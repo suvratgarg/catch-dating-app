@@ -4,8 +4,13 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: Protected Firebase environment alias.
+        description: Firebase environment alias.
         required: true
+        type: string
+      approval_environment:
+        description: Optional separately restricted routine production environment.
+        required: false
+        default: ""
         type: string
       base_sha:
         description: Exact base SHA recorded by the trusted CI impact plan.
@@ -45,6 +50,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
   id-token: write
 
 jobs:
@@ -52,7 +58,7 @@ jobs:
     name: Firebase ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.approval_environment || inputs.environment }}
     concurrency:
       group: firebase-${{ inputs.environment }}
       cancel-in-progress: false
@@ -61,6 +67,8 @@ jobs:
         env:
           CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          APPROVAL_ENVIRONMENT: ${{ inputs.approval_environment || inputs.environment }}
+          RESUME_RUN_ID: ${{ inputs.resume_delivery_run_id }}
           BASE_SHA: ${{ inputs.base_sha }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
@@ -79,6 +87,15 @@ jobs:
           [[ "$SOURCE_CI_RUN_ID" =~ ^[1-9][0-9]*$ ]]
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$REQUIRE_CURRENT_MAIN" =~ ^(true|false)$ ]]
+          if [[ "$APPROVAL_ENVIRONMENT" != "$DEPLOY_ENVIRONMENT" ]]; then
+            test "$DEPLOY_ENVIRONMENT" = prod
+            test "$APPROVAL_ENVIRONMENT" = prod-backend
+            test "$GITHUB_REF" = refs/heads/main
+            test "$GITHUB_WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/delivery.yml@refs/heads/main"
+            [[ "$GITHUB_EVENT_NAME" =~ ^(workflow_run|repository_dispatch)$ ]]
+            test "$REQUIRE_CURRENT_MAIN" = false
+            test -z "$RESUME_RUN_ID"
+          fi
 
       - name: Checkout the immutable Delivery control plane
         uses: actions/checkout@v6
@@ -132,6 +149,7 @@ jobs:
       - id: verify
         name: Verify artifact provenance and packaged CI plan before mutation
         env:
+          GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ inputs.base_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
@@ -159,6 +177,9 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true)"
+          result="$(node tool/ci/backend_source_review.mjs \
+            --source-root build/delivery/source-checkout \
+            --repository "$GITHUB_REPOSITORY" <<< "$result")"
           project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
             '.projects[$environment]' build/delivery/package/.firebaserc)"
           control_project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
@@ -166,12 +187,19 @@ jobs:
           [[ "$project_id" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]]
           test "$control_project_id" = "$project_id"
           printf '%s\n' "$result" > build/delivery/execution-plan.json
-          jq '{stages, targets, functionSelection}' <<< "$result"
+          jq '{stages, targets, functionSelection, productionPromotion}' <<< "$result"
           echo "targets=$(jq -r '.targets | map(select(length > 0)) | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "has_targets=$(jq -r '.targets | any(length > 0)' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
           echo "checkpoint_scope=firebase:${DEPLOY_ENVIRONMENT}:${project_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Recompute automatic production eligibility before authentication
+        if: ${{ inputs.approval_environment == 'prod-backend' }}
+        run: |
+          set -euo pipefail
+          jq -e '.productionPromotion.environment == "prod-backend" and .stages == ["functions"]' \
+            build/delivery/execution-plan.json > /dev/null
 
       - id: restore
         name: Resolve resumable checkpoint

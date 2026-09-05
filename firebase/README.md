@@ -175,6 +175,8 @@ Last consolidated from live environment evidence on 2026-05-21.
 ## Runtime source of truth
 
 - App runtime environment comes from `APP_ENV`.
+- Routine local web development uses `tool/env/dart_defines/local.json`:
+  the dev app target with the isolated `demo-catch` Firebase project.
 - Checked-in defaults live in `tool/env/dart_defines/dev.json`,
   `tool/env/dart_defines/staging.json`, and `tool/env/dart_defines/prod.json`.
 - Native Firebase files are activated by `./tool/use_firebase_environment.sh`.
@@ -183,6 +185,28 @@ Last consolidated from live environment evidence on 2026-05-21.
   Firebase issues.
 
 ## Common commands
+
+Start the isolated local suite, then run either Flutter role in another terminal:
+
+```bash
+npm --prefix functions run serve
+./tool/flutter_with_env.sh local --role host run -d chrome
+./tool/flutter_with_env.sh local run -d chrome
+```
+
+This connects Auth, Firestore, Storage, and Functions to loopback emulators
+before any service is used. It skips Remote Config fetches, push messaging,
+App Check activation, and observability collection. It does not read local
+credential define files or rewrite native Firebase configuration. Custom
+Dart defines are rejected for this target so they cannot silently replace
+the demo project or disable emulator routing.
+
+The local target supports web runs/builds and tests. Native device testing
+and external integrations use `dev` explicitly. Firebase demo projects have
+no live resources; unsupported services cannot fall through to a billed
+project. Local data starts empty and is discarded on exit. See
+[`functions/README.md`](../functions/README.md#commands) for dependencies,
+placeholder integrations, ports, and restart behavior.
 
 Switch the active native/web Firebase config:
 

@@ -233,6 +233,15 @@ Future<void> _lockDeviceOrientation() {
 /// fetch fails, or null. See [_initializeRemoteConfig].
 Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   await _initializeDefaultFirebaseApp();
+  if (AppConfig.useFirebaseEmulators) {
+    final host = AppConfig.firebaseEmulatorHost;
+    await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+    FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+    await FirebaseStorage.instance.useStorageEmulator(host, 9199);
+    FirebaseFunctions.instanceFor(
+      region: firebaseFunctionsRegion,
+    ).useFunctionsEmulator(host, 5001);
+  }
   await _activateFirebaseAppCheck();
   await _configureFirebaseAuthTestingSettings();
   await _debugSignOutOnStartIfRequested();
@@ -249,28 +258,49 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
     registerFirebaseMessagingBackgroundHandler();
   }
 
-  if (AppConfig.useFirebaseEmulators) {
-    final host = AppConfig.firebaseEmulatorHost;
-    await FirebaseAuth.instance.useAuthEmulator(host, 9099);
-    FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
-    await FirebaseStorage.instance.useStorageEmulator(host, 9199);
-    FirebaseFunctions.instanceFor(
-      region: firebaseFunctionsRegion,
-    ).useFunctionsEmulator(host, 5001);
-  }
-
   return remoteConfigError;
 }
 
 Future<void> _initializeDefaultFirebaseApp() async {
-  if (_hasDefaultFirebaseApp()) return;
+  final demoProject = AppConfig.firebaseEmulatorProjectId;
+  if (demoProject.isNotEmpty &&
+      (!AppConfig.useFirebaseEmulators ||
+          !demoProject.startsWith('demo-') ||
+          !kIsWeb ||
+          AppConfig.environment != AppEnvironment.dev)) {
+    throw StateError(
+      'An isolated Firebase demo project requires the local web target.',
+    );
+  }
+  if (_hasDefaultFirebaseApp()) {
+    if (demoProject.isNotEmpty &&
+        Firebase.app().options.projectId != demoProject) {
+      throw StateError(
+        'The existing Firebase app is not the requested demo project.',
+      );
+    }
+    return;
+  }
 
   try {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: demoProject.isEmpty
+          ? DefaultFirebaseOptions.currentPlatform
+          : FirebaseOptions(
+              apiKey: 'demo-api-key',
+              appId: '1:1234567890:web:0000000000000000000000',
+              messagingSenderId: '1234567890',
+              projectId: demoProject,
+              storageBucket: '$demoProject.appspot.com',
+            ),
     );
   } on FirebaseException catch (error) {
-    if (error.code == 'duplicate-app' && _hasDefaultFirebaseApp()) return;
+    if (error.code == 'duplicate-app' &&
+        _hasDefaultFirebaseApp() &&
+        (demoProject.isEmpty ||
+            Firebase.app().options.projectId == demoProject)) {
+      return;
+    }
     rethrow;
   }
 }
@@ -280,7 +310,7 @@ bool _hasDefaultFirebaseApp() {
     Firebase.app();
     return true;
   } on FirebaseException catch (error) {
-    if (error.code == 'no-app') return false;
+    if (error.code == 'no-app' || error.code == 'not-initialized') return false;
     rethrow;
   }
 }
@@ -322,6 +352,7 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
     ),
   );
   await remoteConfig.setDefaults({...kAppVersionConfigDefaults});
+  if (AppConfig.useFirebaseEmulators) return null;
   try {
     await remoteConfig.fetchAndActivate();
     return null;
@@ -334,6 +365,10 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
 }
 
 Future<void> _activateFirebaseAppCheck() async {
+  if (AppConfig.useFirebaseEmulators &&
+      AppConfig.firebaseEmulatorProjectId.isNotEmpty) {
+    return;
+  }
   final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
   final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
   final useDebugProvider =

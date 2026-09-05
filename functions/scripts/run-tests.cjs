@@ -9,7 +9,7 @@ const {spawnSync} = require("node:child_process");
 const functionsRoot = path.resolve(__dirname, "..");
 
 function discoverTestFiles(root = functionsRoot) {
-  return fs.globSync(["lib/**/*.test.js", "test/**/*.test.cjs"], {cwd: root})
+  return fs.globSync(["lib/**/*.test.js", "test/**/*.test.cjs", "scripts/**/*.test.cjs"], {cwd: root})
     .filter((file) => !file.endsWith(".rules.test.cjs"))
     .map((file) => file.split(path.sep).join("/"))
     .sort();

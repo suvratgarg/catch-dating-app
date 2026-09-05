@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.6.0
+version: 2.7.0
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -34,6 +34,34 @@ Functions Node engine, or an Apple-native workflow runner drifts. Keep the
 Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
 7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
 visual-smoke workflows use `macos-26`.
+
+## Deployment Image Retention and Cost Alerts
+
+`tool/firebase/artifact_registry_cleanup_policy.json` owns the seven-day
+Artifact Registry policy for `gcf-artifacts` in `asia-south1` and `us-central1`
+for dev, staging, and production. Apply the same checked policy explicitly to
+each repository and read it back:
+
+```sh
+gcloud artifacts repositories set-cleanup-policies gcf-artifacts \
+  --project <project-id> --location <region> \
+  --policy tool/firebase/artifact_registry_cleanup_policy.json --no-dry-run
+gcloud artifacts repositories describe gcf-artifacts \
+  --project <project-id> --location <region> --format=json
+```
+
+The policy expires tagged and untagged build images after seven days. There is
+no keep-count exception that can retain old images indefinitely. Firebase keeps
+the deployed runtime separately; these build images are not user uploads or
+application data. Artifact Registry executes cleanup asynchronously, and storage
+reclamation can lag version deletion. The immutable source-bound GitHub delivery
+packages retain their separate 90-day recovery window.
+
+The combined `Catch pre-launch` billing budget is ₹400 per calendar month,
+scoped to the three Catch projects, with actual-spend alerts at 50%, 80%, and
+100% plus a forecast alert at 100%. Budgets send alerts; they do not cap spending.
+Keep unrelated project budgets separate. Attribute changes by project and SKU
+before removing resources or claiming savings from the invoice.
 
 ## Firebase Environment Readiness
 
@@ -258,8 +286,13 @@ contract checks retain their separate owners.
 
 The same planner follows the lint engine's seeded and generated probe imports.
 The expensive Catch UI plugin smoke check runs when its engine, configuration,
-corpus or transitive probe APIs change, and on full runs. The application
-analyzer and zero-diagnostic gate still run on every selected Flutter lane.
+corpus or transitive probe APIs change, and on full runs. When the actual Tools
+plan already selects that registered check, Flutter consumes the same CI run's
+required Tools result and omits its duplicate invocation. Standalone Flutter
+runs retain their own engine check. The application analyzer and zero-diagnostic
+gate still run on every selected Flutter lane. The workspace analyzer saves its
+root diagnostics once; the lint gate and report reuse that output instead of
+launching a second root analysis.
 Selector safety tests run before any selective job can proceed; planner failure
 fails the aggregate. The selected inventory and reasons are CI artifacts, not
 a tracked registry.
@@ -277,6 +310,13 @@ derive a concurrency group from `github.workflow`: inside a called workflow
 that value is the caller name, so sibling lanes would share one key and cancel
 one another. Standalone/manual workflow dispatches may add a distinct
 workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
+
+Local `node tool/harness/verify_local.mjs --base origin/main --list` resolves
+Tools checks through the same affected-tool planner and registered runner as CI,
+including full fallback. Literal package working directories are preserved;
+commands with unresolved environment or Actions context remain explicit gaps.
+Identical registered commands execute once per runner invocation. Local checks
+stop on shell pipeline failures and incomplete ownership cannot report success.
 
 The complete impact plan is written to `build/ci/impact-plan.json` and rendered
 from that file. Only bounded booleans and role arrays cross the GitHub step/job
@@ -326,7 +366,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/delivery.yml` | Ordered backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev and protected production. |
+| `.github/workflows/delivery.yml` | Ordered backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev and policy-selected production. |
 | `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -409,7 +449,7 @@ For reconciliation merges touching more than 50 paths, run
 and require explicit discard receipts. After a squash merge is verified on
 `origin/main`, delete the single-use branch and prune tracking refs.
 
-## Git Branch Hygiene
+### Daily orphan-branch detection
 
 GitHub's repository-level delete-after-merge setting is enabled, but it only
 removes the exact PR head. `.github/workflows/branch-hygiene.yml` evaluates the
@@ -436,17 +476,46 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, `prod-mobile`, and `prod`. `prod-hosting` is
+`staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic marketing and admin Firebase
 Hosting workflows. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
 the exact promoter, whose four role/platform targets each have their own bounded
 non-cancelling queue. Every authorized iOS target is dispatched automatically;
-manual dispatch remains a recovery surface. Keep required reviewers on shared `prod`, which owns
-backend production deploys and production data operations. This gives all four
-user-facing products merge-driven deployment without broadening approval-free
-access to backend/data authority.
+manual dispatch remains a recovery surface. `prod-backend` is main-only and
+accepts only the reusable Firebase promoter called by the automatic Delivery
+workflow. Its OIDC provider binds repository, ref, environment, caller workflow,
+reusable workflow, and automatic event type. It reuses the existing deployment
+identity; it does not add project permissions. That identity's federation grant
+is restricted to the exact `prod`, `prod-hosting`, and `prod-backend` subjects,
+replacing its former repository-wide grant. The older production provider
+accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
+
+Keep required reviewers on shared `prod` for production data operations,
+non-Functions stages, snapshots, recovery, and older source without review proof.
+Same-repository pull requests whose plan selects Functions require the
+credential-free `backend-review` environment after selected validation passes.
+Its reviewer explicitly reviews the whole backend change, including permissions,
+secrets, migrations, initialization and trigger settings, before merge. Required
+CI includes this gate. A new PR head requires a new reviewed CI run.
+
+For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
+merged PR, successful pre-merge CI, required-reviewer approval history, completed
+review job, and equality of the reviewed PR tree with the exact packaged source
+tree. Delivery and the promoter independently repeat this read-only verification
+before authentication. Evidence that is missing, expired, unavailable or bound
+to different source retains `prod` review. Source pattern matching cannot prove
+that business logic is free of permission changes and is not used as approval.
+Verified Functions no-ops need no runtime approval. `backend-review` has no
+secrets, variables or cloud federation, allows the sole maintainer to review
+self-authored PRs, restricts branches to `refs/pull/*/merge`, and forbids
+administrator bypass. Its approval is recorded by
+GitHub, not a checked-in receipt. Reviewing before merge keeps human waiting time
+outside the shared deployment queue; after dev succeeds, reviewed Functions-only
+source uses `prod-backend` automatically.
+Both production paths keep the same `firebase-prod` lock and delivery cursor;
+automation never skips an older package or deploys production before dev succeeds.
 
 During cutover, reviewer-protected `prod` may still hold duplicate mobile
 secrets as rollback material. The mobile workflow does not read them. Delete
@@ -808,10 +877,11 @@ staging mutations. Start a fresh refresh instead of partially rerunning it.
 Firebase backend delivery is one ordered promotion chain. After a successful
 same-repository `main` push, CI packages only the backend groups authorized by
 the exact impact plan. `Delivery` verifies that CI-produced package and promotes
-the same bytes through `dev`, then protected `prod`; production waits for dev
-to finish. The reusable promotion job attaches the
-matching GitHub Environment, so reviewer protection on `prod` pauses the chain
-without rebuilding or changing the approved artifact.
+the same bytes through `dev`, then production; production waits for dev to
+finish. The source review policy described under GitHub Environments And
+Auth selects `prod-backend` for explicitly reviewed Functions-only source and
+verified Functions no-ops, or reviewer-protected `prod` for the remaining changes. Neither
+path rebuilds or changes the approved artifact.
 
 Functions packages retain their full immutable CI-authorized target set. Before
 promotion, the current control plane derives an execution subset from the exact
@@ -842,8 +912,8 @@ The backend stages inside each environment are ordered
 `firestore-indexes` → `functions` → `firestore-rules` → `storage-rules`, omitting
 groups the impact plan did not authorize. The index stage is not complete until
 every packaged composite index reaches `READY`. Normal delivery is therefore
-automatic from dev through protected production, but it is still a backend
-deployment—not a store, Hosting, or app release.
+ordered from dev through policy-selected production. Store, Hosting, and app
+releases retain their independent owners.
 
 Manual `Delivery` dispatch is bounded recovery, not an arbitrary deploy path.
 It accepts only the id and full SHA of the oldest pending successful
@@ -1010,7 +1080,8 @@ the exact production bytes, and `_web-hosting-promote.yml` downloads that
 artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
 variables in that environment; App Store
 Connect and mobile signing secrets are owned by `prod-mobile`; backend
-production authority remains in reviewer-protected `prod`. Temporary mobile
+production uses the bounded `prod-backend` path or reviewer-protected `prod`.
+Temporary mobile
 rollback duplicates in `prod` follow the cutover cleanup above.
 
 The production admin Hosting target has its own `Admin Website` workflow. It

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-09-05",
   "id": "feature.host_organizer_create",
   "name": "Host Organizer Create",
   "owner": "hosts",
@@ -63,10 +63,9 @@
           "catch.top_bar"
         ],
         "dataContracts": [
-          "contracts/firestore/clubs.schema.json",
-          "contracts/storage/club_logo_images.schema.json",
-          "contracts/storage/club_logo_thumbnails.schema.json",
-          "contracts/storage/club_photos.schema.json"
+          "contracts/firestore/organizers.schema.json",
+          "contracts/storage/organizer_logo_media_objects.schema.json",
+          "contracts/storage/organizer_media_objects.schema.json"
         ]
       },
       "dimensions": {

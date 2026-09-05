@@ -111,13 +111,13 @@ class ImageUploadRepository {
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
-  static const _clubPhotosContract = _StorageUploadContract(
-    resource: 'club_photos',
+  static const _organizerMediaContract = _StorageUploadContract(
+    resource: 'organizer_media_objects',
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
-  static const _clubLogoImagesContract = _StorageUploadContract(
-    resource: 'club_logo_images',
+  static const _organizerLogoMediaContract = _StorageUploadContract(
+    resource: 'organizer_logo_media_objects',
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
@@ -595,12 +595,12 @@ class ImageUploadRepository {
     if ((storagePath.startsWith('organizers/') ||
             storagePath.startsWith('clubs/')) &&
         (storagePath.contains('/photos/') || storagePath.contains('/media/'))) {
-      return _clubPhotosContract;
+      return _organizerMediaContract;
     }
     if ((storagePath.startsWith('organizers/') ||
             storagePath.startsWith('clubs/')) &&
         storagePath.contains('/logo/')) {
-      return _clubLogoImagesContract;
+      return _organizerLogoMediaContract;
     }
     if (storagePath.startsWith('events/') &&
         (storagePath.contains('/photos/') || storagePath.contains('/media/'))) {

@@ -461,6 +461,37 @@
       ]
     },
     {
+      "id": "ci:backend-source-review",
+      "category": "ci",
+      "path": "tool/ci/backend_source_review.mjs",
+      "command": "node --test tool/ci/backend_source_review.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/backend_source_review.test.mjs",
+        ".github/workflows/ci.yml",
+        ".github/workflows/delivery.yml",
+        ".github/workflows/_firebase-promote.yml",
+        "tool/firebase/affected_function_targets.mjs"
+      ],
+      "description": "Verifies explicit GitHub backend review against the exact merged source tree before automatic Functions promotion; missing or mismatched evidence retains protected production.",
+      "checks": [
+        "node --check tool/ci/backend_source_review.mjs",
+        "node --test tool/ci/backend_source_review.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/backend_source_review.test.mjs"
+      }
+    },
+    {
       "id": "ci:firebase-delivery-workflow",
       "category": "ci",
       "path": "tool/ci/firebase_delivery_workflow.test.mjs",
@@ -499,7 +530,10 @@
           "promotion is ordered dev to protected prod",
           "automatic target planning rejects broad and unrelated Firebase products"
         ]
-      }
+      },
+      "alsoCheckIds": [
+        "ci:backend-source-review"
+      ]
     },
     {
       "id": "ci:web-hosting-delivery-package",
@@ -4784,6 +4818,7 @@
       "category": "design",
       "path": "tool/design/build_host_feature_responsibilities.mjs",
       "impactPaths": [
+        "tool/design/build_host_feature_responsibilities.test.mjs",
         "design/features/host_feature_responsibilities.json",
         "design/features/host_feature_responsibilities.schema.json",
         "design/features/host_home.feature.json",
@@ -4801,6 +4836,13 @@
       "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, existing feature-contract action owners, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
       "checks": [
         "node --check tool/design/build_host_feature_responsibilities.mjs",

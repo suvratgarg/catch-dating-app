@@ -10,6 +10,11 @@ on:
         required: false
         type: boolean
         default: false
+      ui_lint_smoke_in_tools:
+        description: The same CI run selected the registered Tools engine check.
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       base_sha:
@@ -85,7 +90,7 @@ jobs:
       - uses: ./.github/actions/setup-flutter
 
       - name: Analyze every Dart and Flutter package
-        run: node tool/ci/check_flutter_workspace_analysis.mjs
+        run: node tool/ci/check_flutter_workspace_analysis.mjs --root-diagnostics-dir /tmp/catch-ui-root-analysis
 
       - run: npm ci
 
@@ -148,50 +153,15 @@ jobs:
         run: bash tool/check_riverpod_lint.sh
 
       - name: Catch UI lint plugin smoke check
-        if: ${{ needs.test-plan.outputs.ui_lint_smoke == 'true' }}
+        if: ${{ needs.test-plan.outputs.ui_lint_smoke == 'true' && !inputs.ui_lint_smoke_in_tools }}
         run: bash tool/check_catch_ui_lints.sh
 
-      - name: Collect Catch UI analyzer diagnostics
+      - name: Reuse the verified root analyzer diagnostics
         run: |
-          set +e
-          dart analyze --format machine > /tmp/catch-ui-analyze.machine 2>&1
-          status=$?
-          set -e
-          if [[ "$status" != "0" && "$status" != "2" ]]; then
-            cat /tmp/catch-ui-analyze.machine
-            exit "$status"
-          fi
-          if grep -q 'An error occurred while executing an analyzer plugin' /tmp/catch-ui-analyze.machine; then
-            cat /tmp/catch-ui-analyze.machine
-            exit 1
-          fi
-          echo "$status" > /tmp/catch-ui-analyze.status
-          echo 'CATCH_UI_ANALYZE_OUTPUT_PATH=/tmp/catch-ui-analyze.machine' >> "$GITHUB_ENV"
-          echo "CATCH_UI_ANALYZE_STATUS=$status" >> "$GITHUB_ENV"
-
-      - name: Catch UI spacing warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_ui_spacing|catch_use_section_list' --label spacing
-
-      - name: Catch UI color warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_color --label color
-
-      - name: Catch UI typography warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_text_style|catch_no_raw_font_drift|catch_no_direct_font_builder|catch_no_raw_letter_spacing|catch_text_requires_style' --label typography
-
-      - name: Catch UI radius and fixed-dimension warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_radius|catch_no_raw_content_dimension|catch_no_local_design_constant' --label geometry
-
-      - name: Catch UI token-arithmetic warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code catch_no_token_arithmetic --label token-arithmetic
-
-      - name: Catch UI field and section warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_use_named_catch_field_constructor|catch_use_named_catch_section_constructor|catch_field_geometry_is_section_owned|catch_field_divider_is_section_owned' --label field-section-anatomy
-
-      - name: Catch UI event-thumbnail warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code catch_event_detail_prefers_photo_thumbnail --label event-thumbnail
-
-      - name: Catch UI promoted scanner warning gate
-        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_network_image|catch_no_presentation_platform_import|catch_no_tokens_prop_drilling|catch_no_legacy_spacing_token|catch_screen_gutter_uses_semantic_insets|catch_no_async_flush_hack' --label promoted-scanners
+          test "$(cat /tmp/catch-ui-root-analysis/analyze.status)" = "0"
+          test -f /tmp/catch-ui-root-analysis/analyze.machine
+          echo 'CATCH_UI_ANALYZE_OUTPUT_PATH=/tmp/catch-ui-root-analysis/analyze.machine' >> "$GITHUB_ENV"
+          echo 'CATCH_UI_ANALYZE_STATUS=0' >> "$GITHUB_ENV"
 
       - name: Catch UI zero-diagnostic gate
         run: bash tool/check_catch_ui_lint_drift.sh --check
