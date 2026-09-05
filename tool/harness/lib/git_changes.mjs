@@ -4,7 +4,7 @@ import {repoRoot} from "../../lib/repo_paths.mjs";
 // Harness and Tools must see the same window. Endpoint diffs alone erase a
 // change followed by a reversion while an earlier main CI is still running.
 export function changedPathsSince({
-  base, head = "HEAD", cwd = repoRoot, commitWindow = false,
+  base, head = "HEAD", cwd = repoRoot, commitWindow = false, committedOnly = false,
 }) {
   const git = (args) => {
     const result = spawnSync("git", args, {
@@ -32,9 +32,11 @@ export function changedPathsSince({
   } else {
     commands = [
       ["diff", "--name-only", "--no-renames", "-z", `${base}...${head}`, "--"],
-      ["diff", "--name-only", "--no-renames", "-z"],
-      ["diff", "--cached", "--name-only", "--no-renames", "-z"],
-      ["ls-files", "--others", "--exclude-standard", "-z"],
+      ...(committedOnly ? [] : [
+        ["diff", "--name-only", "--no-renames", "-z"],
+        ["diff", "--cached", "--name-only", "--no-renames", "-z"],
+        ["ls-files", "--others", "--exclude-standard", "-z"],
+      ]),
     ];
   }
   return [...new Set(commands.flatMap((args) => git(args).split("\0").filter(Boolean)))].sort();

@@ -468,3 +468,32 @@ function runGit(cwd, args) {
     `git ${args.join(" ")} failed:\n${result.stderr || result.stdout}`,
   );
 }
+
+
+test("Tools preflight and execution retain reverted files from the same exact commit window", (context) => {
+  const fixture = createRunnerFixture(context);
+  fs.copyFileSync(path.join(repositoryRoot, "tool/harness/component_graph.json"),
+    path.join(fixture, "tool/harness/component_graph.json"));
+  const commit = () => {
+    runGit(fixture, ["add", "."]); runGit(fixture, ["commit", "--quiet", "-m", "window fixture"]);
+    return spawnSync("git", ["rev-parse", "HEAD"], {cwd: fixture, encoding: "utf8"}).stdout.trim();
+  };
+  const base = commit();
+  const file = path.join(fixture, "tool/check.mjs");
+  const original = fs.readFileSync(file, "utf8");
+  fs.writeFileSync(file, original + "// transient edit\n"); commit();
+  fs.writeFileSync(file, original); const head = commit();
+  const args = ["affected-tools", "--base", base, "--head", head, "--mode", "main", "--commit-window"];
+  const planned = run(args, {cwd: fixture});
+  assert.equal(planned.status, 0, planned.stderr);
+  const plan = JSON.parse(planned.stdout);
+  assert.deepEqual(plan.changedPaths, ["tool/check.mjs"]);
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.toolIds, ["fixture:check"]);
+  const executed = run([...args, "--check"], {cwd: fixture});
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.match(executed.stdout, /fixture-check/u);
+  const invalid = run([...args, "--paths", "README.md"], {cwd: fixture});
+  assert.notEqual(invalid.status, 0);
+  assert.doesNotMatch(invalid.stdout, /==>/u);
+});

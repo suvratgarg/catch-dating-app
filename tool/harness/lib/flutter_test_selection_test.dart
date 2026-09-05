@@ -76,22 +76,31 @@ void main() {
         'tool/harness/component_graph.json',
         File('tool/harness/component_graph.json').readAsStringSync(),
       );
+      write('.gitignore', 'plan.json\nbin/\n');
       final base = commit();
       write('lib/a.dart', 'const a = 2;');
       write('docs/feature.md', 'After');
       final head = commit();
-      Map<String, dynamic> run({bool full = false, String? path}) {
+      Map<String, dynamic> run({
+        bool full = false,
+        String? path,
+        bool commitWindow = false,
+        String? selectedBase,
+        String? selectedHead,
+      }) {
         final result = Process.runSync(
           Platform.resolvedExecutable,
           [
             '--packages=$packages',
             selector,
             '--base',
-            base,
+            selectedBase ?? base,
             '--head',
-            head,
+            selectedHead ?? head,
             '--full',
             '$full',
+            '--commit-window',
+            '$commitWindow',
             '--output',
             '${root.path}/plan.json',
           ],
@@ -116,6 +125,49 @@ void main() {
           .trim();
       Link('${bin.path}/git').createSync(gitPath);
       expect(run(path: bin.path)['selectedTests'], 3);
+      // An intermediate dependency edge is absent from both initial snapshots.
+      // Its changed owner remains in the committed window, selecting the head
+      // test that a finalized predecessor-based selector would require.
+      write('lib/b.dart', "export 'c.dart';");
+      final intermediate = commit();
+      write('lib/b.dart', "export 'a.dart';");
+      write('lib/c.dart', 'const c = 2;');
+      final restored = commit();
+      final endpoint = run(selectedBase: head, selectedHead: restored);
+      expect(endpoint['files'], ['test/c_test.dart', 'test/probe_test.dart']);
+      final window = run(
+        selectedBase: head,
+        selectedHead: restored,
+        commitWindow: true,
+      );
+      expect(window['reason'], startsWith('Union of base/head'));
+      expect(window['commitWindow'], true);
+      expect(window['files'], [
+        'test/a_test.dart',
+        'test/c_test.dart',
+        'test/probe_test.dart',
+      ]);
+      final finalized = run(selectedBase: intermediate, selectedHead: restored);
+      expect(
+        (window['files'] as List).toSet().containsAll(
+          finalized['files'] as List,
+        ),
+        isTrue,
+      );
+      // A removed/renamed dependency also survives the window and never loses
+      // the dependent test when the original name is restored.
+      git(['mv', 'lib/a.dart', 'lib/renamed.dart']);
+      write('lib/b.dart', "export 'renamed.dart';");
+      commit();
+      git(['mv', 'lib/renamed.dart', 'lib/a.dart']);
+      write('lib/b.dart', "export 'a.dart';");
+      final renamedBack = commit();
+      final renamedWindow = run(
+        selectedBase: restored,
+        selectedHead: renamedBack,
+        commitWindow: true,
+      );
+      expect((renamedWindow['files'] as List), contains('test/a_test.dart'));
     } finally {
       root.deleteSync(recursive: true);
     }

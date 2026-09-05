@@ -13,6 +13,14 @@ const workflow = (name) => fs.readFileSync(
   "utf8",
 );
 
+function ciJob(source, name) {
+  const start = source.indexOf(`\n  ${name}:\n`);
+  assert.ok(start >= 0, `Missing CI job ${name}`);
+  const remaining = source.slice(start + 1);
+  const end = remaining.search(/\n  [a-z][a-z-]*:\n/);
+  return end < 0 ? remaining : remaining.slice(0, end);
+}
+
 test("staging refresh is monthly or manual, validates its exact snapshot, and cannot advance production", () => {
   const staging = workflow("backend-staging.yml");
   assert.match(staging, /schedule:\s+- cron: '17 2 1 \* \*'/);
@@ -36,20 +44,35 @@ test("staging refresh is monthly or manual, validates its exact snapshot, and ca
   assert.equal((staging.match(/uses: \.\/\.github\/workflows\/_firebase-promote.yml/g) ?? []).length, 1);
 });
 
-test("main CI serializes planning and re-covers every failed validation window", () => {
+test("main CI starts validation immediately and serializes only proven publication", () => {
   const ci = workflow("ci.yml");
+  const plan = ciJob(ci, "plan");
+  const finalizer = ciJob(ci, "finalize-plan");
   assert.match(ci, /group: ci-\$\{\{ github\.event_name \}\}-\$\{\{[\s\S]*github\.event_name == 'push'[\s\S]*github\.run_id/);
   assert.match(ci, /cancel-in-progress: \$\{\{ github\.event_name != 'push' \}\}/);
-  assert.match(ci, /permissions:[\s\S]*actions: read[\s\S]*contents: read/);
-  assert.match(ci, /timeout-minutes: 180/);
-  assert.match(ci, /active_pages="\$\(gh api --paginate --slurp[\s\S]*event=push&per_page=100/);
-  assert.match(ci, /\.run_number < \$current_run[\s\S]*\.status != "completed"/);
-  assert.match(ci, /Waiting for \$lower_active lower-numbered active main CI run/);
-  assert.match(ci, /successful_pages="\$\(gh api --paginate --slurp[\s\S]*status=success[\s\S]*max_by\(\.run_number\)/);
-  assert.match(ci, /base_sha="\$\(jq -er '\.head_sha' <<< "\$prior_success"\)"/);
-  assert.match(ci, /No prior successful main CI run exists; using the push before SHA/);
-  assert.match(ci, /git merge-base --is-ancestor "\$base_sha" "\$HEAD_SHA"/);
-  assert.match(ci, /baseSha: \$baseSha,[\s\S]*sourceSha: \$sourceSha,[\s\S]*sourceCiRunId: \$sourceCiRunId,[\s\S]*sourceCiRunAttempt: \$sourceCiRunAttempt/);
+  assert.match(plan, /main_ci_baseline\.mjs/);
+  assert.doesNotMatch(plan, /--wait|while true|sleep 20/);
+  assert.match(plan, /window_flag=\(--commit-window\)/);
+  assert.match(plan, /"\$\{full_flag\[@\]\}" "\$\{window_flag\[@\]\}"/);
+  assert.match(finalizer, /timeout-minutes: 180/);
+  assert.match(finalizer, /--fallback-base "\$BEFORE_SHA" --wait/);
+  assert.ok(finalizer.indexOf('finalize_ci_plan.mjs validate') < finalizer.indexOf('main_ci_baseline.mjs'));
+  assert.ok(finalizer.indexOf('main_ci_baseline.mjs') < finalizer.indexOf('finalize_ci_plan.mjs finalize'));
+  assert.match(finalizer, /name: harness-validation-plan-/);
+  assert.match(finalizer, /name: harness-plan-/);
+  assert.match(finalizer, /check_doc_metadata\.mjs --base "\$base_sha"/);
+  assert.match(finalizer, /check_new_widget_inventory\.mjs --base "\$base_sha" --check --no-write/);
+  assert.match(finalizer, /fetch-depth: 0/);
+  assert.doesNotMatch(finalizer, /continue-on-error|npm --prefix functions|run build/);
+  const packaging = ciJob(ci, "package-firebase");
+  assert.match(packaging, /needs\.finalize-plan\.result == 'success'/);
+  assert.match(packaging, /BASE_SHA: \$\{\{ needs\.finalize-plan\.outputs\.base_sha \}\}/);
+  assert.match(packaging, /DEPLOY_GROUPS: \$\{\{ needs\.finalize-plan\.outputs\.deploy_groups \}\}/);
+  assert.doesNotMatch(packaging, /needs\.plan\.outputs\.(?:deploy_groups|base_sha|deploy_required)/);
+  const required = ciJob(ci, "required");
+  assert.match(required, /'\.\["finalize-plan"\]\.result'/);
+  assert.match(required, /needs\.finalize-plan\.outputs\.deploy_required/);
+  assert.match(required, /^      - finalize-plan$/m);
 });
 
 test("a successful main CI attempt must own its exact planner and backend artifacts", () => {
@@ -57,7 +80,7 @@ test("a successful main CI attempt must own its exact planner and backend artifa
   for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
     assert.match(workflow(name), /pull-requests: read/);
   }
-  const required = ci.slice(ci.indexOf("  required:"));
+  const required = ciJob(ci, "required");
   assert.match(required, /actions\/runs\/\$GITHUB_RUN_ID\/artifacts\?per_page=100/);
   assert.match(required, /harness-plan-\$\{GITHUB_RUN_NUMBER\}-\$\{GITHUB_RUN_ID\}-\$\{SOURCE_SHA\}-\$\{GITHUB_RUN_ATTEMPT\}/);
   assert.match(required, /firebase-delivery-\$\{SOURCE_SHA\}-\$\{GITHUB_RUN_ATTEMPT\}/);
@@ -883,7 +906,7 @@ test("deployment-image retention has one bounded seven-day policy without indefi
 
 test("backend approval occurs before merge without credentials and is independently reverified", () => {
   const ci = workflow("ci.yml");
-  const review = ci.slice(ci.indexOf("  backend-review:"), ci.indexOf("  package-firebase:"));
+  const review = ciJob(ci, "backend-review");
   assert.match(review, /github.event_name == 'pull_request'/);
   assert.match(review, /head.repo.id == github.repository_id/);
   assert.match(review, /needs.plan.outputs.functions == 'true'/);
@@ -894,7 +917,7 @@ test("backend approval occurs before merge without credentials and is independen
   for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
     assert.match(workflow(name), /pull-requests: read/);
   }
-  const required = ci.slice(ci.indexOf("  required:"));
+  const required = ciJob(ci, "required");
   assert.match(required, /- backend-review/);
   assert.ok(required.includes('test "$(jq -er \'.["backend-review"].result\' <<< "$NEEDS_JSON")" = success'));
   for (const name of ["delivery.yml", "_firebase-promote.yml"]) {
@@ -903,5 +926,25 @@ test("backend approval occurs before merge without credentials and is independen
     assert.ok(text.includes('node tool/ci/backend_source_review.mjs'));
     const auth = text.indexOf("Authenticate to Google Cloud");
     if (auth >= 0) assert.ok(text.indexOf("node tool/ci/backend_source_review.mjs") < auth);
+  }
+});
+
+test("Required CI cannot succeed when main publication is skipped or absent", (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-finalization-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.writeFileSync(path.join(directory, "gh"), '#!/bin/sh\ntouch "$GH_CALLED"\nexit 1\n', {mode: 0o755});
+  const command = extractSteps(ciJob(workflow("ci.yml"), "required"))
+    .find((step) => step.name === "Require every selected lane").run;
+  for (const result of [undefined, "skipped", "failure", "cancelled"]) {
+    const needs = {plan: {result: "success"}, "package-firebase": {result: "skipped"},
+      ...(result == null ? {} : {"finalize-plan": {result}})};
+    const execution = spawnSync("bash", ["-c", command], {encoding: "utf8", env: {
+      ...process.env, PATH: `${directory}${path.delimiter}${process.env.PATH}`,
+      GH_CALLED: path.join(directory, "called"), GITHUB_REF: "refs/heads/main",
+      EVENT_NAME: "push", NEEDS_JSON: JSON.stringify(needs), DEPLOY_REQUIRED: "false",
+      BACKEND_REVIEW_REQUIRED: "false",
+    }});
+    assert.notEqual(execution.status, 0, `Unexpected main success with finalize-plan=${result}`);
+    assert.equal(fs.existsSync(path.join(directory, "called")), false, "Missing finalization must reject before consulting artifacts.");
   }
 });

@@ -489,6 +489,34 @@
       }
     },
     {
+      "id": "ci:finalize-ci-plan",
+      "category": "ci",
+      "path": "tool/ci/finalize_ci_plan.mjs",
+      "command": "node --test tool/ci/finalize_ci_plan.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/finalize_ci_plan.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "description": "Verify committed validation coverage and selected job success before ordered main publication.",
+      "checks": [
+        "node --check tool/ci/finalize_ci_plan.mjs",
+        "node --test tool/ci/finalize_ci_plan.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/finalize_ci_plan.test.mjs"
+      }
+    },
+    {
       "id": "ci:backend-source-review",
       "category": "ci",
       "path": "tool/ci/backend_source_review.mjs",

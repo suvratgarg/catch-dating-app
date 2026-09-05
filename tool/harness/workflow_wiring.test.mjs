@@ -942,3 +942,27 @@ test("scheduled and manual CI resolve revision expressions before binding lane i
     fs.rmSync(root, {recursive: true, force: true});
   }
 });
+
+
+test("every selective main consumer reads the exact committed validation window", () => {
+  const ci = workflow("ci.yml");
+  for (const job of ["tools", "flutter"]) {
+    const start = ci.indexOf(`\n  ${job}:\n`);
+    const end = ci.slice(start + 1).search(/\n  [a-z][a-z-]*:\n/u) + start + 1;
+    const caller = ci.slice(start, end);
+    assert.match(caller, /commit_window: \$\{\{ needs\.plan\.outputs\.commit_window == 'true' \}\}/u);
+  }
+  const tools = workflow("tools-ci.yml");
+  for (const name of ["Resolve affected tool checks", "Check affected tools"]) {
+    const step = tools.slice(tools.indexOf(`        name: ${name}`) >= 0 ?
+      tools.indexOf(`        name: ${name}`) : tools.indexOf(`      - name: ${name}`));
+    const body = step.slice(0, step.indexOf("\n      - "));
+    assert.match(body, /SOURCE_SHA: \$\{\{ github\.sha \}\}/u);
+    assert.match(body, /COMMIT_WINDOW: \$\{\{ inputs\.commit_window \|\| false \}\}/u);
+    assert.match(body, /window_flag=\(--commit-window\)/u);
+    assert.match(body, /--head "\$SOURCE_SHA"/u);
+    assert.match(body, /"\$\{window_flag\[@\]\}"/u);
+  }
+  assert.match(namedStep(workflow("flutter-ci.yml"), "Select tests from committed dependency closures"),
+    /--commit-window "\$COMMIT_WINDOW"/u);
+});

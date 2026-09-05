@@ -224,6 +224,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
     timeoutMinutes: 3,
     paths: [
       "/tool/harness.mjs",
+      "/tool/ci/main_ci_baseline.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
       "/tool/harness/lib/git_changes.mjs",

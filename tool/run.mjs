@@ -170,7 +170,8 @@ async function affectedToolChecks(args) {
     return;
   }
 
-  const changedPaths = options.paths ?? changedPathsSince({base: options.base});
+  if (options.commitWindow && options.paths) throw new Error("--commit-window cannot override committed paths.");
+  const changedPaths = options.paths ?? changedPathsSince(options);
   const plan = planAffectedToolChecks({
     changedPaths,
     manifest,
@@ -432,6 +433,8 @@ function parseAffectedToolArgs(args) {
   const pathsValue = valueAfter(args, "--paths");
   return {
     base: valueAfter(args, "--base") ?? "origin/main",
+    head: valueAfter(args, "--head") ?? "HEAD",
+    commitWindow: args.includes("--commit-window"),
     paths: pathsValue == null ? null : pathsValue
       .split(",")
       .map((value) => value.trim())
@@ -467,7 +470,7 @@ Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
     Repeat --category to validate several categories in one deduplicated run.
-  affected-tools [--base ref | --paths a,b] [--mode mode] [--full] [--json] [--check]
+  affected-tools [--base ref [--head ref] [--commit-window] | --paths a,b] [--mode mode] [--full] [--json] [--check]
     [--github-output path]
   CI check execution may add --marketing-checks-in-react only when its required
     aggregate owns the same-run React marketing lane.

@@ -351,6 +351,7 @@ Future<void> main(List<String> arguments) async {
       '--base',
       '--head',
       '--full',
+      '--commit-window',
       '--output',
       '--github-output',
     ].contains(key),
@@ -369,8 +370,25 @@ Future<void> main(List<String> arguments) async {
   if (!['true', 'false'].contains(args['--full'] ?? 'false')) {
     throw ArgumentError('Invalid --full');
   }
+  if (!['true', 'false'].contains(args['--commit-window'] ?? 'false')) {
+    throw ArgumentError('Invalid --commit-window');
+  }
+  final commitWindow = args['--commit-window'] == 'true';
   final changed =
-      (_git(['diff', '--name-only', '--no-renames', '-z', base, head]).stdout
+      (_git(
+                commitWindow
+                    ? [
+                        'log',
+                        '--format=',
+                        '--name-only',
+                        '--no-renames',
+                        '-m',
+                        '-z',
+                        '$base..$head',
+                        '--',
+                      ]
+                    : ['diff', '--name-only', '--no-renames', '-z', base, head],
+              ).stdout
               as String)
           .split('\u0000')
           .where((name) => name.isNotEmpty)
@@ -394,6 +412,7 @@ Future<void> main(List<String> arguments) async {
     ordinaryDocuments: ordinaryDocuments,
   );
   plan['ordinaryDocuments'] = ordinaryDocuments.toList()..sort();
+  plan['commitWindow'] = commitWindow;
   final files = plan['files']! as List<String>;
   final count = math.min(4, files.length);
   final shards = List.generate(
