@@ -140,6 +140,119 @@ test("start refuses overlapping claims and permits disjoint worktrees", (context
   assert.equal(claimFiles(fixture.root).length, 2);
 });
 
+test("scope extends ownership atomically while preserving dirty work and task identity", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "extend-scope", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  const other = start(fixture, "other-scope", ["unrelated"]);
+  const otherBefore = fs.readFileSync(other.result.claimPath, "utf8");
+  const claimBefore = JSON.parse(fs.readFileSync(execution.result.claimPath, "utf8"));
+  fs.appendFileSync(path.join(worktree, "owned", "allowed.txt"), "keep dirty work\n");
+  const bytesBefore = fs.readFileSync(path.join(worktree, "owned", "allowed.txt"), "utf8");
+  const calls = [];
+  const result = guard(fixture.root, ["scope", "--worktree", worktree,
+    "--paths", "./outside.txt,owned"], {runner: recordingGitRunner(calls)});
+  assert.equal(result.status, 0);
+  assert.equal(result.result.extended, true);
+  assert.deepEqual(result.result.addedPaths, ["outside.txt"]);
+  const after = JSON.parse(fs.readFileSync(execution.result.claimPath, "utf8"));
+  assert.deepEqual(after, {...claimBefore, claimedPaths: ["outside.txt", "owned"]});
+  assert.equal(fs.statSync(execution.result.claimPath).mode & 0o777, 0o600);
+  assert.equal(fs.readFileSync(other.result.claimPath, "utf8"), otherBefore);
+  assert.equal(fs.readFileSync(path.join(worktree, "owned", "allowed.txt"), "utf8"), bytesBefore);
+  assert.equal(gitText(worktree, ["rev-parse", "HEAD"]), fixture.baseSha);
+  assert.equal(calls.some((args) => ["add", "commit", "reset", "switch", "checkout", "push"].includes(args[0])), false);
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "now in scope\n");
+  assert.equal(guard(worktree, ["doctor"]).status, 0);
+  const bytes = fs.readFileSync(execution.result.claimPath, "utf8");
+  const repeated = guard(worktree, ["scope", "--paths", "outside.txt"]);
+  assert.equal(repeated.status, 0);
+  assert.equal(repeated.result.extended, false);
+  assert.deepEqual(repeated.result.addedPaths, []);
+  assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), bytes);
+  assert.equal(fs.readdirSync(path.dirname(execution.result.claimPath)).some((name) => name.endsWith(".tmp") || name.endsWith(".lock")), false);
+});
+
+test("scope rejects overlap and invalid options without changing either claim", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-invalid", ["owned"]);
+  const other = start(fixture, "scope-owner", ["outside.txt"]);
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  const otherBefore = fs.readFileSync(other.result.claimPath, "utf8");
+  for (const args of [
+    ["--paths", "outside.txt/nested"],
+    ["--paths", "../outside"],
+    ["--paths", ".git/config"],
+    ["--paths", "new", "--branch", "codex/other"],
+    ["--paths", "new", "--base-sha", fixture.baseSha],
+    ["--paths", "new", "--task-id", "replacement"],
+    ["--paths", "new", "--abandon"],
+    [],
+  ]) {
+    assert.throws(() => guard(execution.result.worktreePath, ["scope", ...args]), TaskUsageError);
+    assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+    assert.equal(fs.readFileSync(other.result.claimPath, "utf8"), otherBefore);
+  }
+});
+
+test("scope refuses to retroactively claim existing dirty or committed out-of-scope edits", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-retroactive", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "outside edit\n");
+  for (const committed of [false, true]) {
+    if (committed) commitAll(worktree, "outside edit");
+    const result = guard(worktree, ["scope", "--paths", "outside.txt"]);
+    assert.equal(result.status, 1);
+    assert.equal(result.result.extended, false);
+    assert.ok(result.result.blockers.includes("out_of_scope_changes"));
+    assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+  }
+});
+
+test("scope refuses changed branch identity and lost base ancestry", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-identity", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  const checkBlocked = (blocker) => {
+    const result = guard(worktree, ["scope", "--paths", "outside.txt"]);
+    assert.equal(result.status, 1);
+    assert.ok(result.result.blockers.includes(blocker));
+    assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+  };
+  git(worktree, ["checkout", "--detach"]);
+  checkBlocked("worktree_detached");
+  git(worktree, ["checkout", "-b", "codex/changed-identity"]);
+  checkBlocked("branch_mismatch");
+  git(worktree, ["checkout", execution.result.branch]);
+  const unrelated = gitText(worktree, ["commit-tree", gitText(worktree, ["write-tree"]), "-m", "unrelated root"]);
+  git(worktree, ["reset", "--hard", unrelated]);
+  checkBlocked("base_not_ancestor_of_head");
+});
+
+test("scope preserves the old claim when its atomic replacement fails", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-write-failure", ["owned"]);
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  context.mock.method(fs, "renameSync", () => { throw new Error("simulated rename failure"); });
+  assert.throws(() => guard(execution.result.worktreePath, ["scope", "--paths", "outside.txt"]), /simulated rename failure/u);
+  assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+  assert.deepEqual(fs.readdirSync(path.dirname(execution.result.claimPath)), [path.basename(execution.result.claimPath)]);
+});
+
+test("scope honors the existing task transition lock", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "scope-locked", ["owned"]);
+  const before = fs.readFileSync(execution.result.claimPath, "utf8");
+  const lockPath = path.join(path.dirname(execution.result.claimPath), ".start-finish.lock");
+  fs.writeFileSync(lockPath, "existing transition");
+  assert.throws(() => guard(execution.result.worktreePath, ["scope", "--paths", "outside.txt"]), /Another task transition is active/u);
+  assert.equal(fs.readFileSync(execution.result.claimPath, "utf8"), before);
+  assert.equal(fs.readFileSync(lockPath, "utf8"), "existing transition");
+});
+
 test("doctor reports staged, unstaged, and untracked paths without treating in-scope dirt as authority", (context) => {
   const fixture = createRepository(context);
   const execution = start(fixture, "dirty-doctor", ["owned"]);

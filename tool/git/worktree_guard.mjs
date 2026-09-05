@@ -18,6 +18,7 @@ Commands:
   start   --task-id <id> --base-sha <40-char-sha> --paths <paths>
           [--branch <branch>] [--worktree <path>]
   doctor  [--worktree <path>]
+  scope   --paths <additional-paths> [--worktree <path>]
   finish  [--worktree <path>]
           [--abandon --reason <why> [--by <identity>]]
   stale   [--stale-days <days>]
@@ -51,6 +52,13 @@ export function executeTaskCommand({
   }
   if (command === "doctor") {
     return doctorTask({
+      repository,
+      options: parseTaskOptions(args.slice(1)),
+      runner,
+    });
+  }
+  if (command === "scope") {
+    return extendTaskScope({
       repository,
       options: parseTaskOptions(args.slice(1)),
       runner,
@@ -192,6 +200,55 @@ export function doctorTask({repository, options, runner = runGit}) {
     status: inspection.blockers.length === 0 ? 0 : 1,
     result: {operation: "doctor", ...inspection},
   };
+}
+
+export function extendTaskScope({repository, options, runner = runGit}) {
+  if (Object.keys(options).some((key) => !["paths", "worktree"].includes(key))) {
+    throw new TaskUsageError("scope accepts only --paths, --worktree, and --json.");
+  }
+  const additionalPaths = normalizeClaimedPaths(options.paths);
+  if (additionalPaths.length === 0) {
+    throw new TaskUsageError("--paths must contain at least one additional repository path.");
+  }
+  const worktreePath = path.resolve(options.worktree ?? repository.currentRoot);
+  return withClaimsLock(repository, () => {
+    const claim = claimForWorktree(repository, worktreePath);
+    const inspection = inspectClaim({repository, claim, runner});
+    if (inspection.blockers.length > 0) {
+      return {status: 1, result: {operation: "scope", ...inspection, extended: false}};
+    }
+    const claimedPaths = normalizeClaimedPaths([...claim.claimedPaths, ...additionalPaths]);
+    const overlap = readClaims(repository).find((other) =>
+      other.claimPath !== claim.claimPath &&
+      scopeSetsOverlap(claimedPaths, other.claimedPaths));
+    if (overlap != null) {
+      throw new TaskUsageError(
+        `Task scope overlaps ${overlap.taskId} at ${overlap.worktreePath}.`,
+      );
+    }
+    const addedPaths = claimedPaths.filter((entry) => !claim.claimedPaths.includes(entry));
+    if (addedPaths.length > 0) {
+      const {claimPath, ...storedClaim} = claim;
+      const temporaryPath = `${claimPath}.scope-${process.pid}.tmp`;
+      const descriptor = fs.openSync(temporaryPath, "wx", 0o600);
+      try {
+        try {
+          fs.writeFileSync(descriptor,
+            `${JSON.stringify({...storedClaim, claimedPaths}, null, 2)}\n`, "utf8");
+        } finally {
+          fs.closeSync(descriptor);
+        }
+        fs.renameSync(temporaryPath, claimPath);
+      } finally {
+        if (fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
+      }
+    }
+    return {
+      status: 0,
+      result: {operation: "scope", ...inspection, claimedPaths, addedPaths,
+        extended: addedPaths.length > 0},
+    };
+  });
 }
 
 export function finishTask({
