@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.10
-updated: 2026-09-05
+version: 2.7.11
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -1280,6 +1280,13 @@ plan, package, raw provenance digest, source attempt, base SHA and successful de
 worker. Production selection and the credential-bearing promoter independently
 verify that receipt against historical CI and dev jobs before authentication.
 A newer CI rerun cannot substitute different bytes for the completed dev attempt.
+
+Historical run identity uses the exact repository, workflow path and numeric
+workflow id, run id and attempt; GitHub's custom run title is not an identity
+field. Cursor and recovery readers share the same verifier. Only the two
+explicit cursor-producing workflow paths are eligible, and recovery accepts
+Delivery alone. Pausing or renaming a workflow does not invalidate its proof;
+deleting and recreating it changes its numeric generation and is rejected.
 
 The dev selector uses the greater verified dev or production source position;
 the production selector advances only from its own cursor. Per-environment drain

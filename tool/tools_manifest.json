@@ -3272,6 +3272,12 @@
       "command": "node tool/firebase/check_deploy_ref.mjs",
       "safety": "local-readonly",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "impactPaths": [
         "tool/firebase/check_deploy_ref.test.mjs",
         "tool/deploy_firebase_targets.sh"
@@ -3336,6 +3342,12 @@
       "command": "./tool/deploy_firebase_targets.sh",
       "safety": "remote-deploy",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Deploys Firebase targets in safe order.",
       "checks": [
         "bash -n tool/deploy_firebase_targets.sh",

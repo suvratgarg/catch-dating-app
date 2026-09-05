@@ -42,6 +42,13 @@ jobs:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
 
+      - id: authorization-toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.authorization-toolchain.outputs.node-version }}
+
       - id: inputs
         name: Require an explicit exact-current-main authorization
         env:
@@ -209,23 +216,10 @@ jobs:
               )
             ' "$cursor_file" > /dev/null
 
-          historical_delivery="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$delivery_run_id/attempts/$delivery_run_attempt")"
-          jq -e \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg delivery_run_id "$delivery_run_id" \
-            --argjson delivery_run_attempt "$delivery_run_attempt" '
-              (
-                (.name == "Delivery" and
-                 (.path | split("@")[0]) == ".github/workflows/delivery.yml") or
-                (.name == "Backend Rebaseline" and
-                 (.path | split("@")[0]) == ".github/workflows/backend-rebaseline.yml")
-              ) and
-              .head_repository.full_name == $repository and
-              .head_branch == "main" and
-              (.id | tostring) == $delivery_run_id and
-              .run_attempt == $delivery_run_attempt
-            ' <<< "$historical_delivery" > /dev/null
+          node tool/ci/backend_delivery_lanes.mjs verify-run \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$REPOSITORY_ID" \
+            --run-id "$delivery_run_id" --run-attempt "$delivery_run_attempt" \
+            --role cursor --output build/rebaseline/cursor/producer.json
           cursor_source_run="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$source_run_id/attempts/$source_run_attempt")"
           jq -e \

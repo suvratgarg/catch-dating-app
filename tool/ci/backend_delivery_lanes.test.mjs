@@ -8,7 +8,7 @@ import {
   AUTHORIZATION_JOB, DEV_COMPLETION_FILE, DEV_PROMOTION_JOB,
   artifactCatalogue, completionArtifactName, completionCandidates, cutoverBlockers,
   executeCli, prepareDevCompletion, readSingleJsonArchive, resolveLaneCursor,
-  selectProductionSource, validateDevCompletion, verifyCompletedPackage, verifyDevCompletionArtifact, verifiedModernProductionRuns,
+  selectProductionSource, validateDevCompletion, verifyCompletedPackage, verifyDevCompletionArtifact, verifiedModernProductionRuns, verifyWorkflowRun,
 } from "./backend_delivery_lanes.mjs";
 
 const sha = (letter) => letter.repeat(40);
@@ -74,7 +74,7 @@ function fixture({noop = false, bootstrap = false, runNumber = 20, attempt = "1"
   const metadata = (binding, producer, headSha) => ({...binding, expired: false,
     workflow_run: {id: Number(producer), head_sha: headSha, head_branch: "main", repository_id: 42, head_repository_id: 42}});
   const artifact = metadata({id: artifactStart + 4, name: completionArtifactName(completion), digest: digest(completionBytes)}, deliveryId, sha("d"));
-  const producer = {id: Number(deliveryId), name: "Delivery", workflow_id: 88, path: ".github/workflows/delivery.yml", run_attempt: 1,
+  const producer = {id: Number(deliveryId), name: "Delivery lane v1 dev", display_title: "Delivery lane v1 dev", workflow_id: 88, path: ".github/workflows/delivery.yml", run_attempt: 1,
     repository: repo, head_repository: repo, head_branch: "main", event: "repository_dispatch", status: "in_progress", conclusion: null};
   const sourceRun = {id: Number(sourceRunId), name: "CI", workflow_id: 77, run_number: runNumber, run_attempt: Number(attempt),
     path: ".github/workflows/ci.yml", repository: repo, head_repository: repo, head_branch: "main", head_sha: sourceSha,
@@ -308,7 +308,7 @@ test("a modern production waiter releases initial dev only after verifying its p
 test("dev receipt from a recreated Delivery workflow cannot authorize production", async () => {
   const f = fixture();
   f.answers.set("repos/owner/catch/actions/runs/900/attempts/1", {...f.producer, workflow_id: 89});
-  await assert.rejects(verifyDevCompletionArtifact(f.verifyArgs), /different Delivery workflow generation/);
+  await assert.rejects(verifyDevCompletionArtifact(f.verifyArgs), /Unexpected workflow generation/);
 });
 
 test("production bootstrap follows its original dev receipt despite old authorities and newer dev progress", async () => {
@@ -394,4 +394,57 @@ test("a legacy snapshot finalized during the initial fence forces fresh independ
     productionCursor: {...prodCursor, sourceCiRunNumber: 21, sourceCiRunId: "121", sourceSha: sha("c")}});
   assert.equal(fresh.waiting, false);
   assert.equal(fresh.refreshRequired, undefined, "A stable new snapshot does not dispatch endlessly.");
+});
+
+
+test("dev receipt accepts custom and legacy run titles without weakening workflow identity", async () => {
+  for (const name of ["Delivery", "backend-delivery-drain", "Delivery lane v1 dev"]) {
+    const f = fixture();
+    f.producer.name = name;
+    f.producer.display_title = name;
+    f.sourceRun.name = "CI for an arbitrary commit title";
+    assert.deepEqual((await verifyDevCompletionArtifact(f.verifyArgs)).completion, f.completion);
+  }
+});
+
+test("historical run identity uses an allowed workflow path and numeric generation, never its title", async () => {
+  const repo = {id: 42, full_name: "owner/catch"};
+  for (const [filename, workflowId, names] of [
+    ["delivery.yml", 88, ["Delivery", "backend-delivery-drain", "Delivery lane v1 dev", "Delivery lane v1 prod"]],
+    ["backend-rebaseline.yml", 89, ["Backend Rebaseline", "Reviewed baseline for main"]],
+  ]) {
+    for (const name of names) {
+      const run = {id: 900, run_attempt: 1, workflow_id: workflowId, path: `.github/workflows/${filename}@refs/heads/main`,
+        name, display_title: name, repository: repo, head_repository: repo, head_branch: "main", status: "in_progress"};
+      const metadata = {id: workflowId, path: `.github/workflows/${filename}`, name: "Renamed workflow", state: "disabled_manually"};
+      const calls = [];
+      const request = async (endpoint) => {
+        calls.push(endpoint);
+        if (endpoint === "repos/owner/catch/actions/runs/900/attempts/1") return run;
+        assert.equal(endpoint, `repos/owner/catch/actions/workflows/${filename}`);
+        return metadata;
+      };
+      const args = {repository: "owner/catch", repositoryId: 42, runId: "900", runAttempt: "1", role: "cursor", request};
+      assert.deepEqual(await verifyWorkflowRun(args), run);
+      assert.equal(calls.length, 2);
+      if (filename === "delivery.yml") assert.deepEqual(await verifyWorkflowRun({...args, role: "delivery"}), run);
+      else await assert.rejects(verifyWorkflowRun({...args, role: "delivery"}), /workflow path/);
+      for (const patch of [{id: 901}, {run_attempt: 2}, {workflow_id: 99}, {head_branch: "feature"},
+        {repository: {...repo, id: 99}}, {repository: {...repo, full_name: "foreign/catch"}},
+        {head_repository: {...repo, id: 99}}, {head_repository: {...repo, full_name: "foreign/catch"}},
+        {path: ".github/workflows/untrusted.yml"}, {path: null}]) {
+        const original = {...run};
+        Object.assign(run, patch);
+        await assert.rejects(verifyWorkflowRun(args));
+        Object.assign(run, original);
+      }
+      for (const patch of [{id: 0}, {id: "88"}, {id: 1.5}, {id: 99}, {path: ".github/workflows/untrusted.yml"}]) {
+        const original = {...metadata};
+        Object.assign(metadata, patch);
+        await assert.rejects(verifyWorkflowRun(args));
+        Object.assign(metadata, original);
+      }
+      await assert.rejects(verifyWorkflowRun({...args, role: "untrusted"}));
+    }
+  }
 });

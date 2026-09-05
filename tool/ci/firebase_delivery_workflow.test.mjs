@@ -263,13 +263,13 @@ test("Delivery selects the oldest pending authority after a cursor and current m
   assert.match(cursor, /actions\/workflows\/ci\.yml/);
   assert.match(cursor, /\^backend-delivery-cursor-v4-/);
   assert.match(cursor, /actions\/artifacts\/\$cursor_artifact_id\/zip/);
-  assert.match(cursor, /actions\/runs\/\$cursor_delivery_run_id\/attempts\/\$cursor_delivery_run_attempt/);
+  assert.match(cursor, /--run-id "\$cursor_delivery_run_id" --run-attempt "\$cursor_delivery_run_attempt"/);
   assert.match(cursor, /catch\.backend-delivery-cursor\/v4/);
   assert.match(cursor, /sourceCiWorkflowId/);
   assert.match(cursor, /cursor_ambiguity_count/);
   assert.match(cursor, /different or legacy CI workflow generation/);
   assert.match(cursor, /sha256:\$\(sha256sum "\$cursor_dir\/cursor\.zip"/);
-  assert.doesNotMatch(cursor.slice(0, cursor.indexOf("historical_delivery=")), /\.conclusion == "success"/);
+  assert.doesNotMatch(cursor.slice(0, cursor.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run")), /\.conclusion == "success"/);
   assert.doesNotMatch(cursor, /gh run download/);
   assert.match(delivery, /actions\/runs\/\$cursor_run_id\/attempts\/\$cursor_run_attempt/);
   assert.match(delivery, /\.run_attempt == \$run_attempt[\s\S]*\.run_number == \$run_number/);
@@ -301,12 +301,12 @@ test("a final cursor is authoritative before its Delivery run reaches completed 
     delivery.indexOf("      - id: source"),
   );
   const originAttempt = cursor.slice(
-    cursor.indexOf("historical_delivery="),
+    cursor.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run"),
     cursor.indexOf("cursor_source_run="),
   );
 
-  assert.match(originAttempt, /actions\/runs\/\$cursor_delivery_run_id\/attempts\/\$cursor_delivery_run_attempt/);
-  assert.match(originAttempt, /\.run_attempt == \$delivery_run_attempt/);
+  assert.match(originAttempt, /--run-id "\$cursor_delivery_run_id" --run-attempt "\$cursor_delivery_run_attempt"/);
+  assert.match(originAttempt, /--role cursor/);
   assert.doesNotMatch(originAttempt, /\.status ==|\.conclusion ==/);
 });
 
@@ -414,7 +414,7 @@ test("high-cardinality queue metadata still resolves one cursor and one oldest a
 
   const boundedSelection = delivery.slice(
     delivery.indexOf("      - id: cursor"),
-    delivery.indexOf('            failed_delivery="$(gh api'),
+    delivery.indexOf('            [[ "$RESUME_DELIVERY_RUN_ID" =~'),
   );
   assert.equal((boundedSelection.match(/actions\/artifacts\/\$[a-z_]+\/zip/g) ?? []).length, 2);
   assert.doesNotMatch(boundedSelection, /while\s/);
@@ -454,7 +454,7 @@ test("manual resume is pinned to the oldest pending CI item and a source-bound t
   const promotion = workflow("_firebase-promote.yml");
   assert.match(delivery, /test "\$INPUT_RUN_ID" = "\$source_ci_run_id"/);
   assert.match(delivery, /test "\$INPUT_SOURCE_SHA" = "\$source_sha"/);
-  assert.match(delivery, /actions\/runs\/\$RESUME_DELIVERY_RUN_ID\/attempts\/\$RESUME_DELIVERY_ATTEMPT/);
+  assert.match(delivery, /--run-id "\$RESUME_DELIVERY_RUN_ID" --run-attempt "\$RESUME_DELIVERY_ATTEMPT"/);
   for (const recoverable of [
     "failure",
     "cancelled",
@@ -803,8 +803,8 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
   assert.match(rebaseline, /test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/);
   assert.match(rebaseline, /test "\$GITHUB_WORKFLOW_SHA" = "\$SOURCE_SHA"/);
   assert.match(rebaseline, /A verified v4 delivery cursor is required before a backend rebaseline/);
-  assert.match(rebaseline, /actions\/runs\/\$delivery_run_id\/attempts\/\$delivery_run_attempt/);
-  assert.match(rebaseline, /\.name == "Delivery"[\s\S]*\.name == "Backend Rebaseline"/);
+  assert.match(rebaseline, /--run-id "\$delivery_run_id" --run-attempt "\$delivery_run_attempt"/);
+  assert.match(rebaseline, /backend_delivery_lanes\.mjs verify-run[\s\S]*--role cursor/);
   assert.match(rebaseline, /node tool\/harness\.mjs plan[\s\S]*--paths functions\/src\/index\.ts,firestore\.indexes\.json,firestore\.rules,storage\.rules[\s\S]*--mode main/);
   for (const group of [
     "firestore-indexes",
@@ -846,11 +846,11 @@ test("Backend Rebaseline promotes in order and advances only a successful curren
 
   const delivery = workflow("delivery.yml");
   const cursorOrigin = delivery.slice(
-    delivery.indexOf("historical_delivery="),
+    delivery.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run"),
     delivery.indexOf("cursor_source_run="),
   );
-  assert.match(cursorOrigin, /\.name == "Delivery"[\s\S]*\.github\/workflows\/delivery\.yml/);
-  assert.match(cursorOrigin, /\.name == "Backend Rebaseline"[\s\S]*\.github\/workflows\/backend-rebaseline\.yml/);
+  assert.match(cursorOrigin, /backend_delivery_lanes\.mjs verify-run/);
+  assert.match(cursorOrigin, /--role cursor/);
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {
@@ -1068,4 +1068,77 @@ test("cutover refresh and peer wakeups are bounded and manual recovery cannot si
   assert.match(wake, /wakeup_reason: \$reason/);
   assert.match(authorize, /name: backend-dev-input-/);
   assert.doesNotMatch(authorize, /name: backend-dev-completion-input-/);
+});
+
+
+test("real cursor and recovery identity commands accept custom titles and reject foreign producers", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-workflow-identity-"));
+  try {
+    fs.mkdirSync(path.join(directory, "tool/ci"), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, "tool/ci/backend_delivery_lanes.mjs"), path.join(directory, "tool/ci/backend_delivery_lanes.mjs"));
+    const bin = path.join(directory, "bin");
+    fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin, "gh"), `#!${process.execPath}
+const fs = require("node:fs");
+const endpoint = process.argv.at(-1);
+const input = JSON.parse(fs.readFileSync(process.env.IDENTITY_FIXTURE, "utf8"));
+if (process.argv[2] !== "api" || !Object.hasOwn(input, endpoint)) process.exit(64);
+process.stdout.write(JSON.stringify(input[endpoint]));
+`, {mode: 0o755});
+    const scripts = ["delivery.yml", "_backend-rebaseline.yml", "_firebase-promote.yml"].flatMap((file) => {
+      const source = workflow(file);
+      return [...source.matchAll(/node tool\/ci\/backend_delivery_lanes\.mjs verify-run \\\n[\s\S]*?--role (cursor|delivery) --output ([^\n]+)/g)].map((match) => {
+        let script = match[0];
+        if (match[1] === "delivery") {
+          const following = source.slice(match.index + match[0].length);
+          script += following.slice(0, following.indexOf("> /dev/null") + "> /dev/null".length);
+        }
+        return {file, role: match[1], output: match[2], script};
+      });
+    });
+    assert.equal(scripts.length, 4);
+    const rebaseline = workflow("_backend-rebaseline.yml");
+    const authorize = ciJob(rebaseline, "authorize");
+    assert.ok(authorize.indexOf("actions/setup-node@v6") < authorize.indexOf("      - id: cursor"));
+    assert.match(authorize, /node-version: \$\{\{ steps\.authorization-toolchain\.outputs\.node-version \}\}/);
+
+    const repo = {id: 42, full_name: "owner/catch"};
+    for (const {file, role, output, script} of scripts) {
+      const run = {id: 900, run_attempt: 1, workflow_id: 88, path: ".github/workflows/delivery.yml",
+        name: "Delivery lane v1 dev", repository: repo, head_repository: repo, head_branch: "main",
+        status: "completed", conclusion: "failure"};
+      const execute = (patch = {}, workflowPatch = {}) => {
+        fs.rmSync(path.join(directory, output), {force: true});
+        const current = {...run, ...patch};
+        const fixture = {
+          "repos/owner/catch/actions/runs/900/attempts/1": current,
+          "repos/owner/catch/actions/workflows/delivery.yml": {id: 88, path: ".github/workflows/delivery.yml", ...workflowPatch},
+          "repos/owner/catch/actions/workflows/backend-rebaseline.yml": {id: 89, path: ".github/workflows/backend-rebaseline.yml"},
+        };
+        const fixtureFile = path.join(directory, "fixture.json");
+        fs.writeFileSync(fixtureFile, JSON.stringify(fixture));
+        return spawnSync("bash", ["-euo", "pipefail", "-c", script], {cwd: directory, encoding: "utf8", env: {...process.env,
+          PATH: `${bin}${path.delimiter}${process.env.PATH}`, IDENTITY_FIXTURE: fixtureFile,
+          GITHUB_REPOSITORY: "owner/catch", REPOSITORY_ID: "42", cursor_delivery_run_id: "900", cursor_delivery_run_attempt: "1",
+          delivery_run_id: "900", delivery_run_attempt: "1", RESUME_DELIVERY_RUN_ID: "900", RESUME_DELIVERY_ATTEMPT: "1",
+          restore_run_id: "900", restore_attempt: "1"}});
+      };
+      for (const name of ["Delivery", "backend-delivery-drain", "Delivery lane v1 dev", "Delivery lane v1 prod"]) {
+        const result = execute({name, display_title: name});
+        assert.equal(result.status, 0, `${file}/${name}: ${result.stderr}`);
+      }
+      for (const patch of [{workflow_id: 99}, {id: 901}, {run_attempt: 2}, {head_branch: "feature"},
+        {head_repository: {...repo, id: 99}}, {repository: {...repo, full_name: "foreign/catch"}}, {path: ".github/workflows/other.yml"}]) {
+        const result = execute(patch);
+        assert.notEqual(result.status, 0, `${file}: rejected identity ${JSON.stringify(patch)}`);
+        assert.equal(fs.existsSync(path.join(directory, output)), false, "Failed identity must not publish verified output.");
+      }
+      assert.notEqual(execute({}, {id: 99}).status, 0);
+      assert.equal(execute({path: ".github/workflows/backend-rebaseline.yml", workflow_id: 89}).status, role === "cursor" ? 0 : 1);
+      assert.equal(execute({status: "in_progress", conclusion: null}).status === 0, role === "cursor");
+      assert.equal(execute({status: "completed", conclusion: "success"}).status === 0, role === "cursor");
+    }
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
 });

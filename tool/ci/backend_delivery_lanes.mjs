@@ -201,8 +201,9 @@ export function githubRequest(endpoint, {paginate = false, binary = false} = {})
   assert.equal(result.status, 0, String(result.stderr || "Cannot read GitHub delivery evidence."));
   return binary ? result.stdout : JSON.parse(result.stdout);
 }
-function runIdentity(run, context, expected, workflowName, workflowPath) {
-  assert.equal(run.name, workflowName);
+function runIdentity(run, context, expected, workflowId, workflowPath) {
+  number(workflowId, "Expected workflow id");
+  assert.equal(run.workflow_id, workflowId, "Unexpected workflow generation.");
   assert.equal(run.path?.split("@")[0], workflowPath);
   assert.equal(run.repository?.id, context.repositoryId);
   assert.equal(run.repository?.full_name, context.repository);
@@ -211,6 +212,24 @@ function runIdentity(run, context, expected, workflowName, workflowPath) {
   assert.equal(run.head_branch, "main");
   assert.equal(String(run.id), expected.runId);
   assert.equal(run.run_attempt, Number(expected.attempt));
+}
+export async function verifyWorkflowRun({repository, repositoryId, runId, runAttempt, role, request = githubRequest}) {
+  assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/, "Exact repository required.");
+  number(repositoryId, "Repository id");
+  id(runId, "Run id");
+  id(runAttempt, "Run attempt");
+  assert.ok(["delivery", "cursor"].includes(role), "Unknown workflow identity role.");
+  const root = `repos/${repository}/actions`;
+  const run = await request(`${root}/runs/${runId}/attempts/${runAttempt}`);
+  const workflowPath = run.path?.split("@")[0];
+  const allowed = role === "cursor" ? ["delivery.yml", "backend-rebaseline.yml"] : ["delivery.yml"];
+  assert.ok(allowed.some((file) => workflowPath === `.github/workflows/${file}`), "Unexpected producer workflow path.");
+  // API run.name is the custom run-name, not the workflow's name. Resolve the
+  // allowed path to its current numeric workflow generation instead.
+  const workflow = await request(`${root}/workflows/${path.posix.basename(workflowPath)}`);
+  assert.equal(workflow.path, workflowPath, "Workflow metadata path mismatch.");
+  runIdentity(run, {repository, repositoryId}, {runId, attempt: runAttempt}, workflow.id, workflowPath);
+  return run;
 }
 function validateAuthority(authority, receipt) {
   keys(authority, ["schema", ...sourceKeys, "deployRequired", "planArtifact", "packageArtifact"], "CI authority");
@@ -267,11 +286,9 @@ export async function verifyDevCompletionArtifact({context, artifactId, artifact
     request(`${root}/actions/artifacts/${completion.authorityArtifact.id}`),
     request(`${root}/actions/artifacts/${completion.authorityArtifact.id}/zip`, {binary: true}),
   ]);
-  runIdentity(producer, context, {runId: completion.deliveryRunId, attempt: completion.deliveryRunAttempt}, "Delivery", ".github/workflows/delivery.yml");
-  assert.equal(producer.workflow_id, context.deliveryWorkflowId, "Dev proof belongs to a different Delivery workflow generation.");
+  runIdentity(producer, context, {runId: completion.deliveryRunId, attempt: completion.deliveryRunAttempt}, context.deliveryWorkflowId, ".github/workflows/delivery.yml");
   assert.ok(["workflow_run", "repository_dispatch", "workflow_dispatch"].includes(producer.event), "Untrusted Delivery producer event.");
-  runIdentity(source, context, {runId: completion.sourceCiRunId, attempt: completion.sourceCiRunAttempt}, "CI", ".github/workflows/ci.yml");
-  assert.equal(source.workflow_id, completion.sourceCiWorkflowId);
+  runIdentity(source, context, {runId: completion.sourceCiRunId, attempt: completion.sourceCiRunAttempt}, completion.sourceCiWorkflowId, ".github/workflows/ci.yml");
   assert.equal(source.run_number, completion.sourceCiRunNumber);
   assert.equal(source.head_sha, completion.sourceSha);
   assert.equal(source.event, "push");
@@ -335,8 +352,7 @@ export async function verifiedModernProductionRuns({context, runs, request = git
         run.head_branch !== "main" || run.head_repository?.id !== context.repositoryId ||
         run.display_title !== "Delivery lane v1 prod") continue;
     const exact = await request(`repos/${context.repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
-    runIdentity(exact, context, {runId: String(run.id), attempt: String(run.run_attempt)}, "Delivery", ".github/workflows/delivery.yml");
-    assert.equal(exact.workflow_id, context.deliveryWorkflowId);
+    runIdentity(exact, context, {runId: String(run.id), attempt: String(run.run_attempt)}, context.deliveryWorkflowId, ".github/workflows/delivery.yml");
     assert.equal(exact.run_number, run.run_number);
     if (exact.status === "completed") { verified.add(String(run.id)); continue; }
     if (exact.display_title !== "Delivery lane v1 prod") continue;
@@ -506,11 +522,11 @@ function writeOutputs(file, values) {
 export async function executeCli(argv, {request = githubRequest} = {}) {
   const [command, ...args] = argv;
   if (command === "--help") {
-    console.log("Usage: backend_delivery_lanes.mjs resolve|select-prod|prepare-receipt|verify-artifact|verify-package --output FILE [--context FILE --catalog FILE --prod-cursor FILE --candidates FILE --source FILE --authority FILE --plan FILE --provenance FILE --package FILE --verified-package-sha256 HEX --dev-result success|skipped --bootstrap true|false --artifact-id ID --artifact-digest sha256:HEX --receipt FILE --source-sha SHA --ci-run-id ID --ci-run-attempt N --base-sha SHA --github-output FILE]");
+    console.log("Usage: backend_delivery_lanes.mjs resolve|select-prod|prepare-receipt|verify-artifact|verify-package|verify-run --output FILE [--context FILE --catalog FILE --prod-cursor FILE --candidates FILE --source FILE --authority FILE --plan FILE --provenance FILE --package FILE --verified-package-sha256 HEX --dev-result success|skipped --bootstrap true|false --artifact-id ID --artifact-digest sha256:HEX --receipt FILE --source-sha SHA --ci-run-id ID --ci-run-attempt N --base-sha SHA --github-output FILE --repository OWNER/REPO --repository-id ID --run-id ID --run-attempt N --role delivery|cursor]");
     return;
   }
-  assert.ok(["resolve", "select-prod", "prepare-receipt", "verify-artifact", "verify-package"].includes(command), "Unknown lane command.");
-  const allowed = new Set(["context", "catalog", "prod-cursor", "output", "github-output", "candidates", "source", "authority", "plan", "package", "provenance", "verified-package-sha256", "dev-result", "bootstrap", "artifact-id", "artifact-digest", "receipt", "source-sha", "ci-run-id", "ci-run-attempt", "base-sha"]);
+  assert.ok(["resolve", "select-prod", "prepare-receipt", "verify-artifact", "verify-package", "verify-run"].includes(command), "Unknown lane command.");
+  const allowed = new Set(["context", "catalog", "prod-cursor", "output", "github-output", "candidates", "source", "authority", "plan", "package", "provenance", "verified-package-sha256", "dev-result", "bootstrap", "artifact-id", "artifact-digest", "receipt", "source-sha", "ci-run-id", "ci-run-attempt", "base-sha", "repository", "repository-id", "run-id", "run-attempt", "role"]);
   const options = {};
   for (let index = 0; index < args.length; index += 2) {
     const key = args[index]?.replace(/^--/, "");
@@ -524,7 +540,10 @@ export async function executeCli(argv, {request = githubRequest} = {}) {
   }
   const context = options.context ? read(options.context) : null;
   let result, outputs = {};
-  if (command === "resolve") {
+  if (command === "verify-run") {
+    result = await verifyWorkflowRun({repository: options.repository, repositoryId: Number(options["repository-id"]),
+      runId: options["run-id"], runAttempt: options["run-attempt"], role: options.role, request});
+  } else if (command === "resolve") {
     result = await resolveLaneCursor({context, catalogue: read(options.catalog), productionCursor: read(options["prod-cursor"]), request});
     outputs = {has_cursor: result.cursor !== null, source_ci_run_number: result.cursor?.sourceCiRunNumber ?? "", source_sha: result.cursor?.sourceSha ?? "", source_ci_workflow_id: context.sourceCiWorkflowId, waiting: result.waiting, refresh_required: result.refreshRequired === true};
   } else if (command === "select-prod") {
