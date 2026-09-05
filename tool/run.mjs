@@ -74,9 +74,10 @@ function listTools(args) {
 }
 
 async function checkTools(args) {
-  const {category, ids, manifestOnly} = parseCheckArgs(args);
+  const {categories, ids, manifestOnly, marketingChecksInReact} = parseCheckArgs(args);
   const manifest = loadManifest();
-  const tools = selectTools(manifest, {category, ids});
+  const tools = categories.length === 0 ? selectTools(manifest, {ids}) :
+    categories.flatMap((category) => selectTools(manifest, {category, ids}));
   const errors = validateManifest(manifest, loadComponentGraph());
 
   if (errors.length > 0) {
@@ -99,11 +100,21 @@ async function checkTools(args) {
     return;
   }
 
-  requireSelection(tools, {category, ids});
-  await runChecks(tools);
+  // Validate every requested category before dispatch. Retain category order
+  // while allowing the existing command deduplication to span the whole bucket.
+  for (const category of categories) {
+    requireSelection(tools.filter((tool) => tool.category === category), {category, ids});
+  }
+  requireSelection(tools, {ids});
+  await runChecks(tools, {marketingChecksInReact});
 }
 
-async function runChecks(tools) {
+async function runChecks(tools, {marketingChecksInReact = false} = {}) {
+  if (marketingChecksInReact && process.env.GITHUB_ACTIONS !== "true") {
+    console.error("--marketing-checks-in-react requires the same-run CI marketing lane.");
+    process.exitCode = 64;
+    return;
+  }
   const compatible = tools.filter((tool) => {
     if (toolSupportsPlatform(tool)) return true;
     console.log(
@@ -113,6 +124,18 @@ async function runChecks(tools) {
     return false;
   });
   for (const {toolId, command} of uniqueToolChecks(compatible)) {
+    // CI's required aggregate owns the parallel React result. Match both the
+    // tool and exact command: an altered check must execute until its new
+    // equivalence is established. Standalone runs retain both browser gates.
+    if (marketingChecksInReact && (
+      (toolId === "marketing:website-storybook-a11y" &&
+        command === "npm --workspace catch-marketing run test:storybook:a11y") ||
+      (toolId === "web:storybook-visuals" &&
+        command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check")
+    )) {
+      console.log(`==> ${toolId}: provided by the required same-run React marketing lane.`);
+      continue;
+    }
     console.log(`==> ${toolId}: ${command}`);
     const result = spawnSync(command, {
       cwd: repoRoot,
@@ -201,7 +224,7 @@ async function affectedToolChecks(args) {
     process.exitCode = 1;
     return;
   }
-  await runChecks(tools);
+  await runChecks(tools, {marketingChecksInReact: options.marketingChecksInReact});
 }
 
 function changedPathsSince(base) {
@@ -411,14 +434,16 @@ function parseListArgs(args) {
 }
 
 function parseCheckArgs(args) {
-  const category = valueAfter(args, "--category");
+  const categories = [...new Set(args.flatMap((arg, index) => arg === "--category" ?
+    [valueAfter(args.slice(index), "--category")] : []))];
   const manifestOnly = args.includes("--manifest-only");
   const ids = args.filter((arg, index) => {
     if (arg.startsWith("--")) return false;
     if (args[index - 1] === "--category") return false;
     return true;
   });
-  return {category, ids, manifestOnly};
+  return {categories, ids, manifestOnly,
+    marketingChecksInReact: args.includes("--marketing-checks-in-react")};
 }
 
 function parseAffectedToolArgs(args) {
@@ -434,6 +459,7 @@ function parseAffectedToolArgs(args) {
     check: args.includes("--check"),
     full: args.includes("--full"),
     mode: valueAfter(args, "--mode") ?? "pr",
+    marketingChecksInReact: args.includes("--marketing-checks-in-react"),
     githubOutput: valueAfter(args, "--github-output"),
   };
 }
@@ -458,8 +484,11 @@ function printHelp() {
 Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
+    Repeat --category to validate several categories in one deduplicated run.
   affected-tools [--base ref | --paths a,b] [--mode mode] [--full] [--json] [--check]
     [--github-output path]
+  CI check execution may add --marketing-checks-in-react only when its required
+    aggregate owns the same-run React marketing lane.
   run <tool-id> [args...]
 
 Examples:

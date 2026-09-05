@@ -14,10 +14,11 @@ import {
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
 
-function run(args, {cwd = repositoryRoot} = {}) {
+function run(args, {cwd = repositoryRoot, env = process.env} = {}) {
   return spawnSync("node", ["tool/run.mjs", ...args], {
     cwd,
     encoding: "utf8",
+    env,
   });
 }
 
@@ -247,6 +248,82 @@ test("direct tool execution forwards shell-sensitive arguments safely", (context
   });
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(JSON.parse(result.stdout), ["two words", "it's-safe"]);
+});
+
+test("same-run React sharing preserves standalone checks and exact command boundaries", (context) => {
+  const fixture = createRunnerFixture(context);
+  const bin = path.join(fixture, "bin");
+  fs.mkdirSync(bin);
+  fs.writeFileSync(path.join(bin, "npm"), '#!/bin/sh\nprintf "%s\\n" "$*" >> browser-runs.txt\n', {mode: 0o755});
+  fs.mkdirSync(path.join(fixture, "tool/web"));
+  fs.writeFileSync(path.join(fixture, "tool/web/check_storybook_visuals.mjs"),
+    'import fs from "node:fs"; fs.appendFileSync("browser-runs.txt", `visual ${process.argv.slice(2).join(" ")}\\n`);\n');
+  const a11y = "npm --workspace catch-marketing run test:storybook:a11y";
+  const visuals = "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check";
+  mutateFixtureManifest(fixture, (manifest) => {
+    const template = manifest.tools[0];
+    manifest.tools.push(
+      {...template, id: "marketing:website-storybook-a11y", checks: [a11y]},
+      {...template, id: "web:storybook-visuals", path: "tool/web/check_storybook_visuals.mjs",
+        checks: ["node tool/web/check_storybook_visuals.mjs --self-test", visuals]},
+    );
+  });
+  const args = ["check", "marketing:website-storybook-a11y", "web:storybook-visuals"];
+  const env = {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_ACTIONS: "true"};
+  const receipt = path.join(fixture, "browser-runs.txt");
+  const standalone = run(args, {cwd: fixture, env});
+  assert.equal(standalone.status, 0, standalone.stderr);
+  assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n"), [
+    "--workspace catch-marketing run test:storybook:a11y",
+    "visual --self-test",
+    "--workspace catch-marketing run build:storybook",
+    "visual --surface website --check",
+  ]);
+  fs.unlinkSync(receipt);
+  const shared = run([...args, "--marketing-checks-in-react"], {cwd: fixture, env});
+  assert.equal(shared.status, 0, shared.stderr);
+  assert.equal(fs.readFileSync(receipt, "utf8"), "visual --self-test\n");
+  assert.equal(shared.stdout.match(/provided by the required same-run React marketing lane/g)?.length, 2);
+
+  // A changed command cannot inherit the old command's passing evidence.
+  mutateFixtureManifest(fixture, (manifest) => {
+    manifest.tools.find((tool) => tool.id === "marketing:website-storybook-a11y")
+      .checks = [`${a11y} -- --changed`];
+  });
+  fs.unlinkSync(receipt);
+  const changed = run([...args, "--marketing-checks-in-react"], {cwd: fixture, env});
+  assert.equal(changed.status, 0, changed.stderr);
+  assert.match(fs.readFileSync(receipt, "utf8"), /test:storybook:a11y -- --changed/u);
+  fs.unlinkSync(receipt);
+  const outsideCi = run([...args, "--marketing-checks-in-react"], {
+    cwd: fixture, env: {...env, GITHUB_ACTIONS: "false"},
+  });
+  assert.equal(outsideCi.status, 64);
+  assert.match(outsideCi.stderr, /requires the same-run CI marketing lane/u);
+  assert.equal(fs.existsSync(receipt), false);
+});
+
+test("multiple categories keep order, deduplicate commands and reject any unknown category before execution", (context) => {
+  const fixture = createRunnerFixture(context);
+  mutateFixtureManifest(fixture, (manifest) => {
+    const template = manifest.tools[0];
+    manifest.tools.push({...template, id: "second:check", category: "second",
+      checks: ["node tool/check.mjs", "node tool/check.mjs second"]});
+  });
+  const result = run(["check", "--category", "second", "--category", "fixture", "--category", "second"], {cwd: fixture});
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout.match(/^fixture-check$/gm)?.length, 1);
+  assert.equal(result.stdout.match(/^\["second"\]$/gm)?.length, 1);
+  assert.match(result.stdout, /==> second:check: node tool\/check.mjs\n/u);
+  assert.ok(result.stdout.indexOf('["second"]') < result.stdout.indexOf('==> tool:runner'));
+  const missing = run(["check", "--category", "fixture", "--category", "missing"], {cwd: fixture});
+  assert.equal(missing.status, 64);
+  assert.match(missing.stderr, /No active tools matched category missing/u);
+  assert.doesNotMatch(missing.stdout, /==>/u);
+  const noValue = run(["check", "--category", "fixture", "--category"], {cwd: fixture});
+  assert.notEqual(noValue.status, 0);
+  assert.match(noValue.stderr, /--category requires a value/u);
+  assert.doesNotMatch(noValue.stdout, /==>/u);
 });
 
 test("manifest validation rejects vacuous tools before dispatch", (context) => {

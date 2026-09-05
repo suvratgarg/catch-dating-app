@@ -632,6 +632,46 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   );
 });
 
+test("Tools reuses only marketing browser checks owned by the required same-run React lane", () => {
+  const ci = workflow("ci.yml");
+  const tools = workflow("tools-ci.yml");
+  const react = workflow("react-surface-validation.yml");
+  const toolJob = ci.match(/\n  tools:\n([\s\S]*?)\n  contracts:/u)?.[1];
+  assert.ok(toolJob);
+  assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
+  assert.match(marketingJob, /surface: marketing/u);
+  const aggregate = ci.slice(ci.indexOf("\n  required:"));
+  assert.match(aggregate, /- tools\n/u);
+  assert.match(aggregate, /- marketing\n/u);
+  assert.match(aggregate, /select\(\.value.result != "success" and \.value.result != "skipped"\)/u);
+  assert.doesNotMatch(marketingJob, /continue-on-error/u);
+  assert.match(tools, /marketing_checks_in_react:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
+  assert.equal(tools.match(/MARKETING_CHECKS_IN_REACT: \$\{\{ inputs.marketing_checks_in_react \}\}/gu)?.length, 2);
+  assert.match(namedStep(tools, "Check affected tools"), /--check "\$\{shared_flags\[@\]\}"/u);
+  const bucket = namedStep(tools, "Check tool categories");
+  assert.match(bucket, /category_flags\+=\(--category "\$category"\)/u);
+  assert.match(bucket, /node tool\/run\.mjs check "\$\{category_flags\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
+  assert.equal(bucket.match(/node tool\/run\.mjs check/gu)?.length, 1);
+  for (const [name, command] of [
+    ["Build marketing Storybook", "npm --workspace catch-marketing run build:storybook"],
+    ["Run marketing and shared web UI visual regression", "npm --workspace catch-marketing run test:visual"],
+    ["Run marketing Storybook accessibility gate", "npm --workspace catch-marketing run test:storybook:a11y"],
+  ]) {
+    const step = namedStep(react, name);
+    assert.ok(step.includes(`run: ${command}`), name);
+    assert.doesNotMatch(step, /continue-on-error/u);
+  }
+  assert.match(react, /update_visual_baselines:[\s\S]*?default: false/u);
+  const scripts = repositorySnapshot.readJson("website/package.json", {required: true}).scripts;
+  assert.equal(scripts["test:visual"], "node ../tool/web/check_storybook_visuals.mjs --surface website --check && node ../tool/web/check_storybook_visuals.mjs --surface webui --check");
+  assert.equal(scripts["test:storybook:a11y"], "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook");
+  const registered = toolsManifest.tools.find((tool) => tool.id === "web:storybook-visuals");
+  assert.ok(registered.checks.includes("npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"));
+});
+
 test("tools materialize only the closure required by each repository view", () => {
   const tools = workflow("tools-ci.yml");
   assert.doesNotMatch(tools, /\n\s+filter:/u);

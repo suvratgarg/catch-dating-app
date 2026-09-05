@@ -265,6 +265,7 @@ jobs:
       base_sha: ${{ needs.plan.outputs.base_sha }}
       mode: ${{ needs.plan.outputs.mode }}
       full: ${{ needs.plan.outputs.full == 'true' }}
+      marketing_checks_in_react: ${{ needs.plan.outputs.marketing == 'true' }}
     secrets: inherit
 
   contracts:
