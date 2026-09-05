@@ -26,6 +26,45 @@ const exactPromoteWorkflow = fs.readFileSync(
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(websiteRoot, "package.json"), "utf8")
 );
+const rootPackageJson = JSON.parse(
+  fs.readFileSync(path.join(repoRoot, "package.json"), "utf8")
+);
+
+for (const {name, skipBuild, script} of [
+  {name: "Build marketing website", skipBuild: false, script: "build"},
+  {
+    name: "Validate marketing build prerequisites without emitting a bundle",
+    skipBuild: true,
+    script: "typecheck",
+  },
+]) {
+  test(`marketing ${script} retains the sole organizer and route prerequisite gate`, () => {
+    const step = surfaceValidationWorkflow.split(/\n      - /u)
+      .find((candidate) => candidate.startsWith(`name: ${name}\n`));
+    assert.ok(step, `${name} must run in the shared validation workflow`);
+    assert.ok(step.includes(
+      `if: \${{ inputs.surface == 'marketing' && ${skipBuild ? "" : "!"}inputs.skip_deployable_build }}`
+    ));
+    assert.match(step, new RegExp(`^        run: npm run web:marketing:${script}$`, "mu"));
+    assert.doesNotMatch(step, /continue-on-error/u);
+    assert.equal(
+      rootPackageJson.scripts[`web:marketing:${script}`],
+      `npm --workspace catch-marketing run ${script}`
+    );
+    // npm's typecheck lifecycle owns these gates for both validation modes
+    // and standalone builds. Keep failure propagation before Vite/postbuild.
+    assert.ok(packageJson.scripts.build.startsWith("npm run typecheck && "));
+    const prerequisites = packageJson.scripts.pretypecheck.split(" && ");
+    for (const check of ["check:organizer-listings", "check:routes"]) {
+      assert.equal(prerequisites.filter((command) => command === `npm run ${check}`).length, 1);
+      assert.ok(packageJson.scripts[check], `${check} must remain a standalone command`);
+      assert.ok(!surfaceValidationWorkflow.includes(`run: npm --workspace catch-marketing run ${check}\n`),
+        `${check} must not run again outside pretypecheck`);
+    }
+    assert.ok(prerequisites.every((command) => /^npm run [\w:-]+$/u.test(command)),
+      "pretypecheck must stop at a failed prerequisite");
+  });
+}
 
 test("production snapshot materializes organizer projections before its one uncredentialed exact build", () => {
   assert.equal(
