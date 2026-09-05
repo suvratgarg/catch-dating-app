@@ -10,7 +10,7 @@ import {
   summarizeCoverage,
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
-import {collectLocalReadonlyCheckIds} from "../lib/tool_impact.mjs";
+import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -71,12 +71,57 @@ for (const [file, target] of [
   });
 }
 
-test("shared CI controls, delivery workflows, and unknown workflow files retain full validation", () => {
+test("backend-only delivery controls validate the backend without granting mutation", () => {
+  const paths = [
+    ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
+    ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
+    "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
+    "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
+    "tool/ci/firebase_delivery_workflow.test.mjs",
+  ];
+  for (const file of paths) {
+    assert.ok(fs.existsSync(new URL(`../../${file}`, import.meta.url)), file);
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true);
+      assert.deepEqual(result.operations.ciTargets,
+        ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], file);
+      assert.deepEqual(result.operations.deployGroups, []);
+      assert.deepEqual(result.operations.releaseTargets, []);
+      assert.deepEqual(result.operations.releaseRoles, []);
+      for (const check of ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package",
+        "ci:firebase-delivery-workflow", "ci:backend-source-review"]) {
+        assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
+      }
+    }
+  }
+  // Reproduce the exact two-file repair that previously rebuilt both apps.
+  const repair = planAffected({changedPaths: [paths[1], paths[8]], graph, mode: "pr"});
+  assert.deepEqual(repair.operations.ciTargets,
+    ["contracts", "firestore_rules", "functions", "policy_docs", "tools"]);
+  assert.equal(planAffectedToolChecks({changedPaths: [paths[1], paths[8]],
+    manifest: toolsManifest, componentGraph: graph, mode: "pr"}).mode, "full",
+  "backend control changes must retain the full registered Tools matrix");
+});
+
+test("backend control routing cannot suppress a changed native app or its release ownership", () => {
+  const result = planAffected({changedPaths: [
+    ".github/workflows/_firebase-promote.yml", "apps/host/ios/Runner/Info.plist",
+  ], graph, mode: "main"});
+  assert.ok(result.operations.ciTargets.includes("flutter_build_ios"));
+  assert.ok(result.operations.ciTargets.includes("functions"));
+  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
+  assert.deepEqual(result.operations.releaseRoles, ["host"]);
+  assert.deepEqual(result.operations.deployGroups, []);
+});
+
+test("shared CI controls and unknown workflow or verifier files retain full validation", () => {
   for (const file of [
     ".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
-    ".github/actions/setup-flutter/action.yml", ".github/workflows/delivery.yml",
-    ".github/workflows/_firebase-promote.yml", ".github/workflows/new-ci.yml",
-    "tool/harness/component_graph.json",
+    ".github/actions/setup-flutter/action.yml", ".github/workflows/new-ci.yml",
+    ".github/workflows/mobile-internal-release.yml", "tool/ci/delivery_core.mjs",
+    "tool/ci/delivery_core.test.mjs", "tool/ci/new_backend_verifier.mjs",
+    "tool/harness/component_graph.json", "tool/ci/toolchain.env",
   ]) {
     assert.deepEqual(plan(file).operations.ciTargets, [...graph.targets].sort(), file);
   }

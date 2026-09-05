@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.1
+version: 2.7.2
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -269,8 +269,13 @@ required check permanently pending.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-Changes to the Harness control plane intentionally run every declared target. A
-nightly scheduled full run catches drift hidden by ordinary impact routing.
+Changes to the shared Harness control plane intentionally run every declared
+target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
+package-verifier and source-review files: those changes run Functions,
+contracts, rules, policy and the full Tools matrix without compiling unrelated
+clients. Shared CI orchestration, toolchains, the cross-product delivery core,
+unknown files and actual app changes retain their broader validation. A nightly
+scheduled full run catches drift hidden by ordinary impact routing.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.
 
