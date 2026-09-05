@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:test/test.dart';
 
 import 'flutter_test_selection.dart';
@@ -17,14 +20,106 @@ Map<String, Object> plan(
   Map<String, String>? before,
   Map<String, String>? after,
   bool full = false,
+  Set<String> ordinaryDocuments = const {},
 }) => selectFlutterTests(
   before: before ?? fixture,
   after: after ?? fixture,
   changed: changed,
   full: full,
+  ordinaryDocuments: ordinaryDocuments,
 );
 
 void main() {
+  test('CLI binds document ownership and full fallback to committed trees', () {
+    final root = Directory.systemTemp.createTempSync(
+      'catch-flutter-selection-',
+    );
+    final selector = File(
+      'tool/harness/lib/flutter_test_selection.dart',
+    ).absolute.path;
+    final packages = File('.dart_tool/package_config.json').absolute.path;
+    String git(List<String> args) {
+      final result = Process.runSync('git', args, workingDirectory: root.path);
+      expect(result.exitCode, 0, reason: result.stderr as String);
+      return (result.stdout as String).trim();
+    }
+
+    void write(String name, String text) {
+      final file = File('${root.path}/$name');
+      file.parent.createSync(recursive: true);
+      file.writeAsStringSync(text);
+    }
+
+    String commit() {
+      git(['add', '.']);
+      git([
+        '-c',
+        'user.name=CI test',
+        '-c',
+        'user.email=ci@example.invalid',
+        'commit',
+        '--quiet',
+        '-m',
+        'fixture',
+      ]);
+      return git(['rev-parse', 'HEAD']);
+    }
+
+    try {
+      git(['init', '--quiet']);
+      for (final entry in fixture.entries) {
+        write(entry.key, entry.value);
+      }
+      write('test/probe_test.dart', "import 'dart:io'; void main() {}");
+      write('docs/feature.md', 'Before');
+      write(
+        'tool/harness/component_graph.json',
+        File('tool/harness/component_graph.json').readAsStringSync(),
+      );
+      final base = commit();
+      write('lib/a.dart', 'const a = 2;');
+      write('docs/feature.md', 'After');
+      final head = commit();
+      Map<String, dynamic> run({bool full = false, String? path}) {
+        final result = Process.runSync(
+          Platform.resolvedExecutable,
+          [
+            '--packages=$packages',
+            selector,
+            '--base',
+            base,
+            '--head',
+            head,
+            '--full',
+            '$full',
+            '--output',
+            '${root.path}/plan.json',
+          ],
+          workingDirectory: root.path,
+          environment: path == null ? null : {'PATH': path},
+        );
+        expect(result.exitCode, 0, reason: result.stderr as String);
+        return jsonDecode(File('${root.path}/plan.json').readAsStringSync())
+            as Map<String, dynamic>;
+      }
+
+      final selected = run();
+      expect(selected['baseSha'], base);
+      expect(selected['sourceSha'], head);
+      expect(selected['mode'], 'affected');
+      expect(selected['files'], ['test/a_test.dart', 'test/probe_test.dart']);
+      expect(selected['ordinaryDocuments'], ['docs/feature.md']);
+      expect(run(full: true)['selectedTests'], 3);
+      // Missing classifier runtime must broaden coverage, never fail open.
+      final bin = Directory('${root.path}/bin')..createSync();
+      final gitPath = (Process.runSync('which', ['git']).stdout as String)
+          .trim();
+      Link('${bin.path}/git').createSync(gitPath);
+      expect(run(path: bin.path)['selectedTests'], 3);
+    } finally {
+      root.deleteSync(recursive: true);
+    }
+  });
   test('lint engine probes follow their API dependencies and fail closed', () {
     final tree = {
       ...fixture,
@@ -36,6 +131,25 @@ void main() {
     bool needs(Set<String> changed) =>
         needsUiLintSmoke(before: tree, after: tree, changed: changed);
     expect(needs({'lib/c.dart'}), false);
+    expect(
+      needsUiLintSmoke(
+        before: tree,
+        after: tree,
+        changed: {'lib/c.dart', 'docs/feature.md'},
+        ordinaryDocuments: {'docs/feature.md'},
+      ),
+      false,
+    );
+    expect(
+      needsUiLintSmoke(
+        before: tree,
+        after: tree,
+        changed: {'lib/a.dart', 'docs/feature.md'},
+        ordinaryDocuments: {'docs/feature.md'},
+      ),
+      true,
+    );
+
     expect(needs({'test/c_test.dart'}), false);
     expect(needs({'lib/a.dart'}), true);
     expect(needs({'pubspec.lock'}), true);
@@ -52,6 +166,45 @@ void main() {
         full: true,
       ),
       true,
+    );
+  });
+  test('ordinary prose does not broaden a proven source change', () {
+    expect(
+      selected(
+        plan(
+          {'lib/a.dart', 'docs/feature.md'},
+          ordinaryDocuments: {'docs/feature.md'},
+        ),
+      ),
+      ['test/a_test.dart'],
+    );
+    expect(plan({'lib/a.dart', 'docs/feature.md'})['mode'], 'full');
+    expect(
+      plan({'docs/feature.md'}, ordinaryDocuments: {'docs/feature.md'})['mode'],
+      'full',
+    );
+    expect(
+      plan(
+        {'lib/a.dart', 'docs/feature.md'},
+        ordinaryDocuments: {'docs/feature.md'},
+        full: true,
+      )['mode'],
+      'full',
+    );
+    final files = {
+      ...fixture,
+      'test/probe_test.dart': "import 'dart:io'; void main() {}",
+    };
+    expect(
+      selected(
+        plan(
+          {'lib/a.dart', 'docs/feature.md'},
+          before: files,
+          after: files,
+          ordinaryDocuments: {'docs/feature.md'},
+        ),
+      ),
+      ['test/a_test.dart', 'test/probe_test.dart'],
     );
   });
   test('transitive exports select dependent tests only', () {

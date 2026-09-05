@@ -170,7 +170,10 @@ jobs:
             echo "Missing usable base SHA for $EVENT_NAME; refusing to broaden a non-nightly plan."
             exit 64
           fi
-          git cat-file -e "${base_sha}^{commit}"
+          # Scheduled/manual bases start as revision expressions. Bind every
+          # downstream lane and artifact to the same immutable commit object.
+          base_sha="$(git rev-parse --verify --end-of-options "${base_sha}^{commit}")"
+          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
           if [[ "$event_mode" == "main" ]]; then
             git merge-base --is-ancestor "$base_sha" "$HEAD_SHA"
           fi
