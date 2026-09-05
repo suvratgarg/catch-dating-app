@@ -1,0 +1,30 @@
+name: Cache CocoaPods Downloads
+description: Reuse pod downloads and specs while every caller resolves and builds its own Pods project.
+
+inputs:
+  cocoapods-version:
+    description: Repository-pinned CocoaPods version.
+    required: true
+  lockfiles:
+    description: Podfile.lock glob for this native build surface.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Require native dependency locks
+      if: ${{ hashFiles(inputs.lockfiles) == '' }}
+      shell: bash
+      run: |
+        echo "::error::CocoaPods caching requires a matching Podfile.lock."
+        exit 64
+
+    - name: Restore CocoaPods downloads
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/Library/Caches/CocoaPods
+          ~/.cocoapods/repos
+        key: pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cocoapods-version }}-${{ hashFiles(inputs.lockfiles) }}
+        restore-keys: |
+          pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cocoapods-version }}-

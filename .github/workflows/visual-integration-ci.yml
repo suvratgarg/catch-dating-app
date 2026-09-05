@@ -13,6 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
       - uses: ./.github/actions/setup-flutter
 
       - run: flutter config --enable-macos-desktop
@@ -43,6 +46,12 @@ jobs:
 
       - name: Deterministic app-shell integration suites
         run: bash tool/test_app_shell_integration.sh
+
+      - name: Restore CocoaPods downloads
+        uses: ./.github/actions/cache-cocoapods
+        with:
+          cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
+          lockfiles: macos/Podfile.lock
 
       - name: Hosted native app-shell smoke
         run: bash tool/test_app_shell_integration.sh macos smoke
