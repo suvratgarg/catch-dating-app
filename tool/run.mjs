@@ -127,8 +127,12 @@ async function runChecks(tools, {marketingChecksInReact = false} = {}) {
   for (const {toolId, command} of uniqueToolChecks(compatible)) {
     // CI's required aggregate owns the parallel React result. Match both the
     // tool and exact command: an altered check must execute until its new
-    // equivalence is established. Standalone runs retain both browser gates.
+    // equivalence is established. Standalone runs retain builds and browser gates.
     if (marketingChecksInReact && (
+      (toolId === "marketing:website-build" &&
+        command === "npm --prefix website run build") ||
+      (toolId === "marketing:website-storybook" &&
+        command === "npm --workspace catch-marketing run build:storybook") ||
       (toolId === "marketing:website-storybook-a11y" &&
         command === "npm --workspace catch-marketing run test:storybook:a11y") ||
       (toolId === "web:storybook-visuals" &&

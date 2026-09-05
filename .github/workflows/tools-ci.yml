@@ -18,7 +18,7 @@ on:
         required: true
         type: boolean
       marketing_checks_in_react:
-        description: The caller's required aggregate owns the same-run React marketing browser checks.
+        description: The caller's required aggregate owns the same-run React marketing site build, Storybook build, and browser checks.
         required: false
         type: boolean
         default: false
