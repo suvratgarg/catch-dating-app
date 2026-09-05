@@ -66,7 +66,7 @@ for (const [file, target] of [
       assert.deepEqual(result.operations.ciTargets, [target, "policy_docs"].sort());
       assert.deepEqual(result.operations.deployGroups, []);
       assert.deepEqual(result.operations.releaseTargets, []);
-      assert.deepEqual(result.operations.checkIds, ["meta:enforcement-integrity"]);
+      assert.deepEqual(result.operations.checkIds, ["agent:harness-v2", "meta:enforcement-integrity"]);
     }
   });
 }

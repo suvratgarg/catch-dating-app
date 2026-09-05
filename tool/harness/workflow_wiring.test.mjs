@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import test from "node:test";
-import {toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
+import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
@@ -433,6 +433,40 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
     fullPolicy,
     new RegExp(`fetch-depth: ${graph.ciCheckout.default.fetchDepth}`),
   );
+});
+
+test("policy-only CI wiring has one Harness owner with its required dependencies", () => {
+  const ci = workflow("ci.yml");
+  const policy = ci.slice(ci.indexOf("  docs-policy:"), ci.indexOf("  app-builds:"));
+  const condition = "if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}";
+  const names = ["Load Harness toolchain", "Set up Harness Node.js",
+    "Install Harness test dependencies", "Validate CI wiring in the policy lane"];
+  const steps = names.map((name) => namedStep(policy, name));
+  for (const step of steps) assert.ok(step.includes(condition), step);
+  assert.match(steps[0], /id: policy-toolchain/u);
+  assert.match(steps[0], /uses: \.\/\.github\/actions\/load-toolchain/u);
+  assert.match(steps[1], /uses: actions\/setup-node@v6/u);
+  assert.ok(steps[1].includes("node-version: ${{ steps.policy-toolchain.outputs.node-version }}"));
+  assert.match(steps[2], /run: npm ci --ignore-scripts --workspaces=false/u);
+  assert.match(steps[3], /run: node tool\/run\.mjs check agent:harness-v2/u);
+  const order = ["Checkout full policy closure", ...names].map((name) => policy.indexOf(namedStep(policy, name)));
+  assert.deepEqual(order, [...order].sort((a, b) => a - b));
+
+  for (const file of ["firestore-rules-ci.yml", "contracts-ci.yml", "functions-ci.yml",
+    "operations-ci.yml", "flutter-ci.yml", "visual-integration-ci.yml"]) {
+    const changedPaths = [`.github/workflows/${file}`];
+    const standalone = planAffected({changedPaths, graph, mode: "pr"});
+    assert.ok(standalone.operations.ciTargets.includes("policy_docs"), file);
+    assert.equal(standalone.operations.ciTargets.includes("tools"), false, file);
+    assert.ok(standalone.operations.checkIds.includes("agent:harness-v2"), file);
+    changedPaths.push("tool/design/check_platform_token_coverage.mjs");
+    const mixed = planAffected({changedPaths, graph, mode: "pr"});
+    assert.ok(mixed.operations.ciTargets.includes("tools"), file);
+    assert.equal(planAffectedToolChecks({changedPaths, manifest: toolsManifest,
+      componentGraph: graph, mode: "pr"}).mode, "full", file);
+  }
+  const docs = planAffected({changedPaths: ["docs/example.md"], graph, mode: "pr"});
+  assert.deepEqual(docs.operations.ciTargets, ["docs"]);
 });
 
 test("planner reports Audience documentation impact before target fanout", () => {

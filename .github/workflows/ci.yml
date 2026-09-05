@@ -382,6 +382,20 @@ jobs:
         timeout-minutes: 10
         with:
           fetch-depth: 0
+      - name: Load Harness toolchain
+        if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
+        id: policy-toolchain
+        uses: ./.github/actions/load-toolchain
+      - name: Set up Harness Node.js
+        if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.policy-toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install Harness test dependencies
+        if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
+        run: npm ci --ignore-scripts --workspaces=false
       - name: Check source-owned document metadata
         env:
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
@@ -389,6 +403,9 @@ jobs:
       - name: Check agent policy enforcement
         if: ${{ needs.plan.outputs.policy_docs == 'true' }}
         run: node tool/run.mjs check meta:enforcement-integrity
+      - name: Validate CI wiring in the policy lane
+        if: ${{ needs.plan.outputs.policy_docs == 'true' && needs.plan.outputs.tools != 'true' }}
+        run: node tool/run.mjs check agent:harness-v2
 
   app-builds:
     needs: plan

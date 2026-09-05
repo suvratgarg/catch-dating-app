@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.2
+version: 2.7.3
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -276,6 +276,11 @@ contracts, rules, policy and the full Tools matrix without compiling unrelated
 clients. Shared CI orchestration, toolchains, the cross-product delivery core,
 unknown files and actual app changes retain their broader validation. A nightly
 scheduled full run catches drift hidden by ordinary impact routing.
+Dedicated validation-workflow edits run their own lane plus policy validation.
+The policy lane runs the existing `agent:harness-v2` wiring suite when Tools is
+absent, with the pinned Node version and only root npm dependencies. When Tools
+is selected alongside a workflow change, its full matrix owns that suite;
+ordinary prose keeps its lightweight document checks.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.
 
