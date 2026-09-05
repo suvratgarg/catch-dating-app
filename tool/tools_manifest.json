@@ -1384,7 +1384,7 @@
       "command": "node tool/web/react_dependency_graph.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries; deterministic JSON evidence is emitted on demand.",
+      "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, direct cross-surface boundaries, and runtime cycles; deterministic JSON evidence is emitted on demand.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -1416,7 +1416,10 @@
           "full and summary JSON evidence is deterministic and newline terminated",
           "CLI accepts live evidence combinations and rejects retired artifact modes",
           "CLI emits inspectable JSON before a combined check fails",
-          "missing source roots and TypeScript configs fail closed"
+          "missing source roots and TypeScript configs fail closed",
+          "known-bad runtime cycle makes graph health and CLI check fail",
+          "type-only cycles stay visible and do not block graph health or CLI check",
+          "runtime self-imports and re-export cycles are rejected"
         ]
       }
     },
