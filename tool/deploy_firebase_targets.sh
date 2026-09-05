@@ -2,13 +2,15 @@
 set -euo pipefail
 
 preflight_only=false
-if [[ "${1:-}" == "--preflight" ]]; then
-  preflight_only=true
-  shift
-fi
+functions_mode=all
+case "${1:-}" in
+  --preflight) preflight_only=true; shift ;;
+  --functions-deploy-only) functions_mode=deploy; shift ;;
+  --functions-postconditions-only) functions_mode=postconditions; shift ;;
+esac
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 [--preflight] <environment> <comma-separated-targets> [firebase deploy args...]" >&2
+  echo "Usage: $0 [--preflight|--functions-deploy-only|--functions-postconditions-only] <environment> <comma-separated-targets> [firebase deploy args...]" >&2
   exit 64
 fi
 
@@ -51,14 +53,16 @@ deploy_target() {
   if [[ "$phase" == "storage" ]]; then
     echo "::group::Verify Storage rules cross-service IAM"
     node "$repo_root/tool/firebase/storage_rules_firestore_iam.mjs" \
-      --env "$environment"
+      --env "$environment" || return $?
     echo "::endgroup::"
   fi
 
   echo "::group::Deploy Firebase target: $phase"
+  local deploy_status=0
   "$repo_root/tool/firebase_with_env.sh" \
-    "$environment" deploy --only "$deploy_only" --non-interactive "$@"
+    "$environment" deploy --only "$deploy_only" --non-interactive "$@" || deploy_status=$?
   echo "::endgroup::"
+  return "$deploy_status"
 }
 
 sync_callable_invokers() {
@@ -77,7 +81,7 @@ sync_callable_invokers() {
       }
       process.stdout.write(project);
     ' "$environment" "$repo_root/.firebaserc"
-  )"
+  )" || return $?
   local scope_version
   local invoker_args=("$project_id")
   scope_version="$(node -e '
@@ -87,7 +91,7 @@ sync_callable_invokers() {
       throw new Error("Unsupported packaged callable scope protocol");
     }
     process.stdout.write(version === 1 ? "1" : "legacy");
-  ' "$functions_dir/scripts/set-callable-invokers-public.cjs")"
+  ' "$functions_dir/scripts/set-callable-invokers-public.cjs")" || return $?
   if [[ "$scope_version" == "1" ]]; then
     invoker_args+=(--targets "$1")
   else
@@ -97,7 +101,7 @@ sync_callable_invokers() {
   # packaged helper catches missing runtime dependencies as well as unsupported
   # scope versions; preflight must never invoke its permission-writing command.
   if [[ "${2:-}" == "--preflight" ]]; then
-    return
+    return 0
   fi
   npm --prefix "$functions_dir" run sync:callable-invokers -- "${invoker_args[@]}"
 }
@@ -106,6 +110,12 @@ plan_output="$(
   node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
     "$targets_csv" --tsv "${planner_policy_args[@]}"
 )"
+if [[ "$functions_mode" != "all" ]]; then
+  [[ "$plan_output" == functions$'\t'* && "$plan_output" != *$'\n'* ]] || {
+    echo "A Functions subphase requires exactly one Functions target group." >&2
+    exit 64
+  }
+fi
 
 # Validate every local Functions prerequisite before even an earlier index
 # phase deploys. Reuse parity's source parser without querying live state:
@@ -142,7 +152,10 @@ while IFS=$'\t' read -r phase deploy_only; do
       node "$repo_root/tool/firebase/plan_firebase_deploy_targets.mjs" \
         "$deploy_only" --function-batches "${planner_policy_args[@]}"
   )"
-  [[ -n "$function_batches" ]]
+  if [[ -z "$function_batches" ]]; then
+    echo "The Functions phase must contain at least one exact deployment batch." >&2
+    exit 64
+  fi
 done <<< "$plan_output"
 
 if [[ "$preflight_only" == "true" ]]; then
@@ -153,31 +166,39 @@ fi
 while IFS=$'\t' read -r phase deploy_only; do
   [[ -z "$phase" || -z "$deploy_only" ]] && continue
   if [[ "$phase" == "functions" ]]; then
-    while IFS= read -r function_batch; do
-      [[ -z "$function_batch" ]] && continue
-      function_batch_status=1
-      for function_batch_attempt in 1 2 3; do
-        function_batch_status=0
-        deploy_target "$phase" "$function_batch" "$@" || \
-          function_batch_status=$?
-        if [[ "$function_batch_status" == "0" ]]; then
-          break
+    if [[ "$functions_mode" != "postconditions" ]]; then
+      while IFS= read -r function_batch; do
+        [[ -z "$function_batch" ]] && continue
+        function_batch_status=1
+        for function_batch_attempt in 1 2 3; do
+          function_batch_status=0
+          deploy_target "$phase" "$function_batch" "$@" || \
+            function_batch_status=$?
+          if [[ "$function_batch_status" == "0" ]]; then
+            break
+          fi
+          if [[ "$function_batch_attempt" -lt 3 ]]; then
+            echo "Firebase Function batch attempt ${function_batch_attempt} failed; cooling down before the same exact retry." >&2
+            sleep 60
+          else
+            echo "Firebase Function batch exhausted all three attempts." >&2
+          fi
+        done
+        if [[ "$function_batch_status" != "0" ]]; then
+          exit "$function_batch_status"
         fi
-        echo "Firebase Function batch attempt ${function_batch_attempt} failed; cooling down before the same exact retry." >&2
-        sleep 60
-      done
-      if [[ "$function_batch_status" != "0" ]]; then
-        exit "$function_batch_status"
-      fi
-      # Firebase CLI currently starts up to 40 mutations at once. Keeping each
-      # invocation at ten exact targets avoids the per-region mutation and
-      # temporary Cloud Run CPU limits without changing the authorized set.
-      sleep 10
-    done <<< "$function_batches"
-    sync_callable_invokers "$deploy_only"
-    node "$repo_root/tool/firebase/check_deploy_parity.mjs" \
-      --env "$environment" \
-      --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}"
+        # Firebase CLI currently starts up to 40 mutations at once. Keeping each
+        # invocation at ten exact targets avoids the per-region mutation and
+        # temporary Cloud Run CPU limits without changing the authorized set.
+        sleep 10
+      done <<< "$function_batches"
+    fi
+    if [[ "$functions_mode" != "deploy" ]]; then
+      sync_callable_invokers "$deploy_only"
+      node "$repo_root/tool/firebase/check_deploy_parity.mjs" \
+        --env "$environment" \
+        --repo-root "${CATCH_FIREBASE_SOURCE_ROOT:-$repo_root}"
+    fi
   else
     deploy_target "$phase" "$deploy_only" "$@"
   fi

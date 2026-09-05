@@ -307,28 +307,48 @@ jobs:
                  .conclusion == "startup_failure")
               ' build/delivery/restore-producer.json > /dev/null
             fi
-            count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/artifacts" \
-              --paginate --jq "[.artifacts[] | select(.name == \"$artifact_name\")] | length" | \
-              awk '{ total += $1 } END { print total + 0 }')"
+            matching_artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/artifacts" \
+              --paginate --slurp | jq --arg name "$artifact_name" \
+                '[.[].artifacts[] | select(.name == $name)]')"
+            count="$(jq 'length' <<< "$matching_artifacts")"
             decision="$(node tool/ci/delivery_core.mjs restore-decision \
               --artifact-count "$count")"
             should_restore="$(jq -r '.shouldRestore' <<< "$decision")"
+            if [[ "$should_restore" == "true" ]]; then
+              echo "artifact_id=$(jq -er '.[0].id' <<< "$matching_artifacts")" >> "$GITHUB_OUTPUT"
+              echo "artifact_digest=$(jq -er '.[0].digest' <<< "$matching_artifacts")" >> "$GITHUB_OUTPUT"
+            fi
             if [[ "$(jq -r '.restartFromFirstStage' <<< "$decision")" == "true" ]]; then
               echo "No exact checkpoint exists for $DEPLOY_ENVIRONMENT; restarting its same verified package at the first stage."
             fi
           fi
           echo "run_id=$restore_run_id" >> "$GITHUB_OUTPUT"
+          echo "run_attempt=$restore_attempt" >> "$GITHUB_OUTPUT"
           echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
           echo "should_restore=$should_restore" >> "$GITHUB_OUTPUT"
 
-      - name: Download prior checkpoint
+      - name: Download and verify the exact prior checkpoint
         if: ${{ steps.restore.outputs.should_restore == 'true' }}
-        uses: actions/download-artifact@v7
-        with:
-          github-token: ${{ github.token }}
-          run-id: ${{ steps.restore.outputs.run_id }}
-          name: ${{ steps.restore.outputs.artifact_name }}
-          path: build/delivery/checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESTORE_RUN_ID: ${{ steps.restore.outputs.run_id }}
+          RESTORE_ATTEMPT: ${{ steps.restore.outputs.run_attempt }}
+          ARTIFACT_ID: ${{ steps.restore.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ steps.restore.outputs.artifact_digest }}
+          CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+        run: |
+          node tool/ci/firebase_functions_checkpoint.mjs restore \
+            --manifest build/delivery/source/firebase-provenance.json \
+            --artifact build/delivery/source/firebase-backend.tar.gz \
+            --source-sha "$SOURCE_SHA" --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" --scope "$CHECKPOINT_SCOPE" \
+            --checkpoint build/delivery/checkpoint/checkpoint.json \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+            --run-id "$RESTORE_RUN_ID" --run-attempt "$RESTORE_ATTEMPT" \
+            --artifact-id "$ARTIFACT_ID" --artifact-digest "$ARTIFACT_DIGEST"
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -449,6 +469,7 @@ jobs:
           CHECKPOINT: build/delivery/checkpoint/checkpoint.json
           CHECKPOINT_SCOPE: ${{ steps.verify.outputs.checkpoint_scope }}
           CONTROL_PLANE_SHA: ${{ inputs.control_plane_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
           PACKAGE_DIR: build/delivery/deploy-tree
@@ -518,6 +539,39 @@ jobs:
             fi
             if [[ "$stage" == "functions" && -z "$target" ]]; then
               echo "No Functions runtime dependency changed; recording the verified no-op stage."
+            elif [[ "$stage" == "functions" ]]; then
+              proof_args=(
+                --manifest build/delivery/source/firebase-provenance.json
+                --artifact build/delivery/source/firebase-backend.tar.gz
+                --source-sha "$SOURCE_SHA" --ci-run-id "$SOURCE_CI_RUN_ID"
+                --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" --scope "$CHECKPOINT_SCOPE"
+                --checkpoint "$CHECKPOINT" --base-sha "$BASE_SHA" --targets "$target"
+                --params-file "$DELIVERY_FUNCTIONS_DIR/.env.$PROJECT_ID"
+              )
+              recovery="$(node tool/ci/firebase_functions_checkpoint.mjs verify "${proof_args[@]}")"
+              postconditions_only="$(jq -r '.postconditionsOnly | select(type == "boolean")' <<< "$recovery")"
+              if [[ "$postconditions_only" != "true" && "$postconditions_only" != "false" ]]; then
+                echo "Invalid Functions checkpoint recovery decision."
+                exit 64
+              fi
+              if [[ "$postconditions_only" == "false" ]]; then
+                CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
+                  CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
+                  ./tool/deploy_firebase_targets.sh --functions-deploy-only \
+                    "$DEPLOY_ENVIRONMENT" "$target" "${deploy_args[@]}" || stage_status=$?
+                if [[ "$stage_status" == "0" ]]; then
+                  node tool/ci/firebase_functions_checkpoint.mjs record "${proof_args[@]}" || stage_status=$?
+                fi
+              else
+                echo "Exact Functions deployment is still active; resuming callable permissions and parity only."
+              fi
+              if [[ "$stage_status" == "0" ]]; then
+                CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
+                  CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
+                  ./tool/deploy_firebase_targets.sh --functions-postconditions-only \
+                    "$DEPLOY_ENVIRONMENT" "$target" "${deploy_args[@]}" || stage_status=$?
+              fi
+              failure_detail="Functions deployment or postcondition failed; exact recovery proof determines the next subphase."
             else
               CATCH_DELIVERY_FUNCTIONS_DIR="$DELIVERY_FUNCTIONS_DIR" \
                 CATCH_FIREBASE_SOURCE_ROOT="$SOURCE_CHECKOUT" \
@@ -575,6 +629,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: firebase-checkpoint-${{ inputs.environment }}-${{ steps.verify.outputs.project_id }}-${{ inputs.source_sha }}-${{ github.run_attempt }}
-          path: build/delivery/checkpoint/checkpoint.json
+          path: |
+            build/delivery/checkpoint/checkpoint.json
+            build/delivery/checkpoint/functions-deployment.json
           if-no-files-found: error
           retention-days: 90

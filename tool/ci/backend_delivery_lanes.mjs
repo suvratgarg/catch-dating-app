@@ -150,10 +150,13 @@ export function completionCandidates(catalogue, context) {
   return current;
 }
 
-// Inspect the central directory before reading a single JSON entry. No archive
+// Inspect the central directory before reading allowlisted JSON entries. No archive
 // entry is extracted, and symlinks, directories, duplicate entries and ZIP64 are
 // rejected. unzip independently checks compressed data and CRC while streaming.
-export function readSingleJsonArchive(bytes, expectedName) {
+export function readJsonArchive(bytes, requiredNames, optionalNames = []) {
+  const allowed = [...requiredNames, ...optionalNames];
+  assert.ok(requiredNames.length > 0 && allowed.length <= 2 && new Set(allowed).size === allowed.length &&
+    allowed.every((name) => /^[a-z][a-z0-9-]*\.json$/.test(name)), "Expected one or two explicit JSON basenames.");
   assert.ok(Buffer.isBuffer(bytes) && bytes.length >= 22 && bytes.length <= 2 * 1024 * 1024, "Invalid JSON archive size.");
   let end = -1;
   for (let offset = bytes.length - 22; offset >= Math.max(0, bytes.length - 65557); offset--) {
@@ -162,38 +165,65 @@ export function readSingleJsonArchive(bytes, expectedName) {
   assert.ok(end >= 0, "ZIP end record missing.");
   assert.equal(bytes.readUInt16LE(end + 4), 0, "Multidisk ZIP refused.");
   assert.equal(bytes.readUInt16LE(end + 6), 0, "Multidisk ZIP refused.");
-  assert.equal(bytes.readUInt16LE(end + 8), 1, "Exactly one JSON archive entry required.");
-  assert.equal(bytes.readUInt16LE(end + 10), 1, "Exactly one JSON archive entry required.");
+  const count = bytes.readUInt16LE(end + 8);
+  assert.equal(bytes.readUInt16LE(end + 10), count, "Split ZIP refused.");
+  assert.ok(count >= requiredNames.length && count <= allowed.length, "Unexpected JSON archive entry count.");
   const centralSize = bytes.readUInt32LE(end + 12);
   const central = bytes.readUInt32LE(end + 16);
   assert.ok(central + centralSize === end && centralSize >= 46, "Invalid ZIP central directory.");
-  assert.equal(bytes.readUInt32LE(central), 0x02014b50);
-  const nameLength = bytes.readUInt16LE(central + 28);
-  const extraLength = bytes.readUInt16LE(central + 30);
-  const commentLength = bytes.readUInt16LE(central + 32);
-  assert.equal(46 + nameLength + extraLength + commentLength, centralSize, "Unexpected extra ZIP entries.");
-  assert.equal(bytes.subarray(central + 46, central + 46 + nameLength).toString("utf8"), expectedName, "Unexpected JSON archive entry.");
-  const attributes = bytes.readUInt32LE(central + 38);
-  const unixType = (attributes >>> 16) & 0o170000;
-  assert.ok(unixType === 0 || unixType === 0o100000, "Non-regular ZIP entry refused.");
-  assert.equal(attributes & 0x10, 0, "ZIP directory refused.");
-  assert.equal(bytes.readUInt16LE(central + 8) & 1, 0, "Encrypted ZIP refused.");
-  assert.ok(bytes.readUInt32LE(central + 24) <= 1024 * 1024, "JSON entry too large.");
-  const local = bytes.readUInt32LE(central + 42);
-  assert.equal(local, 0, "Prefixed or split ZIP refused.");
-  assert.equal(bytes.readUInt32LE(local), 0x04034b50);
-  const localNameLength = bytes.readUInt16LE(local + 26);
-  assert.equal(bytes.subarray(local + 30, local + 30 + localNameLength).toString("utf8"), expectedName, "ZIP local entry name mismatch.");
+  let position = central;
+  const names = new Set();
+  const localEntries = [];
+  for (let index = 0; index < count; index++) {
+    assert.ok(position + 46 <= end, "Truncated ZIP central entry.");
+    assert.equal(bytes.readUInt32LE(position), 0x02014b50);
+    const nameLength = bytes.readUInt16LE(position + 28);
+    const extraLength = bytes.readUInt16LE(position + 30);
+    const commentLength = bytes.readUInt16LE(position + 32);
+    const next = position + 46 + nameLength + extraLength + commentLength;
+    assert.ok(next <= end, "Truncated ZIP metadata.");
+    const name = bytes.subarray(position + 46, position + 46 + nameLength).toString("utf8");
+    assert.ok(allowed.includes(name) && !names.has(name), "Unexpected or duplicate JSON archive entry.");
+    names.add(name);
+    const attributes = bytes.readUInt32LE(position + 38);
+    const unixType = (attributes >>> 16) & 0o170000;
+    assert.ok(unixType === 0 || unixType === 0o100000, "Non-regular ZIP entry refused.");
+    assert.equal(attributes & 0x10, 0, "ZIP directory refused.");
+    assert.equal(bytes.readUInt16LE(position + 8) & 1, 0, "Encrypted ZIP refused.");
+    assert.ok(bytes.readUInt32LE(position + 24) <= 1024 * 1024, "JSON entry too large.");
+    const local = bytes.readUInt32LE(position + 42);
+    assert.ok(local + 30 <= central, "Invalid ZIP local offset.");
+    assert.equal(bytes.readUInt32LE(local), 0x04034b50);
+    const localNameLength = bytes.readUInt16LE(local + 26);
+    const localExtraLength = bytes.readUInt16LE(local + 28);
+    assert.equal(bytes.subarray(local + 30, local + 30 + localNameLength).toString("utf8"), name, "ZIP local entry name mismatch.");
+    const dataEnd = local + 30 + localNameLength + localExtraLength + bytes.readUInt32LE(position + 20);
+    assert.ok(dataEnd <= central, "ZIP compressed entry extends into metadata.");
+    localEntries.push({start: local, end: dataEnd});
+    position = next;
+  }
+  assert.equal(position, end, "Unexpected extra ZIP entries.");
+  assert.ok(requiredNames.every((name) => names.has(name)), "Required JSON archive entry missing.");
+  localEntries.sort((a, b) => a.start - b.start);
+  assert.equal(localEntries[0].start, 0, "Prefixed or split ZIP refused.");
+  for (let index = 1; index < localEntries.length; index++) {
+    assert.ok(localEntries[index - 1].end <= localEntries[index].start, "Overlapping ZIP entries refused.");
+  }
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-delivery-json-"));
   try {
     const archive = path.join(directory, "input.zip");
     fs.writeFileSync(archive, bytes, {mode: 0o600});
-    const result = spawnSync("unzip", ["-p", archive, expectedName], {encoding: "utf8", maxBuffer: 1024 * 1024});
-    assert.equal(result.status, 0, result.stderr || "Cannot verify JSON archive.");
-    return JSON.parse(result.stdout);
+    return Object.fromEntries([...names].map((name) => {
+      const result = spawnSync("unzip", ["-p", archive, name], {encoding: "utf8", maxBuffer: 1024 * 1024});
+      assert.equal(result.status, 0, result.stderr || "Cannot verify JSON archive.");
+      return [name, JSON.parse(result.stdout)];
+    }));
   } finally {
     fs.rmSync(directory, {recursive: true, force: true});
   }
+}
+export function readSingleJsonArchive(bytes, expectedName) {
+  return readJsonArchive(bytes, [expectedName])[expectedName];
 }
 export function githubRequest(endpoint, {paginate = false, binary = false} = {}) {
   const result = spawnSync("gh", ["api", ...(paginate ? ["--paginate", "--slurp"] : []), endpoint],
