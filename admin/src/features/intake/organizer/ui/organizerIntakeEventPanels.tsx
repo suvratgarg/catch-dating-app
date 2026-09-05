@@ -1,28 +1,9 @@
 import {useState} from "react";
-import {
-  Activity,
-  CheckCircle2,
-  Clock3,
-  Database,
-  FileWarning,
-  FolderSearch,
-  LineChart,
-  Lock,
-  RefreshCw,
-  Search,
-  Settings2,
-  UserCheck,
-  Users,
-} from "lucide-react";
+import {CheckCircle2, Clock3, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
-  AdminMetricCard,
-  AdminMetricGrid,
   AdminTag,
-  AlertRow,
   EmptyState,
-  Panel,
-  QualityList,
   QualityRow,
   SelectField,
   StateRow,
@@ -38,8 +19,6 @@ import {
   AdminIntakeDecisionActions,
   AdminIntakeDecisionBox,
   AdminIntakeDecisionState,
-  AdminIntakeLayout,
-  AdminIntakeSourceList,
   AdminTagList,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
@@ -50,10 +29,8 @@ import {
   AdminOrganizerIntakeCardHeader,
   AdminOrganizerIntakeCheckboxField,
   AdminOrganizerIntakeCurationPanel,
-  AdminOrganizerIntakeList,
   AdminOrganizerIntakeSurfaceGrid,
   AdminOrganizerLocationResolutionForm,
-  AdminOrganizerPolicyGapColumns,
   AdminOrganizerSurfaceList,
   AdminOrganizerSurfaceRow,
   AdminSearchCandidateActions,
@@ -61,33 +38,19 @@ import {
   AdminSearchCandidateHeader,
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
-  AdminSearchCandidateSnippet,
   AdminSurfacePreview,
   AdminIntakeStateGrid,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
-  curationFormKey,
   decisionLabel,
-  defaultCurationForm,
   eventDecisionLabel,
   intakeChecklistForDecision,
   locationResolutionFormFromTask,
-  pendingInputDecisionLabel,
-  pendingInputDecisionProgressLabel,
-  pendingInputDecisionState,
-  pendingInputInFlightDecision,
-  pendingInputSubmittedDecision,
-  policyGapDecisionLabel,
   publicationPacketReady,
 } from "../controllers/organizerIntakeHelpers";
-import {
-  type OrganizerIntakeController,
-  useOrganizerIntakeController,
-} from "../controllers/useOrganizerIntakeController";
 import type {
   AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakeResponse,
-  AdminDecideOrganizerPolicyGapResponse,
   AdminRecordOrganizerCurationResponse,
   AdminResolveOrganizerEventLocationResponse,
   OrganizerCurationOperation,
@@ -95,14 +58,9 @@ import type {
   OrganizerEventBlockerResolution,
   OrganizerEventImportBlockerCode,
   OrganizerIntakeDecision,
-  OrganizerPolicyGapDecision,
   OrganizerSurfaceDecision,
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
-import {useAdminFeedback} from "../../../../shared/feedback/AdminFeedbackContext";
-import {organizerIntakeReadinessPanels} from "./organizerIntakeReadinessPanels";
-import {organizerIntakeEvidencePanels} from "./organizerIntakeEvidencePanels";
-import {organizerIntakeDiscoveryPanels} from "./organizerIntakeDiscoveryPanels";
 import {
   blockerResolutionsFromChoices,
   governedBlockersForCandidate,

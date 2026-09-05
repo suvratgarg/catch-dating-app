@@ -1,16 +1,23 @@
+import {ButtonLink, PlainButton, PlainLink, buttonClassName} from "./actionControls";
+import type {ButtonSize, ButtonVariant} from "./actionControls";
 import {forwardRef, useState} from "react";
-import type {AnchorHTMLAttributes, ButtonHTMLAttributes, CSSProperties, HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {ButtonControl} from "@catch/web-ui";
+import type {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  CSSProperties,
+  HTMLAttributes,
+  MouseEvent,
+  ReactNode,
+} from "react";
+import {ButtonControl, classNames} from "@catch/web-ui";
 import type {AppDownloadStorePlatform} from "./marketing";
 import {DataTable, StoreButton} from "./actions2";
 import {LiveStatus, defaultAppDownloadPendingStatus} from "./feedback";
-import {StatStrip, actionGroupClassNames, buttonClassName, classNames} from "./foundation";
+import {StatStrip, actionGroupClassNames} from "./foundation";
 import {UiLabel} from "./layout";
-import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 
-export type ButtonVariant = "primary" | "ghost" | "ghost-light";
-
-export type ButtonSize = "default" | "small";
+export {ButtonLink, PlainButton, PlainLink} from "./actionControls";
+export type {ButtonSize, ButtonVariant} from "./actionControls";
 
 export type ActionGroupVariant = "flow" | "hero" | "host-create-flow";
 
@@ -107,41 +114,6 @@ export function Button({
   );
 }
 
-export function ButtonLink({
-  children,
-  className,
-  onClick,
-  size,
-  tabIndex,
-  variant,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & {
-  children: ReactNode;
-  size?: ButtonSize;
-  variant?: ButtonVariant;
-}) {
-  const navigationBlocked = usePendingRequestNavigationBlocked();
-  return (
-    <a
-      {...props}
-      aria-disabled={navigationBlocked || undefined}
-      className={buttonClassName({className, size, variant})}
-      data-pending-navigation-blocked={navigationBlocked || undefined}
-      onClick={(event) => {
-        if (navigationBlocked) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-        onClick?.(event);
-      }}
-      tabIndex={navigationBlocked ? -1 : tabIndex}
-    >
-      {children}
-    </a>
-  );
-}
-
 export function EventActionCard({
   className,
   event,
@@ -197,50 +169,6 @@ export function EventActionCard({
         </div>
       ) : null}
     </article>
-  );
-}
-
-export const PlainButton = forwardRef<
-  HTMLButtonElement,
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    children: ReactNode;
-  }
->(function PlainButton({children, className, ...props}, ref) {
-  return (
-    <button className={className} ref={ref} {...props}>
-      {children}
-    </button>
-  );
-});
-
-export function PlainLink({
-  children,
-  className,
-  onClick,
-  tabIndex,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & {
-  children: ReactNode;
-}) {
-  const navigationBlocked = usePendingRequestNavigationBlocked();
-  return (
-    <a
-      {...props}
-      aria-disabled={navigationBlocked || undefined}
-      className={className}
-      data-pending-navigation-blocked={navigationBlocked || undefined}
-      onClick={(event) => {
-        if (navigationBlocked) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-        onClick?.(event);
-      }}
-      tabIndex={navigationBlocked ? -1 : tabIndex}
-    >
-      {children}
-    </a>
   );
 }
 

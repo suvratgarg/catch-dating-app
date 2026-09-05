@@ -714,9 +714,9 @@ npm run web:ui:typecheck
 ```
 
 `web:react-dependency-graph` derives the website/admin/web-ui topology live from
-TypeScript ASTs. It blocks unresolved repo-local imports and direct
-website-to-admin dependencies while keeping current strongly connected
-components visible as report-only debt. No generated graph view is committed;
+TypeScript ASTs. It blocks unresolved repo-local imports, direct
+website-to-admin dependencies, and runtime cycles. Type-only cycles remain
+visible without blocking the check. No generated graph view is committed;
 use `--summary` or `--json` for deterministic on-demand evidence and redirect it
 into `build/` when a temporary artifact is useful.
 

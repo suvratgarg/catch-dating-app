@@ -1,4 +1,6 @@
 name: Delivery
+# catch.backend-delivery-lanes/v1
+run-name: Delivery lane v1 ${{ inputs.environment || github.event.client_payload.environment || (github.event_name == 'workflow_run' && 'dev' || 'prod') }}
 
 on:
   workflow_run:
@@ -9,6 +11,12 @@ on:
     types: [backend-delivery-drain]
   workflow_dispatch:
     inputs:
+      environment:
+        description: Environment whose oldest pending source is being recovered.
+        required: true
+        default: prod
+        type: choice
+        options: [dev, prod]
       source_ci_run_id:
         description: Oldest pending successful main CI run id to resume.
         required: true
@@ -33,13 +41,13 @@ permissions:
   pull-requests: read
   id-token: write
 
-# This key serializes one drain worker. It is not the queue: GitHub may replace
-# a pending run. The cursor makes replacement safe because every surviving
-# worker independently selects the oldest unprocessed successful CI run after
-# a cursor exists. With no cursor, it can establish a baseline only from an
-# exact backend-changing CI authority for the current main head.
+# Each lane owns selection, mutation and completion publication. GitHub wakeup
+# order is advisory; immutable source authorities establish release order.
+# Production preserves the legacy/rebaseline drain lock during cutover.
+env:
+  DELIVERY_ENVIRONMENT: ${{ inputs.environment || github.event.client_payload.environment || (github.event_name == 'workflow_run' && 'dev' || 'prod') }}
 concurrency:
-  group: backend-delivery
+  group: ${{ (inputs.environment || github.event.client_payload.environment || (github.event_name == 'workflow_run' && 'dev' || 'prod')) == 'dev' && 'backend-delivery-dev' || 'backend-delivery' }}
   cancel-in-progress: false
 
 jobs:
@@ -54,6 +62,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
+      environment: ${{ env.DELIVERY_ENVIRONMENT }}
+      lane_waiting: ${{ steps.lane.outputs.waiting }}
+      lane_refresh_required: ${{ steps.lane.outputs.refresh_required }}
+      waiting_for_dev: ${{ steps.source.outputs.waiting_for_dev }}
+      dev_completion_artifact_id: ${{ steps.source.outputs.dev_completion_artifact_id }}
+      dev_completion_artifact_digest: ${{ steps.source.outputs.dev_completion_artifact_digest }}
+      bootstrap: ${{ steps.lane.outputs.has_cursor != 'true' }}
       work_required: ${{ steps.source.outputs.work_required }}
       source_ci_workflow_id: ${{ steps.source.outputs.source_ci_workflow_id }}
       source_ci_run_number: ${{ steps.source.outputs.source_ci_run_number }}
@@ -64,6 +79,25 @@ jobs:
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
       production_environment: ${{ steps.package.outputs.production_environment }}
     steps:
+      - name: Validate the isolated lane before queue selection
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          [[ "$DELIVERY_ENVIRONMENT" =~ ^(dev|prod)$ ]]
+
+      - name: Checkout the immutable Delivery control plane
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+
+      - id: queue-toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.queue-toolchain.outputs.node-version }}
+
       - id: cursor
         name: Restore the latest verified delivery cursor
         env:
@@ -271,13 +305,57 @@ jobs:
           echo "source_sha=$cursor_source_sha" >> "$GITHUB_OUTPUT"
           echo "cursor_artifact_id=$cursor_artifact_id" >> "$GITHUB_OUTPUT"
 
+      - id: lane
+        name: Resolve this environment's verified progress and legacy cutover
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_CI_WORKFLOW_ID: ${{ steps.cursor.outputs.source_ci_workflow_id }}
+        run: |
+          set -euo pipefail
+          current_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")"
+          test "$(jq -r '.run_attempt' <<< "$current_run")" = "$GITHUB_RUN_ATTEMPT"
+          test "$(jq -r '.run_number' <<< "$current_run")" = "$GITHUB_RUN_NUMBER"
+          jq -n \
+            --arg environment "$DELIVERY_ENVIRONMENT" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson repositoryId "$GITHUB_REPOSITORY_ID" \
+            --argjson sourceCiWorkflowId "$SOURCE_CI_WORKFLOW_ID" \
+            --argjson deliveryWorkflowId "$(jq -er '.workflow_id' <<< "$current_run")" \
+            --arg deliveryRunId "$GITHUB_RUN_ID" \
+            --arg deliveryRunAttempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson deliveryRunNumber "$GITHUB_RUN_NUMBER" \
+            '{environment: $environment, repository: $repository, repositoryId: $repositoryId,
+              sourceCiWorkflowId: $sourceCiWorkflowId, deliveryWorkflowId: $deliveryWorkflowId,
+              deliveryRunId: $deliveryRunId, deliveryRunAttempt: $deliveryRunAttempt,
+              deliveryRunNumber: $deliveryRunNumber}' > build/delivery/lane-context.json
+          if [[ -f build/delivery/cursor/selected/content/backend-delivery-cursor.json ]]; then
+            cp build/delivery/cursor/selected/content/backend-delivery-cursor.json build/delivery/production-cursor.json
+          else
+            printf 'null\n' > build/delivery/production-cursor.json
+          fi
+          node tool/ci/backend_delivery_lanes.mjs resolve \
+            --context build/delivery/lane-context.json \
+            --catalog build/delivery/unexpired-artifacts.json \
+            --prod-cursor build/delivery/production-cursor.json \
+            --output build/delivery/lane-progress.json \
+            --github-output "$GITHUB_OUTPUT"
+          if [[ "$(jq -r '.refreshRequired // false' build/delivery/lane-progress.json)" == "true" && "$(jq -r '.client_payload.wakeup_reason // ""' "$GITHUB_EVENT_PATH")" == "refresh" ]]; then
+            echo "The production cursor changed again during the initial dev cutover. Review the concurrent worker before retrying." >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$(jq -r '.waiting' build/delivery/lane-progress.json)" == "true" ]]; then
+            echo "Manual recovery is blocked by an earlier legacy delivery or rebaseline. Retry this exact recovery after it completes." >&2
+            exit 1
+          fi
+
       - id: source
         name: Select the next successful main CI authority
+        if: ${{ steps.lane.outputs.waiting != 'true' }}
         env:
-          CURSOR_RUN_NUMBER: ${{ steps.cursor.outputs.source_ci_run_number }}
-          CURRENT_CI_WORKFLOW_ID: ${{ steps.cursor.outputs.source_ci_workflow_id }}
+          CURSOR_RUN_NUMBER: ${{ steps.lane.outputs.source_ci_run_number }}
+          CURRENT_CI_WORKFLOW_ID: ${{ steps.lane.outputs.source_ci_workflow_id }}
           EVENT_NAME: ${{ github.event_name }}
-          HAS_CURSOR: ${{ steps.cursor.outputs.has_cursor }}
+          HAS_CURSOR: ${{ steps.lane.outputs.has_cursor }}
           INPUT_RUN_ID: ${{ inputs.source_ci_run_id }}
           INPUT_SOURCE_SHA: ${{ inputs.source_sha }}
           RESUME_DELIVERY_ATTEMPT: ${{ inputs.resume_delivery_attempt }}
@@ -341,6 +419,7 @@ jobs:
               ]
             ' "$artifact_pages_file")"
           # queue-selector: source-candidates-end
+          printf '%s\n' "$source_candidates" > "$selection_dir/source-candidates.json"
           source_ambiguity_count="$(jq -r '
             group_by(.sourceCiRunNumber) |
             map(select(([.[] | [.sourceCiRunId, .sourceSha]] | unique | length) > 1)) |
@@ -367,6 +446,27 @@ jobs:
           if [[ "$HAS_CURSOR" != "true" ]]; then
             source_candidate="$bootstrap_source_candidate"
           fi
+          if [[ "$DELIVERY_ENVIRONMENT" == "prod" ]]; then
+            node tool/ci/backend_delivery_lanes.mjs select-prod   \
+            --context build/delivery/lane-context.json   \
+            --catalog "$artifact_pages_file"   \
+            --candidates "$selection_dir/source-candidates.json"   \
+            --prod-cursor build/delivery/production-cursor.json   \
+            --output "$selection_dir/production-selection.json"   \
+            --github-output "$GITHUB_OUTPUT"
+            if [[ "$(jq -r '.waiting' "$selection_dir/production-selection.json")" == "true" ]]; then
+              if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+                echo "Protected production recovery requires exact completed dev proof first. Recover dev, then repeat this same production recovery."
+                exit 64
+              fi
+              echo "waiting_for_dev=true" >> "$GITHUB_OUTPUT"
+              echo "work_required=false" >> "$GITHUB_OUTPUT"
+              echo "Production is waiting for the exact oldest source to finish dev."
+              exit 0
+            fi
+            source_candidate="$(jq -c '.sourceCandidate' "$selection_dir/production-selection.json")"
+            jq '.devCompletion' "$selection_dir/production-selection.json" > "$selection_dir/dev-completion.json"
+          fi
           if [[ "$source_candidate" == "null" ]]; then
             if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
               echo "There is no pending successful immutable main CI attempt to resume."
@@ -384,6 +484,7 @@ jobs:
             echo "Preparing to bootstrap from the current main head's latest successful immutable CI authority."
           fi
 
+          printf '%s\n' "$source_candidate" > "$selection_dir/source-candidate.json"
           authority_artifact_id="$(jq -er '.artifactId | tostring' <<< "$source_candidate")"
           authority_artifact_name="$(jq -er '.artifactName' <<< "$source_candidate")"
           authority_artifact_digest="$(jq -er '.artifactDigest' <<< "$source_candidate")"
@@ -462,7 +563,7 @@ jobs:
           package_artifact_name="$(jq -r '.packageArtifact.name // ""' "$authority_file")"
           package_artifact_digest="$(jq -r '.packageArtifact.digest // ""' "$authority_file")"
 
-          if [[ "$HAS_CURSOR" != "true" ]]; then
+          if [[ "$HAS_CURSOR" != "true" && "$DELIVERY_ENVIRONMENT" == "dev" ]]; then
             current_main_ref="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main")"
             current_main_sha="$(jq -er '.object.sha' <<< "$current_main_ref")"
             [[ "$current_main_sha" =~ ^[0-9a-f]{40}$ ]]
@@ -650,13 +751,6 @@ jobs:
           echo "package_artifact_name=$package_artifact_name" >> "$GITHUB_OUTPUT"
           echo "package_artifact_digest=$package_artifact_digest" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout the immutable Delivery control plane
-        if: ${{ steps.source.outputs.work_required == 'true' }}
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 0
-
       - name: Checkout the exact CI-approved source as verification input
         if: ${{ steps.source.outputs.work_required == 'true' }}
         uses: actions/checkout@v6
@@ -704,9 +798,9 @@ jobs:
         name: Verify the plan binding and resolve no-op delivery
         if: ${{ steps.source.outputs.work_required == 'true' }}
         env:
-          CURSOR_SOURCE_SHA: ${{ steps.cursor.outputs.source_sha }}
+          CURSOR_SOURCE_SHA: ${{ steps.lane.outputs.source_sha }}
           EVENT_NAME: ${{ github.event_name }}
-          HAS_CURSOR: ${{ steps.cursor.outputs.has_cursor }}
+          HAS_CURSOR: ${{ steps.lane.outputs.has_cursor }}
           RESUME_BASE_SHA: ${{ steps.source.outputs.resume_base_sha }}
           SOURCE_CI_RUN_ATTEMPT: ${{ steps.source.outputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ steps.source.outputs.source_ci_run_id }}
@@ -795,16 +889,20 @@ jobs:
             test "$(sha256sum build/delivery/source/firebase-provenance.json | awk '{print $1}')" = "$RESUME_PROVENANCE_SHA256"
           fi
 
-      - id: toolchain
-        if: ${{ steps.plan.outputs.deploy_required == 'true' }}
-        uses: ./.github/actions/load-toolchain
-
-      - uses: actions/setup-node@v6
-        if: ${{ steps.plan.outputs.deploy_required == 'true' }}
-        with:
-          node-version: ${{ steps.toolchain.outputs.node-version }}
-          cache: npm
-          cache-dependency-path: package-lock.json
+      - name: Verify production uses the exact completed dev package
+        if: ${{ steps.plan.outputs.deploy_required == 'true' && env.DELIVERY_ENVIRONMENT == 'prod' }}
+        run: |
+          set -euo pipefail
+          node tool/ci/backend_delivery_lanes.mjs verify-package \
+            --context build/delivery/lane-context.json \
+            --receipt build/delivery/selection/dev-completion.json \
+            --source-sha "${{ steps.source.outputs.source_sha }}" \
+            --ci-run-id "${{ steps.source.outputs.source_ci_run_id }}" \
+            --ci-run-attempt "${{ steps.source.outputs.source_ci_run_attempt }}" \
+            --base-sha "${{ steps.plan.outputs.base_sha }}" \
+            --package build/delivery/source/firebase-backend.tar.gz \
+            --provenance build/delivery/source/firebase-provenance.json \
+            --output build/delivery/verified-dev-package.json
 
       - name: Install the pinned source-analysis parser
         if: ${{ steps.plan.outputs.deploy_required == 'true' }}
@@ -894,11 +992,35 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      - name: Preserve the verified inputs for dev completion
+        if: ${{ steps.source.outputs.work_required == 'true' && env.DELIVERY_ENVIRONMENT == 'dev' }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/delivery/dev-completion-input
+          cp build/delivery/lane-context.json build/delivery/dev-completion-input/context.json
+          cp build/delivery/selection/source-candidate.json build/delivery/dev-completion-input/source-candidate.json
+          cp build/delivery/selection/authority/content/ci-delivery-authority.json build/delivery/dev-completion-input/ci-delivery-authority.json
+          cp build/delivery/plan/impact-plan.json build/delivery/dev-completion-input/impact-plan.json
+          if [[ -f build/delivery/source/firebase-provenance.json ]]; then
+            cp build/delivery/source/firebase-provenance.json build/delivery/dev-completion-input/firebase-provenance.json
+            jq -er '.artifact.sha256' build/delivery/source/firebase-provenance.json > build/delivery/dev-completion-input/verified-package-sha256.txt
+          fi
+
+      - name: Upload the exact dev completion inputs
+        if: ${{ steps.source.outputs.work_required == 'true' && env.DELIVERY_ENVIRONMENT == 'dev' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-dev-input-${{ github.run_attempt }}
+          path: build/delivery/dev-completion-input
+          if-no-files-found: error
+          retention-days: 90
+
   dev:
     name: Promote backend to dev
     needs: authorize
     if: >-
       needs.authorize.result == 'success' &&
+      needs.authorize.outputs.environment == 'dev' &&
       needs.authorize.outputs.work_required == 'true' &&
       needs.authorize.outputs.deploy_required == 'true'
     uses: ./.github/workflows/_firebase-promote.yml
@@ -915,17 +1037,20 @@ jobs:
 
   prod:
     name: Promote backend to prod
-    needs: [authorize, dev]
+    needs: authorize
     if: >-
       always() &&
       needs.authorize.result == 'success' &&
       needs.authorize.outputs.work_required == 'true' &&
       needs.authorize.outputs.deploy_required == 'true' &&
-      needs.dev.result == 'success'
+      needs.authorize.outputs.environment == 'prod' &&
+      needs.authorize.outputs.dev_completion_artifact_id != ''
     uses: ./.github/workflows/_firebase-promote.yml
     with:
       environment: prod
       approval_environment: ${{ needs.authorize.outputs.production_environment }}
+      dev_completion_artifact_id: ${{ needs.authorize.outputs.dev_completion_artifact_id }}
+      dev_completion_artifact_digest: ${{ needs.authorize.outputs.dev_completion_artifact_digest }}
       control_plane_sha: ${{ github.workflow_sha }}
       base_sha: ${{ needs.authorize.outputs.base_sha }}
       source_ci_run_attempt: ${{ needs.authorize.outputs.source_ci_run_attempt }}
@@ -935,6 +1060,118 @@ jobs:
       resume_delivery_attempt: ${{ inputs.resume_delivery_attempt }}
     secrets: inherit
 
+  finalize-dev:
+    name: Record the successful dev completion
+    needs: [authorize, dev]
+    if: >-
+      always() &&
+      needs.authorize.result == 'success' &&
+      needs.authorize.outputs.environment == 'dev' &&
+      needs.authorize.outputs.work_required == 'true' &&
+      (needs.authorize.outputs.deploy_required == 'false' || needs.dev.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+
+      - id: completion-toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.completion-toolchain.outputs.node-version }}
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: backend-dev-input-${{ github.run_attempt }}
+          path: build/delivery/dev-completion-input
+
+      - id: completion
+        name: Bind complete dev success to its exact source and package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEV_RESULT: ${{ needs.dev.result }}
+          BOOTSTRAP: ${{ needs.authorize.outputs.bootstrap }}
+          SOURCE_SHA: ${{ needs.authorize.outputs.source_sha }}
+          SOURCE_CI_RUN_ID: ${{ needs.authorize.outputs.source_ci_run_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ needs.authorize.outputs.source_ci_run_attempt }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          input=build/delivery/dev-completion-input
+          jq -e --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            '.deliveryRunId == $run and .deliveryRunAttempt == $attempt and .environment == "dev"' \
+            "$input/context.json" > /dev/null
+          jq -e --arg sha "$SOURCE_SHA" --arg run "$SOURCE_CI_RUN_ID" --arg attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            '.sourceSha == $sha and .sourceCiRunId == $run and .sourceCiRunAttempt == $attempt' \
+            "$input/source-candidate.json" > /dev/null
+          package_args=()
+          if [[ -f "$input/firebase-provenance.json" ]]; then
+            package_args=(--provenance "$input/firebase-provenance.json" --verified-package-sha256 "$(cat "$input/verified-package-sha256.txt")")
+          fi
+          node tool/ci/backend_delivery_lanes.mjs prepare-receipt \
+            --context "$input/context.json" \
+            --source "$input/source-candidate.json" \
+            --authority "$input/ci-delivery-authority.json" \
+            --plan "$input/impact-plan.json" \
+            --dev-result "$DEV_RESULT" \
+            --bootstrap "$BOOTSTRAP" \
+            --output build/delivery/completion/backend-dev-completion.json \
+            --github-output "$GITHUB_OUTPUT" \
+            "${package_args[@]}"
+
+      - name: Upload the immutable completed dev receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.completion.outputs.dev_completion_artifact_name }}
+          path: build/delivery/completion/backend-dev-completion.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Wake both ordered delivery lanes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for environment in dev prod; do
+            jq -n --arg environment "$environment" \
+              '{event_type: "backend-delivery-drain", client_payload: {environment: $environment}}' \
+              > build/delivery/wakeup.json
+            gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input build/delivery/wakeup.json
+          done
+
+  wake-peer:
+    name: Wake the lane whose progress can unblock delivery
+    needs: authorize
+    if: >-
+      needs.authorize.result == 'success' &&
+      (needs.authorize.outputs.lane_refresh_required == 'true' ||
+       (github.event.client_payload.wakeup_reason != 'peer' &&
+        needs.authorize.outputs.lane_waiting != 'true' &&
+        (needs.authorize.outputs.waiting_for_dev == 'true' ||
+         (needs.authorize.outputs.environment == 'dev' && needs.authorize.outputs.work_required == 'false'))))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Dispatch a fresh selector without changing its source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WAKE_ENVIRONMENT: ${{ needs.authorize.outputs.lane_refresh_required == 'true' && 'dev' || (needs.authorize.outputs.environment == 'dev' && 'prod' || 'dev') }}
+          WAKE_REASON: ${{ needs.authorize.outputs.lane_refresh_required == 'true' && 'refresh' || 'peer' }}
+        run: |
+          set -euo pipefail
+          jq -n --arg environment "$WAKE_ENVIRONMENT" --arg reason "$WAKE_REASON" \
+            '{event_type: "backend-delivery-drain", client_payload: {environment: $environment, wakeup_reason: $reason}}' > wakeup.json
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input wakeup.json
+
+
   finalize:
     name: Advance the successful delivery cursor
     needs: [authorize, dev, prod]
@@ -942,6 +1179,7 @@ jobs:
       always() &&
       needs.authorize.result == 'success' &&
       needs.authorize.outputs.work_required == 'true' &&
+      needs.authorize.outputs.environment == 'prod' &&
       (
         needs.authorize.outputs.deploy_required == 'false' ||
         (

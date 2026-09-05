@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.19.0
-updated: 2026-08-19
+version: 0.20.0
+updated: 2026-09-05
 owner: web_platform
 status: active
 ---
@@ -269,13 +269,17 @@ The blocking health contract is deliberately narrow and non-vacuous:
 - every repo-local import must resolve;
 - website and admin must not import each other directly; shared behavior routes
   through a governed package;
+- runtime dependencies must be acyclic, including self-imports and re-exports;
 - every configured source root and TypeScript config must exist; and
 - the seeded test suite must prove unresolved imports, direct cross-surface
-  edges, missing inputs, and the live CLI contract fail closed.
+  edges, runtime cycles, missing inputs, and the live CLI contract fail closed.
 
-Current strongly connected components remain visible report-only debt in the
-live JSON and summary. Do not hide them behind an allowlist or make them
-blocking without first repairing the current cycles. Run:
+Type-only cycles and non-literal dynamic imports remain visible in the live
+JSON and summary without blocking the check. Repair runtime cycles by removing
+unused imports, importing existing leaf owners directly, or extracting a small
+shared leaf while preserving public exports. Do not add a cycle allowlist.
+The read-only `--json` and `--summary` modes still emit evidence for unhealthy
+graphs; combine either with `--check` when a failing exit status is required. Run:
 
 ```sh
 node tool/web/react_dependency_graph.mjs --check

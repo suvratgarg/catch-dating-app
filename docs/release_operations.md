@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.8
+version: 2.7.9
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -580,8 +580,12 @@ administrator bypass. Its approval is recorded by
 GitHub, not a checked-in receipt. Reviewing before merge keeps human waiting time
 outside the shared deployment queue; after dev succeeds, reviewed Functions-only
 source uses `prod-backend` automatically.
-Both production paths keep the same `firebase-prod` lock and delivery cursor;
-automation never skips an older package or deploys production before dev succeeds.
+Both production approval paths keep the same `firebase-prod` lock and production
+cursor. Dev and production drain independently: dev release B may run while
+production release A is waiting for review or deploying. Each environment still
+runs one rollout at a time and applies every pending source in order. Production
+requires the exact source attempt and package that completed dev; advancing dev
+never changes the package awaiting production.
 
 During cutover, reviewer-protected `prod` may still hold duplicate mobile
 secrets as rollback material. The mobile workflow does not read them. Delete
@@ -974,9 +978,14 @@ ordered from dev through policy-selected production. Store, Hosting, and app
 releases retain their independent owners.
 
 Manual `Delivery` dispatch is bounded recovery, not an arbitrary deploy path.
-It accepts only the id and full SHA of the oldest pending successful
-same-repository `main` CI attempt plus a terminal non-success Delivery run id
-and attempt. The prior run must contain a source-, base-, package-, and
+It selects `environment=dev|prod` and accepts only the id and full SHA of that
+environment's oldest pending successful same-repository `main` CI attempt plus
+a terminal non-success Delivery run id and attempt. Production recovery also
+requires that exact attempt's completed dev receipt. If dev has not completed,
+recover dev first and then repeat the protected production recovery; an automatic
+wakeup cannot replace the operator's recovery authorization. An initial cutover
+fence fails a manual request visibly so it can be retried after the older worker
+completes. The prior run must contain a source-, base-, package-, and
 provenance-digest-bound recovery authorization written before promotion. It
 restores a matching checkpoint when present and restarts that same verified
 package at stage one when the terminal attempt ended before checkpoint
@@ -1000,9 +1009,10 @@ local deployment keeps the default stale-checkout refusal. This does not permit
 queue skipping, package substitution, or source outside main history.
 
 `Backend Rebaseline` is the exceptional cumulative-snapshot lane for an
-explicitly approved stale-queue recovery. It is manual-only, shares the
-`backend-delivery` concurrency key, and accepts only the exact current `main`
-SHA plus a single-line operator reason and an affirmative all-backend
+explicitly approved stale-queue recovery. It is manual-only. Its wrapper holds
+both `backend-delivery` (production) and `backend-delivery-dev` from authorization
+through snapshot completion, so neither queue can select work against a partially
+applied baseline. It accepts only the exact current `main` SHA plus a single-line operator reason and an affirmative all-backend
 confirmation. It restores the latest verified v4 cursor, binds the current
 successful `main` CI authority, and uses the required Harness graph to select
 exactly Functions, Firestore indexes, Firestore rules, and Storage rules. It
@@ -1015,20 +1025,23 @@ through `dev` and protected `prod`. Every environment additionally
 requires the package source to remain the exact live `main` head. Only a
 successful production promotion may publish a normal v4 delivery cursor for
 the current successful `main` CI authority; that cursor supersedes the covered
-pending CI window without deleting its artifacts. Rebaseline does not delete
+pending CI window without deleting its artifacts. Dev resumes from the greater
+verified source position of this production cursor or its own completed dev
+receipt. Rebaseline does not delete
 Firestore documents, Storage objects, Extension-owned Functions, or
 environment-only Functions. Legacy data and API retirement remains a separate
 contract migration with its own read, write, rules, and deletion sequence.
 
-When no verified delivery cursor exists, automatic selection has a separate,
+When no verified baseline exists, automatic dev selection has a separate,
 fail-closed bootstrap rule: it may select only the latest successful immutable
 CI authority whose source SHA is the live `main` head, and that authority must
-contain an actual backend package. This establishes the baseline from current
-source instead of replaying an unrelated historical package. A no-op current
-head, a successful ancestor, a branch artifact, or any selection while a cursor
-exists cannot use this rule. Once the bootstrap promotion reaches protected
-production, ordinary oldest-pending cursor order and the manual recovery rules
-above apply again.
+contain an actual backend package. A no-op current head, a successful ancestor,
+a branch artifact, or selection while a baseline exists cannot use this rule.
+The first successful dev completion explicitly marks this bootstrap. Production
+must promote that exact receipt and package, even if main or dev has advanced
+since then; it cannot select a newer bootstrap independently. A missing or
+expired original bootstrap receipt fails visibly. After production publishes its
+baseline, ordinary oldest-pending production order applies.
 
 The promotion process also supplies a fixed disabled profile for the
 non-secret Meta WhatsApp parameters during Functions discovery. This lets an
@@ -1257,27 +1270,45 @@ same artifact and checkpoint binding, identifies the first incomplete stage,
 and resumes there. It cannot skip ahead; replay of an already-passed stage is
 idempotent and does not rewrite prior proof.
 
-Provenance, source-bound recovery authorizations, cursors, and checkpoint
-documents are CI or bounded recovery artifacts, not tracked repository state.
-Writes must be atomic so interruption cannot publish a partial checkpoint. A
-verified v4 cursor remains authoritative if its later drain-dispatch step fails
-or the originating run is subsequently rerun; selection uses the greatest
-verified source run number within the exact CI workflow id, never the mutable
-latest conclusion of that Delivery run. One artifact-catalogue scan selects the
-cursor and oldest pending `catch.ci-delivery-authority/v3`; when no cursor
-exists, it instead selects the latest authority and proves that its SHA is the
-current `main` head and that it owns a backend package. Delivery then
-downloads and verifies only those selected artifacts and their historical run
-attempts. It does not perform an API call or ZIP download per retained merge.
-The selected plan's base SHA must equal the cursor source SHA, so a missing or
-expired intermediate authority fails visibly rather than skipping work.
+Provenance, source-bound recovery authorizations, completion receipts, cursors,
+and checkpoints are CI or bounded recovery artifacts, not tracked repository
+state. Writes must be atomic so interruption cannot publish partial proof.
+Production retains the `catch.backend-delivery-cursor/v4` contract. Dev publishes
+`catch.backend-dev-completion/v1` only after the whole dev promoter succeeds, or
+a verified true no-op is authorized. The receipt binds the exact CI authority,
+plan, package, raw provenance digest, source attempt, base SHA and successful dev
+worker. Production selection and the credential-bearing promoter independently
+verify that receipt against historical CI and dev jobs before authentication.
+A newer CI rerun cannot substitute different bytes for the completed dev attempt.
+
+The dev selector uses the greater verified dev or production source position;
+the production selector advances only from its own cursor. Per-environment drain
+locks cover selection, deployment and completion publication. The existing
+`firebase-dev` and `firebase-prod` locks also cover all reusable promoters. Before
+the first dev receipt exists, dev waits for older nonterminal legacy Delivery
+workers and any rebaseline. An older independent production worker is exempt
+only after its exact referenced control-plane source proves the split protocol;
+its display title alone is insufficient. Once this first-dev fence clears,
+selection checks the production cursor catalogue again. A legacy snapshot that
+finished during the check causes one fresh, independently verified selection;
+repeated change stops visibly instead of deploying from a stale base.
+
+A verified completion remains authoritative if its later wakeup dispatch fails
+or the originating run is subsequently rerun. One artifact-catalogue snapshot
+selects the greatest cursor and oldest pending CI authority within the exact CI
+workflow id; only selected artifacts and historical attempts are downloaded and
+verified. Dev completion wakes both lanes, while a lane waiting for its peer may
+send one bounded wakeup; peer wakeups cannot repeat without progress. An expired
+intermediate dev receipt fails visibly when later verified dev progress exists.
+The selected plan's base SHA must equal that environment's prior source SHA, so
+missing or expired intermediate authority also fails rather than skipping work.
 
 CI workflow ids define queue generations because GitHub run numbers restart if
 a workflow is deleted and recreated. A cursor from another or legacy generation
 causes a hard stop. Review the intended backend baseline and explicitly remove
 or migrate the old cursor artifacts before restarting; never compare run numbers
 across workflow ids.
-Backend plans, packages, authorizations, cursors, and checkpoints retain for 90
+Backend plans, packages, authorizations, dev completions, cursors, and checkpoints retain for 90
 days, covering GitHub's 30-day approval and rerun window without turning source
 control into a delivery-state database.
 
@@ -1679,8 +1710,12 @@ because the public analytics callable inserts into
 identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
 read access to `catch_marketplace_metrics` for Event Success scorecard joins.
 The `bq-host-*` extension service accounts must retain write access to their
-own export tables. The host export env files intentionally use
-`EXCLUDE_OLD_DATA=no` so first install backfills existing host data.
+own export tables. `EXCLUDE_OLD_DATA=no` permits the export schema to retain
+old record data; it does not backfill documents that existed before installation.
+Use the explicit official importer after the relevant trigger and table family
+are ready, then compare the latest export with fresh Firestore source. Follow
+`analytics/sql/README.md` for the existing instance's organizer cutover; that
+migration does not require a broad Extensions deployment.
 
 The standard deploy helper performs this sync automatically. Use the direct
 command only for IAM recovery or auditing a previously deployed environment:
