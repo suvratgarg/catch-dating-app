@@ -56,6 +56,7 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
         manifest: toolsManifest, componentGraph: graph, mode});
       assert.equal(tools.mode, "affected", file);
       assert.ok(tools.toolIds.includes("platform:ios-pod-policy"), file);
+      assert.ok(tools.toolIds.includes("git:pre-commit-generated-artifacts"), file);
       assert.deepEqual(tools.setupRequirements, ["node"], file);
     }
     assert.deepEqual(planPreCommitActions({graph, stagedPaths: [file]}).triggeredGeneratorIds,

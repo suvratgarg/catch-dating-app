@@ -23,6 +23,7 @@ test("every catalogued committed compile generator has a staged-source trigger",
     "copy/notifications_en.json",
     "copy/structured_domain_copy_en.json",
     "lib/l10n/app_en.arb",
+    "ios/Podfile.template",
   ];
   const plan = planPreCommitActions({graph, stagedPaths});
   assert.deepEqual(

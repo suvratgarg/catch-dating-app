@@ -3591,6 +3591,9 @@
         "apps/host/ios/**"
       ],
       "description": "Generates self-contained iOS Podfiles and Runner settings from one authored policy while retaining Flutter and CocoaPods freshness detection.",
+      "alsoCheckIds": [
+        "git:pre-commit-generated-artifacts"
+      ],
       "checks": [
         "node --check tool/platform/sync_ios_pod_policy.mjs",
         "node tool/platform/sync_ios_pod_policy.mjs --check",
