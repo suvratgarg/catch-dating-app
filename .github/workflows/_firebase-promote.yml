@@ -431,6 +431,18 @@ jobs:
             echo "Verified package has no Functions payload; skipping Functions parameter materialization."
           fi
 
+      - name: Preflight the whole backend plan before any deployment
+        if: ${{ steps.verify.outputs.has_functions == 'true' }}
+        env:
+          CATCH_DEPLOY_ALLOW_BEHIND: ${{ inputs.require_current_main && '0' || '1' }}
+          CATCH_DELIVERY_FUNCTIONS_DIR: build/delivery/deploy-tree/functions
+          CATCH_FIREBASE_SOURCE_ROOT: build/delivery/source-checkout
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.verify.outputs.targets }}
+        run: >-
+          ./tool/deploy_firebase_targets.sh --preflight
+          "$DEPLOY_ENVIRONMENT" "$DEPLOY_TARGETS"
+
       - id: promote
         name: Resume ordered backend stages
         env:

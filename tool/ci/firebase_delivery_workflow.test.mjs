@@ -240,6 +240,38 @@ test("Functions deployment checks live parity against the exact source checkout"
   );
 });
 
+test("whole-plan Functions preflight is bound to verified inputs before the first ordered stage", (t) => {
+  const promotion = workflow("_firebase-promote.yml");
+  const preflight = extractSteps(promotion).find((step) =>
+    step.name === "Preflight the whole backend plan before any deployment");
+  assert.ok(preflight?.run, "Missing executable preflight boundary.");
+  const offset = promotion.indexOf("Preflight the whole backend plan before any deployment");
+  assert.ok(promotion.indexOf("Materialize non-secret Functions params") < offset);
+  assert.ok(offset < promotion.indexOf("Resume ordered backend stages"));
+  const wiring = promotion.slice(offset, promotion.indexOf("      - id: promote", offset));
+  assert.match(wiring, /if: \$\{\{ steps\.verify\.outputs\.has_functions == 'true' \}\}/);
+  assert.match(wiring, /CATCH_DEPLOY_ALLOW_BEHIND: \$\{\{ inputs\.require_current_main && '0' \|\| '1' \}\}/);
+  assert.match(wiring, /CATCH_DELIVERY_FUNCTIONS_DIR: build\/delivery\/deploy-tree\/functions/);
+  assert.match(wiring, /CATCH_FIREBASE_SOURCE_ROOT: build\/delivery\/source-checkout/);
+  assert.match(wiring, /DEPLOY_TARGETS: \$\{\{ steps\.verify\.outputs\.targets \}\}/);
+  assert.doesNotMatch(wiring, /continue-on-error|\|\| true/);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-workflow-preflight-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "tool"));
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"),
+    '#!/bin/sh\nprintf "%s\\n" "$@" > "$PREFLIGHT_ARGS"\nexit "$PREFLIGHT_STATUS"\n', {mode: 0o755});
+  for (const status of [0, 64]) {
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c", preflight.run], {
+      cwd: directory, encoding: "utf8", env: {...process.env,
+        DEPLOY_ENVIRONMENT: "prod", DEPLOY_TARGETS: "firestore:indexes,functions:alpha",
+        PREFLIGHT_ARGS: path.join(directory, "args"), PREFLIGHT_STATUS: String(status)},
+    });
+    assert.equal(result.status, status, result.stderr);
+    assert.deepEqual(fs.readFileSync(path.join(directory, "args"), "utf8").trim().split("\n"),
+      ["--preflight", "prod", "firestore:indexes,functions:alpha"]);
+  }
+});
+
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {
   const delivery = workflow("delivery.yml");
   const planOffset = delivery.indexOf("Download the exact CI impact plan first");
