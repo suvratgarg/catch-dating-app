@@ -16,9 +16,12 @@ Baselines live in `test/goldens/baseline/<name>.<light|dark>.png`.
 
 These tests are tagged `golden`. The Ubuntu Flutter CI unit/widget step runs
 with `--exclude-tags=golden` because the committed baselines are macOS-rendered.
-The dedicated macOS lane uses `CatchGoldenFileComparator` with a 0.30% pixel
-tolerance: the reviewed hosted-runner variance is at most 0.29% and concentrated
-on anti-aliased text/icon edges, while larger visual drift still fails and emits
+The dedicated macOS lane uses `CatchGoldenFileComparator`. App goldens keep the
+0.30% pixel tolerance: their reviewed hosted-runner variance is at most 0.29%.
+The larger, text-heavy Widgetbook corpus uses a separately checked 0.60%
+tolerance after its macOS 26 arm64 CI diffs measured at most 0.5188% against
+macOS 27 authoring baselines. The reviewed differences are confined to
+anti-aliased text/icon edges. Larger visual drift still fails and emits
 Flutter's normal master, test, isolated-diff, and masked-diff artifacts.
 
 ## What's covered
@@ -31,13 +34,17 @@ Flutter's normal master, test, isolated-diff, and masked-diff artifacts.
 
 Add coverage as components stabilize (ticket card, polaroid, profile sections, …).
 
-## Widgetbook reference slice
+## Widgetbook corpus
 
-The separate Widgetbook package executes ten existing L2/L3 catalog cases
-through `widgetbook_golden_test_core`'s generated-directory traversal and a
-Catch renderer adapter. Their state declarations remain in
-`widgetbook/lib/primitives/core_catalog_use_cases.dart`. The shared catalog
-frame and knob scope live in `widgetbook/lib/support/widgetbook_harness.dart`.
+The separate Widgetbook package executes 249 designated `core/widgets` use
+cases through `widgetbook_golden_test_core`'s generated-directory traversal
+and a thin Catch renderer adapter. All designated cases render in light and
+dark; 217 text-bearing L2-L4 cases also render at text scale 2.0. The 944
+reviewed images live under `test/goldens/baseline/widgetbook/`. The original
+ten reference filenames remain stable, while the rest use deterministic
+source-derived ids. State declarations remain in Widgetbook source. Shared
+catalog, device, sheet, provider, and case scopes live in
+`widgetbook/lib/support/widgetbook_harness.dart`.
 
 ```bash
 cd widgetbook
@@ -46,11 +53,14 @@ flutter test test/primitive_goldens_test.dart
 flutter test test/primitive_goldens_test.dart # consecutive determinism check
 ```
 
-These tests reuse `matchCatchGolden`, `loadCatchTestFonts`, and the unchanged
-0.30% comparator. Images live in `test/goldens/baseline/widgetbook/` in the
-app package: light/dark for all ten cases and a 2.0 text-scale pair for
-`CatchMonoLabel`. Run the same command with `--update-goldens` to regenerate
-and review these images. Gate registration belongs to Phase 1 proper.
+These tests reuse `matchCatchGolden`, `loadCatchTestFonts`, and
+`CatchGoldenFileComparator` with the reviewed Widgetbook-only 0.60% tolerance.
+Run the same command with `--update-goldens` to regenerate and review the
+images. CI runs the corpus twice sequentially as a determinism check.
+
+From the repository root, `node tool/run.mjs check design:golden-coverage`
+compares public `Catch*` classes with designated golden ids and validates the
+small owner/expiry waiver file.
 
 From the repository root, run
 `node tool/design/classify_widgetbook_use_cases.mjs --json` for on-demand
@@ -109,5 +119,5 @@ visual change pass. Treat a golden diff as "review the change," not "auto-fail"
 
 Do not run these PNG goldens in the default Ubuntu Flutter CI job. Run
 `flutter test test/goldens` on the pinned platform alongside visual-review gates
-(see `docs/release_operations.md`). A diff above the checked 0.30% tolerance
+(see `docs/release_operations.md`). A diff above the suite's checked tolerance
 means a reviewer must confirm the visual change and regenerate baselines.

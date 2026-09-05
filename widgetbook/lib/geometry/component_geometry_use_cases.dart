@@ -677,6 +677,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Compact route',
         child: CatchTopBar(
           title: 'Event details',
+          allowContentHeightExpansion: true,
           leadingType: CatchTopBarLeading.back,
           onBack: _noop,
         ),
@@ -688,6 +689,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
           kicker: 'HOST MODE',
           title: 'Upcoming events',
           subtitle: 'Review requests and keep the room balanced.',
+          allowContentHeightExpansion: true,
         ),
       ),
       _topBarSpecimen(
@@ -695,6 +697,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Identity and overflow',
         child: CatchTopBar.identity(
           identityName: 'Taylor from Sunday Social',
+          allowContentHeightExpansion: true,
           identityPhotoUrl: null,
           onIdentityTap: _noop,
           surface: true,
@@ -722,6 +725,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
             'Use the search action to inspect the in-place width morph and title fade.',
         child: CatchTopBar(
           title: 'Explore',
+          allowContentHeightExpansion: true,
           search: CatchTopBarSearch(
             value: '',
             placeholder: 'Search events and organizers',

@@ -225,7 +225,48 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
   }
 }
 
-void main() {
+// Keep the pre-extraction denominator literal: every public Catch* class,
+// including descriptors, controllers and generated provider types. A class
+// without a visual surface must receive an explicit coverage disposition.
+List<Map<String, Object?>> _coreSurface() {
+  final files =
+      Directory('lib/core/widgets')
+          .listSync(recursive: true)
+          .whereType<File>()
+          .map((file) => file.path)
+          .where((path) => path.endsWith('.dart'))
+          .toList()
+        ..sort();
+  return [
+    for (final file in files)
+      for (final node in _unit(file).declarations.whereType<ClassDeclaration>())
+        if (node.namePart.typeName.lexeme.startsWith('Catch'))
+          {
+            'name': node.namePart.typeName.lexeme,
+            'file': file,
+            'line': _unit(file).lineInfo.getLocation(node.offset).lineNumber,
+            'base': node.extendsClause?.superclass.toSource(),
+            'interfaces': [
+              for (final type
+                  in node.implementsClause?.interfaces ?? <NamedType>[])
+                type.toSource(),
+            ],
+            'generated': file.endsWith('.g.dart'),
+          },
+  ];
+}
+
+Map<String, Object?> readWidgetbookInventory({String repoRoot = '.'}) {
+  final originalDirectory = Directory.current;
+  Directory.current = Directory(repoRoot).absolute;
+  try {
+    return _readWidgetbookInventory();
+  } finally {
+    Directory.current = originalDirectory;
+  }
+}
+
+Map<String, Object?> _readWidgetbookInventory() {
   final files =
       Directory('widgetbook/lib')
           .listSync(recursive: true)
@@ -270,19 +311,20 @@ void main() {
         directive.uri.stringValue,
       ),
   };
-  stdout.writeln(
-    jsonEncode({
-      'cases': cases,
-      'generated': [
-        for (final entry in generated.cases)
-          {
-            'name': entry['name'],
-            'type': entry['type'],
-            'path': entry['path'],
-            'file': imports[(entry['builder'] as String).split('.').first],
-            'builder': (entry['builder'] as String).split('.').last,
-          },
-      ],
-    }),
-  );
+  return {
+    'coreSurface': _coreSurface(),
+    'cases': cases,
+    'generated': [
+      for (final entry in generated.cases)
+        {
+          'name': entry['name'],
+          'type': entry['type'],
+          'path': entry['path'],
+          'file': imports[(entry['builder'] as String).split('.').first],
+          'builder': (entry['builder'] as String).split('.').last,
+        },
+    ],
+  };
 }
+
+void main() => stdout.writeln(jsonEncode(readWidgetbookInventory()));

@@ -6,7 +6,7 @@ on:
 
 jobs:
   visual-and-integration:
-    name: macOS goldens, headless integration & native smoke
+    name: macOS goldens, Widgetbook corpus & native smoke
     runs-on: macos-26
     timeout-minutes: 60
 
@@ -19,8 +19,27 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Resolve Widgetbook dependencies
+        run: (cd widgetbook && flutter pub get)
+
+      - name: Widgetbook corpus contract gates
+        run: >-
+          node tool/run.mjs check
+          design:widgetbook-use-case-triage
+          design:golden-coverage
+
       - name: Flutter goldens (0.30% raster tolerance)
         run: flutter test --concurrency=1 test/goldens
+
+      - name: Widgetbook corpus goldens (pass 1)
+        run: >-
+          (cd widgetbook &&
+          flutter test --concurrency=1 test/primitive_goldens_test.dart)
+
+      - name: Widgetbook corpus goldens (pass 2, determinism)
+        run: >-
+          (cd widgetbook &&
+          flutter test --concurrency=1 test/primitive_goldens_test.dart)
 
       - name: Deterministic app-shell integration suites
         run: bash tool/test_app_shell_integration.sh

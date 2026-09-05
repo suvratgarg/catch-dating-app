@@ -4679,10 +4679,14 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "role": "gate",
-      "rules": ["UI-LINT-001"],
+      "rules": [
+        "UI-LINT-001"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/design/test/platform_token_coverage.test.mjs",
@@ -4710,13 +4714,19 @@
       "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "flutter", "flutter-pub"]
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
       },
       "checks": [
         "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart"
       ],
       "role": "gate",
-      "rules": ["UI-LINT-001"],
+      "rules": [
+        "UI-LINT-001"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "test/core/widgets/platform_control_targets_test.dart",
@@ -5255,15 +5265,85 @@
       "id": "design:widgetbook-use-case-triage",
       "category": "design",
       "path": "tool/design/classify_widgetbook_use_cases.mjs",
+      "impactPaths": [
+        "widgetbook/test/support/screen_scope_dispositions.json",
+        "widgetbook/test/support/triage_inventory.dart",
+        "widgetbook/lib/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "command": "node tool/design/classify_widgetbook_use_cases.mjs",
-      "safety": "local",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Classifies registered Widgetbook use cases on demand across production component, body, screen and explicitly marked prototype mounts.",
+      "description": "Classifies every registered Widgetbook use case into four catalog roles and requires an authored disposition for every screen-scope case.",
       "checks": [
         "node --check tool/design/classify_widgetbook_use_cases.mjs",
-        "node tool/design/classify_widgetbook_use_cases.mjs --self-test"
+        "node tool/design/classify_widgetbook_use_cases.mjs --self-test",
+        "node tool/design/classify_widgetbook_use_cases.mjs --check"
       ],
-      "role": "finder"
+      "role": "gate",
+      "rules": [
+        "WIDGET-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/classify_widgetbook_use_cases.mjs",
+        "contains": [
+          "Widgetbook-defined composition lacks explicit proposed marker",
+          "Duplicate registered id",
+          "screen-scope disposition requires an owner",
+          "expected exactly one screen-scope disposition"
+        ]
+      }
+    },
+    {
+      "id": "design:golden-coverage",
+      "category": "design",
+      "path": "tool/design/check_widgetbook_golden_coverage.mjs",
+      "impactPaths": [
+        "tool/design/check_widgetbook_golden_coverage.test.mjs",
+        "widgetbook/test/support/golden_coverage_waivers.json",
+        "widgetbook/test/support/triage_inventory.dart",
+        "widgetbook/lib/**",
+        "lib/core/widgets/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
+      "command": "node tool/design/check_widgetbook_golden_coverage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Requires every public Catch* class under lib/core/widgets to map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with at most 20 waivers.",
+      "checks": [
+        "node --check tool/design/check_widgetbook_golden_coverage.mjs",
+        "node --test tool/design/check_widgetbook_golden_coverage.test.mjs",
+        "node tool/design/check_widgetbook_golden_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "WIDGET-CATALOG-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_widgetbook_golden_coverage.test.mjs",
+        "contains": [
+          "fails when a public core class loses every registered golden id",
+          "rejects expired, ownerless, vague and stale waivers",
+          "rejects waiver counts above the Phase 1 ceiling",
+          "keeps generated public Catch classes in the denominator"
+        ]
+      }
     },
     {
       "id": "design:widgetbook-contract-refs",

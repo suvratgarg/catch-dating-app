@@ -37,6 +37,36 @@ void main() {
       );
     },
   );
+
+  test('supports a separately reviewed corpus tolerance', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'catch-widgetbook-golden-comparator-',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+
+    await File(
+      '${directory.path}/baseline.png',
+    ).writeAsBytes(_pngWithChangedPixels(0));
+    final comparator = CatchGoldenFileComparator(
+      directory.uri.resolve('comparator_test.dart'),
+      precisionTolerance: 0.006,
+    );
+
+    // Two of 400 pixels differ: 0.50%, inside the reviewed corpus allowance.
+    expect(
+      await comparator.compare(
+        _pngWithChangedPixels(2),
+        Uri.parse('baseline.png'),
+      ),
+      isTrue,
+    );
+
+    // Three of 400 pixels differ: 0.75%, still rejected.
+    await expectLater(
+      comparator.compare(_pngWithChangedPixels(3), Uri.parse('baseline.png')),
+      throwsA(isA<FlutterError>()),
+    );
+  });
 }
 
 Uint8List _pngWithChangedPixels(int count) {

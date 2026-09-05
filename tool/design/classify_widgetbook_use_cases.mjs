@@ -6,7 +6,12 @@ import {fileURLToPath} from "node:url";
 import path from "node:path";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
+const dispositionPath = path.join(
+  root,
+  "widgetbook/test/support/screen_scope_dispositions.json",
+);
 export const classes = ["component-mount", "body-mount", "screen-scope", "prototype"];
+export const dispositions = ["migrate-to-ui-capture", "keep-widgetbook"];
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const key = (row) => [row.file, row.builder, simpleType(row.type), row.name].join(":");
 const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
@@ -106,6 +111,105 @@ export function triage(inventory, routeTargets = new Set()) {
   };
 }
 
+export function applyScreenScopeDispositions(result, policy) {
+  const failures = [...result.failures];
+  const allowedSelectorKeys = new Set([
+    "annotatedTypePattern",
+    "annotatedTypeExcludesPattern",
+  ]);
+  if (policy?.schemaVersion !== 1) {
+    failures.push("Screen-scope disposition policy must use schemaVersion 1");
+  }
+  const seenIds = new Set();
+  const rules = (policy?.rules ?? []).map((rule) => {
+    if (!rule.id || seenIds.has(rule.id)) {
+      failures.push(`Invalid or duplicate screen-scope disposition rule id: ${rule.id ?? "(missing)"}`);
+    }
+    seenIds.add(rule.id);
+    if (!(rule.owner ?? "").trim()) {
+      failures.push(`${rule.id}: screen-scope disposition requires an owner`);
+    }
+    if ((rule.reason ?? "").trim().length < 40) {
+      failures.push(`${rule.id}: screen-scope disposition requires a specific reason`);
+    }
+    if (!dispositions.includes(rule.disposition)) {
+      failures.push(`${rule.id}: unknown screen-scope disposition ${rule.disposition}`);
+    }
+    if (rule.disposition === "migrate-to-ui-capture" &&
+        (rule.replacementGate ?? "").trim().length < 20) {
+      failures.push(`${rule.id}: capture migration requires a replacement gate`);
+    }
+    const selector = rule.selector ?? {};
+    const selectorKeys = Object.keys(selector);
+    if (selectorKeys.length === 0 ||
+        selectorKeys.some((name) => !allowedSelectorKeys.has(name))) {
+      failures.push(`${rule.id}: invalid screen-scope disposition selector`);
+    }
+    let include = null;
+    let exclude = null;
+    try {
+      if (selector.annotatedTypePattern) {
+        include = new RegExp(selector.annotatedTypePattern, "u");
+      }
+      if (selector.annotatedTypeExcludesPattern) {
+        exclude = new RegExp(selector.annotatedTypeExcludesPattern, "u");
+      }
+    } catch (error) {
+      failures.push(`${rule.id}: invalid selector regular expression: ${error.message}`);
+    }
+    return {
+      ...rule,
+      matches(row) {
+        const type = simpleType(row.type);
+        return (!include || include.test(type)) && (!exclude || !exclude.test(type));
+      },
+    };
+  });
+
+  const usage = new Map(rules.map((rule) => [rule.id, 0]));
+  const cases = result.cases.map((row) => {
+    if (row.classification !== "screen-scope") return row;
+    const matchingRules = rules.filter((rule) => rule.matches(row));
+    if (matchingRules.length !== 1) {
+      failures.push(
+        `${row.id}: expected exactly one screen-scope disposition; found ${matchingRules.length}`,
+      );
+      return {...row, screenScopeDisposition: null};
+    }
+    const rule = matchingRules[0];
+    usage.set(rule.id, usage.get(rule.id) + 1);
+    return {
+      ...row,
+      screenScopeDisposition: {
+        ruleId: rule.id,
+        owner: rule.owner,
+        disposition: rule.disposition,
+        reason: rule.reason,
+        replacementGate: rule.replacementGate ?? null,
+      },
+    };
+  });
+  for (const [ruleId, count] of usage) {
+    if (count === 0) failures.push(`${ruleId}: unused screen-scope disposition rule`);
+  }
+  const screenRows = cases.filter((row) => row.classification === "screen-scope");
+  const dispositionCounts = Object.fromEntries(dispositions.map((name) => [
+    name,
+    screenRows.filter(
+      (row) => row.screenScopeDisposition?.disposition === name,
+    ).length,
+  ]));
+  return {
+    ...result,
+    failures,
+    cases,
+    screenScopeDispositionCounts: dispositionCounts,
+    undispositionedScreenScopes: screenRows.filter(
+      (row) => row.screenScopeDisposition == null,
+    ).length,
+  };
+}
+
 function selfTest() {
   const component = {
     file: "widgetbook/lib/primitives/sample.dart", builder: "sample",
@@ -142,7 +246,37 @@ function selfTest() {
   assert.equal(stacked.unregisteredAnnotationCount, 1);
   assert.equal(stacked.annotationCounts["component-mount"], 2);
   assert.deepEqual(stacked.failures, []);
-  console.log("Widgetbook triage probes passed (four classes, prototype marker/exclusion, missing/duplicate registrations, stacked metadata).");
+  const screen = {...body, wrappers: ["ProviderScope"]};
+  const screenResult = triage({
+    cases: [screen],
+    generated: [{...screen, path: "Feature/ExampleBody"}],
+  });
+  const dispositionPolicy = {
+    schemaVersion: 1,
+    rules: [{
+      id: "provider-fixtures",
+      owner: "test-owner",
+      selector: {annotatedTypeExcludesPattern: "Screen$"},
+      disposition: "keep-widgetbook",
+      reason: "Keep deterministic provider edge states in the component catalog.",
+    }],
+  };
+  const dispositioned = applyScreenScopeDispositions(
+    screenResult,
+    dispositionPolicy,
+  );
+  assert.equal(dispositioned.undispositionedScreenScopes, 0);
+  assert.equal(dispositioned.screenScopeDispositionCounts["keep-widgetbook"], 1);
+  assert.deepEqual(dispositioned.failures, []);
+  const missingDisposition = applyScreenScopeDispositions(screenResult, {
+    schemaVersion: 1,
+    rules: [{
+      ...dispositionPolicy.rules[0],
+      selector: {annotatedTypePattern: "Screen$"},
+    }],
+  });
+  assert.ok(missingDisposition.failures.length);
+  console.log("Widgetbook triage probes passed (four classes, prototype marker/exclusion, screen dispositions, missing/duplicate registrations, stacked metadata).");
 }
 
 function main(args) {
@@ -158,12 +292,20 @@ function main(args) {
   if (parsed.status !== 0) throw Error(parsed.stderr || parsed.error?.message || "Dart inventory failed");
   const routes = JSON.parse(fs.readFileSync(path.join(root, "tool/ui_capture/route_inventory.json"), "utf8"));
   const targets = new Set(routes.routes.map((route) => route.presentationTarget).filter(Boolean));
-  const result = triage(JSON.parse(parsed.stdout), targets);
+  const policy = JSON.parse(fs.readFileSync(dispositionPath, "utf8"));
+  const result = applyScreenScopeDispositions(
+    triage(JSON.parse(parsed.stdout), targets),
+    policy,
+  );
   if (args.includes("--json")) console.log(JSON.stringify(result, null, 2));
   else {
     console.log(`Registered Widgetbook cases: ${result.registeredCount}`);
     for (const name of classes) console.log(`${name}: ${result.counts[name]}`);
     console.log(`Unclassified: ${result.unclassified}; unclassified annotations: ${result.unclassifiedAnnotations}`);
+    for (const name of dispositions) {
+      console.log(`screen-scope ${name}: ${result.screenScopeDispositionCounts[name]}`);
+    }
+    console.log(`Undispositioned screen-scope cases: ${result.undispositionedScreenScopes}`);
     console.log(`Annotation occurrences: ${result.annotationCount}; stacked annotations not emitted by generator: ${result.unregisteredAnnotationCount} (included in --json)`);
     for (const failure of result.failures) console.error(failure);
   }

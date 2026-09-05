@@ -18,6 +18,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   }
   goldenFileComparator = CatchGoldenFileComparator(
     Uri.file('${workspace.parent.path}/test/goldens/flutter_test_config.dart'),
+    // The expanded text-heavy corpus measured 0.5188% edge-only variance
+    // between macOS 27 authoring and the macOS 26 arm64 hosted runner.
+    precisionTolerance: 0.006,
   );
   await testMain();
 }

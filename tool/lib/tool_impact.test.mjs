@@ -80,7 +80,11 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   });
   assert.equal(widgetbookPlan.mode, "affected");
   assert.equal(widgetbookPlan.repositoryView, "full");
-  assert.deepEqual(widgetbookPlan.setupRequirements, ["node"]);
+  assert.deepEqual(widgetbookPlan.setupRequirements, [
+    "node",
+    "flutter",
+    "flutter-pub",
+  ]);
   assert.ok(widgetbookPlan.toolIds.includes("design:widget-variant-inventory"));
 
   const finderPlan = planAffectedToolChecks({
