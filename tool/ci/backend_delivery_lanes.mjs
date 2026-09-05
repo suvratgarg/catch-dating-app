@@ -247,6 +247,7 @@ function validateProvenance(provenance, receipt) {
 }
 export async function verifyDevCompletionArtifact({context, artifactId, artifactDigest, request = githubRequest, decodeArchive = readSingleJsonArchive}) {
   validateContext(context);
+  number(context.deliveryWorkflowId, "Delivery workflow id");
   number(artifactId, "dev completion artifact id");
   assert.match(artifactDigest ?? "", githubDigestPattern);
   const root = `repos/${context.repository}`;
@@ -267,6 +268,7 @@ export async function verifyDevCompletionArtifact({context, artifactId, artifact
     request(`${root}/actions/artifacts/${completion.authorityArtifact.id}/zip`, {binary: true}),
   ]);
   runIdentity(producer, context, {runId: completion.deliveryRunId, attempt: completion.deliveryRunAttempt}, "Delivery", ".github/workflows/delivery.yml");
+  assert.equal(producer.workflow_id, context.deliveryWorkflowId, "Dev proof belongs to a different Delivery workflow generation.");
   assert.ok(["workflow_run", "repository_dispatch", "workflow_dispatch"].includes(producer.event), "Untrusted Delivery producer event.");
   runIdentity(source, context, {runId: completion.sourceCiRunId, attempt: completion.sourceCiRunAttempt}, "CI", ".github/workflows/ci.yml");
   assert.equal(source.workflow_id, completion.sourceCiWorkflowId);
@@ -308,7 +310,7 @@ export function validateProductionCursor(cursor, context) {
   id(cursor.deliveryRunAttempt, "production Delivery attempt");
   return cursor;
 }
-export function cutoverBlockers({context, deliveryRuns, rebaselineRuns}) {
+export function cutoverBlockers({context, deliveryRuns, rebaselineRuns, modernProductionRunIds = new Set()}) {
   validateContext(context, {activeRun: true});
   const blockers = [];
   for (const [kind, runs] of [["Delivery", deliveryRuns], ["Backend Rebaseline", rebaselineRuns]]) {
@@ -318,16 +320,55 @@ export function cutoverBlockers({context, deliveryRuns, rebaselineRuns}) {
       if (kind === "Delivery") {
         assert.equal(run.workflow_id, context.deliveryWorkflowId, "Unexpected Delivery workflow generation in cutover fence.");
         number(run.run_number, "historical Delivery run number");
-        if (run.run_number >= context.deliveryRunNumber) continue;
+        if (run.run_number >= context.deliveryRunNumber || modernProductionRunIds.has(String(run.id))) continue;
       }
       blockers.push({kind, runId: String(run.id), runAttempt: run.run_attempt, status: run.status});
     }
   }
   return blockers;
 }
+export async function verifiedModernProductionRuns({context, runs, request = githubRequest}) {
+  const verified = new Set();
+  const definitions = new Map();
+  for (const run of runs) {
+    if (run.status === "completed" || run.run_number >= context.deliveryRunNumber ||
+        run.head_branch !== "main" || run.head_repository?.id !== context.repositoryId ||
+        run.display_title !== "Delivery lane v1 prod") continue;
+    const exact = await request(`repos/${context.repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
+    runIdentity(exact, context, {runId: String(run.id), attempt: String(run.run_attempt)}, "Delivery", ".github/workflows/delivery.yml");
+    assert.equal(exact.workflow_id, context.deliveryWorkflowId);
+    assert.equal(exact.run_number, run.run_number);
+    if (exact.status === "completed") { verified.add(String(run.id)); continue; }
+    if (exact.display_title !== "Delivery lane v1 prod") continue;
+    const references = (exact.referenced_workflows ?? []).filter((item) =>
+      shaPattern.test(item.sha ?? "") && item.ref === "refs/heads/main" &&
+      item.path === `${context.repository}/.github/workflows/_firebase-promote.yml@${item.sha}`);
+    if (references.length !== 1) continue;
+    const revision = references[0].sha;
+    if (!definitions.has(revision)) {
+      const file = await request(`repos/${context.repository}/contents/.github/workflows/delivery.yml?ref=${revision}`);
+      assert.equal(file.path, ".github/workflows/delivery.yml");
+      assert.equal(file.encoding, "base64");
+      const definition = Buffer.from(file.content, "base64").toString("utf8");
+      definitions.set(revision, definition.includes("# catch.backend-delivery-lanes/v1\n") &&
+        definition.includes("run-name: Delivery lane v1 ") &&
+        definition.includes("'dev' && 'backend-delivery-dev' || 'backend-delivery'") &&
+        definition.includes("backend_delivery_lanes.mjs select-prod"));
+    }
+    if (definitions.get(revision)) verified.add(String(run.id));
+  }
+  return verified;
+}
+
 function runsFromPages(pages) {
   assert.ok(Array.isArray(pages) && pages.length > 0 && pages.every((page) => Array.isArray(page.workflow_runs)), "Missing workflow run catalogue.");
   return pages.flatMap((page) => page.workflow_runs);
+}
+function productionCursorCatalogue(catalogue, context) {
+  return artifactCatalogue(catalogue).filter((artifact) => artifact.expired === false &&
+    sameRepository(artifact.workflow_run, context) && artifact.workflow_run.head_branch === "main" &&
+    artifact.name?.startsWith("backend-delivery-cursor-"))
+    .map(({id, name, digest, workflow_run}) => ({id, name, digest, producerRunId: workflow_run.id})).sort((a, b) => a.id - b.id);
 }
 export async function resolveLaneCursor({context, catalogue, productionCursor, request = githubRequest, verify = verifyDevCompletionArtifact}) {
   validateContext(context, {activeRun: true});
@@ -347,7 +388,18 @@ export async function resolveLaneCursor({context, catalogue, productionCursor, r
       request(`${root}/${context.deliveryWorkflowId}/runs?branch=main&per_page=100`, {paginate: true}),
       request(`${root}/backend-rebaseline.yml/runs?branch=main&per_page=100`, {paginate: true}),
     ]);
-    blockers = cutoverBlockers({context, deliveryRuns: runsFromPages(delivery), rebaselineRuns: runsFromPages(rebaseline)});
+    const deliveryRuns = runsFromPages(delivery);
+    const modernProductionRunIds = await verifiedModernProductionRuns({context, runs: deliveryRuns, request});
+    blockers = cutoverBlockers({context, deliveryRuns, rebaselineRuns: runsFromPages(rebaseline), modernProductionRunIds});
+    if (blockers.length === 0) {
+      // A legacy snapshot may have finalized between the original cursor read
+      // and the now-clear fence. Start a new independently verified selection;
+      // never deploy from the stale base or trust the new catalogue as proof.
+      const fresh = await request(`repos/${context.repository}/actions/artifacts?per_page=100`, {paginate: true});
+      if (JSON.stringify(productionCursorCatalogue(fresh, context)) !== JSON.stringify(productionCursorCatalogue(catalogue, context))) {
+        return {cursor: prod, waiting: true, refreshRequired: true, blockers: []};
+      }
+    }
   }
   if (dev && prod && dev.sourceCiRunNumber === prod.sourceCiRunNumber) {
     assert.equal(dev.sourceCiRunId, prod.sourceCiRunId, "Dev/prod source ordering conflict.");
@@ -384,7 +436,15 @@ export async function selectProductionSource({context, catalogue, sourceCandidat
   assert.equal(new Set(candidates.map((candidate) => `${candidate.sourceCiRunId}:${candidate.sourceSha}`)).size, 1, "Ambiguous oldest CI authority.");
   const matching = receipts.filter((receipt) => receipt.sourceCiRunNumber === oldest &&
     receipt.sourceCiRunId === candidates[0].sourceCiRunId && receipt.sourceSha === candidates[0].sourceSha);
-  if (!matching.length) return {...empty, waiting: true};
+  if (!matching.length) {
+    const later = receipts.filter((receipt) => receipt.sourceCiRunNumber >= oldest)
+      .sort((a, b) => b.sourceCiRunNumber - a.sourceCiRunNumber)[0];
+    if (later) {
+      await verify({context, artifactId: later.artifactId, artifactDigest: later.artifactDigest, request});
+      throw new Error("Dev has reached this source or later but its exact completion receipt is missing or expired; refusing to skip or dispatch an endless retry.");
+    }
+    return {...empty, waiting: true};
+  }
   assert.equal(new Set(matching.map((receipt) => receipt.sourceCiRunAttempt)).size, 1, "Multiple dev-completed CI attempts claim one source; explicit review required.");
   const candidate = matching.sort((a, b) => Number(b.deliveryRunId) - Number(a.deliveryRunId))[0];
   const source = candidates.find((item) => item.sourceCiRunAttempt === candidate.sourceCiRunAttempt);
@@ -466,7 +526,7 @@ export async function executeCli(argv, {request = githubRequest} = {}) {
   let result, outputs = {};
   if (command === "resolve") {
     result = await resolveLaneCursor({context, catalogue: read(options.catalog), productionCursor: read(options["prod-cursor"]), request});
-    outputs = {has_cursor: result.cursor !== null, source_ci_run_number: result.cursor?.sourceCiRunNumber ?? "", source_sha: result.cursor?.sourceSha ?? "", source_ci_workflow_id: context.sourceCiWorkflowId, waiting: result.waiting};
+    outputs = {has_cursor: result.cursor !== null, source_ci_run_number: result.cursor?.sourceCiRunNumber ?? "", source_sha: result.cursor?.sourceSha ?? "", source_ci_workflow_id: context.sourceCiWorkflowId, waiting: result.waiting, refresh_required: result.refreshRequired === true};
   } else if (command === "select-prod") {
     result = await selectProductionSource({context, catalogue: read(options.catalog), sourceCandidates: read(options.candidates), productionCursor: read(options["prod-cursor"]), request});
     outputs = {waiting: result.waiting, dev_completion_artifact_id: result.devCompletionArtifact?.id ?? "", dev_completion_artifact_digest: result.devCompletionArtifact?.digest ?? ""};

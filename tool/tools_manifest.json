@@ -570,7 +570,8 @@
         "functions/scripts/set-callable-invokers-public.cjs",
         "functions/test/callable-invokers.test.cjs",
         ".github/workflows/backend-staging.yml",
-        ".github/workflows/backend-rebaseline.yml"
+        ".github/workflows/backend-rebaseline.yml",
+        ".github/workflows/_backend-rebaseline.yml"
       ],
       "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-protected-prod with an independent monthly staging snapshot, and recovery is source-bound.",
       "checks": [
@@ -590,8 +591,40 @@
         ]
       },
       "alsoCheckIds": [
-        "ci:backend-source-review"
+        "ci:backend-source-review",
+        "ci:backend-delivery-lanes"
       ]
+    },
+    {
+      "id": "ci:backend-delivery-lanes",
+      "category": "ci",
+      "path": "tool/ci/backend_delivery_lanes.mjs",
+      "command": "node --test tool/ci/backend_delivery_lanes.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/backend_delivery_lanes.test.mjs",
+        ".github/workflows/delivery.yml",
+        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/backend-rebaseline.yml",
+        ".github/workflows/_backend-rebaseline.yml"
+      ],
+      "description": "Verifies independently ordered dev and production progress, exact completed-dev package identity, bootstrap and legacy cutover without weakening immutable delivery authority.",
+      "checks": [
+        "node --check tool/ci/backend_delivery_lanes.mjs",
+        "node --test tool/ci/backend_delivery_lanes.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/backend_delivery_lanes.test.mjs"
+      }
     },
     {
       "id": "ci:web-hosting-delivery-package",

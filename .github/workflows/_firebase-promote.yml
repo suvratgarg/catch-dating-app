@@ -12,6 +12,16 @@ on:
         required: false
         default: ""
         type: string
+      dev_completion_artifact_id:
+        description: Exact completed-dev receipt required for ordinary production delivery.
+        required: false
+        default: ""
+        type: string
+      dev_completion_artifact_digest:
+        description: GitHub SHA-256 archive digest of the exact completed-dev receipt.
+        required: false
+        default: ""
+        type: string
       base_sha:
         description: Exact base SHA recorded by the trusted CI impact plan.
         required: true
@@ -196,6 +206,51 @@ jobs:
           echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
           echo "checkpoint_scope=firebase:${DEPLOY_ENVIRONMENT}:${project_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Independently verify exact dev completion before production authentication
+        if: ${{ inputs.environment == 'prod' && endsWith(github.workflow_ref, '/.github/workflows/delivery.yml@refs/heads/main') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEV_COMPLETION_ARTIFACT_ID: ${{ inputs.dev_completion_artifact_id }}
+          DEV_COMPLETION_ARTIFACT_DIGEST: ${{ inputs.dev_completion_artifact_digest }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
+          SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
+          BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$DEV_COMPLETION_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$DEV_COMPLETION_ARTIFACT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          current_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")"
+          source_run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID/attempts/$SOURCE_CI_RUN_ATTEMPT")"
+          jq -n \
+            --arg environment prod \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson repositoryId "$GITHUB_REPOSITORY_ID" \
+            --argjson sourceCiWorkflowId "$(jq -er '.workflow_id' <<< "$source_run")" \
+            --argjson deliveryWorkflowId "$(jq -er '.workflow_id' <<< "$current_run")" \
+            --arg deliveryRunId "$GITHUB_RUN_ID" \
+            --arg deliveryRunAttempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson deliveryRunNumber "$GITHUB_RUN_NUMBER" \
+            '{environment: $environment, repository: $repository, repositoryId: $repositoryId,
+              sourceCiWorkflowId: $sourceCiWorkflowId, deliveryWorkflowId: $deliveryWorkflowId,
+              deliveryRunId: $deliveryRunId, deliveryRunAttempt: $deliveryRunAttempt,
+              deliveryRunNumber: $deliveryRunNumber}' > build/delivery/lane-context.json
+          node tool/ci/backend_delivery_lanes.mjs verify-artifact \
+            --context build/delivery/lane-context.json \
+            --artifact-id "$DEV_COMPLETION_ARTIFACT_ID" \
+            --artifact-digest "$DEV_COMPLETION_ARTIFACT_DIGEST" \
+            --output build/delivery/dev-completion.json
+          node tool/ci/backend_delivery_lanes.mjs verify-package \
+            --context build/delivery/lane-context.json \
+            --receipt build/delivery/dev-completion.json \
+            --source-sha "$SOURCE_SHA" \
+            --ci-run-id "$SOURCE_CI_RUN_ID" \
+            --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
+            --base-sha "$BASE_SHA" \
+            --package build/delivery/source/firebase-backend.tar.gz \
+            --provenance build/delivery/source/firebase-provenance.json \
+            --output build/delivery/verified-dev-package.json
 
       - name: Recompute automatic production eligibility before authentication
         if: ${{ inputs.approval_environment == 'prod-backend' }}

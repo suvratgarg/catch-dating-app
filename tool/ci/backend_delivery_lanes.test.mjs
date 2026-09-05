@@ -8,7 +8,7 @@ import {
   AUTHORIZATION_JOB, DEV_COMPLETION_FILE, DEV_PROMOTION_JOB,
   artifactCatalogue, completionArtifactName, completionCandidates, cutoverBlockers,
   executeCli, prepareDevCompletion, readSingleJsonArchive, resolveLaneCursor,
-  selectProductionSource, validateDevCompletion, verifyCompletedPackage, verifyDevCompletionArtifact,
+  selectProductionSource, validateDevCompletion, verifyCompletedPackage, verifyDevCompletionArtifact, verifiedModernProductionRuns,
 } from "./backend_delivery_lanes.mjs";
 
 const sha = (letter) => letter.repeat(40);
@@ -89,6 +89,7 @@ function fixture({noop = false, bootstrap = false, runNumber = 20, attempt = "1"
     [`${root}/actions/runs/${deliveryId}/attempts/1`, producer],
     [`${root}/actions/runs/${deliveryId}/attempts/1/jobs?per_page=100`, [{jobs}]],
     [`${root}/actions/runs/${sourceRunId}/attempts/${attempt}`, sourceRun],
+    [`${root}/actions/artifacts?per_page=100`, [{artifacts: []}]],
     [`${root}/actions/workflows/88/runs?branch=main&per_page=100`, [{workflow_runs: []}]],
     [`${root}/actions/workflows/backend-rebaseline.yml/runs?branch=main&per_page=100`, [{workflow_runs: []}]],
   ]);
@@ -255,16 +256,59 @@ test("production pins the completed dev attempt when a newer successful CI attem
   await assert.rejects(selectProductionSource({...options, sourceCandidates: [newer]}), /Exact dev-completed CI attempt/);
 });
 
-test("production waits for oldest dev proof and never skips ahead to a completed later source", async () => {
+test("production waits only while dev is behind and rejects missing intermediate completion evidence", async () => {
   const f = fixture({runNumber: 21, sourceSha: sha("c"), baseSha: sha("b")});
   const earlier = fixture().source;
-  const result = await selectProductionSource({context: prodContext, catalogue: f.catalogue, productionCursor: prodCursor,
-    sourceCandidates: [f.source, earlier], request: f.request});
-  assert.equal(result.waiting, true);
-  assert.equal(result.sourceCandidate, null);
+  const options = {context: prodContext, catalogue: f.catalogue, productionCursor: prodCursor,
+    sourceCandidates: [f.source, earlier], request: f.request};
+  const waiting = await selectProductionSource({...options, catalogue: [{artifacts: []}]});
+  assert.equal(waiting.waiting, true);
+  assert.equal(waiting.sourceCandidate, null);
   assert.equal(f.calls.length, 0);
-  await assert.rejects(selectProductionSource({context: prodContext, catalogue: f.catalogue, productionCursor: prodCursor,
-    sourceCandidates: [f.source], request: f.request}), /does not continue/);
+  await assert.rejects(selectProductionSource(options), /exact completion receipt is missing or expired/);
+  assert.ok(f.calls.includes(`repos/owner/catch/actions/artifacts/${f.artifact.id}/zip`), "Later proof is verified before declaring missing history.");
+  await assert.rejects(selectProductionSource({...options, sourceCandidates: [f.source]}), /does not continue/);
+});
+
+test("a modern production waiter releases initial dev only after verifying its pinned control plane", async () => {
+  const f = fixture();
+  const row = {...f.producer, id: 899, run_number: 99, display_title: "Delivery lane v1 prod"};
+  const revision = sha("e");
+  const reference = {path: `owner/catch/.github/workflows/_firebase-promote.yml@${revision}`, sha: revision, ref: "refs/heads/main"};
+  const exact = {...row, referenced_workflows: [reference]};
+  const endpoint = "repos/owner/catch/actions/runs/899/attempts/1";
+  const fileEndpoint = `repos/owner/catch/contents/.github/workflows/delivery.yml?ref=${revision}`;
+  const actualWorkflow = fs.readFileSync(new URL("../../.github/workflows/delivery.yml", import.meta.url), "utf8");
+  const definition = (content) => ({path: ".github/workflows/delivery.yml", encoding: "base64", content: Buffer.from(content).toString("base64")});
+  f.answers.set(endpoint, exact);
+  f.answers.set(fileEndpoint, definition(actualWorkflow));
+  const options = {context, runs: [row], request: f.request};
+  assert.deepEqual(await verifiedModernProductionRuns(options), new Set(["899"]));
+  f.answers.set("repos/owner/catch/actions/workflows/88/runs?branch=main&per_page=100", [{workflow_runs: [row]}]);
+  const resolution = await resolveLaneCursor({context, catalogue: [{artifacts: []}], productionCursor: prodCursor, request: f.request});
+  assert.equal(resolution.waiting, false, "A production worker waiting for first dev proof cannot strand the dev worker it wakes.");
+  for (const patch of [{referenced_workflows: []}, {referenced_workflows: [{...reference, ref: "refs/heads/feature"}]},
+    {referenced_workflows: [{...reference, path: `other/catch/.github/workflows/_firebase-promote.yml@${revision}`}]},
+    {display_title: "Delivery"}]) {
+    f.answers.set(endpoint, {...exact, ...patch});
+    assert.deepEqual(await verifiedModernProductionRuns(options), new Set());
+  }
+  f.answers.set(endpoint, exact);
+  for (const content of ["name: Delivery", actualWorkflow.replace("# catch.backend-delivery-lanes/v1", "# old lane"),
+    actualWorkflow.replaceAll("backend-delivery-dev", "backend-delivery")]) {
+    f.answers.set(fileEndpoint, definition(content));
+    assert.deepEqual(await verifiedModernProductionRuns(options), new Set());
+  }
+  f.answers.set(endpoint, {...exact, status: "completed"});
+  assert.deepEqual(await verifiedModernProductionRuns(options), new Set(["899"]));
+  f.answers.set(endpoint, {...exact, workflow_id: 89});
+  await assert.rejects(verifiedModernProductionRuns(options));
+});
+
+test("dev receipt from a recreated Delivery workflow cannot authorize production", async () => {
+  const f = fixture();
+  f.answers.set("repos/owner/catch/actions/runs/900/attempts/1", {...f.producer, workflow_id: 89});
+  await assert.rejects(verifyDevCompletionArtifact(f.verifyArgs), /different Delivery workflow generation/);
 });
 
 test("production bootstrap follows its original dev receipt despite old authorities and newer dev progress", async () => {
@@ -322,4 +366,32 @@ test("CLI produces strict receipt and stable workflow outputs without downloadin
   assert.match(fs.readFileSync(githubOutput, "utf8"), /has_cursor=true\nsource_ci_run_number=19\nsource_sha=a{40}\nsource_ci_workflow_id=77\nwaiting=false/);
   await assert.rejects(executeCli(["prepare-receipt", "--output", output, "--source", output]), /overwrite/);
   await assert.rejects(executeCli(["resolve", "--unknown", "x", "--output", resolved]));
+});
+
+test("an uploaded dev input without completion cannot block recovery or masquerade as progress", async () => {
+  const f = fixture();
+  const input = {...f.artifact, name: "backend-dev-input-1"};
+  const catalogue = [{artifacts: [input]}];
+  assert.deepEqual(completionCandidates(catalogue, context), []);
+  const result = await resolveLaneCursor({context, catalogue, productionCursor: prodCursor, request: f.request});
+  assert.equal(result.waiting, false);
+  assert.deepEqual(result.cursor, prodCursor);
+  const production = await selectProductionSource({context: prodContext, catalogue, productionCursor: prodCursor,
+    sourceCandidates: [f.source], request: f.request});
+  assert.equal(production.waiting, true);
+});
+
+test("a legacy snapshot finalized during the initial fence forces fresh independently verified selection", async () => {
+  const f = fixture();
+  const newerCursor = {...f.artifact, id: 90, name: "backend-delivery-cursor-v4-77-21-121-1-" + sha("c") + "-899-1"};
+  f.answers.set("repos/owner/catch/actions/artifacts?per_page=100", [{artifacts: [newerCursor]}]);
+  const options = {context, catalogue: [{artifacts: []}], productionCursor: prodCursor, request: f.request};
+  const stale = await resolveLaneCursor(options);
+  assert.equal(stale.waiting, true);
+  assert.equal(stale.refreshRequired, true);
+  assert.deepEqual(stale.cursor, prodCursor, "Catalogue changes are a reason to reverify, not authority for a new base.");
+  const fresh = await resolveLaneCursor({...options, catalogue: [{artifacts: [newerCursor]}],
+    productionCursor: {...prodCursor, sourceCiRunNumber: 21, sourceCiRunId: "121", sourceSha: sha("c")}});
+  assert.equal(fresh.waiting, false);
+  assert.equal(fresh.refreshRequired, undefined, "A stable new snapshot does not dispatch endlessly.");
 });

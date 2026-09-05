@@ -249,9 +249,9 @@ test("Delivery consumes the always-present plan before deciding package or no-op
   assert.match(delivery, /if: \$\{\{ steps\.plan\.outputs\.deploy_required == 'true' \}\}[\s\S]*PACKAGE_ARTIFACT_ID/);
   assert.match(delivery, /needs\.authorize\.outputs\.deploy_required == 'true'/);
   assert.match(delivery, /resume_delivery_run_id:[\s\S]*required: true/);
-  assert.match(delivery, /group: backend-delivery\n/);
-  assert.doesNotMatch(delivery, /group: backend-delivery-\$\{\{/);
-  assert.match(delivery, /It is not the queue:[\s\S]*cursor makes replacement safe/);
+  assert.match(delivery, /group: .*'dev' && 'backend-delivery-dev' \|\| 'backend-delivery'/);
+  assert.match(delivery, /cancel-in-progress: false/);
+  assert.match(delivery, /immutable source authorities establish release order/);
 });
 
 test("Delivery selects the oldest pending authority after a cursor and current main for bootstrap", () => {
@@ -521,7 +521,16 @@ test("promotion is ordered dev to protected prod", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
   assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
-  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
+  const dev = ciJob(delivery, "dev");
+  const prod = ciJob(delivery, "prod");
+  assert.match(dev, /needs: authorize/);
+  assert.match(dev, /outputs\.environment == 'dev'/);
+  assert.match(prod, /needs: authorize/);
+  assert.doesNotMatch(prod, /needs\.dev/);
+  assert.match(prod, /outputs\.environment == 'prod'/);
+  assert.match(prod, /outputs\.dev_completion_artifact_id != ''/);
+  assert.match(prod, /dev_completion_artifact_digest: \$\{\{ needs\.authorize\.outputs\.dev_completion_artifact_digest \}\}/);
+  assert.match(delivery, /backend_delivery_lanes\.mjs select-prod/);
 
   const promotion = workflow("_firebase-promote.yml");
   const verifyOffset = promotion.indexOf("Verify artifact provenance");
@@ -784,7 +793,7 @@ test("promotion guards optional deploy-group payloads", () => {
 });
 
 test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
-  const rebaseline = workflow("backend-rebaseline.yml");
+  const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /^name: Backend Rebaseline/m);
   assert.match(rebaseline, /workflow_dispatch:[\s\S]*source_sha:[\s\S]*reason:[\s\S]*confirm_full_backend_rebaseline:/);
   assert.doesNotMatch(rebaseline, /workflow_run:|repository_dispatch:|schedule:/);
@@ -816,7 +825,7 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
 });
 
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
-  const rebaseline = workflow("backend-rebaseline.yml");
+  const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
   assert.doesNotMatch(rebaseline, /\n  staging:|environment: staging|needs\.staging/);
   assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
@@ -980,4 +989,74 @@ test("callable permission sync scopes new packages and preserves historical pack
       ]);
     }
   }
+});
+
+
+test("dev completion is published after the whole promoter and never advances the production cursor", () => {
+  const delivery = workflow("delivery.yml");
+  const finalizer = ciJob(delivery, "finalize-dev");
+  assert.match(finalizer, /needs: \[authorize, dev\]/);
+  assert.match(finalizer, /needs\.authorize\.result == 'success'/);
+  assert.match(finalizer, /outputs\.environment == 'dev'/);
+  assert.match(finalizer, /outputs\.deploy_required == 'false' \|\| needs\.dev\.result == 'success'/);
+  assert.match(finalizer, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);
+  assert.match(finalizer, /\.deliveryRunId == \$run and \.deliveryRunAttempt == \$attempt/);
+  assert.match(finalizer, /\.sourceSha == \$sha and \.sourceCiRunId == \$run and \.sourceCiRunAttempt == \$attempt/);
+  assert.match(finalizer, /backend_delivery_lanes\.mjs prepare-receipt/);
+  assert.match(finalizer, /--dev-result "\$DEV_RESULT"/);
+  assert.match(finalizer, /--bootstrap "\$BOOTSTRAP"/);
+  assert.match(finalizer, /name: \$\{\{ steps\.completion\.outputs\.dev_completion_artifact_name \}\}/);
+  assert.doesNotMatch(finalizer, /backend-delivery-cursor-v4-|overwrite: true|continue-on-error/);
+  assert.ok(finalizer.indexOf("Upload the immutable completed dev receipt") < finalizer.indexOf("Wake both ordered delivery lanes"));
+  assert.match(finalizer, /for environment in dev prod/);
+  assert.match(ciJob(delivery, "finalize"), /outputs\.environment == 'prod'/);
+});
+
+test("production independently rejects absent or different dev proof before cloud credentials", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  const proof = promotion.slice(
+    promotion.indexOf("      - name: Independently verify exact dev completion"),
+    promotion.indexOf("      - name: Recompute automatic production eligibility"),
+  );
+  assert.match(proof, /inputs\.environment == 'prod'/);
+  assert.match(proof, /delivery\.yml@refs\/heads\/main/);
+  assert.match(proof, /DEV_COMPLETION_ARTIFACT_ID.*\^\[1-9\]/);
+  assert.match(proof, /backend_delivery_lanes\.mjs verify-artifact/);
+  assert.match(proof, /backend_delivery_lanes\.mjs verify-package/);
+  for (const flag of ["artifact-id", "artifact-digest", "source-sha", "ci-run-id", "ci-run-attempt", "base-sha", "package", "provenance"]) {
+    assert.ok(proof.includes(`--${flag} `), flag);
+  }
+  assert.ok(promotion.indexOf(proof) < promotion.indexOf("      - name: Authenticate to Google Cloud"));
+  assert.doesNotMatch(proof, /continue-on-error|\|\| true/);
+});
+
+test("rebaseline structurally excludes both lane selectors through snapshot completion", () => {
+  const caller = workflow("backend-rebaseline.yml");
+  const worker = workflow("_backend-rebaseline.yml");
+  assert.match(caller, /concurrency:\n  group: backend-delivery\n/);
+  const snapshot = ciJob(caller, "snapshot");
+  assert.match(snapshot, /concurrency:\n      group: backend-delivery-dev\n/);
+  assert.match(snapshot, /uses: \.\/\.github\/workflows\/_backend-rebaseline\.yml/);
+  assert.match(snapshot, /secrets: inherit/);
+  for (const input of ["source_sha", "reason", "confirm_full_backend_rebaseline"]) {
+    assert.ok(snapshot.includes(`${input}: \${{ inputs.${input} }}`));
+  }
+  assert.match(worker, /workflow_call:/);
+  assert.doesNotMatch(worker, /workflow_dispatch:|repository_dispatch:|workflow_run:|group: backend-delivery/);
+});
+
+test("cutover refresh and peer wakeups are bounded and manual recovery cannot silently disappear", () => {
+  const delivery = workflow("delivery.yml");
+  const authorize = ciJob(delivery, "authorize");
+  const wake = ciJob(delivery, "wake-peer");
+  assert.match(authorize, /lane_refresh_required: \$\{\{ steps\.lane\.outputs\.refresh_required \}\}/);
+  assert.match(authorize, /client_payload\.wakeup_reason[\s\S]*== "refresh"[\s\S]*production cursor changed again[\s\S]*exit 1/);
+  assert.match(authorize, /GITHUB_EVENT_NAME.*workflow_dispatch.*\.waiting[\s\S]*Manual recovery is blocked[\s\S]*exit 1/);
+  assert.match(authorize, /Production recovery requires.*dev|dev completion.*recover/i);
+  assert.match(wake, /github\.event\.client_payload\.wakeup_reason != 'peer'/);
+  assert.match(wake, /lane_refresh_required == 'true' && 'dev'/);
+  assert.match(wake, /lane_refresh_required == 'true' && 'refresh' \|\| 'peer'/);
+  assert.match(wake, /wakeup_reason: \$reason/);
+  assert.match(authorize, /name: backend-dev-input-/);
+  assert.doesNotMatch(authorize, /name: backend-dev-completion-input-/);
 });
