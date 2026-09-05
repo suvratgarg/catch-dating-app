@@ -50,7 +50,13 @@ the full validation fallback.
 Graph checks, exact tool owners, and mandatory checks all expand through the
 same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's
-order. Active tools must define non-empty checks. This prevents a non-tool contract
+order. When the required same-run React marketing lane owns validation, Tools
+reuses its exact site build, Storybook build, accessibility gate, and visual
+comparisons. Postbuild, build-output, and Storybook configuration tests still run
+in Tools. Standalone tool checks keep their own builds and browser gates. This
+reuse requires the React caller to retain its normal deployable build; changed
+commands execute until their equivalence is verified.
+Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
 tool's `safety` describes its command. A remote-write tool may separately set

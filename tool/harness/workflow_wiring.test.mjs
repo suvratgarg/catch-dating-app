@@ -632,7 +632,7 @@ test("fast structural ratchets block dependency-heavy full tool buckets", () => 
   );
 });
 
-test("Tools reuses only marketing browser checks owned by the required same-run React lane", () => {
+test("Tools reuses only marketing builds and browser checks owned by the required same-run React lane", () => {
   const ci = workflow("ci.yml");
   const tools = workflow("tools-ci.yml");
   const react = workflow("react-surface-validation.yml");
@@ -643,6 +643,8 @@ test("Tools reuses only marketing browser checks owned by the required same-run 
   assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
+  assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
+  assert.match(react, /skip_deployable_build:[\s\S]*?default: false/u);
   const aggregate = ci.slice(ci.indexOf("\n  required:"));
   assert.match(aggregate, /- tools\n/u);
   assert.match(aggregate, /- marketing\n/u);
@@ -656,6 +658,7 @@ test("Tools reuses only marketing browser checks owned by the required same-run 
   assert.match(bucket, /node tool\/run\.mjs check "\$\{category_flags\[@\]\}" "\$\{shared_flags\[@\]\}"/u);
   assert.equal(bucket.match(/node tool\/run\.mjs check/gu)?.length, 1);
   for (const [name, command] of [
+    ["Build marketing website", "npm run web:marketing:build"],
     ["Build marketing Storybook", "npm --workspace catch-marketing run build:storybook"],
     ["Run marketing and shared web UI visual regression", "npm --workspace catch-marketing run test:visual"],
     ["Run marketing Storybook accessibility gate", "npm --workspace catch-marketing run test:storybook:a11y"],
@@ -665,11 +668,30 @@ test("Tools reuses only marketing browser checks owned by the required same-run 
     assert.doesNotMatch(step, /continue-on-error/u);
   }
   assert.match(react, /update_visual_baselines:[\s\S]*?default: false/u);
+  assert.match(namedStep(react, "Build marketing website"),
+    /if: \$\{\{ inputs.surface == 'marketing' && !inputs.skip_deployable_build \}\}/u);
+  assert.match(namedStep(react, "Build marketing Storybook"),
+    /if: \$\{\{ inputs.surface == 'marketing' \}\}/u);
+  const rootScripts = repositorySnapshot.readJson("package.json", {required: true}).scripts;
+  assert.equal(rootScripts["web:marketing:build"], "npm --workspace catch-marketing run build");
   const scripts = repositorySnapshot.readJson("website/package.json", {required: true}).scripts;
+  assert.equal(scripts.build, "npm run typecheck && vite build && node scripts/postbuild.mjs");
+  assert.match(scripts.pretypecheck, /npm run check:organizer-listings && npm run check:routes && npm run check:components/u);
   assert.equal(scripts["test:visual"], "node ../tool/web/check_storybook_visuals.mjs --surface website --check && node ../tool/web/check_storybook_visuals.mjs --surface webui --check");
   assert.equal(scripts["test:storybook:a11y"], "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook");
   const registered = toolsManifest.tools.find((tool) => tool.id === "web:storybook-visuals");
   assert.ok(registered.checks.includes("npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"));
+  const siteBuild = toolsManifest.tools.find((tool) => tool.id === "marketing:website-build");
+  for (const command of [
+    "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
+    "node --test website/scripts/postbuild.test.mjs",
+    "npm --prefix website run build",
+  ]) assert.ok(siteBuild.checks.includes(command), command);
+  const storybookBuild = toolsManifest.tools.find((tool) => tool.id === "marketing:website-storybook");
+  assert.deepEqual(storybookBuild.checks, [
+    "npm --workspace catch-marketing run check:storybook-config",
+    "npm --workspace catch-marketing run build:storybook",
+  ]);
 });
 
 test("tools materialize only the closure required by each repository view", () => {

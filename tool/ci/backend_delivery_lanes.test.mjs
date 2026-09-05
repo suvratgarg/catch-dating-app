@@ -7,7 +7,7 @@ import test from "node:test";
 import {
   AUTHORIZATION_JOB, DEV_COMPLETION_FILE, DEV_PROMOTION_JOB,
   artifactCatalogue, completionArtifactName, completionCandidates, cutoverBlockers,
-  executeCli, prepareDevCompletion, readSingleJsonArchive, resolveLaneCursor,
+  executeCli, prepareDevCompletion, readJsonArchive, readSingleJsonArchive, resolveLaneCursor,
   selectProductionSource, validateDevCompletion, verifyCompletedPackage, verifyDevCompletionArtifact, verifiedModernProductionRuns, verifyWorkflowRun,
 } from "./backend_delivery_lanes.mjs";
 
@@ -142,6 +142,25 @@ test("archive verifier reads one regular JSON entry without extracting, rejects 
   corrupted[30 + Buffer.byteLength(DEV_COMPLETION_FILE)] ^= 1;
   assert.throws(() => readSingleJsonArchive(corrupted, DEV_COMPLETION_FILE));
   assert.throws(() => readSingleJsonArchive(Buffer.concat([jsonZip(DEV_COMPLETION_FILE, {}), Buffer.from("trailing")]), DEV_COMPLETION_FILE));
+});
+
+test("checkpoint archives allow only the portable checkpoint and its optional regular Functions companion", () => {
+  const checkpoint = {name: "checkpoint.json", text: '{"schema":"portable"}'};
+  const companion = {name: "functions-deployment.json", text: '{"schema":"firebase"}'};
+  assert.deepEqual(readJsonArchive(zip([checkpoint]), [checkpoint.name], [companion.name]),
+    {[checkpoint.name]: {schema: "portable"}});
+  assert.deepEqual(readJsonArchive(zip([companion, checkpoint]), [checkpoint.name], [companion.name]),
+    {[companion.name]: {schema: "firebase"}, [checkpoint.name]: {schema: "portable"}});
+  for (const entries of [
+    [companion], [checkpoint, checkpoint], [checkpoint, {...companion, name: "other.json"}],
+    [checkpoint, {...companion, mode: 0o120777}], [checkpoint, {...companion, mode: 0o40755}],
+    [checkpoint, {...companion, localName: "different.json"}], [checkpoint, companion, companion],
+  ]) assert.throws(() => readJsonArchive(zip(entries), [checkpoint.name], [companion.name]));
+  const corrupt = zip([checkpoint, companion]);
+  corrupt[30 + checkpoint.name.length] ^= 1;
+  assert.throws(() => readJsonArchive(corrupt, [checkpoint.name], [companion.name]));
+  assert.throws(() => readSingleJsonArchive(zip([checkpoint, companion]), checkpoint.name),
+    "Existing singleton callers must never accept a companion.");
 });
 
 test("dev proof independently verifies archive, historical CI attempt, authority and successful dev job", async () => {

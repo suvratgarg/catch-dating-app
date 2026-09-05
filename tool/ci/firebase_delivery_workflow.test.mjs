@@ -240,6 +240,86 @@ test("Functions deployment checks live parity against the exact source checkout"
   );
 });
 
+test("whole-plan Functions preflight is bound to verified inputs before the first ordered stage", (t) => {
+  const promotion = workflow("_firebase-promote.yml");
+  const preflight = extractSteps(promotion).find((step) =>
+    step.name === "Preflight the whole backend plan before any deployment");
+  assert.ok(preflight?.run, "Missing executable preflight boundary.");
+  const offset = promotion.indexOf("Preflight the whole backend plan before any deployment");
+  assert.ok(promotion.indexOf("Materialize non-secret Functions params") < offset);
+  assert.ok(offset < promotion.indexOf("Resume ordered backend stages"));
+  const wiring = promotion.slice(offset, promotion.indexOf("      - id: promote", offset));
+  assert.match(wiring, /if: \$\{\{ steps\.verify\.outputs\.has_functions == 'true' \}\}/);
+  assert.match(wiring, /CATCH_DEPLOY_ALLOW_BEHIND: \$\{\{ inputs\.require_current_main && '0' \|\| '1' \}\}/);
+  assert.match(wiring, /CATCH_DELIVERY_FUNCTIONS_DIR: build\/delivery\/deploy-tree\/functions/);
+  assert.match(wiring, /CATCH_FIREBASE_SOURCE_ROOT: build\/delivery\/source-checkout/);
+  assert.match(wiring, /DEPLOY_TARGETS: \$\{\{ steps\.verify\.outputs\.targets \}\}/);
+  assert.doesNotMatch(wiring, /continue-on-error|\|\| true/);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-workflow-preflight-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "tool"));
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"),
+    '#!/bin/sh\nprintf "%s\\n" "$@" > "$PREFLIGHT_ARGS"\nexit "$PREFLIGHT_STATUS"\n', {mode: 0o755});
+  for (const status of [0, 64]) {
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c", preflight.run], {
+      cwd: directory, encoding: "utf8", env: {...process.env,
+        DEPLOY_ENVIRONMENT: "prod", DEPLOY_TARGETS: "firestore:indexes,functions:alpha",
+        PREFLIGHT_ARGS: path.join(directory, "args"), PREFLIGHT_STATUS: String(status)},
+    });
+    assert.equal(result.status, status, result.stderr);
+    assert.deepEqual(fs.readFileSync(path.join(directory, "args"), "utf8").trim().split("\n"),
+      ["--preflight", "prod", "firestore:indexes,functions:alpha"]);
+  }
+});
+
+test("actual Functions recovery branch records only completed deployments and never deploys for verified postconditions", (t) => {
+  const promotion = workflow("_firebase-promote.yml");
+  const start = promotion.indexOf("              proof_args=(");
+  const end = promotion.indexOf('            else\n              CATCH_DELIVERY_FUNCTIONS_DIR=', start);
+  assert.ok(start > 0 && end > start);
+  const body = promotion.slice(start, end);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-functions-recovery-branch-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "bin"));
+  fs.mkdirSync(path.join(directory, "tool"));
+  fs.writeFileSync(path.join(directory, "bin/node"), '#!/bin/sh\n' +
+    'printf \'%s\\n\' "$2" >> "$RECOVERY_EVENTS"\n' +
+    'if [ "$2" = verify ]; then printf \'%s\\n\' "$VERIFY_RESULT"; exit "$VERIFY_STATUS"; fi\n' +
+    'exit "$RECORD_STATUS"\n', {mode: 0o755});
+  fs.writeFileSync(path.join(directory, "tool/deploy_firebase_targets.sh"), '#!/bin/sh\n' +
+    'printf \'%s\\n\' "$1" >> "$RECOVERY_EVENTS"\n' +
+    'if [ "$1" = --functions-deploy-only ]; then exit "$DEPLOY_STATUS"; fi\n' +
+    'exit "$POSTCONDITIONS_STATUS"\n', {mode: 0o755});
+  const scenarios = [
+    {label: "no prior proof", expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only"]},
+    {label: "verified prior deployment", proof: true, expected: ["verify", "--functions-postconditions-only"]},
+    {label: "partial batch failed", deploy: 9, expected: ["verify", "--functions-deploy-only"]},
+    {label: "recording deployment failed", record: 8, expected: ["verify", "--functions-deploy-only", "record"]},
+    {label: "postcondition failed", postconditions: 7, expected: ["verify", "--functions-deploy-only", "record", "--functions-postconditions-only"]},
+    {label: "live identity changed", verify: 6, expected: ["verify"]},
+    {label: "malformed recovery result", result: "{}", invalid: true, expected: ["verify"]},
+  ];
+  for (const scenario of scenarios) {
+    const events = path.join(directory, "events");
+    fs.rmSync(events, {force: true});
+    const command = 'stage_status=0\ntarget=functions:alpha\ndeploy_args=(--config package/firebase.json --force)\n' +
+      body + '\nexit "$stage_status"\n';
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c", command], {cwd: directory, encoding: "utf8", env: {
+      ...process.env, PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`,
+      RECOVERY_EVENTS: events, VERIFY_RESULT: scenario.result ?? JSON.stringify({postconditionsOnly: Boolean(scenario.proof)}),
+      VERIFY_STATUS: String(scenario.verify ?? 0), RECORD_STATUS: String(scenario.record ?? 0),
+      DEPLOY_STATUS: String(scenario.deploy ?? 0), POSTCONDITIONS_STATUS: String(scenario.postconditions ?? 0),
+      SOURCE_SHA: "a".repeat(40), BASE_SHA: "b".repeat(40), SOURCE_CI_RUN_ID: "700", SOURCE_CI_RUN_ATTEMPT: "1",
+      CHECKPOINT_SCOPE: "firebase:dev:demo-project", CHECKPOINT: "checkpoint.json", PROJECT_ID: "demo-project",
+      DELIVERY_FUNCTIONS_DIR: "package/functions", SOURCE_CHECKOUT: "source", DEPLOY_ENVIRONMENT: "dev",
+    }});
+    if (scenario.invalid) assert.notEqual(result.status, 0, scenario.label);
+    else assert.equal(result.status, scenario.verify ?? scenario.deploy ?? scenario.record ?? scenario.postconditions ?? 0,
+      `${scenario.label}: ${result.stderr}`);
+    assert.deepEqual(fs.readFileSync(events, "utf8").trim().split("\n"), scenario.expected, scenario.label);
+  }
+});
+
 test("Delivery consumes the always-present plan before deciding package or no-op", () => {
   const delivery = workflow("delivery.yml");
   const planOffset = delivery.indexOf("Download the exact CI impact plan first");
@@ -551,7 +631,7 @@ test("promotion is ordered dev to protected prod", () => {
   assert.ok(
     (promotion.match(/--ci-run-attempt "\$SOURCE_CI_RUN_ATTEMPT"/g) ?? []).length >= 7,
   );
-  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 3);
+  assert.equal((promotion.match(/--scope "\$CHECKPOINT_SCOPE"/g) ?? []).length, 5);
   assert.match(promotion, /wait_firestore_indexes_ready\.mjs/);
   assert.ok(
     promotion.indexOf("wait_firestore_indexes_ready.mjs") <
