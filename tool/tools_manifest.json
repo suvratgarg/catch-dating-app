@@ -3009,6 +3009,15 @@
     },
     {
       "id": "env:ci-toolchain",
+      "impactPaths": [
+        ".github/actions/cache-cocoapods/action.yml",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "category": "env",
       "path": "tool/ci/check_toolchain_consistency.sh",
       "command": "bash tool/ci/check_toolchain_consistency.sh",

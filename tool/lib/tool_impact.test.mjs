@@ -636,6 +636,7 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
     (entry) => entry.id.startsWith("dedicated-") && entry.id.endsWith("-workflow"),
   ).flatMap((entry) => entry.paths.include);
   assert.deepEqual([...workflows].sort(), [
+    ".github/workflows/app-build-matrix.yml",
     ".github/workflows/contracts-ci.yml",
     ".github/workflows/firestore-rules-ci.yml",
     ".github/workflows/flutter-ci.yml",
