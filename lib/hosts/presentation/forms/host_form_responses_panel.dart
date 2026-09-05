@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -100,12 +101,9 @@ class _HostFormResponsesPanelState
                 label: widget.formId == null
                     ? context.l10n.hostAudienceAllForms
                     : widget.formTitle ??
-                          responses
-                              .asData
-                              ?.value
-                              .responses
-                              .firstOrNull
-                              ?.formTitle ??
+                          catchAsyncStateFromAsyncValue(
+                            responses,
+                          ).value?.responses.firstOrNull?.formTitle ??
                           context.l10n.hostAudienceSelectedForm,
                 icon: Icon(CatchIcons.descriptionOutlined),
                 onPressed: widget.onFormChanged != null
@@ -271,9 +269,11 @@ class _HostFormResponsesPanelState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchField.nav(
-                title: context.l10n.hostAudienceAllForms,
-                onTap: () => Navigator.of(sheetContext).pop(''),
+              CatchFieldLanes.single(
+                child: CatchField.nav(
+                  title: context.l10n.hostAudienceAllForms,
+                  onTap: () => Navigator.of(sheetContext).pop(''),
+                ),
               ),
               CatchAsyncValueView<HostFormsDirectoryState>(
                 value: ref.watch(hostFormsDirectoryControllerProvider(request)),

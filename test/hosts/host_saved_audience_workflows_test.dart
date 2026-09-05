@@ -104,7 +104,7 @@ void main() {
       );
       expect(find.bySubtype<CatchErrorState>(), findsNothing);
       expect(find.text('Sunday regulars'), findsWidgets);
-      expect(find.text('Regulars'), findsOneWidget);
+      expect(find.text('Regulars'), findsNWidgets(2));
     },
   );
 

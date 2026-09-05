@@ -761,7 +761,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(directoryRequests.last.organizerId, ownedClub.id);
     expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('People'), findsOneWidget);
-    expect(find.text('Audiences'), findsOneWidget);
+    expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
       tester

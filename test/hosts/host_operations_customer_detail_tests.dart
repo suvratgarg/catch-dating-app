@@ -32,7 +32,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
     expect(requests, 0);
-    expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+    expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
     await tester.tap(find.text('History'));
     await tester.pump();
     expect(requests, 1);
@@ -435,7 +435,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
       findsOneWidget,
     );
-    expect(find.byTooltip('Add customer'), findsOneWidget);
+    expect(find.byTooltip('Add person'), findsOneWidget);
   });
 
   testWidgets('customer timeline opens the host event detail route', (
@@ -493,7 +493,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
     );
 
-    expect(find.text('MEMORY'), findsOneWidget);
+    expect(find.text('NOTES & TAGS'), findsOneWidget);
     expect(find.text('Brings friends'), findsOneWidget);
     final manualTagsField = tester.widget<CatchField>(
       find.byKey(const ValueKey('host-customer-edit-tags')),
@@ -537,7 +537,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.byType(CatchSkeletonRows), findsNothing);
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
-    expect(find.byType(HostCustomerAttendanceCard), findsOneWidget);
+    expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsOneWidget);
     expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
     expect(find.byType(HostCustomerTimelineSection), findsNothing);

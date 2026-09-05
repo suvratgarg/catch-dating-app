@@ -21383,13 +21383,13 @@ abstract class AppLocalizations {
   /// Adds an organizer CRM contact with a name, at least one contact method, and an optional private note.
   ///
   /// In en, this message translates to:
-  /// **'Add customer'**
+  /// **'Add person'**
   String get hostCustomersAdd;
 
   /// Full-page manual CRM contact route title.
   ///
   /// In en, this message translates to:
-  /// **'Add a customer'**
+  /// **'Add person'**
   String get hostCustomersAddTitle;
 
   /// Organizer-owned customer display name used by create and edit states.
@@ -21397,18 +21397,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name shown to your team'**
   String get hostCustomersName;
-
-  /// Manual customer creation guidance for the organizer-owned display name.
-  ///
-  /// In en, this message translates to:
-  /// **'Use the name your team will recognize.'**
-  String get hostCustomersNameHelp;
-
-  /// Manual CRM identity boundary.
-  ///
-  /// In en, this message translates to:
-  /// **'Add a name and at least one way to reach this customer. Phone and email stay unverified and never grant messaging permission.'**
-  String get hostCustomersAddHelp;
 
   /// Required manual customer name validation.
   ///
@@ -21542,13 +21530,13 @@ abstract class AppLocalizations {
   /// Customers-owned saved-audience naming step title.
   ///
   /// In en, this message translates to:
-  /// **'Save this audience'**
+  /// **'Save this group'**
   String get hostSavedAudienceSaveTitle;
 
   /// Explains saved-audience ownership and later eligibility checks.
   ///
   /// In en, this message translates to:
-  /// **'Name this reusable customer group. Messaging will use this saved definition and recheck eligibility before sending.'**
+  /// **'Name this reusable customer group. Inbox will use this saved definition and recheck eligibility before sending.'**
   String get hostSavedAudienceSaveBody;
 
   /// Reusable customer audience name field.
@@ -21578,7 +21566,7 @@ abstract class AppLocalizations {
   /// Saved-audience picker label in campaign composition.
   ///
   /// In en, this message translates to:
-  /// **'Saved audience'**
+  /// **'Saved group'**
   String get hostSavedAudienceFieldLabel;
 
   /// Saved-audience picker option with the explicitly stale last exact preview count.
@@ -21592,12 +21580,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Groups'**
   String get hostSavedAudiencesManage;
-
-  /// Concise Customers versus Messaging ownership explanation above the saved-audience directory.
-  ///
-  /// In en, this message translates to:
-  /// **'Define groups here. Send from Messaging.'**
-  String get hostSavedAudiencesWorkspaceBody;
 
   /// Saved-audience name search control.
   ///
@@ -21623,34 +21605,16 @@ abstract class AppLocalizations {
   /// **'New group'**
   String get hostSavedAudienceNew;
 
-  /// Creates and exactly previews a new saved audience.
-  ///
-  /// In en, this message translates to:
-  /// **'Create audience'**
-  String get hostSavedAudienceCreate;
-
-  /// Saves and exactly previews edits to a saved audience.
-  ///
-  /// In en, this message translates to:
-  /// **'Save changes'**
-  String get hostSavedAudienceSaveChanges;
-
-  /// Audience editor ownership explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Name a reusable group and define who belongs in it. Messaging can select this audience, but cannot change its rules.'**
-  String get hostSavedAudienceEditorBody;
-
   /// Audience editor identity section heading.
   ///
   /// In en, this message translates to:
-  /// **'Audience details'**
+  /// **'Group details'**
   String get hostSavedAudienceDetails;
 
   /// Audience editor name validation.
   ///
   /// In en, this message translates to:
-  /// **'Add an audience name.'**
+  /// **'Add an group name.'**
   String get hostSavedAudienceNameRequired;
 
   /// Audience predicate join field title.
@@ -21818,19 +21782,19 @@ abstract class AppLocalizations {
   /// Managed campaign condition semantics and recheck disclosure.
   ///
   /// In en, this message translates to:
-  /// **'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Messaging rechecks this at send time.'**
+  /// **'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Inbox rechecks this at send time.'**
   String get hostSavedAudienceManagedReachBody;
 
   /// Audience condition validation message.
   ///
   /// In en, this message translates to:
-  /// **'Complete every audience condition before saving.'**
+  /// **'Complete every group condition before saving.'**
   String get hostSavedAudienceCompleteRules;
 
   /// Saved audience preview section heading.
   ///
   /// In en, this message translates to:
-  /// **'Current preview'**
+  /// **'Saved preview'**
   String get hostSavedAudienceCurrentPreview;
 
   /// Saved audience preview count and reach row title.
@@ -21839,34 +21803,28 @@ abstract class AppLocalizations {
   /// **'People and reach'**
   String get hostSavedAudiencePeople;
 
-  /// Saved audience preview staleness and send-time recheck disclosure.
-  ///
-  /// In en, this message translates to:
-  /// **'Counts come from an exact server preview. Messaging checks the audience and each route again before sending.'**
-  String get hostSavedAudiencePreviewDisclosure;
-
   /// Saved audience archive confirmation title.
   ///
   /// In en, this message translates to:
-  /// **'Archive this audience?'**
+  /// **'Archive this group?'**
   String get hostSavedAudienceArchiveTitle;
 
   /// Saved audience archive consequence.
   ///
   /// In en, this message translates to:
-  /// **'It will disappear from new sends. Historical sends keep the audience snapshot they used.'**
+  /// **'It will disappear from new sends. Historical sends keep the group snapshot they used.'**
   String get hostSavedAudienceArchiveBody;
 
   /// Missing or archived saved audience detail message.
   ///
   /// In en, this message translates to:
-  /// **'This saved audience is unavailable.'**
+  /// **'This saved group is unavailable.'**
   String get hostSavedAudienceNotFound;
 
   /// Recomputes an exact saved-audience preview.
   ///
   /// In en, this message translates to:
-  /// **'Refresh exact preview'**
+  /// **'Refresh'**
   String get hostSavedAudiencePreview;
 
   /// Archives one reusable saved audience.
@@ -21878,7 +21836,7 @@ abstract class AppLocalizations {
   /// Saved audience without an exact preview yet.
   ///
   /// In en, this message translates to:
-  /// **'Not previewed yet'**
+  /// **'Not checked yet'**
   String get hostSavedAudienceNeverPreviewed;
 
   /// Compact exact saved-audience headcount for a directory row.
@@ -21890,25 +21848,25 @@ abstract class AppLocalizations {
   /// Full-register reach count for customers with a Catch account.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{0 IN CATCH} other{{count} IN CATCH}}'**
+  /// **'{count} in Catch'**
   String hostAudienceReachCountInCatch({required int count});
 
   /// Full-register reach count for managed automatic delivery.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{0 AUTO} other{{count} AUTO}}'**
+  /// **'{count} automatic'**
   String hostAudienceReachCountAutomatic({required int count});
 
   /// Full-register reach count for personal handoff delivery.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{0 BY HAND} other{{count} BY HAND}}'**
+  /// **'{count} by hand'**
   String hostAudienceReachCountByHand({required int count});
 
   /// Full-register reach count for customers with no available route.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{0 NO REACH} other{{count} NO REACH}}'**
+  /// **'{count} unavailable'**
   String hostAudienceReachCountUnavailable({required int count});
 
   /// Reloads customer history coverage after an organizer import or repair.
@@ -22589,7 +22547,7 @@ abstract class AppLocalizations {
   /// Organizer-authored contact memory section heading.
   ///
   /// In en, this message translates to:
-  /// **'Memory'**
+  /// **'Notes & tags'**
   String get hostCustomersMemory;
 
   /// Customer record overview tab.
@@ -23114,12 +23072,6 @@ abstract class AppLocalizations {
   /// **'The organizer may retain submitted answers for application review and customer history according to its stated policy.'**
   String get hostApplicationsRetentionCopy;
 
-  /// Provider-neutral review queue explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Review sign-ups from Catch forms or imported spreadsheets in one queue.'**
-  String get hostApplicationsSubtitle;
-
   /// Application queue applicant-name search placeholder.
   ///
   /// In en, this message translates to:
@@ -23167,12 +23119,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Filter by review status'**
   String get hostApplicationsReviewStatusFilter;
-
-  /// Visible application review-status filter value.
-  ///
-  /// In en, this message translates to:
-  /// **'Review status: {status}'**
-  String hostApplicationsReviewStatusFilterValue({required String status});
 
   /// New organizer application status.
   ///
@@ -23243,7 +23189,7 @@ abstract class AppLocalizations {
   /// Application detail answers section title.
   ///
   /// In en, this message translates to:
-  /// **'Application answers'**
+  /// **'Answers'**
   String get hostApplicationAnswersTitle;
 
   /// Empty optional application answer value.
@@ -23408,12 +23354,6 @@ abstract class AppLocalizations {
   /// **'Response not found'**
   String get hostFormResponseNotFound;
 
-  /// Explains the organizer Forms workspace.
-  ///
-  /// In en, this message translates to:
-  /// **'Applications, registrations, waivers, feedback, and surveys in one reusable workspace.'**
-  String get hostFormsSubtitle;
-
   /// Forms directory search label.
   ///
   /// In en, this message translates to:
@@ -23455,16 +23395,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Form actions'**
   String get hostFormsActions;
-
-  /// Forms directory row lifecycle, response count, and real consequence summary.
-  ///
-  /// In en, this message translates to:
-  /// **'{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}\n{consequence}'**
-  String hostFormsRowSummary({
-    required String status,
-    required int count,
-    required String consequence,
-  });
 
   /// Legacy form consequence projection has not been established yet.
   ///
@@ -23591,12 +23521,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load more forms'**
   String get hostFormsLoadMore;
-
-  /// Opens a form in the builder.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit form'**
-  String get hostFormsOpen;
 
   /// Creates a draft copy of a form.
   ///
@@ -23748,41 +23672,11 @@ abstract class AppLocalizations {
   /// **'{purpose} · {count, plural, =1{1 question} other{{count} questions}}'**
   String hostFormTemplateSummary({required String purpose, required int count});
 
-  /// Fallback form builder route title.
-  ///
-  /// In en, this message translates to:
-  /// **'Form builder'**
-  String get hostFormBuilderTitle;
-
-  /// Form-level tab for editing the form.
-  ///
-  /// In en, this message translates to:
-  /// **'Build'**
-  String get hostFormBuildTab;
-
-  /// Form-level responses tab with submission count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{Responses · 1} other{Responses · {count}}}'**
-  String hostFormResponsesTab({required int count});
-
   /// Primary heading for the compact form builder outline.
   ///
   /// In en, this message translates to:
   /// **'Questions'**
   String get hostFormQuestionsTitle;
-
-  /// Question-selection guidance for application forms.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose the questions that will help you decide who to call.'**
-  String get hostFormQuestionsPromptHelp;
-
-  /// Compact form settings step guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Set access, availability, confirmation, and privacy.'**
-  String get hostFormSettingsPromptHelp;
 
   /// Compact publish review step heading.
   ///
@@ -23979,12 +23873,6 @@ abstract class AppLocalizations {
   /// **'Share form'**
   String get hostFormShare;
 
-  /// Form distribution route guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish one link everywhere, or create tracked links for each channel.'**
-  String get hostFormShareSubtitle;
-
   /// Canonical form link section label.
   ///
   /// In en, this message translates to:
@@ -24014,18 +23902,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share link'**
   String get hostFormShareLink;
-
-  /// Tracked form distribution links section label.
-  ///
-  /// In en, this message translates to:
-  /// **'Tracked links'**
-  String get hostFormTrackedLinks;
-
-  /// Explains tracked form distribution links.
-  ///
-  /// In en, this message translates to:
-  /// **'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.'**
-  String get hostFormTrackedLinksHelp;
 
   /// Creates a source-attributed form link.
   ///
@@ -24699,12 +24575,6 @@ abstract class AppLocalizations {
   /// **'Retention statement'**
   String get hostFormRetentionCopy;
 
-  /// Form completion settings group.
-  ///
-  /// In en, this message translates to:
-  /// **'After submission'**
-  String get hostFormCompletion;
-
   /// Successful response completion message.
   ///
   /// In en, this message translates to:
@@ -24927,23 +24797,11 @@ abstract class AppLocalizations {
   /// **'Responses'**
   String get hostFormsViewResponses;
 
-  /// Explains the response inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Review every submission, preserve its source, and choose what happens next.'**
-  String get hostFormResponsesSubtitle;
-
   /// Searches the response inbox by permitted identity fields.
   ///
   /// In en, this message translates to:
   /// **'Search responses'**
   String get hostFormResponsesSearch;
-
-  /// Shows submitted and withdrawn form responses.
-  ///
-  /// In en, this message translates to:
-  /// **'All responses'**
-  String get hostFormResponsesAll;
 
   /// Submitted response status label.
   ///
@@ -24993,15 +24851,6 @@ abstract class AppLocalizations {
   /// **'Load more responses'**
   String get hostFormResponsesLoadMore;
 
-  /// Response inbox row form and source summary.
-  ///
-  /// In en, this message translates to:
-  /// **'{formTitle} · {source}'**
-  String hostFormResponseRowSummary({
-    required String formTitle,
-    required String source,
-  });
-
   /// Fallback source label for a direct form visit.
   ///
   /// In en, this message translates to:
@@ -25026,12 +24875,6 @@ abstract class AppLocalizations {
   /// **'Manage automations'**
   String get hostFormsAutomationsAction;
 
-  /// Form response detail title.
-  ///
-  /// In en, this message translates to:
-  /// **'Response'**
-  String get hostFormResponseTitle;
-
   /// Response identity section title.
   ///
   /// In en, this message translates to:
@@ -25043,12 +24886,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Answers'**
   String get hostFormResponseAnswersSection;
-
-  /// Response conversion actions section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Next actions'**
-  String get hostFormResponseOperationsSection;
 
   /// Response identity email field.
   ///
@@ -25107,14 +24944,8 @@ abstract class AppLocalizations {
   /// Reviews a response to CRM conversion.
   ///
   /// In en, this message translates to:
-  /// **'Create CRM contact'**
+  /// **'Add to People'**
   String get hostFormConvertCrm;
-
-  /// Reviews a response to application conversion.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to applications'**
-  String get hostFormConvertApplication;
 
   /// Reviews a response to event attendee proposal conversion.
   ///
@@ -25158,12 +24989,6 @@ abstract class AppLocalizations {
   /// **'Results'**
   String get hostFormAnalyticsTitle;
 
-  /// Form analytics funnel section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Response funnel'**
-  String get hostFormAnalyticsFunnel;
-
   /// Public form open count.
   ///
   /// In en, this message translates to:
@@ -25188,23 +25013,11 @@ abstract class AppLocalizations {
   /// **'Completion rate'**
   String get hostFormAnalyticsCompletionRate;
 
-  /// Median form completion time.
-  ///
-  /// In en, this message translates to:
-  /// **'Median completion'**
-  String get hostFormAnalyticsMedianTime;
-
   /// Source link funnel section title.
   ///
   /// In en, this message translates to:
   /// **'Sources'**
   String get hostFormAnalyticsSources;
-
-  /// Question aggregate analytics section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Question results'**
-  String get hostFormAnalyticsQuestions;
 
   /// Explains form analytics privacy thresholds.
   ///
@@ -25269,7 +25082,7 @@ abstract class AppLocalizations {
   /// Creates an identity-gated CRM response automation.
   ///
   /// In en, this message translates to:
-  /// **'Create CRM contacts'**
+  /// **'Add to People'**
   String get hostFormAutomationCrmPreset;
 
   /// Response-submitted automation trigger label.
@@ -25289,12 +25102,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When an answer matches'**
   String get hostFormAutomationAnswerTrigger;
-
-  /// Automation rule action count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 action} other{{count} actions}}'**
-  String hostFormAutomationActionCount({required int count});
 
   /// Automation run event and retry summary.
   ///
@@ -25353,18 +25160,6 @@ abstract class AppLocalizations {
   /// **'An existing record already matches this response.'**
   String get hostFormConversionExisting;
 
-  /// Explains a form-scoped response inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Showing responses for {formTitle}'**
-  String hostFormResponseFilteredTo({required String formTitle});
-
-  /// Clears the response inbox form filter.
-  ///
-  /// In en, this message translates to:
-  /// **'Show all'**
-  String get hostFormResponseClearFormFilter;
-
   /// One source-link form funnel summary.
   ///
   /// In en, this message translates to:
@@ -25380,12 +25175,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 answer} other{{count} answers}}'**
   String hostFormAnalyticsQuestionSummary({required int count});
-
-  /// Choice aggregate response count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 response} other{{count} responses}}'**
-  String hostFormAnalyticsChoiceCount({required int count});
 
   /// Failed or expired form export feedback.
   ///
@@ -27274,19 +27063,7 @@ abstract class AppLocalizations {
   /// Audience intake workflow label.
   ///
   /// In en, this message translates to:
-  /// **'Review applications'**
-  String get hostApplicationsReviewQueue;
-
-  /// Audience intake workflow label.
-  ///
-  /// In en, this message translates to:
-  /// **'Review submissions, accept people, or keep them on your waitlist.'**
-  String get hostApplicationsReviewQueueBody;
-
-  /// Audience intake workflow label.
-  ///
-  /// In en, this message translates to:
-  /// **'Open person in People'**
+  /// **'Open person'**
   String get hostApplicationOpenPerson;
 
   /// Audience intake workflow label.
@@ -27298,31 +27075,19 @@ abstract class AppLocalizations {
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
-  /// **'Edit audience'**
+  /// **'Edit rules'**
   String get hostSavedAudienceEditRules;
 
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
-  /// **'Last evaluated'**
-  String get hostSavedAudienceEvaluated;
-
-  /// Saved audience overview label.
-  ///
-  /// In en, this message translates to:
-  /// **'Message this audience'**
-  String get hostSavedAudienceMessage;
-
-  /// Saved audience overview label.
-  ///
-  /// In en, this message translates to:
-  /// **'People in this audience'**
+  /// **'People'**
   String get hostSavedAudienceMembers;
 
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
-  /// **'No people in this audience'**
+  /// **'No people in this group'**
   String get hostSavedAudienceNoMembers;
 
   /// Saved audience filter authoring label.
@@ -27454,7 +27219,7 @@ abstract class AppLocalizations {
   /// Saved audience MembershipMode control or explanation.
   ///
   /// In en, this message translates to:
-  /// **'Audience membership'**
+  /// **'Membership'**
   String get hostAudienceMembershipMode;
 
   /// Saved audience RuleMembership control or explanation.
@@ -27760,12 +27525,6 @@ abstract class AppLocalizations {
   /// Audience automation configuration and execution copy.
   ///
   /// In en, this message translates to:
-  /// **'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.'**
-  String get hostAutomationOverview;
-
-  /// Audience automation configuration and execution copy.
-  ///
-  /// In en, this message translates to:
   /// **'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.'**
   String get hostAutomationRunHelp;
 
@@ -27999,6 +27758,285 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preparing export…'**
   String get hostAudiencePreparingExport;
+
+  /// Response
+  ///
+  /// In en, this message translates to:
+  /// **'Response'**
+  String get hostAudienceResponseTitle;
+
+  /// Submission details
+  ///
+  /// In en, this message translates to:
+  /// **'Submission details'**
+  String get hostAudienceSubmissionDetails;
+
+  /// Review application
+  ///
+  /// In en, this message translates to:
+  /// **'Review application'**
+  String get hostAudienceReviewApplication;
+
+  /// Application
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get hostAudienceApplicationTitle;
+
+  /// Accepted into People. Event admission is handled separately.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted into People. Event admission is handled separately.'**
+  String get hostAudienceApplicationAccepted;
+
+  /// Accepting adds this person to People. Event admission is handled separately.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting adds this person to People. Event admission is handled separately.'**
+  String get hostAudienceApplicationAdmission;
+
+  /// New applications
+  ///
+  /// In en, this message translates to:
+  /// **'New applications'**
+  String get hostAudienceApplicationsNew;
+
+  /// All applications
+  ///
+  /// In en, this message translates to:
+  /// **'All applications'**
+  String get hostAudienceApplicationsAll;
+
+  /// Event application
+  ///
+  /// In en, this message translates to:
+  /// **'Event application'**
+  String get hostAudienceApplicationEvent;
+
+  /// Organizer application
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer application'**
+  String get hostAudienceApplicationOrganizer;
+
+  /// Activity
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get hostAudienceApplicationActivity;
+
+  /// Selected people
+  ///
+  /// In en, this message translates to:
+  /// **'Selected people'**
+  String get hostAudienceManualGroup;
+
+  /// Automatic membership
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic membership'**
+  String get hostAudienceAutomaticGroup;
+
+  /// Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.'**
+  String get hostAudienceGroupMembershipHelp;
+
+  /// Checked {date}
+  ///
+  /// In en, this message translates to:
+  /// **'Checked {date}'**
+  String hostAudienceGroupChecked({required String date});
+
+  /// Group
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get hostAudienceGroupTitle;
+
+  /// Edit group
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get hostAudienceEditGroup;
+
+  /// Open in Inbox
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Inbox'**
+  String get hostAudienceOpenInbox;
+
+  /// Reach
+  ///
+  /// In en, this message translates to:
+  /// **'Reach'**
+  String get hostAudienceGroupReach;
+
+  /// Inbox checks available contact routes before sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbox checks available contact routes before sending.'**
+  String get hostAudienceGroupInboxHelp;
+
+  /// Refresh membership to check contact options.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh membership to check contact options.'**
+  String get hostAudienceGroupReachUnknown;
+
+  /// Save and check membership
+  ///
+  /// In en, this message translates to:
+  /// **'Save and check membership'**
+  String get hostAudienceSaveCheckMembership;
+
+  /// Create group
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get hostAudienceCreateCheckMembership;
+
+  /// This is the saved group. Saving changes checks membership again.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the saved group. Saving changes checks membership again.'**
+  String get hostAudienceSavedGroupPreviewHelp;
+
+  /// Group saved. Membership could not be checked.
+  ///
+  /// In en, this message translates to:
+  /// **'Group saved. Membership could not be checked.'**
+  String get hostAudienceSavedPreviewFailed;
+
+  /// Audience automations
+  ///
+  /// In en, this message translates to:
+  /// **'Audience automations'**
+  String get hostAudienceAllAutomations;
+
+  /// Selected form
+  ///
+  /// In en, this message translates to:
+  /// **'Selected form'**
+  String get hostAudienceThisForm;
+
+  /// Rules across forms and audience activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules across forms and audience activity.'**
+  String get hostAudienceAutomationScopeAll;
+
+  /// Rules that run for this form.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules that run for this form.'**
+  String get hostAudienceAutomationScopeForm;
+
+  /// Active
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get hostAudienceAutomationActive;
+
+  /// Paused
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get hostAudienceAutomationPaused;
+
+  /// Quick setup
+  ///
+  /// In en, this message translates to:
+  /// **'Quick setup'**
+  String get hostAudienceAutomationShortcuts;
+
+  /// After {minutes} minutes
+  ///
+  /// In en, this message translates to:
+  /// **'After {minutes} minutes'**
+  String hostAudienceAutomationDelay({required int minutes});
+
+  /// When
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get hostAudienceAutomationWhen;
+
+  /// Then
+  ///
+  /// In en, this message translates to:
+  /// **'Then'**
+  String get hostAudienceAutomationThen;
+
+  /// Application approved. Event admission is handled separately.
+  ///
+  /// In en, this message translates to:
+  /// **'Application approved. Event admission is handled separately.'**
+  String get hostAudienceApplicationApprovedUnlinked;
+
+  /// Contact method
+  ///
+  /// In en, this message translates to:
+  /// **'Contact method'**
+  String get hostAudienceContactMethod;
+
+  /// These details were added by you. Adding a person does not grant permission to send messages.
+  ///
+  /// In en, this message translates to:
+  /// **'These details were added by you. Adding a person does not grant permission to send messages.'**
+  String get hostAudienceAddedContactPermission;
+
+  /// Recently checked
+  ///
+  /// In en, this message translates to:
+  /// **'Recently checked'**
+  String get hostAudienceRecentlyChecked;
+
+  /// All groups
+  ///
+  /// In en, this message translates to:
+  /// **'All groups'**
+  String get hostAudienceAllGroups;
+
+  /// {trigger}, then {actions}
+  ///
+  /// In en, this message translates to:
+  /// **'{trigger}, then {actions}'**
+  String hostAudienceAutomationConsequence({
+    required String trigger,
+    required String actions,
+  });
+
+  /// At a glance
+  ///
+  /// In en, this message translates to:
+  /// **'At a glance'**
+  String get hostAudienceAtAGlance;
+
+  /// Add at least one contact method.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one contact method.'**
+  String get hostAudienceContactRequirement;
+
+  /// Retry the shared organizer source labels without blocking application review.
+  ///
+  /// In en, this message translates to:
+  /// **'Form and event names unavailable · Retry'**
+  String get hostAudienceRetrySourceNames;
+
+  /// Summary of the current group definition before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Who will belong'**
+  String get hostAudienceWhoWillBelong;
+
+  /// Distinguishes an unsaved definition from evaluated group membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership is checked when you save. Incomplete conditions must be finished first.'**
+  String get hostAudienceMembershipCheckOnSave;
 }
 
 class _AppLocalizationsDelegate

@@ -204,6 +204,99 @@ final class HostFormResponseDetailFamily extends $Family
   String toString() => r'hostFormResponseDetailProvider';
 }
 
+/// Applies the immutable response version's server-side conversion rules.
+
+@ProviderFor(hostFormResponseCanApply)
+final hostFormResponseCanApplyProvider = HostFormResponseCanApplyFamily._();
+
+/// Applies the immutable response version's server-side conversion rules.
+
+final class HostFormResponseCanApplyProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// Applies the immutable response version's server-side conversion rules.
+  HostFormResponseCanApplyProvider._({
+    required HostFormResponseCanApplyFamily super.from,
+    required ({String organizerId, String responseId}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostFormResponseCanApplyProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostFormResponseCanApplyHash();
+
+  @override
+  String toString() {
+    return r'hostFormResponseCanApplyProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    final argument = this.argument as ({String organizerId, String responseId});
+    return hostFormResponseCanApply(
+      ref,
+      organizerId: argument.organizerId,
+      responseId: argument.responseId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostFormResponseCanApplyProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostFormResponseCanApplyHash() =>
+    r'2caee51fc6ac1b5b8da0c4bce617122ea8fa2ebd';
+
+/// Applies the immutable response version's server-side conversion rules.
+
+final class HostFormResponseCanApplyFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<bool>,
+          ({String organizerId, String responseId})
+        > {
+  HostFormResponseCanApplyFamily._()
+    : super(
+        retry: null,
+        name: r'hostFormResponseCanApplyProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Applies the immutable response version's server-side conversion rules.
+
+  HostFormResponseCanApplyProvider call({
+    required String organizerId,
+    required String responseId,
+  }) => HostFormResponseCanApplyProvider._(
+    argument: (organizerId: organizerId, responseId: responseId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostFormResponseCanApplyProvider';
+}
+
 @ProviderFor(hostFormAnalytics)
 final hostFormAnalyticsProvider = HostFormAnalyticsFamily._();
 

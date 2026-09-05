@@ -51,51 +51,77 @@ class HostSavedAudienceOverview extends ConsumerWidget {
           ),
         ).value ??
         const HostSavedAudienceFilterOptions.empty();
+    final current = catchAsyncStateFromAsyncValue(members).value;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
-        context: context,
-        title: audience.name,
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: context.l10n.hostAudienceGroupTitle,
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      body: CatchRouteBody.standard(
-        child: CatchSectionList(
-          emptyStateOmitted: true,
+      bottomNavigationBar: current == null
+          ? null
+          : CatchBottomAction(
+              buttonKey: const ValueKey('host-saved-audience-message'),
+              label: context.l10n.hostAudienceOpenInbox,
+              onPressed:
+                  current.preview.matchCount == 0 ||
+                      current.loadMoreError != null
+                  ? null
+                  : () => context.goNamed(
+                      Routes.hostInboxScreen.name,
+                      queryParameters: {
+                        'workspace': 'campaigns',
+                        'compose': '1',
+                        'audienceId': audience.audienceId,
+                        'organizerId': audience.organizerId,
+                      },
+                    ),
+            ),
+      body: CatchRouteBody.standardConstrained(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchSection.fieldRows(
-              children: [
-                CatchField.action(
-                  key: const ValueKey('host-saved-audience-edit'),
-                  title: context.l10n.hostSavedAudienceEditRules,
-                  onTap: onEdit,
-                ),
-                CatchField.action(
-                  key: const ValueKey('host-saved-audience-refresh-preview'),
-                  title: context.l10n.hostSavedAudiencePreview,
-                  onTap: () => ref.invalidate(provider),
-                ),
-              ],
+            Text(audience.name, style: CatchTextStyles.headline(context)),
+            gapH8,
+            Text(
+              _savedAudienceDirectoryBody(
+                context,
+                current?.preview.audience ?? audience,
+              ),
+              style: CatchTextStyles.supporting(context),
             ),
-            CatchSection.fieldRows(
-              title: audience.definition.isStatic
-                  ? context.l10n.hostAudienceStaticMembership
-                  : audience.definition.join == HostSavedAudienceJoin.all
-                  ? context.l10n.hostSavedAudienceMatchAll
-                  : context.l10n.hostSavedAudienceMatchAny,
-              children: [
-                for (var i = 0; i < audience.definition.predicates.length; i++)
-                  CatchField.read(
-                    title: context.l10n.hostSavedAudienceCondition(
-                      number: i + 1,
+            gapH24,
+            CatchSection.divided(
+              first: true,
+              title: context.l10n.hostAudienceMembershipMode,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!audience.definition.isStatic &&
+                      audience.definition.predicates.length > 1)
+                    Text(
+                      audience.definition.join == HostSavedAudienceJoin.all
+                          ? context.l10n.hostSavedAudienceMatchAll
+                          : context.l10n.hostSavedAudienceMatchAny,
+                      style: CatchTextStyles.recordContext(context),
                     ),
-                    body: _savedAudienceRuleSummary(
-                      context,
-                      audience.definition.predicates[i],
-                      options,
+                  for (final predicate in audience.definition.predicates)
+                    Padding(
+                      padding: CatchInsets.contentVerticalCompact,
+                      child: Text(
+                        _savedAudienceRuleSummary(context, predicate, options),
+                        style: CatchTextStyles.recordBody(context),
+                      ),
                     ),
+                  CatchButton.command(
+                    key: const ValueKey('host-saved-audience-edit'),
+                    label: context.l10n.hostSavedAudienceEditRules,
+                    onPressed: onEdit,
                   ),
-              ],
+                ],
+              ),
             ),
+            gapH24,
             CatchAsyncValueView<HostSavedAudienceMembersState>(
               value: members,
               initialLoadTimeout: null,
@@ -109,55 +135,32 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               builder: (context, state) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchSection.fieldRows(
-                    children: [
-                      CatchField.read(
-                        title: context.l10n.hostSavedAudiencePeople,
-                        body: _savedAudienceDirectoryBody(
-                          context,
-                          state.preview.audience,
-                        ),
-                      ),
-                      CatchField.read(
-                        title: context.l10n.hostSavedAudienceEvaluated,
-                        body: DateFormat.yMMMd().add_jm().format(
-                          state.preview.evaluatedAt,
-                        ),
-                      ),
-                      CatchField.action(
-                        key: const ValueKey('host-saved-audience-message'),
-                        title: context.l10n.hostSavedAudienceMessage,
-                        body: context.l10n.hostSavedAudiencePreviewDisclosure,
-                        onTap:
-                            state.preview.matchCount == 0 ||
-                                state.loadMoreError != null
-                            ? null
-                            : () => context.goNamed(
-                                Routes.hostInboxScreen.name,
-                                queryParameters: {
-                                  'workspace': 'campaigns',
-                                  'compose': '1',
-                                  'audienceId': audience.audienceId,
-                                  'organizerId': audience.organizerId,
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-                  gapH24,
-                  CatchSection.fieldRows(
+                  CatchSection.divided(
+                    first: true,
                     title: context.l10n.hostSavedAudienceMembers,
+                    count: state.preview.matchCount,
+                    trailing: CatchTextButton(
+                      key: const ValueKey(
+                        'host-saved-audience-refresh-preview',
+                      ),
+                      label: context.l10n.hostSavedAudiencePreview,
+                      onPressed: () => ref.invalidate(provider),
+                    ),
                     children: [
                       if (state.members.isEmpty)
-                        CatchField.read(
-                          title: context.l10n.hostSavedAudienceNoMembers,
+                        Text(
+                          context.l10n.hostSavedAudienceNoMembers,
+                          style: CatchTextStyles.supporting(context),
                         ),
                       for (final member in state.members)
-                        CatchField.nav(
+                        CatchPersonRow.directory(
                           key: ValueKey(
                             'host-saved-audience-member-${member.contactId}',
                           ),
-                          title: member.displayName,
+                          data: CatchPersonRowData(
+                            name: member.displayName,
+                            seed: member.contactId,
+                          ),
                           onTap: () => context.pushNamed(
                             Routes.hostCustomerDetailScreen.name,
                             pathParameters: {'contactId': member.contactId},
@@ -179,16 +182,44 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                   if (state.preview.nextCursor != null &&
                       state.loadMoreError == null) ...[
                     gapH16,
-                    CatchButton(
+                    CatchButton.command(
                       key: const ValueKey('host-saved-audience-more-members'),
                       label: context.l10n.hostApplicationsLoadMore,
-                      variant: CatchButtonVariant.secondary,
-                      isLoading: state.loadingMore,
                       onPressed: state.loadingMore
                           ? null
                           : () => ref.read(provider.notifier).loadMore(),
                     ),
                   ],
+                  gapH24,
+                  CatchSection.divided(
+                    title: context.l10n.hostAudienceGroupReach,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          _savedAudienceReachBody(
+                            context,
+                            state.preview.reachSummary,
+                          ),
+                          style: CatchTextStyles.recordBody(context),
+                        ),
+                        gapH8,
+                        Text(
+                          context.l10n.hostAudienceGroupInboxHelp,
+                          style: CatchTextStyles.supporting(context),
+                        ),
+                        gapH8,
+                        Text(
+                          context.l10n.hostAudienceGroupChecked(
+                            date: DateFormat.yMMMd().add_jm().format(
+                              state.preview.evaluatedAt,
+                            ),
+                          ),
+                          style: CatchTextStyles.recordContext(context),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -197,6 +228,24 @@ class HostSavedAudienceOverview extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _savedAudienceReachBody(
+  BuildContext context,
+  HostAudienceReachSummary? reach,
+) {
+  if (reach == null) return context.l10n.hostAudienceGroupReachUnknown;
+  return [
+    if (reach.inCatch > 0)
+      context.l10n.hostAudienceReachCountInCatch(count: reach.inCatch),
+    if (reach.automatic > 0)
+      context.l10n.hostAudienceReachCountAutomatic(count: reach.automatic),
+    if (reach.byHand > 0)
+      context.l10n.hostAudienceReachCountByHand(count: reach.byHand),
+    if (reach.unavailable > 0)
+      context.l10n.hostAudienceReachCountUnavailable(count: reach.unavailable),
+    if (reach.total == 0) context.l10n.hostSavedAudienceNoMembers,
+  ].join(' · ');
 }
 
 String _savedAudienceRuleSummary(

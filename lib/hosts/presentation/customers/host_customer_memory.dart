@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -36,14 +37,13 @@ class HostCustomerMemoryPreview extends StatelessWidget {
     key: const ValueKey('host-customer-memory-preview'),
     title: context.l10n.hostCustomersMemory,
     children: [
-      CatchField.content(
+      CatchRecordRow(
         title: customer.manualTags.isEmpty
             ? context.l10n.hostCustomersNotes
             : customer.manualTags.map((tag) => tag.label).join(' · '),
-        body:
+        description:
             customer.notes.firstOrNull?.body ??
             context.l10n.hostCustomersNoNotes,
-        titleMaxLines: 3,
         icon: CatchIcons.editNoteOutlined,
         onTap: onOpenMemory,
       ),

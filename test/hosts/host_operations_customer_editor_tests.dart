@@ -51,7 +51,7 @@ void _registerHostOperationsCustomerEditorTests() {
     final avatar = tester.widget<CatchPersonAvatar>(
       find.byType(CatchPersonAvatar),
     );
-    expect(avatar.size, CatchSpacing.s16);
+    expect(avatar.size, CatchRecordTokens.avatarExtent);
     expect(find.text('Regular'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('host-customer-edit-details')));

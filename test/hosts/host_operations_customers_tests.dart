@@ -217,11 +217,8 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
     expect(find.text('Repeat runners'), findsOneWidget);
-    expect(
-      find.text('24 people\n14 IN CATCH · 8 BY HAND · 2 NO REACH'),
-      findsOneWidget,
-    );
-    expect(find.text('New audience'), findsOneWidget);
+    expect(find.textContaining('24 people · Checked'), findsOneWidget);
+    expect(find.text('New group'), findsOneWidget);
     expect(find.text('Archive'), findsNothing);
 
     await _pumpHostScreen(
@@ -248,7 +245,7 @@ void _registerHostOperationsCustomersTests() {
         ),
       ],
     );
-    expect(find.text('No saved audiences yet'), findsOneWidget);
+    expect(find.text('No groups yet'), findsOneWidget);
 
     await _pumpHostScreen(
       tester,
@@ -493,8 +490,8 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.text('People'), findsOneWidget);
-    expect(find.text('Audiences'), findsOneWidget);
-    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('Groups'), findsOneWidget);
+    expect(find.text('New group'), findsOneWidget);
     expect(find.text('Repeat runners'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-customers-add-customer')),
@@ -650,6 +647,11 @@ void _registerHostOperationsCustomersTests() {
           .title,
       'Email',
     );
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-add-customer-memory')),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-add-customer-memory')));
+    await pumpFeatureUi(tester);
     expect(
       tester
           .widget<CatchField>(
@@ -659,7 +661,7 @@ void _registerHostOperationsCustomersTests() {
       'Private note',
     );
     expect(
-      find.textContaining('never grant messaging permission'),
+      find.textContaining('does not grant permission to send messages'),
       findsOneWidget,
     );
 
@@ -678,6 +680,63 @@ void _registerHostOperationsCustomersTests() {
       findsOneWidget,
     );
   });
+
+  for (final endpoint in ['phone', 'email']) {
+    testWidgets(
+      'Add person accepts only $endpoint and retains values on failure',
+      (tester) async {
+        final controller = _CreatePersonProbe();
+        await _pumpHostScreen(
+          tester,
+          const HostAddCustomerScreen(organizerId: 'organizer-1'),
+          overrides: [
+            hostCustomersControllerProvider.overrideWithValue(controller),
+          ],
+        );
+        await tester.enterText(
+          find.descendant(
+            of: find.byKey(const ValueKey('host-add-customer-name')),
+            matching: find.byType(TextField),
+          ),
+          'Maya Kapoor',
+        );
+        final field = find.descendant(
+          of: find.byKey(ValueKey('host-add-customer-$endpoint')),
+          matching: find.byType(TextField),
+        );
+        await tester.enterText(
+          field,
+          endpoint == 'phone' ? '+919876543210' : 'MAYA@Example.COM',
+        );
+        await tester.tap(
+          find.byKey(const ValueKey('host-add-customer-submit')),
+        );
+        await pumpFeatureUi(tester);
+        expect(
+          controller.requests,
+          hasLength(1),
+          reason: tester.allStates
+              .whereType<FormFieldState>()
+              .map((s) => '${s.value}: ${s.errorText}')
+              .join(' | '),
+        );
+        final request = controller.requests.single;
+        expect(request['name'], 'Maya Kapoor');
+        expect(request['phone'], endpoint == 'phone' ? '+919876543210' : null);
+        expect(
+          request['email'],
+          endpoint == 'email' ? 'maya@example.com' : null,
+        );
+        expect(request['note'], isNull);
+        expect(find.text('Maya Kapoor'), findsOneWidget);
+        expect(
+          find.text('Add or keep at least one mobile number or email address.'),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets('saved audience directory exposes one create action', (
     tester,
@@ -729,11 +788,22 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    expect(find.text('New audience'), findsOneWidget);
+    expect(find.text('New group'), findsOneWidget);
     expect(find.text('Regular customers'), findsOneWidget);
-    expect(find.text('9 people'), findsOneWidget);
+    expect(find.textContaining('9 people'), findsOneWidget);
     expect(find.text('Archive'), findsNothing);
-    expect(find.text('Refresh exact preview'), findsNothing);
+    expect(find.text('Refresh'), findsNothing);
+    await tester.tap(find.text('All groups'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Selected people').last);
+    await pumpFeatureUi(tester);
+    expect(find.text('Regular customers'), findsNothing);
+    expect(find.text('No groups yet'), findsNothing);
+    await tester.tap(find.text('Selected people').first);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('All groups').last);
+    await pumpFeatureUi(tester);
+    expect(find.text('Regular customers'), findsOneWidget);
   });
 
   testWidgets('saved audience create and edit use full-page routes', (
@@ -783,10 +853,10 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    expect(find.text('New audience'), findsOneWidget);
-    expect(find.text('AUDIENCE DETAILS'), findsOneWidget);
+    expect(find.text('New group'), findsOneWidget);
+    expect(find.text('GROUP DETAILS'), findsOneWidget);
     expect(find.text('CONDITION 1'), findsOneWidget);
-    expect(find.text('Create audience'), findsOneWidget);
+    expect(find.text('Create group'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-saved-audience-create')),
       findsNothing,
@@ -818,9 +888,9 @@ void _registerHostOperationsCustomersTests() {
     );
     await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
     await pumpFeatureUi(tester);
-    expect(find.text('Save changes'), findsOneWidget);
-    expect(find.text('CURRENT PREVIEW'), findsOneWidget);
-    expect(find.text('Refresh exact preview'), findsOneWidget);
+    expect(find.text('Save and check membership'), findsOneWidget);
+    expect(find.text('SAVED PREVIEW'), findsOneWidget);
+    expect(find.text('Refresh'), findsOneWidget);
     expect(find.text('Archive'), findsOneWidget);
   });
 }
@@ -839,4 +909,24 @@ class _CustomersTestPrimaryRail extends StatelessWidget
   @override
   Widget build(BuildContext context) =>
       SizedBox(height: preferredSizeFor(context).height);
+}
+
+class _CreatePersonProbe extends Fake implements HostCustomersController {
+  final requests = <Map<String, String?>>[];
+  @override
+  Future<HostCreatedCustomer> createCustomer({
+    required String organizerId,
+    required String displayName,
+    String? phoneE164,
+    String? email,
+    String? initialNote,
+  }) async {
+    requests.add({
+      'name': displayName,
+      'phone': phoneE164,
+      'email': email,
+      'note': initialNote,
+    });
+    throw StateError('Simulated retryable save failure');
+  }
 }

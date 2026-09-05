@@ -63,11 +63,11 @@ void _registerHostOperationsCustomerCommunicationsTests() {
           .getTopLeft(find.byType(HostCustomerMemoryPreview))
           .dy;
       final activityY = tester
-          .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
+          .getTopLeft(find.byType(HostCustomerDetailOverview))
           .dy;
       expect(identityY, lessThan(memoryY));
       expect(activityY, lessThan(memoryY));
-      expect(find.byType(HostCustomerRevenueCard), findsOneWidget);
+      expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
       expect(
         find.byKey(const ValueKey('host-customer-controls')),
         findsNothing,
@@ -77,15 +77,12 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       );
       await pumpFeatureUi(tester);
       expect(find.byType(HostCustomerMemorySection), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('host-customer-activity')),
-        findsNothing,
-      );
+      expect(find.byType(HostCustomerDetailOverview), findsNothing);
       await tester.ensureVisible(find.text('History'));
       await tester.tap(find.text('History'));
       await pumpFeatureUi(tester);
       expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
-      expect(find.byType(HostCustomerRevenueCard), findsNothing);
+      expect(find.byType(HostCustomerDetailOverview), findsNothing);
       expect(
         find.byKey(const ValueKey('host-customer-controls')),
         findsNothing,
@@ -184,19 +181,26 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       ],
     );
 
-    final revenueTop = tester
-        .getTopLeft(find.byType(HostCustomerRevenueCard))
-        .dy;
-    final attendanceTop = tester
-        .getTopLeft(find.byKey(const ValueKey('host-customer-activity')))
-        .dy;
-    expect(revenueTop, closeTo(attendanceTop, 0.5));
-    expect(
-      tester
-          .getRect(find.byKey(const ValueKey('host-customer-activity')))
-          .right,
-      lessThan(tester.getRect(find.byType(HostCustomerRevenueCard)).left),
+    final overview = find.byType(HostCustomerDetailOverview);
+    final attendance = find.descendant(
+      of: overview,
+      matching: find.text('Attended'),
     );
+    final spend = find.descendant(
+      of: overview,
+      matching: find.textContaining('Recorded spend'),
+    );
+    expect(attendance, findsOneWidget);
+    expect(spend, findsOneWidget);
+    expect(
+      tester.getTopLeft(attendance).dy,
+      closeTo(tester.getTopLeft(spend).dy, 0.5),
+    );
+    expect(
+      tester.getRect(attendance).right,
+      lessThan(tester.getRect(spend).left),
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('customer WhatsApp handoff pre-fills copy and opens the app', (

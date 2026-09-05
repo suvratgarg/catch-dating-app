@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -6,9 +7,12 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -32,6 +36,9 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sources = catchAsyncStateFromAsyncValue(
+      ref.watch(hostSavedAudienceFilterOptionsProvider(organizerId)),
+    ).value;
     final request = HostApplicationListRequest(
       organizerId: organizerId,
       contactId: contactId,
@@ -51,15 +58,19 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
               if (state.applications.isEmpty)
                 CatchField.read(body: context.l10n.hostCustomersNoApplications),
               for (final application in state.applications)
-                CatchField.nav(
+                CatchRecordRow(
                   key: ValueKey(
                     'host-customer-application-${application.applicationId}',
                   ),
-                  title: AppTimeFormatters.shortDate(application.submittedAt),
-                  body: hostApplicationStatusLabel(
+                  title: hostApplicationContextLabel(
                     context,
-                    application.reviewStatus,
+                    formId: application.formId,
+                    targetKind: application.targetKind,
+                    targetId: application.targetId,
+                    sources: sources,
                   ),
+                  metadata:
+                      '${hostApplicationStatusLabel(context, application.reviewStatus)} · ${AppTimeFormatters.shortDate(application.submittedAt)}',
                   icon: CatchIcons.tabForms,
                   onTap: () => onOpenApplication(application.applicationId),
                 ),
@@ -81,12 +92,17 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
             ),
           if (state.applications.isNotEmpty) ...[
             gapH24,
-            HostCustomerApplicationSnapshot(
-              organizerId: organizerId,
-              applicationId: state.applications.first.applicationId,
-              onOpen: () =>
-                  onOpenApplication(state.applications.first.applicationId),
-              onOpenContact: onOpenContact,
+            CatchFieldLanes.single(
+              child: CatchField.control(
+                title: context.l10n.hostCustomersLatestSubmittedDetails,
+                control: HostCustomerApplicationSnapshot(
+                  organizerId: organizerId,
+                  applicationId: state.applications.first.applicationId,
+                  onOpen: () =>
+                      onOpenApplication(state.applications.first.applicationId),
+                  onOpenContact: onOpenContact,
+                ),
+              ),
             ),
           ],
         ],

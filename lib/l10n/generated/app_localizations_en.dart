@@ -13696,20 +13696,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersNotSaved => 'Not saved';
 
   @override
-  String get hostCustomersAdd => 'Add customer';
+  String get hostCustomersAdd => 'Add person';
 
   @override
-  String get hostCustomersAddTitle => 'Add a customer';
+  String get hostCustomersAddTitle => 'Add person';
 
   @override
   String get hostCustomersName => 'Name shown to your team';
-
-  @override
-  String get hostCustomersNameHelp => 'Use the name your team will recognize.';
-
-  @override
-  String get hostCustomersAddHelp =>
-      'Add a name and at least one way to reach this customer. Phone and email stay unverified and never grant messaging permission.';
 
   @override
   String get hostCustomersNameRequired => 'Enter the customer’s name.';
@@ -13786,11 +13779,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersViewAudiences => 'Groups';
 
   @override
-  String get hostSavedAudienceSaveTitle => 'Save this audience';
+  String get hostSavedAudienceSaveTitle => 'Save this group';
 
   @override
   String get hostSavedAudienceSaveBody =>
-      'Name this reusable customer group. Messaging will use this saved definition and recheck eligibility before sending.';
+      'Name this reusable customer group. Inbox will use this saved definition and recheck eligibility before sending.';
 
   @override
   String get hostSavedAudienceName => 'Group name';
@@ -13806,7 +13799,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create a group to keep the right people together. Use it in Inbox when you are ready to send.';
 
   @override
-  String get hostSavedAudienceFieldLabel => 'Saved audience';
+  String get hostSavedAudienceFieldLabel => 'Saved group';
 
   @override
   String hostSavedAudienceOption({required String name, required int count}) {
@@ -13823,10 +13816,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudiencesManage => 'Groups';
 
   @override
-  String get hostSavedAudiencesWorkspaceBody =>
-      'Define groups here. Send from Messaging.';
-
-  @override
   String get hostSavedAudiencesSearch => 'Search groups';
 
   @override
@@ -13840,20 +13829,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostSavedAudienceNew => 'New group';
 
   @override
-  String get hostSavedAudienceCreate => 'Create audience';
+  String get hostSavedAudienceDetails => 'Group details';
 
   @override
-  String get hostSavedAudienceSaveChanges => 'Save changes';
-
-  @override
-  String get hostSavedAudienceEditorBody =>
-      'Name a reusable group and define who belongs in it. Messaging can select this audience, but cannot change its rules.';
-
-  @override
-  String get hostSavedAudienceDetails => 'Audience details';
-
-  @override
-  String get hostSavedAudienceNameRequired => 'Add an audience name.';
+  String get hostSavedAudienceNameRequired => 'Add an group name.';
 
   @override
   String get hostSavedAudienceMatch => 'Match rules';
@@ -13941,40 +13920,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostSavedAudienceManagedReachBody =>
-      'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Messaging rechecks this at send time.';
+      'Includes only customers currently eligible for an organizer-managed WhatsApp campaign. Inbox rechecks this at send time.';
 
   @override
   String get hostSavedAudienceCompleteRules =>
-      'Complete every audience condition before saving.';
+      'Complete every group condition before saving.';
 
   @override
-  String get hostSavedAudienceCurrentPreview => 'Current preview';
+  String get hostSavedAudienceCurrentPreview => 'Saved preview';
 
   @override
   String get hostSavedAudiencePeople => 'People and reach';
 
   @override
-  String get hostSavedAudiencePreviewDisclosure =>
-      'Counts come from an exact server preview. Messaging checks the audience and each route again before sending.';
-
-  @override
-  String get hostSavedAudienceArchiveTitle => 'Archive this audience?';
+  String get hostSavedAudienceArchiveTitle => 'Archive this group?';
 
   @override
   String get hostSavedAudienceArchiveBody =>
-      'It will disappear from new sends. Historical sends keep the audience snapshot they used.';
+      'It will disappear from new sends. Historical sends keep the group snapshot they used.';
 
   @override
-  String get hostSavedAudienceNotFound => 'This saved audience is unavailable.';
+  String get hostSavedAudienceNotFound => 'This saved group is unavailable.';
 
   @override
-  String get hostSavedAudiencePreview => 'Refresh exact preview';
+  String get hostSavedAudiencePreview => 'Refresh';
 
   @override
   String get hostSavedAudienceArchive => 'Archive';
 
   @override
-  String get hostSavedAudienceNeverPreviewed => 'Not previewed yet';
+  String get hostSavedAudienceNeverPreviewed => 'Not checked yet';
 
   @override
   String hostSavedAudiencePeopleCount({required int count}) {
@@ -13989,46 +13964,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostAudienceReachCountInCatch({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count IN CATCH',
-      zero: '0 IN CATCH',
-    );
-    return '$_temp0';
+    return '$count in Catch';
   }
 
   @override
   String hostAudienceReachCountAutomatic({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count AUTO',
-      zero: '0 AUTO',
-    );
-    return '$_temp0';
+    return '$count automatic';
   }
 
   @override
   String hostAudienceReachCountByHand({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count BY HAND',
-      zero: '0 BY HAND',
-    );
-    return '$_temp0';
+    return '$count by hand';
   }
 
   @override
   String hostAudienceReachCountUnavailable({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count NO REACH',
-      zero: '0 NO REACH',
-    );
-    return '$_temp0';
+    return '$count unavailable';
   }
 
   @override
@@ -14543,7 +14494,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Clear the manual tag filter to export.';
 
   @override
-  String get hostCustomersMemory => 'Memory';
+  String get hostCustomersMemory => 'Notes & tags';
 
   @override
   String get hostCustomersOverview => 'Overview';
@@ -14898,10 +14849,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
 
   @override
-  String get hostApplicationsSubtitle =>
-      'Review sign-ups from Catch forms or imported spreadsheets in one queue.';
-
-  @override
   String get hostApplicationsSearch => 'Search by applicant name';
 
   @override
@@ -14925,11 +14872,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationsReviewStatusFilter => 'Filter by review status';
-
-  @override
-  String hostApplicationsReviewStatusFilterValue({required String status}) {
-    return 'Review status: $status';
-  }
 
   @override
   String get hostApplicationsStatusSubmitted => 'Submitted';
@@ -14967,7 +14909,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsLoadMore => 'Load more applications';
 
   @override
-  String get hostApplicationAnswersTitle => 'Application answers';
+  String get hostApplicationAnswersTitle => 'Answers';
 
   @override
   String get hostApplicationNotAnswered => 'Not answered';
@@ -15062,10 +15004,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormResponseNotFound => 'Response not found';
 
   @override
-  String get hostFormsSubtitle =>
-      'Applications, registrations, waivers, feedback, and surveys in one reusable workspace.';
-
-  @override
   String get hostFormsSearch => 'Search forms';
 
   @override
@@ -15087,22 +15025,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormsActions => 'Form actions';
-
-  @override
-  String hostFormsRowSummary({
-    required String status,
-    required int count,
-    required String consequence,
-  }) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count responses',
-      one: '1 response',
-      zero: 'No responses',
-    );
-    return '$status · $_temp0\n$consequence';
-  }
 
   @override
   String get hostFormConsequencesUnavailable =>
@@ -15175,9 +15097,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormsLoadMore => 'Load more forms';
-
-  @override
-  String get hostFormsOpen => 'Edit form';
 
   @override
   String get hostFormsDuplicate => 'Duplicate form';
@@ -15270,32 +15189,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostFormBuilderTitle => 'Form builder';
-
-  @override
-  String get hostFormBuildTab => 'Build';
-
-  @override
-  String hostFormResponsesTab({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Responses · $count',
-      one: 'Responses · 1',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get hostFormQuestionsTitle => 'Questions';
-
-  @override
-  String get hostFormQuestionsPromptHelp =>
-      'Choose the questions that will help you decide who to call.';
-
-  @override
-  String get hostFormSettingsPromptHelp =>
-      'Set access, availability, confirmation, and privacy.';
 
   @override
   String get hostFormPublishPrompt => 'Ready to publish?';
@@ -15409,10 +15303,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormShare => 'Share form';
 
   @override
-  String get hostFormShareSubtitle =>
-      'Publish one link everywhere, or create tracked links for each channel.';
-
-  @override
   String get hostFormCanonicalLink => 'Public link';
 
   @override
@@ -15427,13 +15317,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormShareLink => 'Share link';
-
-  @override
-  String get hostFormTrackedLinks => 'Tracked links';
-
-  @override
-  String get hostFormTrackedLinksHelp =>
-      'Use a different link for Instagram, WhatsApp, email, or a partner so response attribution stays visible.';
 
   @override
   String get hostFormCreateTrackedLink => 'Create tracked link';
@@ -15795,9 +15678,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormRetentionCopy => 'Retention statement';
 
   @override
-  String get hostFormCompletion => 'After submission';
-
-  @override
   String get hostFormCompletionMessageLabel => 'Confirmation message';
 
   @override
@@ -15910,14 +15790,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsViewResponses => 'Responses';
 
   @override
-  String get hostFormResponsesSubtitle =>
-      'Review every submission, preserve its source, and choose what happens next.';
-
-  @override
   String get hostFormResponsesSearch => 'Search responses';
-
-  @override
-  String get hostFormResponsesAll => 'All responses';
 
   @override
   String get hostFormResponsesSubmitted => 'Submitted';
@@ -15946,14 +15819,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormResponsesLoadMore => 'Load more responses';
 
   @override
-  String hostFormResponseRowSummary({
-    required String formTitle,
-    required String source,
-  }) {
-    return '$formTitle · $source';
-  }
-
-  @override
   String get hostFormResponseDirectSource => 'Direct link';
 
   @override
@@ -15966,16 +15831,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsAutomationsAction => 'Manage automations';
 
   @override
-  String get hostFormResponseTitle => 'Response';
-
-  @override
   String get hostFormResponseIdentitySection => 'Respondent';
 
   @override
   String get hostFormResponseAnswersSection => 'Answers';
-
-  @override
-  String get hostFormResponseOperationsSection => 'Next actions';
 
   @override
   String get hostFormResponseEmail => 'Email';
@@ -16007,10 +15866,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostFormConvertCrm => 'Create CRM contact';
-
-  @override
-  String get hostFormConvertApplication => 'Add to applications';
+  String get hostFormConvertCrm => 'Add to People';
 
   @override
   String get hostFormConvertAttendee => 'Propose attendee';
@@ -16036,9 +15892,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAnalyticsTitle => 'Results';
 
   @override
-  String get hostFormAnalyticsFunnel => 'Response funnel';
-
-  @override
   String get hostFormAnalyticsOpens => 'Opens';
 
   @override
@@ -16051,13 +15904,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAnalyticsCompletionRate => 'Completion rate';
 
   @override
-  String get hostFormAnalyticsMedianTime => 'Median completion';
-
-  @override
   String get hostFormAnalyticsSources => 'Sources';
-
-  @override
-  String get hostFormAnalyticsQuestions => 'Question results';
 
   @override
   String get hostFormAnalyticsPrivacyNotice =>
@@ -16092,7 +15939,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormAutomationNotifyPreset => 'Notify my team';
 
   @override
-  String get hostFormAutomationCrmPreset => 'Create CRM contacts';
+  String get hostFormAutomationCrmPreset => 'Add to People';
 
   @override
   String get hostFormAutomationSubmittedTrigger =>
@@ -16104,17 +15951,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormAutomationAnswerTrigger => 'When an answer matches';
-
-  @override
-  String hostFormAutomationActionCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count actions',
-      one: '1 action',
-    );
-    return '$_temp0';
-  }
 
   @override
   String hostFormAutomationRunSummary({
@@ -16151,14 +15987,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'An existing record already matches this response.';
 
   @override
-  String hostFormResponseFilteredTo({required String formTitle}) {
-    return 'Showing responses for $formTitle';
-  }
-
-  @override
-  String get hostFormResponseClearFormFilter => 'Show all';
-
-  @override
   String hostFormAnalyticsSourceSummary({
     required int opens,
     required int starts,
@@ -16192,17 +16020,6 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count answers',
       one: '1 answer',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostFormAnalyticsChoiceCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count responses',
-      one: '1 response',
     );
     return '$_temp0';
   }
@@ -17333,32 +17150,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'More source records exist. Only the loaded records are shown.';
 
   @override
-  String get hostApplicationsReviewQueue => 'Review applications';
-
-  @override
-  String get hostApplicationsReviewQueueBody =>
-      'Review submissions, accept people, or keep them on your waitlist.';
-
-  @override
-  String get hostApplicationOpenPerson => 'Open person in People';
+  String get hostApplicationOpenPerson => 'Open person';
 
   @override
   String get hostApplicationOpenResponse => 'Open original response';
 
   @override
-  String get hostSavedAudienceEditRules => 'Edit audience';
+  String get hostSavedAudienceEditRules => 'Edit rules';
 
   @override
-  String get hostSavedAudienceEvaluated => 'Last evaluated';
+  String get hostSavedAudienceMembers => 'People';
 
   @override
-  String get hostSavedAudienceMessage => 'Message this audience';
-
-  @override
-  String get hostSavedAudienceMembers => 'People in this audience';
-
-  @override
-  String get hostSavedAudienceNoMembers => 'No people in this audience';
+  String get hostSavedAudienceNoMembers => 'No people in this group';
 
   @override
   String get hostAudienceRuleApplication => 'Application status';
@@ -17435,7 +17239,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You have selected the maximum of 2,500 people.';
 
   @override
-  String get hostAudienceMembershipMode => 'Audience membership';
+  String get hostAudienceMembershipMode => 'Membership';
 
   @override
   String get hostAudienceRuleMembership => 'Match conditions automatically';
@@ -17605,10 +17409,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Complete the trigger, condition and action settings.';
 
   @override
-  String get hostAutomationOverview =>
-      'Welcome accepted applicants, follow up after attendance, and connect form activity to your team and tools.';
-
-  @override
   String get hostAutomationRunHelp =>
       'A successful message action means the send was queued. Check its delivery in Messaging. Temporary failures retry up to five times; successful actions are retained.';
 
@@ -17763,4 +17563,164 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudiencePreparingExport => 'Preparing export…';
+
+  @override
+  String get hostAudienceResponseTitle => 'Response';
+
+  @override
+  String get hostAudienceSubmissionDetails => 'Submission details';
+
+  @override
+  String get hostAudienceReviewApplication => 'Review application';
+
+  @override
+  String get hostAudienceApplicationTitle => 'Application';
+
+  @override
+  String get hostAudienceApplicationAccepted =>
+      'Accepted into People. Event admission is handled separately.';
+
+  @override
+  String get hostAudienceApplicationAdmission =>
+      'Accepting adds this person to People. Event admission is handled separately.';
+
+  @override
+  String get hostAudienceApplicationsNew => 'New applications';
+
+  @override
+  String get hostAudienceApplicationsAll => 'All applications';
+
+  @override
+  String get hostAudienceApplicationEvent => 'Event application';
+
+  @override
+  String get hostAudienceApplicationOrganizer => 'Organizer application';
+
+  @override
+  String get hostAudienceApplicationActivity => 'Activity';
+
+  @override
+  String get hostAudienceManualGroup => 'Selected people';
+
+  @override
+  String get hostAudienceAutomaticGroup => 'Automatic membership';
+
+  @override
+  String get hostAudienceGroupMembershipHelp =>
+      'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.';
+
+  @override
+  String hostAudienceGroupChecked({required String date}) {
+    return 'Checked $date';
+  }
+
+  @override
+  String get hostAudienceGroupTitle => 'Group';
+
+  @override
+  String get hostAudienceEditGroup => 'Edit group';
+
+  @override
+  String get hostAudienceOpenInbox => 'Open in Inbox';
+
+  @override
+  String get hostAudienceGroupReach => 'Reach';
+
+  @override
+  String get hostAudienceGroupInboxHelp =>
+      'Inbox checks available contact routes before sending.';
+
+  @override
+  String get hostAudienceGroupReachUnknown =>
+      'Refresh membership to check contact options.';
+
+  @override
+  String get hostAudienceSaveCheckMembership => 'Save and check membership';
+
+  @override
+  String get hostAudienceCreateCheckMembership => 'Create group';
+
+  @override
+  String get hostAudienceSavedGroupPreviewHelp =>
+      'This is the saved group. Saving changes checks membership again.';
+
+  @override
+  String get hostAudienceSavedPreviewFailed =>
+      'Group saved. Membership could not be checked.';
+
+  @override
+  String get hostAudienceAllAutomations => 'Audience automations';
+
+  @override
+  String get hostAudienceThisForm => 'Selected form';
+
+  @override
+  String get hostAudienceAutomationScopeAll =>
+      'Rules across forms and audience activity.';
+
+  @override
+  String get hostAudienceAutomationScopeForm => 'Rules that run for this form.';
+
+  @override
+  String get hostAudienceAutomationActive => 'Active';
+
+  @override
+  String get hostAudienceAutomationPaused => 'Paused';
+
+  @override
+  String get hostAudienceAutomationShortcuts => 'Quick setup';
+
+  @override
+  String hostAudienceAutomationDelay({required int minutes}) {
+    return 'After $minutes minutes';
+  }
+
+  @override
+  String get hostAudienceAutomationWhen => 'When';
+
+  @override
+  String get hostAudienceAutomationThen => 'Then';
+
+  @override
+  String get hostAudienceApplicationApprovedUnlinked =>
+      'Application approved. Event admission is handled separately.';
+
+  @override
+  String get hostAudienceContactMethod => 'Contact method';
+
+  @override
+  String get hostAudienceAddedContactPermission =>
+      'These details were added by you. Adding a person does not grant permission to send messages.';
+
+  @override
+  String get hostAudienceRecentlyChecked => 'Recently checked';
+
+  @override
+  String get hostAudienceAllGroups => 'All groups';
+
+  @override
+  String hostAudienceAutomationConsequence({
+    required String trigger,
+    required String actions,
+  }) {
+    return '$trigger, then $actions';
+  }
+
+  @override
+  String get hostAudienceAtAGlance => 'At a glance';
+
+  @override
+  String get hostAudienceContactRequirement =>
+      'Add at least one contact method.';
+
+  @override
+  String get hostAudienceRetrySourceNames =>
+      'Form and event names unavailable · Retry';
+
+  @override
+  String get hostAudienceWhoWillBelong => 'Who will belong';
+
+  @override
+  String get hostAudienceMembershipCheckOnSave =>
+      'Membership is checked when you save. Incomplete conditions must be finished first.';
 }

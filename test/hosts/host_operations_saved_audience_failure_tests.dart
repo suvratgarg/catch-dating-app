@@ -35,8 +35,12 @@ void _registerHostOperationsSavedAudienceFailureTests() {
 
     expect(functions.upsertCalls, hasLength(1));
     expect(functions.previewCalls, hasLength(1));
-    expect(find.text('Save changes'), findsOneWidget);
+    expect(find.text('Save and check membership'), findsOneWidget);
     expect(find.text('Friday regulars'), findsWidgets);
+    expect(
+      find.text('Group saved. Membership could not be checked.'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
     await pumpFeatureUi(tester);

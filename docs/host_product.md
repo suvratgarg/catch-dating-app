@@ -2655,6 +2655,37 @@ visual, release, or runtime verification.
    event. Resolve current organizer-scoped source facts on the server; do not
    copy private Consumer attributes or execute arbitrary queries.
 
+### Audience layout and record hierarchy
+
+- The root modes are People, Groups, Forms and Responses. The existing
+  `audiences` wire value remains compatible; changing tabs preserves the selected
+  form and organizer. Directories use shared record/person rows with separate
+  subject, context, status and activity lines.
+- A form has Overview, Questions and Responses, with Settings as a contextual
+  view of the same editor. Drafts open Questions; published forms open Overview.
+  Preserve autosave, undo, version review and the wider editor composition.
+  Share puts the public link first and reveals QR, tracking and embed tools on
+  demand. Results states its published version and completion denominator;
+  export uses that version. Question preview names the renderer-only scope.
+- Response detail presents the respondent, immutable answers and submission
+  context. Application conversion eligibility comes from the submitted version's
+  server preview. Linked records remain reachable; withdrawn responses expose no
+  conversion mutations. Application review retains its independent lifecycle,
+  private note and explicit conversion review. Current form/event names come from
+  one bounded organizer source lookup, with retry and category fallbacks.
+- Groups distinguish automatic rules from selected people. Directory filtering
+  and sorting operate on the complete bounded set. Detail puts members before
+  channel reach and labels the evaluation time. The editor summarizes unsaved
+  conditions separately from the saved preview; a successful save followed by a
+  failed membership check remains visibly saved and can retry evaluation.
+- Automation rows read as trigger then consequence, with form scope and enabled
+  state. Editing owns enable/pause; run outcomes remain a separate, paged section.
+- Person detail uses Overview, Details, Notes & tags and History. Overview shows
+  attendance and currency-separated recorded spend, with source coverage and
+  breakdown access. Details links original forms/applications and discloses the
+  latest submitted answers. Add person requires a name and at least one contact
+  method; private notes remain optional and messaging permission stays separate.
+
 ### Spend, static membership, and automation requirements
 
 Required behavior across the three capabilities:
@@ -2684,8 +2715,8 @@ Required behavior across the three capabilities:
 
 ### Exclusions
 
-Visual redesign and render matching remain deferred. Use existing Catch
-components. This scope does not add arbitrary nested expressions, a visual
+Use the existing Catch primitives and the Audience layout requirements below.
+This scope does not add arbitrary nested expressions, a visual
 workflow canvas, imported-spend reconciliation, additional messaging providers,
 or bulk historical automation replay. Deployment and activation evidence are
 owned by `docs/release_operations.md`.
@@ -2741,7 +2772,7 @@ Current navigation and implementation references come from the generated Host
 feature READMEs. Close a decision by changing its policy and relevant source or
 tests; retain execution history in Git and CI.
 
-- Audience is the canonical Host destination at `/host/audience`. People, Audiences, Forms, and Responses are peer modes; legacy `/host/customers` and `/host/forms` paths redirect into Audience. The generated README is the source for routes, code owners, handoffs, and exclusions.
+- Audience is the canonical Host destination at `/host/audience`. People, Groups, Forms, and Responses are peer modes; legacy `/host/customers` and `/host/forms` paths redirect into Audience. The generated README is the source for routes, code owners, handoffs, and exclusions.
 - Host Event Manage remains the single per-event operations workspace for setup, live attendance/Event Success, report, cancellation, and unused-event deletion. Today and creation success are discovery/handoff surfaces; Event Detail does not grow a second Host operations section.
 - Organizer owns organizer identity, settings, team, and payment-account configuration. Use `lib/hosts/organizer/README.md` for current route and code ownership; keep these controls out of Audience and event-specific runtime screens.
 - The Host web target shares the Host Flutter product. Do not create a parallel React Host dashboard.

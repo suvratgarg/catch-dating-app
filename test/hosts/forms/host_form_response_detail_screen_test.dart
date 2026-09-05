@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
@@ -26,7 +26,9 @@ void main() {
     );
     expect(find.text('Maya Kapoor'), findsOneWidget);
     expect(find.text('Saturday Social application'), findsOneWidget);
-    expect(find.text('Submitted · Phone'), findsOneWidget);
+    expect(find.textContaining('Published version 1'), findsOneWidget);
+    expect(find.text('Submission details'), findsOneWidget);
+    expect(find.text('Consent version'), findsNothing);
     expect(
       find.byKey(const ValueKey('host-form-response-call')),
       findsOneWidget,
@@ -37,7 +39,7 @@ void main() {
     );
     expect(find.text('Why do you want to join?'), findsOneWidget);
     expect(find.text('I love meeting new people in the city.'), findsOneWidget);
-    expect(find.byType(CatchBottomDock), findsOneWidget);
+    expect(find.byType(CatchBottomAction), findsOneWidget);
     expect(
       find.byKey(const ValueKey('host-form-response-convert-application')),
       findsOneWidget,
@@ -63,7 +65,7 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-    final name = find.byKey(const ValueKey('host-form-response-name'));
+    final name = find.text('Maya Kapoor');
     final status = find.byKey(const ValueKey('host-form-response-status'));
     await pumpUntilFound(tester, name);
     expect(
@@ -80,15 +82,42 @@ void main() {
           .height,
       greaterThan(CatchSpacing.s12),
     );
-    expect(
-      tester
-          .getSize(find.byKey(const ValueKey('host-form-response-convert-crm')))
-          .height,
-      greaterThan(CatchSpacing.s12),
-    );
-    expect(find.byType(CatchBottomDock), findsOneWidget);
+    expect(find.byType(CatchBottomAction), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'Non-application responses offer People without an application CTA',
+    (tester) async {
+      await _pumpDetail(tester, canApply: false);
+      expect(
+        find.byKey(const ValueKey('host-form-response-convert-application')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const ValueKey('host-form-response-convert-crm-primary')),
+        findsOneWidget,
+      );
+      expect(find.text('Add to People'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'Withdrawn responses preserve answers without conversion actions',
+    (tester) async {
+      await _pumpDetail(tester, withdrawn: true);
+      expect(find.byType(CatchBottomAction), findsNothing);
+      expect(
+        find.byKey(const ValueKey('host-form-response-convert-crm')),
+        findsNothing,
+      );
+      expect(
+        find.text('I love meeting new people in the city.'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 Future<void> _pumpDetail(
@@ -97,15 +126,25 @@ Future<void> _pumpDetail(
   ThemeData? theme,
   double textScale = 1,
   bool disableAnimations = false,
+  bool canApply = true,
+  bool withdrawn = false,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
-  final detail = HostFormResponseDetail.fromCallableData(_detailMap());
+  final data = _detailMap();
+  if (withdrawn) {
+    (data['response'] as Map<String, Object?>)['status'] = 'withdrawn';
+  }
+  final detail = HostFormResponseDetail.fromCallableData(data);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        hostFormResponseCanApplyProvider(
+          organizerId: 'org_1',
+          responseId: 'response_1',
+        ).overrideWith((ref) => canApply),
         hostFormResponseDetailProvider(
           organizerId: 'org_1',
           responseId: 'response_1',

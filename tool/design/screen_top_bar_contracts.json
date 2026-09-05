@@ -261,8 +261,7 @@
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "titlePolicy": "routeOrIdentity"
+      "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
@@ -275,8 +274,8 @@
     },
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-      "role": "screen", "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar", "surface": "CatchRouteScaffold",
+      "role": "compact", "expression": "CatchTopBar",
+      "owner": "CatchTopBar", "surface": "CatchRouteScaffold",
       "leading": "back", "occurrences": 1
     },
     {
@@ -416,6 +415,13 @@
     }
   ],
   "manualHeaders": [
+    {
+      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+      "symbol": "HostFormWorkspaceHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Form identity and its workspace tabs are content beneath the canonical compact Form route bar; route navigation remains in CatchTopBar."
+    },
     {
       "path": "lib/hosts/presentation/club_management/create/widgets/create_club_step_header.dart",
       "symbol": "CreateClubStepHeader",

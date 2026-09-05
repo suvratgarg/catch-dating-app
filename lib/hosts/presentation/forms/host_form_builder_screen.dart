@@ -189,7 +189,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               ),
             ),
             builder: (context, value) {
-              final header = _FormWorkspaceHeader(
+              final header = HostFormWorkspaceHeader(
                 state: value,
                 selected: view,
                 onChanged: (next) => setState(() => _view = next),
@@ -237,7 +237,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                         gapH24,
                         switch (view) {
                           HostFormWorkspaceView.overview =>
-                            _FormWorkspaceOverview(
+                            HostFormWorkspaceOverview(
                               organizerId: widget.organizerId,
                               state: value,
                               onQuestions: () => setState(
@@ -562,8 +562,9 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
   }
 }
 
-class _FormWorkspaceHeader extends StatelessWidget {
-  const _FormWorkspaceHeader({
+class HostFormWorkspaceHeader extends StatelessWidget {
+  const HostFormWorkspaceHeader({
+    super.key,
     required this.state,
     required this.selected,
     required this.onChanged,
@@ -587,7 +588,7 @@ class _FormWorkspaceHeader extends StatelessWidget {
         Text(
           state.editor.definition.title,
           key: const ValueKey('host-form-command-center-title'),
-          style: CatchTextStyles.headline(context),
+          style: CatchTextStyles.titleL(context),
         ),
         gapH8,
         Wrap(
@@ -637,8 +638,9 @@ class _FormWorkspaceHeader extends StatelessWidget {
   }
 }
 
-class _FormWorkspaceOverview extends ConsumerWidget {
-  const _FormWorkspaceOverview({
+class HostFormWorkspaceOverview extends ConsumerWidget {
+  const HostFormWorkspaceOverview({
+    super.key,
     required this.organizerId,
     required this.state,
     required this.onQuestions,
