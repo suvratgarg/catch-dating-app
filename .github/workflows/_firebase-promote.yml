@@ -177,7 +177,7 @@ jobs:
             --ci-run-attempt "$SOURCE_CI_RUN_ATTEMPT" \
             --provenance-manifest build/delivery/source/firebase-provenance.json \
             --affected-functions true)"
-          result="$(node tool/ci/backend_source_review.mjs \
+          reviewed_result="$(node tool/ci/backend_source_review.mjs \
             --source-root build/delivery/source-checkout \
             --repository "$GITHUB_REPOSITORY" <<< "$result")"
           project_id="$(jq -er --arg environment "$DEPLOY_ENVIRONMENT" \
@@ -186,8 +186,11 @@ jobs:
             '.projects[$environment]' .firebaserc)"
           [[ "$project_id" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]]
           test "$control_project_id" = "$project_id"
+          # Keep live approval evidence separate from the deterministic package
+          # plan compared again at each deployment boundary.
           printf '%s\n' "$result" > build/delivery/execution-plan.json
-          jq '{stages, targets, functionSelection, productionPromotion}' <<< "$result"
+          jq '.productionPromotion' <<< "$reviewed_result" > build/delivery/production-approval.json
+          jq '{stages, targets, functionSelection, productionPromotion}' <<< "$reviewed_result"
           echo "targets=$(jq -r '.targets | map(select(length > 0)) | join(",")' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "has_targets=$(jq -r '.targets | any(length > 0)' <<< "$result")" >> "$GITHUB_OUTPUT"
           echo "has_functions=$(jq -r '.targets | any(startswith("functions:"))' <<< "$result")" >> "$GITHUB_OUTPUT"
@@ -198,7 +201,9 @@ jobs:
         if: ${{ inputs.approval_environment == 'prod-backend' }}
         run: |
           set -euo pipefail
-          jq -e '.productionPromotion.environment == "prod-backend" and .stages == ["functions"]' \
+          jq -e '.environment == "prod-backend"' \
+            build/delivery/production-approval.json > /dev/null
+          jq -e '.stages == ["functions"]' \
             build/delivery/execution-plan.json > /dev/null
 
       - id: restore

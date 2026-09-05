@@ -5,6 +5,7 @@ import os from "node:os";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const workflow = (name) => fs.readFileSync(
@@ -548,6 +549,69 @@ test("promotion executes the reverified subset and handles empty Functions as a 
   assert.match(promotion, /\.targets \| any\(startswith\("functions:"\)\)/);
 });
 
+test("live approval metadata does not change the package comparison and changed targets still fail", (t) => {
+  const steps = extractSteps(workflow("_firebase-promote.yml"));
+  const script = (name) => {
+    const step = steps.find((entry) => entry.name === name);
+    assert.ok(step?.run, `missing workflow shell step: ${name}`);
+    return step.run;
+  };
+  for (const environment of ["prod", "prod-backend"]) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-promotion-review-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const plan = {sourceSha: "a".repeat(40), stages: ["functions"], targets: ["functions:example"],
+      productionPromotion: {environment: "prod", preMergeReviewEligible: true, reason: "Review required"}};
+    const approval = {environment, reason: "Live review result differs from deterministic verification"};
+    fs.mkdirSync(path.join(root, "bin"));
+    fs.mkdirSync(path.join(root, "build/delivery/source"), {recursive: true});
+    fs.mkdirSync(path.join(root, "fixture-package"));
+    const aliases = JSON.stringify({projects: {dev: "fixture-dev"}});
+    fs.writeFileSync(path.join(root, ".firebaserc"), aliases);
+    fs.writeFileSync(path.join(root, "fixture-package/.firebaserc"), aliases);
+    fs.writeFileSync(path.join(root, "verified-plan.json"), JSON.stringify(plan));
+    // Exercise the actual shell composition with controlled verifier outputs;
+    // package byte validation and live review provenance have separate tests.
+    fs.writeFileSync(path.join(root, "bin/node"), `#!${process.execPath}
+const fs = require("node:fs");
+const args = process.argv.slice(2);
+if (args[0] === "tool/ci/delivery_core.mjs") console.log('{"ok":true}');
+else if (args[0] === "tool/ci/package_firebase_delivery.mjs") console.log(fs.readFileSync("verified-plan.json", "utf8"));
+else if (args[0] === "tool/ci/backend_source_review.mjs") {
+  const plan = JSON.parse(fs.readFileSync(0, "utf8"));
+  console.log(JSON.stringify({...plan, productionPromotion: JSON.parse(process.env.REVIEW_DECISION)}));
+} else throw new Error("Unexpected workflow command: " + args.join(" "));
+`, {mode: 0o755});
+    const packed = spawnSync("tar", ["-czf", "build/delivery/source/firebase-backend.tar.gz", "-C", "fixture-package", "."], {cwd: root, encoding: "utf8"});
+    assert.equal(packed.status, 0, packed.stderr);
+    const run = (name) => spawnSync("bash", ["-e", "-o", "pipefail", "-c", script(name)], {
+      cwd: root, encoding: "utf8", env: {...process.env,
+        PATH: `${path.join(root, "bin")}${path.delimiter}${process.env.PATH}`,
+        BASE_SHA: "b".repeat(40), SOURCE_SHA: plan.sourceSha, SOURCE_CI_RUN_ID: "1",
+        SOURCE_CI_RUN_ATTEMPT: "1", DEPLOY_ENVIRONMENT: "dev",
+        GITHUB_REPOSITORY: "owner/repo", GITHUB_OUTPUT: path.join(root, "outputs"),
+        REVIEW_DECISION: JSON.stringify(approval)},
+    });
+    const verified = run("Verify artifact provenance and packaged CI plan before mutation");
+    assert.equal(verified.status, 0, verified.stderr);
+    const copied = run("Create a separate deploy tree");
+    assert.equal(copied.status, 0, copied.stderr);
+    const reverified = run("Reverify every authored byte immediately before deployment");
+    assert.equal(reverified.status, 0, reverified.stdout + reverified.stderr);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "build/delivery/execution-plan.json"), "utf8")), plan);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "build/delivery/production-approval.json"), "utf8")), approval);
+    const eligible = run("Recompute automatic production eligibility before authentication");
+    assert.equal(eligible.status, environment === "prod-backend" ? 0 : 1, eligible.stderr);
+    fs.writeFileSync(path.join(root, "build/delivery/execution-plan.json"), JSON.stringify({...plan, stages: ["functions", "storage"]}));
+    assert.notEqual(run("Recompute automatic production eligibility before authentication").status, 0,
+      "live Functions approval must not authorize a mixed-stage package");
+    fs.writeFileSync(path.join(root, "build/delivery/execution-plan.json"), `${JSON.stringify(plan)}\n`);
+    fs.writeFileSync(path.join(root, "verified-plan.json"), JSON.stringify({...plan, targets: ["functions:unexpected"]}));
+    const changed = run("Reverify every authored byte immediately before deployment");
+    assert.notEqual(changed.status, 0, "changed deployment targets must still fail comparison");
+    assert.match(changed.stdout, /differ/);
+  }
+});
+
 test("ordered artifacts survive main advancing but preserve exact-source and snapshot guards at every stage", () => {
   const promotion = workflow("_firebase-promote.yml");
   const loop = promotion.slice(promotion.indexOf("          while true; do"));
@@ -804,7 +868,8 @@ test("automatic production is recomputed before credentials and cannot be used f
     'test "$REQUIRE_CURRENT_MAIN" = false', 'workflow_run|repository_dispatch',
     'delivery.yml@refs/heads/main']) assert.ok(promotion.includes(guard));
   assert.ok(promotion.indexOf("Recompute automatic production eligibility") < promotion.indexOf("Authenticate to Google Cloud"));
-  assert.ok(promotion.includes('.productionPromotion.environment == "prod-backend" and .stages == ["functions"]'));
+  assert.match(promotion, /jq -e '\.environment == "prod-backend"'[\s\S]*build\/delivery\/production-approval.json/);
+  assert.match(promotion, /jq -e '\.stages == \["functions"\]'[\s\S]*build\/delivery\/execution-plan.json/);
 });
 
 test("deployment-image retention has one bounded seven-day policy without indefinite keep exceptions", () => {
