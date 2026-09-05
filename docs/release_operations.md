@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.4
+version: 2.7.5
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -291,9 +291,14 @@ Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Tests that
-inspect files through `dart:io` remain selected. Assets, dependency manifests,
-test configuration, non-Dart changes, unsupported inputs, and changes with no
-provable dependent test retain the full suite. Nightly and explicit full runs
+inspect files through `dart:io` remain selected. Mixed ordinary Markdown changes
+retain source selection only when both committed component graphs classify the
+prose as documentation-only and neither snapshot's package manifests could bundle
+it as an asset. Markdown in test or asset directories is never exempt. Assets,
+dependency manifests, test configuration, other non-Dart changes, unsupported
+inputs, and changes with no provable dependent test retain the full suite.
+Scheduled and manual CI resolve their base revision to an exact commit before
+binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 

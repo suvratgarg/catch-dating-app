@@ -11,6 +11,8 @@ bool _testFile(String name) =>
     !name.startsWith('test/goldens/') &&
     !name.startsWith('test/integration/');
 
+const _componentGraph = 'tool/harness/component_graph.json';
+
 const _uiProbeScript = 'tool/check_catch_ui_lints.sh';
 const _generatedProbe =
     'packages/catch_ui_lints/probes/catch_ui_lint_probes.dart';
@@ -22,10 +24,12 @@ bool needsUiLintSmoke({
   required Map<String, String> after,
   required Set<String> changed,
   bool full = false,
+  Set<String> ordinaryDocuments = const {},
 }) {
+  final sourceChanges = changed.difference(ordinaryDocuments);
   if (full ||
-      changed.isEmpty ||
-      changed.any(
+      sourceChanges.isEmpty ||
+      sourceChanges.any(
         (name) =>
             !name.endsWith('.dart') ||
             !(name.startsWith('lib/') || name.startsWith('test/')),
@@ -48,7 +52,7 @@ bool needsUiLintSmoke({
         graph.files[name] = corpora[index];
         inputs.addAll(graph.closure(name));
       }
-      if (inputs.any(changed.contains)) return true;
+      if (inputs.any(sourceChanges.contains)) return true;
     }
     return false;
   } on Object {
@@ -63,6 +67,7 @@ Map<String, Object> selectFlutterTests({
   required Map<String, String> after,
   required Set<String> changed,
   bool full = false,
+  Set<String> ordinaryDocuments = const {},
 }) {
   final all = after.keys.where(_testFile).toList()..sort();
   if (all.isEmpty) throw StateError('No root Flutter tests exist.');
@@ -73,12 +78,13 @@ Map<String, Object> selectFlutterTests({
     'selectedTests': files.length,
     'files': files,
   };
-  if (full || changed.isEmpty) {
+  final sourceChanges = changed.difference(ordinaryDocuments);
+  if (full || sourceChanges.isEmpty) {
     return result(all, 'Full validation or no usable change window');
   }
   // Unknown/non-Dart inputs can be loaded without an import (assets, fixtures,
   // configuration, generators, plugins). Keep the full suite for those changes.
-  if (changed.any(
+  if (sourceChanges.any(
     (name) =>
         !name.endsWith('.dart') ||
         !(name.startsWith('lib/') || name.startsWith('test/')) ||
@@ -101,7 +107,7 @@ Map<String, Object> selectFlutterTests({
           : <String>{};
       final impacted =
           !before.containsKey(test) ||
-          {...current, ...previous}.any(changed.contains);
+          {...current, ...previous}.any(sourceChanges.contains);
       provenImpact = provenImpact || impacted;
       if (impacted ||
           current.contains(_Imports.fileSystemProbe) ||
@@ -235,7 +241,10 @@ ProcessResult _git(List<String> arguments) {
   return result;
 }
 
-Future<Map<String, String>> _tree(String sha) async {
+Future<Map<String, String>> _tree(
+  String sha, {
+  Set<String> includePaths = const {},
+}) async {
   final listing = (_git(['ls-tree', '-rz', sha]).stdout as String)
       .split('\u0000')
       .where((entry) => entry.isNotEmpty);
@@ -243,7 +252,9 @@ Future<Map<String, String>> _tree(String sha) async {
   for (final entry in listing) {
     final split = entry.indexOf('\t');
     final name = entry.substring(split + 1);
-    if (name != _uiProbeScript &&
+    if (!includePaths.contains(name) &&
+        name != _componentGraph &&
+        name != _uiProbeScript &&
         !name.endsWith('.dart') &&
         name != 'pubspec.yaml' &&
         !name.endsWith('/pubspec.yaml')) {
@@ -281,6 +292,48 @@ Future<Map<String, String>> _tree(String sha) async {
     offset = end + size + 2;
   }
   return result;
+}
+
+// Graphs and manifests come from the same exact Git snapshots as the Dart
+// dependency graph. No caller-supplied path ignore list crosses the CLI boundary.
+Future<Set<String>> _ordinaryDocuments(
+  Map<String, String> before,
+  Map<String, String> after,
+  Set<String> changed,
+) async {
+  try {
+    final helper = File.fromUri(
+      Platform.script.resolve('flutter_document_selection.mjs'),
+    ).path;
+    final candidates = changed.where((name) => name.endsWith('.md')).toList();
+    if (candidates.isEmpty) return {};
+    final input = jsonEncode({
+      'beforeGraph': jsonDecode(before[_componentGraph]!),
+      'afterGraph': jsonDecode(after[_componentGraph]!),
+      'changed': candidates,
+      'manifests': [
+        for (final tree in [before, after])
+          {
+            for (final entry in tree.entries)
+              if (entry.key == 'pubspec.yaml' ||
+                  entry.key.endsWith('/pubspec.yaml'))
+                entry.key: entry.value,
+          },
+      ],
+    });
+    final process = await Process.start('node', [helper]);
+    final output = process.stdout.transform(utf8.decoder).join();
+    final errors = process.stderr.transform(utf8.decoder).join();
+    process.stdin.write(input);
+    await process.stdin.close();
+    final text = await output;
+    await errors;
+    if (await process.exitCode != 0) return {};
+    final parsed = (jsonDecode(text) as List).cast<String>().toSet();
+    return parsed.every(candidates.contains) ? parsed : {};
+  } on Object {
+    return {}; // Missing Node, graph or unsupported ownership keeps full tests.
+  }
 }
 
 Future<void> main(List<String> arguments) async {
@@ -322,20 +375,25 @@ Future<void> main(List<String> arguments) async {
           .split('\u0000')
           .where((name) => name.isNotEmpty)
           .toSet();
-  final before = await _tree(base);
-  final after = await _tree(head);
+  final documents = changed.where((name) => name.endsWith('.md')).toSet();
+  final before = await _tree(base, includePaths: documents);
+  final after = await _tree(head, includePaths: documents);
+  final ordinaryDocuments = await _ordinaryDocuments(before, after, changed);
   final plan = selectFlutterTests(
     before: before,
     after: after,
     changed: changed,
     full: args['--full'] == 'true',
+    ordinaryDocuments: ordinaryDocuments,
   );
   plan['uiLintSmoke'] = needsUiLintSmoke(
     before: before,
     after: after,
     changed: changed,
     full: args['--full'] == 'true',
+    ordinaryDocuments: ordinaryDocuments,
   );
+  plan['ordinaryDocuments'] = ordinaryDocuments.toList()..sort();
   final files = plan['files']! as List<String>;
   final count = math.min(4, files.length);
   final shards = List.generate(

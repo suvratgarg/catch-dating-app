@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import path from "node:path";
+import fs from "node:fs";
+import os from "node:os";
+import {spawnSync} from "node:child_process";
 import test from "node:test";
 import {planAffectedToolChecks, toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
 import {planAffected} from "./lib/component_graph.mjs";
@@ -864,4 +867,38 @@ test("identical registered checks execute once while preserving first-owner orde
     {toolId: "second", command: "node two.mjs"},
   ]);
   assert.match(repositorySnapshot.readText("tool/run.mjs", {required: true}), /uniqueToolChecks\(compatible\)/u);
+});
+
+test("scheduled and manual CI resolve revision expressions before binding lane inputs", () => {
+  const ci = workflow("ci.yml");
+  const start = ci.indexOf('          if [[ -z "$base_sha"');
+  const end = ci.indexOf("          mkdir -p build/ci", start);
+  assert.ok(start >= 0 && end > start);
+  const resolve = ci.slice(start, end).replace(/^          /gmu, "");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-base-"));
+  const run = (command, args, env = {}) => spawnSync(command, args, {
+    cwd: root, encoding: "utf8", env: {...process.env, ...env},
+  });
+  try {
+    assert.equal(run("git", ["init", "--quiet"]).status, 0);
+    for (let index = 0; index < 2; index++) {
+      assert.equal(run("git", ["-c", "user.name=CI test", "-c", "user.email=ci@example.invalid", "commit", "--quiet", "--allow-empty", "-m", `fixture ${index}`]).status, 0);
+    }
+    const head = run("git", ["rev-parse", "HEAD"]).stdout.trim();
+    const parent = run("git", ["rev-parse", "HEAD^"]).stdout.trim();
+    for (const event of ["schedule", "workflow_dispatch"]) {
+      const result = run("bash", ["-eu", "-c", resolve + '\nprintf "%s\\n" "$base_sha"'], {
+        base_sha: `${head}^`, HEAD_SHA: head, event_mode: "nightly", EVENT_NAME: event,
+      });
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stdout.trim(), parent);
+    }
+    for (const invalid of ["", "0".repeat(40), "missing-commit", "--help"]) {
+      assert.notEqual(run("bash", ["-eu", "-c", resolve], {
+        base_sha: invalid, HEAD_SHA: head, event_mode: "nightly", EVENT_NAME: "schedule",
+      }).status, 0);
+    }
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
 });
