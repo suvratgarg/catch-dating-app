@@ -1395,6 +1395,10 @@
       "safety": "local",
       "status": "active",
       "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      },
       "checks": [
         "node --check tool/web/check_website_copy_ownership.mjs",
         "node tool/web/check_website_copy_ownership.mjs --self-test",
@@ -1597,6 +1601,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_website_import_boundaries.mjs",
         "node tool/web/check_website_import_boundaries.mjs --self-test",
@@ -1612,6 +1620,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_ui_primitives.mjs",
         "node tool/web/check_react_ui_primitives.mjs --check"
@@ -1626,6 +1638,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_classname_boundaries.mjs",
         "node tool/web/check_react_classname_boundaries.mjs --self-test",
@@ -1648,6 +1664,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_component_governance.mjs",
         "node tool/web/check_react_component_governance.mjs --self-test",
@@ -1671,6 +1691,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_admin_feature_exports.mjs",
         "node tool/web/check_admin_feature_exports.mjs --self-test",
@@ -1742,6 +1766,10 @@
       "safety": "local",
       "status": "active",
       "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_admin_components.mjs",
         "node tool/web/check_admin_components.mjs --self-test",
@@ -1764,6 +1792,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_architecture_boundaries.mjs",
         "node tool/web/check_react_architecture_boundaries.mjs --check"
@@ -1783,6 +1815,10 @@
       ],
       "baseline": "tool/web/react_query_state_baseline.json",
       "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_query_state.mjs",
         "node tool/web/check_react_query_state.mjs --self-test",
@@ -3068,6 +3104,8 @@
     {
       "id": "env:ci-toolchain",
       "impactPaths": [
+        "tool/ci/check_toolchain_consistency.test.mjs",
+        "tool/app_targets.json",
         ".github/actions/cache-cocoapods/action.yml",
         ".github/workflows/app-build-matrix.yml",
         ".github/workflows/visual-integration-ci.yml"
@@ -3084,6 +3122,7 @@
       "description": "Validates checked-in CI toolchain pins, package-level runtime declarations, and Apple-native workflow runner compatibility.",
       "checks": [
         "bash -n tool/ci/check_toolchain_consistency.sh",
+        "node --test tool/ci/check_toolchain_consistency.test.mjs",
         "bash tool/ci/check_toolchain_consistency.sh"
       ],
       "role": "generator"
@@ -4243,6 +4282,10 @@
       "safety": "local",
       "status": "active",
       "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
         "node --test tool/organizer_intake/check_admin_review_bridge.test.mjs",
