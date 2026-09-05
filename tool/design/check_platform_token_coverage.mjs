@@ -188,6 +188,10 @@ function auditPinnedSources(document, tokens) {
   } catch (error) { errors.push(error.message); return errors; }
 
   const flat = Object.assign({}, ...Object.entries(documents).filter(([name]) => !['color_light','color_dark'].includes(name)).map(([,value]) => Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'version'))));
+  const flatEntries = Object.entries(flat);
+  // Reuse prefix lookups only within this audit. Values still resolve with the
+  // current mode and cycle trail; each audit reloads and verifies pinned files.
+  const typeStyleReferences = new Map();
   const kebab = value => value.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   function resolve(value, mode, trail = new Set()) {
     if (typeof value !== 'string') return value;
@@ -198,7 +202,10 @@ function auditPinnedSources(document, tokens) {
       if (key in flat) return resolve(flat[key], mode, next);
     }
     const prefix = `md.sys.typescale.${kebab(value)}.`;
-    const parts = Object.fromEntries(Object.entries(flat).filter(([key]) => key.startsWith(prefix)).map(([key, v]) => [key.slice(prefix.length), resolve(v, mode, next)]));
+    if (!typeStyleReferences.has(prefix)) {
+      typeStyleReferences.set(prefix, flatEntries.filter(([key]) => key.startsWith(prefix)));
+    }
+    const parts = Object.fromEntries(typeStyleReferences.get(prefix).map(([key, v]) => [key.slice(prefix.length), resolve(v, mode, next)]));
     if (Object.keys(parts).length) return parts;
     return /^0x[0-9a-f]{8}$/i.test(value) ? `#${value.slice(4)}${value.slice(2,4)}` : value;
   }
