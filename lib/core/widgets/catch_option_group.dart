@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
@@ -85,6 +87,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   final GlobalKey _groupKey = GlobalKey();
   var _labelKeys = <GlobalKey>[];
   var _labelRects = <Rect?>[];
+  bool _revealSelected = true;
 
   List<CatchOption<T>> get _options {
     final values = CatchContractFieldPolicy.supportedChoiceValues(
@@ -109,11 +112,19 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   void didUpdateWidget(covariant CatchOptionGroup<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.options.length != widget.options.length ||
-        oldWidget.options != widget.options ||
         oldWidget.contract != widget.contract ||
         oldWidget.contractValue != widget.contractValue) {
       _syncLabelKeys();
     }
+    if (oldWidget.selected != widget.selected) _revealSelected = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateLabelRects());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Text scaling and viewport changes can hide a previously visible tab.
+    _revealSelected = true;
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateLabelRects());
   }
 
@@ -153,6 +164,25 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
       }
     }
     if (changed) setState(() => _labelRects = nextRects);
+    if (_revealSelected) {
+      _revealSelected = false;
+      final index = _options.indexWhere(
+        (option) => option.value == widget.selected,
+      );
+      if (index < 0 || index >= _labelKeys.length) return;
+      final labelContext = _labelKeys[index].currentContext;
+      if (labelContext == null) return;
+      final scrollable = Scrollable.maybeOf(
+        labelContext,
+        axis: Axis.horizontal,
+      );
+      final labelBox = labelContext.findRenderObject();
+      if (scrollable != null && labelBox != null) {
+        // Reveal only this rail. Scrolling an ancestor page would move content
+        // unexpectedly when a user switches tabs or restores a deep link.
+        unawaited(scrollable.position.ensureVisible(labelBox, alignment: 0.5));
+      }
+    }
   }
 
   @override

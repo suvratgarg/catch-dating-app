@@ -13783,7 +13783,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersViewPeople => 'People';
 
   @override
-  String get hostCustomersViewAudiences => 'Audiences';
+  String get hostCustomersViewAudiences => 'Groups';
 
   @override
   String get hostSavedAudienceSaveTitle => 'Save this audience';
@@ -13793,17 +13793,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Name this reusable customer group. Messaging will use this saved definition and recheck eligibility before sending.';
 
   @override
-  String get hostSavedAudienceName => 'Audience name';
+  String get hostSavedAudienceName => 'Group name';
 
   @override
   String get hostSavedAudienceSaveAndMessage => 'Save and continue to message';
 
   @override
-  String get hostSavedAudiencesEmptyTitle => 'No saved audiences yet';
+  String get hostSavedAudiencesEmptyTitle => 'No groups yet';
 
   @override
   String get hostSavedAudiencesEmptyBody =>
-      'Create a reusable customer group here. Messaging can use it later without redefining who belongs in it.';
+      'Create a group to keep the right people together. Use it in Inbox when you are ready to send.';
 
   @override
   String get hostSavedAudienceFieldLabel => 'Saved audience';
@@ -13820,25 +13820,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostSavedAudiencesManage => 'Saved audiences';
+  String get hostSavedAudiencesManage => 'Groups';
 
   @override
   String get hostSavedAudiencesWorkspaceBody =>
       'Define groups here. Send from Messaging.';
 
   @override
-  String get hostSavedAudiencesSearch => 'Search audiences';
+  String get hostSavedAudiencesSearch => 'Search groups';
 
   @override
   String get hostSavedAudiencesSearchEmptyTitle =>
-      'No audiences match this search';
+      'No groups match this search';
 
   @override
-  String get hostSavedAudiencesSearchEmptyBody =>
-      'Try a different audience name.';
+  String get hostSavedAudiencesSearchEmptyBody => 'Try a different group name.';
 
   @override
-  String get hostSavedAudienceNew => 'New audience';
+  String get hostSavedAudienceNew => 'New group';
 
   @override
   String get hostSavedAudienceCreate => 'Create audience';
@@ -15934,7 +15933,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormResponsesEmptyBody =>
-      'Share a published form. New submissions will appear here without loading the full response history.';
+      'Share a published form. New submissions will appear here.';
 
   @override
   String get hostFormResponsesNoMatchesTitle => 'No responses match';
@@ -17625,4 +17624,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAutomationConfigured => 'Configured';
+
+  @override
+  String get hostAudienceAllPurposes => 'All purposes';
+
+  @override
+  String get hostAudienceAllStatuses => 'All statuses';
+
+  @override
+  String get hostAudienceFormPurposeFilter => 'Form purpose';
+
+  @override
+  String get hostAudienceFormStatusFilter => 'Form status';
+
+  @override
+  String hostAudienceFormEdited({required String time}) {
+    return 'Edited $time';
+  }
+
+  @override
+  String hostAudienceFormLastResponse({required String time}) {
+    return 'Last response $time';
+  }
+
+  @override
+  String hostAudienceFormRecordStatus({
+    required String status,
+    required int count,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count responses',
+      one: '1 response',
+      zero: 'No responses',
+    );
+    return '$status · $_temp0';
+  }
+
+  @override
+  String get hostAudienceAllResponses => 'All responses';
+
+  @override
+  String get hostAudienceAllForms => 'All forms';
+
+  @override
+  String get hostAudienceSelectedForm => 'Selected form';
 }

@@ -21536,7 +21536,7 @@ abstract class AppLocalizations {
   /// Customers workspace tab for reusable named customer groups.
   ///
   /// In en, this message translates to:
-  /// **'Audiences'**
+  /// **'Groups'**
   String get hostCustomersViewAudiences;
 
   /// Customers-owned saved-audience naming step title.
@@ -21554,7 +21554,7 @@ abstract class AppLocalizations {
   /// Reusable customer audience name field.
   ///
   /// In en, this message translates to:
-  /// **'Audience name'**
+  /// **'Group name'**
   String get hostSavedAudienceName;
 
   /// Persists and exactly previews an audience before opening Messaging.
@@ -21566,13 +21566,13 @@ abstract class AppLocalizations {
   /// Empty saved-audience directory or campaign picker title.
   ///
   /// In en, this message translates to:
-  /// **'No saved audiences yet'**
+  /// **'No groups yet'**
   String get hostSavedAudiencesEmptyTitle;
 
   /// Explains that audience authoring belongs to Customers.
   ///
   /// In en, this message translates to:
-  /// **'Create a reusable customer group here. Messaging can use it later without redefining who belongs in it.'**
+  /// **'Create a group to keep the right people together. Use it in Inbox when you are ready to send.'**
   String get hostSavedAudiencesEmptyBody;
 
   /// Saved-audience picker label in campaign composition.
@@ -21590,7 +21590,7 @@ abstract class AppLocalizations {
   /// Customers-owned saved-audience directory heading.
   ///
   /// In en, this message translates to:
-  /// **'Saved audiences'**
+  /// **'Groups'**
   String get hostSavedAudiencesManage;
 
   /// Concise Customers versus Messaging ownership explanation above the saved-audience directory.
@@ -21602,25 +21602,25 @@ abstract class AppLocalizations {
   /// Saved-audience name search control.
   ///
   /// In en, this message translates to:
-  /// **'Search audiences'**
+  /// **'Search groups'**
   String get hostSavedAudiencesSearch;
 
   /// Filtered saved-audience directory empty title.
   ///
   /// In en, this message translates to:
-  /// **'No audiences match this search'**
+  /// **'No groups match this search'**
   String get hostSavedAudiencesSearchEmptyTitle;
 
   /// Filtered saved-audience directory empty guidance.
   ///
   /// In en, this message translates to:
-  /// **'Try a different audience name.'**
+  /// **'Try a different group name.'**
   String get hostSavedAudiencesSearchEmptyBody;
 
   /// Single canonical create action in the saved-audience section header.
   ///
   /// In en, this message translates to:
-  /// **'New audience'**
+  /// **'New group'**
   String get hostSavedAudienceNew;
 
   /// Creates and exactly previews a new saved audience.
@@ -24972,7 +24972,7 @@ abstract class AppLocalizations {
   /// Empty form response inbox guidance.
   ///
   /// In en, this message translates to:
-  /// **'Share a published form. New submissions will appear here without loading the full response history.'**
+  /// **'Share a published form. New submissions will appear here.'**
   String get hostFormResponsesEmptyBody;
 
   /// Filtered response inbox empty title.
@@ -27343,7 +27343,7 @@ abstract class AppLocalizations {
   /// **'Attended event'**
   String get hostAudienceRuleNamedEvent;
 
-  /// Saved audience filter authoring label.
+  /// Response directory form picker title.
   ///
   /// In en, this message translates to:
   /// **'Choose a form'**
@@ -27792,6 +27792,69 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configured'**
   String get hostAutomationConfigured;
+
+  /// Form directory purpose filter for every purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'All purposes'**
+  String get hostAudienceAllPurposes;
+
+  /// Directory status filter for every lifecycle state.
+  ///
+  /// In en, this message translates to:
+  /// **'All statuses'**
+  String get hostAudienceAllStatuses;
+
+  /// Form directory purpose selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form purpose'**
+  String get hostAudienceFormPurposeFilter;
+
+  /// Form directory lifecycle selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form status'**
+  String get hostAudienceFormStatusFilter;
+
+  /// Activity label for a form without responses.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {time}'**
+  String hostAudienceFormEdited({required String time});
+
+  /// Latest submitted response activity on a form record.
+  ///
+  /// In en, this message translates to:
+  /// **'Last response {time}'**
+  String hostAudienceFormLastResponse({required String time});
+
+  /// Form record lifecycle and submitted response count.
+  ///
+  /// In en, this message translates to:
+  /// **'{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}'**
+  String hostAudienceFormRecordStatus({
+    required String status,
+    required int count,
+  });
+
+  /// Summary view for every form submission.
+  ///
+  /// In en, this message translates to:
+  /// **'All responses'**
+  String get hostAudienceAllResponses;
+
+  /// Response directory without a form filter.
+  ///
+  /// In en, this message translates to:
+  /// **'All forms'**
+  String get hostAudienceAllForms;
+
+  /// Scoped response label while the form title is loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected form'**
+  String get hostAudienceSelectedForm;
 }
 
 class _AppLocalizationsDelegate
