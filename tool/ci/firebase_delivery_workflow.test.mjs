@@ -53,6 +53,9 @@ test("main CI serializes planning and re-covers every failed validation window",
 
 test("a successful main CI attempt must own its exact planner and backend artifacts", () => {
   const ci = workflow("ci.yml");
+  for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
+    assert.match(workflow(name), /pull-requests: read/);
+  }
   const required = ci.slice(ci.indexOf("  required:"));
   assert.match(required, /actions\/runs\/\$GITHUB_RUN_ID\/artifacts\?per_page=100/);
   assert.match(required, /harness-plan-\$\{GITHUB_RUN_NUMBER\}-\$\{GITHUB_RUN_ID\}-\$\{SOURCE_SHA\}-\$\{GITHUB_RUN_ATTEMPT\}/);
@@ -153,7 +156,7 @@ test("Delivery keeps the current immutable control plane separate from an older 
   assert.match(promotion, /name: Checkout the immutable Delivery control plane[\s\S]*ref: \$\{\{ inputs\.control_plane_sha \}\}/);
   assert.match(promotion, /name: Checkout the exact CI-approved source as verification input[\s\S]*path: build\/delivery\/source-checkout/);
   assert.match(promotion, /test "\$control_project_id" = "\$project_id"/);
-  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 3);
+  assert.equal((promotion.match(/--source-root build\/delivery\/source-checkout/g) ?? []).length, 4);
   assert.match(promotion, /CATCH_FIREBASE_SOURCE_ROOT="\$SOURCE_CHECKOUT"/);
   assert.match(promotion, /\.\/tool\/deploy_firebase_targets\.sh/);
   assert.doesNotMatch(promotion, /build\/delivery\/source-checkout\/tool\/deploy_firebase_targets\.sh/);
@@ -786,3 +789,51 @@ function runJq(program, input, args = []) {
   assert.equal(result.status, 0, result.error?.message ?? result.stderr);
   return JSON.parse(result.stdout);
 }
+
+
+test("automatic production is recomputed before credentials and cannot be used for recovery", () => {
+  const delivery = workflow("delivery.yml");
+  assert.match(delivery, /production_environment: \$\{\{ steps\.package\.outputs\.production_environment \}\}/);
+  assert.match(delivery, /approval_environment: \$\{\{ needs\.authorize\.outputs\.production_environment \}\}/);
+  assert.match(delivery, /GITHUB_EVENT_NAME.*workflow_dispatch.*production_environment=prod/);
+  const promotion = workflow("_firebase-promote.yml");
+  assert.match(promotion, /environment: \$\{\{ inputs\.approval_environment \|\| inputs\.environment \}\}/);
+  assert.match(promotion, /group: firebase-\$\{\{ inputs\.environment \}\}/);
+  for (const guard of ['test "$DEPLOY_ENVIRONMENT" = prod', 'test "$APPROVAL_ENVIRONMENT" = prod-backend',
+    'test "$GITHUB_REF" = refs/heads/main', 'test -z "$RESUME_RUN_ID"',
+    'test "$REQUIRE_CURRENT_MAIN" = false', 'workflow_run|repository_dispatch',
+    'delivery.yml@refs/heads/main']) assert.ok(promotion.includes(guard));
+  assert.ok(promotion.indexOf("Recompute automatic production eligibility") < promotion.indexOf("Authenticate to Google Cloud"));
+  assert.ok(promotion.includes('.productionPromotion.environment == "prod-backend" and .stages == ["functions"]'));
+});
+
+test("deployment-image retention has one bounded seven-day policy without indefinite keep exceptions", () => {
+  const policy = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/firebase/artifact_registry_cleanup_policy.json"), "utf8"));
+  assert.deepEqual(policy, [{name: "delete-deployment-images-after-7-days", action: {type: "Delete"}, condition: {tagState: "any", olderThan: "7d"}}]);
+});
+
+
+test("backend approval occurs before merge without credentials and is independently reverified", () => {
+  const ci = workflow("ci.yml");
+  const review = ci.slice(ci.indexOf("  backend-review:"), ci.indexOf("  package-firebase:"));
+  assert.match(review, /github.event_name == 'pull_request'/);
+  assert.match(review, /head.repo.id == github.repository_id/);
+  assert.match(review, /needs.plan.outputs.functions == 'true'/);
+  assert.match(review, /permissions: \{\}/);
+  assert.match(review, /name: backend-review/);
+  assert.ok(!review.includes("checkout@"));
+  assert.ok(!review.includes("secrets."));
+  for (const name of ["backend-rebaseline.yml", "backend-staging.yml"]) {
+    assert.match(workflow(name), /pull-requests: read/);
+  }
+  const required = ci.slice(ci.indexOf("  required:"));
+  assert.match(required, /- backend-review/);
+  assert.ok(required.includes('test "$(jq -er \'.["backend-review"].result\' <<< "$NEEDS_JSON")" = success'));
+  for (const name of ["delivery.yml", "_firebase-promote.yml"]) {
+    const text = workflow(name);
+    assert.match(text, /pull-requests: read/);
+    assert.ok(text.includes('node tool/ci/backend_source_review.mjs'));
+    const auth = text.indexOf("Authenticate to Google Cloud");
+    if (auth >= 0) assert.ok(text.indexOf("node tool/ci/backend_source_review.mjs") < auth);
+  }
+});

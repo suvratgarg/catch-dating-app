@@ -48,6 +48,50 @@ test("component graph schema admits only signed mobile release targets", () => {
   );
 });
 
+for (const [file, target] of [
+  ["firestore-rules-ci.yml", "firestore_rules"],
+  ["contracts-ci.yml", "contracts"],
+  ["functions-ci.yml", "functions"],
+  ["operations-ci.yml", "operations"],
+  ["flutter-ci.yml", "flutter"],
+  ["visual-integration-ci.yml", "visual_integration"],
+]) {
+  test(`dedicated ${file} validates its lane and policy without authorizing deployment`, () => {
+    const filePath = `.github/workflows/${file}`;
+    const source = fs.readFileSync(new URL(`../../${filePath}`, import.meta.url), "utf8");
+    assert.match(source, /workflow_call:/);
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(filePath, mode);
+      assert.equal(result.complete, true);
+      assert.deepEqual(result.operations.ciTargets, [target, "policy_docs"].sort());
+      assert.deepEqual(result.operations.deployGroups, []);
+      assert.deepEqual(result.operations.releaseTargets, []);
+      assert.deepEqual(result.operations.checkIds, ["meta:enforcement-integrity"]);
+    }
+  });
+}
+
+test("shared CI controls, delivery workflows, and unknown workflow files retain full validation", () => {
+  for (const file of [
+    ".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
+    ".github/actions/setup-flutter/action.yml", ".github/workflows/delivery.yml",
+    ".github/workflows/_firebase-promote.yml", ".github/workflows/new-ci.yml",
+    "tool/harness/component_graph.json",
+  ]) {
+    assert.deepEqual(plan(file).operations.ciTargets, [...graph.targets].sort(), file);
+  }
+});
+
+test("a dedicated workflow cannot suppress another changed surface", () => {
+  const result = planAffected({
+    changedPaths: [".github/workflows/firestore-rules-ci.yml", "functions/src/example.ts"],
+    graph, mode: "main",
+  });
+  assert.ok(result.operations.ciTargets.includes("firestore_rules"));
+  assert.ok(result.operations.ciTargets.includes("functions"));
+  assert.deepEqual(result.operations.deployGroups, ["functions"]);
+});
+
 test("CI checkout requirements keep planner and docs narrow with a full fallback", () => {
   assert.deepEqual(graph.ciCheckout.planner, {
     mode: "sparse",
@@ -62,6 +106,8 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/tool_impact.mjs",
       "/tool/tools_manifest.json",
+      "/tool/design/build_host_feature_responsibilities.mjs",
+      "/design/features/host_feature_responsibilities.json",
     ],
   });
   assert.deepEqual(resolveTargetCheckout({graph, target: "docs"}), {

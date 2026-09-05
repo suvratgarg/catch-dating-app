@@ -28,23 +28,46 @@ npm --prefix functions ci
 cp .env.example .env.local
 ```
 
-Firebase defaults to the development project. Every deployment or remote log command must still name an environment explicitly through `tool/firebase_with_env.sh`; see [firebase/README.md](firebase/README.md).
+For routine local web development, start `npm --prefix functions run serve`,
+then use the `local` Flutter commands below in another terminal. This runs
+against the isolated `demo-catch` emulator suite. Use `dev` explicitly for native
+devices and live integrations. Every deployment or remote log command must name
+an environment through `tool/firebase_with_env.sh`; see [firebase/README.md](firebase/README.md).
 
 ## Main surfaces
 
 | Surface | Source | Typical local command |
 |---|---|---|
-| Flutter consumer app | `lib/` | `./tool/flutter_with_env.sh dev run` |
-| Flutter host app | `lib/hosts/` + `lib/main_host.dart` | `./tool/flutter_with_env.sh dev run --target lib/main_host.dart` |
+| Flutter consumer app | `apps/consumer/` + shared `lib/` | `./tool/flutter_with_env.sh local --role consumer run -d chrome` |
+| Flutter host app | `apps/host/` + `lib/hosts/` | `./tool/flutter_with_env.sh local --role host run -d chrome` |
 | Marketing website | `website/` | `npm run web:marketing:dev` |
 | Admin console | `admin/` | `npm run web:admin:dev` |
-| Cloud Functions | `functions/` | `npm --prefix functions run build` |
+| Cloud Functions | `functions/` | `npm --prefix functions run serve` |
 | Widgetbook | `widgetbook/` | `cd widgetbook && flutter run -d chrome` |
+
+The folders separate runtime code from its contracts and tooling:
+
+- `apps/consumer/` and `apps/host/` own installable app shells and native projects;
+  `lib/` owns shared Flutter runtime code, features, and generated Dart bindings.
+- `website/` and `admin/` are React applications. `packages/web-ui/` owns their
+  shared UI primitives; `packages/web-config/` owns shared web configuration.
+- `functions/` owns Firebase backend code. `operations/` owns durable operations
+  workflows, rather than one-off scripts.
+- `contracts/` owns business and data schemas. `design/` owns visual tokens,
+  component/screen contracts, and reference assets. Their generated projections
+  are checked against these authored sources.
+- `widgetbook/` previews Flutter components. `packages/catch_ui_lints/` implements
+  analyzer rules; it is tooling, not another UI application.
+- `.github/workflows/` orchestrates CI and delivery. `tool/harness/` selects
+  affected lanes; `tool/tools_manifest.json` registers checks; the other `tool/`
+  folders contain their implementations and bounded operational utilities.
+- `docs/` contains the owning architecture and operations documents linked above.
 
 ## Core checks
 
 ```sh
-flutter analyze
+node tool/harness/verify_local.mjs --base origin/main --list
+node tool/ci/check_flutter_workspace_analysis.mjs
 flutter test
 npm --prefix functions test
 npm run web:typecheck

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import test from "node:test";
+import {toolsOwnUiLintSmoke, uniqueToolChecks} from "../lib/tool_impact.mjs";
+import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 
 const repositorySnapshot = createRepositorySnapshot();
@@ -109,11 +111,13 @@ test("Flutter UI lint wiring uses one analyzer census and no legacy wrappers", (
   const flutter = workflow("flutter-ci.yml");
   assert.equal(
     [...flutter.matchAll(/dart analyze --format machine/gu)].length,
-    1,
+    0,
   );
+  assert.match(flutter, /check_flutter_workspace_analysis\.mjs --root-diagnostics-dir/u);
+  assert.match(flutter, /CATCH_UI_ANALYZE_OUTPUT_PATH=\/tmp\/catch-ui-root-analysis\/analyze.machine/u);
   assert.match(flutter, /check_catch_ui_lint_drift\.sh --check/u);
   assert.match(namedStep(flutter, "Catch UI lint plugin smoke check"),
-    /if: \$\{\{ needs.test-plan.outputs.ui_lint_smoke == 'true' \}\}/u);
+    /if: \$\{\{ needs.test-plan.outputs.ui_lint_smoke == 'true' && !inputs.ui_lint_smoke_in_tools \}\}/u);
   for (const retired of retiredUiWrapperNames) {
     assert.doesNotMatch(flutter, new RegExp(retired.replace(".", "\\."), "u"));
   }
@@ -431,11 +435,36 @@ test("planner and ordinary docs consume the graph-owned checkout closure", () =>
   );
 });
 
+test("planner reports Audience documentation impact before target fanout", () => {
+  const ci = workflow("ci.yml");
+  const report = namedStep(ci, "Report Audience documentation impact");
+  assert.match(report, /BASE_SHA: \$\{\{ steps\.plan\.outputs\.base_sha \}\}/u);
+  assert.match(report, /node tool\/design\/build_host_feature_responsibilities\.mjs\s*\\\n\s*--affected audience --base "\$BASE_SHA" --json/u);
+  assert.match(report, /> build\/ci\/audience-doc-impact\.json/u);
+  assert.match(report, /\$GITHUB_STEP_SUMMARY/u);
+  // Source-only changes must receive advice even when the docs target is off.
+  assert.doesNotMatch(report, /^\s+if:/mu);
+  assert.ok(ci.indexOf(report) < ci.indexOf("\n  tools:"));
+  const evidence = namedStep(ci, "Upload planner evidence");
+  // Backend and mobile consumers require a one-file delivery plan archive.
+  assert.match(evidence, /^\s+path: build\/ci\/impact-plan\.json$/mu);
+  assert.doesNotMatch(evidence, /audience-doc-impact/u);
+  assert.match(evidence, /retention-days: [1-9][0-9]*/u);
+  const advice = namedStep(ci, "Upload Audience documentation advice");
+  assert.match(advice, /name: audience-doc-impact-/u);
+  assert.match(advice, /^\s+path: build\/ci\/audience-doc-impact\.json$/mu);
+  assert.match(advice, /retention-days: 7/u);
+  assert.doesNotMatch(advice, /harness-plan-/u);
+});
+
 test("planner sparse checkout contains its recursive local module closure", () => {
   const declared = new Set(
     graph.ciCheckout.planner.paths.map((entry) => entry.replace(/^\//u, "")),
   );
-  const pending = ["tool/harness.mjs"];
+  const pending = [
+    "tool/harness.mjs",
+    "tool/design/build_host_feature_responsibilities.mjs",
+  ];
   const visited = new Set();
   while (pending.length > 0) {
     const modulePath = pending.pop();
@@ -762,4 +791,39 @@ test("reusable fanout workflows cannot cancel sibling lanes", () => {
       `${name} must inherit concurrency from the CI orchestrator`,
     );
   }
+});
+
+
+test("shared UI lint engine runs once only when the same Tools plan owns it", () => {
+  const owned = (changedPaths, full = false) => toolsOwnUiLintSmoke({
+    plan: planAffected({changedPaths, graph, full, mode: full ? "nightly" : "pr"}), manifest: toolsManifest, componentGraph: graph,
+  });
+  assert.equal(owned([".github/workflows/ci.yml"]), true);
+  assert.equal(owned([], true), true);
+  assert.equal(owned(["tool/check_catch_ui_lints.sh"]), true);
+  assert.equal(owned(["lib/main.dart"]), false);
+  assert.equal(owned(["tool/docs/check_doc_metadata.mjs"]), false);
+  assert.throws(() => toolsOwnUiLintSmoke({plan: {complete: false}}), /incomplete/);
+  const changedManifest = structuredClone(toolsManifest);
+  changedManifest.tools.find((tool) => tool.id === "lint:catch-ui-plugin-smoke").checks = ["true"];
+  assert.throws(() => toolsOwnUiLintSmoke({
+    plan: planAffected({changedPaths: [], graph, full: true, mode: "nightly"}), manifest: changedManifest, componentGraph: graph,
+  }), /no longer provides/);
+  const ci = workflow("ci.yml");
+  assert.match(ci, /toolsOwnUiLintSmoke\(\{/u);
+  assert.match(ci, /ui_lint_smoke_in_tools: \$\{\{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' \}\}/u);
+  const flutter = workflow("flutter-ci.yml");
+  assert.match(flutter, /ui_lint_smoke_in_tools:[\s\S]*?default: false/u);
+});
+
+test("identical registered checks execute once while preserving first-owner order", () => {
+  assert.deepEqual(uniqueToolChecks([
+    {id: "first", checks: ["node shared.mjs", "node one.mjs"]},
+    {id: "second", checks: ["node shared.mjs", "node two.mjs", "node one.mjs"]},
+  ]), [
+    {toolId: "first", command: "node shared.mjs"},
+    {toolId: "first", command: "node one.mjs"},
+    {toolId: "second", command: "node two.mjs"},
+  ]);
+  assert.match(repositorySnapshot.readText("tool/run.mjs", {required: true}), /uniqueToolChecks\(compatible\)/u);
 });

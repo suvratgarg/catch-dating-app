@@ -214,3 +214,23 @@ export function affectedFunctionTargets({
     return all(`Conservative fallback: ${error.message}`);
   }
 }
+
+
+// Dependency selection proves scope, not the absence of sensitive behavior.
+// Runtime changes require an explicit review of the exact source. The caller
+// may replace this protected default only with live GitHub review evidence.
+export function productionPromotionEnvironment({
+  sourceRoot, sourceSha, baseSha, stages, fullSnapshot = false, noOp = false,
+}) {
+  if (!SHA.test(sourceSha) || !SHA.test(baseSha)) throw new Error("Invalid Git source/base SHA.");
+  git(sourceRoot, ["merge-base", "--is-ancestor", baseSha, sourceSha]);
+  if (fullSnapshot || sourceSha === baseSha ||
+      stages.length !== 1 || stages[0] !== "functions") {
+    return {environment: "prod", reason: "Snapshots and non-Functions stages require production review"};
+  }
+  if (noOp) return {environment: "prod-backend", reason: "Verified Functions no-op"};
+  return {
+    environment: "prod", preMergeReviewEligible: true,
+    reason: "Runtime changes require an explicit review of the exact source",
+  };
+}

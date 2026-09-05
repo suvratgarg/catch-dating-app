@@ -39,7 +39,8 @@ path, or an explicit full run fails closed to the unchanged six-bucket matrix.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
 ignored by this inner planner instead of broadening a valid Tools selection.
-Active tools must define non-empty checks. This prevents a non-tool contract
+Identical check commands run once per invocation, preserving their first owner's
+order. Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
 tool's `safety` describes its command. A remote-write tool may separately set
@@ -96,6 +97,28 @@ node tool/harness.mjs plan --base origin/main --head HEAD --json
 The authored graph and compile-codegen allowlist live in
 `tool/harness/component_graph.json`. Use the plan's check ids with the explicit
 `node tool/run.mjs check <id...>` runner. Harness commands are read-only.
+
+## Documentation Checks And Retrieval
+
+`docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
+also rejects surviving Markdown references to deleted or renamed documents;
+`--inventory [--query <text>] --json` prints owners, headings, word counts, and
+literal document references without writing a catalog. Fenced examples, code
+consumers, external links, and dynamic references are outside the retirement
+link check.
+
+The existing Host responsibility generator provides `--explain audience` for
+question-oriented answers and `--affected audience --base <ref> --json` for
+section-level review advice. The impact command needs only Node, Git, and its
+source contract. CI publishes that advice as a separate seven-day artifact in
+the planner job, including for source-only changes; the one-file delivery-plan
+artifact remains unchanged. The advice does not add a release gate or claim
+semantic freshness. Generation/`--check` still validates schema facts, source
+paths, named examples, and generated READMEs. Named examples are declarations;
+run their selected tests to verify behavior.
+
+See `docs/README.md` for document placement and retirement policy. Keep
+inventories and run evidence in temporary output or expiring CI artifacts.
 
 ## Build Versus Adopt
 
@@ -210,6 +233,12 @@ sequential command—not another package task graph—and the product applicatio
 still lives primarily in the root package. The small repository-specific
 orchestrator therefore has less configuration and no additional bootstrap
 dependency while its plan and nonzero-stop behavior remain unit tested.
+
+Pass `--root-diagnostics-dir <directory>` to retain the root analyzer's machine
+output and exit status from that same invocation. Flutter CI uses this output
+for its all-rules lint gate and report; it never launches another root analyzer
+just to collect diagnostic evidence. Plugin crashes and nonzero analysis still
+fail before the output can authorize a successful gate.
 
 The old UI/design shell scanners and their compatibility wrapper names are
 retired. Matching policy lives in `packages/catch_ui_lints`; CI collects one

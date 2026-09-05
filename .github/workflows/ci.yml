@@ -56,6 +56,7 @@ jobs:
       deploy_required: ${{ steps.plan.outputs.deploy_required }}
       mode: ${{ steps.plan.outputs.mode }}
       full: ${{ steps.plan.outputs.full }}
+      tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
 
     steps:
       - name: Checkout planner closure
@@ -72,6 +73,8 @@ jobs:
             /tool/lib/repo_paths.mjs
             /tool/lib/tool_impact.mjs
             /tool/tools_manifest.json
+            /tool/design/build_host_feature_responsibilities.mjs
+            /design/features/host_feature_responsibilities.json
 
       - id: plan
         name: Resolve fail-closed impact plan
@@ -195,6 +198,43 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           echo "source_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {toolsOwnUiLintSmoke} from './tool/lib/tool_impact.mjs';
+          const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+          const owned = toolsOwnUiLintSmoke({
+            plan: read('build/ci/impact-plan.json'),
+            manifest: read('tool/tools_manifest.json'),
+            componentGraph: read('tool/harness/component_graph.json'),
+          });
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
+          NODE
+
+      - name: Report Audience documentation impact
+        env:
+          BASE_SHA: ${{ steps.plan.outputs.base_sha }}
+        run: |
+          node tool/design/build_host_feature_responsibilities.mjs \
+            --affected audience --base "$BASE_SHA" --json \
+            > build/ci/audience-doc-impact.json
+          {
+            echo "## Audience documentation review"
+            jq -r '.coverage,
+              (.sections[] | "- " + .anchor + ": " + .status +
+                "; changed sources: " + (.changedSources | join(", "))),
+              (.changedReferenceSources[] | "- Regenerate schema reference: " + .),
+              (if .referenceDefinitionChanged then "- Schema reference selection changed." else empty end),
+              (if (.sections | length) == 0 then "No affected explanations in declared dependencies." else empty end)
+            ' build/ci/audience-doc-impact.json
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Audience documentation advice
+        uses: actions/upload-artifact@v7
+        with:
+          name: audience-doc-impact-${{ github.run_number }}-${{ github.run_id }}-${{ steps.plan.outputs.source_sha }}-${{ github.run_attempt }}
+          path: build/ci/audience-doc-impact.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Publish impact summary
         run: |
@@ -249,6 +289,7 @@ jobs:
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
       full: ${{ needs.plan.outputs.full == 'true' }}
+      ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
     secrets: inherit
 
   visual-integration:
@@ -364,6 +405,42 @@ jobs:
       build_web: ${{ needs.plan.outputs.flutter_build_web == 'true' }}
       web_smoke: ${{ needs.plan.outputs.flutter_web_smoke == 'true' }}
     secrets: inherit
+
+  backend-review:
+    name: Backend source review
+    if: >-
+      always() && github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.id == github.repository_id &&
+      needs.plan.result == 'success' && needs.plan.outputs.functions == 'true' &&
+      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    needs:
+      - plan
+      - tools
+      - contracts
+      - functions
+      - firestore-rules
+      - flutter
+      - visual-integration
+      - admin
+      - marketing
+      - operations
+      - docs-policy
+      - app-builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    # Review source before merge, outside the shared backend delivery queue.
+    # This environment has a required reviewer and no cloud credentials.
+    environment:
+      name: backend-review
+      url: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Record the reviewed source
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TESTED_SHA: ${{ needs.plan.outputs.source_sha }}
+        run: |
+          printf 'Backend source reviewed: %s (tested merge: %s)\n' "$HEAD_SHA" "$TESTED_SHA" >> "$GITHUB_STEP_SUMMARY"
 
   package-firebase:
     name: Package approved Firebase backend
@@ -517,12 +594,14 @@ jobs:
       - docs-policy
       - app-builds
       - package-firebase
+      - backend-review
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - id: artifact_guard
         name: Require every selected lane
         env:
+          BACKEND_REVIEW_REQUIRED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.id == github.repository_id && needs.plan.outputs.functions == 'true' }}
           DEPLOY_REQUIRED: ${{ needs.plan.outputs.deploy_required }}
           EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
@@ -538,6 +617,9 @@ jobs:
             echo "Selected CI lanes did not pass:"
             echo "$failures"
             exit 1
+          fi
+          if [[ "$BACKEND_REVIEW_REQUIRED" == "true" ]]; then
+            test "$(jq -er '.["backend-review"].result' <<< "$NEEDS_JSON")" = success
           fi
           if [[ "$DEPLOY_REQUIRED" == "true" ]]; then
             package_result="$(jq -er '.["package-firebase"].result' <<< "$NEEDS_JSON")"

@@ -26,6 +26,7 @@ import path from "node:path";
 import process from "node:process";
 
 import {deriveTargetWorkflows, extractSteps, workflowForTarget} from "./lib/workflow_steps.mjs";
+import {planAffectedToolChecks} from "../lib/tool_impact.mjs";
 
 const WORKFLOW_DIR = ".github/workflows";
 
@@ -66,12 +67,14 @@ function resolveTargets({base, head}) {
   return {
     targets: plan.operations?.ciTargets ?? [],
     changedPaths: plan.changedPaths ?? [],
-    complete: plan.complete !== false,
+    complete: plan.complete === true,
+    mode: plan.mode,
+    full: plan.full,
     unknownPaths: plan.unknownPaths ?? [],
   };
 }
 
-function collectGates(targets) {
+function collectGates(targets, context) {
   const available = fs.readdirSync(WORKFLOW_DIR).filter((f) => f.endsWith(".yml"));
   const derived = deriveTargetWorkflows(
     fs.readFileSync(path.join(WORKFLOW_DIR, "ci.yml"), "utf8"),
@@ -82,6 +85,22 @@ function collectGates(targets) {
   const seen = new Set();
 
   for (const target of targets) {
+    if (target === "tools") {
+      const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
+      const tools = planAffectedToolChecks({
+        changedPaths: context.changedPaths ?? [],
+        manifest: read("tool/tools_manifest.json"),
+        componentGraph: read("tool/harness/component_graph.json"),
+        mode: context.mode ?? "pr",
+        full: context.full ?? true,
+      });
+      if (tools.mode !== "full" && !tools.toolIds.length) throw new Error("Affected Tools plan is empty.");
+      if (tools.toolIds.some((id) => !/^[a-z0-9:_-]+$/.test(id))) throw new Error("Unsafe tool identifier.");
+      gates.push({target, workflow: "tools-ci.yml", name: `Registered tool checks (${tools.mode})`,
+        workingDirectory: ".", command: "node tool/run.mjs check" +
+          (tools.mode === "full" ? "" : " " + tools.toolIds.join(" "))});
+      continue;
+    }
     const workflows = workflowForTarget(target, available, derived);
     if (workflows.length === 0) {
       unresolved.push(target);
@@ -98,7 +117,7 @@ function collectGates(targets) {
         // Targets share workflows (android/ios/web all route to the build
         // matrix); running a gate once per target would multiply the cost of
         // a full verification for no additional coverage.
-        const key = `${workflow}::${step.name}::${step.run}`;
+        const key = `${step.workingDirectory}::${step.run}`;
         if (seen.has(key)) continue;
         seen.add(key);
         if (!step.runnable) {
@@ -107,7 +126,7 @@ function collectGates(targets) {
           if (step.run) skipped.push({workflow, name: step.name, reason: step.skipReason});
           continue;
         }
-        gates.push({target, workflow, name: step.name, command: step.run});
+        gates.push({target, workflow, name: step.name, command: step.run, workingDirectory: step.workingDirectory});
       }
     }
   }
@@ -116,7 +135,9 @@ function collectGates(targets) {
 
 function runGate(gate) {
   const started = Date.now();
-  const result = spawnSync("bash", ["-c", gate.command], {stdio: "inherit"});
+  const result = spawnSync("bash", ["-e", "-o", "pipefail", "-c", gate.command], {
+    stdio: "inherit", cwd: path.resolve(gate.workingDirectory),
+  });
   return {...gate, status: result.status ?? 1, seconds: Math.round((Date.now() - started) / 1000)};
 }
 
@@ -143,7 +164,7 @@ function main() {
     context = resolved;
   }
 
-  const {gates, unresolved, skipped} = collectGates(targets);
+  const {gates, unresolved, skipped} = collectGates(targets, context);
 
   if (unresolved.length > 0) {
     console.error(
@@ -177,15 +198,7 @@ function main() {
       `equivalent to CI:`,
     );
     for (const step of skipped) console.log(`  ${step.name}  (${step.workflow}) — ${step.reason}`);
-    console.log(
-      `\nMatrix-driven jobs are the common case. For the tools lane run\n` +
-      `  node tool/run.mjs affected-tools --base origin/main --check\n` +
-      `which executes the registered tool checks those buckets fan out to.\n` +
-      `If that reports "selected full mode" — which a control-plane change\n` +
-      `always does — incremental selection is deliberately bypassed and it\n` +
-      `will run nothing; use the full matrix instead:\n` +
-      `  node tool/run.mjs check`,
-    );
+    console.log("\nTools selection is resolved through the same registered planner and runner as CI.");
   };
 
   if (args.list) {
@@ -196,6 +209,7 @@ function main() {
         lastWorkflow = gate.workflow;
       }
       console.log(`  ${gate.name}`);
+      if (gate.workingDirectory !== ".") console.log(`      working directory: ${gate.workingDirectory}`);
       for (const line of gate.command.split("\n")) console.log(`      ${line}`);
     }
     reportSkipped();
@@ -215,7 +229,7 @@ function main() {
   }
   console.log(`${results.length - failed.length}/${results.length} gate(s) passed.`);
   reportSkipped();
-  process.exit(failed.length === 0 ? 0 : 1);
+  process.exit(failed.length === 0 && context.complete !== false ? 0 : 1);
 }
 
 main();

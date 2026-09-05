@@ -29,7 +29,7 @@ const dedent = (lines) => {
   const present = lines.filter((line) => line.trim().length > 0);
   if (present.length === 0) return "";
   const indent = Math.min(...present.map((line) => /^\s*/.exec(line)[0].length));
-  return present.map((line) => line.slice(indent)).join("\n");
+  return lines.map((line) => line.trim() ? line.slice(indent) : "").join("\n").trimEnd();
 };
 
 /**
@@ -77,7 +77,7 @@ export function extractSteps(source) {
     if (line.startsWith(STEP_INDENT)) {
       flush();
       current = {
-        name: null, run: null, uses: null, if: null, raw: `${line}\n`,
+        name: null, run: null, uses: null, if: null, workingDirectory: ".", raw: `${line}\n`,
         blockKey: null, blockLines: [],
       };
       // The first key of a step sits on the dash line itself.
@@ -87,6 +87,12 @@ export function extractSteps(source) {
     }
 
     if (!current) continue;
+    // A job boundary must close a final run block before its YAML can become
+    // part of the shell command or contaminate the step's runtime classification.
+    if (line.trim().length > 0 && !line.startsWith(KEY_INDENT)) {
+      flush();
+      continue;
+    }
     current.raw += `${line}\n`;
 
     if (line.startsWith(KEY_INDENT) && !line.startsWith(`${KEY_INDENT} `)) {
@@ -143,6 +149,9 @@ function applyKey(step, text) {
   if (key === "name") step.name = value.replace(/^["']|["']$/g, "");
   if (key === "uses") step.uses = value;
   if (key === "if") step.if = value;
+  if (key === "working-directory") step.workingDirectory = value.replace(/^["']|["']$/g, "");
+  if (key === "env") step.hasEnvironment = true;
+  if (key === "shell") step.shell = value;
 }
 
 function classify(step) {
@@ -157,6 +166,8 @@ function classify(step) {
     // variables, so inspecting the body alone reports CI-only aggregation
     // steps as locally runnable.
     skipReason = "references GitHub Actions runtime context";
+  } else if (step.hasEnvironment || step.if || step.shell && step.shell !== "bash") {
+    skipReason = "requires an explicit environment, condition, or non-bash shell";
   }
   return {
     name: step.name ?? "(unnamed)",
@@ -164,6 +175,7 @@ function classify(step) {
     raw: undefined,
     uses: step.uses,
     if: step.if,
+    workingDirectory: step.workingDirectory,
     runnable: skipReason === null,
     skipReason,
   };
