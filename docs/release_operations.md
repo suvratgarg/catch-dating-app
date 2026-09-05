@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.0
+version: 2.7.1
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -289,7 +289,10 @@ The expensive Catch UI plugin smoke check runs when its engine, configuration,
 corpus or transitive probe APIs change, and on full runs. When the actual Tools
 plan already selects that registered check, Flutter consumes the same CI run's
 required Tools result and omits its duplicate invocation. Standalone Flutter
-runs retain their own engine check. The application analyzer and zero-diagnostic
+runs retain their own engine check. The engine stages its existing fixture
+libraries together and supplies every exact file to one analyzer process.
+Positive and negative assertions remain per-file; plugin failure, missing
+fixtures or malformed diagnostics fail the run. The application analyzer and zero-diagnostic
 gate still run on every selected Flutter lane. The workspace analyzer saves its
 root diagnostics once; the lint gate and report reuse that output instead of
 launching a second root analysis.
