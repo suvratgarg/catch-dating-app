@@ -635,7 +635,15 @@ test("mixed dedicated workflow changes retain policy wiring in the affected Tool
   const workflows = productionGraph.classifications.filter(
     (entry) => entry.id.startsWith("dedicated-") && entry.id.endsWith("-workflow"),
   ).flatMap((entry) => entry.paths.include);
-  assert.equal(workflows.length, 6);
+  assert.deepEqual([...workflows].sort(), [
+    ".github/workflows/contracts-ci.yml",
+    ".github/workflows/firestore-rules-ci.yml",
+    ".github/workflows/flutter-ci.yml",
+    ".github/workflows/functions-ci.yml",
+    ".github/workflows/operations-ci.yml",
+    ".github/workflows/react-surface-validation.yml",
+    ".github/workflows/visual-integration-ci.yml",
+  ]);
   for (const workflow of workflows) {
     const plan = planAffectedToolChecks({
       changedPaths: ["tool/docs/check_doc_metadata.mjs", workflow],
