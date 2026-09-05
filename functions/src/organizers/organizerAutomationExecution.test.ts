@@ -94,6 +94,21 @@ function harness() {
   };
 }
 
+async function partiallyFailedRunHarness() {
+  const h = harness();
+  h.deps.deliverWebhook = async (input) => {
+    h.calls.push(input.deliveryId);
+    if (input.url.endsWith("second")) throw new Error("Unavailable");
+  };
+  await dispatchOrganizerFormAutomations(
+    "response",
+    undefined,
+    h.response,
+    h.deps,
+  );
+  return h;
+}
+
 test("successful actions survive retries and duplicate triggers", async () => {
   const h = harness();
   let fail = true;
@@ -255,6 +270,149 @@ test("retries stop after five attempts and remain visible", async () => {
   assert.equal(run.status, "failed");
   assert.equal(run.dueAt, null);
 });
+
+test("an expired final lease stops without losing successful action receipts",
+  async () => {
+    const h = await partiallyFailedRunHarness();
+    const [path, run] = h.runs()[0];
+    const actionResults = structuredClone(run.actionResults);
+    Object.assign(run, {
+      status: "running",
+      attemptCount: 5,
+      leaseOwner: "crashed-final-worker",
+      leaseExpiresAt: stamp(330000),
+      dueAt: stamp(330000),
+    });
+    h.advance(330000);
+    await processDueOrganizerAutomations(h.deps);
+    const terminal = h.store.docs[path];
+    assert.equal(terminal.status, "failed");
+    assert.equal(terminal.errorCode, "attempt_limit_exhausted");
+    assert.equal(terminal.attemptCount, 5);
+    assert.equal(terminal.dueAt, null);
+    assert.equal(terminal.leaseOwner, null);
+    assert.equal(terminal.leaseExpiresAt, null);
+    assert.deepEqual(terminal.completedAt, stamp(330000));
+    assert.deepEqual(terminal.updatedAt, stamp(330000));
+    assert.deepEqual(terminal.actionResults, actionResults);
+    assert.equal(h.calls.length, 2);
+    h.advance(60000);
+    await processDueOrganizerAutomations(h.deps);
+    assert.deepEqual(h.store.docs[path], terminal);
+    assert.equal(h.calls.length, 2);
+  });
+
+test("a live fifth attempt can finish without a second worker terminating it",
+  async () => {
+    const h = await partiallyFailedRunHarness();
+    const [path, run] = h.runs()[0];
+    run.attemptCount = 4;
+    h.advance(120001);
+    let release!: () => void;
+    let entered!: () => void;
+    const blocked = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const started = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    h.deps.deliverWebhook = async (input) => {
+      h.calls.push(input.deliveryId);
+      entered();
+      await blocked;
+    };
+    const worker = processOrganizerAutomationRun(path.split("/")[1], h.deps);
+    await started;
+    const leased = {...h.store.docs[path]};
+    try {
+      assert.equal(leased.attemptCount, 5);
+      assert.equal(leased.status, "running");
+      await processOrganizerAutomationRun(path.split("/")[1], h.deps);
+      assert.deepEqual(h.store.docs[path], leased);
+    } finally {
+      release();
+    }
+    await worker;
+    assert.equal(h.store.docs[path].status, "succeeded");
+    assert.equal(h.store.docs[path].attemptCount, 5);
+    assert.equal(h.calls.length, 3);
+  });
+
+test("terminal runs keep their recorded outcome after attempt exhaustion",
+  async () => {
+    const statuses = ["succeeded", "skipped", "failed", "partiallyFailed"];
+    for (const status of statuses) {
+      const h = await partiallyFailedRunHarness();
+      const [path, run] = h.runs()[0];
+      Object.assign(run, {
+        status,
+        attemptCount: 5,
+        dueAt: null,
+        completedAt: stamp(),
+      });
+      const terminal = {...run};
+      h.advance(3600000);
+      await processOrganizerAutomationRun(path.split("/")[1], h.deps);
+      assert.deepEqual(h.store.docs[path], terminal);
+      assert.equal(h.calls.length, 2);
+    }
+  });
+
+test("exhausted runs wait for both their due time and worker lease to expire",
+  async () => {
+    for (const futureField of ["dueAt", "leaseExpiresAt"]) {
+      const h = await partiallyFailedRunHarness();
+      const [path, run] = h.runs()[0];
+      Object.assign(run, {
+        status: "running",
+        attemptCount: 5,
+        dueAt: stamp(),
+        leaseExpiresAt: stamp(),
+        [futureField]: stamp(1000),
+      });
+      const waiting = {...run};
+      await processOrganizerAutomationRun(path.split("/")[1], h.deps);
+      assert.deepEqual(h.store.docs[path], waiting);
+      h.advance(1000);
+      await processOrganizerAutomationRun(path.split("/")[1], h.deps);
+      assert.equal(h.store.docs[path].status, "failed");
+      assert.equal(h.store.docs[path].dueAt, null);
+      assert.equal(h.store.docs[path].attemptCount, 5);
+      assert.equal(h.calls.length, 2);
+    }
+  });
+
+test("100 exhausted leases leave the due batch so later work can progress",
+  async () => {
+    const h = await partiallyFailedRunHarness();
+    const [path, template] = h.runs()[0];
+    delete h.store.docs[path];
+    for (let index = 0; index < 100; index++) {
+      const id = `exhausted-${String(index).padStart(3, "0")}`;
+      h.store.docs[`organizerFormAutomationRuns/${id}`] = {
+        ...template,
+        status: "running",
+        attemptCount: 5,
+        dueAt: stamp(330000),
+        leaseExpiresAt: stamp(330000),
+        leaseOwner: `crashed-${index}`,
+      };
+    }
+    const pendingPath = "organizerFormAutomationRuns/zz-runnable";
+    h.store.docs[pendingPath] = {...template, dueAt: stamp(330001)};
+    h.deps.deliverWebhook = async (input) => {
+      h.calls.push(input.deliveryId);
+    };
+    h.advance(330002);
+    await processDueOrganizerAutomations(h.deps);
+    assert.equal(h.calls.length, 2, "the first pass keeps its 100-run bound");
+    assert.equal(h.store.docs[pendingPath].attemptCount, 1);
+    assert.equal(h.runs().filter(([, run]) => run.dueAt === null).length, 100);
+    await processDueOrganizerAutomations(h.deps);
+    assert.equal(h.store.docs[pendingPath].status, "succeeded");
+    assert.equal(h.store.docs[pendingPath].attemptCount, 2);
+    assert.equal(h.calls.length, 3, "only the unfinished action may execute");
+  });
 
 test("rule editing protects secrets, ids and organizer authority", async () => {
   const h = harness();
