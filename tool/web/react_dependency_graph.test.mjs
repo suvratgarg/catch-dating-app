@@ -158,18 +158,70 @@ test("direct website-to-admin dependency is rejected", (t) => {
   );
 });
 
-test("runtime and type-only cycles are detected without baselining existing debt", (t) => {
+test("known-bad runtime cycle makes graph health and CLI check fail", (t) => {
   const repoRoot = createFixture(t);
   write(repoRoot, "admin/src/features/cycle/A.ts", 'import {b} from "./B"; export const a = b;\n');
   write(repoRoot, "admin/src/features/cycle/B.ts", 'import {a} from "./A"; export const b = a;\n');
-  write(repoRoot, "website/src/features/types/A.ts", 'import type {B} from "./B"; export type A = B;\n');
-  write(repoRoot, "website/src/features/types/B.ts", 'import type {A} from "./A"; export type B = A;\n');
 
   const graph = buildReactDependencyGraph({repoRoot});
   assert.equal(graph.summary.runtimeCycles, 1);
-  assert.equal(graph.summary.allModuleCycles, 2);
+  assert.equal(graph.health.healthy, false);
+  assert.equal(graph.policy.runtimeModuleCycles, "error");
+  assert.throws(() => assertReactDependencyGraphHealthy(graph), /runtime dependency cycle/u);
+
+  const before = fs.readdirSync(repoRoot, {recursive: true}).sort();
+  for (const output of [[], ["--json"], ["--summary"]]) {
+    const checked = spawnSync(
+      process.execPath,
+      [scriptPath, "--repo-root", repoRoot, "--check", ...output],
+      {encoding: "utf8"}
+    );
+    assert.equal(checked.status, 1);
+    assert.match(checked.stderr, /runtime dependency cycle among admin\/src\/features\/cycle\/A.ts, admin\/src\/features\/cycle\/B.ts/u);
+    if (output.length > 0) {
+      assert.equal(JSON.parse(checked.stdout).summary.runtimeCycles, 1);
+      const report = spawnSync(
+        process.execPath,
+        [scriptPath, "--repo-root", repoRoot, ...output],
+        {encoding: "utf8"}
+      );
+      assert.equal(report.status, 0);
+      assert.equal(report.stderr, "");
+      assert.equal(report.stdout, checked.stdout);
+    }
+  }
+  assert.deepEqual(fs.readdirSync(repoRoot, {recursive: true}).sort(), before);
+});
+
+test("type-only cycles stay visible and do not block graph health or CLI check", (t) => {
+  const repoRoot = createFixture(t);
+  write(repoRoot, "website/src/features/types/A.ts", 'import type {B} from "./B"; export interface A {b?: B}\n');
+  write(repoRoot, "website/src/features/types/B.ts", 'import {type A} from "./A"; export interface B {a?: A}\n');
+
+  const graph = buildReactDependencyGraph({repoRoot});
+  assert.equal(graph.summary.runtimeCycles, 0);
+  assert.equal(graph.summary.allModuleCycles, 1);
+  assert.equal(graph.health.healthy, true);
+  assert.equal(graph.policy.typeOnlyModuleCycles, "report");
   assertReactDependencyGraphHealthy(graph);
-  assert.equal(graph.policy.runtimeModuleCycles, "report");
+  const checked = spawnSync(
+    process.execPath,
+    [scriptPath, "--repo-root", repoRoot, "--check", "--summary"],
+    {encoding: "utf8"}
+  );
+  assert.equal(checked.status, 0);
+  assert.equal(JSON.parse(checked.stdout).summary.allModuleCycles, 1);
+});
+
+test("runtime self-imports and re-export cycles are rejected", (t) => {
+  const repoRoot = createFixture(t);
+  write(repoRoot, "admin/src/features/cycle/self.ts", 'import "./self"; export const self = true;\n');
+  write(repoRoot, "admin/src/features/cycle/index.ts", 'export {read} from "./read"; export const value = true;\n');
+  write(repoRoot, "admin/src/features/cycle/read.ts", 'import {value} from "./index"; export const read = () => value;\n');
+
+  const graph = buildReactDependencyGraph({repoRoot});
+  assert.equal(graph.summary.runtimeCycles, 2);
+  assert.throws(() => assertReactDependencyGraphHealthy(graph), /runtime dependency cycle/u);
 });
 
 test("AST parser ignores comments and records non-literal dynamic imports", () => {

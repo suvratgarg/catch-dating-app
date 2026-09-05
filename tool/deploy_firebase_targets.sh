@@ -67,7 +67,8 @@ sync_callable_invokers() {
   local scope_version
   local invoker_args=("$project_id")
   scope_version="$(node -e '
-    const version = require(process.argv[1]).functionTargetScopeVersion;
+    const helperPath = require("node:path").resolve(process.argv[1]);
+    const version = require(helperPath).functionTargetScopeVersion;
     if (version !== undefined && version !== 1) {
       throw new Error("Unsupported packaged callable scope protocol");
     }

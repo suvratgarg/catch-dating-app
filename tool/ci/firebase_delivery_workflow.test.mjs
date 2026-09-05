@@ -249,9 +249,9 @@ test("Delivery consumes the always-present plan before deciding package or no-op
   assert.match(delivery, /if: \$\{\{ steps\.plan\.outputs\.deploy_required == 'true' \}\}[\s\S]*PACKAGE_ARTIFACT_ID/);
   assert.match(delivery, /needs\.authorize\.outputs\.deploy_required == 'true'/);
   assert.match(delivery, /resume_delivery_run_id:[\s\S]*required: true/);
-  assert.match(delivery, /group: backend-delivery\n/);
-  assert.doesNotMatch(delivery, /group: backend-delivery-\$\{\{/);
-  assert.match(delivery, /It is not the queue:[\s\S]*cursor makes replacement safe/);
+  assert.match(delivery, /group: .*'dev' && 'backend-delivery-dev' \|\| 'backend-delivery'/);
+  assert.match(delivery, /cancel-in-progress: false/);
+  assert.match(delivery, /immutable source authorities establish release order/);
 });
 
 test("Delivery selects the oldest pending authority after a cursor and current main for bootstrap", () => {
@@ -263,13 +263,13 @@ test("Delivery selects the oldest pending authority after a cursor and current m
   assert.match(cursor, /actions\/workflows\/ci\.yml/);
   assert.match(cursor, /\^backend-delivery-cursor-v4-/);
   assert.match(cursor, /actions\/artifacts\/\$cursor_artifact_id\/zip/);
-  assert.match(cursor, /actions\/runs\/\$cursor_delivery_run_id\/attempts\/\$cursor_delivery_run_attempt/);
+  assert.match(cursor, /--run-id "\$cursor_delivery_run_id" --run-attempt "\$cursor_delivery_run_attempt"/);
   assert.match(cursor, /catch\.backend-delivery-cursor\/v4/);
   assert.match(cursor, /sourceCiWorkflowId/);
   assert.match(cursor, /cursor_ambiguity_count/);
   assert.match(cursor, /different or legacy CI workflow generation/);
   assert.match(cursor, /sha256:\$\(sha256sum "\$cursor_dir\/cursor\.zip"/);
-  assert.doesNotMatch(cursor.slice(0, cursor.indexOf("historical_delivery=")), /\.conclusion == "success"/);
+  assert.doesNotMatch(cursor.slice(0, cursor.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run")), /\.conclusion == "success"/);
   assert.doesNotMatch(cursor, /gh run download/);
   assert.match(delivery, /actions\/runs\/\$cursor_run_id\/attempts\/\$cursor_run_attempt/);
   assert.match(delivery, /\.run_attempt == \$run_attempt[\s\S]*\.run_number == \$run_number/);
@@ -301,12 +301,12 @@ test("a final cursor is authoritative before its Delivery run reaches completed 
     delivery.indexOf("      - id: source"),
   );
   const originAttempt = cursor.slice(
-    cursor.indexOf("historical_delivery="),
+    cursor.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run"),
     cursor.indexOf("cursor_source_run="),
   );
 
-  assert.match(originAttempt, /actions\/runs\/\$cursor_delivery_run_id\/attempts\/\$cursor_delivery_run_attempt/);
-  assert.match(originAttempt, /\.run_attempt == \$delivery_run_attempt/);
+  assert.match(originAttempt, /--run-id "\$cursor_delivery_run_id" --run-attempt "\$cursor_delivery_run_attempt"/);
+  assert.match(originAttempt, /--role cursor/);
   assert.doesNotMatch(originAttempt, /\.status ==|\.conclusion ==/);
 });
 
@@ -414,7 +414,7 @@ test("high-cardinality queue metadata still resolves one cursor and one oldest a
 
   const boundedSelection = delivery.slice(
     delivery.indexOf("      - id: cursor"),
-    delivery.indexOf('            failed_delivery="$(gh api'),
+    delivery.indexOf('            [[ "$RESUME_DELIVERY_RUN_ID" =~'),
   );
   assert.equal((boundedSelection.match(/actions\/artifacts\/\$[a-z_]+\/zip/g) ?? []).length, 2);
   assert.doesNotMatch(boundedSelection, /while\s/);
@@ -454,7 +454,7 @@ test("manual resume is pinned to the oldest pending CI item and a source-bound t
   const promotion = workflow("_firebase-promote.yml");
   assert.match(delivery, /test "\$INPUT_RUN_ID" = "\$source_ci_run_id"/);
   assert.match(delivery, /test "\$INPUT_SOURCE_SHA" = "\$source_sha"/);
-  assert.match(delivery, /actions\/runs\/\$RESUME_DELIVERY_RUN_ID\/attempts\/\$RESUME_DELIVERY_ATTEMPT/);
+  assert.match(delivery, /--run-id "\$RESUME_DELIVERY_RUN_ID" --run-attempt "\$RESUME_DELIVERY_ATTEMPT"/);
   for (const recoverable of [
     "failure",
     "cancelled",
@@ -521,7 +521,16 @@ test("promotion is ordered dev to protected prod", () => {
   const delivery = workflow("delivery.yml");
   assert.match(delivery, /dev:[\s\S]*environment: dev/);
   assert.doesNotMatch(delivery, /\n  staging:|environment: staging|needs\.staging/);
-  assert.match(delivery, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
+  const dev = ciJob(delivery, "dev");
+  const prod = ciJob(delivery, "prod");
+  assert.match(dev, /needs: authorize/);
+  assert.match(dev, /outputs\.environment == 'dev'/);
+  assert.match(prod, /needs: authorize/);
+  assert.doesNotMatch(prod, /needs\.dev/);
+  assert.match(prod, /outputs\.environment == 'prod'/);
+  assert.match(prod, /outputs\.dev_completion_artifact_id != ''/);
+  assert.match(prod, /dev_completion_artifact_digest: \$\{\{ needs\.authorize\.outputs\.dev_completion_artifact_digest \}\}/);
+  assert.match(delivery, /backend_delivery_lanes\.mjs select-prod/);
 
   const promotion = workflow("_firebase-promote.yml");
   const verifyOffset = promotion.indexOf("Verify artifact provenance");
@@ -784,7 +793,7 @@ test("promotion guards optional deploy-group payloads", () => {
 });
 
 test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
-  const rebaseline = workflow("backend-rebaseline.yml");
+  const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /^name: Backend Rebaseline/m);
   assert.match(rebaseline, /workflow_dispatch:[\s\S]*source_sha:[\s\S]*reason:[\s\S]*confirm_full_backend_rebaseline:/);
   assert.doesNotMatch(rebaseline, /workflow_run:|repository_dispatch:|schedule:/);
@@ -794,8 +803,8 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
   assert.match(rebaseline, /test "\$\(git rev-parse refs\/remotes\/origin\/main\)" = "\$SOURCE_SHA"/);
   assert.match(rebaseline, /test "\$GITHUB_WORKFLOW_SHA" = "\$SOURCE_SHA"/);
   assert.match(rebaseline, /A verified v4 delivery cursor is required before a backend rebaseline/);
-  assert.match(rebaseline, /actions\/runs\/\$delivery_run_id\/attempts\/\$delivery_run_attempt/);
-  assert.match(rebaseline, /\.name == "Delivery"[\s\S]*\.name == "Backend Rebaseline"/);
+  assert.match(rebaseline, /--run-id "\$delivery_run_id" --run-attempt "\$delivery_run_attempt"/);
+  assert.match(rebaseline, /backend_delivery_lanes\.mjs verify-run[\s\S]*--role cursor/);
   assert.match(rebaseline, /node tool\/harness\.mjs plan[\s\S]*--paths functions\/src\/index\.ts,firestore\.indexes\.json,firestore\.rules,storage\.rules[\s\S]*--mode main/);
   for (const group of [
     "firestore-indexes",
@@ -816,7 +825,7 @@ test("Backend Rebaseline authorizes one exact all-backend snapshot", () => {
 });
 
 test("Backend Rebaseline promotes in order and advances only a successful current-main prod", () => {
-  const rebaseline = workflow("backend-rebaseline.yml");
+  const rebaseline = workflow("backend-rebaseline.yml") + "\n" + workflow("_backend-rebaseline.yml");
   assert.match(rebaseline, /dev:[\s\S]*needs: \[authorize, package\][\s\S]*environment: dev/);
   assert.doesNotMatch(rebaseline, /\n  staging:|environment: staging|needs\.staging/);
   assert.match(rebaseline, /prod:[\s\S]*needs: \[authorize, dev\][\s\S]*environment: prod/);
@@ -837,11 +846,11 @@ test("Backend Rebaseline promotes in order and advances only a successful curren
 
   const delivery = workflow("delivery.yml");
   const cursorOrigin = delivery.slice(
-    delivery.indexOf("historical_delivery="),
+    delivery.indexOf("node tool/ci/backend_delivery_lanes.mjs verify-run"),
     delivery.indexOf("cursor_source_run="),
   );
-  assert.match(cursorOrigin, /\.name == "Delivery"[\s\S]*\.github\/workflows\/delivery\.yml/);
-  assert.match(cursorOrigin, /\.name == "Backend Rebaseline"[\s\S]*\.github\/workflows\/backend-rebaseline\.yml/);
+  assert.match(cursorOrigin, /backend_delivery_lanes\.mjs verify-run/);
+  assert.match(cursorOrigin, /--role cursor/);
 });
 
 test("automatic target planning rejects broad and unrelated Firebase products", () => {
@@ -949,10 +958,9 @@ test("Required CI cannot succeed when main publication is skipped or absent", (c
   }
 });
 
-test("callable permission sync scopes new packages and preserves historical package compatibility", (context) => {
+test("callable permission sync supports CI-relative paths and historical package compatibility", (context) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-callable-scope-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  fs.mkdirSync(path.join(directory, "functions/scripts"), {recursive: true});
   fs.mkdirSync(path.join(directory, "bin"));
   fs.writeFileSync(path.join(directory, ".firebaserc"), JSON.stringify({projects: {dev: "demo-project"}}));
   const receipt = path.join(directory, "npm-args");
@@ -960,24 +968,177 @@ test("callable permission sync scopes new packages and preserves historical pack
   const executor = fs.readFileSync(path.join(repoRoot, "tool/deploy_firebase_targets.sh"), "utf8");
   const sync = executor.slice(executor.indexOf("sync_callable_invokers() {"), executor.indexOf('\nplan_output="'));
   assert.match(executor, /sync_callable_invokers "\$deploy_only"/);
-  for (const version of [1, undefined, 2]) {
-    fs.writeFileSync(path.join(directory, "functions/scripts/set-callable-invokers-public.cjs"),
-      `module.exports = ${JSON.stringify(version === undefined ? {} : {functionTargetScopeVersion: version})};\n`);
-    if (fs.existsSync(receipt)) fs.unlinkSync(receipt);
-    const result = spawnSync("bash", ["-eu", "-c", sync + '\nsync_callable_invokers "functions:alpha,functions:beta"'], {
-      encoding: "utf8", env: {...process.env, repo_root: directory, environment: "dev",
-        CATCH_DELIVERY_FUNCTIONS_DIR: path.join(directory, "functions"), NPM_ARGS: receipt,
-        PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`},
-    });
-    if (version === 2) {
-      assert.notEqual(result.status, 0);
-      assert.equal(fs.existsSync(receipt), false);
-    } else {
-      assert.equal(result.status, 0, result.stderr);
-      assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n"), [
-        "--prefix", path.join(directory, "functions"), "run", "sync:callable-invokers", "--", "demo-project",
-        ...(version === 1 ? ["--targets", "functions:alpha,functions:beta"] : []),
-      ]);
+  for (const functionsDir of [
+    "build/delivery/deploy-tree/functions",
+    "./build/delivery/deploy-tree/functions",
+    path.join(directory, "build/delivery/deploy-tree/functions"),
+    "build/delivery/deploy tree/functions",
+  ]) {
+    const helper = path.resolve(directory, functionsDir, "scripts/set-callable-invokers-public.cjs");
+    fs.mkdirSync(path.dirname(helper), {recursive: true});
+    for (const version of [1, undefined, 2]) {
+      fs.writeFileSync(helper,
+        `module.exports = ${JSON.stringify(version === undefined ? {} : {functionTargetScopeVersion: version})};\n`);
+      if (fs.existsSync(receipt)) fs.unlinkSync(receipt);
+      const result = spawnSync("bash", ["-eu", "-c", sync + '\nsync_callable_invokers "functions:alpha,functions:beta"'], {
+        cwd: directory, encoding: "utf8", env: {...process.env, repo_root: directory, environment: "dev",
+          CATCH_DELIVERY_FUNCTIONS_DIR: functionsDir, NPM_ARGS: receipt,
+          PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`},
+      });
+      if (version === 2) {
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr, /Unsupported packaged callable scope protocol/);
+        assert.equal(fs.existsSync(receipt), false);
+      } else {
+        assert.equal(result.status, 0, `${functionsDir}: ${result.stderr}`);
+        assert.deepEqual(fs.readFileSync(receipt, "utf8").trim().split("\n"), [
+          "--prefix", functionsDir, "run", "sync:callable-invokers", "--", "demo-project",
+          ...(version === 1 ? ["--targets", "functions:alpha,functions:beta"] : []),
+        ]);
+      }
     }
+  }
+});
+
+
+test("dev completion is published after the whole promoter and never advances the production cursor", () => {
+  const delivery = workflow("delivery.yml");
+  const finalizer = ciJob(delivery, "finalize-dev");
+  assert.match(finalizer, /needs: \[authorize, dev\]/);
+  assert.match(finalizer, /needs\.authorize\.result == 'success'/);
+  assert.match(finalizer, /outputs\.environment == 'dev'/);
+  assert.match(finalizer, /outputs\.deploy_required == 'false' \|\| needs\.dev\.result == 'success'/);
+  assert.match(finalizer, /test "\$GITHUB_RUN_ATTEMPT" = "1"/);
+  assert.match(finalizer, /\.deliveryRunId == \$run and \.deliveryRunAttempt == \$attempt/);
+  assert.match(finalizer, /\.sourceSha == \$sha and \.sourceCiRunId == \$run and \.sourceCiRunAttempt == \$attempt/);
+  assert.match(finalizer, /backend_delivery_lanes\.mjs prepare-receipt/);
+  assert.match(finalizer, /--dev-result "\$DEV_RESULT"/);
+  assert.match(finalizer, /--bootstrap "\$BOOTSTRAP"/);
+  assert.match(finalizer, /name: \$\{\{ steps\.completion\.outputs\.dev_completion_artifact_name \}\}/);
+  assert.doesNotMatch(finalizer, /backend-delivery-cursor-v4-|overwrite: true|continue-on-error/);
+  assert.ok(finalizer.indexOf("Upload the immutable completed dev receipt") < finalizer.indexOf("Wake both ordered delivery lanes"));
+  assert.match(finalizer, /for environment in dev prod/);
+  assert.match(ciJob(delivery, "finalize"), /outputs\.environment == 'prod'/);
+});
+
+test("production independently rejects absent or different dev proof before cloud credentials", () => {
+  const promotion = workflow("_firebase-promote.yml");
+  const proof = promotion.slice(
+    promotion.indexOf("      - name: Independently verify exact dev completion"),
+    promotion.indexOf("      - name: Recompute automatic production eligibility"),
+  );
+  assert.match(proof, /inputs\.environment == 'prod'/);
+  assert.match(proof, /delivery\.yml@refs\/heads\/main/);
+  assert.match(proof, /DEV_COMPLETION_ARTIFACT_ID.*\^\[1-9\]/);
+  assert.match(proof, /backend_delivery_lanes\.mjs verify-artifact/);
+  assert.match(proof, /backend_delivery_lanes\.mjs verify-package/);
+  for (const flag of ["artifact-id", "artifact-digest", "source-sha", "ci-run-id", "ci-run-attempt", "base-sha", "package", "provenance"]) {
+    assert.ok(proof.includes(`--${flag} `), flag);
+  }
+  assert.ok(promotion.indexOf(proof) < promotion.indexOf("      - name: Authenticate to Google Cloud"));
+  assert.doesNotMatch(proof, /continue-on-error|\|\| true/);
+});
+
+test("rebaseline structurally excludes both lane selectors through snapshot completion", () => {
+  const caller = workflow("backend-rebaseline.yml");
+  const worker = workflow("_backend-rebaseline.yml");
+  assert.match(caller, /concurrency:\n  group: backend-delivery\n/);
+  const snapshot = ciJob(caller, "snapshot");
+  assert.match(snapshot, /concurrency:\n      group: backend-delivery-dev\n/);
+  assert.match(snapshot, /uses: \.\/\.github\/workflows\/_backend-rebaseline\.yml/);
+  assert.match(snapshot, /secrets: inherit/);
+  for (const input of ["source_sha", "reason", "confirm_full_backend_rebaseline"]) {
+    assert.ok(snapshot.includes(`${input}: \${{ inputs.${input} }}`));
+  }
+  assert.match(worker, /workflow_call:/);
+  assert.doesNotMatch(worker, /workflow_dispatch:|repository_dispatch:|workflow_run:|group: backend-delivery/);
+});
+
+test("cutover refresh and peer wakeups are bounded and manual recovery cannot silently disappear", () => {
+  const delivery = workflow("delivery.yml");
+  const authorize = ciJob(delivery, "authorize");
+  const wake = ciJob(delivery, "wake-peer");
+  assert.match(authorize, /lane_refresh_required: \$\{\{ steps\.lane\.outputs\.refresh_required \}\}/);
+  assert.match(authorize, /client_payload\.wakeup_reason[\s\S]*== "refresh"[\s\S]*production cursor changed again[\s\S]*exit 1/);
+  assert.match(authorize, /GITHUB_EVENT_NAME.*workflow_dispatch.*\.waiting[\s\S]*Manual recovery is blocked[\s\S]*exit 1/);
+  assert.match(authorize, /Production recovery requires.*dev|dev completion.*recover/i);
+  assert.match(wake, /github\.event\.client_payload\.wakeup_reason != 'peer'/);
+  assert.match(wake, /lane_refresh_required == 'true' && 'dev'/);
+  assert.match(wake, /lane_refresh_required == 'true' && 'refresh' \|\| 'peer'/);
+  assert.match(wake, /wakeup_reason: \$reason/);
+  assert.match(authorize, /name: backend-dev-input-/);
+  assert.doesNotMatch(authorize, /name: backend-dev-completion-input-/);
+});
+
+
+test("real cursor and recovery identity commands accept custom titles and reject foreign producers", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-workflow-identity-"));
+  try {
+    fs.mkdirSync(path.join(directory, "tool/ci"), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, "tool/ci/backend_delivery_lanes.mjs"), path.join(directory, "tool/ci/backend_delivery_lanes.mjs"));
+    const bin = path.join(directory, "bin");
+    fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin, "gh"), `#!${process.execPath}
+const fs = require("node:fs");
+const endpoint = process.argv.at(-1);
+const input = JSON.parse(fs.readFileSync(process.env.IDENTITY_FIXTURE, "utf8"));
+if (process.argv[2] !== "api" || !Object.hasOwn(input, endpoint)) process.exit(64);
+process.stdout.write(JSON.stringify(input[endpoint]));
+`, {mode: 0o755});
+    const scripts = ["delivery.yml", "_backend-rebaseline.yml", "_firebase-promote.yml"].flatMap((file) => {
+      const source = workflow(file);
+      return [...source.matchAll(/node tool\/ci\/backend_delivery_lanes\.mjs verify-run \\\n[\s\S]*?--role (cursor|delivery) --output ([^\n]+)/g)].map((match) => {
+        let script = match[0];
+        if (match[1] === "delivery") {
+          const following = source.slice(match.index + match[0].length);
+          script += following.slice(0, following.indexOf("> /dev/null") + "> /dev/null".length);
+        }
+        return {file, role: match[1], output: match[2], script};
+      });
+    });
+    assert.equal(scripts.length, 4);
+    const rebaseline = workflow("_backend-rebaseline.yml");
+    const authorize = ciJob(rebaseline, "authorize");
+    assert.ok(authorize.indexOf("actions/setup-node@v6") < authorize.indexOf("      - id: cursor"));
+    assert.match(authorize, /node-version: \$\{\{ steps\.authorization-toolchain\.outputs\.node-version \}\}/);
+
+    const repo = {id: 42, full_name: "owner/catch"};
+    for (const {file, role, output, script} of scripts) {
+      const run = {id: 900, run_attempt: 1, workflow_id: 88, path: ".github/workflows/delivery.yml",
+        name: "Delivery lane v1 dev", repository: repo, head_repository: repo, head_branch: "main",
+        status: "completed", conclusion: "failure"};
+      const execute = (patch = {}, workflowPatch = {}) => {
+        fs.rmSync(path.join(directory, output), {force: true});
+        const current = {...run, ...patch};
+        const fixture = {
+          "repos/owner/catch/actions/runs/900/attempts/1": current,
+          "repos/owner/catch/actions/workflows/delivery.yml": {id: 88, path: ".github/workflows/delivery.yml", ...workflowPatch},
+          "repos/owner/catch/actions/workflows/backend-rebaseline.yml": {id: 89, path: ".github/workflows/backend-rebaseline.yml"},
+        };
+        const fixtureFile = path.join(directory, "fixture.json");
+        fs.writeFileSync(fixtureFile, JSON.stringify(fixture));
+        return spawnSync("bash", ["-euo", "pipefail", "-c", script], {cwd: directory, encoding: "utf8", env: {...process.env,
+          PATH: `${bin}${path.delimiter}${process.env.PATH}`, IDENTITY_FIXTURE: fixtureFile,
+          GITHUB_REPOSITORY: "owner/catch", REPOSITORY_ID: "42", cursor_delivery_run_id: "900", cursor_delivery_run_attempt: "1",
+          delivery_run_id: "900", delivery_run_attempt: "1", RESUME_DELIVERY_RUN_ID: "900", RESUME_DELIVERY_ATTEMPT: "1",
+          restore_run_id: "900", restore_attempt: "1"}});
+      };
+      for (const name of ["Delivery", "backend-delivery-drain", "Delivery lane v1 dev", "Delivery lane v1 prod"]) {
+        const result = execute({name, display_title: name});
+        assert.equal(result.status, 0, `${file}/${name}: ${result.stderr}`);
+      }
+      for (const patch of [{workflow_id: 99}, {id: 901}, {run_attempt: 2}, {head_branch: "feature"},
+        {head_repository: {...repo, id: 99}}, {repository: {...repo, full_name: "foreign/catch"}}, {path: ".github/workflows/other.yml"}]) {
+        const result = execute(patch);
+        assert.notEqual(result.status, 0, `${file}: rejected identity ${JSON.stringify(patch)}`);
+        assert.equal(fs.existsSync(path.join(directory, output)), false, "Failed identity must not publish verified output.");
+      }
+      assert.notEqual(execute({}, {id: 99}).status, 0);
+      assert.equal(execute({path: ".github/workflows/backend-rebaseline.yml", workflow_id: 89}).status, role === "cursor" ? 0 : 1);
+      assert.equal(execute({status: "in_progress", conclusion: null}).status === 0, role === "cursor");
+      assert.equal(execute({status: "completed", conclusion: "success"}).status === 0, role === "cursor");
+    }
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
   }
 });

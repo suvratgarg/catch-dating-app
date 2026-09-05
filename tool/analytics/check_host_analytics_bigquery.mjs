@@ -1,49 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-
-const expectedExtensions = {
-  "bq-host-clubs": {
-    collectionPath: "clubs",
-    tableId: "clubs",
-    requiredInMart: true,
-  },
-  "bq-host-events": {
-    collectionPath: "events",
-    tableId: "events",
-    requiredInMart: true,
-  },
-  "bq-host-event-participations": {
-    collectionPath: "eventParticipations",
-    tableId: "event_participations",
-    requiredInMart: true,
-  },
-  "bq-host-payments": {
-    collectionPath: "payments",
-    tableId: "payments",
-    requiredInMart: true,
-  },
-  "bq-host-reviews": {
-    collectionPath: "reviews",
-    tableId: "reviews",
-    requiredInMart: true,
-  },
-  "bq-host-saved-events": {
-    collectionPath: "savedEvents",
-    tableId: "saved_events",
-    requiredInMart: true,
-  },
-  "bq-host-event-invite-links": {
-    collectionPath: "eventInviteLinks",
-    tableId: "event_invite_links",
-    requiredInMart: true,
-  },
-  "bq-host-matches": {
-    collectionPath: "matches",
-    tableId: "matches",
-    requiredInMart: false,
-  },
-};
+import {hostExports as expectedExtensions, hostExportSource, retainedHostRawViews} from "./host_analytics_contract.mjs";
 
 const expectedMartColumns = [
   "date",
@@ -91,7 +49,7 @@ const firebaseJson = readJson("firebase.json");
 const declaredExtensions = firebaseJson.extensions ?? {};
 for (const [instanceId, expected] of Object.entries(expectedExtensions)) {
   const source = declaredExtensions[instanceId];
-  if (source !== "firebase/firestore-bigquery-export@0.3.2") {
+  if (source !== hostExportSource) {
     errors.push(
       `${instanceId}: expected firestore-bigquery-export@0.3.2, found ${source ?? "missing"}.`,
     );
@@ -142,6 +100,9 @@ for (const [instanceId, expected] of Object.entries(expectedExtensions)) {
     `${expected.tableId}_raw_latest`,
     `refresh SQL must read ${instanceId} export view ${expected.tableId}_raw_latest`,
   );
+}
+for (const view of retainedHostRawViews) {
+  requireText(refresh, view, `refresh SQL must retain historical dimension ${view}`);
 }
 requireText(refresh, "event_success_scorecards_raw_latest");
 requireText(refresh, "host_analytics_events");

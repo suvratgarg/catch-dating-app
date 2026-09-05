@@ -570,7 +570,8 @@
         "functions/scripts/set-callable-invokers-public.cjs",
         "functions/test/callable-invokers.test.cjs",
         ".github/workflows/backend-staging.yml",
-        ".github/workflows/backend-rebaseline.yml"
+        ".github/workflows/backend-rebaseline.yml",
+        ".github/workflows/_backend-rebaseline.yml"
       ],
       "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-protected-prod with an independent monthly staging snapshot, and recovery is source-bound.",
       "checks": [
@@ -590,8 +591,40 @@
         ]
       },
       "alsoCheckIds": [
-        "ci:backend-source-review"
+        "ci:backend-source-review",
+        "ci:backend-delivery-lanes"
       ]
+    },
+    {
+      "id": "ci:backend-delivery-lanes",
+      "category": "ci",
+      "path": "tool/ci/backend_delivery_lanes.mjs",
+      "command": "node --test tool/ci/backend_delivery_lanes.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/backend_delivery_lanes.test.mjs",
+        ".github/workflows/delivery.yml",
+        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/backend-rebaseline.yml",
+        ".github/workflows/_backend-rebaseline.yml"
+      ],
+      "description": "Verifies independently ordered dev and production progress, exact completed-dev package identity, bootstrap and legacy cutover without weakening immutable delivery authority.",
+      "checks": [
+        "node --check tool/ci/backend_delivery_lanes.mjs",
+        "node --test tool/ci/backend_delivery_lanes.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/backend_delivery_lanes.test.mjs"
+      }
     },
     {
       "id": "ci:web-hosting-delivery-package",
@@ -1351,7 +1384,7 @@
       "command": "node tool/web/react_dependency_graph.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, and direct cross-surface boundaries; deterministic JSON evidence is emitted on demand.",
+      "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, direct cross-surface boundaries, and runtime cycles; deterministic JSON evidence is emitted on demand.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -1383,7 +1416,10 @@
           "full and summary JSON evidence is deterministic and newline terminated",
           "CLI accepts live evidence combinations and rejects retired artifact modes",
           "CLI emits inspectable JSON before a combined check fails",
-          "missing source roots and TypeScript configs fail closed"
+          "missing source roots and TypeScript configs fail closed",
+          "known-bad runtime cycle makes graph health and CLI check fail",
+          "type-only cycles stay visible and do not block graph health or CLI check",
+          "runtime self-imports and re-export cycles are rejected"
         ]
       }
     },
@@ -1395,6 +1431,10 @@
       "safety": "local",
       "status": "active",
       "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      },
       "checks": [
         "node --check tool/web/check_website_copy_ownership.mjs",
         "node tool/web/check_website_copy_ownership.mjs --self-test",
@@ -1597,6 +1637,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_website_import_boundaries.mjs",
         "node tool/web/check_website_import_boundaries.mjs --self-test",
@@ -1612,6 +1656,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_ui_primitives.mjs",
         "node tool/web/check_react_ui_primitives.mjs --check"
@@ -1626,6 +1674,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_classname_boundaries.mjs",
         "node tool/web/check_react_classname_boundaries.mjs --self-test",
@@ -1648,6 +1700,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_component_governance.mjs",
         "node tool/web/check_react_component_governance.mjs --self-test",
@@ -1671,6 +1727,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_admin_feature_exports.mjs",
         "node tool/web/check_admin_feature_exports.mjs --self-test",
@@ -1742,6 +1802,10 @@
       "safety": "local",
       "status": "active",
       "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_admin_components.mjs",
         "node tool/web/check_admin_components.mjs --self-test",
@@ -1764,6 +1828,10 @@
       "safety": "local",
       "status": "active",
       "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_architecture_boundaries.mjs",
         "node tool/web/check_react_architecture_boundaries.mjs --check"
@@ -1783,6 +1851,10 @@
       ],
       "baseline": "tool/web/react_query_state_baseline.json",
       "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/web/check_react_query_state.mjs",
         "node tool/web/check_react_query_state.mjs --self-test",
@@ -3068,6 +3140,8 @@
     {
       "id": "env:ci-toolchain",
       "impactPaths": [
+        "tool/ci/check_toolchain_consistency.test.mjs",
+        "tool/app_targets.json",
         ".github/actions/cache-cocoapods/action.yml",
         ".github/workflows/app-build-matrix.yml",
         ".github/workflows/visual-integration-ci.yml"
@@ -3084,6 +3158,7 @@
       "description": "Validates checked-in CI toolchain pins, package-level runtime declarations, and Apple-native workflow runner compatibility.",
       "checks": [
         "bash -n tool/ci/check_toolchain_consistency.sh",
+        "node --test tool/ci/check_toolchain_consistency.test.mjs",
         "bash tool/ci/check_toolchain_consistency.sh"
       ],
       "role": "generator"
@@ -3197,6 +3272,12 @@
       "command": "node tool/firebase/check_deploy_ref.mjs",
       "safety": "local-readonly",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "impactPaths": [
         "tool/firebase/check_deploy_ref.test.mjs",
         "tool/deploy_firebase_targets.sh"
@@ -3261,6 +3342,12 @@
       "command": "./tool/deploy_firebase_targets.sh",
       "safety": "remote-deploy",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Deploys Firebase targets in safe order.",
       "checks": [
         "bash -n tool/deploy_firebase_targets.sh",
@@ -3286,9 +3373,24 @@
       "description": "Validates host analytics Firebase exports, BigQuery SQL, and callable wiring.",
       "checks": [
         "node --check tool/analytics/check_host_analytics_bigquery.mjs",
-        "node tool/analytics/check_host_analytics_bigquery.mjs"
+        "node tool/analytics/check_host_analytics_bigquery.mjs",
+        "node --test tool/analytics/mart_refresh.test.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "analytics/sql/marts/refresh_mart_host_event_daily.sql",
+        "tool/analytics/mart_refresh.test.mjs",
+        "tool/analytics/host_analytics_contract.mjs",
+        "tool/analytics/host_analytics_contract.test.mjs",
+        "extensions/bq-host-clubs.env"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:deploy-host-bigquery",
@@ -3300,7 +3402,44 @@
       "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
       "checks": [
         "bash -n tool/analytics/deploy_host_analytics_bigquery.sh"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "analytics:host-bigquery-contract",
+      "category": "analytics",
+      "path": "tool/analytics/host_analytics_contract.mjs",
+      "command": "node --test tool/analytics/host_analytics_contract.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "gate",
+      "checks": [
+        "node --check tool/analytics/host_analytics_contract.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/analytics/host_analytics_contract.test.mjs",
+        "contains": [
+          "ACTIVE legacy export is incomplete until both canonical parameters match",
+          "failed, disabled, duplicate, missing and wrong-kind schedules are incomplete"
+        ]
+      }
     },
     {
       "id": "analytics:host-bigquery-live-status",
@@ -3311,8 +3450,21 @@
       "status": "active",
       "description": "Checks live Firebase and BigQuery host analytics deployment status.",
       "checks": [
-        "node --check tool/analytics/host_analytics_live_status.mjs"
-      ]
+        "node --check tool/analytics/host_analytics_live_status.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/analytics/host_analytics_contract.mjs",
+        "tool/analytics/host_analytics_contract.test.mjs",
+        "analytics/sql/marts/refresh_mart_host_event_daily.sql",
+        "extensions/bq-host-clubs.env"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:check-user-bigquery",
@@ -3324,9 +3476,20 @@
       "description": "Validates user analytics BigQuery SQL, callable wiring, and app copy references.",
       "checks": [
         "node --check tool/analytics/check_user_analytics_bigquery.mjs",
-        "node tool/analytics/check_user_analytics_bigquery.mjs"
+        "node tool/analytics/check_user_analytics_bigquery.mjs",
+        "node --test tool/analytics/mart_refresh.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "analytics/sql/marts/refresh_mart_user_analytics_daily.sql",
+        "tool/analytics/mart_refresh.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:deploy-user-bigquery",
@@ -4243,6 +4406,10 @@
       "safety": "local",
       "status": "active",
       "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      },
       "checks": [
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
         "node --test tool/organizer_intake/check_admin_review_bridge.test.mjs",

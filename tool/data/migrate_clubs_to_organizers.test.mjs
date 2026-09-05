@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  applyClubsToOrganizersPlan,
   applyStorageMigrationPlan,
   buildClubsToOrganizersPlan,
   buildStorageMigrationPlan,
@@ -188,6 +189,147 @@ test("repair mode corrects only the known legacy-derived follower count", () => 
     clubMemberships: [membership],
   }), {repairLegacyMemberCounts: true});
   assert.equal(conflicting.blockers.length, 1);
+});
+
+function followerInventory({
+  followerCount = 3,
+  canonicalMembers = ["one", "two", "new"],
+  legacyMembers = ["one", "two"],
+} = {}) {
+  const club = entry("clubs/club-1", {memberCount: 4});
+  return inventory({
+    clubs: [club],
+    organizers: [entry("organizers/club-1", canonicalOrganizerDocument(
+      "club-1", club.data, {followerCount}
+    ))],
+    clubMemberships: legacyMembers.map((uid) => entry(
+      `clubMemberships/club-1_${uid}`,
+      {clubId: "club-1", uid, role: "member", status: "active", joinedAt: timestamp}
+    )),
+    organizerFollows: canonicalMembers.map((uid) => entry(
+      `organizerFollows/club-1_${uid}`,
+      {organizerId: "club-1", uid, status: "active", pushNotificationsEnabled: true,
+        followedAt: timestamp, unfollowedAt: null}
+    )),
+  });
+}
+
+test("canonical follows added after migration do not inherit frozen legacy counts", () => {
+  const before = followerInventory();
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.blockers, []);
+  assert.deepEqual(plan.writes, []);
+  assert.equal(before.collections.organizers[0].data.followerCount, 3);
+  assert.equal(before.collections.organizerFollows.length, 3);
+});
+
+test("actual canonical follower-count mismatches still block ordinary migration", () => {
+  for (const followerCount of [2, 4]) {
+    const plan = buildClubsToOrganizersPlan(followerInventory({followerCount}));
+    assert.deepEqual(plan.writes, []);
+    assert.equal(plan.blockers.length, 1);
+    assert.deepEqual(plan.blockers[0].reasons,
+      ["followerCount differs between source and target"]);
+  }
+});
+
+test("partial migration keeps canonical followers and adds missing legacy members once", () => {
+  const before = followerInventory({canonicalMembers: ["one", "new"]});
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.blockers, []);
+  assert.equal(plan.writes.length, 1);
+  assert.equal(plan.writes[0].targetPath, "organizerFollows/club-1_two");
+  assert.equal(plan.writes[0].data.status, "active");
+  const after = structuredClone(before);
+  after.collections.organizerFollows.push(entry(
+    plan.writes[0].targetPath, plan.writes[0].data
+  ));
+  assert.equal(after.collections.organizerFollows.length, 3);
+  assert.deepEqual(buildClubsToOrganizersPlan(after).writes, []);
+  assert.deepEqual(buildClubsToOrganizersPlan(after).blockers, []);
+});
+
+for (const missingField of ["status", "organizerId"]) {
+  test(`partial canonical follow missing ${missingField} remains idempotent after apply`, async () => {
+    const before = followerInventory({
+      followerCount: 1, canonicalMembers: ["one"], legacyMembers: ["one"],
+    });
+    before.collections.organizers = [];
+    delete before.collections.organizerFollows[0].data[missingField];
+    before.collections.organizerFollows[0].data.canonicalOnlyField = "preserve";
+    const snapshot = structuredClone(before);
+    const plan = buildClubsToOrganizersPlan(before);
+    assert.deepEqual(before, snapshot, "planning must not modify its inventory");
+    assert.deepEqual(plan.blockers, []);
+    assert.equal(plan.writes.length, 2);
+    const followPatch = plan.writes.find(({kind}) => kind === "follow");
+    assert.equal(followPatch.merge, true);
+    assert.deepEqual(Object.keys(followPatch.data), [missingField]);
+
+    // Exercise the real apply function against an in-memory Firestore batch.
+    const after = structuredClone(before);
+    const db = {
+      doc: (documentPath) => documentPath,
+      batch: () => {
+        const writes = [];
+        return {
+          set: (documentPath, data, options) => writes.push({documentPath, data, options}),
+          commit: async () => {
+            for (const {documentPath, data, options} of writes) {
+              const [collection, id] = documentPath.split("/");
+              const entries = after.collections[collection];
+              const existing = entries.find((item) => item.id === id);
+              if (existing) {
+                existing.data = options.merge ? {...existing.data, ...data} : {...data};
+              } else {
+                entries.push(entry(documentPath, {...data}));
+              }
+            }
+          },
+        };
+      },
+    };
+    await applyClubsToOrganizersPlan(db, plan);
+    assert.equal(after.collections.organizers[0].data.followerCount, 1);
+    assert.equal(after.collections.organizerFollows.length, 1);
+    assert.equal(after.collections.organizerFollows[0].data.canonicalOnlyField, "preserve");
+    assert.deepEqual(buildClubsToOrganizersPlan(after).writes, []);
+    assert.deepEqual(buildClubsToOrganizersPlan(after).blockers, []);
+  });
+}
+
+test("legacy active memberships cannot overwrite a canonical unfollow", () => {
+  const before = followerInventory({followerCount: 2});
+  before.collections.organizerFollows[1].data.status = "inactive";
+  const plan = buildClubsToOrganizersPlan(before);
+  assert.deepEqual(plan.writes, []);
+  assert.equal(plan.blockers.length, 1);
+  assert.equal(plan.blockers[0].path, "organizerFollows/club-1_two");
+  assert.match(plan.blockers[0].reasons.join(" "), /status differs/);
+});
+
+test("conflicting partial canonical follows never project blocked missing-field fills", () => {
+  for (const [presentField, value, missingField] of [
+    ["status", "inactive", "organizerId"],
+    ["status", null, "organizerId"],
+    ["organizerId", null, "status"],
+    ["organizerId", "other-organizer", "status"],
+  ]) {
+    const before = followerInventory({canonicalMembers: ["one"], legacyMembers: ["one"]});
+    before.collections.organizers = [];
+    const partial = before.collections.organizerFollows[0].data;
+    partial[presentField] = value;
+    delete partial[missingField];
+    const snapshot = structuredClone(before);
+    const plan = buildClubsToOrganizersPlan(before);
+    assert.deepEqual(before, snapshot);
+    assert.equal(plan.blockers.length, 1);
+    assert.equal(plan.blockers[0].path, "organizerFollows/club-1_one");
+    assert.deepEqual(plan.blockers[0].reasons, [`${presentField} differs between source and target`]);
+    assert.equal(plan.writes.length, 1);
+    assert.equal(plan.writes[0].kind, "organizer");
+    assert.equal(plan.writes[0].data.followerCount, 0);
+  }
 });
 
 test("plan splits host/member edges and patches dependent references", () => {
