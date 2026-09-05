@@ -34,11 +34,16 @@ the exact active owner declared by `path` or `impactPaths`, its transitive
 `alsoCheckIds`, and the mandatory repository guards in
 `tools_manifest.json#ciImpact`. Canonical Harness control-plane paths come from
 `component_graph.json#repo.harness`; the tool manifest declares only additional
-full-matrix paths. Any lane input without an exact active owner, a control-plane
-path, or an explicit full run fails closed to the unchanged six-bucket matrix.
+full-matrix paths. Terminal graph classifications override broad Harness
+patterns. Shared control-plane changes, unowned lane inputs, and explicit full
+runs retain the complete six-bucket matrix.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
-ignored by this inner planner instead of broadening a valid Tools selection.
+excluded from direct tool ownership instead of broadening a valid Tools
+selection. Their graph-declared check ids are still included, so a mixed
+workflow change keeps its policy wiring checks when Tools owns that validation.
+Graph checks, exact tool owners, and mandatory checks all expand through the
+same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's
 order. Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and

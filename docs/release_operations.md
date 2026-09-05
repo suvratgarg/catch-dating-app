@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.3
+version: 2.7.4
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -272,14 +272,17 @@ explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
 package-verifier and source-review files: those changes run Functions,
-contracts, rules, policy and the full Tools matrix without compiling unrelated
-clients. Shared CI orchestration, toolchains, the cross-product delivery core,
+contracts, rules, policy and the affected Tools check closure without compiling
+unrelated clients. The tool planner honors the graph's terminal classifications
+and includes every declared check plus its transitive dependencies; it does not
+reapply a broader workflow glob or drop graph-required checks. Shared CI
+orchestration, toolchains, the cross-product delivery core,
 unknown files and actual app changes retain their broader validation. A nightly
 scheduled full run catches drift hidden by ordinary impact routing.
 Dedicated validation-workflow edits run their own lane plus policy validation.
 The policy lane runs the existing `agent:harness-v2` wiring suite when Tools is
 absent, with the pinned Node version and only root npm dependencies. When Tools
-is selected alongside a workflow change, its full matrix owns that suite;
+is selected alongside a workflow change, its check closure owns that suite;
 ordinary prose keeps its lightweight document checks.
 Only direct component ownership may authorize Firebase deployment or a mobile
 release; dependency expansion can add validation but cannot authorize mutation.

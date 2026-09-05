@@ -462,8 +462,12 @@ test("policy-only CI wiring has one Harness owner with its required dependencies
     changedPaths.push("tool/design/check_platform_token_coverage.mjs");
     const mixed = planAffected({changedPaths, graph, mode: "pr"});
     assert.ok(mixed.operations.ciTargets.includes("tools"), file);
-    assert.equal(planAffectedToolChecks({changedPaths, manifest: toolsManifest,
-      componentGraph: graph, mode: "pr"}).mode, "full", file);
+    const tools = planAffectedToolChecks({changedPaths, manifest: toolsManifest,
+      componentGraph: graph, mode: "pr"});
+    assert.equal(tools.mode, "affected", file);
+    assert.ok(tools.toolIds.includes("agent:harness-v2"), file);
+    assert.ok(tools.toolIds.includes("meta:enforcement-integrity"), file);
+    assert.ok(tools.setupRequirements.includes("root-npm"), file);
   }
   const docs = planAffected({changedPaths: ["docs/example.md"], graph, mode: "pr"});
   assert.deepEqual(docs.operations.ciTargets, ["docs"]);

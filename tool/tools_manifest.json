@@ -3153,6 +3153,12 @@
       "command": "node tool/firebase/check_deploy_parity.mjs",
       "safety": "remote-readonly",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "impactPaths": [
         "tool/firebase/check_deploy_parity.test.mjs",
         "tool/ci/firebase_delivery_workflow.test.mjs",
@@ -3297,6 +3303,12 @@
       "command": "node tool/platform/check_app_targets.mjs --check",
       "safety": "local",
       "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "description": "Validates the six Consumer/Host app targets across entrypoints, Firebase registrations, Apple schemes and entitlements, Android flavors and capabilities, deep links, force-update policy, and release ownership.",
       "checks": [
         "node --check tool/platform/resolve_app_target.mjs",

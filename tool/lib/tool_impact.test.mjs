@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import {planAffected} from "../harness/lib/component_graph.mjs";
 import {
   canonicalHarnessFullPaths,
   duplicateCanonicalFullPathOverrides,
@@ -306,7 +307,7 @@ test("a mixed plan cannot hide an unowned lane input behind an owned tool", () =
   assert.deepEqual(plan.unmappedPaths, ["design/screens/catch.screens.json"]);
 });
 
-test("non-Tools companion files do not broaden an owned tool change", () => {
+test("non-Tools companion files retain graph guards without a full matrix", () => {
   const fixture = manifest([
     {
       id: "docs-check",
@@ -314,6 +315,7 @@ test("non-Tools companion files do not broaden an owned tool change", () => {
       status: "active",
       checks: ["node tool/docs/check.mjs"],
     },
+    productionManifest.tools.find((tool) => tool.id === "docs:metadata"),
   ]);
   const plan = planAffectedToolChecks({
     changedPaths: ["tool/docs/check.mjs", "docs/audit_registry/passes.jsonl"],
@@ -602,6 +604,87 @@ test("canonical harness full paths come only from the component graph", () => {
     () => canonicalHarnessFullPaths({components: []}),
     /must declare non-empty repo\.harness/u,
   );
+});
+
+test("backend control classifications retain every graph check without the full matrix", () => {
+  const paths = productionGraph.classifications.find(
+    (entry) => entry.id === "backend-delivery-control",
+  ).paths.include;
+  for (const changedPath of paths) {
+    for (const mode of ["pr", "merge_group", "main"]) {
+      const plan = planAffectedToolChecks({
+        changedPaths: [changedPath], manifest: productionManifest,
+        componentGraph: productionGraph, mode,
+      });
+      assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
+      const graphPlan = planAffected({
+        changedPaths: [changedPath], graph: productionGraph, mode,
+      });
+      for (const id of graphPlan.operations.checkIds) {
+        assert.ok(plan.toolIds.includes(id), `${changedPath} omitted ${id}`);
+      }
+      assert.ok(plan.toolIds.includes("ci:web-hosting-delivery-package"));
+      assert.ok(plan.toolIds.includes("ci:mobile-release-package"));
+      assert.ok(plan.toolIds.length < 40, `${changedPath} selected ${plan.toolIds.length}`);
+      assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
+    }
+  }
+});
+
+test("mixed dedicated workflow changes retain policy wiring in the affected Tools owner", () => {
+  const workflows = productionGraph.classifications.filter(
+    (entry) => entry.id.startsWith("dedicated-") && entry.id.endsWith("-workflow"),
+  ).flatMap((entry) => entry.paths.include);
+  assert.equal(workflows.length, 6);
+  for (const workflow of workflows) {
+    const plan = planAffectedToolChecks({
+      changedPaths: ["tool/docs/check_doc_metadata.mjs", workflow],
+      manifest: productionManifest, componentGraph: productionGraph,
+    });
+    assert.equal(plan.mode, "affected", workflow);
+    assert.ok(plan.toolIds.includes("agent:harness-v2"), workflow);
+    assert.ok(plan.toolIds.includes("meta:enforcement-integrity"), workflow);
+  }
+});
+
+test("graph checks expand dependencies and fail when a required check is unavailable", () => {
+  const graph = structuredClone(productionGraph);
+  graph.operationProfiles["repo-tooling"].direct.pr.checkIds = ["required"];
+  const fixture = manifest([
+    {id: "owner", path: "tool/owner.mjs", status: "active", checks: ["node owner"]},
+    {id: "required", path: "tool/required.mjs", status: "active",
+      checks: ["node required"], alsoCheckIds: ["dependency"]},
+    {id: "dependency", path: "tool/dependency.mjs", status: "active",
+      checks: ["node dependency"]},
+  ]);
+  const options = {changedPaths: ["tool/owner.mjs"], manifest: fixture, componentGraph: graph};
+  assert.deepEqual(planAffectedToolChecks(options).toolIds,
+    ["dependency", "guard", "owner", "required"]);
+  for (const status of ["retired", "missing"]) {
+    const invalid = structuredClone(fixture);
+    if (status === "missing") invalid.tools = invalid.tools.filter((tool) => tool.id !== "required");
+    else invalid.tools.find((tool) => tool.id === "required").status = status;
+    assert.throws(() => planAffectedToolChecks({...options, manifest: invalid}),
+      /inactive or unknown tool id: required/u);
+  }
+});
+
+test("shared controls and unknown companions still force full backend validation", () => {
+  for (const companion of [
+    ".github/workflows/ci.yml", ".github/workflows/unknown.yml",
+    "tool/ci/delivery_core.mjs", "tool/harness/component_graph.json",
+    "package-lock.json", "unowned-input.xyz",
+  ]) {
+    const plan = planAffectedToolChecks({
+      changedPaths: [".github/workflows/_firebase-promote.yml", companion],
+      manifest: productionManifest, componentGraph: productionGraph,
+    });
+    assert.equal(plan.mode, "full", companion);
+  }
+  assert.equal(planAffectedToolChecks({
+    changedPaths: [".github/workflows/_firebase-promote.yml"],
+    manifest: productionManifest, componentGraph: productionGraph, mode: "nightly", full: true,
+  }).mode, "full");
 });
 
 test("active check ownership rejects vacuous shell commands", () => {

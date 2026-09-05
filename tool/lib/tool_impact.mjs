@@ -34,13 +34,12 @@ export function planAffectedToolChecks({
     (tool) => tool.status === "active" && hasExecutableChecks(tool),
   );
   const activeById = new Map(activeTools.map((tool) => [tool.id, tool]));
-  const fullPaths = [
-    ...canonicalHarnessFullPaths(componentGraph),
-    ...(manifest.ciImpact?.additionalFullPaths ?? []),
-  ];
+  const additionalFullPaths = manifest.ciImpact?.additionalFullPaths ?? [];
+  const controlPlanePaths = new Set();
   const fullReasons = [];
   const toolLanePaths = [];
   const ignoredPaths = [];
+  const selectedIds = new Set(manifest.ciImpact?.mandatoryCheckIds ?? []);
 
   for (const changedPath of paths) {
     const pathPlan = planAffected({
@@ -48,6 +47,15 @@ export function planAffectedToolChecks({
       graph: componentGraph,
       mode,
     });
+    // Terminal classifications override broad Harness globs. Use the resolved
+    // graph ownership instead of independently classifying the same path again.
+    if (pathPlan.selectedComponents.includes("repo.harness") ||
+        additionalFullPaths.some((pattern) => matchesGlob(changedPath, pattern))) {
+      controlPlanePaths.add(changedPath);
+    }
+    // Companion workflow policy checks can belong to Tools in a mixed change,
+    // even when that workflow alone does not select the Tools lane.
+    for (const id of pathPlan.operations.checkIds) selectedIds.add(id);
     if (!pathPlan.complete) {
       fullReasons.push(`incomplete Harness ownership: ${changedPath}`);
     } else if (pathPlan.operations.ciTargets.includes("tools")) {
@@ -61,15 +69,12 @@ export function planAffectedToolChecks({
   if (!full && toolLanePaths.length === 0) {
     fullReasons.push("no changed path is owned by the Tools lane");
   }
-  for (const changedPath of paths) {
-    if (fullPaths.some((pattern) => matchesGlob(changedPath, pattern))) {
-      fullReasons.push(`control-plane path changed: ${changedPath}`);
-    }
+  for (const changedPath of controlPlanePaths) {
+    fullReasons.push(`control-plane path changed: ${changedPath}`);
   }
 
   const ownersByPath = {};
   const unmappedPaths = [];
-  const selectedIds = new Set(manifest.ciImpact?.mandatoryCheckIds ?? []);
   for (const changedPath of toolLanePaths) {
     const owners = activeTools.filter((tool) =>
       tool.path === changedPath ||
@@ -78,7 +83,7 @@ export function planAffectedToolChecks({
     if (owners.length > 0) {
       ownersByPath[changedPath] = owners.map((tool) => tool.id).sort();
       for (const owner of owners) selectedIds.add(owner.id);
-    } else if (!fullPaths.some((pattern) => matchesGlob(changedPath, pattern))) {
+    } else if (!controlPlanePaths.has(changedPath)) {
       unmappedPaths.push(changedPath);
     }
   }

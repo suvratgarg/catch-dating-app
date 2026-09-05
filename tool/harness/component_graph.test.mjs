@@ -99,9 +99,13 @@ test("backend-only delivery controls validate the backend without granting mutat
   const repair = planAffected({changedPaths: [paths[1], paths[8]], graph, mode: "pr"});
   assert.deepEqual(repair.operations.ciTargets,
     ["contracts", "firestore_rules", "functions", "policy_docs", "tools"]);
-  assert.equal(planAffectedToolChecks({changedPaths: [paths[1], paths[8]],
-    manifest: toolsManifest, componentGraph: graph, mode: "pr"}).mode, "full",
-  "backend control changes must retain the full registered Tools matrix");
+  const tools = planAffectedToolChecks({changedPaths: [paths[1], paths[8]],
+    manifest: toolsManifest, componentGraph: graph, mode: "pr"});
+  assert.equal(tools.mode, "affected");
+  for (const id of repair.operations.checkIds) {
+    assert.ok(tools.toolIds.includes(id), `backend control checks omitted ${id}`);
+  }
+  assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
 });
 
 test("backend control routing cannot suppress a changed native app or its release ownership", () => {
