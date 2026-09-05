@@ -15,11 +15,10 @@ mkdir -p "$probe_parent"
 rm -rf "${probe_parent:?}"/run.*
 probe_root="$(mktemp -d "$probe_parent/run.XXXXXX")"
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
-probe_output=""
-probe_status=0
+probe_number=0
+probe_manifest="$probe_root/expectations.tsv"
 dart_bin="${DART_BIN:-dart}"
 generated_probe_path="packages/catch_ui_lints/probes/catch_ui_lint_probes.dart"
-generated_expectations_path="tool/design/generated/enforcement_expectations.json"
 
 node tool/design/build_lint_enforcement_tables.mjs --check
 
@@ -47,58 +46,27 @@ cleanup() {
 trap cleanup EXIT
 trap 'cleanup; exit 130' HUP INT TERM
 
-run_analyze_probe() {
+# Keep each fixture in its own library while preserving path-based ownership.
+# Assertions below are recorded per file, then checked after one analyzer run.
+stage_probe() {
   local name="$1"
-
-  cleanup
-  mkdir -p "$(dirname "$probe_path")"
-  cat >"$probe_path"
-
-  set +e
-  probe_output="$("$dart_bin" analyze "$probe_path" 2>&1)"
-  probe_status=$?
-  set -e
-
-  if [[ -z "$probe_output" ]]; then
-    echo "Catch UI lint probe '$name' produced no analyzer output." >&2
-    exit 1
-  fi
-  if [[ "$probe_output" == *"An error occurred while executing an analyzer plugin"* ]]; then
-    echo "Catch UI lint probe '$name' could not load the analyzer plugin." >&2
-    echo "$probe_output" >&2
-    exit 1
-  fi
-}
-
-count_code() {
-  local code="$1"
-  awk -v code="$code" '
-    {
-      line = $0
-      while ((at = index(line, code)) > 0) {
-        count += 1
-        line = substr(line, at + length(code))
-      }
-    }
-    END { print count + 0 }
-  ' <<<"$probe_output"
+  probe_number=$((probe_number + 1))
+  current_probe_file="$probe_root/$probe_number/${probe_path#"$probe_root"/}"
+  mkdir -p "$(dirname "$current_probe_file")"
+  cat >"$current_probe_file"
+  printf '%s\tcase\t%s\t0\n' "$current_probe_file" "$name" >> "$probe_manifest"
 }
 
 expect_code_count() {
-  local name="$1"
-  local code="$2"
-  local minimum="$3"
-  local actual
-  actual="$(count_code "$code")"
-
-  if (( actual < minimum )); then
-    echo "Catch UI lint probe '$name' emitted $actual $code diagnostics; expected at least $minimum." >&2
-    echo "$probe_output" >&2
-    exit 1
-  fi
+  local name="$1" code="$2" minimum="$3"
+  printf '%s\tmin\t%s\t%s\n' "$current_probe_file" "$code" "$minimum" >> "$probe_manifest"
 }
 
-run_analyze_probe "seeded violation corpus" <<'DART'
+expect_probe() {
+  printf '%s\t%s\t%s\t%s\n' "$current_probe_file" "$1" "${2:--}" "${3:-0}" >> "$probe_manifest"
+}
+
+stage_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
@@ -321,11 +289,7 @@ class _ProbeSection extends StatelessWidget {
 }
 DART
 
-if [[ $probe_status -eq 0 ]]; then
-  echo "Catch UI lint violation probe unexpectedly passed for warning-stage rules." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
+expect_probe nonzero
 
 expect_code_count "seeded violation corpus" "catch_no_raw_ui_spacing" 1
 expect_code_count "seeded violation corpus" "catch_use_section_list" 1
@@ -432,7 +396,7 @@ expect_code_count \
   1
 
 probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
-run_analyze_probe "Host route-edge async-state violation" <<'DART'
+stage_probe "Host route-edge async-state violation" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -459,7 +423,7 @@ expect_code_count \
   1
 
 probe_path="$probe_root/lib/events/presentation/generated/prefixed_constructor_probe.dart"
-run_analyze_probe "prefixed constructor in authored generated-named directory" <<'DART'
+stage_probe "prefixed constructor in authored generated-named directory" <<'DART'
 import 'package:flutter/material.dart' as material;
 
 class PrefixedConstructorProbe extends material.StatelessWidget {
@@ -480,7 +444,7 @@ expect_code_count \
   1
 
 probe_path="$probe_root/lib/events/presentation/widgets/raw_menu_anchor_probe.dart"
-run_analyze_probe "raw menu anchor bypass" <<'DART'
+stage_probe "raw menu anchor bypass" <<'DART'
 import 'package:flutter/material.dart';
 
 class RawMenuAnchorProbe extends StatelessWidget {
@@ -506,7 +470,7 @@ expect_code_count \
 
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 
-run_analyze_probe "generated steering corpus" <"$generated_probe_path"
+stage_probe "generated steering corpus" <"$generated_probe_path"
 while IFS=$'\t' read -r code minimum; do
   expect_code_count "generated steering corpus" "$code" "$minimum"
 done < <(
@@ -518,7 +482,7 @@ done < <(
   '
 )
 
-run_analyze_probe "transparent and token-backed clean cases" <<'DART'
+stage_probe "transparent and token-backed clean cases" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
@@ -543,13 +507,9 @@ class CatchUiLintProbe extends StatelessWidget {
 }
 DART
 
-if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
-  echo "Catch UI lint clean probe emitted an unexpected diagnostic." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
+expect_probe clean
 
-run_analyze_probe "mutation pending per-mutation violation" <<'DART'
+stage_probe "mutation pending per-mutation violation" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -581,7 +541,7 @@ expect_code_count \
   "catch_mutation_pending_requires_error" \
   1
 
-run_analyze_probe "mutation pending per-mutation clean case" <<'DART'
+stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:flutter/material.dart';
@@ -618,14 +578,10 @@ class CatchUiMutationProbe extends ConsumerWidget {
 }
 DART
 
-if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
-  echo "Catch UI lint mutation per-mutation clean probe emitted an unexpected diagnostic." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
+expect_probe clean
 
 probe_path="$probe_root/test/catch_ui_test_lint_probe_test.dart"
-run_analyze_probe "test reliability seeded violations" <<'DART'
+stage_probe "test reliability seeded violations" <<'DART'
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main() async {
@@ -660,7 +616,7 @@ for feedback_scope in \
   "apps/host/lib/feedback_probe.dart" \
   "lib/core/widgets/feedback_probe.dart"; do
   probe_path="$probe_root/$feedback_scope"
-  run_analyze_probe "resolved feedback $feedback_scope" <<'DART'
+  stage_probe "resolved feedback $feedback_scope" <<'DART'
 import 'package:flutter/material.dart' as material;
 
 typedef SnackAlias = material.SnackBar;
@@ -683,12 +639,8 @@ List<Object> rawFeedback(material.BuildContext context) {
 }
 DART
   expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 9
-  if (( $(count_code "catch_use_canonical_feedback") != 9 )); then
-    echo "Feedback probe must report exactly its nine distinct violations." >&2
-    echo "$probe_output" >&2
-    exit 1
-  fi
-  run_analyze_probe "status placement $feedback_scope" <<'DART'
+  expect_probe exact catch_use_canonical_feedback 9
+  stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
 typedef StripAlias = ui.CatchStatusStrip;
 List<Object> forbiddenPlacement() => [
@@ -698,12 +650,8 @@ List<Object> forbiddenPlacement() => [
 ];
 DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
-  if (( $(count_code "catch_status_strip_is_layout_owned") != 3 )); then
-    echo "Status placement probe must report exactly three violations." >&2
-    echo "$probe_output" >&2
-    exit 1
-  fi
-  run_analyze_probe "arrival placement $feedback_scope" <<'DART'
+  expect_probe exact catch_status_strip_is_layout_owned 3
+  stage_probe "arrival placement $feedback_scope" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_notice.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
@@ -720,41 +668,31 @@ DART
 done
 
 probe_path="$probe_root/lib/app.dart"
-run_analyze_probe "global arrival host owner" <<'DART'
+stage_probe "global arrival host owner" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:flutter/widgets.dart';
 final host = CatchNoticeHost(child: const SizedBox());
 DART
-if (( $(count_code "catch_notice_host_is_app_owned") != 0 )); then
-  echo "App-level notice host must remain permitted." >&2
-  exit 1
-fi
+expect_probe exact catch_notice_host_is_app_owned 0
 
 probe_path="$probe_root/lib/core/fcm_service.dart"
-run_analyze_probe "foreground transport owner" <<'DART'
+stage_probe "foreground transport owner" <<'DART'
 import 'package:firebase_messaging/firebase_messaging.dart';
 final foreground = FirebaseMessaging.onMessage;
 DART
-if (( $(count_code "catch_notification_delivery_is_service_owned") != 0 )); then
-  echo "FCM service must own foreground delivery." >&2
-  exit 1
-fi
+expect_probe exact catch_notification_delivery_is_service_owned 0
 
 for status_owner in catch_screen_scaffold catch_tabbed_screen catch_route_scaffold; do
   probe_path="$probe_root/lib/core/widgets/$status_owner.dart"
-  run_analyze_probe "status owner $status_owner" <<'DART'
+  stage_probe "status owner $status_owner" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 final status = CatchStatusStrip(statuses: const []);
 DART
-  if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
-    echo "Canonical status layout owner must be permitted." >&2
-    echo "$probe_output" >&2
-    exit 1
-  fi
+  expect_probe exact catch_status_strip_is_layout_owned 0
 done
 
 probe_path="$probe_root/lib/core/widgets/catch_error_snackbar.dart"
-run_analyze_probe "canonical feedback owner" <<'DART'
+stage_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 
@@ -766,15 +704,11 @@ void owner(BuildContext context) {
   );
 }
 DART
-if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
-  echo "The canonical feedback owner must remain permitted." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
+expect_probe exact catch_use_canonical_feedback 0
 expect_code_count "feedback owner is not a status layout" "catch_status_strip_is_layout_owned" 1
 
 probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
-run_analyze_probe "canonical API and same-name non-framework symbols" <<'DART'
+stage_probe "canonical API and same-name non-framework symbols" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
@@ -800,13 +734,7 @@ List<Object> allowedFeedback(material.BuildContext context) {
   ];
 }
 DART
-if (( $(count_code "catch_use_canonical_feedback") != 0 )); then
-  echo "Feedback lint must not flag canonical APIs or unrelated same-name symbols." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
-if (( $(count_code "catch_status_strip_is_layout_owned") != 0 )); then
-  echo "Status lint must permit typed context publication and unrelated same-name symbols." >&2
-  echo "$probe_output" >&2
-  exit 1
-fi
+expect_probe exact catch_use_canonical_feedback 0
+expect_probe exact catch_status_strip_is_layout_owned 0
+
+node tool/lib/lint_probe_batch.mjs "$probe_root" "$probe_manifest" "$dart_bin"

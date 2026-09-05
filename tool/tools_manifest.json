@@ -1760,13 +1760,46 @@
       "role": "finder"
     },
     {
+      "id": "lint:probe-batch-protocol",
+      "category": "lint",
+      "path": "tool/lib/lint_probe_batch.mjs",
+      "command": "node --test tool/lib/lint_probe_batch.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/lib/lint_probe_batch.test.mjs",
+        "tool/check_catch_ui_lints.sh"
+      ],
+      "checks": [
+        "node --check tool/lib/lint_probe_batch.mjs",
+        "node --test tool/lib/lint_probe_batch.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/lib/lint_probe_batch.test.mjs"
+      }
+    },
+    {
       "id": "lint:catch-ui-plugin-smoke",
       "category": "lint",
       "path": "tool/check_catch_ui_lints.sh",
       "command": "bash tool/check_catch_ui_lints.sh",
       "safety": "local",
       "status": "active",
-      "description": "Verifies Catch UI analysis_server_plugin diagnostics across seeded violation and clean allowance probes.",
+      "description": "Verifies all Catch UI violation and clean-allowance fixtures with one analyzer invocation and independent per-file assertions.",
+      "impactPaths": [
+        "tool/lib/lint_probe_batch.mjs",
+        "tool/lib/lint_probe_batch.test.mjs"
+      ],
+      "alsoCheckIds": ["lint:probe-batch-protocol"],
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",

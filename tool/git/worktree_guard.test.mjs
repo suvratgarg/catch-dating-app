@@ -207,6 +207,43 @@ test("doctor and finish refuse a head that no longer descends from the exact bas
   assert.equal(fs.existsSync(execution.result.claimPath), true);
 });
 
+test("main updates stay outside task scope while task edits remain visible", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "merge-main", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned", "allowed.txt"), "task work\n");
+  commitAll(worktree, "task work");
+  fs.appendFileSync(path.join(fixture.root, "outside.txt"), "upstream work\n");
+  commitAll(fixture.root, "upstream work");
+  git(fixture.root, ["push", "origin", "main"]);
+  const mainSha = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  // Main advancing alone must not make its new file bytes look like a task edit.
+  assert.deepEqual(guard(worktree, ["doctor"]).result.committedPaths, ["owned/allowed.txt"]);
+  git(worktree, ["merge", "--no-edit", "origin/main"]);
+  const doctor = guard(worktree, ["doctor"]);
+  assert.equal(doctor.status, 0);
+  assert.equal(doctor.result.baseSha, fixture.baseSha);
+  assert.equal(doctor.result.scopeBaseSha, mainSha);
+  assert.deepEqual(doctor.result.committedPaths, ["owned/allowed.txt"]);
+  assert.deepEqual(doctor.result.outOfScopePaths, []);
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "task changed upstream owner\n");
+  commitAll(worktree, "outside task change");
+  assert.deepEqual(guard(worktree, ["doctor"]).result.outOfScopePaths, ["outside.txt"]);
+});
+
+test("a missing main ref retains the original scope scan", (context) => {
+  const fixture = createRepository(context);
+  const execution = start(fixture, "missing-main-ref", ["owned"]);
+  const worktree = execution.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "outside.txt"), "outside task change\n");
+  commitAll(worktree, "outside task change");
+  git(worktree, ["update-ref", "-d", "refs/remotes/origin/main"]);
+  const doctor = guard(worktree, ["doctor"]);
+  assert.equal(doctor.status, 1);
+  assert.equal(doctor.result.scopeBaseSha, fixture.baseSha);
+  assert.deepEqual(doctor.result.outOfScopePaths, ["outside.txt"]);
+});
+
 test("finish refuses uncommitted, upstream-less, and unpushed unique work", (context) => {
   const fixture = createRepository(context);
   const execution = start(fixture, "finish-blockers", ["owned"]);
