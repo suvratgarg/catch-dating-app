@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.11
+version: 2.7.12
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
