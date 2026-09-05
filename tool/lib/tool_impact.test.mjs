@@ -231,6 +231,38 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
   }
 });
 
+test("backend deploy helper repairs preserve checks with only Node and root npm setup", () => {
+  const changedPaths = [
+    "tool/ci/firebase_delivery_workflow.test.mjs",
+    "tool/deploy_firebase_targets.sh",
+  ];
+  const plan = planAffectedToolChecks({
+    changedPaths,
+    manifest: productionManifest,
+    componentGraph: componentGraph(),
+  });
+  assert.equal(plan.mode, "affected");
+  assert.equal(plan.repositoryView, "full");
+  assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
+
+  // Filling in setup metadata must not remove any direct, mandatory, or
+  // transitive check that the previous conservative plan selected.
+  const unannotatedManifest = structuredClone(productionManifest);
+  for (const id of ["firebase:check-deploy-ref", "firebase:deploy-targets"]) {
+    delete unannotatedManifest.tools.find((tool) => tool.id === id).ciRequirements;
+  }
+  const previousPlan = planAffectedToolChecks({
+    changedPaths,
+    manifest: unannotatedManifest,
+    componentGraph: componentGraph(),
+  });
+  assert.deepEqual(previousPlan.setupRequirements, supportedToolSetupRequirements);
+  assert.deepEqual(
+    {...plan, setupRequirements: previousPlan.setupRequirements},
+    previousPlan,
+  );
+});
+
 test("transitive check dependencies are selected once", () => {
   const fixture = manifest([
     {
