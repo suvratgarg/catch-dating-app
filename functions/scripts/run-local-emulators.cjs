@@ -9,6 +9,7 @@ const {prepareFunctionsParamsForDeploy} = require("../../tool/firebase/prepare_f
 
 const projectId = "demo-catch";
 const emulatorPorts = {auth: 9099, functions: 5001, firestore: 8080, storage: 9199};
+const localProviderIds = {ALGOLIA_APPLICATION_ID: "LOCALDEMO0", RAZORPAY_PUBLIC_KEY_ID: "rzp_test_localplaceholder"};
 
 function prepareLocalEmulators(repoRoot, directory) {
   const source = path.join(repoRoot, "functions");
@@ -27,7 +28,7 @@ function prepareLocalEmulators(repoRoot, directory) {
     name === "ORGANIZER_WHATSAPP_ACCESS_TOKENS" ? "{}" : "local-emulator-placeholder-never-a-live-secret",
   ]));
   fs.writeFileSync(path.join(functionsRoot, ".secret.local"), Object.entries(secrets).map(([name, value]) => `${name}=${value}\n`).join(""));
-  prepareFunctionsParamsForDeploy({functionsDir: functionsRoot, projectId, environment: {}});
+  prepareFunctionsParamsForDeploy({functionsDir: functionsRoot, projectId, environment: localProviderIds});
   const sourceConfig = JSON.parse(fs.readFileSync(path.join(repoRoot, "firebase.json"), "utf8"));
   const config = {
     functions: {source: "functions"},
@@ -46,7 +47,7 @@ function prepareLocalEmulators(repoRoot, directory) {
 
 function emulatorEnvironment(inherited, directory, secrets) {
   return {
-    ...inherited, ...secrets,
+    ...inherited, ...secrets, ...localProviderIds,
     GCLOUD_PROJECT: projectId,
     GOOGLE_CLOUD_PROJECT: projectId,
     GOOGLE_CLOUD_QUOTA_PROJECT: projectId,

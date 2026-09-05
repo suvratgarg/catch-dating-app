@@ -259,7 +259,7 @@ export async function createRazorpayOrderHandler(
 }
 
 export const createRazorpayOrder = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   async (request) => {
     if (request.auth) {
       await checkRateLimit(

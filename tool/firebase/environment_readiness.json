@@ -22,31 +22,6 @@
   },
   "requirements": [
     {
-      "id": "functions.secret.algolia-app-id",
-      "kind": "secret-version",
-      "name": "ALGOLIA_APP_ID",
-      "environments": [
-        "dev",
-        "staging",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyDeployTarget": [
-          "functions:exploreSearch",
-          "functions:syncAlgoliaOrganizerIndex",
-          "functions:syncAlgoliaEventIndex"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "explore-search",
-      "sourcePaths": [
-        "functions/src/search/exploreSearch.ts",
-        "functions/src/search/algoliaExploreIndex.ts"
-      ]
-    },
-    {
       "id": "functions.secret.algolia-search-api-key",
       "kind": "secret-version",
       "name": "ALGOLIA_SEARCH_API_KEY",
@@ -113,35 +88,6 @@
       "sourcePaths": [
         "functions/src/places/googlePlaces.ts",
         "functions/src/places/placeAutocomplete.ts"
-      ]
-    },
-    {
-      "id": "functions.secret.razorpay-key-id",
-      "kind": "secret-version",
-      "name": "RAZORPAY_KEY_ID",
-      "environments": [
-        "dev",
-        "staging",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyDeployTarget": [
-          "functions:cancelEvent",
-          "functions:cancelEventSignUp",
-          "functions:createRazorpayHostPaymentAccount",
-          "functions:createRazorpayOrder",
-          "functions:razorpayWebhook",
-          "functions:reconcileRazorpayOrders",
-          "functions:refreshRazorpayHostPaymentAccount",
-          "functions:verifyRazorpayPayment"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "payments",
-      "sourcePaths": [
-        "functions/src/payments/razorpay.ts"
       ]
     },
     {

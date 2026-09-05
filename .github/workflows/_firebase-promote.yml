@@ -363,6 +363,8 @@ jobs:
 
       - name: Materialize non-secret Functions params in the deploy copy
         env:
+          ALGOLIA_APPLICATION_ID: ${{ vars.ALGOLIA_APPLICATION_ID }}
+          RAZORPAY_PUBLIC_KEY_ID: ${{ vars.RAZORPAY_PUBLIC_KEY_ID }}
           META_WHATSAPP_APP_ID: ${{ vars.META_WHATSAPP_APP_ID }}
           META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: ${{ vars.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID }}
           META_WHATSAPP_GRAPH_VERSION: ${{ vars.META_WHATSAPP_GRAPH_VERSION }}

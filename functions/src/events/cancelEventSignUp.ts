@@ -20,7 +20,6 @@ import {
 } from "../shared/callableOptions";
 import {
   createRazorpayClient,
-  razorpayKeyId,
   razorpayKeySecret,
 } from "../payments/razorpay";
 import {
@@ -476,6 +475,6 @@ export async function cancelEventSignUpHandler(
 }
 
 export const cancelEventSignUp = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   async (request) => cancelEventSignUpHandler(request)
 );

@@ -11,7 +11,6 @@ import {
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
-  razorpayKeyId,
   razorpayKeySecret,
   razorpayWebhookSecret,
   verifyRazorpayWebhookSignature,
@@ -219,7 +218,7 @@ function noteString(
 }
 
 export const razorpayWebhook = onRequest(
-  {secrets: [razorpayKeyId, razorpayKeySecret, razorpayWebhookSecret]},
+  {secrets: [razorpayKeySecret, razorpayWebhookSecret]},
   async (request, response) => {
     const rawBody = (request as {rawBody?: Buffer}).rawBody;
     if (!rawBody) {

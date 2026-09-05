@@ -318,7 +318,9 @@ secrets because live Razorpay credentials have not been introduced yet.
 Before real payments launch:
 
 1. Create environment-owned Razorpay test/live credentials.
-2. Set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in each Firebase project.
+2. Set the plain `RAZORPAY_PUBLIC_KEY_ID` parameter and the server-only
+   `RAZORPAY_KEY_SECRET` secret in each Firebase project, following
+   `docs/release_operations.md`.
 3. Deploy Functions for each environment.
 4. Smoke test order creation, payment verification, cancellation, and refunds.
 

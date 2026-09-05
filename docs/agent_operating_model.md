@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.0.6
+version: 3.0.7
 updated: 2026-09-05
 owner: agent_operating_model
 status: active
@@ -215,6 +215,7 @@ node tool/git/worktree_guard.mjs start \
   --base-sha <40-character-sha> \
   --paths <claimed-path[,claimed-path...]>
 node tool/git/worktree_guard.mjs doctor --worktree <path>
+node tool/git/worktree_guard.mjs scope --paths <additional-paths> --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path>
 node tool/git/worktree_guard.mjs finish --worktree <path> \
   --abandon --reason <why> [--by <identity>]
@@ -230,7 +231,14 @@ reports registration, branch, dirty-state, and out-of-scope problems. Its
 committed scope uses the latest shared ancestor with fetched `origin/main`, so
 ordinary upstream merges do not claim other tasks' changes. The original exact
 base still must be an ancestor of the task head; unavailable main history keeps
-the original scope window. Dirty paths are always checked independently. `finish` removes only the local claim after the branch
+the original scope window. Dirty paths are always checked independently.
+When authorized work reveals additional files, use `scope` before editing them.
+It adds paths under the same transition lock, preserves the original task
+identity and Git state, and refuses overlap with another task or any existing
+inspection blocker. In-scope uncommitted work is preserved; already out-of-scope
+edits cannot be legitimized through scope expansion. Repeated additions are
+idempotent. The command cannot narrow a claim or change its branch or base.
+`finish` removes only the local claim after the branch
 is clean and any unique commits are pushed. `stale` reports candidates and
 never deletes anything. When a task is deliberately superseded and pushing its
 commits is inappropriate, `finish --abandon` releases the claim only if the

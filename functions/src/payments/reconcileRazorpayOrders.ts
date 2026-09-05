@@ -16,7 +16,6 @@ import {
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
-  razorpayKeyId,
   razorpayKeySecret,
 } from "./razorpay";
 
@@ -201,7 +200,7 @@ export const reconcileRazorpayOrders = onSchedule(
   {
     schedule: "every 15 minutes",
     timeZone: "Asia/Kolkata",
-    secrets: [razorpayKeyId, razorpayKeySecret],
+    secrets: [razorpayKeySecret],
   },
   async () => {
     try {

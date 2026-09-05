@@ -455,7 +455,7 @@ function finiteNumberOrZero(value: number): number {
 export const syncAlgoliaOrganizerIndex = onDocumentWritten(
   {
     document: "organizers/{organizerId}",
-    secrets: [algoliaAppId, algoliaWriteApiKey],
+    secrets: [algoliaWriteApiKey],
   },
   async (event) => {
     const organizer = event.data?.after.data() as
@@ -470,7 +470,7 @@ export const syncAlgoliaOrganizerIndex = onDocumentWritten(
 export const syncAlgoliaEventIndex = onDocumentWritten(
   {
     document: "events/{eventId}",
-    secrets: [algoliaAppId, algoliaWriteApiKey],
+    secrets: [algoliaWriteApiKey],
   },
   async (event) => {
     const eventDoc = event.data?.after.data() as EventDocument | undefined;

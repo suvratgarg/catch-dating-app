@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.5
+version: 2.7.6
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -621,12 +621,31 @@ account's project roles, its exact impersonation principal, and both GitHub
 environment variables. A repository-wide `attribute.repository` principal is
 not an acceptable substitute for the environment-scoped subject.
 
-## Algolia Server-Side Search Secrets
+## Public Provider IDs and Server-Side Search Secrets
 
-Explore server-side search stores runtime Algolia credentials in Firebase
-Secret Manager, not in the client app and not in GitHub Actions. Use one
-Algolia application per Firebase environment so data, analytics, write keys,
-and emergency rotations stay isolated:
+`ALGOLIA_APPLICATION_ID` and `RAZORPAY_PUBLIC_KEY_ID` identify the provider
+account; they are plain Firebase `defineString` parameters. Store them as
+GitHub environment variables for `dev`, `staging`, `prod`, and `prod-backend`
+(the last two use the same production values). The backend workflow writes
+validated values into the disposable Functions `.env.<project-id>` before
+Firebase discovers its parameters. Missing or invalid IDs fail deployment.
+
+The parameter names deliberately differ from the older `ALGOLIA_APP_ID` and
+`RAZORPAY_KEY_ID` SecretParams, allowing historical immutable packages to run
+without an environment-variable/secret-name collision. Keep those legacy
+Secret Manager versions until the historical queue and replacement runtime
+verification are complete; switching source declarations alone does not retire
+live secret versions or their charges.
+
+For an explicit local deployment, provide the same environment's public IDs
+to `tool/firebase/prepare_functions_params_for_deploy.mjs --functions-dir
+functions --project <project-id>`, then use the environment wrapper. Its output
+file is ignored and permission-restricted. Never put a search, write, payment,
+or webhook credential in this file.
+
+Explore search keeps `ALGOLIA_SEARCH_API_KEY` and `ALGOLIA_WRITE_API_KEY` in
+Firebase Secret Manager. Use one Algolia application per Firebase environment
+so data, analytics, write keys, and emergency rotations stay isolated:
 
 | Firebase project | Algolia app |
 |---|---|
@@ -634,58 +653,31 @@ and emergency rotations stay isolated:
 | `catchdates-staging` | `Catch Staging` |
 | `catch-dating-app-64e51` | `Catch Prod` |
 
-The callable and index sync triggers use:
-
-- `ALGOLIA_APP_ID`
-- `ALGOLIA_SEARCH_API_KEY`
-- `ALGOLIA_WRITE_API_KEY`
-
-Use a search-only Algolia key for `ALGOLIA_SEARCH_API_KEY`. Do not use the
-Algolia Admin API key for runtime search. `ALGOLIA_WRITE_API_KEY` is backend
-only; use a write-capable key for Functions triggers and backfills, and keep it
-out of the mobile app.
-
-Create or rotate the runtime search secrets per Firebase project. Do not reuse
-one app's key material across environments:
+Use a search-only key for runtime search and a write-capable key for index
+triggers and backfills. Rotate one environment at a time, selecting that
+project's matching keys. Do not loop over all projects with one account's key
+material:
 
 ```sh
-printf "Algolia application ID: "
-IFS= read -r ALGOLIA_APP_ID
+search_project=catchdates-dev
 printf "Algolia search-only API key: "
 stty -echo
 IFS= read -r ALGOLIA_SEARCH_API_KEY
 stty echo
-printf "\n"
-printf "Algolia write API key: "
+printf "\nAlgolia write API key: "
 stty -echo
 IFS= read -r ALGOLIA_WRITE_API_KEY
 stty echo
 printf "\n"
-
-for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
-  printf "%s" "$ALGOLIA_APP_ID" |
-    firebase functions:secrets:set ALGOLIA_APP_ID \
-      --project "$project" \
-      --data-file -
-  printf "%s" "$ALGOLIA_SEARCH_API_KEY" |
-    firebase functions:secrets:set ALGOLIA_SEARCH_API_KEY \
-      --project "$project" \
-      --data-file -
-  printf "%s" "$ALGOLIA_WRITE_API_KEY" |
-    firebase functions:secrets:set ALGOLIA_WRITE_API_KEY \
-      --project "$project" \
-      --data-file -
-done
-```
-
-Verify metadata without printing secret values:
-
-```sh
-for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
-  firebase functions:secrets:get ALGOLIA_APP_ID --project "$project"
-  firebase functions:secrets:get ALGOLIA_SEARCH_API_KEY --project "$project"
-  firebase functions:secrets:get ALGOLIA_WRITE_API_KEY --project "$project"
-done
+printf "%s" "$ALGOLIA_SEARCH_API_KEY" |
+  firebase functions:secrets:set ALGOLIA_SEARCH_API_KEY \
+    --project "$search_project" --data-file -
+printf "%s" "$ALGOLIA_WRITE_API_KEY" |
+  firebase functions:secrets:set ALGOLIA_WRITE_API_KEY \
+    --project "$search_project" --data-file -
+unset ALGOLIA_SEARCH_API_KEY ALGOLIA_WRITE_API_KEY
+firebase functions:secrets:get ALGOLIA_SEARCH_API_KEY --project "$search_project"
+firebase functions:secrets:get ALGOLIA_WRITE_API_KEY --project "$search_project"
 ```
 
 Index names default to `organizers` and `events`. Only override them with
@@ -1451,10 +1443,11 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   before staging/prod payment rollout.
 - [ ] Create environment-owned Razorpay credentials before live INR payments.
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
-  them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
+  them with the intended `RAZORPAY_PUBLIC_KEY_ID` parameter and
+  `RAZORPAY_KEY_SECRET` secret per
   Firebase project.
 - [ ] Verify `createRazorpayOrder` returns the public `keyId` from the same
-  Firebase Secret Manager environment that created the order. Mobile builds do
+  Firebase project configuration that created the order. Mobile builds do
   not read a local Razorpay `.env` value or embed a generated key. The
   `RAZORPAY_KEY_SECRET` remains server-only and must never enter a client
   contract or artifact.

@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 16);
-  assert.equal(execution.report.requirementCount, 18);
+  assert.equal(execution.report.secretCount, 14);
+  assert.equal(execution.report.requirementCount, 16);
   assert.equal(commandCalls, 0);
 });
 
@@ -70,12 +70,12 @@ test("manifest completeness catches missing and dynamic defineSecret declaration
 
   const reduced = structuredClone(manifest);
   reduced.requirements = reduced.requirements.filter(
-    (entry) => entry.name !== "ALGOLIA_APP_ID",
+    (entry) => entry.name !== "ALGOLIA_WRITE_API_KEY",
   );
   assert.throws(
     () => executeReadinessCli(["--manifest-only"], {manifest: reduced, repoRoot}),
     (error) => error.exitCode === 64 &&
-      /defineSecret is missing from the manifest: ALGOLIA_APP_ID/u.test(
+      /defineSecret is missing from the manifest: ALGOLIA_WRITE_API_KEY/u.test(
         error.message,
       ),
   );
@@ -145,15 +145,15 @@ test("target and capability filtering selects only relevant prerequisites", () =
 
   assert.deepEqual(
     selected("dev", ["functions:exploreSearch"]).map((entry) => entry.name),
-    ["ALGOLIA_APP_ID", "ALGOLIA_SEARCH_API_KEY"],
+    ["ALGOLIA_SEARCH_API_KEY"],
   );
   assert.equal(
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    16,
+    14,
   );
-  assert.equal(selected("dev", ["functions"]).length, 18);
+  assert.equal(selected("dev", ["functions"]).length, 16);
   for (const target of [
     "functions:checkInEventRuntime",
     "functions:createEventVenueSession",
