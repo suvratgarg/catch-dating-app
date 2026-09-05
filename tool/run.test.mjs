@@ -258,17 +258,26 @@ test("same-run React sharing preserves standalone checks and exact command bound
   fs.mkdirSync(path.join(fixture, "tool/web"));
   fs.writeFileSync(path.join(fixture, "tool/web/check_storybook_visuals.mjs"),
     'import fs from "node:fs"; fs.appendFileSync("browser-runs.txt", `visual ${process.argv.slice(2).join(" ")}\\n`);\n');
+  fs.writeFileSync(path.join(fixture, "tool/build_contract.mjs"),
+    'import fs from "node:fs"; fs.appendFileSync("browser-runs.txt", `contract ${process.argv[2]}\\n`); if (process.env.FAIL_BUILD_CONTRACT) process.exit(23);\n');
   const a11y = "npm --workspace catch-marketing run test:storybook:a11y";
   const visuals = "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check";
+  const siteBuild = "npm --prefix website run build";
+  const storybookBuild = "npm --workspace catch-marketing run build:storybook";
   mutateFixtureManifest(fixture, (manifest) => {
     const template = manifest.tools[0];
     manifest.tools.push(
       {...template, id: "marketing:website-storybook-a11y", checks: [a11y]},
       {...template, id: "web:storybook-visuals", path: "tool/web/check_storybook_visuals.mjs",
         checks: ["node tool/web/check_storybook_visuals.mjs --self-test", visuals]},
+      {...template, id: "marketing:website-build", path: "tool/build_contract.mjs",
+        checks: ["node tool/build_contract.mjs postbuild", siteBuild]},
+      {...template, id: "marketing:website-storybook",
+        checks: ["node tool/build_contract.mjs storybook-config", storybookBuild]},
     );
   });
-  const args = ["check", "marketing:website-storybook-a11y", "web:storybook-visuals"];
+  const args = ["check", "marketing:website-storybook-a11y", "web:storybook-visuals",
+    "marketing:website-build", "marketing:website-storybook"];
   const env = {...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_ACTIONS: "true"};
   const receipt = path.join(fixture, "browser-runs.txt");
   const standalone = run(args, {cwd: fixture, env});
@@ -278,22 +287,41 @@ test("same-run React sharing preserves standalone checks and exact command bound
     "visual --self-test",
     "--workspace catch-marketing run build:storybook",
     "visual --surface website --check",
+    "contract postbuild",
+    "--prefix website run build",
+    "contract storybook-config",
+    "--workspace catch-marketing run build:storybook",
   ]);
   fs.unlinkSync(receipt);
   const shared = run([...args, "--marketing-checks-in-react"], {cwd: fixture, env});
   assert.equal(shared.status, 0, shared.stderr);
-  assert.equal(fs.readFileSync(receipt, "utf8"), "visual --self-test\n");
-  assert.equal(shared.stdout.match(/provided by the required same-run React marketing lane/g)?.length, 2);
+  assert.equal(fs.readFileSync(receipt, "utf8"),
+    "visual --self-test\ncontract postbuild\ncontract storybook-config\n");
+  assert.equal(shared.stdout.match(/provided by the required same-run React marketing lane/g)?.length, 4);
+  const failedContract = run([...args, "--marketing-checks-in-react"], {
+    cwd: fixture, env: {...env, FAIL_BUILD_CONTRACT: "true"},
+  });
+  assert.equal(failedContract.status, 23);
+  assert.doesNotMatch(failedContract.stdout, /Tool checks passed/u);
 
   // A changed command cannot inherit the old command's passing evidence.
   mutateFixtureManifest(fixture, (manifest) => {
     manifest.tools.find((tool) => tool.id === "marketing:website-storybook-a11y")
       .checks = [`${a11y} -- --changed`];
+    for (const [id, command] of [
+      ["marketing:website-build", siteBuild],
+      ["marketing:website-storybook", storybookBuild],
+    ]) {
+      const tool = manifest.tools.find((entry) => entry.id === id);
+      tool.checks = tool.checks.map((check) => check === command ? `${check} -- --changed` : check);
+    }
   });
   fs.unlinkSync(receipt);
   const changed = run([...args, "--marketing-checks-in-react"], {cwd: fixture, env});
   assert.equal(changed.status, 0, changed.stderr);
   assert.match(fs.readFileSync(receipt, "utf8"), /test:storybook:a11y -- --changed/u);
+  assert.match(fs.readFileSync(receipt, "utf8"), /--prefix website run build -- --changed/u);
+  assert.match(fs.readFileSync(receipt, "utf8"), /run build:storybook -- --changed/u);
   fs.unlinkSync(receipt);
   const outsideCi = run([...args, "--marketing-checks-in-react"], {
     cwd: fixture, env: {...env, GITHUB_ACTIONS: "false"},
