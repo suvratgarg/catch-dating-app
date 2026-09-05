@@ -33,12 +33,19 @@ test("local suite copies only built code and supplies isolated config and placeh
   assert.equal(config.firestore.rules, path.join(source, "firestore.rules"));
   assert.equal(fs.existsSync(path.join(directory, "functions/.env.prod")), false);
   assert.doesNotMatch(fs.readFileSync(path.join(directory, "functions/.secret.local"), "utf8"), /live-value/);
-  const env = emulatorEnvironment({GOOGLE_APPLICATION_CREDENTIALS: "/real/credentials.json", STRIPE_SECRET_KEY: "real"}, directory, secrets);
+  const env = emulatorEnvironment({GOOGLE_APPLICATION_CREDENTIALS: "/real/credentials.json", STRIPE_SECRET_KEY: "real",
+    ALGOLIA_APPLICATION_ID: "REALAPP123", RAZORPAY_PUBLIC_KEY_ID: "rzp_live_real"}, directory, secrets);
   assert.equal(env.GCLOUD_PROJECT, "demo-catch");
   assert.equal(env.GOOGLE_CLOUD_QUOTA_PROJECT, "demo-catch");
   assert.equal(fs.existsSync(env.GOOGLE_APPLICATION_CREDENTIALS), false);
   assert.equal(env.STRIPE_SECRET_KEY, "local-emulator-placeholder-never-a-live-secret");
   assert.equal(env.ORGANIZER_WHATSAPP_ACCESS_TOKENS, "{}");
+  assert.equal(env.ALGOLIA_APPLICATION_ID, "LOCALDEMO0");
+  assert.equal(env.RAZORPAY_PUBLIC_KEY_ID, "rzp_test_localplaceholder");
+  const params = fs.readFileSync(path.join(directory, "functions/.env.demo-catch"), "utf8");
+  assert.match(params, /ALGOLIA_APPLICATION_ID="LOCALDEMO0"/);
+  assert.match(params, /RAZORPAY_PUBLIC_KEY_ID="rzp_test_localplaceholder"/);
+  assert.doesNotMatch(params, /REALAPP123|rzp_live_real|KEY_SECRET/);
 });
 
 test("Flutter local runs preserve native configs and cannot override the isolated project", (t) => {

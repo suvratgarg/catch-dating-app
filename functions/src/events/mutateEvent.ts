@@ -101,7 +101,6 @@ import {
 } from "./organizerEventVenues";
 import {
   createRazorpayClient,
-  razorpayKeyId,
   razorpayKeySecret,
 } from "../payments/razorpay";
 
@@ -2194,7 +2193,7 @@ export const updateEvent = onCall(
   (request) => updateEventHandler(request)
 );
 export const cancelEvent = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   (request) => cancelEventHandler(request)
 );
 export const deleteEvent = onCall(

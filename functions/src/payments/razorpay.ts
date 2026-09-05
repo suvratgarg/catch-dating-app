@@ -1,15 +1,15 @@
 import * as crypto from "crypto";
-import {defineSecret} from "firebase-functions/params";
+import {defineSecret, defineString} from "firebase-functions/params";
 import Razorpay from "razorpay";
 
-export const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
+export const razorpayKeyId = defineString("RAZORPAY_PUBLIC_KEY_ID");
 export const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
 export const razorpayWebhookSecret = defineSecret("RAZORPAY_WEBHOOK_SECRET");
 
 export const razorpayCurrency = "INR";
 
 /**
- * Creates a Razorpay SDK client from configured Firebase secrets.
+ * Creates a Razorpay client from its public ID and server-only secret.
  * @return {Razorpay} Razorpay SDK client.
  */
 export function createRazorpayClient(): Razorpay {

@@ -13,7 +13,6 @@ import {
 } from "./razorpayFulfillment";
 import {
   createRazorpayClient,
-  razorpayKeyId,
   razorpayKeySecret,
   verifyPaymentSignature,
 } from "./razorpay";
@@ -120,6 +119,6 @@ function normalizeVerifyPaymentPayload(data: unknown): unknown {
 }
 
 export const verifyRazorpayPayment = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   (request) => verifyRazorpayPaymentHandler(request)
 );

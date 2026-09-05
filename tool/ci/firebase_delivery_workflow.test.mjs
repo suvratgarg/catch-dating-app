@@ -729,6 +729,9 @@ test("promotion keeps the verified package immutable and reverifies its deploy c
     promotion.indexOf("- id: promote"),
   );
   assert.match(paramsStep, /prepare_functions_params_for_deploy\.mjs/);
+  assert.match(paramsStep, /ALGOLIA_APPLICATION_ID: \$\{\{ vars\.ALGOLIA_APPLICATION_ID \}\}/);
+  assert.match(paramsStep, /RAZORPAY_PUBLIC_KEY_ID: \$\{\{ vars\.RAZORPAY_PUBLIC_KEY_ID \}\}/);
+  assert.doesNotMatch(paramsStep, /ALGOLIA_APP_ID:|RAZORPAY_KEY_ID:|RAZORPAY_KEY_SECRET:/);
   assert.match(
     paramsStep,
     /functions_dir=build\/delivery\/deploy-tree\/functions[\s\S]*if \[\[ -d "\$functions_dir" \]\][\s\S]*--functions-dir "\$functions_dir"/,

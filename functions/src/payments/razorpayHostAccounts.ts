@@ -1,7 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {createRazorpayClient, razorpayKeyId, razorpayKeySecret} from
+import {createRazorpayClient, razorpayKeySecret} from
   "./razorpay";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
@@ -345,11 +345,11 @@ function normalizeRazorpayHostPayload(data: unknown): unknown {
 }
 
 export const createRazorpayHostPaymentAccount = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   (request) => createRazorpayHostPaymentAccountHandler(request)
 );
 
 export const refreshRazorpayHostPaymentAccount = onCall(
-  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
+  appCheckCallableOptionsWithSecrets([razorpayKeySecret]),
   (request) => refreshRazorpayHostPaymentAccountHandler(request)
 );

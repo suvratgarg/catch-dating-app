@@ -15,6 +15,12 @@ function option(name) {
 }
 
 function normalizedProviderParams(environment = process.env) {
+  const algoliaApplicationId = environment.ALGOLIA_APPLICATION_ID?.trim() ?? "";
+  const razorpayPublicKeyId = environment.RAZORPAY_PUBLIC_KEY_ID?.trim() ?? "";
+  assert(/^[A-Za-z0-9]{10}$/.test(algoliaApplicationId),
+    "ALGOLIA_APPLICATION_ID must be a 10-character application identifier");
+  assert(/^rzp_(test|live)_[A-Za-z0-9]+$/.test(razorpayPublicKeyId),
+    "RAZORPAY_PUBLIC_KEY_ID must be a Razorpay test or live public key id");
   const enabled = environment.META_WHATSAPP_ENABLED?.trim().toLowerCase() ||
     "false";
   assert(enabled === "true" || enabled === "false",
@@ -37,6 +43,9 @@ function normalizedProviderParams(environment = process.env) {
   }
 
   return {
+    // Distinct names coexist with the SecretParams in immutable older packages.
+    ALGOLIA_APPLICATION_ID: algoliaApplicationId,
+    RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
     // Quoted whitespace satisfies legacy Firebase parameter discovery while
     // remaining unconfigured under the source-owned trim checks.
     META_WHATSAPP_APP_ID: appId || " ",

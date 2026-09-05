@@ -1,6 +1,6 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
-import {defineSecret} from "firebase-functions/params";
+import {defineSecret, defineString} from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptionsWithSecrets} from
   "../shared/callableOptions";
@@ -17,7 +17,7 @@ import {
   validateExploreSearchCallablePayload,
 } from "../shared/generated/validators/exploreSearchInput";
 
-export const algoliaAppId = defineSecret("ALGOLIA_APP_ID");
+export const algoliaAppId = defineString("ALGOLIA_APPLICATION_ID");
 export const algoliaSearchApiKey = defineSecret("ALGOLIA_SEARCH_API_KEY");
 
 const defaultLimit = 20;
@@ -236,6 +236,6 @@ function uniqueHitIds(result: AlgoliaSearchResult | undefined): string[] {
 }
 
 export const exploreSearch = onCall(
-  appCheckCallableOptionsWithSecrets([algoliaAppId, algoliaSearchApiKey]),
+  appCheckCallableOptionsWithSecrets([algoliaSearchApiKey]),
   (request) => exploreSearchHandler(request)
 );
