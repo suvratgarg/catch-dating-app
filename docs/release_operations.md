@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.9
+version: 2.7.10
 updated: 2026-09-05
 owner: recursive_audit_loop
 status: active
@@ -472,10 +472,10 @@ packages, and 38 packages blocked by coordinated constraints or major-version
 boundaries. Do not describe the `flutter pub get` summary as 38 independent
 patches.
 
-iOS remains on CocoaPods, not Swift Package Manager. The current
-`razorpay_flutter`, `health`, and `google_maps_flutter_ios` plugin graph still
-reports missing SPM support, and the FirebaseFirestore prebuilt-pod graph has a
-separate duplicate-symbol boundary. Remove `enable-swift-package-manager:
+iOS remains on CocoaPods. The currently locked `razorpay_flutter` and
+`google_maps_flutter_ios` packages do not ship Swift Package Manager manifests;
+`health` does. The FirebaseFirestore prebuilt-pod graph has a separate
+duplicate-symbol boundary. Remove `enable-swift-package-manager:
 false` only in a dedicated migration after both conditions are resolved and
 Consumer plus Host iOS builds pass together.
 
@@ -1647,60 +1647,41 @@ Remote Config is intentionally separate from the standard backend deploy:
 ```
 
 Firebase Extensions (`firestore-bigquery-export` instances in `firebase.json`)
-are **not** part of the standard backend deploy and are not in the
-`deploy_firebase_targets.sh` default target set. When extension parameters
-change in `firebase.json`, deploy them explicitly and deliberately:
+are separate from standard backend delivery. A source merge does not update an
+installed instance. Review and apply only the intended instance's configuration;
+then compare live parameters and version against the reviewed source. A blanket
+Extensions deployment is not the organizer analytics migration procedure.
 
-```bash
-./tool/firebase_with_env.sh prod deploy --only extensions
-```
-
-Otherwise extension config in the repo silently drifts from what is installed.
-
-Host analytics uses BigQuery as the reporting source of truth. Before deploying
-or refreshing it, run the local wiring check:
+Host analytics uses BigQuery as its reporting source. Run the existing source
+check before deployment or refresh:
 
 ```bash
 node tool/run.mjs check analytics:check-host-bigquery
 ```
 
-Use this production order so the mart is never refreshed before its source
-exports exist:
+`analytics/sql/README.md` owns installation, refresh, explicit import and the
+existing production instance's organizer cutover. Follow its bounded order:
+verify the existing export and schedules, establish transactional refresh safety,
+reconfigure the existing organizer export, import after the trigger is active,
+prove source/export content parity, and only then publish the canonical dimension
+query to the existing schedule. A view's existence alone does not prove backfill.
+Preserve retained historical tables and the existing schedule identities. Do not
+create a paid dev warehouse solely to rehearse this production cutover.
+
+Use `--dry-run` when checking the deploy helpers. Their `--create-schedule`
+option updates one existing display-name match, creates a schedule when no match
+exists, and fails on duplicates. The migration instead requires updating the
+known existing resource; an unexpected missing schedule needs investigation.
+
+Verify current runtime state with:
 
 ```bash
-# 1. Create the analytics dataset and host analytics tables.
-tool/analytics/deploy_host_analytics_bigquery.sh prod --skip-refresh
-
-# 2. Install or update the Firestore-to-BigQuery export extensions.
-./tool/firebase_with_env.sh prod deploy --only extensions
-
-# 3. Deploy only the callable code that records and reads analytics.
-./tool/firebase_with_env.sh prod deploy --only \
-  functions:getHostAnalytics,functions:adminGetHostAnalytics,functions:recordOrganizerAnalyticsEvent
-
-# 4. After the bq-host-* backfill/export views exist, refresh and schedule.
-tool/analytics/deploy_host_analytics_bigquery.sh prod \
-  --refresh-only \
-  --create-schedule
-
-# 5. Verify the live backend state.
 node tool/analytics/host_analytics_live_status.mjs --env prod
 ```
 
-Use `--dry-run` first when validating credentials or SQL syntax locally.
-`--create-schedule` is idempotent by display name: it updates the existing
-scheduled-query transfer config when exactly one matching config exists, creates
-it when none exists, and fails if duplicate configs already exist.
-
-Live prod evidence from 2026-06-18 before the first host analytics deploy:
-`catch_analytics` did not exist, no `bq-host-*` extension instances were
-installed, no matching scheduled query existed, and
-`getHostAnalytics` / `adminGetHostAnalytics` /
-`recordOrganizerAnalyticsEvent` were not deployed. Do not treat checked-in
-analytics code as live until the four-step sequence above has completed and the
-post-deploy smoke checks prove it. The live-status command above is expected to
-exit nonzero until all required BigQuery tables/views, extension instances,
-scheduled refresh, and callable Functions are present.
+This compares required tables/views, exact extension configuration, reviewed
+scheduled SQL and callable Functions. Checked-in configuration and historical
+installation notes cannot establish current runtime completion.
 
 The required IAM is not optional. The Functions runtime service account needs
 `roles/bigquery.jobUser` at project scope plus access to `catch_analytics`

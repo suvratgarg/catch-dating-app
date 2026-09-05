@@ -1,7 +1,7 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.2.0
-updated: 2026-08-21
+version: 1.2.2
+updated: 2026-09-05
 owner: data_platform
 status: active
 ---
@@ -89,8 +89,15 @@ An existing canonical value must either match the legacy source or be missing,
 except for backend-owned organizer projections such as next-event and review
 aggregates. Once a canonical organizer exists, those trigger-recomputed values
 are authoritative and the migration verifier preserves them instead of
-comparing them to a stale legacy projection. Other differences remain blockers
-and are never overwritten. Existing Storage targets require a matching CRC32C
+comparing them to a stale legacy projection. Follower parity is checked against
+active canonical `organizerFollows` after projecting the plan's missing-only
+fills for new and partial legacy member edges, deduplicated by target document
+ID. Blocked fills never count as applied. This preserves followers
+added after the cutover and still validates initial/partial migrations. A count
+that differs from that resulting edge set remains a blocker. A conflicting
+canonical follow (including a later unfollow) is never overwritten by a frozen
+legacy membership. Other differences remain blockers and are never overwritten.
+Existing Storage targets require a matching CRC32C
 or MD5 checksum; different or incomparable objects block apply.
 
 ## Environment Run Order

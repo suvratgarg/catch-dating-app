@@ -212,7 +212,7 @@ export function buildClubsToOrganizersPlan(
   const collections = inventory.collections ?? {};
   const targetById = indexById(collections.organizers);
   const clubsById = indexById(collections.clubs);
-  const followerCounts = activeLegacyFollowerCounts(collections.clubMemberships);
+  const followerCounts = activeFollowerCountsAfterMigration(collections);
 
   for (const club of collections.clubs ?? []) {
     const target = targetById.get(club.id)?.data;
@@ -444,13 +444,35 @@ export function canonicalOrganizerDocument(
   });
 }
 
-function activeLegacyFollowerCounts(memberships = []) {
+function activeFollowerCountsAfterMigration(collections) {
+  // Canonical follows may have grown after the legacy copy. Keep them, and
+  // project the same missing-only fills that queueFullDocument will apply to
+  // new or partial member edges before counting the resulting active follows.
+  // Existing conflicting/inactive canonical edges remain blockers in the
+  // ordinary follow comparison; a stale legacy edge never overrides them here.
+  const follows = indexById(collections.organizerFollows);
+  for (const membership of collections.clubMemberships ?? []) {
+    const {clubId, uid, role} = membership.data ?? {};
+    if (typeof clubId !== "string" || !clubId.trim() ||
+        typeof uid !== "string" || !uid.trim() ||
+        role !== "member") continue;
+    const targetId = `${clubId}_${uid}`;
+    const existing = follows.get(targetId)?.data;
+    const expected = canonicalOrganizerFollow(membership.data, clubId, uid);
+    if (existing === undefined) {
+      follows.set(targetId, {data: expected});
+    } else {
+      const patch = missingOrEqualPatch(existing, expected);
+      if (patch.conflicts.length === 0) {
+        follows.set(targetId, {data: {...existing, ...patch.missing}});
+      }
+    }
+  }
   const counts = new Map();
-  for (const membership of memberships) {
-    const organizerId = membership.data?.clubId;
-    if (typeof organizerId !== "string" || !organizerId.trim()) continue;
-    if (membership.data?.role !== "member" ||
-        membership.data?.status !== "active") continue;
+  for (const follow of follows.values()) {
+    const {organizerId, status} = follow.data ?? {};
+    if (typeof organizerId !== "string" || !organizerId.trim() ||
+        status !== "active") continue;
     counts.set(organizerId, (counts.get(organizerId) ?? 0) + 1);
   }
   return counts;

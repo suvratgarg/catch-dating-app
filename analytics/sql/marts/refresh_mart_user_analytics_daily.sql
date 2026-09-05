@@ -8,12 +8,6 @@ DECLARE refresh_end DATE DEFAULT CURRENT_DATE("Asia/Kolkata");
 DECLARE ga4_dataset_exists BOOL DEFAULT FALSE;
 DECLARE ga4_events_exist BOOL DEFAULT FALSE;
 
-EXECUTE IMMEDIATE FORMAT("""
-DELETE FROM `%s.%s.mart_user_analytics_daily`
-WHERE date BETWEEN @refresh_start AND @refresh_end
-""", analytics_project, user_dataset)
-USING refresh_start AS refresh_start, refresh_end AS refresh_end;
-
 CREATE TEMP TABLE ga4_user_daily (
   date DATE NOT NULL,
   uid STRING NOT NULL,
@@ -65,37 +59,7 @@ IF ga4_events_exist THEN
 END IF;
 
 EXECUTE IMMEDIATE FORMAT("""
-INSERT INTO `%s.%s.mart_user_analytics_daily` (
-  date,
-  uid,
-  events_booked_count,
-  events_attended_count,
-  outgoing_like_count,
-  incoming_like_count,
-  private_interest_sent_count,
-  private_interest_received_count,
-  match_count,
-  chat_started_sent_count,
-  chat_started_received_count,
-  chat_message_sent_count,
-  chat_message_received_count,
-  feedback_submitted_count,
-  profile_view_count,
-  unique_profile_viewer_count,
-  profile_dwell_ms,
-  photo_impression_count,
-  photo_dwell_ms,
-  top_photo_id,
-  top_photo_score,
-  app_active_minutes,
-  app_event_count,
-  profile_pull_score,
-  connection_followthrough_score,
-  event_anchor_score,
-  internal_desirability_percentile,
-  data_completeness_score,
-  refreshed_at
-)
+CREATE TEMP TABLE refreshed_user_analytics_daily AS
 WITH
 participant_signals AS (
   SELECT
@@ -318,10 +282,91 @@ SELECT
 FROM scored
 WHERE date BETWEEN @refresh_start AND @refresh_end
 """,
-analytics_project, user_dataset,
 analytics_project, marketplace_dataset,
 analytics_project, host_dataset,
 analytics_project, host_dataset,
 analytics_project, user_dataset,
 analytics_project, user_dataset)
 USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+-- Build every replacement row before touching the published mart. If either
+-- mutation fails, roll back the whole refresh and propagate the error.
+BEGIN
+  BEGIN TRANSACTION;
+
+EXECUTE IMMEDIATE FORMAT("""
+DELETE FROM `%s.%s.mart_user_analytics_daily`
+WHERE date BETWEEN @refresh_start AND @refresh_end
+""", analytics_project, user_dataset)
+USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+EXECUTE IMMEDIATE FORMAT("""
+INSERT INTO `%s.%s.mart_user_analytics_daily` (
+  date,
+  uid,
+  events_booked_count,
+  events_attended_count,
+  outgoing_like_count,
+  incoming_like_count,
+  private_interest_sent_count,
+  private_interest_received_count,
+  match_count,
+  chat_started_sent_count,
+  chat_started_received_count,
+  chat_message_sent_count,
+  chat_message_received_count,
+  feedback_submitted_count,
+  profile_view_count,
+  unique_profile_viewer_count,
+  profile_dwell_ms,
+  photo_impression_count,
+  photo_dwell_ms,
+  top_photo_id,
+  top_photo_score,
+  app_active_minutes,
+  app_event_count,
+  profile_pull_score,
+  connection_followthrough_score,
+  event_anchor_score,
+  internal_desirability_percentile,
+  data_completeness_score,
+  refreshed_at
+)
+SELECT
+  date,
+  uid,
+  events_booked_count,
+  events_attended_count,
+  outgoing_like_count,
+  incoming_like_count,
+  private_interest_sent_count,
+  private_interest_received_count,
+  match_count,
+  chat_started_sent_count,
+  chat_started_received_count,
+  chat_message_sent_count,
+  chat_message_received_count,
+  feedback_submitted_count,
+  profile_view_count,
+  unique_profile_viewer_count,
+  profile_dwell_ms,
+  photo_impression_count,
+  photo_dwell_ms,
+  top_photo_id,
+  top_photo_score,
+  app_active_minutes,
+  app_event_count,
+  profile_pull_score,
+  connection_followthrough_score,
+  event_anchor_score,
+  internal_desirability_percentile,
+  data_completeness_score,
+  refreshed_at
+FROM refreshed_user_analytics_daily
+""", analytics_project, user_dataset);
+
+  COMMIT TRANSACTION;
+EXCEPTION WHEN ERROR THEN
+  ROLLBACK TRANSACTION;
+  RAISE;
+END;

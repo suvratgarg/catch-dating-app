@@ -3361,9 +3361,24 @@
       "description": "Validates host analytics Firebase exports, BigQuery SQL, and callable wiring.",
       "checks": [
         "node --check tool/analytics/check_host_analytics_bigquery.mjs",
-        "node tool/analytics/check_host_analytics_bigquery.mjs"
+        "node tool/analytics/check_host_analytics_bigquery.mjs",
+        "node --test tool/analytics/mart_refresh.test.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "analytics/sql/marts/refresh_mart_host_event_daily.sql",
+        "tool/analytics/mart_refresh.test.mjs",
+        "tool/analytics/host_analytics_contract.mjs",
+        "tool/analytics/host_analytics_contract.test.mjs",
+        "extensions/bq-host-clubs.env"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:deploy-host-bigquery",
@@ -3375,7 +3390,44 @@
       "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
       "checks": [
         "bash -n tool/analytics/deploy_host_analytics_bigquery.sh"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "analytics:host-bigquery-contract",
+      "category": "analytics",
+      "path": "tool/analytics/host_analytics_contract.mjs",
+      "command": "node --test tool/analytics/host_analytics_contract.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "gate",
+      "checks": [
+        "node --check tool/analytics/host_analytics_contract.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/analytics/host_analytics_contract.test.mjs",
+        "contains": [
+          "ACTIVE legacy export is incomplete until both canonical parameters match",
+          "failed, disabled, duplicate, missing and wrong-kind schedules are incomplete"
+        ]
+      }
     },
     {
       "id": "analytics:host-bigquery-live-status",
@@ -3386,8 +3438,21 @@
       "status": "active",
       "description": "Checks live Firebase and BigQuery host analytics deployment status.",
       "checks": [
-        "node --check tool/analytics/host_analytics_live_status.mjs"
-      ]
+        "node --check tool/analytics/host_analytics_live_status.mjs",
+        "node --test tool/analytics/host_analytics_contract.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/analytics/host_analytics_contract.mjs",
+        "tool/analytics/host_analytics_contract.test.mjs",
+        "analytics/sql/marts/refresh_mart_host_event_daily.sql",
+        "extensions/bq-host-clubs.env"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:check-user-bigquery",
@@ -3399,9 +3464,20 @@
       "description": "Validates user analytics BigQuery SQL, callable wiring, and app copy references.",
       "checks": [
         "node --check tool/analytics/check_user_analytics_bigquery.mjs",
-        "node tool/analytics/check_user_analytics_bigquery.mjs"
+        "node tool/analytics/check_user_analytics_bigquery.mjs",
+        "node --test tool/analytics/mart_refresh.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "analytics/sql/marts/refresh_mart_user_analytics_daily.sql",
+        "tool/analytics/mart_refresh.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "analytics:deploy-user-bigquery",
