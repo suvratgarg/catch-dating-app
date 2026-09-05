@@ -127,6 +127,49 @@ test("shared React validation runs both callers and retains Hosting and policy c
   }
 });
 
+test("native build controls validate their callers with Node-only toolchain setup", () => {
+  const cases = [
+    [".github/workflows/app-build-matrix.yml", ["flutter_build_android",
+      "flutter_build_ios", "flutter_build_web", "flutter_web_smoke", "policy_docs", "tools"]],
+    [".github/actions/cache-cocoapods/action.yml", ["flutter_build_ios",
+      "policy_docs", "tools", "visual_integration"]],
+  ];
+  for (const [file, targets] of cases) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true);
+      assert.deepEqual(result.operations.ciTargets, targets);
+      assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
+      assert.deepEqual(result.operations.deployGroups, []);
+      assert.deepEqual(result.operations.releaseTargets, []);
+      assert.deepEqual(result.operations.releaseRoles, []);
+      const tools = planAffectedToolChecks({changedPaths: [file],
+        manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected");
+      assert.ok(tools.toolIds.includes("env:ci-toolchain"));
+      assert.ok(tools.toolIds.includes("agent:harness-v2"));
+      assert.ok(tools.toolIds.includes("meta:enforcement-integrity"));
+      assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
+    }
+  }
+});
+
+test("native cache ownership retains both callers when mixed with one app role", () => {
+  const result = planAffected({changedPaths: [
+    ".github/actions/cache-cocoapods/action.yml",
+    "apps/host/ios/Runner/Info.plist", "functions/src/payments/razorpay.ts",
+  ], graph, mode: "main"});
+  assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
+  assert.ok(result.operations.ciTargets.includes("functions"));
+  assert.deepEqual(result.operations.releaseTargets, ["host-ios"]);
+  assert.deepEqual(result.operations.releaseRoles, ["host"]);
+  assert.deepEqual(result.operations.deployGroups, ["functions"]);
+  const shared = planAffected({changedPaths: [
+    ".github/actions/cache-cocoapods/action.yml", ".github/actions/setup-flutter/action.yml",
+  ], graph, mode: "pr"});
+  assert.deepEqual(shared.operations.ciTargets, [...graph.targets].sort());
+});
+
 test("React workflow routing preserves mixed native and backend ownership", () => {
   const result = planAffected({changedPaths: [
     ".github/workflows/react-surface-validation.yml",

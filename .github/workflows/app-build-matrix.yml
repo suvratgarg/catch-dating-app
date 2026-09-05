@@ -217,17 +217,11 @@ jobs:
 
       - run: flutter pub get
 
-      # Cache downloaded pods only. Flutter still generates each role's Pods
-      # project and compiles the app on every run, including a cache hit.
       - name: Restore CocoaPods downloads
-        uses: actions/cache@v5
+        uses: ./.github/actions/cache-cocoapods
         with:
-          path: |
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods/repos
-          key: pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cocoapods-version }}-${{ hashFiles('apps/*/ios/Podfile.lock') }}
-          restore-keys: |
-            pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cocoapods-version }}-
+          cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
+          lockfiles: apps/*/ios/Podfile.lock
 
       - name: Validate Host design reference manifest
         if: ${{ matrix.role == 'host' }}
