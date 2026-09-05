@@ -71,6 +71,26 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
   }
 });
 
+test("shared screenshot runner validates every React caller with only its required setup", () => {
+  const file = "tool/web/check_storybook_visuals.mjs";
+  for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+    const result = plan(file, mode);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.directComponents, ["web.shared"]);
+    assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
+    assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+    for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "codegenIds", "buildTargets"]) {
+      assert.deepEqual(result.operations[key], [], key);
+    }
+    const tools = planAffectedToolChecks({changedPaths: [file],
+      manifest: toolsManifest, componentGraph: graph, mode});
+    assert.equal(tools.mode, "affected");
+    assert.ok(tools.toolIds.includes("web:storybook-visuals"));
+    assert.deepEqual(tools.setupRequirements, ["node", "root-npm", "playwright"]);
+    assert.equal(tools.repositoryView, "full");
+  }
+});
+
 test("component graph validates and affected edges cannot authorize release", () => {
   assert.deepEqual(validateComponentGraph(graph), []);
   for (const profile of Object.values(graph.operationProfiles)) {
