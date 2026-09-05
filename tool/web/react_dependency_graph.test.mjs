@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -15,6 +16,20 @@ import {
 } from "./react_dependency_graph.mjs";
 
 const scriptPath = fileURLToPath(new URL("./react_dependency_graph.mjs", import.meta.url));
+
+test("hoisted Vitest resolves a matching coverage provider inside this checkout", () => {
+  const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+  const requireFromRoot = createRequire(path.join(repoRoot, "package.json"));
+  const vitestPath = requireFromRoot.resolve("vitest/package.json");
+  const requireFromVitest = createRequire(vitestPath);
+  const providerPath = requireFromVitest.resolve("@vitest/coverage-v8/package.json");
+  // A developer's parent checkout must not mask a missing clean-runner dependency.
+  assert.ok(providerPath.startsWith(path.join(repoRoot, "node_modules") + path.sep),
+    `coverage provider escaped this checkout: ${providerPath}`);
+  const vitest = JSON.parse(fs.readFileSync(vitestPath, "utf8"));
+  const provider = JSON.parse(fs.readFileSync(providerPath, "utf8"));
+  assert.equal(provider.peerDependencies.vitest, vitest.version);
+});
 
 test("parses imports, dynamic imports, re-exports, aliases, and workspace modules", (t) => {
   const repoRoot = createFixture(t);
