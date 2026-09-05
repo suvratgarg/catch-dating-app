@@ -1681,6 +1681,17 @@ installed instance. Review and apply only the intended instance's configuration;
 then compare live parameters and version against the reviewed source. A blanket
 Extensions deployment is not the organizer analytics migration procedure.
 
+Firebase's [Extensions deprecation guidance](https://firebase.google.com/docs/extensions/faq-and-troubleshooting)
+sets March 31, 2027 as the end of managed installation, reconfiguration,
+upgrades and removal. Existing resources continue running, subject to their
+underlying runtime support. The September 1, 2026 guidance still describes
+installed-user migration tools as forthcoming. Keep active exports and their
+history in place; assess the official self-managed replacement when its
+installed-instance migration procedure is available. Before switching ownership,
+verify trigger delivery, historical/latest-row parity, parameters, IAM and
+rollback against the existing instances. Publisher SDK instructions alone do
+not establish a safe migration for Catch's installed exports.
+
 Host analytics uses BigQuery as its reporting source. Run the existing source
 check before deployment or refresh:
 
