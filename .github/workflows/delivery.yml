@@ -258,23 +258,10 @@ jobs:
               )
             ' "$cursor_file" > /dev/null
           cursor_source_sha="$(jq -er '.sourceSha' "$cursor_file")"
-          historical_delivery="$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/runs/$cursor_delivery_run_id/attempts/$cursor_delivery_run_attempt")"
-          jq -e \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --arg delivery_run_id "$cursor_delivery_run_id" \
-            --argjson delivery_run_attempt "$cursor_delivery_run_attempt" '
-              (
-                (.name == "Delivery" and
-                 (.path | split("@")[0]) == ".github/workflows/delivery.yml") or
-                (.name == "Backend Rebaseline" and
-                 (.path | split("@")[0]) == ".github/workflows/backend-rebaseline.yml")
-              ) and
-              .head_repository.full_name == $repository and
-              .head_branch == "main" and
-              (.id | tostring) == $delivery_run_id and
-              .run_attempt == $delivery_run_attempt
-            ' <<< "$historical_delivery" > /dev/null
+          node tool/ci/backend_delivery_lanes.mjs verify-run \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$REPOSITORY_ID" \
+            --run-id "$cursor_delivery_run_id" --run-attempt "$cursor_delivery_run_attempt" \
+            --role cursor --output build/delivery/cursor/producer.json
           cursor_source_run="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$cursor_run_id/attempts/$cursor_run_attempt")"
           jq -e \
@@ -616,24 +603,19 @@ jobs:
             test "$INPUT_SOURCE_SHA" = "$source_sha"
             [[ "$RESUME_DELIVERY_RUN_ID" =~ ^[1-9][0-9]*$ ]]
             [[ "$RESUME_DELIVERY_ATTEMPT" =~ ^[1-9][0-9]*$ ]]
-            failed_delivery="$(gh api \
-              "repos/$GITHUB_REPOSITORY/actions/runs/$RESUME_DELIVERY_RUN_ID/attempts/$RESUME_DELIVERY_ATTEMPT")"
-            jq -e \
-              --arg repository "$GITHUB_REPOSITORY" \
-              --argjson attempt "$RESUME_DELIVERY_ATTEMPT" '
-                .name == "Delivery" and
-                (.path | split("@")[0]) == ".github/workflows/delivery.yml" and
-                .head_repository.full_name == $repository and
-                .head_branch == "main" and
-                .status == "completed" and
+            node tool/ci/backend_delivery_lanes.mjs verify-run \
+              --repository "$GITHUB_REPOSITORY" --repository-id "$REPOSITORY_ID" \
+              --run-id "$RESUME_DELIVERY_RUN_ID" --run-attempt "$RESUME_DELIVERY_ATTEMPT" \
+              --role delivery --output build/delivery/selection/failed-producer.json
+            jq -e '
+              .status == "completed" and
                 (.conclusion == "failure" or
                  .conclusion == "cancelled" or
                  .conclusion == "timed_out" or
                  .conclusion == "stale" or
                  .conclusion == "action_required" or
-                 .conclusion == "startup_failure") and
-                .run_attempt == $attempt
-              ' <<< "$failed_delivery" > /dev/null
+                 .conclusion == "startup_failure")
+              ' build/delivery/selection/failed-producer.json > /dev/null
             authorization_name="backend-delivery-authorization-${CURRENT_CI_WORKFLOW_ID}-${source_sha}-${source_ci_run_attempt}-${RESUME_DELIVERY_ATTEMPT}"
             failed_artifacts="$(gh api --paginate --slurp \
               "repos/$GITHUB_REPOSITORY/actions/runs/$RESUME_DELIVERY_RUN_ID/artifacts?per_page=100")"

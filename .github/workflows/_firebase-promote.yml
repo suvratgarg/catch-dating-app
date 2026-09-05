@@ -266,6 +266,7 @@ jobs:
         env:
           EXPLICIT_ATTEMPT: ${{ inputs.resume_delivery_attempt }}
           EXPLICIT_RUN_ID: ${{ inputs.resume_delivery_run_id }}
+          REPOSITORY_ID: ${{ github.repository_id }}
           GH_TOKEN: ${{ github.token }}
           PROJECT_ID: ${{ steps.verify.outputs.project_id }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
@@ -292,24 +293,19 @@ jobs:
               exit 64
             fi
             if [[ "$restore_run_id" != "$GITHUB_RUN_ID" ]]; then
-              prior_run="$(gh api \
-                "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/attempts/$restore_attempt")"
-              jq -e \
-                --arg repository "$GITHUB_REPOSITORY" \
-                --argjson attempt "$restore_attempt" '
-                .name == "Delivery" and
-                .path == ".github/workflows/delivery.yml" and
-                .head_repository.full_name == $repository and
-                .head_branch == "main" and
+              node tool/ci/backend_delivery_lanes.mjs verify-run \
+                --repository "$GITHUB_REPOSITORY" --repository-id "$REPOSITORY_ID" \
+                --run-id "$restore_run_id" --run-attempt "$restore_attempt" \
+                --role delivery --output build/delivery/restore-producer.json
+              jq -e '
                 .status == "completed" and
                 (.conclusion == "failure" or
                  .conclusion == "cancelled" or
                  .conclusion == "timed_out" or
                  .conclusion == "stale" or
                  .conclusion == "action_required" or
-                 .conclusion == "startup_failure") and
-                .run_attempt == $attempt
-              ' <<< "$prior_run" > /dev/null
+                 .conclusion == "startup_failure")
+              ' build/delivery/restore-producer.json > /dev/null
             fi
             count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$restore_run_id/artifacts" \
               --paginate --jq "[.artifacts[] | select(.name == \"$artifact_name\")] | length" | \
