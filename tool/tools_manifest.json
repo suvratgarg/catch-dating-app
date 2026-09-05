@@ -170,7 +170,7 @@
         "node --check tool/harness.mjs",
         "node --check tool/harness/lib/component_graph.mjs",
         "node --check tool/harness/lib/check_flutter_l10n_generated.mjs",
-        "node --test tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
+        "node --test tool/harness/lib/git_changes.test.mjs tool/harness/lib/flutter_document_selection.test.mjs tool/lib/path_glob.test.mjs tool/harness/component_graph.test.mjs tool/harness/check_flutter_l10n_generated.test.mjs tool/harness/harness_cli.test.mjs tool/harness/workflow_wiring.test.mjs",
         "node tool/harness.mjs validate"
       ],
       "role": "gate",
@@ -459,6 +459,34 @@
       "alsoCheckIds": [
         "firebase:affected-function-targets"
       ]
+    },
+    {
+      "id": "ci:main-ci-baseline",
+      "category": "ci",
+      "path": "tool/ci/main_ci_baseline.mjs",
+      "command": "node --test tool/ci/main_ci_baseline.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/main_ci_baseline.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "description": "Tests exact main CI baseline identity, immediate validation and bounded ordered publication waits, retaining failed-window recovery and rejecting foreign or rewritten source histories.",
+      "checks": [
+        "node --check tool/ci/main_ci_baseline.mjs",
+        "node --test tool/ci/main_ci_baseline.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/ci/main_ci_baseline.test.mjs"
+      }
     },
     {
       "id": "ci:backend-source-review",

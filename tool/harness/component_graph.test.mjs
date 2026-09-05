@@ -226,6 +226,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/harness.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
+      "/tool/harness/lib/git_changes.mjs",
       "/tool/lib/path_glob.mjs",
       "/tool/lib/repo_paths.mjs",
       "/tool/lib/tool_impact.mjs",

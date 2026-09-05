@@ -12,6 +12,8 @@ import {
   validateComponentGraph,
 } from "./harness/lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds} from "./lib/tool_impact.mjs";
+import {changedPathsSince} from "./harness/lib/git_changes.mjs";
+export {changedPathsSince} from "./harness/lib/git_changes.mjs";
 
 const graphPath = fromRepo("tool/harness/component_graph.json");
 const toolsManifestPath = fromRepo("tool/tools_manifest.json");
@@ -73,24 +75,6 @@ export function formatGithubOutputs(outputs) {
 
 export function writeGithubOutputs(path, outputs) {
   fs.appendFileSync(path, formatGithubOutputs(outputs), "utf8");
-}
-
-export function changedPathsSince({base, head = "HEAD", cwd = repoRoot}) {
-  const commands = [
-    ["diff", "--name-only", `${base}...${head}`],
-    ["diff", "--name-only"],
-    ["diff", "--cached", "--name-only"],
-    ["ls-files", "--others", "--exclude-standard"],
-  ];
-  const paths = new Set();
-  for (const gitArgs of commands) {
-    const result = spawnSync("git", gitArgs, {cwd, encoding: "utf8"});
-    if (result.status !== 0) {
-      throw new Error(result.stderr || `Unable to resolve changed paths from ${base}.`);
-    }
-    for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
-  }
-  return [...paths].sort();
 }
 
 export function main({

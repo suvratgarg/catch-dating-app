@@ -379,6 +379,7 @@ function createRunnerFixture(context) {
     "tool/run.mjs",
     "tool/agent/lib/context_plan.mjs",
     "tool/harness/lib/component_graph.mjs",
+    "tool/harness/lib/git_changes.mjs",
     "tool/lib/path_glob.mjs",
     "tool/lib/repo_paths.mjs",
     "tool/lib/repository_snapshot.mjs",
