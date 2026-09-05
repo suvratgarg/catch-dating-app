@@ -89,6 +89,15 @@
       },
       "affected": {}
     },
+    "backend-delivery-control": {
+      "direct": {
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review"]}
+      },
+      "affected": {}
+    },
     "ci-workflow-rules": {
       "direct": {
         "pr": {"ciTargets": ["firestore_rules", "policy_docs"], "checkIds": ["meta:enforcement-integrity"]},
@@ -637,6 +646,18 @@
     }
   },
   "classifications": [
+    {
+      "id": "backend-delivery-control",
+      "paths": {"include": [
+        ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
+        "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
+        "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
+        "tool/ci/firebase_delivery_workflow.test.mjs"
+      ]},
+      "components": ["ci.backend-delivery"],
+      "terminal": true
+    },
     {"id": "dedicated-rules-workflow", "paths": {"include": [".github/workflows/firestore-rules-ci.yml"]}, "components": ["ci.workflow.rules"], "terminal": true},
     {"id": "dedicated-contracts-workflow", "paths": {"include": [".github/workflows/contracts-ci.yml"]}, "components": ["ci.workflow.contracts"], "terminal": true},
     {"id": "dedicated-functions-workflow", "paths": {"include": [".github/workflows/functions-ci.yml"]}, "components": ["ci.workflow.functions"], "terminal": true},
@@ -746,6 +767,7 @@
     }
   ],
   "components": [
+    {"id": "ci.backend-delivery", "owner": "repository_tooling", "risk": "high", "operationProfile": "backend-delivery-control", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Exclusive backend delivery workflows and verifiers validate backend payloads and control-plane guards without compiling unrelated clients or authorizing deployment."},
     {"id": "ci.workflow.rules", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-rules", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated rules validation workflow; execute its lane and policy checks without granting deployment authority."},
     {"id": "ci.workflow.contracts", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-contracts", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated contracts validation workflow; execute its lane and policy checks without granting deployment authority."},
     {"id": "ci.workflow.functions", "owner": "repository_tooling", "risk": "high", "operationProfile": "ci-workflow-functions", "pathType": "terminal", "dependsOn": [], "alsoAffects": [], "description": "Dedicated functions validation workflow; execute its lane and policy checks without granting deployment authority."},
