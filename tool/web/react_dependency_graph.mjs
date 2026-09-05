@@ -139,7 +139,8 @@ export function buildReactDependencyGraph({repoRoot = defaultRepoRoot()} = {}) {
   const health = {
     healthy:
       unresolvedImports.length === 0 &&
-      crossSurfaceViolations.length === 0,
+      crossSurfaceViolations.length === 0 &&
+      runtimeCycles.length === 0,
     unresolvedImports,
     crossSurfaceViolations,
     runtimeCycles,
@@ -155,7 +156,7 @@ export function buildReactDependencyGraph({repoRoot = defaultRepoRoot()} = {}) {
     policy: {
       unresolvedRepoLocalImports: "error",
       directWebsiteAdminImports: "error",
-      runtimeModuleCycles: "report",
+      runtimeModuleCycles: "error",
       typeOnlyModuleCycles: "report",
       nonLiteralDynamicImports: "report",
     },
@@ -276,6 +277,12 @@ export function graphHealthErrors(graph) {
     errors.push(
       `${violation.source}:${violation.line}:${violation.column} directly imports ` +
         `${violation.target}; website and admin must remain separate deployable apps`
+    );
+  }
+  for (const cycle of graph.health.runtimeCycles) {
+    errors.push(
+      `runtime dependency cycle among ${cycle.modules.join(", ")}; ` +
+        "remove unused imports or import shared behavior from an acyclic leaf module"
     );
   }
   return errors;
@@ -1003,8 +1010,8 @@ async function main() {
       console.log(
         `React dependency graph is healthy (${graph.summary.scannedSourceModules} modules, ` +
           `${graph.summary.moduleEdges} edges, ${graph.summary.unresolvedImports} unresolved, ` +
-          `${graph.summary.crossSurfaceViolations} direct violations; report-only: ` +
-          `${graph.summary.runtimeCycles} runtime cycles, ` +
+          `${graph.summary.crossSurfaceViolations} direct violations, ` +
+          `${graph.summary.runtimeCycles} runtime cycles; report-only: ` +
           `${graph.summary.allModuleCycles} type-inclusive cycles, ` +
           `${graph.summary.nonLiteralDynamicImports} non-literal dynamic imports).`
       );

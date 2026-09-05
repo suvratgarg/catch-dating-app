@@ -2,8 +2,14 @@ import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
 import type {ActivityMeta} from "./foundation";
 import type {ContentGridVariant} from "./layout";
 import type {ActivityListing} from "./organizer";
-import {classNames} from "./foundation";
-import {ContentGrid, UiLabel, captureGridClassNames, marketingSectionClassNames, marketingSectionCopyClassNames} from "./layout";
+import {classNames} from "@catch/web-ui";
+import {
+  ContentGrid,
+  UiLabel,
+  captureGridClassNames,
+  marketingSectionClassNames,
+  marketingSectionCopyClassNames,
+} from "./layout";
 import {fallbackCaptionForCapture} from "./media2";
 
 export type ActivityMarkSize = "sm" | "md" | "lg";
