@@ -146,6 +146,15 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ steps.toolchain.outputs.java-version }}
+          cache: gradle
+          cache-dependency-path: |
+            tool/ci/toolchain.env
+            pubspec.lock
+            apps/*/pubspec.yaml
+            packages/*/pubspec.yaml
+            apps/*/android/**/*.gradle*
+            apps/*/android/**/gradle-wrapper.properties
+            apps/*/android/gradle.properties
 
       - uses: ./.github/actions/setup-flutter
 
@@ -207,6 +216,18 @@ jobs:
       - uses: ./.github/actions/setup-flutter
 
       - run: flutter pub get
+
+      # Cache downloaded pods only. Flutter still generates each role's Pods
+      # project and compiles the app on every run, including a cache hit.
+      - name: Restore CocoaPods downloads
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods/repos
+          key: pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cocoapods-version }}-${{ hashFiles('apps/*/ios/Podfile.lock') }}
+          restore-keys: |
+            pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.cocoapods-version }}-
 
       - name: Validate Host design reference manifest
         if: ${{ matrix.role == 'host' }}
