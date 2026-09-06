@@ -97,6 +97,7 @@ test("workflow lifecycle semantics are bound and category-safe", async () => {
   const customResult = await checkWorkflowManifest({
     manifest: custom,
     registry: [descriptor],
+    workflowDirectories: [descriptor.directory],
   });
   assert.equal(customResult.ok, true, JSON.stringify(customResult.findings));
 });
@@ -166,6 +167,7 @@ test("workflow manifests may declare a supported CLI command subset",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
+    workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, true, JSON.stringify(result.findings));
     assert.equal(result.checked.workflows[0].commands, 1);
@@ -183,6 +185,7 @@ test("workflows without source inventories may omit a source loader",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
+    workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, true, JSON.stringify(result.findings));
   });
@@ -192,7 +195,9 @@ test("workflows with source inventories require a source loader", async () => {
     ...WORKFLOW_REGISTRY[0],
     loadSourceProfiles: undefined,
   };
-  const result = await checkWorkflowManifest({registry: [descriptor]});
+  const result = await checkWorkflowManifest({
+    registry: [descriptor], workflowDirectories: [descriptor.directory],
+  });
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((finding) =>
     finding.id === "workflow-source-profile-loader-missing"));
@@ -209,6 +214,7 @@ test("transition graphs must cover every stage and remain stage-closed",
     const missingKey = await checkWorkflowManifest({
       manifest: missingKeyManifest,
       registry: [missingKeyDescriptor],
+      workflowDirectories: [missingKeyDescriptor.directory],
     });
     assert.equal(missingKey.ok, false);
     assert.ok(missingKey.findings.some((finding) =>
@@ -226,6 +232,7 @@ test("transition graphs must cover every stage and remain stage-closed",
     const unknownTarget = await checkWorkflowManifest({
       manifest: unknownTargetManifest,
       registry: [unknownTargetDescriptor],
+      workflowDirectories: [unknownTargetDescriptor.directory],
     });
     assert.equal(unknownTarget.ok, false);
     assert.ok(unknownTarget.findings.some((finding) =>
@@ -248,6 +255,7 @@ test("workflow manifests cannot exceed platform mode or capability authority",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
+    workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, false);
     assert.ok(result.findings.some((finding) =>
@@ -261,7 +269,9 @@ test("learn command declarations require a learner factory", async () => {
     ...WORKFLOW_REGISTRY[0],
     createLearner: undefined,
   };
-  const result = await checkWorkflowManifest({registry: [descriptor]});
+  const result = await checkWorkflowManifest({
+    registry: [descriptor], workflowDirectories: [descriptor.directory],
+  });
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((finding) =>
     finding.contract?.endsWith(":learner-factory")));
@@ -278,7 +288,9 @@ test("declared workflow commands require executable factory methods",
         return workflow;
       },
     };
-    const result = await checkWorkflowManifest({registry: [descriptor]});
+    const result = await checkWorkflowManifest({
+    registry: [descriptor], workflowDirectories: [descriptor.directory],
+  });
     assert.equal(result.ok, false);
     assert.ok(result.findings.some((finding) =>
       finding.contract?.endsWith(

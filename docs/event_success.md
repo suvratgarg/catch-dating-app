@@ -107,6 +107,23 @@ time. Effect identities include the execution context and participation episode.
 Live and rehearsal adapters must use this policy with mode-scoped effects;
 the pure evaluator alone does not establish application integration.
 
+The registered `event-assistance` workflow now evaluates bounded late-join
+snapshots through the existing Operations engine. Its manifest exposes plan,
+run, resume, queue and status, with zero network/public-write authority. A run
+is one event/context and frozen evaluation time; duplicate participation
+episodes, schema-invalid facts and changed plan authority fail closed. Its
+queue separates evaluating, waiting, host review, proposed effect and terminal
+outcomes. Completion means snapshot evaluation finished, not that a guest was
+contacted or the event is complete.
+
+`lateJoinPolicy.ts` is the single authored pure implementation. The Operations
+runtime generator transpiles it to the checked JavaScript module consumed by Operations;
+the Functions adapter validates the same schemas before invoking it. Changing
+the policy therefore requires both generated-output parity and runtime tests.
+The local shadow factory does not load live event facts or send messages.
+Trusted worker scheduling, the channel outbox, the guest response boundary,
+and the Host/rehearsal application adapters remain integration work.
+
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow
 families, then verified provider activation. Catalog membership describes an

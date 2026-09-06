@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.9.1
-updated: 2026-08-07
+version: 1.10.0
+updated: 2026-09-06
 owner: operations_platform
 status: active
 ---
@@ -551,7 +551,26 @@ work; adding these primitives does not enable Supply Intake publication.
 
 ## Adding Another Workflow
 
-Before a second admin workflow adopts this platform:
+Event Assistance is the second registered workflow. Its initial supported
+commands evaluate a frozen array of canonical late-join inputs:
+
+```sh
+node operations/src/cli/main.mjs plan --workflow event-assistance \
+  --input /absolute/path/late-join-inputs.json --now <snapshot-ISO-time>
+node operations/src/cli/main.mjs run --plan /absolute/path/saved-plan.json
+```
+
+`--input` contains a JSON array matching
+`contracts/operations/event_assistance_late_join_input.schema.json`, with the
+same event context and evaluation time in every item. `plan` emits a JSON
+envelope that `run --plan` accepts directly. The input file is bounded at 2 MB
+and each run at 10,000 distinct guest episodes. The factory uses the generated
+JavaScript version of the canonical typed policy; it has no provider port.
+Ready items are proposed effects in a completed shadow evaluation. This path
+does not claim live scheduling, dispatch or app integration. Supply Intake's
+publication ceiling remains unchanged.
+
+Before another workflow adopts this platform:
 
 1. define its authority, stages, terminal outcomes, idempotency keys, budgets,
    receipts, and human-decision seam;
