@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import {runInNewContext} from "node:vm";
 
 const source = fs.readFileSync(
   new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
@@ -14,6 +15,23 @@ const hostGradleWrapper = fs.readFileSync(
   new URL("../../apps/host/android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
   "utf8",
 );
+
+test("mobile producer skips successful nightly and manual CI before allocating a runner", () => {
+  const authorizeHeader = source.slice(source.indexOf("  authorize:"), source.indexOf("    runs-on:"));
+  const expression = authorizeHeader.match(/if: \$\{\{ (.+) \}\}/u)?.[1];
+  assert.ok(expression, "the authorization job must filter the triggering CI event");
+  // These string comparisons and boolean operators have the same semantics
+  // in JavaScript and GitHub expressions for the event values below.
+  for (const event of ["push", "schedule", "workflow_dispatch", "pull_request"]) {
+    for (const conclusion of ["success", "failure", "cancelled"]) {
+      assert.equal(
+        runInNewContext(expression, {github: {event: {workflow_run: {event, conclusion}}}}),
+        event === "push" && conclusion === "success",
+        `${event}/${conclusion}`,
+      );
+    }
+  }
+});
 
 test("mobile producer consumes only a successful same-repository main CI attempt", () => {
   assert.match(source, /workflow_run:\s*\n\s+workflows: \["CI"\]/u);
