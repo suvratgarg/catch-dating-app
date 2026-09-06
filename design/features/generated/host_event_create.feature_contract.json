@@ -2,23 +2,23 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:401717db58c0e473d4f18c2c86e4db9efd16507c92f836c5e375875e8e8bc41c",
-  "resolvedDigest": "sha256:8abf5450d6b1995c4a0ae201feee477e7d706b15e521089d130930b1ff7ab178",
+  "generatedFor": "2026-09-04",
+  "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
+  "resolvedDigest": "sha256:95e0d435db31467baa1a45fa8926b2b151b20b112366cd1e7344056907d2717c",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
     "owner": "hosts",
     "status": "pilot",
-    "description": "Orchestrates Host Event Create route resolution, the five-step event wizard, local drafts, media and location selection, event submission, and post-create navigation."
+    "description": "Orchestrates Host Event Create route resolution, the shared three-stage event wizard (basics, when and where, then guests/booking and guide), local drafts, media and location selection, event submission, and post-create navigation."
   },
   "coverage": {
     "surfaces": 1,
-    "states": 31,
-    "scenarios": 31,
-    "actionCases": 36,
-    "actions": 33,
-    "captures": 38,
+    "states": 36,
+    "scenarios": 36,
+    "actionCases": 41,
+    "actions": 34,
+    "captures": 43,
     "previews": 1,
     "testFiles": 3,
     "evidenceExceptions": 10
@@ -35,7 +35,7 @@
         "included": "Host Event Create route recovery; wizard navigation; activity, schedule, policy, and guide choices; event-photo and meeting-location selection; local draft restore, save, delete, and exit handling; event submission; and success navigation.",
         "excluded": [
           "Raw text-field edits are form data governed by CatchField, form validators, and the event data contracts rather than separately cardinalized actions.",
-          "Host Home launch and repeat-template selection retain Host Home ownership; post-create event administration retains Host Event Manage ownership."
+          "Host Events launch and repeat-template selection retain Host Events ownership; post-create event administration retains Host Event Manage ownership."
         ]
       },
       "bindings": {
@@ -108,11 +108,11 @@
         ]
       },
       "coverage": {
-        "states": 31,
-        "scenarios": 31,
-        "actionCases": 36,
-        "actions": 33,
-        "captures": 38,
+        "states": 36,
+        "scenarios": 36,
+        "actionCases": 41,
+        "actions": 34,
+        "captures": 43,
         "previews": 1,
         "testFiles": 3,
         "evidenceExceptions": 10
@@ -132,10 +132,9 @@
           "default": "basics",
           "values": [
             "basics",
-            "location",
             "schedule",
-            "policy",
-            "guide",
+            "setup",
+            "review",
             "success"
           ]
         },
@@ -204,6 +203,13 @@
           "values": [
             "standard",
             "light_dark"
+          ]
+        },
+        "integration": {
+          "default": "catch_booking",
+          "values": [
+            "catch_booking",
+            "runtime_only"
           ]
         }
       },
@@ -908,6 +914,29 @@
           ],
           "description": "Pops the successful create flow back to whichever host surface launched it.",
           "implementationStatus": "implemented"
+        },
+        {
+          "id": "review_event",
+          "owner": "wizard_state",
+          "codeValue": "review",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "draftSignature"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "runtime_review",
+                "basics_validation",
+                "same_day_time_error",
+                "policy_age_validation"
+              ]
+            }
+          ],
+          "description": "Validates required sections and opens review without creating an event.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -956,7 +985,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -982,7 +1012,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1021,7 +1052,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             },
@@ -1037,7 +1069,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1076,7 +1109,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1097,7 +1131,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1121,7 +1156,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -1159,7 +1195,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1180,7 +1217,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1204,7 +1242,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1243,7 +1282,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1264,7 +1304,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1288,7 +1329,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -1326,7 +1368,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1347,7 +1390,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1373,7 +1417,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1412,7 +1457,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             },
@@ -1428,7 +1474,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1467,7 +1514,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1488,7 +1536,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1514,7 +1563,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1553,7 +1603,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1574,7 +1625,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1599,7 +1651,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1638,7 +1691,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1659,7 +1713,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1685,7 +1740,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1724,7 +1780,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1737,7 +1794,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "location",
+            "step": "schedule",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -1745,7 +1802,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1763,7 +1821,7 @@
               "id": "location",
               "dimensions": {
                 "route": "ready",
-                "step": "location",
+                "step": "schedule",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -1771,7 +1829,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1810,7 +1869,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1823,7 +1883,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "location",
+            "step": "schedule",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -1831,7 +1891,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1849,7 +1910,7 @@
               "id": "picker",
               "dimensions": {
                 "route": "ready",
-                "step": "location",
+                "step": "schedule",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -1857,7 +1918,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1896,7 +1958,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -1909,7 +1972,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "location",
+            "step": "schedule",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -1917,7 +1980,8 @@
             "policy": "standard",
             "connectivity": "offline",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -1933,7 +1997,7 @@
               "id": "retry_search",
               "dimensions": {
                 "route": "ready",
-                "step": "location",
+                "step": "schedule",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -1941,7 +2005,8 @@
                 "policy": "standard",
                 "connectivity": "offline",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -1980,7 +2045,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -2001,7 +2067,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2027,7 +2094,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2066,7 +2134,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -2087,7 +2156,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2113,7 +2183,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2152,7 +2223,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -2165,7 +2237,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "policy",
+            "step": "setup",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -2173,7 +2245,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2191,7 +2264,7 @@
               "id": "policy",
               "dimensions": {
                 "route": "ready",
-                "step": "policy",
+                "step": "setup",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -2199,7 +2272,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2208,13 +2282,14 @@
                   "toggle_cohort_caps",
                   "toggle_dynamic_pricing",
                   "select_cancellation_policy",
-                  "next_step",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_route",
                   "close_flow",
+                  "next_step",
                   "select_event_photos",
                   "remove_event_photo",
                   "reorder_event_photo",
@@ -2251,7 +2326,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "policy",
+            "step": "setup",
             "mutation": "validation",
             "draft": "none",
             "media": "empty",
@@ -2259,7 +2334,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2277,7 +2353,7 @@
               "id": "correct",
               "dimensions": {
                 "route": "ready",
-                "step": "policy",
+                "step": "setup",
                 "mutation": "validation",
                 "draft": "none",
                 "media": "empty",
@@ -2285,7 +2361,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2294,13 +2371,14 @@
                   "toggle_cohort_caps",
                   "toggle_dynamic_pricing",
                   "select_cancellation_policy",
-                  "next_step",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_route",
                   "close_flow",
+                  "next_step",
                   "select_event_photos",
                   "remove_event_photo",
                   "reorder_event_photo",
@@ -2337,7 +2415,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "policy",
+            "step": "setup",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -2345,7 +2423,8 @@
             "policy": "invite_only",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2364,7 +2443,7 @@
               "id": "invite",
               "dimensions": {
                 "route": "ready",
-                "step": "policy",
+                "step": "setup",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -2372,19 +2451,21 @@
                 "policy": "invite_only",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
                   "previous_step",
                   "select_admission_policy",
-                  "next_step",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_route",
                   "close_flow",
+                  "next_step",
                   "select_event_photos",
                   "remove_event_photo",
                   "reorder_event_photo",
@@ -2424,7 +2505,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "policy",
+            "step": "setup",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -2432,7 +2513,8 @@
             "policy": "cohort_caps",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2450,7 +2532,7 @@
               "id": "caps",
               "dimensions": {
                 "route": "ready",
-                "step": "policy",
+                "step": "setup",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -2458,19 +2540,21 @@
                 "policy": "cohort_caps",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
                   "previous_step",
                   "toggle_cohort_caps",
-                  "next_step",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_route",
                   "close_flow",
+                  "next_step",
                   "select_event_photos",
                   "remove_event_photo",
                   "reorder_event_photo",
@@ -2510,7 +2594,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "policy",
+            "step": "setup",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -2518,7 +2602,8 @@
             "policy": "dynamic_pricing",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2538,7 +2623,7 @@
               "id": "pricing",
               "dimensions": {
                 "route": "ready",
-                "step": "policy",
+                "step": "setup",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -2546,19 +2631,21 @@
                 "policy": "dynamic_pricing",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
                   "previous_step",
                   "toggle_dynamic_pricing",
-                  "next_step",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_route",
                   "close_flow",
+                  "next_step",
                   "select_event_photos",
                   "remove_event_photo",
                   "reorder_event_photo",
@@ -2598,7 +2685,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "guide",
+            "step": "setup",
             "mutation": "idle",
             "draft": "none",
             "media": "empty",
@@ -2606,7 +2693,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2624,7 +2712,7 @@
               "id": "guide",
               "dimensions": {
                 "route": "ready",
-                "step": "guide",
+                "step": "setup",
                 "mutation": "idle",
                 "draft": "none",
                 "media": "empty",
@@ -2632,13 +2720,14 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
                   "previous_step",
                   "configure_event_success",
-                  "submit_event",
+                  "review_event",
                   "save_draft"
                 ],
                 "disabled": [],
@@ -2670,6 +2759,7 @@
                   "request_exit",
                   "save_and_exit",
                   "discard_and_exit",
+                  "submit_event",
                   "manage_created_event",
                   "dismiss_success"
                 ]
@@ -2684,7 +2774,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "guide",
+            "step": "review",
             "mutation": "pending",
             "draft": "none",
             "media": "empty",
@@ -2692,7 +2782,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2708,7 +2799,7 @@
               "id": "default",
               "dimensions": {
                 "route": "ready",
-                "step": "guide",
+                "step": "review",
                 "mutation": "pending",
                 "draft": "none",
                 "media": "empty",
@@ -2716,7 +2807,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -2754,7 +2846,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -2767,7 +2860,7 @@
           "status": "captured",
           "dimensions": {
             "route": "ready",
-            "step": "guide",
+            "step": "review",
             "mutation": "error",
             "draft": "none",
             "media": "empty",
@@ -2775,7 +2868,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2794,7 +2888,7 @@
               "id": "retry",
               "dimensions": {
                 "route": "ready",
-                "step": "guide",
+                "step": "review",
                 "mutation": "error",
                 "draft": "none",
                 "media": "empty",
@@ -2802,7 +2896,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2841,7 +2936,8 @@
                   "save_and_exit",
                   "discard_and_exit",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -2862,7 +2958,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2888,7 +2985,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -2927,7 +3025,8 @@
                   "request_exit",
                   "save_and_exit",
                   "discard_and_exit",
-                  "submit_event"
+                  "submit_event",
+                  "review_event"
                 ]
               }
             }
@@ -2948,7 +3047,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -2975,7 +3075,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3014,7 +3115,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3035,7 +3137,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3062,7 +3165,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3101,7 +3205,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3122,7 +3227,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3148,7 +3254,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3187,7 +3294,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3208,7 +3316,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3234,7 +3343,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3273,7 +3383,8 @@
                   "request_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3294,7 +3405,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3321,7 +3433,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -3359,7 +3472,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3380,7 +3494,8 @@
             "policy": "standard",
             "connectivity": "offline",
             "accessibility": "standard",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3407,7 +3522,8 @@
                 "policy": "standard",
                 "connectivity": "offline",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3446,7 +3562,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             },
@@ -3462,7 +3579,8 @@
                 "policy": "standard",
                 "connectivity": "offline",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3501,7 +3619,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             },
@@ -3517,7 +3636,8 @@
                 "policy": "standard",
                 "connectivity": "offline",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3556,7 +3676,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             },
@@ -3572,7 +3693,8 @@
                 "policy": "standard",
                 "connectivity": "offline",
                 "accessibility": "standard",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [
@@ -3611,7 +3733,8 @@
                   "save_and_exit",
                   "discard_and_exit",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3632,7 +3755,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "text_scale_2",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3656,7 +3780,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "text_scale_2",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -3694,7 +3819,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3715,7 +3841,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "reduced_motion",
-            "theme": "standard"
+            "theme": "standard",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3739,7 +3866,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "reduced_motion",
-                "theme": "standard"
+                "theme": "standard",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -3777,7 +3905,8 @@
                   "discard_and_exit",
                   "submit_event",
                   "manage_created_event",
-                  "dismiss_success"
+                  "dismiss_success",
+                  "review_event"
                 ]
               }
             }
@@ -3798,7 +3927,8 @@
             "policy": "standard",
             "connectivity": "online",
             "accessibility": "standard",
-            "theme": "light_dark"
+            "theme": "light_dark",
+            "integration": "catch_booking"
           },
           "evidence": {
             "captureIds": [
@@ -3822,7 +3952,8 @@
                 "policy": "standard",
                 "connectivity": "online",
                 "accessibility": "standard",
-                "theme": "light_dark"
+                "theme": "light_dark",
+                "integration": "catch_booking"
               },
               "actions": {
                 "enabled": [],
@@ -3852,6 +3983,452 @@
                   "select_cancellation_policy",
                   "configure_event_success",
                   "save_draft",
+                  "restore_draft",
+                  "start_fresh",
+                  "delete_draft",
+                  "request_exit",
+                  "save_and_exit",
+                  "discard_and_exit",
+                  "submit_event",
+                  "manage_created_event",
+                  "dismiss_success",
+                  "review_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runtime_basics",
+          "stateId": "runtime_basics",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "step": "basics",
+            "mutation": "idle",
+            "draft": "none",
+            "media": "empty",
+            "location": "empty",
+            "policy": "standard",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard",
+            "integration": "runtime_only"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_create_runtime_basics"
+            ],
+            "previewIds": [
+              "HostCreateEventRouteScreen/Route and wizard states"
+            ],
+            "tests": [
+              "test/hosts/host_create_event_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "dimensions": {
+                "route": "ready",
+                "step": "basics",
+                "mutation": "idle",
+                "draft": "none",
+                "media": "empty",
+                "location": "empty",
+                "policy": "standard",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard",
+                "integration": "runtime_only"
+              },
+              "actions": {
+                "enabled": [
+                  "next_step",
+                  "select_activity",
+                  "save_draft"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_route",
+                  "close_flow",
+                  "previous_step",
+                  "select_event_photos",
+                  "remove_event_photo",
+                  "reorder_event_photo",
+                  "select_interaction_model",
+                  "select_pace",
+                  "open_location_picker",
+                  "search_location",
+                  "select_location_suggestion",
+                  "set_location_pin",
+                  "confirm_location",
+                  "select_date",
+                  "select_start_time",
+                  "adjust_duration",
+                  "select_admission_policy",
+                  "toggle_cohort_caps",
+                  "toggle_dynamic_pricing",
+                  "select_cancellation_policy",
+                  "configure_event_success",
+                  "restore_draft",
+                  "start_fresh",
+                  "delete_draft",
+                  "request_exit",
+                  "save_and_exit",
+                  "discard_and_exit",
+                  "submit_event",
+                  "manage_created_event",
+                  "dismiss_success",
+                  "review_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runtime_schedule",
+          "stateId": "runtime_schedule",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "step": "schedule",
+            "mutation": "idle",
+            "draft": "none",
+            "media": "empty",
+            "location": "empty",
+            "policy": "standard",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard",
+            "integration": "runtime_only"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_create_runtime_schedule"
+            ],
+            "previewIds": [
+              "HostCreateEventRouteScreen/Route and wizard states"
+            ],
+            "tests": [
+              "test/hosts/host_create_event_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "dimensions": {
+                "route": "ready",
+                "step": "schedule",
+                "mutation": "idle",
+                "draft": "none",
+                "media": "empty",
+                "location": "empty",
+                "policy": "standard",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard",
+                "integration": "runtime_only"
+              },
+              "actions": {
+                "enabled": [
+                  "previous_step",
+                  "select_date",
+                  "select_start_time",
+                  "adjust_duration",
+                  "open_location_picker",
+                  "next_step",
+                  "save_draft"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_route",
+                  "close_flow",
+                  "select_event_photos",
+                  "remove_event_photo",
+                  "reorder_event_photo",
+                  "select_activity",
+                  "select_interaction_model",
+                  "select_pace",
+                  "search_location",
+                  "select_location_suggestion",
+                  "set_location_pin",
+                  "confirm_location",
+                  "select_admission_policy",
+                  "toggle_cohort_caps",
+                  "toggle_dynamic_pricing",
+                  "select_cancellation_policy",
+                  "configure_event_success",
+                  "restore_draft",
+                  "start_fresh",
+                  "delete_draft",
+                  "request_exit",
+                  "save_and_exit",
+                  "discard_and_exit",
+                  "submit_event",
+                  "manage_created_event",
+                  "dismiss_success",
+                  "review_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runtime_guests",
+          "stateId": "runtime_guests",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "step": "setup",
+            "mutation": "idle",
+            "draft": "none",
+            "media": "empty",
+            "location": "empty",
+            "policy": "standard",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard",
+            "integration": "runtime_only"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_create_runtime_guests"
+            ],
+            "previewIds": [
+              "HostCreateEventRouteScreen/Route and wizard states"
+            ],
+            "tests": [
+              "test/hosts/host_create_event_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "dimensions": {
+                "route": "ready",
+                "step": "setup",
+                "mutation": "idle",
+                "draft": "none",
+                "media": "empty",
+                "location": "empty",
+                "policy": "standard",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard",
+                "integration": "runtime_only"
+              },
+              "actions": {
+                "enabled": [
+                  "previous_step",
+                  "review_event",
+                  "configure_event_success",
+                  "save_draft"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_route",
+                  "close_flow",
+                  "next_step",
+                  "select_event_photos",
+                  "remove_event_photo",
+                  "reorder_event_photo",
+                  "select_activity",
+                  "select_interaction_model",
+                  "select_pace",
+                  "open_location_picker",
+                  "search_location",
+                  "select_location_suggestion",
+                  "set_location_pin",
+                  "confirm_location",
+                  "select_date",
+                  "select_start_time",
+                  "adjust_duration",
+                  "select_admission_policy",
+                  "toggle_cohort_caps",
+                  "toggle_dynamic_pricing",
+                  "select_cancellation_policy",
+                  "restore_draft",
+                  "start_fresh",
+                  "delete_draft",
+                  "request_exit",
+                  "save_and_exit",
+                  "discard_and_exit",
+                  "submit_event",
+                  "manage_created_event",
+                  "dismiss_success"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runtime_review",
+          "stateId": "runtime_review",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "step": "review",
+            "mutation": "idle",
+            "draft": "none",
+            "media": "empty",
+            "location": "empty",
+            "policy": "standard",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard",
+            "integration": "runtime_only"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_create_runtime_review"
+            ],
+            "previewIds": [
+              "HostCreateEventRouteScreen/Route and wizard states"
+            ],
+            "tests": [
+              "test/hosts/host_create_event_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "dimensions": {
+                "route": "ready",
+                "step": "review",
+                "mutation": "idle",
+                "draft": "none",
+                "media": "empty",
+                "location": "empty",
+                "policy": "standard",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard",
+                "integration": "runtime_only"
+              },
+              "actions": {
+                "enabled": [
+                  "previous_step",
+                  "submit_event",
+                  "save_draft"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_route",
+                  "close_flow",
+                  "next_step",
+                  "select_event_photos",
+                  "remove_event_photo",
+                  "reorder_event_photo",
+                  "select_activity",
+                  "select_interaction_model",
+                  "select_pace",
+                  "open_location_picker",
+                  "search_location",
+                  "select_location_suggestion",
+                  "set_location_pin",
+                  "confirm_location",
+                  "select_date",
+                  "select_start_time",
+                  "adjust_duration",
+                  "select_admission_policy",
+                  "toggle_cohort_caps",
+                  "toggle_dynamic_pricing",
+                  "select_cancellation_policy",
+                  "configure_event_success",
+                  "restore_draft",
+                  "start_fresh",
+                  "delete_draft",
+                  "request_exit",
+                  "save_and_exit",
+                  "discard_and_exit",
+                  "manage_created_event",
+                  "dismiss_success",
+                  "review_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "runtime_customize",
+          "stateId": "runtime_customize",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "step": "setup",
+            "mutation": "idle",
+            "draft": "none",
+            "media": "empty",
+            "location": "empty",
+            "policy": "standard",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard",
+            "integration": "runtime_only"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_create_runtime_customize"
+            ],
+            "previewIds": [
+              "HostCreateEventRouteScreen/Route and wizard states"
+            ],
+            "tests": [
+              "test/hosts/host_create_event_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "dimensions": {
+                "route": "ready",
+                "step": "setup",
+                "mutation": "idle",
+                "draft": "none",
+                "media": "empty",
+                "location": "empty",
+                "policy": "standard",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard",
+                "integration": "runtime_only"
+              },
+              "actions": {
+                "enabled": [
+                  "previous_step",
+                  "review_event",
+                  "configure_event_success",
+                  "save_draft"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_route",
+                  "close_flow",
+                  "next_step",
+                  "select_event_photos",
+                  "remove_event_photo",
+                  "reorder_event_photo",
+                  "select_activity",
+                  "select_interaction_model",
+                  "select_pace",
+                  "open_location_picker",
+                  "search_location",
+                  "select_location_suggestion",
+                  "set_location_pin",
+                  "confirm_location",
+                  "select_date",
+                  "select_start_time",
+                  "adjust_duration",
+                  "select_admission_policy",
+                  "toggle_cohort_caps",
+                  "toggle_dynamic_pricing",
+                  "select_cancellation_policy",
                   "restore_draft",
                   "start_fresh",
                   "delete_draft",

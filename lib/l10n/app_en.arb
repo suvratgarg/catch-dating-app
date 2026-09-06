@@ -3599,13 +3599,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
   },
-  "hostsEventDetailsStepExternalIntro": "Keep taking bookings wherever you already do. Catch adds the guest-list, check-in, and Event Success layer without replacing your booking platform.",
-  "@hostsEventDetailsStepExternalIntro": {
-    "description": "Explains the external booking companion flow during event creation.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
   "hostsEventDetailsStepExternalProviderTitle": "Booking platform",
   "@hostsEventDetailsStepExternalProviderTitle": {
     "description": "Field title for the event's external booking provider.",
@@ -3753,7 +3746,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_policy_step"
   },
-  "hostsEventPolicyStepExternalOperationsIntro": "Set the operational capacity, age range, and on-site pairing inventory. Bookings, payments, refunds, and cancellations stay with the external provider.",
+  "hostsEventPolicyStepExternalOperationsIntro": "Set your capacity and guest access. Bookings stay with your provider.",
   "@hostsEventPolicyStepExternalOperationsIntro": {"description": "Rules-step intro for externally booked events.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsEventPolicyStepTitleMaxAttendees": "Max attendees",
   "@hostsEventPolicyStepTitleMaxAttendees": {
@@ -3852,13 +3845,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_policy_step"
-  },
-  "hostsEventSuccessStepTextPrepareTheHostGuide": "Prepare the host guide for this event. You can adjust it again before Live mode starts.",
-  "@hostsEventSuccessStepTextPrepareTheHostGuide": {
-    "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_success_step.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_success_step"
   },
   "hostsEventSuccessStepTitleLiveEventGuide": "Live event guide",
   "@hostsEventSuccessStepTitleLiveEventGuide": {
@@ -6936,62 +6922,6 @@
   "hostsEventDetailsStepLabelActivityType": "Activity type",
   "@hostsEventDetailsStepLabelActivityType": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/event_details_step.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackTitle": "Catch prepares",
-  "@hostsEventDetailsStepFormatPackTitle": {
-    "description": "Labels the operational runbook automatically selected from an event type.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackPacePods": "Pace pods · timed legs · finish sweep",
-  "@hostsEventDetailsStepFormatPackPacePods": {
-    "description": "Summarizes the pace-pod event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackPairedRotations": "Pair assignments · timed rounds · ranked outcomes",
-  "@hostsEventDetailsStepFormatPackPairedRotations": {
-    "description": "Summarizes the paired-rotation event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackTeamRotations": "Teams · points by round · standings reveal",
-  "@hostsEventDetailsStepFormatPackTeamRotations": {
-    "description": "Summarizes the team-rotation event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackSeatedTable": "Tables · course pacing · guided prompts",
-  "@hostsEventDetailsStepFormatPackSeatedTable": {
-    "description": "Summarizes the seated-table event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackFreeFormMixer": "Social groups · guided rounds · reveal moments",
-  "@hostsEventDetailsStepFormatPackFreeFormMixer": {
-    "description": "Summarizes the free-form mixer event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackHostLedProgram": "Host run-of-show · live prompts · event recap",
-  "@hostsEventDetailsStepFormatPackHostLedProgram": {
-    "description": "Summarizes the host-led event format pack.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
-  },
-  "hostsEventDetailsStepFormatPackOpenFormat": "Flexible run-of-show · optional groups · event recap",
-  "@hostsEventDetailsStepFormatPackOpenFormat": {
-    "description": "Summarizes the open event format pack.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_details_step"
@@ -21169,7 +21099,7 @@
   "@hostsCreateEventRosterAttached": {"description": "Attached external event roster summary.", "placeholders": {"fileName": {"type": "String"}, "ready": {"type": "int"}, "review": {"type": "int"}, "excluded": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateEventRosterReattach": "Reattach {fileName} before publishing. Drafts remember the file fingerprint, not guest data.",
   "@hostsCreateEventRosterReattach": {"description": "Roster reattachment guidance after restoring a draft.", "placeholders": {"fileName": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
-  "hostsCreateEventRosterChoose": "Choose CSV or XLSX",
+  "hostsCreateEventRosterChoose": "Choose file",
   "@hostsCreateEventRosterChoose": {"description": "External event roster picker action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateEventRosterReplace": "Replace file",
   "@hostsCreateEventRosterReplace": {"description": "External event roster replacement action.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
@@ -23181,8 +23111,6 @@
   "@hostsCreateEventReviewTitle": {"description": "Final review title and action in event creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateClubReviewTitle": "Review organizer",
   "@hostsCreateClubReviewTitle": {"description": "Final review title and action in organizer creation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
-  "hostsCreateEventScheduleAction": "Schedule event",
-  "@hostsCreateEventScheduleAction": {"description": "Publishes an event after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsCreateClubCreateAction": "Create organizer",
   "@hostsCreateClubCreateAction": {"description": "Creates an organizer after the final creation review passes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.club_management.create"},
   "hostsDraftExitTitle": "Save your work?",
@@ -24265,5 +24193,115 @@
 "hostAudienceWhoWillBelong": "Who will belong",
 "@hostAudienceWhoWillBelong": {"description": "Summary of the current group definition before saving.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
 "hostAudienceMembershipCheckOnSave": "Membership is checked when you save. Incomplete conditions must be finished first.",
-"@hostAudienceMembershipCheckOnSave": {"description": "Distinguishes an unsaved definition from evaluated group membership.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"}
+"@hostAudienceMembershipCheckOnSave": {"description": "Distinguishes an unsaved definition from evaluated group membership.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostsCreateEventBasicsTitle": "Event basics",
+  "@hostsCreateEventBasicsTitle": {
+    "description": "Shared event creation: BasicsTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventWhenWhereTitle": "When & where",
+  "@hostsCreateEventWhenWhereTitle": {
+    "description": "Shared event creation: WhenWhereTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventGuestsGuideTitle": "Guests & live guide",
+  "@hostsCreateEventGuestsGuideTitle": {
+    "description": "Shared event creation: GuestsGuideTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventBookingGuideTitle": "Booking & live guide",
+  "@hostsCreateEventBookingGuideTitle": {
+    "description": "Shared event creation: BookingGuideTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventPresentationTitle": "Description & photos · Optional",
+  "@hostsCreateEventPresentationTitle": {
+    "description": "Shared event creation: PresentationTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventItineraryTitle": "Route & itinerary · Optional",
+  "@hostsCreateEventItineraryTitle": {
+    "description": "Shared event creation: ItineraryTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventExternalDetailsTitle": "Booking source · Optional details",
+  "@hostsCreateEventExternalDetailsTitle": {
+    "description": "Shared event creation: ExternalDetailsTitle.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventShowDetails": "Edit",
+  "@hostsCreateEventShowDetails": {
+    "description": "Shared event creation: ShowDetails.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventHideDetails": "Hide",
+  "@hostsCreateEventHideDetails": {
+    "description": "Shared event creation: HideDetails.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventGuideReady": "{format} guide is ready. You can adjust it before the event.",
+  "@hostsCreateEventGuideReady": {
+    "description": "Shared event creation: GuideReady.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create",
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "hostsCreateEventGuideOptional": "Optional host tools for running the event.",
+  "@hostsCreateEventGuideOptional": {
+    "description": "Shared event creation: GuideOptional.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventCustomizeGuide": "Customize guide",
+  "@hostsCreateEventCustomizeGuide": {
+    "description": "Shared event creation: CustomizeGuide.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventHideGuide": "Hide guide settings",
+  "@hostsCreateEventHideGuide": {
+    "description": "Shared event creation: HideGuide.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventRosterLater": "Import now or later",
+  "@hostsCreateEventRosterLater": {
+    "description": "Shared event creation: RosterLater.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  },
+  "hostsCreateEventCreateAction": "Create event",
+  "@hostsCreateEventCreateAction": {
+    "description": "Shared event creation: CreateAction.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_create"
+  }
 }
