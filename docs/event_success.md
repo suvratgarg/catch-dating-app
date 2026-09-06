@@ -270,8 +270,13 @@ explicit sender identity, revision-fenced permission and immutable receipt
 contracts. They do not read organizer announcement permission. Invalid sender
 provisioning blocks new grants while preserving withdrawal. The owning data
 contract describes identity, expiry and replay semantics. Guest UI wiring,
-independent withdrawal/STOP, budget reservation and the live dispatch composition
-remain necessary before this material can be submitted.
+independent message-link withdrawal, provider submission and delivery/reply
+reconciliation remain necessary before this material can be submitted.
+`WhatsappDispatchStore` now composes current consent, authenticated endpoint
+STOP state, approved material, two spending ceilings and native reply bindings
+inside one outbox claim. It returns prepared material only after that transaction
+commits, with no provider I/O or activation. UTC sender-day and event debits
+remain conservative until financial reconciliation is implemented.
 
 ### SMS submission and spending boundary
 

@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `functions/src/shared/generated/eventWhatsappBudgetDocument.ts` |
+| EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/eventWhatsappDispatchDocument.ts` |
+| OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts` |
 | EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `functions/src/shared/generated/eventWhatsappPermissionDocument.ts` |
 | EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts` |
 | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts` |
@@ -581,6 +584,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventWhatsappBudgetDocumentSchema` | EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_budget_document.g.dart` |
+| `schemaEventWhatsappDispatchDocumentSchema` | EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_dispatch_document.g.dart` |
+| `schemaOrganizerWhatsappEndpointStopDocumentSchema` | OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_whatsapp_endpoint_stop_document.g.dart` |
 | `schemaEventWhatsappPermissionDocumentSchema` | EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_permission_document.g.dart` |
 | `schemaEventWhatsappConsentReceiptDocumentSchema` | EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_consent_receipt_document.g.dart` |
 | `schemaGetEventWhatsappPreferenceCallablePayloadSchema` | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_preference_callable_payload.g.dart` |

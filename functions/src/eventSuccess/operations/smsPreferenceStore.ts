@@ -14,6 +14,7 @@ import {
   Permission, parseSmsPermission, smsCollections, smsPermissionId,
 } from "./smsPermissionRecords";
 import {parseSmsConfig, SmsConfig, smsEndpointId} from "./smsProtocol";
+import {runPreferenceTransaction} from "./preferenceTransaction";
 import {
   CATCH_EVENT_SMS_SENDER_ID, ConsentReceipt, parseSmsConsentReceipt,
   SMS_CONSENT_HASH, SMS_CONSENT_RECEIPTS, SMS_CONSENT_TEXT,
@@ -39,7 +40,7 @@ export class SmsPreferenceStore {
   }
 
   async get(actor: SmsPreferenceActor, scope: Scope): Promise<Response> {
-    return this.db.runTransaction(async (tx) => ({outcome: "read",
+    return runPreferenceTransaction(this.db, async (tx) => ({outcome: "read",
       view: this.view(actor, scope, await this.read(tx, actor, scope),
         this.now())}));
   }
@@ -50,7 +51,7 @@ export class SmsPreferenceStore {
       actor.uid, input.eventId, input.attendeeId, input.requestId,
     ]);
     const requestHash = operationContentHash([actor.uid, input]);
-    return this.db.runTransaction(async (tx) => {
+    return runPreferenceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, actor, input);
       const reference = this.db.collection(SMS_CONSENT_RECEIPTS).doc(receiptId);
       const existingReceipt = await tx.get(reference);

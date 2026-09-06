@@ -35,7 +35,10 @@ export async function readEventAssistanceMessageGate(
   if (!guestCanReceiveMessage(guest, source, intent)) {
     return {kind: "stop", reason: "notAdmitted"};
   }
-  if (!messageWindowOpen(intent, source, now)) {
+  // Event-service consent cannot outlive the current event window after a
+  // schedule change, even if its original grant and message remain valid.
+  const serviceEnd = Math.floor(source.eventEnd) + 86_400_000;
+  if (now >= serviceEnd || !messageWindowOpen(intent, source, now)) {
     return {kind: "stop", reason: "eventClosed"};
   }
   if (intent.kind === "joiningUpdate") {
@@ -48,7 +51,7 @@ export async function readEventAssistanceMessageGate(
   }
   return {kind: "allow", checkedAt: now,
     validUntil: Math.min(now + 30_000, intent.expiresAt,
-      source.eventEnd > now ? source.eventEnd : Number.MAX_SAFE_INTEGER),
+      source.eventEnd > now ? source.eventEnd : serviceEnd),
     instructionRevision: intent.kind === "joiningUpdate" ?
       intent.guidance.revision : intent.instructionRevision};
 }

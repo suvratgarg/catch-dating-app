@@ -537,6 +537,96 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+/**
+ * Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.
+ */
+export interface EventWhatsappBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: string;
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Immutable debit and material identity committed with one outbox dispatch claim. No credentials, body, guest secret or recipient phone.
+ */
+export interface EventWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  senderHash: string;
+  policyHash: string;
+  policyRevision: number;
+  permissionId: string;
+  permissionRevision: number;
+  permissionHash: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  payloadHash: string;
+  quoteRevision: number;
+  grantId: string;
+  currency: string;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  replyBindingId: null | string;
+  stopRecordHash: null | string;
+  createdAt: number;
+}
+
+/**
+ * Latest authenticated text STOP for an organizer and WhatsApp endpoint, independent of CRM contact resolution. No TTL until suppression and consent retention are reconciled.
+ */
+export interface OrganizerWhatsappEndpointStopDocument {
+  schemaVersion: 1;
+  stopId: string;
+  organizerId: string;
+  endpointHash: string;
+  connectionId: string;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  providerEventId: string;
+  payloadHash: string;
+  stoppedAt: number;
+  observedAt: number;
+  revision: number;
+}
+
 export interface EventWhatsappPermissionDocument {
   [k: string]: unknown;
 }

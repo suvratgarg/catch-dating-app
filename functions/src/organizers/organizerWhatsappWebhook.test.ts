@@ -8,6 +8,8 @@ import {ingestMetaWhatsappWebhook, parseMetaWhatsappWebhook} from
   "./organizerWhatsappWebhook";
 import {validateOrganizerMessagingWebhookEventDocument} from
   "../shared/generated/validators/organizerMessagingWebhookEventDocument";
+import {WHATSAPP_ENDPOINT_STOPS, parseWhatsappStop} from
+  "../shared/organizerWhatsappStops";
 
 test("webhook parsing stores status metadata without message content", () => {
   const events = parseMetaWhatsappWebhook(Buffer.from(JSON.stringify({
@@ -76,6 +78,54 @@ function sender() {
   return {provider: "metaCloudApi", phoneNumberId: "123456", wabaId: "700123",
     organizerId: "organizer-one", channel: "whatsapp", status: "active"};
 }
+
+test("signed STOP and its queue receipt commit together without a CRM contact",
+  async () => {
+    const fake = new FakeFirestore();
+    fake.write("organizerSenderConnections/connection-one", sender());
+    const rawBody = webhook([incoming({type: "text", text: {body: "STOP"}})]);
+    const params = {db: fake as unknown as FirebaseFirestore.Firestore,
+      rawBody, signatureHeader: signature(rawBody), appSecret,
+      now: Timestamp.fromMillis(1720000001000)};
+    const before = fake.entries();
+    fake.failNextCommit = true;
+    await assert.rejects(ingestMetaWhatsappWebhook(params), /interruption/);
+    assert.deepEqual(fake.entries(), before);
+    assert.equal(await ingestMetaWhatsappWebhook(params), 1);
+    assert.equal(await ingestMetaWhatsappWebhook(params), 0);
+    const records = fake.entries().filter(([p]) =>
+      p.startsWith(WHATSAPP_ENDPOINT_STOPS + "/"));
+    assert.equal(records.length, 1);
+    const stop = parseWhatsappStop(records[0][1]);
+    assert.equal(stop.revision, 1);
+    assert.equal(stop.stoppedAt, 1720000000000);
+    assert.equal(stop.organizerId, "organizer-one");
+    assert.equal(JSON.stringify(stop).includes("919999999999"), false);
+    assert.equal(fake.entries().some(([p]) =>
+      p.startsWith("organizerContacts/")), false);
+  });
+
+test("native labels, unsigned STOP and unmatched senders create no STOP record",
+  async () => {
+    for (const kind of ["native", "unsigned", "unmatched"]) {
+      const fake = new FakeFirestore();
+      if (kind !== "unmatched") {
+        fake.write("organizerSenderConnections/connection-one", sender());
+      }
+      const rawBody = webhook([incoming(kind === "native" ? {type: "button",
+        button: {payload: "STOP", text: "STOP"}} :
+        {type: "text", text: {body: "STOP"}})]);
+      const params = {db: fake as unknown as FirebaseFirestore.Firestore,
+        rawBody, signatureHeader: kind === "unsigned" ? undefined :
+          signature(rawBody), appSecret,
+        now: Timestamp.fromMillis(1720000001000)};
+      if (kind === "unsigned") {
+        await assert.rejects(ingestMetaWhatsappWebhook(params), /signature/);
+      } else await ingestMetaWhatsappWebhook(params);
+      assert.equal(fake.entries().some(([p]) =>
+        p.startsWith(WHATSAPP_ENDPOINT_STOPS + "/")), false, kind);
+    }
+  });
 
 test("native choices retain their exact discriminator and identifier",
   () => {

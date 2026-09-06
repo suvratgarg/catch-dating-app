@@ -16,6 +16,21 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventWhatsappBudgetDocument",
+    source: "firestore/event_whatsapp_budgets.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappBudgetDocument.ts",
+  },
+  {
+    name: "EventWhatsappDispatchDocument",
+    source: "firestore/event_whatsapp_dispatches.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappEndpointStopDocument",
+    source: "firestore/organizer_whatsapp_endpoint_stops.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts",
+  },
+  {
     name: "EventWhatsappPermissionDocument",
     source: "firestore/event_assistance_whatsapp_permissions.schema.json",
     typeOutput: "functions/src/shared/generated/eventWhatsappPermissionDocument.ts",

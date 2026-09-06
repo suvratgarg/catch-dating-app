@@ -37,7 +37,8 @@ export const eventWhatsappPreferenceCallableResponseSchema: Record<string, unkno
         "expiresAt",
         "consent",
         "senderId",
-        "sender"
+        "sender",
+        "stopRecordHash"
       ],
       "properties": {
         "eventId": {
@@ -168,6 +169,17 @@ export const eventWhatsappPreferenceCallableResponseSchema: Record<string, unkno
                   "pattern": "^[a-f0-9]{64}$"
                 }
               }
+            }
+          ]
+        },
+        "stopRecordHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           ]
         }

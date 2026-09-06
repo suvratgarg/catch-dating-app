@@ -783,6 +783,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceWhatsappBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /organizerWhatsappEndpointStops/{stopId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceWhatsappPolicies/{senderId} {
       allow read, write: if false;
     }

@@ -28,6 +28,7 @@ import {
 } from "./organizerCampaignModel";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
+import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";
 
 export const metaWhatsappWebhookVerifyToken = defineSecret(
   "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN"
@@ -183,6 +184,19 @@ export async function ingestMetaWhatsappWebhook(params: {
     const created = await params.db.runTransaction(async (tx) => {
       const receipt = await tx.get(receiptRef);
       if (receipt.exists) return false;
+      const commitStop = connection && event.eventKind === "inbound" &&
+        event.isStop && event.endpointHash && event.providerAccountId &&
+        event.phoneNumberId ? await prepareWhatsappStop(params.db, tx, {
+          organizerId: connection.value.organizerId,
+          connectionId: connection.id, endpointHash: event.endpointHash,
+          providerAccountId: event.providerAccountId,
+          providerPhoneNumberId: event.phoneNumberId,
+          providerEventId: event.providerEventId,
+          payloadHash: event.payloadHash,
+          occurredAt: event.providerOccurredAt?.toMillis() ?? null,
+          now: now.toMillis(),
+        }) : null;
+      commitStop?.();
       tx.create(receiptRef, {
         provider: "metaCloudApi",
         providerEventId: event.providerEventId,

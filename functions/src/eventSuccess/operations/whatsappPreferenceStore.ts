@@ -23,6 +23,9 @@ import {whatsappEndpointHash, whatsappEndpointId} from
   "./whatsappReplyProtocol";
 import {ConsentSender, whatsappConsentSender} from "./whatsappConsentSender";
 import {WHATSAPP_POLICIES} from "./whatsappTemplate";
+import {runPreferenceTransaction} from "./preferenceTransaction";
+import {EndpointStop, parseWhatsappStop, WHATSAPP_ENDPOINT_STOPS,
+  whatsappStopId} from "../../shared/organizerWhatsappStops";
 
 /** UID and phone are derived from Firebase Auth, never request data. */
 export interface WhatsappPreferenceActor {uid: string; phone: string | null}
@@ -33,6 +36,8 @@ interface PreferenceFacts {
   permission: Permission | null;
   receipt: ConsentReceipt | null;
   sender: ConsentSender | null;
+  stop: EndpointStop | null;
+  stopInvalid: boolean;
 }
 
 export class WhatsappPreferenceStore {
@@ -40,7 +45,7 @@ export class WhatsappPreferenceStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(actor: WhatsappPreferenceActor, scope: Scope): Promise<Response> {
-    return this.db.runTransaction(async (tx) => ({outcome: "read",
+    return runPreferenceTransaction(this.db, async (tx) => ({outcome: "read",
       view: this.view(actor, scope, await this.read(tx, actor, scope),
         this.now())}));
   }
@@ -53,7 +58,7 @@ export class WhatsappPreferenceStore {
       input.senderId, input.requestId,
     ]);
     const requestHash = operationContentHash([actor.uid, input]);
-    return this.db.runTransaction(async (tx) => {
+    return runPreferenceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, actor, input);
       const ref = this.db.collection(WHATSAPP_CONSENT_RECEIPTS)
         .doc(receiptId);
@@ -77,7 +82,9 @@ export class WhatsappPreferenceStore {
       const granting = input.decision.kind === "grant";
       if (input.decision.kind === "grant" && (!currentView.canEnable ||
           input.decision.copyVersion !== WHATSAPP_CONSENT_VERSION ||
-          input.decision.senderHash !== currentView.sender?.bindingHash)) {
+          input.decision.senderHash !== currentView.sender?.bindingHash ||
+          input.decision.stopRecordHash !== currentView.stopRecordHash ||
+          now <= (facts.stop?.stoppedAt ?? -1))) {
         throw new HttpsError("failed-precondition",
           "Event WhatsApp updates cannot be enabled right now.");
       }
@@ -168,7 +175,24 @@ export class WhatsappPreferenceStore {
       .doc(permission.currentReceiptId)) : null;
     const receipt = receiptSnap?.exists ?
       parseWhatsappConsentReceipt(receiptSnap.data()) : null;
-    return {context, source, permission, receipt,
+    const endpoint = whatsappEndpointHash(attendee.phoneE164);
+    let stop: EndpointStop | null = null;
+    let stopInvalid = false;
+    if (endpoint) {
+      const stopId = whatsappStopId(context.organizerId, endpoint);
+      const stopSnap = await tx.get(this.db
+        .collection(WHATSAPP_ENDPOINT_STOPS).doc(stopId));
+      if (stopSnap.exists) {
+        try {
+          stop = parseWhatsappStop(stopSnap.data());
+          if (stop.stopId !== stopId) throw new Error("Stop identity mismatch");
+        } catch {
+          stop = null;
+          stopInvalid = true;
+        }
+      }
+    }
+    return {context, source, permission, receipt, stop, stopInvalid,
       sender: whatsappConsentSender(scope.senderId, context.organizerId,
         senderSnap.data(), policySnap.data()),
       phone: whatsappEndpointHash(attendee.phoneE164) ?
@@ -177,7 +201,7 @@ export class WhatsappPreferenceStore {
 
   private view(actor: WhatsappPreferenceActor, scope: Scope,
     facts: PreferenceFacts, now: number): Response["view"] {
-    const {source, sender, permission, receipt, phone} = facts;
+    const {source, sender, permission, receipt, phone, stop} = facts;
     if (now < (permission?.updatedAt ?? 0) || now < (receipt?.createdAt ?? 0)) {
       throw new HttpsError("unavailable", "Event preference clock is behind.");
     }
@@ -197,7 +221,8 @@ export class WhatsappPreferenceStore {
       availability = "notAdmitted";
     } else if (source.eventStatus !== "active" ||
         now >= source.eventEnd + 86_400_000) availability = "eventClosed";
-    else if (!sender?.connectionReady || !sender.policy ||
+    else if (facts.stopInvalid || (stop?.observedAt ?? 0) > now ||
+        !sender?.connectionReady || !sender.policy ||
         sender.policy.status !== "ready" ||
         sender.policy.activation.approvedAt > now ||
         sender.policy.activation.validUntil <= now ||
@@ -205,14 +230,18 @@ export class WhatsappPreferenceStore {
           phone.startsWith(p))) {
       availability = "senderUnavailable";
     }
+    const stopped = stop !== null && permission?.evidence !== null &&
+      stop.stoppedAt >= (permission?.evidence?.acceptedAt ?? 0);
     const preference: Response["view"]["preference"] = !belongs ? "notSet" :
       permission!.status === "revoked" ? "disabled" :
-        !proof ? "notSet" :
+        stopped ? "disabled" :
+          !proof ? "notSet" :
           permission!.expiresAt <= now ? "expired" : "enabled";
     const identity = sender?.identity ?? permission?.sender;
     return {eventId: scope.eventId, attendeeId: scope.attendeeId,
       senderId: scope.senderId, serverTime: now,
       revision: permission?.revision ?? null, preference,
+      stopRecordHash: stop ? operationContentHash(stop) : null,
       canEnable: availability === "ready", availability,
       phoneLastFour: phone?.slice(-4) ?? null,
       expiresAt: belongs ? permission!.expiresAt : null,

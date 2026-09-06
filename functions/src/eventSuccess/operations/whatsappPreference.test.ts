@@ -84,6 +84,7 @@ async function harness(realDb?: Firestore, key = "one") {
   const store = new WhatsappPreferenceStore(db, () => clock.now);
   const grant: Submission = {...scope, requestId: "grant-1", expectedRevision:
     null, decision: {kind: "grant", copyVersion: WHATSAPP_CONSENT_VERSION,
+    stopRecordHash: null,
     senderHash: (await store.get(actor, scope)).view.sender!.bindingHash}};
   const stop: Submission = {...scope, requestId: "stop-1", expectedRevision:
     1, decision: {kind: "revoke"}};
@@ -290,6 +291,7 @@ test("credentials can rotate but new provider identity needs fresh consent",
     const fresh = await h.store.set(h.actor, {...h.grant, requestId: "fresh",
       expectedRevision: 1, decision: {kind: "grant",
         copyVersion: WHATSAPP_CONSENT_VERSION,
+        stopRecordHash: null,
         senderHash: changed.view.sender!.bindingHash}});
     assert.equal(fresh.view.preference, "enabled");
     assert.equal(fresh.view.revision, 2);
@@ -357,6 +359,7 @@ test("explicit sender selection never inherits another sender's permission",
     // A second sender can use the same UI request id without colliding.
     const applied = await h.store.set(h.actor, {...h.grant, ...scope,
       decision: {kind: "grant", copyVersion: WHATSAPP_CONSENT_VERSION,
+        stopRecordHash: null,
         senderHash: second.view.sender!.bindingHash}});
     assert.equal(applied.outcome, "applied");
   });

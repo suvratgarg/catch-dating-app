@@ -4346,6 +4346,10 @@ describe("firestore.rules", () => {
         "eventAssistanceSmsWithdrawalGrants",
         "eventAssistanceWhatsappReplyBindings",
         "eventAssistanceWhatsappPolicies",
+        "eventAssistanceWhatsappBudgets",
+        "eventAssistanceWhatsappDispatches",
+        "organizerWhatsappEndpointStops",
+
         "eventAssistanceWhatsappPermissions",
         "eventAssistanceWhatsappConsentReceipts"]) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

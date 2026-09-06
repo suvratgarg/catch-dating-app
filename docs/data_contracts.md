@@ -2095,9 +2095,10 @@ generation, verified subject and recipient endpoint to an explicit organizer
 sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
 copy version, displayed sender hash and complete resulting permission hash.
 Future-event announcement consent remains separate and is never read as an
-Event Assistance grant. This schema currently supports verified-participant
-decisions; native STOP and independent message-link withdrawal remain required
-integration work before automated WhatsApp dispatch is enabled.
+Event Assistance grant. This schema supports verified-participant decisions;
+authenticated endpoint STOP evidence also suppresses the saved preference.
+Independent message-link withdrawal remains required integration work before
+automated WhatsApp dispatch is enabled.
 
 The App-Check-protected `getEventWhatsappPreference` and
 `setEventWhatsappPreference` callables require the roster's linked UID. Scope
@@ -2106,7 +2107,9 @@ silently switch consent. Grants additionally require the matching signed phone
 claim, an admitted participant, eligible event, reviewed sender policy and
 current verified sender identity. The client submits only scope, decision,
 expected revision, request ID, copy version and the previously displayed sender
-hash. Provider identities, recipient number, consent copy and evidence times
+hash plus the current nullable STOP-record hash. An unseen STOP cannot be
+reversed by an older in-flight enable request. Provider identities, recipient
+number, consent copy and evidence times
 come from trusted server data. The response exposes the sender display name and
 business number, masked recipient number and preference state; no provider
 account IDs or credentials are exposed.
@@ -2119,15 +2122,63 @@ at grant time; dispatch must also recheck the current event window. Sender
 readiness is independent of a recorded enabled preference.
 
 Permission and receipt commit in one transaction. Exact replays return current
-state, while revision conflicts cannot reverse a later withdrawal. A first
+state, while revision conflicts cannot reverse a later withdrawal. The shared
+preference transaction adapter maps only the exact closed-transaction callback
+RPC error into the SDK's bounded ABORTED retry path. It does not catch commit
+uncertainty or reclassify other validation errors. SMS preference and link
+withdrawal use this same boundary; paired withdrawal reads are batched. A first
 opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
 preserves the old recipient/sender evidence even after either changes, and
 paused, deleted or malformed sender provisioning cannot obstruct it. These
 authenticated APIs still require a current authorized event/roster identity;
 they do not replace independent message-link withdrawal. Client access to both
 collections is denied, including with an admin claim. Guest UI integration,
-suppression/STOP handling, budgets, live dispatch and sender activation remain
+live provider submission, independent withdrawal and sender activation remain
 separate delivery work.
+
+### Event Service WhatsApp Dispatch Contract
+
+`WhatsappDispatchStore` reads event/guest authority, the explicit sender and its
+reviewed policy, the original verified recipient, exact consent receipt,
+endpoint STOP evidence, CRM pauses/provider blocks, template and scoped guest
+link. These facts are read in the same transaction as the outbox claim. The
+single-route outbox refuses mixed-route intents; `readFacts` exposes this
+channel to the future shared composer without silently skipping other channels.
+The shared message gate caps all event-service routes at 24 hours after the
+current event end, including after a schedule change shortens a previously
+granted consent window.
+
+`eventAssistanceWhatsappBudgets` supplies independently approved event and UTC
+sender-day ceilings. Budget identity includes currency. Missing, paused, stale,
+wrong-scope or exhausted authority withholds the claim. Both conservative cost
+debits, `eventAssistanceWhatsappDispatches` material evidence and any native
+reply binding commit with the outbox's single unknown attempt. Failure rolls
+all of them back. A second outbox still contends on the same spending records.
+Unknown/accepted delivery does not release spending or authorize another send.
+These records store hashes and scoped references, not credentials, recipient
+phone numbers, message text or guest URL secrets. Native payloads are returned
+only to the trusted caller. No TTL is applied before reconciliation is defined.
+
+`organizerWhatsappEndpointStops` records the latest authenticated text STOP per
+organizer and endpoint independently of CRM contact resolution. It commits with
+the signed webhook's receipt and queue item, after transactionally rechecking
+an unambiguous provider account/phone connection. Native labels cannot become
+STOP commands. Duplicate or older events cannot advance the stop time; absent
+or future provider timestamps are conservatively capped at receipt time.
+The event preference view reports a stopped grant as disabled. A fresh explicit
+grant must acknowledge the current STOP hash and occur later than that stop.
+Dispatch requires that later grant and its immutable receipt. Credentials and
+sender changes cannot evade an organizer-wide endpoint stop.
+
+CRM admin/provider suppression remains independent. Announcement preference
+withdrawal does not revoke separately granted event-service permission. Legacy
+CRM inbound-STOP suppression without endpoint evidence stays blocked until
+reconciled; the new ledger cannot retroactively prove old consent ordering.
+A STOP committed after a dispatch claim prevents later claims but cannot undo
+provider I/O already authorized or started. The provider worker, independent
+message-link withdrawal, status correlation, durable queue/reply retries and
+cross-channel composer remain integration work. This transaction performs no
+provider I/O and does not activate automated sending.
 
 ### Event Assistance SMS Delivery Contract
 

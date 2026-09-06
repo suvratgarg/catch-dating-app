@@ -550,7 +550,8 @@
         "expiresAt",
         "consent",
         "senderId",
-        "sender"
+        "sender",
+        "stopRecordHash"
       ],
       "properties": {
         "eventId": {
@@ -681,6 +682,17 @@
                   "pattern": "^[a-f0-9]{64}$"
                 }
               }
+            }
+          ]
+        },
+        "stopRecordHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           ]
         }

@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventWhatsappBudgetDocument',
+    source: 'firestore/event_whatsapp_budgets.schema.json',
+    schema: schemaEventWhatsappBudgetDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventWhatsappDispatchDocument',
+    source: 'firestore/event_whatsapp_dispatches.schema.json',
+    schema: schemaEventWhatsappDispatchDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'OrganizerWhatsappEndpointStopDocument',
+    source: 'firestore/organizer_whatsapp_endpoint_stops.schema.json',
+    schema: schemaOrganizerWhatsappEndpointStopDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventWhatsappPermissionDocument',
     source: 'firestore/event_assistance_whatsapp_permissions.schema.json',
     schema: schemaEventWhatsappPermissionDocumentSchema,
@@ -2839,6 +2854,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventWhatsappBudgetDocument': schemaEventWhatsappBudgetDocumentSchema,
+  'EventWhatsappDispatchDocument': schemaEventWhatsappDispatchDocumentSchema,
+  'OrganizerWhatsappEndpointStopDocument': schemaOrganizerWhatsappEndpointStopDocumentSchema,
   'EventWhatsappPermissionDocument': schemaEventWhatsappPermissionDocumentSchema,
   'EventWhatsappConsentReceiptDocument': schemaEventWhatsappConsentReceiptDocumentSchema,
   'GetEventWhatsappPreferenceCallablePayload': schemaGetEventWhatsappPreferenceCallablePayloadSchema,
@@ -3406,6 +3424,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_whatsapp_budgets.schema.json': schemaEventWhatsappBudgetDocumentSchema,
+  'firestore/event_whatsapp_dispatches.schema.json': schemaEventWhatsappDispatchDocumentSchema,
+  'firestore/organizer_whatsapp_endpoint_stops.schema.json': schemaOrganizerWhatsappEndpointStopDocumentSchema,
   'firestore/event_assistance_whatsapp_permissions.schema.json': schemaEventWhatsappPermissionDocumentSchema,
   'firestore/event_assistance_whatsapp_consent_receipts.schema.json': schemaEventWhatsappConsentReceiptDocumentSchema,
   'callables/get_event_whatsapp_preference_payload.schema.json': schemaGetEventWhatsappPreferenceCallablePayloadSchema,

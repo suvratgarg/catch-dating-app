@@ -2129,6 +2129,42 @@
       "migrationNotes": [
         "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
       ]
+    },
+    {
+      "id": "eventAssistanceWhatsappBudgets",
+      "path": "eventAssistanceWhatsappBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceWhatsappBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-service WhatsApp dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappDispatches",
+      "path": "eventAssistanceWhatsappDispatches/{attemptId}",
+      "rulesMatch": "/eventAssistanceWhatsappDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-service WhatsApp dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable reviewed material, consent and debit identity; native reply bindings share the transaction. No provider credentials, plaintext recipient or guest bearer secret. Retain through reconciliation."
+      ]
+    },
+    {
+      "id": "organizerWhatsappEndpointStops",
+      "path": "organizerWhatsappEndpointStops/{stopId}",
+      "rulesMatch": "/organizerWhatsappEndpointStops/{stopId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "authenticated WhatsApp ingress",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Latest signed text STOP, keyed by organizer and endpoint, commits with the private queue receipt and does not depend on CRM contacts. No TTL pending suppression/consent retention reconciliation."
+      ]
     }
   ]
 }

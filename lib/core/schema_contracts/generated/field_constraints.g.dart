@@ -26947,6 +26947,138 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventWhatsappBudgetDocumentApprovalId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentBudgetId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentChargedMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappBudgetDocumentEndsAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentLimitMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeDay = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappBudgetDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentStartsAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused'],
+  );
+
+  static const eventWhatsappBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventWhatsappConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
     path: 'eventWhatsappConsentReceiptDocument.actorUid',
     maxLength: 160,
@@ -27094,6 +27226,241 @@ abstract final class CatchContractConstraints {
     path: 'eventWhatsappConsentReceiptDocument.source',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentBudgetIds = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.budgetIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventWhatsappDispatchDocumentBudgetIdsItems = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.budgetIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentGrantId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentPolicyHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPolicyRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.policyRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.quoteRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentReplyBindingId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.replyBindingId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentStopRecordHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.stopRecordHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventWhatsappPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
@@ -27658,6 +28025,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewStopRecordHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.stopRecordHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventWhatsappReplyBindingDocumentAttemptId = CatchContractFieldConstraints(
@@ -54806,6 +55179,99 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerWhatsappEndpointStopDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentObservedAt = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerWhatsappEndpointStopDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerEventId',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerWhatsappEndpointStopDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerWhatsappEndpointStopDocumentStopId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.stopId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentStoppedAt = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.stoppedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerWhatsappMessageDocumentActorUid = CatchContractFieldConstraints(
     path: 'organizerWhatsappMessageDocument.actorUid',
     maxLength: 180,
@@ -60632,6 +61098,12 @@ abstract final class CatchContractConstraints {
   static const setEventWhatsappPreferenceCallablePayloadDecisionSenderHash = CatchContractFieldConstraints(
     path: 'setEventWhatsappPreferenceCallablePayload.decision.senderHash',
     required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionStopRecordHash = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.stopRecordHash',
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
   );
@@ -72577,6 +73049,23 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.uid': eventWaitlistOfferDocumentUid,
     'eventWaitlistOfferDocument.updatedAt._nanoseconds': eventWaitlistOfferDocumentUpdatedAtNanoseconds,
     'eventWaitlistOfferDocument.updatedAt._seconds': eventWaitlistOfferDocumentUpdatedAtSeconds,
+    'eventWhatsappBudgetDocument.approvalId': eventWhatsappBudgetDocumentApprovalId,
+    'eventWhatsappBudgetDocument.budgetId': eventWhatsappBudgetDocumentBudgetId,
+    'eventWhatsappBudgetDocument.chargedMicros': eventWhatsappBudgetDocumentChargedMicros,
+    'eventWhatsappBudgetDocument.currency': eventWhatsappBudgetDocumentCurrency,
+    'eventWhatsappBudgetDocument.endsAt': eventWhatsappBudgetDocumentEndsAt,
+    'eventWhatsappBudgetDocument.limitMicros': eventWhatsappBudgetDocumentLimitMicros,
+    'eventWhatsappBudgetDocument.revision': eventWhatsappBudgetDocumentRevision,
+    'eventWhatsappBudgetDocument.schemaVersion': eventWhatsappBudgetDocumentSchemaVersion,
+    'eventWhatsappBudgetDocument.scope.context.eventId': eventWhatsappBudgetDocumentScopeContextEventId,
+    'eventWhatsappBudgetDocument.scope.context.mode': eventWhatsappBudgetDocumentScopeContextMode,
+    'eventWhatsappBudgetDocument.scope.context.organizerId': eventWhatsappBudgetDocumentScopeContextOrganizerId,
+    'eventWhatsappBudgetDocument.scope.day': eventWhatsappBudgetDocumentScopeDay,
+    'eventWhatsappBudgetDocument.scope.kind': eventWhatsappBudgetDocumentScopeKind,
+    'eventWhatsappBudgetDocument.senderId': eventWhatsappBudgetDocumentSenderId,
+    'eventWhatsappBudgetDocument.startsAt': eventWhatsappBudgetDocumentStartsAt,
+    'eventWhatsappBudgetDocument.status': eventWhatsappBudgetDocumentStatus,
+    'eventWhatsappBudgetDocument.updatedAt': eventWhatsappBudgetDocumentUpdatedAt,
     'eventWhatsappConsentReceiptDocument.actorUid': eventWhatsappConsentReceiptDocumentActorUid,
     'eventWhatsappConsentReceiptDocument.appliedRevision': eventWhatsappConsentReceiptDocumentAppliedRevision,
     'eventWhatsappConsentReceiptDocument.attendeeGeneration': eventWhatsappConsentReceiptDocumentAttendeeGeneration,
@@ -72597,6 +73086,36 @@ abstract final class CatchContractConstraints {
     'eventWhatsappConsentReceiptDocument.senderHash': eventWhatsappConsentReceiptDocumentSenderHash,
     'eventWhatsappConsentReceiptDocument.senderId': eventWhatsappConsentReceiptDocumentSenderId,
     'eventWhatsappConsentReceiptDocument.source': eventWhatsappConsentReceiptDocumentSource,
+    'eventWhatsappDispatchDocument.attemptId': eventWhatsappDispatchDocumentAttemptId,
+    'eventWhatsappDispatchDocument.bindingRevision': eventWhatsappDispatchDocumentBindingRevision,
+    'eventWhatsappDispatchDocument.budgetIds': eventWhatsappDispatchDocumentBudgetIds,
+    'eventWhatsappDispatchDocument.budgetIds.items': eventWhatsappDispatchDocumentBudgetIdsItems,
+    'eventWhatsappDispatchDocument.context.eventId': eventWhatsappDispatchDocumentContextEventId,
+    'eventWhatsappDispatchDocument.context.mode': eventWhatsappDispatchDocumentContextMode,
+    'eventWhatsappDispatchDocument.context.organizerId': eventWhatsappDispatchDocumentContextOrganizerId,
+    'eventWhatsappDispatchDocument.createdAt': eventWhatsappDispatchDocumentCreatedAt,
+    'eventWhatsappDispatchDocument.currency': eventWhatsappDispatchDocumentCurrency,
+    'eventWhatsappDispatchDocument.endpointHash': eventWhatsappDispatchDocumentEndpointHash,
+    'eventWhatsappDispatchDocument.grantId': eventWhatsappDispatchDocumentGrantId,
+    'eventWhatsappDispatchDocument.maxCostMicros': eventWhatsappDispatchDocumentMaxCostMicros,
+    'eventWhatsappDispatchDocument.messageId': eventWhatsappDispatchDocumentMessageId,
+    'eventWhatsappDispatchDocument.payloadHash': eventWhatsappDispatchDocumentPayloadHash,
+    'eventWhatsappDispatchDocument.permissionHash': eventWhatsappDispatchDocumentPermissionHash,
+    'eventWhatsappDispatchDocument.permissionId': eventWhatsappDispatchDocumentPermissionId,
+    'eventWhatsappDispatchDocument.permissionRevision': eventWhatsappDispatchDocumentPermissionRevision,
+    'eventWhatsappDispatchDocument.policyHash': eventWhatsappDispatchDocumentPolicyHash,
+    'eventWhatsappDispatchDocument.policyRevision': eventWhatsappDispatchDocumentPolicyRevision,
+    'eventWhatsappDispatchDocument.providerAccountId': eventWhatsappDispatchDocumentProviderAccountId,
+    'eventWhatsappDispatchDocument.providerPhoneNumberId': eventWhatsappDispatchDocumentProviderPhoneNumberId,
+    'eventWhatsappDispatchDocument.quoteRevision': eventWhatsappDispatchDocumentQuoteRevision,
+    'eventWhatsappDispatchDocument.recipientEndpointId': eventWhatsappDispatchDocumentRecipientEndpointId,
+    'eventWhatsappDispatchDocument.replyBindingId': eventWhatsappDispatchDocumentReplyBindingId,
+    'eventWhatsappDispatchDocument.schemaVersion': eventWhatsappDispatchDocumentSchemaVersion,
+    'eventWhatsappDispatchDocument.senderHash': eventWhatsappDispatchDocumentSenderHash,
+    'eventWhatsappDispatchDocument.senderId': eventWhatsappDispatchDocumentSenderId,
+    'eventWhatsappDispatchDocument.stopRecordHash': eventWhatsappDispatchDocumentStopRecordHash,
+    'eventWhatsappDispatchDocument.templateDocumentId': eventWhatsappDispatchDocumentTemplateDocumentId,
+    'eventWhatsappDispatchDocument.templateHash': eventWhatsappDispatchDocumentTemplateHash,
     'eventWhatsappPermissionDocument.attendeeGeneration': eventWhatsappPermissionDocumentAttendeeGeneration,
     'eventWhatsappPermissionDocument.attendeeId': eventWhatsappPermissionDocumentAttendeeId,
     'eventWhatsappPermissionDocument.context.eventId': eventWhatsappPermissionDocumentContextEventId,
@@ -72670,6 +73189,7 @@ abstract final class CatchContractConstraints {
     'eventWhatsappPreferenceCallableResponse.view.sender.displayPhoneNumber': eventWhatsappPreferenceCallableResponseViewSenderDisplayPhoneNumber,
     'eventWhatsappPreferenceCallableResponse.view.senderId': eventWhatsappPreferenceCallableResponseViewSenderId,
     'eventWhatsappPreferenceCallableResponse.view.serverTime': eventWhatsappPreferenceCallableResponseViewServerTime,
+    'eventWhatsappPreferenceCallableResponse.view.stopRecordHash': eventWhatsappPreferenceCallableResponseViewStopRecordHash,
     'eventWhatsappReplyBindingDocument.attemptId': eventWhatsappReplyBindingDocumentAttemptId,
     'eventWhatsappReplyBindingDocument.attemptScopeHash': eventWhatsappReplyBindingDocumentAttemptScopeHash,
     'eventWhatsappReplyBindingDocument.attendeeGeneration': eventWhatsappReplyBindingDocumentAttendeeGeneration,
@@ -76427,6 +76947,18 @@ abstract final class CatchContractConstraints {
     'organizerTeamMembershipDocument.role': organizerTeamMembershipDocumentRole,
     'organizerTeamMembershipDocument.status': organizerTeamMembershipDocumentStatus,
     'organizerTeamMembershipDocument.uid': organizerTeamMembershipDocumentUid,
+    'organizerWhatsappEndpointStopDocument.connectionId': organizerWhatsappEndpointStopDocumentConnectionId,
+    'organizerWhatsappEndpointStopDocument.endpointHash': organizerWhatsappEndpointStopDocumentEndpointHash,
+    'organizerWhatsappEndpointStopDocument.observedAt': organizerWhatsappEndpointStopDocumentObservedAt,
+    'organizerWhatsappEndpointStopDocument.organizerId': organizerWhatsappEndpointStopDocumentOrganizerId,
+    'organizerWhatsappEndpointStopDocument.payloadHash': organizerWhatsappEndpointStopDocumentPayloadHash,
+    'organizerWhatsappEndpointStopDocument.providerAccountId': organizerWhatsappEndpointStopDocumentProviderAccountId,
+    'organizerWhatsappEndpointStopDocument.providerEventId': organizerWhatsappEndpointStopDocumentProviderEventId,
+    'organizerWhatsappEndpointStopDocument.providerPhoneNumberId': organizerWhatsappEndpointStopDocumentProviderPhoneNumberId,
+    'organizerWhatsappEndpointStopDocument.revision': organizerWhatsappEndpointStopDocumentRevision,
+    'organizerWhatsappEndpointStopDocument.schemaVersion': organizerWhatsappEndpointStopDocumentSchemaVersion,
+    'organizerWhatsappEndpointStopDocument.stopId': organizerWhatsappEndpointStopDocumentStopId,
+    'organizerWhatsappEndpointStopDocument.stoppedAt': organizerWhatsappEndpointStopDocumentStoppedAt,
     'organizerWhatsappMessageDocument.actorUid': organizerWhatsappMessageDocumentActorUid,
     'organizerWhatsappMessageDocument.body': organizerWhatsappMessageDocumentBody,
     'organizerWhatsappMessageDocument.connectionId': organizerWhatsappMessageDocumentConnectionId,
@@ -77215,6 +77747,7 @@ abstract final class CatchContractConstraints {
     'setEventWhatsappPreferenceCallablePayload.decision.copyVersion': setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion,
     'setEventWhatsappPreferenceCallablePayload.decision.kind': setEventWhatsappPreferenceCallablePayloadDecisionKind,
     'setEventWhatsappPreferenceCallablePayload.decision.senderHash': setEventWhatsappPreferenceCallablePayloadDecisionSenderHash,
+    'setEventWhatsappPreferenceCallablePayload.decision.stopRecordHash': setEventWhatsappPreferenceCallablePayloadDecisionStopRecordHash,
     'setEventWhatsappPreferenceCallablePayload.eventId': setEventWhatsappPreferenceCallablePayloadEventId,
     'setEventWhatsappPreferenceCallablePayload.expectedRevision': setEventWhatsappPreferenceCallablePayloadExpectedRevision,
     'setEventWhatsappPreferenceCallablePayload.requestId': setEventWhatsappPreferenceCallablePayloadRequestId,

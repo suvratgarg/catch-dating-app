@@ -51,7 +51,8 @@
           "required": [
             "kind",
             "copyVersion",
-            "senderHash"
+            "senderHash",
+            "stopRecordHash"
           ],
           "properties": {
             "kind": {
@@ -65,6 +66,17 @@
             "senderHash": {
               "type": "string",
               "pattern": "^[a-f0-9]{64}$"
+            },
+            "stopRecordHash": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              ]
             }
           }
         },

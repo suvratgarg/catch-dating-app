@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  eventWhatsappBudgetDocumentSchema,
+  eventWhatsappDispatchDocumentSchema,
+  organizerWhatsappEndpointStopDocumentSchema,
   eventWhatsappPermissionDocumentSchema,
   eventWhatsappConsentReceiptDocumentSchema,
   getEventWhatsappPreferenceCallablePayloadSchema,
@@ -591,6 +594,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventWhatsappBudgetDocument = ajv.compile(eventWhatsappBudgetDocumentSchema);
+export const validateEventWhatsappDispatchDocument = ajv.compile(eventWhatsappDispatchDocumentSchema);
+export const validateOrganizerWhatsappEndpointStopDocument = ajv.compile(organizerWhatsappEndpointStopDocumentSchema);
 export const validateEventWhatsappPermissionDocument = ajv.compile(eventWhatsappPermissionDocumentSchema);
 export const validateEventWhatsappConsentReceiptDocument = ajv.compile(eventWhatsappConsentReceiptDocumentSchema);
 export const validateGetEventWhatsappPreferenceCallablePayload = ajv.compile(getEventWhatsappPreferenceCallablePayloadSchema);

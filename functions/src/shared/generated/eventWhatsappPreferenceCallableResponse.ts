@@ -29,5 +29,6 @@ export interface EventWhatsappPreferenceCallableResponse {
       displayPhoneNumber: string;
       bindingHash: string;
     };
+    stopRecordHash: null | string;
   };
 }

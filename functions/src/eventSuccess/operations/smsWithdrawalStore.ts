@@ -13,6 +13,7 @@ import {guestCollections, parseGrant, requireDocumentId, unavailable} from
 import {Permission, parseSmsPermission, smsCollections} from
   "./smsPermissionRecords";
 import {parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS} from "./smsConsent";
+import {runPreferenceTransaction} from "./preferenceTransaction";
 import {
   WithdrawalGrant, parseSmsWithdrawalGrant, SMS_WITHDRAWAL_GRANTS,
   smsWithdrawalMatchesPermission,
@@ -26,7 +27,7 @@ export class SmsWithdrawalStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(input: Credential): Promise<Response> {
-    return this.db.runTransaction(async (tx) => {
+    return runPreferenceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       return {outcome: "read", view: this.view(facts, this.now())};
     });
@@ -34,7 +35,7 @@ export class SmsWithdrawalStore {
 
   async withdraw(input: Submission): Promise<Response> {
     requireDocumentId(input.requestId);
-    return this.db.runTransaction(async (tx) => {
+    return runPreferenceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       const {permission, authority} = facts;
       const receiptId = "sms-withdrawal:" + operationContentHash([
@@ -85,10 +86,10 @@ export class SmsWithdrawalStore {
   private async read(tx: Transaction, input: Credential): Promise<Facts> {
     if (!/^[a-f0-9]{32}$/.test(input.linkId) ||
         !/^[A-Za-z0-9_-]{43}$/.test(input.secret)) throw unavailable();
-    const [authoritySnap, guestSnap] = await Promise.all([
-      tx.get(this.db.collection(SMS_WITHDRAWAL_GRANTS).doc(input.linkId)),
-      tx.get(this.db.collection(guestCollections.grants).doc(input.linkId)),
-    ]);
+    const [authoritySnap, guestSnap] = await tx.getAll(
+      this.db.collection(SMS_WITHDRAWAL_GRANTS).doc(input.linkId),
+      this.db.collection(guestCollections.grants).doc(input.linkId),
+    );
     if (!authoritySnap.exists || !guestSnap.exists) throw unavailable();
     const authority = parseSmsWithdrawalGrant(authoritySnap.data());
     const guest = parseGrant(guestSnap.data());
