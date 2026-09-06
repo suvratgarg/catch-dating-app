@@ -1020,6 +1020,8 @@ owns form-builder pane geometry. Import the public entrypoint instead of
 package internals. The package uses the repository Dart workspace and its only
 production dependency is the Flutter SDK, enforced by
 `platform:app-package-graphs` with seeded forbidden-dependency tests.
+The package also enables Flutter lints, including undeclared-package-import
+diagnostics, and treats info diagnostics as failures.
 Theme wiring, typography, icon assets, and the app-coupled `ActivityPalette`
 remain in `lib/core/theme` until their Phase 3 disposition.
 
