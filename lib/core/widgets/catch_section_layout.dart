@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show
@@ -22,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_divider.dart';
