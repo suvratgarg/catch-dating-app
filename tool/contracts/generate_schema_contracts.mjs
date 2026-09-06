@@ -16,6 +16,21 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventAssistanceMessageIntent",
+    source: "operations/event_assistance_message_intent.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageIntent.ts",
+  },
+  {
+    name: "EventAssistanceDeliveryAttempt",
+    source: "operations/event_assistance_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts",
+  },
+  {
+    name: "EventAssistanceGuestResponse",
+    source: "operations/event_assistance_guest_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceGuestResponse.ts",
+  },
+  {
     name: "EventAssistancePolicy",
     source: "operations/event_assistance_policy.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistancePolicy.ts"

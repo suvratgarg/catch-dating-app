@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.21.0
+version: 1.22.0
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
@@ -117,12 +117,41 @@ outcomes. Completion means snapshot evaluation finished, not that a guest was
 contacted or the event is complete.
 
 `lateJoinPolicy.ts` is the single authored pure implementation. The Operations
-runtime generator transpiles it to the checked JavaScript module consumed by Operations;
+runtime generator transpiles it to the checked JavaScript module consumed by
+Operations;
 the Functions adapter validates the same schemas before invoking it. Changing
 the policy therefore requires both generated-output parity and runtime tests.
 The local shadow factory does not load live event facts or send messages.
 Trusted worker scheduling, the channel outbox, the guest response boundary,
 and the Host/rehearsal application adapters remain integration work.
+
+`contracts/shared/event_assistance_messaging.schema.json` separates immutable
+message intent, a channel attempt and a guest response. Joining updates carry
+only approved joining choices; operational notices carry scoped acknowledgements
+or help requests. A response cannot represent physical check-in. Provider
+attempts require a live context and a sender binding correlated with the route;
+rehearsal attempts cannot carry that binding. Reserved attempts freeze the
+permission revision, validity interval and instruction revision used to select
+the route. Opaque provider ids are not restricted to Firestore path syntax.
+
+`messageProtocol.ts` creates late-join message proposals and reservations,
+validates wire records, and resolves a scoped submitted choice to its stored
+value. An expired grant, changed episode, stale instruction, unknown choice or
+duplicate response cannot create a new effect. The trusted adapter must resolve
+the bearer grant or provider correlation and atomically persist an accepted
+response with the owner domain's revision check; this pure resolver is not an
+authenticated endpoint or a persistence implementation.
+
+`messagingPolicy.ts` owns the shared delivery decision. Reserved, accepted and
+uncertain attempts require reconciliation, and delivered/read attempts cannot
+trigger fallback. Confirmed technical failures permit bounded retries across
+freshly eligible routes. Policy rejection, suppression, invalid recipient and
+provider-owned fallback create owned exceptions. Event/guest state, current
+instruction, expiry, permission freshness and attempt limits are checked before
+selection. `deliveryReceipts.ts` preserves delivered/read evidence when delayed
+or contradictory provider statuses arrive, and rejects another sender,
+connection revision, endpoint or provider message id. Provider signature
+verification and durable receipt correlation belong to the upcoming adapters.
 
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow

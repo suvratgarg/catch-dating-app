@@ -6,37 +6,43 @@ import ts from "typescript";
 
 const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const checkOnly = process.argv.includes("--check");
-const policySource =
-  "functions/src/eventSuccess/operations/lateJoinPolicy.ts";
-const policyCode = fs.readFileSync(path.join(repoRoot, policySource), "utf8");
-const parsedPolicy = ts.createSourceFile(
-  policySource, policyCode, ts.ScriptTarget.ES2022, true
-);
-for (const statement of parsedPolicy.statements) {
-  if (ts.isImportDeclaration(statement) &&
-      !statement.importClause?.isTypeOnly) {
-    throw new Error("Shared assistance policy must have no runtime imports.");
+const policies = [
+  ["lateJoinPolicy.ts", "late-join.mjs"],
+  ["messagingPolicy.ts", "messaging.mjs"],
+];
+for (const [sourceName, outputName] of policies) {
+  const policySource = "functions/src/eventSuccess/operations/" + sourceName;
+  const policyCode = fs.readFileSync(path.join(repoRoot, policySource), "utf8");
+  const parsedPolicy = ts.createSourceFile(
+    policySource, policyCode, ts.ScriptTarget.ES2022, true
+  );
+  for (const statement of parsedPolicy.statements) {
+    if (ts.isImportDeclaration(statement) &&
+        !statement.importClause?.isTypeOnly) {
+      throw new Error("Shared assistance policy must have no runtime imports.");
+    }
+    if (ts.isExportDeclaration(statement) && statement.moduleSpecifier) {
+      throw new Error("Shared assistance policy cannot re-export dependencies.");
+    }
   }
-  if (ts.isExportDeclaration(statement) && statement.moduleSpecifier) {
-    throw new Error("Shared assistance policy cannot re-export dependencies.");
+  const policyModule = ts.transpileModule(policyCode, {
+    compilerOptions: {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022},
+    reportDiagnostics: true,
+    fileName: policySource,
+  });
+  if (policyModule.diagnostics?.some((issue) =>
+    issue.category === ts.DiagnosticCategory.Error)) {
+    throw new Error("Shared assistance policy could not be transpiled.");
   }
+  addTextOutput(
+    "operations/src/workflows/event-assistance/generated/" + outputName,
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+      "// Source: " + policySource + "\n" +
+      "// Regenerate: node operations/scripts/generate-event-assistance-runtime.mjs\n\n" +
+      policyModule.outputText
+  );
+
 }
-const policyModule = ts.transpileModule(policyCode, {
-  compilerOptions: {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022},
-  reportDiagnostics: true,
-  fileName: policySource,
-});
-if (policyModule.diagnostics?.some((issue) =>
-  issue.category === ts.DiagnosticCategory.Error)) {
-  throw new Error("Shared assistance policy could not be transpiled.");
-}
-addTextOutput(
-  "operations/src/workflows/event-assistance/generated/late-join.mjs",
-  "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
-    "// Source: " + policySource + "\n" +
-    "// Regenerate: node operations/scripts/generate-event-assistance-runtime.mjs\n\n" +
-    policyModule.outputText
-);
 
 function addTextOutput(relativePath, content) {
   const target = path.join(repoRoot, relativePath);

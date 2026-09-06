@@ -167,7 +167,7 @@ test("workflow manifests may declare a supported CLI command subset",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
-    workflowDirectories: [descriptor.directory],
+      workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, true, JSON.stringify(result.findings));
     assert.equal(result.checked.workflows[0].commands, 1);
@@ -185,7 +185,7 @@ test("workflows without source inventories may omit a source loader",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
-    workflowDirectories: [descriptor.directory],
+      workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, true, JSON.stringify(result.findings));
   });
@@ -255,7 +255,7 @@ test("workflow manifests cannot exceed platform mode or capability authority",
     const result = await checkWorkflowManifest({
       manifest,
       registry: [descriptor],
-    workflowDirectories: [descriptor.directory],
+      workflowDirectories: [descriptor.directory],
     });
     assert.equal(result.ok, false);
     assert.ok(result.findings.some((finding) =>
@@ -289,8 +289,8 @@ test("declared workflow commands require executable factory methods",
       },
     };
     const result = await checkWorkflowManifest({
-    registry: [descriptor], workflowDirectories: [descriptor.directory],
-  });
+      registry: [descriptor], workflowDirectories: [descriptor.directory],
+    });
     assert.equal(result.ok, false);
     assert.ok(result.findings.some((finding) =>
       finding.contract?.endsWith(

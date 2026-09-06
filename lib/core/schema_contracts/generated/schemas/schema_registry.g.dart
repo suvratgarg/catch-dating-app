@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceMessageIntent',
+    source: 'operations/event_assistance_message_intent.schema.json',
+    schema: schemaEventAssistanceMessageIntentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceDeliveryAttempt',
+    source: 'operations/event_assistance_delivery_attempt.schema.json',
+    schema: schemaEventAssistanceDeliveryAttemptSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGuestResponse',
+    source: 'operations/event_assistance_guest_response.schema.json',
+    schema: schemaEventAssistanceGuestResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistancePolicy',
     source: 'operations/event_assistance_policy.schema.json',
     schema: schemaEventAssistancePolicySchema,
@@ -2679,6 +2694,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceMessageIntent': schemaEventAssistanceMessageIntentSchema,
+  'EventAssistanceDeliveryAttempt': schemaEventAssistanceDeliveryAttemptSchema,
+  'EventAssistanceGuestResponse': schemaEventAssistanceGuestResponseSchema,
   'EventAssistancePolicy': schemaEventAssistancePolicySchema,
   'EventAssistanceCommand': schemaEventAssistanceCommandSchema,
   'EventAssistanceLateJoinInput': schemaEventAssistanceLateJoinInputSchema,
@@ -3214,6 +3232,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'operations/event_assistance_message_intent.schema.json': schemaEventAssistanceMessageIntentSchema,
+  'operations/event_assistance_delivery_attempt.schema.json': schemaEventAssistanceDeliveryAttemptSchema,
+  'operations/event_assistance_guest_response.schema.json': schemaEventAssistanceGuestResponseSchema,
   'operations/event_assistance_policy.schema.json': schemaEventAssistancePolicySchema,
   'operations/event_assistance_command.schema.json': schemaEventAssistanceCommandSchema,
   'operations/event_assistance_late_join_input.schema.json': schemaEventAssistanceLateJoinInputSchema,
