@@ -61,6 +61,7 @@ Map<String, bool> _coreGoldenDesignations() {
 
 bool _isGoldenSource(String path) =>
     path.startsWith('lib/core/widgets/') ||
+    path.startsWith('lib/core/riverpod_ui/') ||
     path.startsWith('packages/catch_ui/lib/src/primitives/') ||
     path.startsWith('packages/catch_ui/lib/src/components/') ||
     path.startsWith('packages/catch_ui/lib/src/patterns/');

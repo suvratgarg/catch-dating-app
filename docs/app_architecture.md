@@ -56,7 +56,7 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` plus remaining `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` plus remaining `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` plus remaining mutation-banner/notice owners in `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
@@ -289,7 +289,7 @@ providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
-`lib/core/presentation/catch_async_value_adapter.dart`. That adapter preserves
+`lib/core/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
 the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
@@ -1777,8 +1777,8 @@ Candidate patterns:
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
 | Error banner | `lib/core/widgets/catch_error_banner.dart` |
-| Mutation helpers | `lib/core/widgets/mutation_error_util.dart` |
-| Mutation snackbar listener | `lib/core/widgets/catch_mutation_error_listener.dart` |
+| Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
+| Mutation snackbar listener | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` |
 | Global error handlers | `lib/main.dart` |
 
 ## Controller And View-Model Contract

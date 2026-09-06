@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8",
+  "sourceDigest": "938ef9e33c6d7b1d1d35ed9d462e77d26d131d75c0eaba218bbca5045bd71c61",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8",
-    "contractDigest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8"
+    "digest": "938ef9e33c6d7b1d1d35ed9d462e77d26d131d75c0eaba218bbca5045bd71c61",
+    "contractDigest": "938ef9e33c6d7b1d1d35ed9d462e77d26d131d75c0eaba218bbca5045bd71c61"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "193f4dbc2a0fc3b21f22de6316a0b6e9129800b03cef338c0cf272d114d583d2",
+    "handoffRequestDigest": "1fd5d2ec72e5c810591afe84f950bc7f1cc36144f90d1358d1c272e47bb901a2",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -752,7 +752,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ErrorBanner",
       "claudeAllowed": true,
-      "contractDigest": "208abd68cb9a5657561cad758be6cf16413fca5bcb4a6654e5ed9624776c483b"
+      "contractDigest": "f549f87e1acf6c09430f8613d1f18a08071f35388b91ca65ec8d6594e97bc4d1"
     },
     {
       "contractId": "catch.notice",
@@ -962,7 +962,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "fd945f7948591d76c23d6cc59416530d865ef711a3b3b615eb6a98a0f47ba7a4"
+      "contractDigest": "83c90a2c3fa8a8dc2f1e82a1cec1d4f4e231f6b4cfc2464ea34d37a10b635189"
     },
     {
       "contractId": "catch.loading_indicator",
@@ -1001,7 +1001,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.async_value",
       "dartSymbol": "CatchAsyncValueView",
-      "dartFile": "lib/core/widgets/catch_async_value_view.dart",
+      "dartFile": "lib/core/riverpod_ui/catch_async_value_view.dart",
       "figmaName": "Catch/AsyncValue",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1026,7 +1026,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "AsyncValue",
       "claudeAllowed": true,
-      "contractDigest": "cfdf9446f5bb48dadc2ba6388c2f02924e8cab1ec2c05be7a7af0e62ded8c7db"
+      "contractDigest": "ee79892f5d6e797301b50fbe2cee1d79d862e74ec9b605ef12b183fd70a18e98"
     },
     {
       "contractId": "catch.startup_loading_screen",

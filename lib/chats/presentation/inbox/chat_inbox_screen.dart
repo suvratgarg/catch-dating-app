@@ -6,7 +6,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dar
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';

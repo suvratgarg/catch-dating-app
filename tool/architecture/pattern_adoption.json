@@ -495,7 +495,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/presentation/catch_async_value_adapter.dart",
+          "path": "lib/core/riverpod_ui/catch_async_value_adapter.dart",
           "role": "route-edge Riverpod translation into provider-free CatchAsyncState with known-error, credible-data, then loading precedence",
           "status": "aligned"
         },

@@ -1741,7 +1741,7 @@
           {
             "id": "catch.error_banner.mutation_listener",
             "symbol": "CatchMutationErrorListener",
-            "file": "lib/core/widgets/catch_mutation_error_listener.dart",
+            "file": "lib/core/riverpod_ui/catch_mutation_error_listener.dart",
             "summary": "Transient snackbar boundary for one mutation's pending-to-error transition.",
             "states": [
               "single-mutation",
@@ -1759,7 +1759,7 @@
           {
             "id": "catch.error_banner.mutation_listeners",
             "symbol": "CatchMutationErrorListeners",
-            "file": "lib/core/widgets/catch_mutation_error_listener.dart",
+            "file": "lib/core/riverpod_ui/catch_mutation_error_listeners.dart",
             "summary": "Transient snackbar boundary for several mutations that should share one error-feedback policy.",
             "states": [
               "multiple-mutations",
@@ -4000,7 +4000,7 @@
           {
             "id": "catch.skeleton.async_screen",
             "symbol": "CatchAsyncScreenLoading",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/widgets/catch_async_screen_loading.dart",
             "summary": "Screen-body placement adapter that composes CatchSkeletonList with CatchScreenBody.",
             "states": [
               "async-screen",
@@ -4020,7 +4020,7 @@
           {
             "id": "catch.skeleton.async_sliver",
             "symbol": "CatchAsyncSliverLoading",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/widgets/catch_async_sliver_loading.dart",
             "summary": "Sliver placement adapter that composes CatchSkeletonList with CatchSliverPageBody.",
             "states": [
               "async-sliver",
@@ -4204,7 +4204,7 @@
       "summary": "Exhaustive AsyncValue transition boundary with branded defaults for box and sliver layouts.",
       "dart": {
         "symbol": "CatchAsyncValueView",
-        "file": "lib/core/widgets/catch_async_value_view.dart",
+        "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
         "constructors": [
           "CatchAsyncValueView"
         ]
@@ -4316,7 +4316,7 @@
           {
             "id": "catch.async_value.sliver",
             "symbol": "CatchAsyncValueSliver",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/riverpod_ui/catch_async_value_sliver.dart",
             "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
             "states": [
               "data-sliver",

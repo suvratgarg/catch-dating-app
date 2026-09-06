@@ -72,7 +72,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -538,7 +538,7 @@ expect_code_count \
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

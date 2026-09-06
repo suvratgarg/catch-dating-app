@@ -232,13 +232,14 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
   }
 }
 
-// Preserve the migration denominator across both source homes: every public
+// Preserve the migration denominator across shared UI and app adapters: every public
 // Catch* core class, including descriptors and controllers, remains inventoried
 // when moved into the package. Nonvisual classes need an explicit disposition.
 List<Map<String, Object?>> _coreSurface() {
   final files = [
     for (final root in [
       'lib/core/widgets',
+      'lib/core/riverpod_ui',
       'packages/catch_ui/lib/src/primitives',
       'packages/catch_ui/lib/src/components',
       'packages/catch_ui/lib/src/patterns',

@@ -11,6 +11,7 @@ const waiverPath = path.join(
 );
 const coreRoots = [
   "lib/core/widgets/",
+  "lib/core/riverpod_ui/",
   "packages/catch_ui/lib/src/primitives/",
   "packages/catch_ui/lib/src/components/",
   "packages/catch_ui/lib/src/patterns/",
@@ -49,7 +50,7 @@ export function validateGoldenCoverage({
     coreRoots.some((root) => row.typeFile?.startsWith(root))
   );
   if (designatedCases.length === 0) {
-    failures.push("No registered core/widgets Widgetbook golden ids were found");
+    failures.push("No registered shared UI or app-adapter Widgetbook golden ids were found");
   }
 
   const surfaces = new Map();
@@ -59,7 +60,7 @@ export function validateGoldenCoverage({
     surfaces.set(key, row);
   }
   if (surfaces.size === 0) {
-    failures.push("Public Catch* core/widgets surface is empty");
+    failures.push("Public Catch* shared UI and app-adapter surface is empty");
   }
 
   const waiverRows = new Map();
@@ -149,7 +150,7 @@ function main(args) {
   if (args.includes("--help")) {
     console.log(
       "Usage: node tool/design/check_widgetbook_golden_coverage.mjs [--check|--json]\n" +
-      "Compares every public Catch* class under lib/core/widgets with registered " +
+      "Compares every public Catch* shared UI and app-adapter class with registered " +
       "core Widgetbook golden ids or a live owner+expiry waiver.",
     );
     return;

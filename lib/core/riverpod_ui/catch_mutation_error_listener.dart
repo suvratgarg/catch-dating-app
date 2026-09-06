@@ -40,34 +40,3 @@ class CatchMutationErrorListener extends ConsumerWidget {
     return child;
   }
 }
-
-/// Watches several mutations and surfaces pending-to-error transitions as one
-/// transient snackbar boundary.
-class CatchMutationErrorListeners extends ConsumerWidget {
-  const CatchMutationErrorListeners({
-    super.key,
-    required this.mutations,
-    required this.child,
-    this.errorContext = AppErrorContext.generic,
-  });
-
-  final List<Mutation<dynamic>> mutations;
-  final Widget child;
-  final AppErrorContext errorContext;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    for (final mutation in mutations) {
-      ref.listen(mutation, (previous, current) {
-        if (previous?.isPending == true && current.hasError) {
-          showCatchErrorSnackBar(
-            context,
-            (current as MutationError).error,
-            errorContext: errorContext,
-          );
-        }
-      });
-    }
-    return child;
-  }
-}

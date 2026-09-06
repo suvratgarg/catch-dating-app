@@ -730,6 +730,17 @@ moves to the package. Distance rings retain their size negotiation and label
 behavior, with a registered viewport member replacing the private body and
 an individual file for the native-map-compatible edge label.
 
+AsyncValue box/sliver boundaries, their state translator, mutation-error listeners
+and mutation-message translation move to `lib/core/riverpod_ui`. Each public
+widget has its own file, preserving deadline/retry and pending-to-error behavior.
+The sliver boundary inlines its local error selection into the exhaustive build
+switch, resolving the private helper instead of carrying it across the move.
+The two provider-free skeleton placement helpers remain with their app-side
+layout dependencies in individual files until those patterns move. Golden
+discovery includes the Riverpod adapter root so relocation cannot remove its
+classes or designated cases. Mutation banners and notice state still need their
+remaining adapter extraction.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

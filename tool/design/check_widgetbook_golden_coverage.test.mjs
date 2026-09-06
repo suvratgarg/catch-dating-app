@@ -177,3 +177,17 @@ for (const layer of ["primitives", "components", "patterns"]) {
     assert.match(validate(moved).failures.join("\n"), /CatchIndirect.*missing registered/u);
   });
 }
+
+// Moving a Riverpod adapter must preserve both coverage and its failure signal.
+test("preserves adapter coverage at the app Riverpod boundary", () => {
+  const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
+    "lib/core/widgets/", "lib/core/riverpod_ui/",
+  ));
+  const result = validate(moved);
+  assert.deepEqual(result.failures, []);
+  assert.equal(result.surfaceCount, 3);
+  assert.equal(result.coveredCount, 3);
+  assert.equal(result.designatedCaseCount, 2);
+  moved.inventory.generated.pop();
+  assert.match(validate(moved).failures.join("\n"), /CatchIndirect.*missing registered/u);
+});
