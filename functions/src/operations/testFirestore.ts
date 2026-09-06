@@ -110,6 +110,11 @@ class FakeTransaction {
     return reference.get();
   }
 
+  async getAll(...references: FakeDocReference[]): Promise<FakeSnapshot[]> {
+    assert.equal(this.writes.size, 0, "Firestore reads must precede writes");
+    return Promise.all(references.map((reference) => reference.get()));
+  }
+
   create(reference: FakeDocReference, value: unknown): void {
     if (this.firestore.read(reference.path) ||
         this.writes.has(reference.path)) {

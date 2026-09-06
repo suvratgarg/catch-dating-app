@@ -95,10 +95,10 @@ export async function readGuestSourceFacts(
   context: Guest["context"], attendeeId: string
 ): Promise<GuestSourceFacts> {
   guestIdentity(context, attendeeId);
-  const [eventSnapshot, attendeeSnapshot] = await Promise.all([
-    transaction.get(db.collection("events").doc(context.eventId)),
-    transaction.get(db.collection("eventAttendees").doc(attendeeId)),
-  ]);
+  const [eventSnapshot, attendeeSnapshot] = await transaction.getAll(
+    db.collection("events").doc(context.eventId),
+    db.collection("eventAttendees").doc(attendeeId),
+  );
   const event = eventSnapshot.data();
   const attendee = attendeeSnapshot.data();
   if (!event || !attendee ||

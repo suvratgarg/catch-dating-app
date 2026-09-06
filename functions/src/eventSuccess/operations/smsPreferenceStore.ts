@@ -126,11 +126,13 @@ export class SmsPreferenceStore {
     requireDocumentId(scope.eventId);
     requireDocumentId(scope.attendeeId);
     requireDocumentId(actor.uid);
-    const [eventSnap, attendeeSnap, senderSnap] = await Promise.all([
-      tx.get(this.db.collection("events").doc(scope.eventId)),
-      tx.get(this.db.collection("eventAttendees").doc(scope.attendeeId)),
-      tx.get(this.db.collection(smsCollections.senders).doc(this.senderId)),
-    ]);
+    // One transactional batch avoids independent RPCs outliving an aborted
+    // sibling read while the SDK rolls the transaction back and retries it.
+    const [eventSnap, attendeeSnap, senderSnap] = await tx.getAll(
+      this.db.collection("events").doc(scope.eventId),
+      this.db.collection("eventAttendees").doc(scope.attendeeId),
+      this.db.collection(smsCollections.senders).doc(this.senderId),
+    );
     const event = eventSnap.data();
     const attendee = attendeeSnap.data();
     if (!event || !attendee || attendee.linkedUid !== actor.uid ||
