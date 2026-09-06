@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 71,
-    "captures": 665,
+    "captures": 670,
     "statusCounts": {
       "excluded": 2,
       "captured": 53,

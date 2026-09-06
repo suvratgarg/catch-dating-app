@@ -17682,6 +17682,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceMembershipCheckOnSave =>
       'Membership is checked when you save. Incomplete conditions must be finished first.';
 
+  @override
   String get hostsCreateEventBasicsTitle => 'Event basics';
 
   @override
