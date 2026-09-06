@@ -562,6 +562,7 @@ export {adminListCrossPathsShowcaseCandidatesCallableResponseSchema} from "./sch
 export {adminSetCrossPathsShowcaseEligibilityCallableResponseSchema} from "./schemas/adminSetCrossPathsShowcaseEligibilityOutput";
 export {joinWaitlistHTTPRequestSchema} from "./schemas/joinWaitlistHttpRequest";
 export {joinWaitlistHTTPResponseSchema} from "./schemas/joinWaitlistHttpResponse";
+export {eventAssistanceWorkflowCatalog} from "./catalogs/eventAssistanceWorkflowCatalog";
 export {profilePromptCatalog} from "./catalogs/profilePromptCatalog";
 export {personFieldCatalog} from "./catalogs/personFieldCatalog";
 export {organizerFormTemplateCatalog} from "./catalogs/organizerFormTemplateCatalog";

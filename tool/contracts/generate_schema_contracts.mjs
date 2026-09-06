@@ -4036,13 +4036,6 @@ async function main() {
   const eventAssistanceCatalog = readContractJson(
     "catalogs/event_assistance_workflows.json"
   );
-  addTextOutput(
-    "functions/src/shared/generated/catalogs/eventAssistanceWorkflowCatalog.ts",
-    tsGeneratedHeader() +
-      "export const eventAssistanceWorkflowCatalog = " +
-      JSON.stringify(eventAssistanceCatalog, null, 2) +
-      " as const;\n"
-  );
   const assistanceCommon = readContractJson(
     "shared/event_assistance_common.schema.json"
   );
@@ -4077,6 +4070,7 @@ async function main() {
     "functions/src/shared/generated/schemaRegistry.ts",
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -4107,6 +4101,7 @@ async function main() {
     "tool/contracts/generated/schema_contract_registry.mjs",
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -5336,6 +5331,7 @@ function runtimeSchemaModuleName(spec) {
 
 function renderTsSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5359,6 +5355,7 @@ function renderTsSchemaRegistry({
     exports.push(`export {${name}} from "./schemas/${module}";`);
   }
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
@@ -5469,6 +5466,7 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 
 function renderToolSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5478,6 +5476,7 @@ function renderToolSchemaRegistry({
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
