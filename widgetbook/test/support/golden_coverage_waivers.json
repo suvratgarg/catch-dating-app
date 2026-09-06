@@ -65,25 +65,11 @@
       "reason": "Nonvisual form-step descriptor has no independent renderable golden surface."
     },
     {
-      "class": "CatchFormStepReviewItem",
-      "file": "lib/core/widgets/catch_form_step_flow.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual form-step review item cannot be a Widgetbook component type."
-    },
-    {
       "class": "CatchFormReviewState",
       "file": "lib/core/widgets/catch_form_step_flow.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Nonvisual review-state protocol has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchFractionalMaxWidth",
-      "file": "packages/catch_ui/lib/src/primitives/catch_fractional_max_width.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Layout helper still needs a directly registered geometry golden case."
     },
     {
       "class": "CatchMasterDetailLayout",
@@ -105,13 +91,6 @@
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Generated provider type is nonvisual and has no independent golden surface."
-    },
-    {
-      "class": "CatchPagerFocusBoundary",
-      "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Focus-boundary render object still needs a registered behavior fixture."
     },
     {
       "class": "CatchScaledPreferredSize",

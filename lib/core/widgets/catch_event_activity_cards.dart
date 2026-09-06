@@ -181,7 +181,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : catchHeroSurface(tag: heroTag!, child: card);
+        : CatchHeroViewport(tag: heroTag!, child: card);
   }
 }
 

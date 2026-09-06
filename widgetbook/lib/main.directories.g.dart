@@ -53,6 +53,8 @@ import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
+import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
+    as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
@@ -1453,7 +1455,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Motion',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMapRevealTransition',
+            name: 'CatchMapRevealViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1463,7 +1465,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTicketHero',
+            name: 'CatchTicketHeroViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -2489,6 +2491,33 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Layout',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFractionalMaxWidth',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fraction and absolute cap',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .fractionalWidthStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPagerFocusBoundary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Editable pager content',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .pagerFocusStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Lists',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2690,6 +2719,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchMetaRowContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Motion',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFadeScaleViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Resting and transition poses',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .fadeScaleStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHeroViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Transparent hero material',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .heroViewportStates,
               ),
             ],
           ),

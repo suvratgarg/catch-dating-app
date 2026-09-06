@@ -68,7 +68,7 @@ void _registerCatchPrimitivesControlsTests() {
         MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),
           child: Builder(
-            builder: (context) => CatchMapRevealTransition(
+            builder: (context) => CatchMapRevealViewport(
               animation: animation,
               child: const Text('Map surface'),
             ),

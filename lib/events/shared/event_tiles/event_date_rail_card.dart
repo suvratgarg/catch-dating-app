@@ -216,7 +216,7 @@ class EventDateRailCard extends StatelessWidget {
           );
     final cardWithHero = heroTag == null
         ? card
-        : catchHeroSurface(tag: heroTag!, child: card);
+        : CatchHeroViewport(tag: heroTag!, child: card);
     return Semantics(
       container: true,
       button: onTap != null,

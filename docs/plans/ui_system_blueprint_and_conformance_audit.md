@@ -672,7 +672,9 @@ workspace analysis explicitly visits its library and test sources.
 Phase 3b moves the provider-free surface, control shell, row-press surface,
 text/icon atoms, gap values, image loading/grade/scrim, dividers, indicators,
 and focused sizing/reveal protocols into `catch_ui/src/primitives`. The image
-fallback has its own file. Each original app file is deleted. Golden discovery
+fallback has its own file. Motion render helpers become cataloged viewport
+widgets with the same transitions; each has a single owning file. Each original
+app file is deleted. Golden discovery
 counts both remaining app classes and extracted primitives, preserving every
 pre-move class and case instead of losing coverage at the package boundary.
 Components, patterns/adapters, entity materials, and final public-barrel cleanup

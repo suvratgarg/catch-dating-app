@@ -1481,7 +1481,7 @@ function buildCandidates() {
         "ClubHeroAppBar",
         "EventDetailHeroAppBar",
         "CatchDetailHeroBackdrop",
-        "CatchTicketHero",
+        "CatchTicketHeroViewport",
       ],
     },
     {

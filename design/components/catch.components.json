@@ -3111,22 +3111,22 @@
     },
     {
       "id": "catch.section",
-        "enforcement": {
-          "code": "catch_use_named_catch_section_constructor",
-          "codes": [
-            "catch_use_section_list",
-            "catch_no_nested_rounded_rectangles"
+      "enforcement": {
+        "code": "catch_use_named_catch_section_constructor",
+        "codes": [
+          "catch_use_section_list",
+          "catch_no_nested_rounded_rectangles"
+        ],
+        "vehicle": "plugin",
+        "placement": {
+          "allowedParents": [
+            "CatchSectionList",
+            "CatchDetailSliverSectionList"
           ],
-          "vehicle": "plugin",
-          "placement": {
-            "allowedParents": [
-              "CatchSectionList",
-              "CatchDetailSliverSectionList"
-            ],
-            "slot": "children"
-          },
-          "probeSeed": "CatchSection(child: const SizedBox())"
+          "slot": "children"
         },
+        "probeSeed": "CatchSection(child: const SizedBox())"
+      },
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
@@ -3678,6 +3678,24 @@
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
+            "id": "catch.section.divider",
+            "symbol": "CatchDivider",
+            "file": "packages/catch_ui/lib/src/primitives/catch_divider.dart",
+            "summary": "Shared semantic section and field-row separator.",
+            "states": [
+              "section",
+              "field-section",
+              "field-row"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.section"
             }
           }
@@ -7253,26 +7271,26 @@
     },
     {
       "id": "catch.screen_body",
-        "enforcement": {
-          "code": "catch_prefer_semantic_insets",
-          "codes": [
-            "catch_no_raw_breakpoint",
-            "catch_no_raw_ui_spacing",
-            "catch_no_token_arithmetic",
-            "catch_no_raw_content_dimension",
-            "catch_no_local_design_constant",
-            "catch_no_legacy_spacing_token",
-            "catch_screen_gutter_uses_semantic_insets",
-            "catch_no_shell_local_measurement",
-            "catch_screen_registry_conformance",
-            "catch_screen_layout_family_conformance",
-            "catch_screen_layout_constructor_vocabulary",
-            "catch_screen_route_owner_binding",
-            "catch_screen_scaffold_ownership"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
-        },
+      "enforcement": {
+        "code": "catch_prefer_semantic_insets",
+        "codes": [
+          "catch_no_raw_breakpoint",
+          "catch_no_raw_ui_spacing",
+          "catch_no_token_arithmetic",
+          "catch_no_raw_content_dimension",
+          "catch_no_local_design_constant",
+          "catch_no_legacy_spacing_token",
+          "catch_screen_gutter_uses_semantic_insets",
+          "catch_no_shell_local_measurement",
+          "catch_screen_registry_conformance",
+          "catch_screen_layout_family_conformance",
+          "catch_screen_layout_constructor_vocabulary",
+          "catch_screen_route_owner_binding",
+          "catch_screen_scaffold_ownership"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
+      },
       "name": "CatchScreenBody",
       "status": "active",
       "kind": "pattern",
@@ -7424,8 +7442,8 @@
               "decisionRef": "contract-family:catch.screen_body"
             }
           },
-      {
-        "id": "catch.screen_body.root_screen_page_scroll_view",
+          {
+            "id": "catch.screen_body.root_screen_page_scroll_view",
             "symbol": "CatchRootScreenPageScrollView",
             "summary": "Typed inner root-page scroll owner whose closed standard, fullBleed, and embeddedViewport constructors jointly select geometry, responsive width, and terminal-clearance policy. It also owns overlap injection, focus isolation, stable PageStorage restoration, and refresh; CatchRootScreenPageSpec selects only the surrounding page adapter.",
             "states": [
@@ -7441,30 +7459,30 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "adapter",
-          "decisionRef": "contract-family:catch.screen_body"
-        }
-      },
-      {
-        "id": "catch.screen_body.sliver_content_width",
-        "symbol": "CatchSliverContentWidth",
-        "summary": "Sliver-preserving responsive width adapter used by root screen bodies on viewports wider than their semantic content lane.",
-        "states": [
-          "direct-narrow",
-          "centered-wide"
-        ],
-        "file": "lib/core/widgets/catch_section_layout.dart",
-        "governance": {
-          "conceptRole": "member",
-          "conceptId": "catch.screen_body",
-          "parentConceptId": "catch.screen_body",
-          "qualifier": "layout",
-          "decisionRef": "contract-family:catch.screen_body"
-        }
-      },
-      {
-        "id": "catch.screen_body.sliver_screen_body",
-        "symbol": "CatchSliverScreenBody",
-        "summary": "Semantic sliver body used by ordinary and primary-rail root scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_content_width",
+            "symbol": "CatchSliverContentWidth",
+            "summary": "Sliver-preserving responsive width adapter used by root screen bodies on viewports wider than their semantic content lane.",
+            "states": [
+              "direct-narrow",
+              "centered-wide"
+            ],
+            "file": "lib/core/widgets/catch_section_layout.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_screen_body",
+            "symbol": "CatchSliverScreenBody",
+            "summary": "Semantic sliver body used by ordinary and primary-rail root scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
             "states": [
               "standard",
               "full-bleed",
@@ -7544,6 +7562,40 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.fractional_max_width",
+            "symbol": "CatchFractionalMaxWidth",
+            "file": "packages/catch_ui/lib/src/primitives/catch_fractional_max_width.dart",
+            "summary": "Caps a local content fraction without measuring the parent imperatively.",
+            "states": [
+              "half-width",
+              "capped-full-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.pager_focus_boundary",
+            "symbol": "CatchPagerFocusBoundary",
+            "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart",
+            "summary": "Preserves inner caret reveal while preventing horizontal pager leakage.",
+            "states": [
+              "editable-content",
+              "inner-reveal"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
           }
@@ -14938,6 +14990,161 @@
       },
       "surfaces": {
         "flutter": "CatchClubCover"
+      }
+    },
+    {
+      "id": "catch.motion_viewport",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Production viewports are rendered at fixed animation poses through the shared Widgetbook golden harness."
+      },
+      "name": "CatchFadeScaleViewport",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Route and shared-element motion viewports preserve child layout and shared flight behavior.",
+      "dart": {
+        "symbol": "CatchFadeScaleViewport",
+        "file": "packages/catch_ui/lib/src/primitives/catch_fade_scale_viewport.dart",
+        "constructors": [
+          "CatchFadeScaleViewport"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchFadeScaleViewport"
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/MotionViewport",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MotionViewport",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "animation",
+            "type": "object",
+            "dartType": "Animation<double>",
+            "required": true
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "dartType": "Widget",
+            "required": true
+          }
+        ],
+        "states": [
+          "initial",
+          "mid-transition",
+          "settled"
+        ],
+        "slots": [
+          "child"
+        ],
+        "tokens": [],
+        "dartRoles": [
+          "CatchMotion.standardCurve",
+          "CatchMotion.easeInCubicCurve",
+          "CatchMotion.springCurve"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Child layout remains unconstrained by the transition viewport and preserves the active text scale."
+          },
+          "reducedMotion": {
+            "policy": "Map reveal removes its veil when animations are disabled; other viewports retain their existing route-owned animation policy."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        },
+        "members": [
+          {
+            "id": "catch.motion_viewport.map_reveal",
+            "symbol": "CatchMapRevealViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_map_reveal_viewport.dart",
+            "summary": "Reveals a stationary map beneath a token-colored paper veil.",
+            "states": [
+              "mid-reveal",
+              "reduced-motion"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          },
+          {
+            "id": "catch.motion_viewport.hero",
+            "symbol": "CatchHeroViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_hero_viewport.dart",
+            "summary": "Owns transparent Material chrome and gesture-enabled Hero flights.",
+            "states": [
+              "resting",
+              "transparent-material"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          },
+          {
+            "id": "catch.motion_viewport.ticket_hero",
+            "symbol": "CatchTicketHeroViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_ticket_hero_viewport.dart",
+            "summary": "Shares deterministic prefix/id tags and spring-backed ticket flights.",
+            "states": [
+              "resting",
+              "shared-tag"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "recipe",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          }
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.motion_viewport",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.motion_viewport"
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.surface"
+        ],
+        "notes": [
+          "Callers own route state, animation lifetimes, Hero tags, and child content."
+        ]
       }
     }
   ]

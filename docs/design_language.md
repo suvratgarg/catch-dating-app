@@ -615,10 +615,10 @@ that detaches the explanation from the options it describes.
   enlarge phone components. The canonical Host contract lives in
   [`app_architecture.md#host-adaptive-workspace-specification`](app_architecture.md#host-adaptive-workspace-specification).
 - **Motion:** route motion through `CatchMotion` and
-  `packages/catch_ui/lib/src/foundations/catch_transitions.dart`. Use `catchSelectionHaptic()` for
+  `package:catch_ui/catch_ui.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
-  `catchFadeScalePageTransition` for calm card-to-detail routes, and
-  `catchHeroSurface`/`CatchTicketHero` for ticket or polaroid flights. Avoid
+  `CatchFadeScaleViewport` for calm card-to-detail routes, and
+  `CatchHeroViewport`/`CatchTicketHeroViewport` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
 

@@ -246,7 +246,7 @@ class EventDetailTicketHeroSurface extends StatelessWidget {
     );
     final tag = heroTag;
     if (tag == null) return surface;
-    return catchHeroSurface(tag: tag, child: surface);
+    return CatchHeroViewport(tag: tag, child: surface);
   }
 }
 

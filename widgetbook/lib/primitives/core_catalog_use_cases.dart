@@ -866,17 +866,17 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketHero,
+  type: CatchTicketHeroViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchTicketHeroCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTicketHero',
+    title: 'Ticket hero viewport',
     catalogId: 'core.motion.catch_ticket_hero',
     children: [
       _StateCard(
         label: 'ticket hero wrapper',
-        child: CatchTicketHero(
+        child: CatchTicketHeroViewport(
           prefix: 'event',
           id: 'widgetbook-ticket',
           child: CatchSurface.card(
@@ -893,32 +893,38 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMapRevealTransition,
+  type: CatchMapRevealViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMapRevealTransition',
+    title: 'Map reveal viewport',
     catalogId: 'core.motion.catch_map_reveal_transition',
     children: [
-      _StateCard(
-        label: 'paper veil / mid reveal',
-        child: SizedBox(
-          height: CatchLayout.distanceRingDefaultSize,
-          child: CatchMapRevealTransition(
-            animation: const AlwaysStoppedAnimation<double>(0.58),
-            child: CatchSurface.card(
-              child: Center(
-                child: Text(
-                  'Native map remains stationary below the veil.',
-                  style: CatchTextStyles.proseM(context),
-                  textAlign: TextAlign.center,
+      for (final reducedMotion in [false, true])
+        _StateCard(
+          label: reducedMotion ? 'reduced motion' : 'paper veil / mid reveal',
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(disableAnimations: reducedMotion),
+            child: SizedBox(
+              height: CatchLayout.distanceRingDefaultSize,
+              child: CatchMapRevealViewport(
+                animation: const AlwaysStoppedAnimation<double>(0.58),
+                child: CatchSurface.card(
+                  child: Center(
+                    child: Text(
+                      'Native map remains stationary below the veil.',
+                      style: CatchTextStyles.proseM(context),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
     ],
   );
 }

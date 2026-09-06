@@ -175,7 +175,58 @@ class CatchSurface extends StatelessWidget {
         ? Duration.zero
         : duration;
     if (role == CatchSurfaceRole.message) {
-      return _buildMessageSurface(context, t);
+      final isNeutral = messageTone == CatchSurfaceMessageTone.neutral;
+      final toneColor = switch (messageTone) {
+        CatchSurfaceMessageTone.primary => t.primary,
+        CatchSurfaceMessageTone.success => t.success,
+        CatchSurfaceMessageTone.warning => t.warning,
+        CatchSurfaceMessageTone.danger => t.danger,
+        CatchSurfaceMessageTone.neutral => t.ink2,
+      };
+
+      return CatchSurface(
+        width: width,
+        height: height,
+        margin: margin,
+        padding: padding,
+        radius: CatchRadius.md,
+        tone: isNeutral
+            ? CatchSurfaceTone.transparent
+            : CatchSurfaceTone.surface,
+        backgroundColor: isNeutral
+            ? null
+            : Color.alphaBlend(
+                toneColor.withValues(alpha: CatchOpacity.calloutFill),
+                t.surface,
+              ),
+        borderRole: isNeutral ? CatchBorderRole.boundary : null,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: CatchStroke.hairline),
+              child: Icon(
+                messageIcon ?? CatchIcons.sparkle,
+                size: CatchIcon.md,
+                color: isNeutral ? t.ink2 : toneColor,
+              ),
+            ),
+            const SizedBox(width: CatchSpacing.s3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (title != null && title!.isNotEmpty) ...[
+                    Text(title!, style: CatchTextStyles.labelL(context)),
+                    const SizedBox(height: CatchSpacing.s1),
+                  ],
+                  Text(message!, style: CatchTextStyles.supporting(context)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(radius);
@@ -224,59 +275,6 @@ class CatchSurface extends StatelessWidget {
 
     if (onTap == null) return decorated;
     return Semantics(button: true, child: decorated);
-  }
-
-  Widget _buildMessageSurface(BuildContext context, CatchTokens t) {
-    final isNeutral = messageTone == CatchSurfaceMessageTone.neutral;
-    final toneColor = switch (messageTone) {
-      CatchSurfaceMessageTone.primary => t.primary,
-      CatchSurfaceMessageTone.success => t.success,
-      CatchSurfaceMessageTone.warning => t.warning,
-      CatchSurfaceMessageTone.danger => t.danger,
-      CatchSurfaceMessageTone.neutral => t.ink2,
-    };
-
-    return CatchSurface(
-      width: width,
-      height: height,
-      margin: margin,
-      padding: padding,
-      radius: CatchRadius.md,
-      tone: isNeutral ? CatchSurfaceTone.transparent : CatchSurfaceTone.surface,
-      backgroundColor: isNeutral
-          ? null
-          : Color.alphaBlend(
-              toneColor.withValues(alpha: CatchOpacity.calloutFill),
-              t.surface,
-            ),
-      borderRole: isNeutral ? CatchBorderRole.boundary : null,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: CatchStroke.hairline),
-            child: Icon(
-              messageIcon ?? CatchIcons.sparkle,
-              size: CatchIcon.md,
-              color: isNeutral ? t.ink2 : toneColor,
-            ),
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (title != null && title!.isNotEmpty) ...[
-                  Text(title!, style: CatchTextStyles.labelL(context)),
-                  const SizedBox(height: CatchSpacing.s1),
-                ],
-                Text(message!, style: CatchTextStyles.supporting(context)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Color _color(CatchTokens t) {
