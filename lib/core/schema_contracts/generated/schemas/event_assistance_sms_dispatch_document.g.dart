@@ -27,6 +27,8 @@ const schemaEventAssistanceSmsDispatchDocumentSchema = <String, Object?>{
     'maxCostMicros',
     'budgetIds',
     'createdAt',
+    'reportTokenHash',
+    'senderMask',
   ],
   'properties': <String, Object?>{
     'schemaVersion': <String, Object?>{
@@ -134,6 +136,14 @@ const schemaEventAssistanceSmsDispatchDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'reportTokenHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
+    'senderMask': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Za-z]{6}\$',
     },
   },
   'title': 'EventAssistanceSmsDispatchDocument',

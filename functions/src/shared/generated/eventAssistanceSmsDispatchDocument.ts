@@ -26,4 +26,6 @@ export interface EventAssistanceSmsDispatchDocument {
    */
   budgetIds: string[];
   createdAt: number;
+  reportTokenHash: string;
+  senderMask: string;
 }

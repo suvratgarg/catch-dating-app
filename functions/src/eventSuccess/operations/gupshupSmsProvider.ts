@@ -4,6 +4,8 @@ import type {LiveDispatchPermit} from "./messageOutbox";
 import type {RenderedSms, SmsConfig} from "./smsProtocol";
 import {parseSmsConfig, smsEndpointId, smsSegments} from "./smsProtocol";
 import {parseDeliveryAttempt} from "./messageProtocol";
+import {smsProviderCorrelation, smsReportTokenHash} from
+  "./smsReportCredentials";
 
 export interface SmsCredentials {
   schema: "catch.event-sms-credential/v1";
@@ -53,11 +55,6 @@ export class SmsCredentialStore {
   }
 }
 
-export function smsProviderCorrelation(attemptId: string): string {
-  // Gupshup msg_id is alphanumeric correlation, NOT provider idempotency.
-  return operationContentHash(["gupshup-sms", attemptId]);
-}
-
 /** HTTPS POST only. A lost response never triggers another submission here. */
 export class GupshupSmsProvider {
   constructor(private readonly fetchImpl: typeof fetch = fetch,
@@ -66,10 +63,12 @@ export class GupshupSmsProvider {
   async send(input: {
     permit: LiveDispatchPermit; config: SmsConfig;
     credentials: SmsCredentials; phoneE164: string; rendered: RenderedSms;
+    reportToken: string;
   }): Promise<SmsSubmissionOutcome> {
     const {permit, config, credentials, phoneE164, rendered} = input;
     parseSmsConfig(config);
     parseSmsCredentials(credentials, config.senderId);
+    smsReportTokenHash(input.reportToken);
     parseDeliveryAttempt(permit.attempt);
     const binding = permit.attempt.binding;
     if (permit.intent.context.mode !== "live" ||
@@ -108,6 +107,7 @@ export class GupshupSmsProvider {
       principalEntityId: config.principalEntityId,
       dltTemplateId: rendered.template.dltTemplateId,
       msg_id: smsProviderCorrelation(permit.attempt.attemptId),
+      extra: input.reportToken,
     });
     // Check immediately before I/O, after credential loading and transaction.
     const now = this.clock();

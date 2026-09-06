@@ -253,14 +253,38 @@ budget withholds delivery. The configured rate ceiling is conservative spend
 control, not a claim about the provider's final invoice.
 
 `GupshupSmsProvider` submits one HTTPS POST with the configured entity, header,
-template and alphanumeric attempt correlation. Correlation is not provider
-idempotency. It checks the permit immediately before I/O; acceptance is stored
+template, alphanumeric attempt correlation and a random per-attempt reporting
+credential in `extra`. Correlation is not provider idempotency. It checks the
+permit immediately before I/O; acceptance is stored
 separately from delivery. Unknown/malformed responses, transport loss and the
 provider's auto-resubmitting maintenance response remain uncertain and cannot
 cause fallback. Explicit account/policy/recipient rejection needs resolution.
 If permit expiry provably prevented provider I/O, the attempt is recorded as
 not dispatched. Debits are conservatively retained until reconciliation;
 there is no automatic refund or release on timeout or rejection.
+
+`SmsDeliveryReportStore` accepts decoded Enterprise GET report fields only when
+the echoed credential matches the hash committed with that attempt's debit.
+It binds the original recipient endpoint, sender mask when reported, fragment
+count and known provider message id. Provider time is bounded by a five-minute
+clock-skew tolerance; state timestamps use the server receipt clock. Reports
+need no current roster, sender, grant, permission or event liveness, so closing
+an event cannot erase later delivery evidence. Duplicate reports converge in
+the outbox transaction. Contradictory final reports retain a delivery conflict;
+unknown causes, deferred delivery, SMSC timeout and missing operator
+acknowledgement cannot authorize fallback. Policy, suppression and invalid
+recipient causes retain their distinct meaning. Reporting never sends a
+message, changes consent or releases a spending debit.
+
+This bearer credential is scoped to one attempt; it is not a Gupshup signature.
+The field contracts come from Gupshup's [single-message API](https://docs.gupshup.io/docs/send-message-to-single-number)
+and [delivery-report documentation](https://docs.gupshup.io/docs/real-time-delivery-reports).
+There is no deployed or exported HTTP ingress for the reporting service yet.
+Before adding it, verify the account's actual echoed field names, secure callback
+transport, URL/log redaction and report finality with provider evidence. POST
+reporting requires provider support configuration and has a different shape;
+the service does not guess a mapping from the documentation's malformed POST
+example. Missing credentials or a different shape cannot update the outbox.
 
 This is an invocable server worker tested with an injected transport and the
 Firestore emulator, not an enabled provider integration. Gupshup is the first
@@ -269,7 +293,7 @@ unconfirmed. This bounded worker only accepts SMS-only intents; multi-route
 intents are withheld until a shared reader can assess all permitted channels.
 Before activation, complete the remaining consent/withdrawal entry points,
 audited sender/budget provisioning, live Operations scheduling, authenticated delivery
-callbacks and lookup/reconciliation, provider freshness/expiry behavior,
+ingress and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
 fixture permission or quote can satisfy live onboarding. WhatsApp/RCS routing

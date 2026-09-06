@@ -1532,7 +1532,9 @@ export const eventAssistanceSmsDispatchDocumentSchema = {
     "segments",
     "maxCostMicros",
     "budgetIds",
-    "createdAt"
+    "createdAt",
+    "reportTokenHash",
+    "senderMask"
   ],
   "properties": {
     "schemaVersion": {
@@ -1640,6 +1642,14 @@ export const eventAssistanceSmsDispatchDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "reportTokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "senderMask": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{6}$"
     }
   },
   "title": "EventAssistanceSmsDispatchDocument",

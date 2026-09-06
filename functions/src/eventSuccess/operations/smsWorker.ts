@@ -61,6 +61,7 @@ export class EventSmsWorker {
     const material = claim.resource;
     const outcome = await this.provider.send({permit: claim.permit,
       config: material.config, credentials,
+      reportToken: material.reportToken,
       phoneE164: material.permission.phoneE164, rendered: material.rendered});
     if (outcome.kind === "withheld") {
       await outbox.recordExpiredBeforeSend(claim.permit);

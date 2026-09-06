@@ -2061,7 +2061,15 @@ Sender approval and activation remain separate trusted provisioning steps.
 Asia/Kolkata. A trusted worker atomically charges both ceilings with the
 outbox claim. `eventAssistanceSmsDispatches` keeps one immutable attempt debit,
 rendered-material hash and sender/template/permission/quote references. It
-stores neither message content nor the guest URL secret. Conservative debits
+also binds the original sender mask and the hash of a random 192-bit reporting
+credential. Only the worker receives the plaintext credential, submitted in
+Gupshup's `extra` field; decoded delivery reports must prove this credential
+and match the dispatch scope before updating the private outbox. The credential
+does not authorize a send, opt-in or budget release. Retain the immutable
+dispatch and outbox through the provider reconciliation window, independently
+of guest-link or event expiry. Cleanup and HTTP ingress remain unimplemented.
+The dispatch stores neither message content, reporting credential nor the guest
+URL secret. Conservative debits
 remain charged across uncertain outcomes and provider rejections until an
 explicit reconciliation implementation accounts for them. They are spending
 reservations, not billing receipts. Firestore clients, including admins, cannot

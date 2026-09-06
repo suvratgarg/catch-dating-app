@@ -15346,6 +15346,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceSmsDispatchDocumentReportTokenHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.reportTokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceSmsDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsDispatchDocument.schemaVersion',
     required: true,
@@ -15367,6 +15374,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSenderMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.senderMask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
   );
 
   static const eventAssistanceSmsDispatchDocumentTemplateId = CatchContractFieldConstraints(
@@ -69886,9 +69900,11 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsDispatchDocument.permissionRevision': eventAssistanceSmsDispatchDocumentPermissionRevision,
     'eventAssistanceSmsDispatchDocument.quoteRevision': eventAssistanceSmsDispatchDocumentQuoteRevision,
     'eventAssistanceSmsDispatchDocument.recipientEndpointId': eventAssistanceSmsDispatchDocumentRecipientEndpointId,
+    'eventAssistanceSmsDispatchDocument.reportTokenHash': eventAssistanceSmsDispatchDocumentReportTokenHash,
     'eventAssistanceSmsDispatchDocument.schemaVersion': eventAssistanceSmsDispatchDocumentSchemaVersion,
     'eventAssistanceSmsDispatchDocument.segments': eventAssistanceSmsDispatchDocumentSegments,
     'eventAssistanceSmsDispatchDocument.senderId': eventAssistanceSmsDispatchDocumentSenderId,
+    'eventAssistanceSmsDispatchDocument.senderMask': eventAssistanceSmsDispatchDocumentSenderMask,
     'eventAssistanceSmsDispatchDocument.templateId': eventAssistanceSmsDispatchDocumentTemplateId,
     'eventAssistanceSmsDispatchDocument.templateRevision': eventAssistanceSmsDispatchDocumentTemplateRevision,
     'eventAssistanceSmsPermissionDocument.attendeeGeneration': eventAssistanceSmsPermissionDocumentAttendeeGeneration,

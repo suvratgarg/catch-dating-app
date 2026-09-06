@@ -19,6 +19,7 @@ import {
 } from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
 import type {RouteReadiness} from "./messagingPolicy";
+import {newSmsReportCredential} from "./smsReportCredentials";
 import {
   parseSmsConfig, renderEventSms, RenderedSms, SmsConfig,
 } from "./smsProtocol";
@@ -44,6 +45,10 @@ export interface SmsMaterial {
   grantId: string;
   grant: Grant;
   budgets: [Budget, Budget];
+}
+export interface ClaimedSmsMaterial extends SmsMaterial {
+  /** Per-attempt report credential; never persisted or returned to a guest. */
+  reportToken: string;
 }
 type MaterialResult = {facts: OutboxFacts; material: SmsMaterial | null};
 type BlockReason = Extract<RouteReadiness["state"], {kind: "blocked"}>[
@@ -105,7 +110,7 @@ export class SmsDispatchStore {
 
   /** Exact material and both budget debits commit with the outbox claim. */
   prepare(linkId: string, expectedConfig: SmsConfig):
-    PrepareDispatchResource<SmsMaterial> {
+    PrepareDispatchResource<ClaimedSmsMaterial> {
     return async (tx, record, attempt, now) => {
       const result = await this.read(tx, record.intent, linkId, now);
       const material = result.material;
@@ -135,6 +140,7 @@ export class SmsDispatchStore {
           withdrawal.guestGrantHash !== operationContentHash(material.grant) ||
           withdrawal.expiresAt < permission.expiresAt ||
           withdrawal.issuedAt > now) return {kind: "withheld"};
+      const report = newSmsReportCredential();
       const dispatch = {schemaVersion: 1, attemptId: attempt.attemptId,
         messageId: record.messageId, senderId: config.senderId,
         bindingRevision: config.revision,
@@ -142,6 +148,7 @@ export class SmsDispatchStore {
         permissionId: permission.permissionId,
         permissionRevision: permission.revision,
         recipientEndpointId: permission.recipientEndpointId,
+        reportTokenHash: report.hash, senderMask: config.mask,
         payloadHash: rendered.payloadHash,
         templateId: rendered.template.templateId,
         templateRevision: rendered.template.revision,
@@ -155,7 +162,7 @@ export class SmsDispatchStore {
       const debited = budgets.map((budget) => parseSmsBudget({...budget,
         chargedMicros: budget.chargedMicros + rendered.maxCostMicros,
         revision: budget.revision + 1, updatedAt: now}));
-      return {kind: "ready", value: material,
+      return {kind: "ready", value: {...material, reportToken: report.token},
         validUntil: route.state.validUntil, commit: () => {
           tx.create(dispatchRef, dispatch);
           if (!withdrawalSnap.exists) tx.create(withdrawalRef, withdrawal);

@@ -27,7 +27,10 @@ import {
   SmsCredentials,
 } from "./gupshupSmsProvider";
 import {EventSmsWorker} from "./smsWorker";
+import {smsProviderCorrelation, smsReportTokenMatches} from
+  "./smsReportCredentials";
 import {SmsPreferenceStore} from "./smsPreferenceStore";
+import {SmsDeliveryReportStore} from "./smsDeliveryReports";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
@@ -236,20 +239,25 @@ test("SMS worker contends once, debits atomically and posts correctly",
     assert.equal(form.get("mask"), "CATCHS");
     assert.equal(form.get("dltTemplateId"), "100200200200");
     assert.equal(form.get("principalEntityId"), "100100100100");
-    assert.match(form.get("msg_id")!, /^[a-f0-9]{64}$/);
     assert.ok(form.get("msg")!.includes(h.link.secret));
     const record = await h.store.outbox(h.link.linkId).get(h.messageId);
     assert.equal(record?.attempts[0].state.kind, "accepted");
+    assert.equal(form.get("msg_id"),
+      smsProviderCorrelation(record!.attempts[0].attemptId));
+    assert.match(form.get("extra")!, /^[a-f0-9]{48}$/);
     const debit = await h.read(smsCollections.dispatches + "/" +
     record!.attempts[0].attemptId);
     assert.ok(debit);
+    assert.ok(smsReportTokenMatches(form.get("extra")!,
+      String(debit.reportTokenHash)));
     for (const path of h.budgetPaths) {
       const budget = parseSmsBudget(await h.read(path));
       assert.equal(budget.chargedMicros, debit.maxCostMicros);
       assert.equal(budget.revision, 2);
     }
     const persisted = JSON.stringify(h.fake.entries());
-    for (const secret of [h.link.secret, h.credentials.password]) {
+    for (const secret of [h.link.secret, h.credentials.password,
+      form.get("extra")!]) {
       assert.equal(persisted.includes(secret), false);
       assert.equal(JSON.stringify(results).includes(secret), false);
     }
@@ -489,6 +497,7 @@ test("transport refuses an expired permit, changed phone or changed body",
       assert.ok(claimed.kind === "claimed");
       const input = {permit: claimed.permit, config: claimed.resource.config,
         credentials: h.credentials, phoneE164: h.permission.phoneE164,
+        reportToken: claimed.resource.reportToken,
         rendered: claimed.resource.rendered};
       if (change === "phone") input.phoneE164 = "+918888888888";
       if (change === "body") input.rendered.text = "Changed after budget claim";
@@ -710,3 +719,172 @@ test("SMS withholds a withdrawal binding stored under the wrong link",
     assert.equal(result.kind, "withheld");
     assert.equal(h.requests.length, 0);
   });
+
+async function deliveryReport(h: Awaited<ReturnType<typeof harness>>) {
+  const form = new URLSearchParams(String(h.requests.at(-1)?.init?.body));
+  const record = await h.store.outbox(h.link.linkId).get(h.messageId);
+  assert.ok(record);
+  const dispatch = await h.read(smsCollections.dispatches + "/" +
+    record.attempts[0].attemptId);
+  assert.ok(dispatch);
+  return {msg_id: form.get("msg_id")!, extra: form.get("extra")!,
+    externalId: "660362025761505631-520576818555598760",
+    deliveredTS: String(h.clock.now), status: "SUCCESS", cause: "SUCCESS",
+    errCode: "000", phoneNo: "919999999999",
+    noOfFrags: String(dispatch.segments), mask: "CATCHS"};
+}
+
+test("authenticated SMS delivery reconciles a lost response after closure",
+  async () => {
+    const h = await harness();
+    h.transport.error = true;
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const report = await deliveryReport(h);
+    const outbox = h.store.outbox(h.link.linkId);
+    const before = await outbox.get(h.messageId);
+    assert.equal(before?.attempts[0].state.kind, "unknown");
+    await outbox.close(h.messageId, before!.revision, "cancelled");
+    await h.write(h.senderPath, {...h.sender, status: "paused"});
+    await h.write("events/" + h.context.eventId, {status: "cancelled"});
+    await h.write(h.attendeePath,
+      {status: "cancelled", linkedUid: "replacement"});
+    h.clock.now += 2 * 86_400_000;
+    const budgets = await Promise.all(h.budgetPaths.map(h.read));
+    const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+    assert.deepEqual(await reports.receive(report), {kind: "recorded",
+      messageId: h.messageId, disposition: "applied"});
+    const after = await outbox.get(h.messageId);
+    assert.equal(after?.lifecycle, "cancelled");
+    assert.deepEqual(after?.attempts[0].state, {kind: "delivered",
+      at: h.clock.now, providerMessageId: report.externalId});
+    assert.deepEqual(await Promise.all(h.budgetPaths.map(h.read)), budgets);
+    assert.equal(h.requests.length, 1);
+  });
+
+test("SMS reports require their issued credential and exact dispatch scope",
+  async () => {
+    const h = await harness();
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const report = await deliveryReport(h);
+    const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+    const before = h.fake.entries();
+    for (const change of [
+      {extra: undefined}, {extra: "a".repeat(48)}, {extra: [report.extra]},
+      {msg_id: "catchSms1" + "b".repeat(64)}, {msg_id: [report.msg_id]},
+      {externalId: "123-456"}, {phoneNo: "918888888888"}, {mask: "CHANGD"},
+      {noOfFrags: report.noOfFrags === "1" ? "2" : "1"},
+      {noOfFrags: "7"}, {deliveredTS: String(start - 300_001)},
+      {deliveredTS: String(start + 300_001)}, {deliveredTS: "NaN"},
+      {deliveredTS: String(start / 1000)}, {status: "DELIVERED"},
+    ]) {
+      assert.deepEqual(await reports.receive({...report, ...change}),
+        {kind: "rejected"}, Object.keys(change).join(","));
+      assert.deepEqual(h.fake.entries(), before);
+    }
+    for (const malformed of [null, [], "raw query", {msg_id: report.msg_id}]) {
+      assert.deepEqual(await reports.receive(malformed), {kind: "rejected"});
+    }
+    assert.deepEqual(await reports.receive({...report, mask: undefined}),
+      {kind: "recorded", messageId: h.messageId, disposition: "applied"});
+  });
+
+test("unknown SMS reports never manufacture failure or another send",
+  async () => {
+    const h = await harness();
+    h.transport.error = true;
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const report = await deliveryReport(h);
+    const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+    const before = h.fake.entries();
+    for (const change of [
+      {status: "UNKNOWN"},
+      {status: "FAILURE", cause: "DEFERRED", errCode: "10"},
+      {status: "FAILURE", cause: "SMSCTIMEDOUT", errCode: "00c"},
+      {status: "FAILURE", cause: "NO_ACK_FROM_OPERATOR", errCode: "13"},
+      {status: "FAILURE", cause: "OTHER", errCode: "24"},
+      {status: "FAILURE", cause: "SERVICE_DOWN", errCode: "999"},
+      {status: "FAILURE", cause: "DND_FAIL", errCode: "004"},
+      {status: "SUCCESS", cause: "DND_FAIL", errCode: "006"},
+    ]) {
+      assert.deepEqual(await reports.receive({...report, ...change}),
+        {kind: "unconfirmed", messageId: h.messageId}, change.cause);
+      assert.deepEqual(h.fake.entries(), before);
+    }
+    h.clock.now += 121_000;
+    const result = await h.worker.dispatch(h.messageId, h.link.linkId);
+    assert.ok(result.kind === "waiting");
+    assert.equal(result.decision.kind, "reconcile");
+    assert.equal(h.requests.length, 1);
+  });
+
+test("SMS final causes retain technical, suppression and policy meaning",
+  async () => {
+    for (const [code, cause, classification] of [
+      ["001", "ABSENT_SUBSCRIBER", "technical"],
+      ["004", "SERVICE_DOWN", "technical"],
+      ["005", "SYSTEM_FAILURE", "technical"],
+      ["011", "INBOXFULL", "technical"],
+      ["012", "CONGESTION", "technical"],
+      ["002", "CALL_BARRED", "suppressed"],
+      ["006", "DND_FAIL", "suppressed"],
+      ["007", "BLOCKED", "suppressed"],
+      ["022", "BLOCKED_FOR_USER", "suppressed"],
+      ["003", "UNKNOWN_SUBSCRIBER", "invalidRecipient"],
+      ["023", "UNKNOWN_SUBSCRIBER", "invalidRecipient"],
+      ["008", "DND_TIMEOUT", "policy"],
+      ["009", "OUTSIDE_WORKING_HOURS", "policy"],
+      ["00b", "BLOCKED_MASK", "policy"],
+      ["038", "MSG_DOES_NOT_MATCH_TEMPLATE", "policy"],
+    ]) {
+      const h = await harness();
+      await h.worker.dispatch(h.messageId, h.link.linkId);
+      const report = {...await deliveryReport(h), status: "FAILURE",
+        cause, errCode: code};
+      const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+      const result = await reports.receive(report);
+      assert.equal(result.kind, "recorded", cause);
+      const record = await h.store.outbox(h.link.linkId).get(h.messageId);
+      const state = record!.attempts[0].state;
+      assert.ok(state.kind === "failed");
+      assert.equal(state.classification, classification, cause);
+      assert.match(state.evidenceId, /^sms-dlr:[a-f0-9]{64}$/);
+      assert.equal(h.requests.length, 1);
+    }
+  });
+
+async function competingReports(h: Awaited<ReturnType<typeof harness>>) {
+  await h.worker.dispatch(h.messageId, h.link.linkId);
+  const report = await deliveryReport(h);
+  const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+  const results = await Promise.all(Array.from({length: 8}, () =>
+    reports.receive(report)));
+  assert.equal(results.filter((r) => r.kind === "recorded" &&
+    r.disposition === "applied").length, 1);
+  assert.equal(results.filter((r) => r.kind === "recorded" &&
+    r.disposition === "duplicateOrOlder").length, 7);
+  assert.deepEqual(await reports.receive({...report, status: "FAILURE",
+    cause: "SERVICE_DOWN", errCode: "004"}), {kind: "recorded",
+    messageId: h.messageId, disposition: "conflictingEvidence"});
+  const record = await h.store.outbox(h.link.linkId).get(h.messageId);
+  assert.equal(record?.deliveryConflict, true);
+  assert.equal(record?.attempts[0].state.kind, "delivered");
+  await h.worker.dispatch(h.messageId, h.link.linkId);
+  assert.equal(h.requests.length, 1);
+}
+
+test("duplicate SMS reports converge and contradictory reports retain evidence",
+  async () => competingReports(await harness()));
+
+test("Firestore deduplicates competing SMS delivery reports", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const id = randomUUID();
+  const app = initializeApp({projectId: "demo-catch-rules"}, "sms-dlr-" + id);
+  try {
+    await competingReports(await harness(getFirestore(app), id));
+  } finally {
+    await deleteApp(app);
+  }
+});
