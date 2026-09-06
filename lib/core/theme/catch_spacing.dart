@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 
-export 'package:catch_dating_app/core/theme/catch_tokens.dart'
+export 'package:catch_tokens/catch_tokens.dart'
     show CatchAspectRatio, CatchGaps, CatchInsets, CatchSpacing;
 
 // Vertical gaps.

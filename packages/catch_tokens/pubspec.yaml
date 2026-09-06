@@ -1,0 +1,12 @@
+name: catch_tokens
+description: Catch design token scales, semantic roles, and component contracts.
+version: 0.1.0
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter

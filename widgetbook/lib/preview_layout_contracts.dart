@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 
 /// Semantic geometry used only to make Widgetbook contract states reviewable.
 ///
@@ -124,7 +124,7 @@ abstract final class WidgetbookPreviewLayout {
   static const double onboardingWelcomeMediaTop = 44;
   static const double onboardingWelcomeMediaBottom = 34;
   static const double onboardingWelcomeFocusWidth =
-      CatchLayout.welcomeFocusLockupMaxWidth;
+      CatchWelcomeTokens.welcomeFocusLockupMaxWidth;
   static const double onboardingReelRowPreviewHeight = 92;
 
   static const double utilityMediaPreviewHeight = 146;

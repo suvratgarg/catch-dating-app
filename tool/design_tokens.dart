@@ -4,7 +4,7 @@ import 'dart:io';
 const _tokenPath = 'design/tokens/catch.tokens.json';
 const _defaultWebsiteCssPath = 'packages/web-config/generated/catch-tokens.css';
 const _defaultDartTokensPath =
-    'lib/core/theme/generated/catch_design_tokens.g.dart';
+    'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart';
 
 void main(List<String> args) {
   if (args.contains('--help') || args.contains('-h')) {

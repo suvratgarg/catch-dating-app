@@ -41,7 +41,7 @@ bash tool/check_catch_ui_lint_drift.sh --count   # how many candidates (if 0, ST
 bash tool/check_catch_ui_lint_drift.sh           # lists matching analyzer diagnostics, exits 1
 ```
 Scanned: all of `lib/` except generated code, the token DEFINITIONS
-(`lib/core/theme/**`), design fixtures (`lib/design_fixtures/**`), and retired
+(`packages/catch_tokens/lib/**`) and app theme foundations (`lib/core/theme/**`), design fixtures (`lib/design_fixtures/**`), and retired
 concept files (`*explore_concept*`),
 and color-only art exemptions (`graded_image.dart`,
 `event_activity_visuals.dart`). `Colors.transparent` and transparent
@@ -122,7 +122,7 @@ or directly above the raw color expression.
   If a file has more than a couple, you're escape-hatching things that should be tokens.
 - **Behavior-preserving:** pick the token whose value matches the old color's
   *intent* (an `#16140F` is `t.ink`, not a random near-black). When unsure which
-  role, match the value in `catch_tokens.dart`.
+  role, match the value in `package:catch_tokens/catch_tokens.dart`.
 
 ## Step 4 — verify (after every 5–10 files, and at the end)
 ```bash

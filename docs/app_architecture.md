@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.25.0
-updated: 2026-09-04
+version: 1.26.0
+updated: 2026-09-06
 owner: app_architecture
 status: active
 ---
@@ -51,7 +51,7 @@ section under 120 lines.
 
 | Level | Name | Contents | Home today | Target home | May depend on |
 |---|---|---|---|---|---|
-| L0 | tokens | scale values, semantic roles | `lib/core/theme/**` | `packages/catch_tokens` | nothing |
+| L0 | tokens | scale values, semantic roles | `packages/catch_tokens` | unchanged | Flutter SDK only |
 | L1 | foundations | theme wiring, typography, icons, motion | `lib/core/theme/**` | `packages/catch_ui` | L0 |
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `lib/core/widgets/**` | `packages/catch_ui` | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
@@ -949,7 +949,7 @@ first dashboard frame.
 
 ## Layout, Spacing, And UI Architecture
 
-Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
+Use `CatchSpacing` from `package:catch_tokens/catch_tokens.dart` for reusable layout
 contracts. Feature screens should usually consume the semantic layer
 (`CatchGaps`, `CatchInsets`, or layout primitives) rather than composing
 anonymous `EdgeInsets` from primitive spacing tokens.
@@ -1011,10 +1011,22 @@ across sibling tabs. If a new repeated role appears, add a semantic
 Use the lowest tier that preserves intent, and move repeated feature-local
 roles upward only when they recur.
 
+`packages/catch_tokens` owns L0. Its public entrypoint is
+`package:catch_tokens/catch_tokens.dart`; generated scales live in
+`lib/generated`, handwritten scales in `lib/src/primitives`, semantic roles in
+`lib/src/semantic`, and component token contracts in `lib/src/components`.
+`CatchWelcomeTokens` owns Welcome reel geometry and `CatchFormWorkspaceTokens`
+owns form-builder pane geometry. Import the public entrypoint instead of
+package internals. The package uses the repository Dart workspace and its only
+production dependency is the Flutter SDK, enforced by
+`platform:app-package-graphs` with seeded forbidden-dependency tests.
+Theme wiring, typography, icon assets, and the app-coupled `ActivityPalette`
+remain in `lib/core/theme` until their Phase 3 disposition.
+
 | Tier | Owner | Examples | Use when |
 |---|---|---|---|
-| Primitive scale | `lib/core/theme/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIcon` | A reusable value is part of the global visual scale. |
-| Semantic layout role | `lib/core/theme/catch_tokens.dart` or a shared primitive | `CatchGaps.section`, `CatchInsets.pageBody`, `CatchLayout.maxContentWidth` | A value describes a repeated relationship or viewport/content contract. |
+| Primitive scale | `package:catch_tokens/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIcon` | A reusable value is part of the global visual scale. |
+| Semantic layout role | `package:catch_tokens/catch_tokens.dart` or a shared primitive | `CatchGaps.section`, `CatchInsets.pageBody`, `CatchLayout.maxContentWidth` | A value describes a repeated relationship or viewport/content contract. |
 | Expressive palette role | `ActivityPalette` / `CatchTokens` theme extensions | activity swatches, functional status colors, photo grade overlays | Color communicates activity, state, or theme meaning rather than decoration. |
 | Component contract | Owning component or primitive | profile tab body padding, ticket geometry, control shell sizing | A value is tied to one component family and should not become a global token yet. |
 | Sanctioned art | Painter/canvas owner with a narrow comment | graded image grain, activity artwork, map-pin canvas colors pending policy | Raw values are part of deliberate illustration/canvas output and are not layout tokens. |
@@ -1242,8 +1254,8 @@ current toolchain, `flutter analyze` and `dart analyze lib` do not load the
 Catch plugin; they remain useful generic checks but are not Catch lint proof.
 
 The current lint scope is all handwritten `lib/**` Dart except
-`lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
-are the source of raw token definitions; feature/shared widget code consumes
+`packages/catch_tokens/lib/**`, `lib/core/theme/**` foundations, generated code,
+and schema-generated contracts. The token package owns raw token definitions; feature/shared widget code consumes
 named `CatchSpacing`, `CatchLayout`, `CatchGaps`, `CatchInsets`, `CatchRadius`,
 `CatchBorder`, `CatchStroke`, and Catch control primitives instead of local raw
 layout numbers or Material/Cupertino controls. `catch_no_raw_stroke_width`

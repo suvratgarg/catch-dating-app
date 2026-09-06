@@ -13,7 +13,7 @@ anchors during a redesign chat.
 Generated sources:
 - docs/design_language.md
 - design/components/catch.components.json
-- lib/core/theme/catch_tokens.dart
+- packages/catch_tokens/lib/catch_tokens.dart
 - lib/core/theme/activity_palette.dart
 - lib/core/theme/catch_text_styles.dart
 - lib/core/theme/catch_fonts.dart

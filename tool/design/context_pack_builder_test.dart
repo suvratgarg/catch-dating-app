@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -94,7 +94,7 @@ anchors during a redesign chat.
 Generated sources:
 - docs/design_language.md
 - design/components/catch.components.json
-- lib/core/theme/catch_tokens.dart
+- packages/catch_tokens/lib/catch_tokens.dart
 - lib/core/theme/activity_palette.dart
 - lib/core/theme/catch_text_styles.dart
 - lib/core/theme/catch_fonts.dart
@@ -116,18 +116,19 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     final dark = _themeExtension<CatchTokens>(AppTheme.dark);
     final generatedSpacing = _doubleConstants(
       'GeneratedCatchSpacingTokens',
-      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final generatedRadius = _doubleConstants(
       'GeneratedCatchRadiusTokens',
-      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final generatedLayout = _doubleConstants(
       'GeneratedCatchLayoutTokens',
-      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final spacing = _doubleConstants(
       'CatchSpacing',
+      sourcePath: 'packages/catch_tokens/lib/src/primitives/catch_spacing.dart',
       refs: {
         'GeneratedCatchSpacingTokens': generatedSpacing,
         'GeneratedCatchLayoutTokens': generatedLayout,
@@ -135,17 +136,24 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     );
     final radius = _doubleConstants(
       'CatchRadius',
+      sourcePath: 'packages/catch_tokens/lib/src/primitives/catch_radius.dart',
       refs: {
         'CatchSpacing': spacing,
         'GeneratedCatchRadiusTokens': generatedRadius,
       },
     );
-    final opacity = _doubleConstants('CatchOpacity');
-    final stroke = _doubleConstants('CatchStroke');
+    final opacity = _doubleConstants(
+      'CatchOpacity',
+      sourcePath: 'packages/catch_tokens/lib/src/semantic/catch_opacity.dart',
+    );
+    final stroke = _doubleConstants(
+      'CatchStroke',
+      sourcePath: 'packages/catch_tokens/lib/src/primitives/catch_stroke.dart',
+    );
 
     return {
       'version': 1,
-      'source': 'lib/core/theme/catch_tokens.dart',
+      'source': 'packages/catch_tokens/lib/catch_tokens.dart',
       'color': {
         for (final role in _tokenColorRoles(light, dark).entries)
           role.key: {
@@ -678,7 +686,7 @@ $activityCards
 
   Map<String, double> _doubleConstants(
     String className, {
-    String sourcePath = 'lib/core/theme/catch_tokens.dart',
+    required String sourcePath,
     Map<String, Map<String, double>> refs = const {},
   }) {
     final source = File(sourcePath).readAsStringSync();

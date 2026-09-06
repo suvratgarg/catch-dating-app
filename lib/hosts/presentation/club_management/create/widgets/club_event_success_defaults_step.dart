@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessDefaultsPanel;
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 class ClubEventSuccessDefaultsStep extends StatelessWidget {

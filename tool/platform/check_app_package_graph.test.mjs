@@ -62,6 +62,10 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
       );
     }
 
+    const tokenRoot = path.join(root, "packages/catch_tokens");
+    fs.mkdirSync(tokenRoot, {recursive: true});
+    fs.writeFileSync(path.join(tokenRoot, "pubspec.yaml"),
+      "name: catch_tokens\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -73,4 +77,17 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
+});
+
+// The L0 package must never acquire app, provider, or other library dependencies.
+test("token package rejects every dependency outside Flutter", () => {
+  for (const dependency of ["catch_dating_app", "flutter_riverpod", "firebase_core", "collection"]) {
+    assert.deepEqual(validateRoleGraph({
+      role: "catch_tokens",
+      declaredPackages: new Set(["flutter", dependency]),
+      pluginPackages: new Set(),
+    }), [`catch_tokens: dependency '${dependency}' is outside the Flutter-only token boundary.`]);
+  }
+  assert.deepEqual(validateRoleGraph({role: "catch_tokens", declaredPackages: new Set(), pluginPackages: new Set()}),
+    ["catch_tokens: required package 'flutter' is absent."]);
 });

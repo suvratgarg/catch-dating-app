@@ -6,6 +6,19 @@
 /// scopes, perimeter renderers, or responsive implementation details.
 library;
 
+export 'package:catch_tokens/catch_tokens.dart'
+    show
+        CatchAspectRatio,
+        CatchFieldTokens,
+        CatchGaps,
+        CatchInsets,
+        CatchLayout,
+        CatchMotion,
+        CatchOpacity,
+        CatchRadius,
+        CatchSpacing,
+        CatchStroke,
+        CatchTokens;
 export 'core/forms/catch_form_descriptors.dart'
     show
         CatchFormCustomRow,
@@ -20,19 +33,6 @@ export 'core/forms/catch_form_descriptors.dart'
         CatchFormSingleChoiceRow,
         CatchFormTextCommitMode,
         CatchFormTextRow;
-export 'core/theme/catch_tokens.dart'
-    show
-        CatchAspectRatio,
-        CatchFieldTokens,
-        CatchGaps,
-        CatchInsets,
-        CatchLayout,
-        CatchMotion,
-        CatchOpacity,
-        CatchRadius,
-        CatchSpacing,
-        CatchStroke,
-        CatchTokens;
 export 'core/widgets/catch_field.dart'
     show
         CatchContractConstraints,

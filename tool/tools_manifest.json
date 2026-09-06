@@ -3237,7 +3237,7 @@
       "command": "node tool/platform/check_app_package_graph.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, and keeps both apps on one repository workspace lock.",
+      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, keeps both apps on one repository workspace lock, and enforces the Flutter-only catch_tokens dependency boundary.",
       "checks": [
         "node --check tool/platform/check_app_package_graph.mjs",
         "node --test tool/platform/check_app_package_graph.test.mjs",
@@ -3245,7 +3245,8 @@
       ],
       "role": "gate",
       "rules": [
-        "APP-TARGET-IDENTITY-001"
+        "APP-TARGET-IDENTITY-001",
+        "DESIGN-TOKENS-001"
       ],
       "vacuityProof": {
         "type": "test",
@@ -5075,7 +5076,7 @@
       "status": "active",
       "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON.",
       "checks": [
-        "dart analyze tool/design_tokens.dart lib/core/theme/generated/catch_design_tokens.g.dart",
+        "dart analyze tool/design_tokens.dart packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
         "dart run tool/design_tokens.dart --check"
       ],
       "role": "finder"

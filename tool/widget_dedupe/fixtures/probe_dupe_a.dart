@@ -2,7 +2,7 @@
 
 import 'package:flutter/widgets.dart';
 
-import '../../../lib/core/theme/catch_tokens.dart';
+import '../../../packages/catch_tokens/lib/catch_tokens.dart';
 
 class ProbeDupeA extends StatelessWidget {
   const ProbeDupeA({super.key, required this.title, this.enabled = true});

@@ -5,8 +5,8 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "06640609e89e692b758836697c87efdde55ac557eb5933cd1821350edd8376cd",
-      "bytes": 1112
+      "sha256": "90442db049fb415c540442938d7d8244b00a1e37b303ce170d8085a98fb344d9",
+      "bytes": 1123
     },
     {
       "path": "design_system/activity_palette.json",
@@ -25,8 +25,8 @@
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "4188d1f90b8be237c673654cf02894d32f7d97d879cfcdbb84be53fbabab6369",
-      "bytes": 42413
+      "sha256": "239a4e67a7b154b808ee0b4628671ce43b5e35f469f75ce98b036cb72d7c7e4d",
+      "bytes": 42634
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -35,8 +35,8 @@
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "852ec5ad564b4bae5fbb5f3b59606d373765aa63bf19bf3741bce7d83e4231a0",
-      "bytes": 27907
+      "sha256": "e471839062e605afa162af4fbed5215d778d731a66c0822269c8e5de7df864fd",
+      "bytes": 27837
     },
     {
       "path": "design_system/typography.json",

@@ -5,11 +5,11 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -185,7 +185,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             behavior: HitTestBehavior.opaque,
             onTap: _landed ? null : _skip,
             child: CatchSceneViewport(
-              maxWidth: CatchLayout.welcomeMaxWidth,
+              maxWidth: CatchWelcomeTokens.welcomeMaxWidth,
               builder: (context, viewport) => AnimatedBuilder(
                 animation: _sceneListenable,
                 builder: (context, _) {
@@ -251,14 +251,14 @@ class WelcomeScene extends StatelessWidget {
   Widget build(BuildContext context) {
     const tokens = CatchTokens.editorialDark;
     final sceneWidth = viewportWidth;
-    final wheelTop = CatchLayout.welcomeReelTopFor(mediaPadding);
+    final wheelTop = CatchWelcomeTokens.welcomeReelTopFor(mediaPadding);
     final reelHeight = math.min(
-      CatchLayout.welcomeReelHeight,
+      CatchWelcomeTokens.welcomeReelHeight,
       math.max(0.0, viewportHeight - wheelTop),
     );
-    final catchTop = CatchLayout.welcomeReelCatchTopFor(mediaPadding);
-    final catchLeft = CatchLayout.welcomeReelCatchLeftForWidth(sceneWidth);
-    final rightInset = CatchLayout.welcomeReelRightForWidth(sceneWidth);
+    final catchTop = CatchWelcomeTokens.welcomeReelCatchTopFor(mediaPadding);
+    final catchLeft = CatchWelcomeTokens.welcomeReelCatchLeftForWidth(sceneWidth);
+    final rightInset = CatchWelcomeTokens.welcomeReelRightForWidth(sceneWidth);
     final focusedPhraseIndex = welcomeFocusedPhraseIndex(
       spinValue: spinValue,
       landed: landed,
@@ -275,21 +275,21 @@ class WelcomeScene extends StatelessWidget {
         ? Color.lerp(pigment, tokens.ink, colorCool)!
         : pigment;
     final buttonsBottom = math.max(
-      CatchLayout.welcomeButtonsBottom,
+      CatchWelcomeTokens.welcomeButtonsBottom,
       mediaPadding.bottom + CatchSpacing.s4,
     );
     final ctaTop =
-        viewportHeight - buttonsBottom - CatchLayout.welcomeCtaApproxHeight;
-    final minBodyTop = catchTop + CatchLayout.welcomeHeadlineToBodyGap;
+        viewportHeight - buttonsBottom - CatchWelcomeTokens.welcomeCtaApproxHeight;
+    final minBodyTop = catchTop + CatchWelcomeTokens.welcomeHeadlineToBodyGap;
     final maxBodyTop = math.max(
       minBodyTop,
       ctaTop -
-          CatchLayout.welcomeMinBodyToCtaGap -
-          CatchLayout.welcomeCtaApproxHeight,
+          CatchWelcomeTokens.welcomeMinBodyToCtaGap -
+          CatchWelcomeTokens.welcomeCtaApproxHeight,
     );
     final bodyTop = math
-        .min(CatchLayout.welcomeBodyTop, maxBodyTop)
-        .clamp(minBodyTop, CatchLayout.welcomeBodyTop)
+        .min(CatchWelcomeTokens.welcomeBodyTop, maxBodyTop)
+        .clamp(minBodyTop, CatchWelcomeTokens.welcomeBodyTop)
         .toDouble();
 
     return Stack(
@@ -336,8 +336,8 @@ class WelcomeScene extends StatelessWidget {
         ),
         if (landed && showLandingContent) ...[
           Positioned(
-            left: CatchLayout.welcomeBodyHorizontalPadding,
-            right: CatchLayout.welcomeBodyHorizontalPadding,
+            left: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
+            right: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
             top: bodyTop,
             child: RevealEntrance(
               landingValue: landingValue,
@@ -354,8 +354,8 @@ class WelcomeScene extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: CatchLayout.welcomeBodyHorizontalPadding,
-            right: CatchLayout.welcomeBodyHorizontalPadding,
+            left: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
+            right: CatchWelcomeTokens.welcomeBodyHorizontalPadding,
             bottom: buttonsBottom,
             child: IgnorePointer(
               ignoring: landingValue < 0.4,
@@ -376,7 +376,7 @@ class WelcomeScene extends StatelessWidget {
                       foregroundColor: tokens.primaryInk,
                     ),
                   ),
-                  const SizedBox(height: CatchLayout.welcomeButtonGap),
+                  const SizedBox(height: CatchWelcomeTokens.welcomeButtonGap),
                   RevealEntrance(
                     landingValue: landingValue,
                     order: 2,
@@ -475,12 +475,12 @@ class WelcomeFocusLockup extends StatelessWidget {
             ),
           );
     final phraseBox = phraseBoxes.isEmpty ? null : phraseBoxes.first;
-    final underlineTop = painter.height + CatchLayout.welcomeReelUnderlineGap;
+    final underlineTop = painter.height + CatchWelcomeTokens.welcomeReelUnderlineGap;
     final contentHeight = phraseBox == null
         ? painter.height
         : math.max(
             painter.height,
-            underlineTop + CatchLayout.welcomeReelUnderlineThickness,
+            underlineTop + CatchWelcomeTokens.welcomeReelUnderlineThickness,
           );
 
     final fitScale = painter.width <= 0
@@ -527,7 +527,7 @@ class WelcomeFocusLockup extends StatelessWidget {
                       left: phraseBox.left,
                       top: underlineTop,
                       width: phraseBox.right - phraseBox.left,
-                      height: CatchLayout.welcomeReelUnderlineThickness,
+                      height: CatchWelcomeTokens.welcomeReelUnderlineThickness,
                       child: ColoredBox(
                         key: WelcomeFocusLockup.underlineKey,
                         color: underlineColor!,
@@ -546,14 +546,14 @@ class WelcomeFocusLockup extends StatelessWidget {
 TextScaler _welcomeReelTextScaler(BuildContext context) {
   final requestedScale = MediaQuery.textScalerOf(context).scale(1);
   return TextScaler.linear(
-    requestedScale.clamp(1.0, CatchLayout.welcomeReelMaxTextScale),
+    requestedScale.clamp(1.0, CatchWelcomeTokens.welcomeReelMaxTextScale),
   );
 }
 
 class ReelBand extends StatelessWidget {
   const ReelBand({
     super.key,
-    this.viewportWidth = CatchLayout.welcomeReferenceWidth,
+    this.viewportWidth = CatchWelcomeTokens.welcomeReferenceWidth,
     required this.spinValue,
     required this.landingValue,
     required this.landed,
@@ -570,7 +570,7 @@ class ReelBand extends StatelessWidget {
   Widget build(BuildContext context) {
     final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
     final trackHeight =
-        welcomePhraseBank.length * CatchLayout.welcomeReelRowHeight;
+        welcomePhraseBank.length * CatchWelcomeTokens.welcomeReelRowHeight;
 
     return ShaderMask(
       blendMode: BlendMode.dstIn,
@@ -661,13 +661,13 @@ class ReelRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const tokens = CatchTokens.editorialDark;
-    final center = CatchLayout.welcomeReelRowCenter(
+    final center = CatchWelcomeTokens.welcomeReelRowCenter(
       rowIndex: rowIndex,
       trackOffset: trackOffset,
     );
-    final distance = center - CatchLayout.welcomeReelFocus;
+    final distance = center - CatchWelcomeTokens.welcomeReelFocus;
     final absDistance = distance.abs();
-    final inFocus = CatchLayout.welcomeReelRowIsFocused(distance);
+    final inFocus = CatchWelcomeTokens.welcomeReelRowIsFocused(distance);
     final isLandingFocus =
         landed && phraseIndex == welcomeLandingIndex && inFocus;
     final pigment =
@@ -680,7 +680,7 @@ class ReelRow extends StatelessWidget {
     )!;
     final dimOpacity = math.max(
       CatchOpacity.welcomeReelDimMin,
-      1 - (absDistance / CatchLayout.welcomeReelDimRange),
+      1 - (absDistance / CatchWelcomeTokens.welcomeReelDimRange),
     );
     final nonFocusFade = _durationProgress(
       landingValue,
@@ -707,13 +707,13 @@ class ReelRow extends StatelessWidget {
     final effectiveOpacity = hideWhenFocused && inFocus ? 0.0 : rowOpacity;
 
     return SizedBox(
-      height: CatchLayout.welcomeReelRowHeight,
+      height: CatchWelcomeTokens.welcomeReelRowHeight,
       child: Opacity(
         opacity: effectiveOpacity.clamp(0, 1).toDouble(),
         child: Padding(
           padding: EdgeInsets.only(
-            left: CatchLayout.welcomeReelObjectLeftForWidth(viewportWidth),
-            right: CatchLayout.welcomeReelRightForWidth(viewportWidth),
+            left: CatchWelcomeTokens.welcomeReelObjectLeftForWidth(viewportWidth),
+            right: CatchWelcomeTokens.welcomeReelRightForWidth(viewportWidth),
           ),
           child: Align(
             alignment: Alignment.topLeft,
@@ -745,9 +745,9 @@ class ReelRow extends StatelessWidget {
                     left: 0,
                     right: 0,
                     bottom:
-                        -CatchLayout.welcomeReelUnderlineGap -
-                        CatchLayout.welcomeReelUnderlineThickness,
-                    height: CatchLayout.welcomeReelUnderlineThickness,
+                        -CatchWelcomeTokens.welcomeReelUnderlineGap -
+                        CatchWelcomeTokens.welcomeReelUnderlineThickness,
+                    height: CatchWelcomeTokens.welcomeReelUnderlineThickness,
                     child: ColoredBox(color: pigment),
                   ),
               ],
@@ -778,7 +778,7 @@ class RevealEntrance extends StatelessWidget {
     return Opacity(
       opacity: progress,
       child: Transform.translate(
-        offset: Offset(0, (1 - progress) * CatchLayout.welcomeRevealOffsetY),
+        offset: Offset(0, (1 - progress) * CatchWelcomeTokens.welcomeRevealOffsetY),
         child: child,
       ),
     );
@@ -786,9 +786,9 @@ class RevealEntrance extends StatelessWidget {
 }
 
 double _welcomeTrackOffset({required double spinValue, required bool landed}) {
-  final trackH = welcomePhraseBank.length * CatchLayout.welcomeReelRowHeight;
+  final trackH = welcomePhraseBank.length * CatchWelcomeTokens.welcomeReelRowHeight;
   final base =
-      CatchLayout.welcomeReelLandingOffset(welcomeLandingIndex) % trackH;
+      CatchWelcomeTokens.welcomeReelLandingOffset(welcomeLandingIndex) % trackH;
   if (landed) return base;
 
   final eased = _welcomeSpinEase(spinValue, CatchMotion.welcomeSpinCurvePower);
@@ -803,9 +803,9 @@ int welcomeFocusedPhraseIndex({
   final offset = _welcomeTrackOffset(spinValue: spinValue, landed: landed);
   final centeredRow =
       ((offset +
-                  CatchLayout.welcomeReelFocus -
-                  CatchLayout.welcomeReelRowHalfHeight) /
-              CatchLayout.welcomeReelRowHeight)
+                  CatchWelcomeTokens.welcomeReelFocus -
+                  CatchWelcomeTokens.welcomeReelRowHalfHeight) /
+              CatchWelcomeTokens.welcomeReelRowHeight)
           .round();
   return centeredRow % welcomePhraseBank.length;
 }
