@@ -4337,14 +4337,17 @@ describe("firestore.rules", () => {
     });
 
     it("keeps event-service messages private to trusted workers", async () => {
-      await seed(["eventAssistanceMessages", "record-1"], {schemaVersion: 1});
-      for (const client of [testEnv.unauthenticatedContext().firestore(),
-        authedDb("host-1"),
-        authedDb("admin-1", {admin: true})]) {
-        const reference = doc(client, "eventAssistanceMessages", "record-1");
-        await assertFails(getDoc(reference));
-        await assertFails(setDoc(reference, {schemaVersion: 1}));
-        await assertFails(deleteDoc(reference));
+      for (const collectionName of ["eventAssistanceMessages",
+        "eventAssistanceGuests", "eventAssistanceThreads",
+        "eventAssistanceGuestGrants", "eventAssistanceCases"]) {
+        await seed([collectionName, "record-1"], {schemaVersion: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {schemaVersion: 1}));
+          await assertFails(deleteDoc(reference));
+        }
       }
     });
 

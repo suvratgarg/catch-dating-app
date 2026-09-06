@@ -537,6 +537,144 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceGuestDocument {
+  schemaVersion: 1;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  episodeId: string;
+  revision: number;
+  lifecycle: "active" | "closed";
+  intention:
+    | {
+        kind: "unknown";
+      }
+    | {
+        kind: "onMyWay";
+        claimedEta: number | null;
+      }
+    | {
+        kind: "joinLater";
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+      }
+    | {
+        kind: "notComing";
+      };
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceThreadDocument {
+  schemaVersion: 1;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  workflow: {
+    kind:
+      | "venueReadiness"
+      | "routeReadiness"
+      | "formatReadiness"
+      | "rosterReadiness"
+      | "requiredGuestData"
+      | "resourceReadiness"
+      | "staffingReadiness"
+      | "messagingReadiness"
+      | "admissionReview"
+      | "financialReadiness"
+      | "joiningInstructions"
+      | "identityResolution"
+      | "guestAdmission"
+      | "guestCheckIn"
+      | "lateJoin"
+      | "participationChange"
+      | "guestPrerequisite"
+      | "allocationRepair"
+      | "placementConfirmation"
+      | "resourceRecovery"
+      | "fairParticipation"
+      | "roundPublication"
+      | "unitProgress"
+      | "outcomeRecording"
+      | "programmeRecovery"
+      | "departure"
+      | "checkpoint"
+      | "groupTransfer"
+      | "routeRecovery"
+      | "locationFreshness"
+      | "accountability"
+      | "planChangeCommunication"
+      | "deliveryRecovery"
+      | "replyOwnership"
+      | "guestAssistance"
+      | "comfortSafety"
+      | "attendanceSync"
+      | "concurrencyRecovery"
+      | "operationRecovery"
+      | "contextBoundary"
+      | "overrideReview"
+      | "eventClosure"
+      | "attendanceReconciliation"
+      | "financialReconciliation"
+      | "postEventFollowUp"
+      | "eventLearning";
+    occurrenceId: string;
+  };
+  messageId: string;
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceGuestGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  tokenHash: string;
+  signingKeyId: string;
+  issuedAt: number;
+  expiresAt: number;
+  revokedAt: number | null;
+}
+
+export interface EventAssistanceCaseDocument {
+  [k: string]: unknown;
+}
+
 /**
  * Private durable event-service outbox. The immutable intent and bounded attempt history survive workflow completion and delayed callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.
  */
@@ -829,7 +967,7 @@ export interface EventAssistanceMessageDocument {
               };
         }[];
       };
-  lifecycle: "active" | "cancelled" | "superseded";
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
   /**
    * @maxItems 6
    */
@@ -1023,6 +1161,204 @@ export interface EventAssistanceMessageDocument {
   deliveryConflict: boolean;
   createdAt: number;
   updatedAt: number;
+  response:
+    | (
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "guestWeb";
+              linkId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "provider";
+              attemptId: string;
+              providerEventId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+            source: {
+              kind: "simulation";
+              actionId: string;
+            };
+          }
+      )
+    | null;
 }
 
 /**

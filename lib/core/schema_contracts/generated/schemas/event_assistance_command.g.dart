@@ -305,6 +305,8 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
           'required': <Object?>[
             'attendeeId',
             'intent',
+            'episodeId',
+            'expectedParticipationRevision',
           ],
           'properties': <String, Object?>{
             'attendeeId': <String, Object?>{
@@ -474,6 +476,17 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
                   },
                 },
               ],
+            },
+            'episodeId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'expectedParticipationRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
             },
           },
         },

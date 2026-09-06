@@ -71,6 +71,10 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  getEventAssistanceGuestView,
+  submitEventAssistanceGuestChoice,
+} from "./eventSuccess/operations/guestHandlers";
+export {
   completeEventRehearsal,
   controlEventRehearsal,
   controlEventRehearsalSpatial,

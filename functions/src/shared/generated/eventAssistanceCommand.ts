@@ -93,6 +93,8 @@ export type EventAssistanceCommand =
           | {
               kind: "notComing";
             };
+        episodeId: string;
+        expectedParticipationRevision: number;
       };
     }
   | {

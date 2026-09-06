@@ -3,6 +3,14 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceGuestDocumentSchema,
+  eventAssistanceThreadDocumentSchema,
+  eventAssistanceGuestGrantDocumentSchema,
+  eventAssistanceCaseDocumentSchema,
+  getEventAssistanceGuestViewCallablePayloadSchema,
+  submitEventAssistanceGuestChoiceCallablePayloadSchema,
+  eventAssistanceGuestViewCallableResponseSchema,
+  submitEventAssistanceGuestChoiceCallableResponseSchema,
   eventAssistanceMessageDocumentSchema,
   eventAssistanceMessageIntentSchema,
   eventAssistanceDeliveryAttemptSchema,
@@ -563,6 +571,14 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceGuestDocument = ajv.compile(eventAssistanceGuestDocumentSchema);
+export const validateEventAssistanceThreadDocument = ajv.compile(eventAssistanceThreadDocumentSchema);
+export const validateEventAssistanceGuestGrantDocument = ajv.compile(eventAssistanceGuestGrantDocumentSchema);
+export const validateEventAssistanceCaseDocument = ajv.compile(eventAssistanceCaseDocumentSchema);
+export const validateGetEventAssistanceGuestViewCallablePayload = ajv.compile(getEventAssistanceGuestViewCallablePayloadSchema);
+export const validateSubmitEventAssistanceGuestChoiceCallablePayload = ajv.compile(submitEventAssistanceGuestChoiceCallablePayloadSchema);
+export const validateEventAssistanceGuestViewCallableResponse = ajv.compile(eventAssistanceGuestViewCallableResponseSchema);
+export const validateSubmitEventAssistanceGuestChoiceCallableResponse = ajv.compile(submitEventAssistanceGuestChoiceCallableResponseSchema);
 export const validateEventAssistanceMessageDocument = ajv.compile(eventAssistanceMessageDocumentSchema);
 export const validateEventAssistanceMessageIntent = ajv.compile(eventAssistanceMessageIntentSchema);
 export const validateEventAssistanceDeliveryAttempt = ajv.compile(eventAssistanceDeliveryAttemptSchema);

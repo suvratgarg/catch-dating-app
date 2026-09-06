@@ -1835,6 +1835,58 @@
       ]
     },
     {
+      "id": "eventAssistanceGuests",
+      "path": "eventAssistanceGuests/{guestId}",
+      "rulesMatch": "/eventAssistanceGuests/{guestId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceThreads",
+      "path": "eventAssistanceThreads/{threadId}",
+      "rulesMatch": "/eventAssistanceThreads/{threadId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceGuestGrants",
+      "path": "eventAssistanceGuestGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceGuestGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceCases",
+      "path": "eventAssistanceCases/{caseId}",
+      "rulesMatch": "/eventAssistanceCases/{caseId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
       "id": "eventAssistanceMessages",
       "path": "eventAssistanceMessages/{messageId}",
       "rulesMatch": "/eventAssistanceMessages/{messageId}",

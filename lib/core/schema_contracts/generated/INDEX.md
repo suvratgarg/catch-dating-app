@@ -12,6 +12,14 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
+| EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
+| EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts` |
+| EventAssistanceCaseDocument | `firestore/event_assistance_cases.schema.json` | `functions/src/shared/generated/eventAssistanceCaseDocument.ts` |
+| GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload.ts` |
+| SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload.ts` |
+| EventAssistanceGuestViewCallableResponse | `callable_responses/event_assistance_guest_view_response.schema.json` | `functions/src/shared/generated/eventAssistanceGuestViewCallableResponse.ts` |
+| SubmitEventAssistanceGuestChoiceCallableResponse | `callable_responses/submit_event_assistance_guest_choice_response.schema.json` | `functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse.ts` |
 | EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `functions/src/shared/generated/eventAssistanceMessageDocument.ts` |
 | EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `functions/src/shared/generated/eventAssistanceMessageIntent.ts` |
 | EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts` |
@@ -553,6 +561,14 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
+| `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |
+| `schemaEventAssistanceGuestGrantDocumentSchema` | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_grant_document.g.dart` |
+| `schemaEventAssistanceCaseDocumentSchema` | EventAssistanceCaseDocument | `firestore/event_assistance_cases.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_case_document.g.dart` |
+| `schemaGetEventAssistanceGuestViewCallablePayloadSchema` | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_guest_view_callable_payload.g.dart` |
+| `schemaSubmitEventAssistanceGuestChoiceCallablePayloadSchema` | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_assistance_guest_choice_callable_payload.g.dart` |
+| `schemaEventAssistanceGuestViewCallableResponseSchema` | EventAssistanceGuestViewCallableResponse | `callable_responses/event_assistance_guest_view_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_view_callable_response.g.dart` |
+| `schemaSubmitEventAssistanceGuestChoiceCallableResponseSchema` | SubmitEventAssistanceGuestChoiceCallableResponse | `callable_responses/submit_event_assistance_guest_choice_response.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_assistance_guest_choice_callable_response.g.dart` |
 | `schemaEventAssistanceMessageDocumentSchema` | EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_document.g.dart` |
 | `schemaEventAssistanceMessageIntentSchema` | EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_intent.g.dart` |
 | `schemaEventAssistanceDeliveryAttemptSchema` | EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_delivery_attempt.g.dart` |
@@ -1094,6 +1110,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
+| SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
 | CreateOrganizerCallableRequest | CreateOrganizerCallablePayload | `callables/create_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_callable_request.g.dart` |

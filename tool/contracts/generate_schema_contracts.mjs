@@ -16,6 +16,58 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "EventAssistanceGuestDocument",
+    "source": "firestore/event_assistance_guests.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"
+  },
+  {
+    "name": "EventAssistanceThreadDocument",
+    "source": "firestore/event_assistance_threads.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceThreadDocument.ts"
+  },
+  {
+    "name": "EventAssistanceGuestGrantDocument",
+    "source": "firestore/event_assistance_guest_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts"
+  },
+  {
+    "name": "EventAssistanceCaseDocument",
+    "source": "firestore/event_assistance_cases.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceCaseDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGuestViewCallablePayload",
+    "source": "callables/get_event_assistance_guest_view_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventAssistanceGuestViewCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallablePayload",
+    "source": "callables/submit_event_assistance_guest_choice_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventAssistanceGuestViewCallableResponse",
+    "source": "callable_responses/event_assistance_guest_view_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestViewCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventAssistanceGuestViewCallableResponse.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallableResponse",
+    "source": "callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallableResponse.ts"
+    ]
+  },
+  {
     name: "EventAssistanceMessageDocument",
     source: "firestore/event_assistance_messages.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceMessageDocument.ts",

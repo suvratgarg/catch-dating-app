@@ -1,6 +1,1196 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventAssistanceGuestDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "guestId",
+    "context",
+    "attendeeId",
+    "attendeeGeneration",
+    "episodeId",
+    "revision",
+    "lifecycle",
+    "intention",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lifecycle": {
+      "enum": [
+        "active",
+        "closed"
+      ]
+    },
+    "intention": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unknown"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "claimedEta"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "onMyWay"
+            },
+            "claimedEta": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "joinLater"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "stopId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "stopId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "checkpointId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "notComing"
+            }
+          }
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceGuestDocument",
+  "x-firestore-collection": "eventAssistanceGuests",
+  "x-firestore-path": "eventAssistanceGuests/{guestId}",
+  "x-document-id-field": "guestId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceThreadDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "threadId",
+    "guestId",
+    "context",
+    "attendeeId",
+    "episodeId",
+    "workflow",
+    "messageId",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "occurrenceId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "venueReadiness",
+            "routeReadiness",
+            "formatReadiness",
+            "rosterReadiness",
+            "requiredGuestData",
+            "resourceReadiness",
+            "staffingReadiness",
+            "messagingReadiness",
+            "admissionReview",
+            "financialReadiness",
+            "joiningInstructions",
+            "identityResolution",
+            "guestAdmission",
+            "guestCheckIn",
+            "lateJoin",
+            "participationChange",
+            "guestPrerequisite",
+            "allocationRepair",
+            "placementConfirmation",
+            "resourceRecovery",
+            "fairParticipation",
+            "roundPublication",
+            "unitProgress",
+            "outcomeRecording",
+            "programmeRecovery",
+            "departure",
+            "checkpoint",
+            "groupTransfer",
+            "routeRecovery",
+            "locationFreshness",
+            "accountability",
+            "planChangeCommunication",
+            "deliveryRecovery",
+            "replyOwnership",
+            "guestAssistance",
+            "comfortSafety",
+            "attendanceSync",
+            "concurrencyRecovery",
+            "operationRecovery",
+            "contextBoundary",
+            "overrideReview",
+            "eventClosure",
+            "attendanceReconciliation",
+            "financialReconciliation",
+            "postEventFollowUp",
+            "eventLearning"
+          ],
+          "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+        },
+        "occurrenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        }
+      }
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceThreadDocument",
+  "x-firestore-collection": "eventAssistanceThreads",
+  "x-firestore-path": "eventAssistanceThreads/{threadId}",
+  "x-document-id-field": "threadId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceGuestGrantDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "linkId",
+    "threadId",
+    "guestId",
+    "context",
+    "attendeeId",
+    "episodeId",
+    "tokenHash",
+    "signingKeyId",
+    "issuedAt",
+    "expiresAt",
+    "revokedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "tokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "signingKeyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "title": "EventAssistanceGuestGrantDocument",
+  "x-firestore-collection": "eventAssistanceGuestGrants",
+  "x-firestore-path": "eventAssistanceGuestGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceCaseDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "guestId",
+        "context",
+        "attendeeId",
+        "episodeId",
+        "responseId",
+        "messageId",
+        "status",
+        "receivedAt",
+        "category",
+        "owner"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "category": {
+          "enum": [
+            "eventLogistics",
+            "accessibility",
+            "other"
+          ]
+        },
+        "owner": {
+          "const": "eventLead"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "guestId",
+        "context",
+        "attendeeId",
+        "episodeId",
+        "responseId",
+        "messageId",
+        "status",
+        "receivedAt",
+        "category",
+        "owner"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "category": {
+          "enum": [
+            "comfortSafety"
+          ]
+        },
+        "owner": {
+          "const": "authorizedSafetyOperator"
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceCaseDocument",
+  "x-firestore-collection": "eventAssistanceCases",
+  "x-firestore-path": "eventAssistanceCases/{caseId}",
+  "x-document-id-field": "caseId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const getEventAssistanceGuestViewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_guest_view_payload.schema.json",
+  "title": "GetEventAssistanceGuestViewCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const submitEventAssistanceGuestChoiceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_assistance_guest_choice_payload.schema.json",
+  "title": "SubmitEventAssistanceGuestChoiceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "intentId",
+    "intentRevision",
+    "expectedGuestRevision",
+    "choiceId",
+    "requestId"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedGuestRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choiceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const eventAssistanceGuestViewCallableResponseSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "serverTime",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "const": "unavailable"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "enum": [
+            "expired",
+            "eventClosed",
+            "guestUnavailable",
+            "noInstructions",
+            "alreadyJoined"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "serverTime",
+        "eventTitle",
+        "guestRevision",
+        "intentId",
+        "intentRevision",
+        "instructionRevision",
+        "title",
+        "text",
+        "expiresAt",
+        "response",
+        "choices"
+      ],
+      "properties": {
+        "status": {
+          "const": "ready"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventTitle": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "guestRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "response": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "receivedAt"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "choices": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "choiceId",
+              "label"
+            ],
+            "properties": {
+              "choiceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceGuestViewCallableResponse"
+};
+
+export const submitEventAssistanceGuestChoiceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+  "title": "SubmitEventAssistanceGuestChoiceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result",
+    "view"
+  ],
+  "properties": {
+    "result": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "accepted",
+                "replayed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "rejected"
+            },
+            "reason": {
+              "enum": [
+                "scopeMismatch",
+                "staleIntent",
+                "invalidChoice",
+                "expired",
+                "alreadyResponded",
+                "noLongerNeeded",
+                "factsStale",
+                "guestStateChanged"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "view": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "serverTime",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "const": "unavailable"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "enum": [
+                "expired",
+                "eventClosed",
+                "guestUnavailable",
+                "noInstructions",
+                "alreadyJoined"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "serverTime",
+            "eventTitle",
+            "guestRevision",
+            "intentId",
+            "intentRevision",
+            "instructionRevision",
+            "title",
+            "text",
+            "expiresAt",
+            "response",
+            "choices"
+          ],
+          "properties": {
+            "status": {
+              "const": "ready"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "eventTitle": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "guestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "intentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "intentRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "instructionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "response": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "receivedAt"
+                  ],
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    "receivedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "choices": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "choiceId",
+                  "label"
+                ],
+                "properties": {
+                  "choiceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
 export const eventAssistanceMessageDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_assistance_messages.schema.json",
@@ -21,7 +1211,8 @@ export const eventAssistanceMessageDocumentSchema = {
     "attempts",
     "deliveryConflict",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "response"
   ],
   "properties": {
     "schemaVersion": {
@@ -975,7 +2166,8 @@ export const eventAssistanceMessageDocumentSchema = {
       "enum": [
         "active",
         "cancelled",
-        "superseded"
+        "superseded",
+        "responded"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -1947,8 +3139,1031 @@ export const eventAssistanceMessageDocumentSchema = {
       "minimum": 0,
       "maximum": 9007199254740991,
       "x-catch-ownership": "server-only"
+    },
+    "response": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "linkId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestWeb",
+                      "type": "string"
+                    },
+                    "linkId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "attemptId",
+                    "providerEventId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "provider",
+                      "type": "string"
+                    },
+                    "attemptId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    },
+                    "providerEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "rehearsalId",
+                    "virtualEventId",
+                    "clockId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "rehearsal"
+                    },
+                    "rehearsalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "virtualEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "clockId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "simulation",
+                      "type": "string"
+                    },
+                    "actionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lifecycle": {
+            "const": "responded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "response": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const eventAssistanceMessageIntentSchema = {
@@ -14767,7 +16982,9 @@ export const eventAssistanceCommandSchema = {
           "additionalProperties": false,
           "required": [
             "attendeeId",
-            "intent"
+            "intent",
+            "episodeId",
+            "expectedParticipationRevision"
           ],
           "properties": {
             "attendeeId": {
@@ -14937,6 +17154,17 @@ export const eventAssistanceCommandSchema = {
                   }
                 }
               ]
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedParticipationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             }
           }
         }

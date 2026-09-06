@@ -18,7 +18,8 @@
     "attempts",
     "deliveryConflict",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "response"
   ],
   "properties": {
     "schemaVersion": {
@@ -45,7 +46,8 @@
       "enum": [
         "active",
         "cancelled",
-        "superseded"
+        "superseded",
+        "responded"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -72,6 +74,41 @@
       "minimum": 0,
       "maximum": 9007199254740991,
       "x-catch-ownership": "server-only"
+    },
+    "response": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/GuestResponse"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lifecycle": {
+            "const": "responded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "response": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
 }

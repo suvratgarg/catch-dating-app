@@ -124,10 +124,10 @@ receipts remain reconcilable after closure. Contradictory delivery evidence is
 sticky and blocks further dispatch pending an owned resolution.
 
 No browser or mobile client can read or write this collection directly, even
-with an admin claim. Guest responses still require the separate scoped grant
-and owning-domain mutation boundary; this outbox does not grant attendee access
-or turn self-reported intention into attendance. Scheduling, provider activation,
-the concrete source readers and terminal cleanup remain delivery work. The
+with an admin claim. Guest responses use the separate scoped grant and atomic
+mutation boundary described below; this outbox does not grant full runtime
+access or turn self-reported intention into attendance. Scheduling, provider
+activation, route permission readers and terminal cleanup remain delivery work. The
 collection currently has no TTL; executable or reconcilable deduplication state
 must not be deleted merely because the message's instruction has expired.
 
@@ -2025,3 +2025,28 @@ source identity, original occurrence time, due time and fenced lease fields.
 Message actions pin a draft campaign revision and generated campaigns carry
 server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
+
+### Event Assistance Guest Response Contract
+
+`eventAssistanceGuests` stores the event/attendee binding, exact roster creation
+generation, participation episode and revisioned reported intent. It deliberately
+does not extend or mutate the admission/attendance projection. Replacing an
+episode invalidates all earlier grants. `eventAssistanceThreads` stores one
+current message head per guest episode, workflow kind and occurrence; separate
+workflow conversations cannot overwrite each other.
+
+`eventAssistanceGuestGrants` contains only the hashed bearer secret and its
+thread/guest/episode scope, signing key id, issue/expiry times and optional
+revocation. Grants live for at most 24 hours, bounded by the event end when it
+is still upcoming. The raw secret is regenerated only for the trusted worker;
+it is never stored in the outbox or returned by the public read endpoint.
+
+Guest response acceptance checks the current thread head and intent revision;
+joining intent additionally fences the participation revision. The response,
+message closure and any intention/help-case effect commit in one transaction.
+The response remains in the message for retry deduplication. `eventAssistanceCases`
+correlates a help request with the accepted response; comfort/safety categories
+are assigned only to the restricted safety owner, other categories to the event
+lead. No SDK client, including an administrator, can access any of these four
+collections directly. Host projections and case-resolution commands require
+separate authorized boundaries before this feature can be enabled.

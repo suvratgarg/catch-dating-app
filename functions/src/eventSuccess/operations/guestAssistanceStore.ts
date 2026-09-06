@@ -1,0 +1,387 @@
+import {HttpsError} from "firebase-functions/v2/https";
+import type {Firestore, Transaction} from "firebase-admin/firestore";
+import type {EventAssistanceGuestViewCallableResponse as GuestView} from
+  "../../shared/generated/eventAssistanceGuestViewCallableResponse";
+import type {SubmitEventAssistanceGuestChoiceCallablePayload as Submission} from
+  "../../shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
+import type {
+  SubmitEventAssistanceGuestChoiceCallableResponse as SubmitResult,
+} from
+  "../../shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
+import {validateEventAssistanceCaseDocument} from
+  "../../shared/generated/validators/eventAssistanceCaseDocument";
+import {operationContentHash} from "../../operations/durableActions";
+import {assertCommandContext, assertCommandRole} from "./commands";
+import {
+  assistanceMessageId, MessageRecord, newMessageRecord, parseMessageRecord,
+} from "./messageOutbox";
+import {parseMessageIntent, resolveGuestChoice} from "./messageProtocol";
+import {sameMessageContext} from "./messagingPolicy";
+import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
+import {
+  Grant, Guest, guestCanReceiveMessage, guestCollections, guestIdentity,
+  GuestSourceFacts,
+  messageWindowOpen, parseGrant, parseGuest, parseThread, readGuestSourceFacts,
+  requireDocumentId, Thread, threadIdentity, unavailable,
+} from "./guestRecords";
+import {
+  grantSecret, GuestLinkSigningKeys, guestSecretHash, matchesGuestSecret,
+} from "./guestLinkTokens";
+
+interface ResolvedGuestView {
+  grant: Grant;
+  guest: Guest;
+  thread: Thread;
+  message: MessageRecord;
+  source: GuestSourceFacts;
+}
+
+/** Trusted publisher plus the least-authority bearer response boundary. */
+export class GuestAssistanceStore {
+  constructor(
+    private readonly db: Firestore,
+    private readonly clock: () => number = Date.now
+  ) {}
+
+  /** Reuse an operation id, or supply a revision to start a new episode. */
+  async startEpisode(
+    context: Guest["context"], attendeeId: string, operationId: string,
+    expectedRevision: number | null
+  ): Promise<Guest> {
+    const guestId = guestIdentity(context, attendeeId);
+    requireDocumentId(operationId);
+    return this.db.runTransaction(async (tx) => {
+      const reference = this.db.collection(guestCollections.guests)
+        .doc(guestId);
+      const snapshot = await tx.get(reference);
+      const source = await readGuestSourceFacts(this.db, tx, context,
+        attendeeId);
+      const now = this.now();
+      const episodeId = "episode:" + operationContentHash([
+        guestId, source.attendeeGeneration, operationId,
+      ]);
+      const existing = snapshot.exists ? parseGuest(snapshot.data()) : null;
+      if (existing && existing.guestId !== guestId) throw unavailable();
+      if (existing?.episodeId === episodeId) return existing;
+      if ((existing?.revision ?? null) !== expectedRevision) throw conflict();
+      if (source.attendeeStatus !== "registered" &&
+          source.attendeeStatus !== "checkedIn" &&
+          !(source.attendeeStatus === "cancelled" &&
+            source.eventStatus === "cancelled")) throw unavailable();
+      const guest = parseGuest({schemaVersion: 1, guestId, context, attendeeId,
+        attendeeGeneration: source.attendeeGeneration, episodeId,
+        revision: existing ? existing.revision + 1 : 0, lifecycle: "active",
+        intention: {kind: "unknown"}, createdAt: now, updatedAt: now});
+      tx.set(reference, guest);
+      return guest;
+    });
+  }
+
+  /** Publish current instructions, superseding this workflow's old intent. */
+  async publishMessage(
+    value: unknown, expectedThreadRevision: number | null
+  ): Promise<Thread> {
+    const intent = parseMessageIntent(value);
+    if (intent.context.mode !== "live") throw unavailable();
+    const context = intent.context;
+    const guestId = guestIdentity(context, intent.attendeeId);
+    const threadId = threadIdentity(intent);
+    const messageId = assistanceMessageId(intent);
+    return this.db.runTransaction(async (tx) => {
+      const threadRef = this.db.collection(guestCollections.threads)
+        .doc(threadId);
+      const messageRef = this.db.collection(EVENT_ASSISTANCE_MESSAGES)
+        .doc(messageId);
+      const [guestSnap, threadSnap, messageSnap] = await Promise.all([
+        tx.get(this.db.collection(guestCollections.guests).doc(guestId)),
+        tx.get(threadRef), tx.get(messageRef),
+      ]);
+      const guest = parseGuest(guestSnap.data());
+      if (guest.guestId !== guestId) throw unavailable();
+      const source = await readGuestSourceFacts(this.db, tx, context,
+        intent.attendeeId);
+      if (!guestCanReceiveMessage(guest, source, intent) ||
+          guest.episodeId !== intent.episodeId) {
+        throw unavailable();
+      }
+      const previous = threadSnap.exists ?
+        parseThread(threadSnap.data()) : null;
+      if (previous && previous.threadId !== threadId) throw unavailable();
+      const existing = messageSnap.exists ?
+        parseMessageRecord(messageSnap.data()) : null;
+      if (existing && operationContentHash(existing.intent) !==
+          operationContentHash(intent)) throw conflict();
+      if (previous?.messageId === messageId && existing) return previous;
+      if ((previous?.revision ?? null) !== expectedThreadRevision) {
+        throw conflict();
+      }
+      const priorRef = previous ? this.db.collection(EVENT_ASSISTANCE_MESSAGES)
+        .doc(previous.messageId) : null;
+      const prior = priorRef ? parseMessageRecord((await tx.get(priorRef))
+        .data()) : null;
+      if (prior && (prior.messageId !== previous?.messageId ||
+          threadIdentity(prior.intent) !== threadId)) throw unavailable();
+      const now = this.now();
+      if (!messageWindowOpen(intent, source, now)) throw unavailable();
+      const message = existing ?? newMessageRecord(intent, now);
+      if (message.lifecycle !== "active" || now >= intent.expiresAt) {
+        throw unavailable();
+      }
+      const thread = parseThread({schemaVersion: 1, threadId, guestId, context,
+        attendeeId: intent.attendeeId, episodeId: intent.episodeId,
+        workflow: intent.workflow, messageId,
+        revision: previous ? previous.revision + 1 : 0,
+        createdAt: previous?.createdAt ?? now, updatedAt: now});
+      if (!existing) tx.create(messageRef, message);
+      if (priorRef && prior?.lifecycle === "active") {
+        tx.set(priorRef, parseMessageRecord({...prior, lifecycle: "superseded",
+          revision: prior.revision + 1, updatedAt: now}));
+      }
+      tx.set(threadRef, thread);
+      return thread;
+    });
+  }
+
+  /** Idempotent issuance. Only the worker receives the regenerated secret. */
+  async issueLink(
+    threadId: string, operationId: string, keys: GuestLinkSigningKeys
+  ): Promise<{linkId: string; secret: string; expiresAt: number}> {
+    requireDocumentId(threadId);
+    requireDocumentId(operationId);
+    const linkId = operationContentHash([threadId, operationId]).slice(0, 32);
+    return this.db.runTransaction(async (tx) => {
+      const reference = this.db.collection(guestCollections.grants).doc(linkId);
+      const [threadSnap, grantSnap] = await Promise.all([
+        tx.get(this.db.collection(guestCollections.threads).doc(threadId)),
+        tx.get(reference),
+      ]);
+      const thread = parseThread(threadSnap.data());
+      if (thread.threadId !== threadId) throw unavailable();
+      const guest = parseGuest((await tx.get(this.db
+        .collection(guestCollections.guests).doc(thread.guestId))).data());
+      if (guest.guestId !== thread.guestId) throw unavailable();
+      const source = await readGuestSourceFacts(this.db, tx, thread.context,
+        thread.attendeeId);
+      const message = parseMessageRecord((await tx.get(this.db
+        .collection(EVENT_ASSISTANCE_MESSAGES).doc(thread.messageId))).data());
+      const now = this.now();
+      if (!guestCanReceiveMessage(guest, source, message.intent) ||
+          guest.episodeId !== thread.episodeId ||
+          message.messageId !== thread.messageId ||
+          threadIdentity(message.intent) !== thread.threadId ||
+          (message.lifecycle !== "active" &&
+            message.lifecycle !== "responded") ||
+          message.intent.expiresAt <= now ||
+          !messageWindowOpen(message.intent, source, now)) throw unavailable();
+      let grant: Grant;
+      if (grantSnap.exists) {
+        grant = parseGrant(grantSnap.data());
+        if (grant.linkId !== linkId || grant.threadId !== threadId ||
+            grant.guestId !== thread.guestId ||
+            grant.episodeId !== thread.episodeId ||
+            !sameMessageContext(grant.context, thread.context) ||
+            grant.revokedAt !== null ||
+            grant.expiresAt <= now) throw unavailable();
+      } else {
+        grant = parseGrant({schemaVersion: 1, linkId, threadId,
+          guestId: thread.guestId, context: thread.context,
+          attendeeId: thread.attendeeId, episodeId: thread.episodeId,
+          tokenHash: "0".repeat(64), signingKeyId: keys.currentKeyId,
+          issuedAt: now, expiresAt: Math.min(now + 86_400_000,
+            source.eventEnd > now ? source.eventEnd : now + 86_400_000),
+          revokedAt: null});
+      }
+      const secret = grantSecret(grant, keys);
+      if (grantSnap.exists && !matchesGuestSecret(grant, secret)) {
+        throw unavailable();
+      }
+      if (!grantSnap.exists) {
+        tx.create(reference, {...grant, tokenHash: guestSecretHash(secret)});
+      }
+      return {linkId, secret, expiresAt: grant.expiresAt};
+    });
+  }
+
+  async revokeLink(linkId: string): Promise<void> {
+    assertLinkId(linkId);
+    await this.db.runTransaction(async (tx) => {
+      const reference = this.db.collection(guestCollections.grants).doc(linkId);
+      const grant = parseGrant((await tx.get(reference)).data());
+      if (grant.revokedAt === null) {
+        tx.set(reference, parseGrant({...grant, revokedAt: this.now()}));
+      }
+    });
+  }
+
+  async getView(linkId: string, secret: string): Promise<GuestView> {
+    return this.db.runTransaction(async (tx) =>
+      this.project(await this.resolve(tx, linkId, secret), this.now()));
+  }
+
+  async submit(input: Submission): Promise<SubmitResult> {
+    return this.db.runTransaction(async (tx) => {
+      const resolved = await this.resolve(tx, input.linkId, input.secret);
+      const {message, guest, grant} = resolved;
+      const now = this.now();
+      const view = this.project(resolved, now);
+      if (view.status !== "ready") {
+        return {result: {kind: "rejected", reason: "noLongerNeeded"}, view};
+      }
+      const choice = resolveGuestChoice({intent: message.intent,
+        lifecycle: message.lifecycle, submission: input,
+        scope: {context: grant.context, eventId: grant.context.eventId,
+          attendeeId: grant.attendeeId, episodeId: grant.episodeId,
+          validUntil: grant.expiresAt,
+          source: {kind: "guestWeb", linkId: grant.linkId}},
+        gate: {kind: "allow", checkedAt: now,
+          validUntil: Math.min(message.intent.expiresAt, grant.expiresAt),
+          instructionRevision: view.instructionRevision},
+        now, existingResponse: message.response});
+      if (choice.kind === "rejected") return {result: choice, view};
+      if (choice.kind === "replayed") {
+        return {result: {kind: "replayed"}, view};
+      }
+      const response = choice.response;
+      if (response.value.kind === "joinIntent" &&
+          guest.revision !== input.expectedGuestRevision) {
+        return {result: {kind: "rejected", reason: "guestStateChanged"}, view};
+      }
+      let nextGuest = guest;
+      switch (response.value.kind) {
+      case "joinIntent": {
+        const command = {kind: "setJoinIntent" as const,
+          context: guest.context, eventId: guest.context.eventId,
+          operationId: response.responseId,
+          payload: {attendeeId: guest.attendeeId, episodeId: guest.episodeId,
+            expectedParticipationRevision: input.expectedGuestRevision,
+            intent: response.value.intention}};
+        assertCommandContext(command, guest.context);
+        assertCommandRole(command, ["guestSelf"]);
+        nextGuest = parseGuest({...guest, intention: command.payload.intent,
+          revision: guest.revision + 1, updatedAt: now});
+        tx.set(this.db.collection(guestCollections.guests).doc(guest.guestId),
+          nextGuest);
+        break;
+      }
+      case "requestHelp": {
+        const category = response.value.category;
+        const request = {schemaVersion: 1,
+          caseId: "case:" + operationContentHash(response.responseId),
+          guestId: guest.guestId, context: guest.context,
+          attendeeId: guest.attendeeId, episodeId: guest.episodeId,
+          responseId: response.responseId, messageId: message.messageId,
+          status: "open", category, receivedAt: now,
+          owner: category === "comfortSafety" ?
+            "authorizedSafetyOperator" : "eventLead"};
+        if (!validateEventAssistanceCaseDocument(request)) {
+          throw new Error("Guest request failed its ownership contract");
+        }
+        tx.create(this.db.collection(guestCollections.cases)
+          .doc(request.caseId),
+        request);
+        break;
+      }
+      case "acknowledge": break;
+      default: {
+        const unhandled: never = response.value;
+        throw new Error("Unhandled guest response: " + unhandled);
+      }
+      }
+      const nextMessage = parseMessageRecord({...message, response,
+        lifecycle: "responded", revision: message.revision + 1,
+        updatedAt: now});
+      tx.set(this.db.collection(EVENT_ASSISTANCE_MESSAGES)
+        .doc(message.messageId), nextMessage);
+      return {result: {kind: "accepted"}, view: this.project({...resolved,
+        guest: nextGuest, message: nextMessage}, now)};
+    });
+  }
+
+  private async resolve(
+    tx: Transaction, linkId: string, secret: string
+  ): Promise<ResolvedGuestView> {
+    assertLinkId(linkId);
+    const grant = parseGrant((await tx.get(this.db
+      .collection(guestCollections.grants).doc(linkId))).data());
+    if (grant.linkId !== linkId) throw unavailable();
+    const now = this.now();
+    if (!matchesGuestSecret(grant, secret) || grant.revokedAt !== null ||
+        grant.issuedAt > now || grant.expiresAt <= now) throw unavailable();
+    const [guestSnap, threadSnap] = await Promise.all([
+      tx.get(this.db.collection(guestCollections.guests).doc(grant.guestId)),
+      tx.get(this.db.collection(guestCollections.threads).doc(grant.threadId)),
+    ]);
+    const guest = parseGuest(guestSnap.data());
+    const thread = parseThread(threadSnap.data());
+    if (guest.guestId !== grant.guestId ||
+        guest.episodeId !== grant.episodeId ||
+        thread.threadId !== grant.threadId ||
+        thread.guestId !== guest.guestId ||
+        thread.episodeId !== guest.episodeId ||
+        thread.attendeeId !== guest.attendeeId ||
+        !sameMessageContext(thread.context, grant.context) ||
+        !sameMessageContext(guest.context, grant.context)) throw unavailable();
+    const message = parseMessageRecord((await tx.get(this.db
+      .collection(EVENT_ASSISTANCE_MESSAGES).doc(thread.messageId))).data());
+    if (message.messageId !== thread.messageId ||
+        threadIdentity(message.intent) !== thread.threadId ||
+        message.intent.attendeeId !== guest.attendeeId ||
+        message.intent.episodeId !== guest.episodeId ||
+        !sameMessageContext(message.intent.context, guest.context)) {
+      throw unavailable();
+    }
+    const source = await readGuestSourceFacts(this.db, tx, guest.context,
+      guest.attendeeId);
+    return {grant, guest, thread, message, source};
+  }
+
+  private project(resolved: ResolvedGuestView, now: number): GuestView {
+    const {grant, guest, message, source} = resolved;
+    const closed = (reason: Extract<GuestView, {status: "unavailable"}>[
+      "reason"]): GuestView => ({
+      status: "unavailable", serverTime: now, reason,
+    });
+    if (grant.expiresAt <= now) return closed("expired");
+    const intent = message.intent;
+    if (!guestCanReceiveMessage(guest, source, intent)) {
+      return closed("guestUnavailable");
+    }
+    if (!messageWindowOpen(intent, source, now)) return closed("eventClosed");
+    if (intent.kind === "joiningUpdate" &&
+        source.attendeeStatus === "checkedIn") return closed("alreadyJoined");
+    if (intent.expiresAt <= now) return closed("expired");
+    if (message.lifecycle === "cancelled" ||
+        message.lifecycle === "superseded") return closed("noInstructions");
+    const response = message.response ? {
+      label: intent.choices.find((c) =>
+        c.choiceId === message.response!.choiceId)!.label,
+      receivedAt: message.response.receivedAt,
+    } : null;
+    return {status: "ready", serverTime: now, eventTitle: source.eventTitle,
+      guestRevision: guest.revision, intentId: intent.intentId,
+      intentRevision: intent.revision,
+      instructionRevision: intent.kind === "joiningUpdate" ?
+        intent.guidance.revision : intent.instructionRevision,
+      title: intent.kind === "joiningUpdate" ? "Where to join" : intent.title,
+      text: intent.kind === "joiningUpdate" ?
+        intent.guidance.text : intent.body,
+      expiresAt: Math.min(intent.expiresAt, grant.expiresAt), response,
+      choices: response ? [] : intent.choices.map(({choiceId, label}) =>
+        ({choiceId, label}))};
+  }
+
+  private now(): number {
+    const now = this.clock();
+    if (!Number.isSafeInteger(now) || now < 0) throw unavailable();
+    return now;
+  }
+}
+
+function assertLinkId(linkId: string): void {
+  if (!/^[a-f0-9]{32}$/.test(linkId)) throw unavailable();
+}
+
+function conflict(): HttpsError {
+  return new HttpsError("aborted",
+    "Event assistance changed. Refresh and retry.");
+}

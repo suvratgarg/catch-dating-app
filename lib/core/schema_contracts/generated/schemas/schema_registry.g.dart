@@ -17,6 +17,46 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceGuestDocument',
+    source: 'firestore/event_assistance_guests.schema.json',
+    schema: schemaEventAssistanceGuestDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceThreadDocument',
+    source: 'firestore/event_assistance_threads.schema.json',
+    schema: schemaEventAssistanceThreadDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGuestGrantDocument',
+    source: 'firestore/event_assistance_guest_grants.schema.json',
+    schema: schemaEventAssistanceGuestGrantDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCaseDocument',
+    source: 'firestore/event_assistance_cases.schema.json',
+    schema: schemaEventAssistanceCaseDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventAssistanceGuestViewCallablePayload',
+    source: 'callables/get_event_assistance_guest_view_payload.schema.json',
+    schema: schemaGetEventAssistanceGuestViewCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SubmitEventAssistanceGuestChoiceCallablePayload',
+    source: 'callables/submit_event_assistance_guest_choice_payload.schema.json',
+    schema: schemaSubmitEventAssistanceGuestChoiceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGuestViewCallableResponse',
+    source: 'callable_responses/event_assistance_guest_view_response.schema.json',
+    schema: schemaEventAssistanceGuestViewCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SubmitEventAssistanceGuestChoiceCallableResponse',
+    source: 'callable_responses/submit_event_assistance_guest_choice_response.schema.json',
+    schema: schemaSubmitEventAssistanceGuestChoiceCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceMessageDocument',
     source: 'firestore/event_assistance_messages.schema.json',
     schema: schemaEventAssistanceMessageDocumentSchema,
@@ -2699,6 +2739,14 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceGuestDocument': schemaEventAssistanceGuestDocumentSchema,
+  'EventAssistanceThreadDocument': schemaEventAssistanceThreadDocumentSchema,
+  'EventAssistanceGuestGrantDocument': schemaEventAssistanceGuestGrantDocumentSchema,
+  'EventAssistanceCaseDocument': schemaEventAssistanceCaseDocumentSchema,
+  'GetEventAssistanceGuestViewCallablePayload': schemaGetEventAssistanceGuestViewCallablePayloadSchema,
+  'SubmitEventAssistanceGuestChoiceCallablePayload': schemaSubmitEventAssistanceGuestChoiceCallablePayloadSchema,
+  'EventAssistanceGuestViewCallableResponse': schemaEventAssistanceGuestViewCallableResponseSchema,
+  'SubmitEventAssistanceGuestChoiceCallableResponse': schemaSubmitEventAssistanceGuestChoiceCallableResponseSchema,
   'EventAssistanceMessageDocument': schemaEventAssistanceMessageDocumentSchema,
   'EventAssistanceMessageIntent': schemaEventAssistanceMessageIntentSchema,
   'EventAssistanceDeliveryAttempt': schemaEventAssistanceDeliveryAttemptSchema,
@@ -3238,6 +3286,14 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_guests.schema.json': schemaEventAssistanceGuestDocumentSchema,
+  'firestore/event_assistance_threads.schema.json': schemaEventAssistanceThreadDocumentSchema,
+  'firestore/event_assistance_guest_grants.schema.json': schemaEventAssistanceGuestGrantDocumentSchema,
+  'firestore/event_assistance_cases.schema.json': schemaEventAssistanceCaseDocumentSchema,
+  'callables/get_event_assistance_guest_view_payload.schema.json': schemaGetEventAssistanceGuestViewCallablePayloadSchema,
+  'callables/submit_event_assistance_guest_choice_payload.schema.json': schemaSubmitEventAssistanceGuestChoiceCallablePayloadSchema,
+  'callable_responses/event_assistance_guest_view_response.schema.json': schemaEventAssistanceGuestViewCallableResponseSchema,
+  'callable_responses/submit_event_assistance_guest_choice_response.schema.json': schemaSubmitEventAssistanceGuestChoiceCallableResponseSchema,
   'firestore/event_assistance_messages.schema.json': schemaEventAssistanceMessageDocumentSchema,
   'operations/event_assistance_message_intent.schema.json': schemaEventAssistanceMessageIntentSchema,
   'operations/event_assistance_delivery_attempt.schema.json': schemaEventAssistanceDeliveryAttemptSchema,

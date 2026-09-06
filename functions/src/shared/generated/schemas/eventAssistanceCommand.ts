@@ -302,7 +302,9 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "additionalProperties": false,
           "required": [
             "attendeeId",
-            "intent"
+            "intent",
+            "episodeId",
+            "expectedParticipationRevision"
           ],
           "properties": {
             "attendeeId": {
@@ -472,6 +474,17 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
                   }
                 }
               ]
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedParticipationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             }
           }
         }

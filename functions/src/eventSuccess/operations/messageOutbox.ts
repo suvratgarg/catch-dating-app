@@ -9,6 +9,7 @@ import {
 import type {
   DeliveryDecision, DeliveryEvaluationInput, DispatchCandidate,
 } from "./messagingPolicy";
+import {sameMessageContext} from "./messagingPolicy";
 
 export type {MessageRecord};
 export type OutboxFacts = Pick<DeliveryEvaluationInput, "gate" | "routes">;
@@ -37,7 +38,38 @@ export function parseMessageRecord(value: unknown): MessageRecord {
   planMessageDelivery({intent: value.intent, attempts: value.attempts,
     lifecycle: value.lifecycle, now: value.updatedAt,
     gate: {kind: "stop", reason: "hostStopped"}, routes: []});
+  if (value.response) {
+    const response = value.response;
+    const choice = value.intent.choices.find((c) =>
+      c.choiceId === response.choiceId);
+    if (!choice ||
+        !sameMessageContext(response.context, value.intent.context) ||
+        response.intentId !== value.intent.intentId ||
+        response.intentRevision !== value.intent.revision ||
+        response.eventId !== value.intent.eventId ||
+        response.attendeeId !== value.intent.attendeeId ||
+        response.episodeId !== value.intent.episodeId ||
+        response.receivedAt < value.intent.createdAt ||
+        response.receivedAt > value.updatedAt ||
+        operationContentHash(choice.value) !==
+          operationContentHash(response.value)) {
+      throw new Error("Recorded response is outside the message");
+    }
+  }
   return value;
+}
+
+export function newMessageRecord(
+  value: unknown, now: number
+): MessageRecord {
+  const intent = structuredClone(parseMessageIntent(value));
+  if (!Number.isSafeInteger(now) || now >= intent.expiresAt) {
+    throw new Error("Message intent expired or clock invalid");
+  }
+  return parseMessageRecord({schemaVersion: 1,
+    messageId: assistanceMessageId(intent), revision: 0, intent,
+    lifecycle: "active", response: null, attempts: [], deliveryConflict: false,
+    createdAt: now, updatedAt: now});
 }
 
 export function evaluateOutbox(

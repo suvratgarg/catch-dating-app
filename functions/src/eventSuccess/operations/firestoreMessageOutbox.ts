@@ -9,7 +9,8 @@ import {mergeDeliveryReceipt, VerifiedDeliveryReceipt} from
   "./deliveryReceipts";
 import {
   assistanceMessageId, canClaimLiveAttempt, evaluateOutbox,
-  MessageRecord, OutboxFacts, parseMessageRecord, PermitResult,
+  MessageRecord, newMessageRecord, OutboxFacts, parseMessageRecord,
+  PermitResult,
 } from "./messageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
 
@@ -51,9 +52,7 @@ export class FirestoreMessageOutbox {
       }
       const now = this.now(intent.createdAt);
       if (now >= intent.expiresAt) throw new Error("Message intent expired");
-      const record = parseMessageRecord({schemaVersion: 1,
-        messageId: reference.id, revision: 0, intent, lifecycle: "active",
-        attempts: [], deliveryConflict: false, createdAt: now, updatedAt: now});
+      const record = newMessageRecord(intent, now);
       transaction.create(reference, record);
       return record;
     });
@@ -141,7 +140,7 @@ export class FirestoreMessageOutbox {
 
   async close(
     messageId: string, expectedRevision: number,
-    lifecycle: Exclude<MessageRecord["lifecycle"], "active">
+    lifecycle: "cancelled" | "superseded"
   ): Promise<MessageRecord> {
     if (lifecycle !== "cancelled" && lifecycle !== "superseded") {
       throw new Error("Invalid message closure");

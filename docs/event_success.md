@@ -122,7 +122,7 @@ Operations;
 the Functions adapter validates the same schemas before invoking it. Changing
 the policy therefore requires both generated-output parity and runtime tests.
 The local shadow factory does not load live event facts or send messages.
-Trusted worker scheduling, source fact readers, the guest response boundary,
+Trusted worker scheduling, complete live policy fact readers, provider adapters,
 and the Host/rehearsal application adapters remain integration work.
 
 `contracts/shared/event_assistance_messaging.schema.json` separates immutable
@@ -172,10 +172,36 @@ of its workflow run. They cannot reopen sending. Contradictory evidence creates
 a persistent conflict that withholds new dispatch, including an already
 reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
 or accept a real provider receipt. The outbox is not yet wired to a scheduler,
-live sender, guest endpoint, Host read model or rehearsal runtime; those remain
+live sender, Host read model or rehearsal runtime; those remain
 separate integration steps. Terminal cleanup must be added before activation,
 and must retain deduplication state throughout the provider reconciliation
 window.
+
+`GuestAssistanceStore` supplies the trusted publisher and scoped guest-response
+boundary. Private guest state records the roster document's exact creation
+generation and a participation episode. Each workflow occurrence has its own
+thread head, so joining guidance and another operational notice can coexist.
+Publishing a replacement atomically supersedes the prior message. A link
+resolves the thread's current head; an old button cannot mutate newer guidance.
+
+The worker issues a bounded, revocable grant using a versioned signing key.
+Firestore stores only its secret hash. Link redemption rechecks current event,
+roster generation, admission, episode, instruction expiry and message purpose.
+Cancellation and post-event notices have their own event-phase eligibility.
+The public App-Check-protected callables return only the event label, current
+instruction and approved response labels, not guest identity or roster data.
+A response and its effect commit together: joining intent advances a fenced
+private participation revision, acknowledgement records the receipt, and help
+creates an owned case. Comfort/safety requests require the restricted safety
+owner. None of these responses checks in, cancels or assigns an attendee.
+
+`readEventAssistanceMessageGate` is the concrete transaction-scoped event and
+roster gate for all channel adapters. It rejects a replaced episode or thread
+head, expired event phase, declined guest or confirmed arrival. Channel-specific
+consent, suppression and sender authority must still be read in the same outbox
+transaction. The guest webpage, key provisioning, live workflow publisher,
+Host case projection/resolution and rehearsal response adapter remain separate
+integration steps; recording a help case does not yet notify a Host.
 
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow
