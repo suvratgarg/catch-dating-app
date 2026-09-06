@@ -63,6 +63,8 @@ import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
 import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
     as _widgetbook_workspace_primitives_text_input_use_cases;
+import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart'
+    as _widgetbook_workspace_primitives_viewport_layout_use_cases;
 import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
     as _widgetbook_workspace_profiles_profile_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -1778,6 +1780,50 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Viewport',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAdaptiveMasterDetailLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route body breakpoint',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .adaptiveMasterDetailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFillViewportScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Short and overflowing content',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .fillViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMasterDetailLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Compact and split panes',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .masterDetailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSceneViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bounded scene geometry',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .sceneViewportStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchTabViewportScope',
             useCases: [

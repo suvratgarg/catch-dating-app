@@ -719,6 +719,11 @@ direct top/bottom previews while retaining route-neutral obstruction metrics.
 The shared package enables the Catch analyzer plugin at its own analysis root.
 Exact foundation-definition and raw-control ownership follows the moved files;
 seeded package-neighbor probes prevent extraction from bypassing enforcement.
+Box viewport scrolling and bounded scene geometry move unchanged to the package.
+Direct short/overflow, scene-size/inset and master-detail breakpoint previews
+cover the four layouts and scene descriptor, retiring five waivers. Master-detail
+source remains at its app owner
+until its state-matrix reference can move in the same slice.
 
 ### Phase 4 — One registry, binding grammar
 

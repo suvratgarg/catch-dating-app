@@ -69,6 +69,8 @@ export 'src/foundations/catch_icons.dart';
 export 'src/foundations/catch_text_styles.dart';
 export 'src/foundations/catch_theme.dart';
 export 'src/foundations/catch_transitions.dart';
+export 'src/patterns/catch_fill_viewport_scroll_view.dart';
+export 'src/patterns/catch_scene_viewport.dart';
 export 'src/patterns/catch_screen_scaffold.dart';
 export 'src/patterns/catch_sliver_empty_state.dart';
 export 'src/patterns/catch_sliver_state_viewport.dart';

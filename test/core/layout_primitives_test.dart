@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_fill_viewport_scroll_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

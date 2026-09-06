@@ -44,13 +44,6 @@
       "reason": "Inherited geometry scope has no independent renderable golden surface."
     },
     {
-      "class": "CatchFillViewportScrollView",
-      "file": "lib/core/widgets/catch_fill_viewport_scroll_view.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Viewport helper still needs a directly registered core catalog case."
-    },
-    {
       "class": "CatchFormStepSpec",
       "file": "lib/core/widgets/catch_form_step_flow.dart",
       "owner": "ui_system_program",
@@ -65,20 +58,6 @@
       "reason": "Nonvisual review-state protocol has no independent renderable golden surface."
     },
     {
-      "class": "CatchMasterDetailLayout",
-      "file": "lib/core/widgets/catch_master_detail_layout.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Master-detail layout still needs a directly registered geometry golden case."
-    },
-    {
-      "class": "CatchAdaptiveMasterDetailLayout",
-      "file": "lib/core/widgets/catch_master_detail_layout.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Adaptive master-detail layout still needs a registered breakpoint matrix."
-    },
-    {
       "class": "CatchNoticeControllerProvider",
       "file": "lib/core/widgets/catch_notice.g.dart",
       "owner": "ui_system_program",
@@ -91,20 +70,6 @@
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Preferred-size adapter still needs a directly registered geometry case."
-    },
-    {
-      "class": "CatchSceneViewportData",
-      "file": "lib/core/widgets/catch_scene_viewport.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual viewport descriptor is not yet bound to a registered host golden."
-    },
-    {
-      "class": "CatchSceneViewport",
-      "file": "lib/core/widgets/catch_scene_viewport.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Scene viewport still needs a directly registered geometry golden case."
     }
   ]
 }

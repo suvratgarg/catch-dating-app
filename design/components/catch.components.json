@@ -7757,6 +7757,80 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
+          },
+          {
+            "id": "catch.screen_body.fill_viewport_scroll_view",
+            "symbol": "CatchFillViewportScrollView",
+            "file": "packages/catch_ui/lib/src/patterns/catch_fill_viewport_scroll_view.dart",
+            "summary": "Box viewport scroller that fills short content, scrolls overflow and caps its content width.",
+            "states": [
+              "short-content",
+              "overflowing-content",
+              "capped-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.scene_viewport",
+            "symbol": "CatchSceneViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scene_viewport.dart",
+            "summary": "Bounded scene geometry supplying local width, height and inherited safe-area metrics.",
+            "states": [
+              "width-capped",
+              "local-width",
+              "local-height",
+              "safe-area-metrics"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.master_detail_layout",
+            "symbol": "CatchMasterDetailLayout",
+            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "summary": "Master and detail pane placement with an explicit compact or expanded decision and canonical index width.",
+            "states": [
+              "compact",
+              "expanded",
+              "index-width",
+              "shared-divider"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.adaptive_master_detail_layout",
+            "symbol": "CatchAdaptiveMasterDetailLayout",
+            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "summary": "Resolves master-detail expansion from route-body constraints and forwards that decision to the master builder.",
+            "states": [
+              "below-breakpoint",
+              "at-breakpoint",
+              "master-builder-state"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           }
         ],
         "accessibility": {
