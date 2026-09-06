@@ -199,8 +199,10 @@ owner. None of these responses checks in, cancels or assigns an attendee.
 roster gate for all channel adapters. It rejects a replaced episode or thread
 head, expired event phase, declined guest or confirmed arrival. Channel-specific
 consent, suppression and sender authority must still be read in the same outbox
-transaction. The guest webpage, key provisioning, live workflow publisher,
-Host case projection/resolution and rehearsal response adapter remain separate
+transaction. The guest webpage at `/event-update/:linkId` uses the public
+read/reply boundary and the existing web runtime primitives. Key provisioning,
+the live workflow publisher, Host case projection/resolution and rehearsal
+response adapter remain separate
 integration steps; recording a help case does not yet notify a Host.
 
 The implementation sequence is shared contracts and durable execution, an

@@ -84,6 +84,43 @@
       }
     },
     {
+      "id": "event_assistance",
+      "kind": "clientDynamic",
+      "pathPattern": "/event-update/:linkId/",
+      "pageKey": "event_assistance",
+      "source": "website/src/features/eventAssistance/EventAssistancePage.tsx",
+      "metaKey": "event_assistance",
+      "staticOutput": "spa-rewrite",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Scoped event-service update and approved guest replies. The URL fragment supplies a private bearer credential; the route does not unlock attendance, assignments or a roster. Marketing analytics are excluded.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "loading",
+          "instructions",
+          "responded",
+          "stale",
+          "unavailable"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "instructions",
+            "responded",
+            "stale",
+            "unavailable",
+            "loading"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "event_rehearsal",
       "kind": "clientDynamic",
       "pathPattern": "/rehearse/:publicRehearsalId/",

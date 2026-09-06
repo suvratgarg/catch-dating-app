@@ -127,6 +127,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   for (const [routeKey, relativeOutput] of [
     ["home", "index.html"],
     ["host", path.join("host", "index.html")],
+    ["event_assistance", path.join("event-update", "index.html")],
     ["organizers", path.join("organizers", "index.html")],
     ["claim", path.join("claim", "index.html")],
     ["privacy", path.join("privacy", "index.html")],
@@ -154,6 +155,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     sitemap,
     /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc><lastmod>2026-06-18<\/lastmod>/
   );
+  assert.doesNotMatch(sitemap, /event-update/u);
   assert.doesNotMatch(sitemap, /claim\/<\/loc>/);
   assert.doesNotMatch(sitemap, /404\/<\/loc>/);
   assert.doesNotMatch(sitemap, /organizers\/$/);

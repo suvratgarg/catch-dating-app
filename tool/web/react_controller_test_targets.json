@@ -153,6 +153,11 @@
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
+      "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
+      "status": "required"
     }
   ]
 }

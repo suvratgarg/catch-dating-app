@@ -13,6 +13,12 @@ export const websiteQueryKeys = {
       [...websiteQueryKeys.all, "event-runtime", "conversation-graph",
         eventId ?? "none"] as const,
   },
+  eventAssistance: {
+    guest: (instanceId: string) =>
+      [...websiteQueryKeys.all, "event-assistance", "guest", instanceId] as const,
+    reply: (instanceId: string) =>
+      [...websiteQueryKeys.all, "event-assistance", "reply", instanceId] as const,
+  },
   eventRehearsal: {
     guest: (publicRehearsalId: string) =>
       [...websiteQueryKeys.all, "event-rehearsal", "guest",

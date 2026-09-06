@@ -1094,7 +1094,7 @@ web; it does not require or silently create a dating profile.
 
 ### No-Download Event Runtime And Invite Landing
 
-The React marketing runtime owns three non-SEO transactional routes:
+The React marketing runtime owns the following non-SEO transactional routes:
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
@@ -1112,6 +1112,19 @@ The React marketing runtime owns three non-SEO transactional routes:
   creating a Consumer profile or booking edge. The conversation roster is
   fetched through an attendee-authorized callable; Hosts receive only numeric
   scorecard counts and exclusion, never who named whom.
+
+- `/event-update/:linkId` is a scoped event-service update, with its bearer secret
+  only in the URL fragment. It shows the current instruction and approved reply
+  choices through App-Check-protected callables. The route does not unlock the
+  full attendee runtime or check-in. Marketing initialization, attribution and
+  events are excluded. The secret never enters query keys or mutation variables;
+  private cache state is discarded when the page instance unmounts. Reads poll
+  only while visible, refresh on reconnect/focus, and use conservative server
+  expiry. Stale reads cannot overwrite a confirmed response. The controller
+  locks repeat taps and reuses an uncertain submission identity. Responses are
+  recorded server-side before the page confirms them. It is noindex, excluded
+  from the sitemap and emitted through `/event-update/**`; sender activation,
+  worker-issued links and Host case handling remain separate delivery steps.
 
 - `/rehearse/:publicRehearsalId` is the synthetic-only guest phone for a Host
   dress rehearsal. It never enters the OTP, attendee-claim, booking, payment,

@@ -1,3 +1,7 @@
+import type {EventAssistanceGuestViewCallableResponse} from "../../functions/src/shared/generated/eventAssistanceGuestViewCallableResponse";
+import type {GetEventAssistanceGuestViewCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload";
+import type {SubmitEventAssistanceGuestChoiceCallablePayload} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
+import type {SubmitEventAssistanceGuestChoiceCallableResponse} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
 import type {FirebaseApp} from "firebase/app";
 import type {Auth, User} from "firebase/auth";
 import type {Functions} from "firebase/functions";
@@ -953,4 +957,18 @@ async function invokeWebsiteCallable<Request, Response>(
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<Request, Response>(runtime.functions, name);
   return (await callable(payload)).data;
+}
+
+export async function getEventAssistanceGuestView(
+  payload: GetEventAssistanceGuestViewCallablePayload
+): Promise<EventAssistanceGuestViewCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceGuestView", payload,
+    eventRuntimeFirebaseConfigured, "Event updates");
+}
+
+export async function submitEventAssistanceGuestChoice(
+  payload: SubmitEventAssistanceGuestChoiceCallablePayload
+): Promise<SubmitEventAssistanceGuestChoiceCallableResponse> {
+  return invokeWebsiteCallable("submitEventAssistanceGuestChoice", payload,
+    eventRuntimeFirebaseConfigured, "Event updates");
 }
