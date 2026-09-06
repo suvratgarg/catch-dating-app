@@ -30,7 +30,7 @@
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "400",
-            "source": "assets/fonts/IBMPlexMono-Regular.ttf",
+            "source": "packages/catch_ui/assets/fonts/IBMPlexMono-Regular.ttf",
             "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Regular.ttf",
             "url": "./assets/fonts/IBMPlexMono-Regular.ttf",
             "format": "truetype"
@@ -39,7 +39,7 @@
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "500",
-            "source": "assets/fonts/IBMPlexMono-Medium.ttf",
+            "source": "packages/catch_ui/assets/fonts/IBMPlexMono-Medium.ttf",
             "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Medium.ttf",
             "url": "./assets/fonts/IBMPlexMono-Medium.ttf",
             "format": "truetype"
@@ -48,7 +48,7 @@
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "600",
-            "source": "assets/fonts/IBMPlexMono-SemiBold.ttf",
+            "source": "packages/catch_ui/assets/fonts/IBMPlexMono-SemiBold.ttf",
             "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-SemiBold.ttf",
             "url": "./assets/fonts/IBMPlexMono-SemiBold.ttf",
             "format": "truetype"
@@ -57,7 +57,7 @@
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "700",
-            "source": "assets/fonts/IBMPlexMono-Bold.ttf",
+            "source": "packages/catch_ui/assets/fonts/IBMPlexMono-Bold.ttf",
             "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Bold.ttf",
             "url": "./assets/fonts/IBMPlexMono-Bold.ttf",
             "format": "truetype"
