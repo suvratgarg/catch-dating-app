@@ -76,7 +76,10 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                   style: CatchTextStyles.titleL(context),
                 ),
               ),
-              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
+              CatchPrivacyBadge(
+                copy: catchPrivacyBadgeCopy(context.l10n),
+                kind: CatchPrivacyBadgeKind.hostCanSee,
+              ),
             ],
           ),
           gapH4,

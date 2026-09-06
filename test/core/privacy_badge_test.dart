@@ -1,5 +1,6 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,16 +9,23 @@ void main() {
   testWidgets('CatchPrivacyBadge renders each handoff visibility mode', (
     tester,
   ) async {
+    final copy = catchPrivacyBadgeCopy(AppLocalizationsEn());
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchPrivacyBadge(),
-              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
-              CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
+              CatchPrivacyBadge(copy: copy),
+              CatchPrivacyBadge(
+                copy: copy,
+                kind: CatchPrivacyBadgeKind.catchPrivate,
+              ),
+              CatchPrivacyBadge(
+                copy: copy,
+                kind: CatchPrivacyBadgeKind.hostCanSee,
+              ),
             ],
           ),
         ),

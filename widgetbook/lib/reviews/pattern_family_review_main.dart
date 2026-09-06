@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/clubs/domain/club.dart' show ClubHostRole;
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
     show ClubHostRoleBadge;
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart'
     show CatchPersonNewMatchDot, CatchPersonUnreadCountPill;
-import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_progress_cue.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -14,7 +14,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_live_r
     show CountdownBeatRail;
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
-import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -293,7 +293,7 @@ class _BadgeStatusFamily extends StatelessWidget {
             runSpacing: CatchSpacing.micro10,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchPrivacyBadge(),
+              CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
               ClubHostRoleBadge(role: ClubHostRole.owner),
               EventSuccessMetricPill(label: 'Pacing', value: .78),
               CatchInlineStatus(

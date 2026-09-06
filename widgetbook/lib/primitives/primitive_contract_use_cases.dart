@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -30,7 +31,6 @@ import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
@@ -5002,14 +5002,23 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
     contractId: 'catch.privacy_badge',
     states: const ['private-to-you', 'catch-private', 'host-visible'],
     children: [
-      _StateCard(label: 'private-to-you', child: CatchPrivacyBadge()),
+      _StateCard(
+        label: 'private-to-you',
+        child: CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
+      ),
       _StateCard(
         label: 'catch-private',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+        child: CatchPrivacyBadge(
+          copy: catchPrivacyBadgeCopy(context.l10n),
+          kind: CatchPrivacyBadgeKind.catchPrivate,
+        ),
       ),
       _StateCard(
         label: 'host-visible',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
+        child: CatchPrivacyBadge(
+          copy: catchPrivacyBadgeCopy(context.l10n),
+          kind: CatchPrivacyBadgeKind.hostCanSee,
+        ),
       ),
     ],
   );

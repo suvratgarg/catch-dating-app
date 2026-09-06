@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e",
+  "sourceDigest": "7bd9f452b5e7f59fb694767c09ffd891ca88fbaddb48807f7f025e86216f6027",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e",
-    "contractDigest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e"
+    "digest": "7bd9f452b5e7f59fb694767c09ffd891ca88fbaddb48807f7f025e86216f6027",
+    "contractDigest": "7bd9f452b5e7f59fb694767c09ffd891ca88fbaddb48807f7f025e86216f6027"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "3f004eb3a31580de56ba8cdb8a84317e3ce7bbf2d38b4821b7d0f0873c2d5363",
+    "handoffRequestDigest": "ec7ae7824f1275d62c9280c18684f2addbb0b653a98f3f400ac336c560147549",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1443,7 +1443,7 @@
       "conceptRole": "member",
       "conceptId": "catch.badge",
       "dartSymbol": "CatchPrivacyBadge",
-      "dartFile": "lib/core/widgets/catch_privacy_badge.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_privacy_badge.dart",
       "figmaName": "Catch/PrivacyBadge",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1468,7 +1468,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PrivacyBadge",
       "claudeAllowed": true,
-      "contractDigest": "62d10edcdeec0480412c3e66e5a5d8161d9d8a7302e89dcd8315cdeeec4b290f"
+      "contractDigest": "f53edd49f11e263cfcc98b942ddca663718e869db25e7c11d27798bc017f9622"
     },
     {
       "contractId": "catch.journey_steps",

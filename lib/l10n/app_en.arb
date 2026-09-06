@@ -19087,21 +19087,21 @@
   },
   "coreCatchPrivacyBadgeLabelPrivateToYou": "Private to you",
   "@coreCatchPrivacyBadgeLabelPrivateToYou": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelHostCanSee": "Host can see",
   "@coreCatchPrivacyBadgeLabelHostCanSee": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelCatchPrivate": "Catch private",
   "@coreCatchPrivacyBadgeLabelCatchPrivate": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"

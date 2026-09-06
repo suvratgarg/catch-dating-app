@@ -9,6 +9,9 @@ const _baselinePath = 'tool/copy/mobile_copy_baseline.json';
 const _allowlistPath = 'tool/copy/mobile_copy_allowlist.json';
 
 const _copyArgumentNames = <String>{
+  'privateToYouLabel',
+  'hostCanSeeLabel',
+  'catchPrivateLabel',
   'actionLabel',
   'answer',
   'antiPatterns',
@@ -95,6 +98,9 @@ const _copyConstructors = <String>{
 };
 
 const _copyMemberNames = <String>{
+  'privateToYouLabel',
+  'hostCanSeeLabel',
+  'catchPrivateLabel',
   'balanceLabel',
   'badgeLabel',
   'body',
@@ -718,6 +724,9 @@ class SharedCopy {
     this.debugDetailsLabel = 'Developer details',
     this.decreaseTooltip = 'Decrease',
     this.increaseTooltip = 'Increase',
+    this.privateToYouLabel = 'Private to you',
+    this.hostCanSeeLabel = 'Host can see',
+    this.catchPrivateLabel = 'Catch private',
   });
   String optionalSemantics(String label) => '$label, optional';
   String get diagnosticMessage => 'Internal diagnostic only';
@@ -736,13 +745,16 @@ final copy = SharedCopy(
   final sharedCopyKinds = sharedCopyFindings
       .map((finding) => finding.kind)
       .toSet();
-  if (sharedCopyFindings.length != 10 ||
+  if (sharedCopyFindings.length != 13 ||
       !sharedCopyKinds.containsAll({
         'default:optionalLabel',
         'default:optionalSuffix',
         'default:debugDetailsLabel',
         'default:decreaseTooltip',
         'default:increaseTooltip',
+        'default:privateToYouLabel',
+        'default:hostCanSeeLabel',
+        'default:catchPrivateLabel',
         'member:optionalSemantics',
         'argument:optionalLabel',
         'argument:optionalSuffix',

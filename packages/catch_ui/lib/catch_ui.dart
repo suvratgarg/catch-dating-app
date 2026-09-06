@@ -41,6 +41,7 @@ export 'src/components/catch_metric_strip_item.dart';
 export 'src/components/catch_mini_bar_chart.dart';
 export 'src/components/catch_number_stepper.dart';
 export 'src/components/catch_plain_sheet_header.dart';
+export 'src/components/catch_privacy_badge.dart';
 export 'src/components/catch_record_row.dart';
 export 'src/components/catch_section_header.dart';
 export 'src/components/catch_share_card_footer.dart';

@@ -705,6 +705,9 @@ cannot remove its existing golden cases.
 Persistent status rendering/publication and the basic screen scaffold also move
 without changing their bodies. Their app state publishers and the root-header/
 scroll compositions remain at their current owners for the next pattern slices.
+Privacy badges receive their three translated visibility labels through the app
+copy adapter. Their fixed mode-to-icon pairing and single accessible label are
+preserved in the package; no app catalog is imported.
 
 ### Phase 4 — One registry, binding grammar
 

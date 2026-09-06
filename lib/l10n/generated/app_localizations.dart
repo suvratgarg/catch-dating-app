@@ -16459,19 +16459,19 @@ abstract class AppLocalizations {
   /// **'Insights get sharper after more post-event profile views.'**
   String get userAnalyticsUserAnalyticsCopyBodyInsightsGetSharperAfter;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Private to you'**
   String get coreCatchPrivacyBadgeLabelPrivateToYou;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host can see'**
   String get coreCatchPrivacyBadgeLabelHostCanSee;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Catch private'**

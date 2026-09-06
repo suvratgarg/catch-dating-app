@@ -7214,10 +7214,10 @@
       "name": "CatchPrivacyBadge",
       "status": "active",
       "kind": "primitive",
-      "summary": "Localized privacy/visibility adapter that maps domain meaning into CatchBadge.privacy.",
+      "summary": "Privacy/visibility adapter with caller-resolved labels and fixed mode-to-icon pairing in CatchBadge.privacy.",
       "dart": {
         "symbol": "CatchPrivacyBadge",
-        "file": "lib/core/widgets/catch_privacy_badge.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_privacy_badge.dart",
         "constructors": [
           "CatchPrivacyBadge"
         ]
@@ -7240,6 +7240,13 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "copy",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchPrivacyBadgeCopy",
+            "notes": "Caller-resolved private-to-you, host-visible and Catch-private labels."
+          },
           {
             "name": "kind",
             "type": "enum",

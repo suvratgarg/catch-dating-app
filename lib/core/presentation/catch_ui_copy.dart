@@ -17,3 +17,11 @@ CatchFrameworkErrorCopy catchFrameworkErrorCopy(AppLocalizations l10n) =>
       message: l10n.coreCatchFrameworkErrorViewTextThisScreenHitA,
       debugDetailsLabel: l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
     );
+
+/// Keeps visibility labels and badge modes paired at the localization boundary.
+CatchPrivacyBadgeCopy catchPrivacyBadgeCopy(AppLocalizations l10n) =>
+    CatchPrivacyBadgeCopy(
+      privateToYouLabel: l10n.coreCatchPrivacyBadgeLabelPrivateToYou,
+      hostCanSeeLabel: l10n.coreCatchPrivacyBadgeLabelHostCanSee,
+      catchPrivateLabel: l10n.coreCatchPrivacyBadgeLabelCatchPrivate,
+    );
