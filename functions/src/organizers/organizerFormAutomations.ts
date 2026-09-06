@@ -804,11 +804,27 @@ export async function processOrganizerAutomationRun(
     if (
       !current ||
       ["succeeded", "skipped"].includes(current.status) ||
-      current.attemptCount >= maxAutomationAttempts ||
       !current.dueAt ||
       current.dueAt.toMillis() > now.toMillis() ||
       (current.leaseExpiresAt?.toMillis() ?? 0) > now.toMillis()
     ) {
+      return null;
+    }
+    if (current.attemptCount >= maxAutomationAttempts) {
+      // Retire an exhausted lease from the due query without a sixth attempt.
+      // Partial updates preserve every recorded action result.
+      tx.update(ref, {
+        status: "failed",
+        errorCode: "attempt_limit_exhausted",
+        errorMessage:
+          "Automation stopped after its final attempt did not complete. " +
+          "Review its recorded action results.",
+        dueAt: null,
+        leaseOwner: null,
+        leaseExpiresAt: null,
+        completedAt: now,
+        updatedAt: now,
+      });
       return null;
     }
     const leaseExpiresAt = admin.firestore.Timestamp.fromMillis(
