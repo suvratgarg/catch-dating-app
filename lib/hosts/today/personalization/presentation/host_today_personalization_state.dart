@@ -25,12 +25,14 @@ class HostTodayRoadmapEvidence {
     this.rehearsal = HostTodayMilestoneProgress.unknown,
     this.organizerPage = HostTodayMilestoneProgress.unknown,
     this.payouts = HostTodayMilestoneProgress.unknown,
+    this.canManagePayouts = false,
   });
 
   final HostTodayMilestoneProgress audience;
   final HostTodayMilestoneProgress rehearsal;
   final HostTodayMilestoneProgress organizerPage;
   final HostTodayMilestoneProgress payouts;
+  final bool canManagePayouts;
 
   HostTodayMilestoneProgress progressFor(HostTodayMilestone milestone) =>
       switch (milestone) {
@@ -47,11 +49,13 @@ class HostTodayRoadmapStep {
     required this.milestone,
     required this.progress,
     required this.action,
+    this.enabled = true,
   });
 
   final HostTodayMilestone milestone;
   final HostTodayMilestoneProgress progress;
   final HostTodaySuggestedAction action;
+  final bool enabled;
 }
 
 @immutable
@@ -132,6 +136,9 @@ HostTodayPersonalizationState buildHostTodayPersonalizationState({
           milestone: milestone,
           progress: evidence.progressFor(milestone),
           action: actionFor(milestone),
+          enabled:
+              milestone != HostTodayMilestone.payouts ||
+              evidence.canManagePayouts,
         ),
     ],
   );
