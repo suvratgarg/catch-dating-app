@@ -2175,10 +2175,34 @@ withdrawal does not revoke separately granted event-service permission. Legacy
 CRM inbound-STOP suppression without endpoint evidence stays blocked until
 reconciled; the new ledger cannot retroactively prove old consent ordering.
 A STOP committed after a dispatch claim prevents later claims but cannot undo
-provider I/O already authorized or started. The provider worker, independent
-message-link withdrawal, status correlation, durable queue/reply retries and
-cross-channel composer remain integration work. This transaction performs no
-provider I/O and does not activate automated sending.
+provider I/O already authorized or started.
+
+`EventWhatsappWorker` loads the pinned sender credential before reserving,
+claims the exact rendered material and sends once through the Meta adapter
+outside the transaction. Submission acceptance is recorded independently from
+delivery. A lost response or receipt commit cannot trigger another send. Only
+the adapter's proof that permit expiry prevented all I/O can mark an attempt
+unsent. HTTP errors and uncertain outcomes retain their conservative debit and
+reconciliation hold. The worker requires an explicit provider and is not wired
+to a callable, scheduler or live Operations executor.
+
+The worker sends versioned callback correlation containing the attempt and
+rendered payload hashes, never credentials, phone numbers or guest secrets.
+`WhatsappDeliveryStore` reads the private signed queue and its ingress receipt;
+it correlates exact organizer, sender, WABA, phone, recipient endpoint, immutable
+dispatch and outbox attempt. Provider timestamps have a five-minute clock-skew
+tolerance relative to dispatch and ingestion, not a delivery SLA. The consumer
+can recover a lost submission ID from `sent`, `delivered` or `read` evidence.
+It merges late/duplicate receipts without regressing delivery, even after event
+closure or sender removal; unexpected delivery after an unsent record preserves
+a conflict. It does not execute guest choices or grant fallback permission.
+
+Failed or inconsistent provider statuses remain unconfirmed until the provider
+error/finality mapping is reviewed. The configured Meta API version's callback
+echo still requires controlled account verification. Independent message-link
+withdrawal, durable queue/reply retries, failure classification and the shared
+cross-channel composer remain integration work. These boundaries do not
+activate automated sending.
 
 ### Event Assistance SMS Delivery Contract
 

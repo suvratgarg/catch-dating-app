@@ -53,6 +53,7 @@ options when specific functions need higher or lower limits.
 | `resolveEventSuccessLateArrival` | `src/eventSuccess/lateArrivals.ts` | Record a revision-fenced Host resolution for a late or returning attendee |
 | `getEventAssistanceSmsWithdrawal` / `withdrawEventAssistanceSms` | `src/eventSuccess/operations/smsWithdrawalHandlers.ts` | Stop original event texts from the SMS link, independently of instruction expiry and event cancellation |
 | `getEventAssistanceSmsPreference` / `setEventAssistanceSmsPreference` | `src/eventSuccess/operations/smsPreferenceHandlers.ts` | Read and update verified participant event-service SMS choices with immutable receipts and withdrawal fences |
+| `getEventWhatsappPreference` / `setEventWhatsappPreference` | `src/eventSuccess/operations/whatsappPreferenceHandlers.ts` | Read and update verified participant event-service WhatsApp choices for an explicit organizer sender, with immutable receipts and sender/STOP revision fences |
 | `getEventSuccessConversationGraph` / `submitEventSuccessConversationGraph` | `src/eventSuccess/conversationGraph.ts` | Read and submit attendee-private, consent-gated conversation outcomes |
 | `setEventSuccessAccountabilityResolution` | `src/eventSuccess/accountability.ts` | Acknowledge the configured completion sweep and resolve checked-in attendees |
 | `listOrganizerAttentionItems` | `src/organizers/organizerAttention.ts` | Return a manager-authorized, exhaustively reconciled and time-ranked Today attention queue for the organizer workspace |
