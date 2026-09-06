@@ -11778,6 +11778,1008 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceCommandContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandPayloadResolutionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.resolutionId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandPayloadRestrictedCaseId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.restrictedCaseId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionMessageKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.messageKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionNextEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.nextEvaluationAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unreachable', 'entryDecision', 'missingInformation'],
+  );
+
+  static const eventAssistanceLateJoinDecisionShouldSend = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.shouldSend',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputDepartureConfirmed = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.departureConfirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputEventOpen = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.eventOpen',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAdmission = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.admission',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admitted', 'pending', 'declined'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceLastValueCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.lastValue.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceObservedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCollected', 'notConfirmed', 'sourceUnavailable'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'guest', 'provider', 'system'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceStaleAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.staleAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceValueCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.value.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestDeliveryEligibility = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.deliveryEligibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'unreachable', 'unknown'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionClaimedEta = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.claimedEta',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceObservedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCollected', 'notConfirmed', 'sourceUnavailable'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'guest', 'provider', 'system'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceStaleAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.staleAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputLastMessageAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.lastMessage.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputLastMessageMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.lastMessage.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputMessagesThisEpisode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.messagesThisEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAssistanceLateJoinInputNow = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.now',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyCutoffAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyCutoffKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedStopIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedStopIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedStopIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyUnanswered = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyUpdateOn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.policyVersion',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistancePolicyConfigMetrics = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.metrics',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyConfigMissingCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.missingCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyConfigSensitiveDetails = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.sensitiveDetails',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeEventId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyScopeResourceId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.resourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeRound = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.round',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistancePolicyScopeUnitId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.unitId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistancePolicySettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.policyVersion',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistancePolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
     required: true,
@@ -64739,6 +65741,137 @@ abstract final class CatchContractConstraints {
     'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
     'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
     'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
+    'eventAssistanceCommand.context.clockId': eventAssistanceCommandContextClockId,
+    'eventAssistanceCommand.context.eventId': eventAssistanceCommandContextEventId,
+    'eventAssistanceCommand.context.mode': eventAssistanceCommandContextMode,
+    'eventAssistanceCommand.context.organizerId': eventAssistanceCommandContextOrganizerId,
+    'eventAssistanceCommand.context.rehearsalId': eventAssistanceCommandContextRehearsalId,
+    'eventAssistanceCommand.context.virtualEventId': eventAssistanceCommandContextVirtualEventId,
+    'eventAssistanceCommand.eventId': eventAssistanceCommandEventId,
+    'eventAssistanceCommand.kind': eventAssistanceCommandKind,
+    'eventAssistanceCommand.operationId': eventAssistanceCommandOperationId,
+    'eventAssistanceCommand.payload.resolutionId': eventAssistanceCommandPayloadResolutionId,
+    'eventAssistanceCommand.payload.restrictedCaseId': eventAssistanceCommandPayloadRestrictedCaseId,
+    'eventAssistanceLateJoinDecision.guidance.destination.checkpointId': eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId,
+    'eventAssistanceLateJoinDecision.guidance.destination.groupId': eventAssistanceLateJoinDecisionGuidanceDestinationGroupId,
+    'eventAssistanceLateJoinDecision.guidance.destination.itineraryId': eventAssistanceLateJoinDecisionGuidanceDestinationItineraryId,
+    'eventAssistanceLateJoinDecision.guidance.destination.kind': eventAssistanceLateJoinDecisionGuidanceDestinationKind,
+    'eventAssistanceLateJoinDecision.guidance.destination.lateEntry': eventAssistanceLateJoinDecisionGuidanceDestinationLateEntry,
+    'eventAssistanceLateJoinDecision.guidance.destination.placeId': eventAssistanceLateJoinDecisionGuidanceDestinationPlaceId,
+    'eventAssistanceLateJoinDecision.guidance.destination.routeId': eventAssistanceLateJoinDecisionGuidanceDestinationRouteId,
+    'eventAssistanceLateJoinDecision.guidance.destination.stopId': eventAssistanceLateJoinDecisionGuidanceDestinationStopId,
+    'eventAssistanceLateJoinDecision.guidance.materialKey': eventAssistanceLateJoinDecisionGuidanceMaterialKey,
+    'eventAssistanceLateJoinDecision.guidance.revision': eventAssistanceLateJoinDecisionGuidanceRevision,
+    'eventAssistanceLateJoinDecision.guidance.text': eventAssistanceLateJoinDecisionGuidanceText,
+    'eventAssistanceLateJoinDecision.guidance.validUntil': eventAssistanceLateJoinDecisionGuidanceValidUntil,
+    'eventAssistanceLateJoinDecision.kind': eventAssistanceLateJoinDecisionKind,
+    'eventAssistanceLateJoinDecision.messageKey': eventAssistanceLateJoinDecisionMessageKey,
+    'eventAssistanceLateJoinDecision.nextEvaluationAt': eventAssistanceLateJoinDecisionNextEvaluationAt,
+    'eventAssistanceLateJoinDecision.reason': eventAssistanceLateJoinDecisionReason,
+    'eventAssistanceLateJoinDecision.shouldSend': eventAssistanceLateJoinDecisionShouldSend,
+    'eventAssistanceLateJoinInput.context.clockId': eventAssistanceLateJoinInputContextClockId,
+    'eventAssistanceLateJoinInput.context.eventId': eventAssistanceLateJoinInputContextEventId,
+    'eventAssistanceLateJoinInput.context.mode': eventAssistanceLateJoinInputContextMode,
+    'eventAssistanceLateJoinInput.context.organizerId': eventAssistanceLateJoinInputContextOrganizerId,
+    'eventAssistanceLateJoinInput.context.rehearsalId': eventAssistanceLateJoinInputContextRehearsalId,
+    'eventAssistanceLateJoinInput.context.virtualEventId': eventAssistanceLateJoinInputContextVirtualEventId,
+    'eventAssistanceLateJoinInput.departureConfirmed': eventAssistanceLateJoinInputDepartureConfirmed,
+    'eventAssistanceLateJoinInput.eventId': eventAssistanceLateJoinInputEventId,
+    'eventAssistanceLateJoinInput.eventOpen': eventAssistanceLateJoinInputEventOpen,
+    'eventAssistanceLateJoinInput.guest.admission': eventAssistanceLateJoinInputGuestAdmission,
+    'eventAssistanceLateJoinInput.guest.attendance.kind': eventAssistanceLateJoinInputGuestAttendanceKind,
+    'eventAssistanceLateJoinInput.guest.attendance.lastValue.checkedIn': eventAssistanceLateJoinInputGuestAttendanceLastValueCheckedIn,
+    'eventAssistanceLateJoinInput.guest.attendance.observedAt': eventAssistanceLateJoinInputGuestAttendanceObservedAt,
+    'eventAssistanceLateJoinInput.guest.attendance.reason': eventAssistanceLateJoinInputGuestAttendanceReason,
+    'eventAssistanceLateJoinInput.guest.attendance.revision': eventAssistanceLateJoinInputGuestAttendanceRevision,
+    'eventAssistanceLateJoinInput.guest.attendance.source': eventAssistanceLateJoinInputGuestAttendanceSource,
+    'eventAssistanceLateJoinInput.guest.attendance.staleAt': eventAssistanceLateJoinInputGuestAttendanceStaleAt,
+    'eventAssistanceLateJoinInput.guest.attendance.value.checkedIn': eventAssistanceLateJoinInputGuestAttendanceValueCheckedIn,
+    'eventAssistanceLateJoinInput.guest.attendeeId': eventAssistanceLateJoinInputGuestAttendeeId,
+    'eventAssistanceLateJoinInput.guest.deliveryEligibility': eventAssistanceLateJoinInputGuestDeliveryEligibility,
+    'eventAssistanceLateJoinInput.guest.episodeId': eventAssistanceLateJoinInputGuestEpisodeId,
+    'eventAssistanceLateJoinInput.guest.intention.claimedEta': eventAssistanceLateJoinInputGuestIntentionClaimedEta,
+    'eventAssistanceLateJoinInput.guest.intention.kind': eventAssistanceLateJoinInputGuestIntentionKind,
+    'eventAssistanceLateJoinInput.guest.intention.target.checkpointId': eventAssistanceLateJoinInputGuestIntentionTargetCheckpointId,
+    'eventAssistanceLateJoinInput.guest.intention.target.groupId': eventAssistanceLateJoinInputGuestIntentionTargetGroupId,
+    'eventAssistanceLateJoinInput.guest.intention.target.itineraryId': eventAssistanceLateJoinInputGuestIntentionTargetItineraryId,
+    'eventAssistanceLateJoinInput.guest.intention.target.kind': eventAssistanceLateJoinInputGuestIntentionTargetKind,
+    'eventAssistanceLateJoinInput.guest.intention.target.lateEntry': eventAssistanceLateJoinInputGuestIntentionTargetLateEntry,
+    'eventAssistanceLateJoinInput.guest.intention.target.placeId': eventAssistanceLateJoinInputGuestIntentionTargetPlaceId,
+    'eventAssistanceLateJoinInput.guest.intention.target.routeId': eventAssistanceLateJoinInputGuestIntentionTargetRouteId,
+    'eventAssistanceLateJoinInput.guest.intention.target.stopId': eventAssistanceLateJoinInputGuestIntentionTargetStopId,
+    'eventAssistanceLateJoinInput.guidance.kind': eventAssistanceLateJoinInputGuidanceKind,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.checkpointId': eventAssistanceLateJoinInputGuidanceLastValueDestinationCheckpointId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.groupId': eventAssistanceLateJoinInputGuidanceLastValueDestinationGroupId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.itineraryId': eventAssistanceLateJoinInputGuidanceLastValueDestinationItineraryId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.kind': eventAssistanceLateJoinInputGuidanceLastValueDestinationKind,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.lateEntry': eventAssistanceLateJoinInputGuidanceLastValueDestinationLateEntry,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.placeId': eventAssistanceLateJoinInputGuidanceLastValueDestinationPlaceId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.routeId': eventAssistanceLateJoinInputGuidanceLastValueDestinationRouteId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.stopId': eventAssistanceLateJoinInputGuidanceLastValueDestinationStopId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.materialKey': eventAssistanceLateJoinInputGuidanceLastValueMaterialKey,
+    'eventAssistanceLateJoinInput.guidance.lastValue.revision': eventAssistanceLateJoinInputGuidanceLastValueRevision,
+    'eventAssistanceLateJoinInput.guidance.lastValue.text': eventAssistanceLateJoinInputGuidanceLastValueText,
+    'eventAssistanceLateJoinInput.guidance.lastValue.validUntil': eventAssistanceLateJoinInputGuidanceLastValueValidUntil,
+    'eventAssistanceLateJoinInput.guidance.observedAt': eventAssistanceLateJoinInputGuidanceObservedAt,
+    'eventAssistanceLateJoinInput.guidance.reason': eventAssistanceLateJoinInputGuidanceReason,
+    'eventAssistanceLateJoinInput.guidance.revision': eventAssistanceLateJoinInputGuidanceRevision,
+    'eventAssistanceLateJoinInput.guidance.source': eventAssistanceLateJoinInputGuidanceSource,
+    'eventAssistanceLateJoinInput.guidance.staleAt': eventAssistanceLateJoinInputGuidanceStaleAt,
+    'eventAssistanceLateJoinInput.guidance.value.destination.checkpointId': eventAssistanceLateJoinInputGuidanceValueDestinationCheckpointId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.groupId': eventAssistanceLateJoinInputGuidanceValueDestinationGroupId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.itineraryId': eventAssistanceLateJoinInputGuidanceValueDestinationItineraryId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.kind': eventAssistanceLateJoinInputGuidanceValueDestinationKind,
+    'eventAssistanceLateJoinInput.guidance.value.destination.lateEntry': eventAssistanceLateJoinInputGuidanceValueDestinationLateEntry,
+    'eventAssistanceLateJoinInput.guidance.value.destination.placeId': eventAssistanceLateJoinInputGuidanceValueDestinationPlaceId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.routeId': eventAssistanceLateJoinInputGuidanceValueDestinationRouteId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.stopId': eventAssistanceLateJoinInputGuidanceValueDestinationStopId,
+    'eventAssistanceLateJoinInput.guidance.value.materialKey': eventAssistanceLateJoinInputGuidanceValueMaterialKey,
+    'eventAssistanceLateJoinInput.guidance.value.revision': eventAssistanceLateJoinInputGuidanceValueRevision,
+    'eventAssistanceLateJoinInput.guidance.value.text': eventAssistanceLateJoinInputGuidanceValueText,
+    'eventAssistanceLateJoinInput.guidance.value.validUntil': eventAssistanceLateJoinInputGuidanceValueValidUntil,
+    'eventAssistanceLateJoinInput.lastMessage.at': eventAssistanceLateJoinInputLastMessageAt,
+    'eventAssistanceLateJoinInput.lastMessage.materialKey': eventAssistanceLateJoinInputLastMessageMaterialKey,
+    'eventAssistanceLateJoinInput.messagesThisEpisode': eventAssistanceLateJoinInputMessagesThisEpisode,
+    'eventAssistanceLateJoinInput.now': eventAssistanceLateJoinInputNow,
+    'eventAssistanceLateJoinInput.policy.cutoff.at': eventAssistanceLateJoinInputPolicyCutoffAt,
+    'eventAssistanceLateJoinInput.policy.cutoff.kind': eventAssistanceLateJoinInputPolicyCutoffKind,
+    'eventAssistanceLateJoinInput.policy.destination.groupId': eventAssistanceLateJoinInputPolicyDestinationGroupId,
+    'eventAssistanceLateJoinInput.policy.destination.itineraryId': eventAssistanceLateJoinInputPolicyDestinationItineraryId,
+    'eventAssistanceLateJoinInput.policy.destination.kind': eventAssistanceLateJoinInputPolicyDestinationKind,
+    'eventAssistanceLateJoinInput.policy.destination.lateEntry': eventAssistanceLateJoinInputPolicyDestinationLateEntry,
+    'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds': eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds,
+    'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds.items': eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIdsItems,
+    'eventAssistanceLateJoinInput.policy.destination.permittedStopIds': eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds,
+    'eventAssistanceLateJoinInput.policy.destination.permittedStopIds.items': eventAssistanceLateJoinInputPolicyDestinationPermittedStopIdsItems,
+    'eventAssistanceLateJoinInput.policy.destination.placeId': eventAssistanceLateJoinInputPolicyDestinationPlaceId,
+    'eventAssistanceLateJoinInput.policy.destination.routeId': eventAssistanceLateJoinInputPolicyDestinationRouteId,
+    'eventAssistanceLateJoinInput.policy.maxMessagesPerEpisode': eventAssistanceLateJoinInputPolicyMaxMessagesPerEpisode,
+    'eventAssistanceLateJoinInput.policy.minimumMinutesBetweenMessages': eventAssistanceLateJoinInputPolicyMinimumMinutesBetweenMessages,
+    'eventAssistanceLateJoinInput.policy.unanswered': eventAssistanceLateJoinInputPolicyUnanswered,
+    'eventAssistanceLateJoinInput.policy.updateOn': eventAssistanceLateJoinInputPolicyUpdateOn,
+    'eventAssistanceLateJoinInput.responseDeadline': eventAssistanceLateJoinInputResponseDeadline,
+    'eventAssistanceLateJoinInput.setting.authority': eventAssistanceLateJoinInputSettingAuthority,
+    'eventAssistanceLateJoinInput.setting.kind': eventAssistanceLateJoinInputSettingKind,
+    'eventAssistanceLateJoinInput.setting.policyVersion': eventAssistanceLateJoinInputSettingPolicyVersion,
+    'eventAssistanceLateJoinInput.setting.reason': eventAssistanceLateJoinInputSettingReason,
+    'eventAssistancePolicy.config.metrics': eventAssistancePolicyConfigMetrics,
+    'eventAssistancePolicy.config.missingCoverage': eventAssistancePolicyConfigMissingCoverage,
+    'eventAssistancePolicy.config.sensitiveDetails': eventAssistancePolicyConfigSensitiveDetails,
+    'eventAssistancePolicy.kind': eventAssistancePolicyKind,
+    'eventAssistancePolicy.scope.attendeeId': eventAssistancePolicyScopeAttendeeId,
+    'eventAssistancePolicy.scope.episodeId': eventAssistancePolicyScopeEpisodeId,
+    'eventAssistancePolicy.scope.eventId': eventAssistancePolicyScopeEventId,
+    'eventAssistancePolicy.scope.groupId': eventAssistancePolicyScopeGroupId,
+    'eventAssistancePolicy.scope.kind': eventAssistancePolicyScopeKind,
+    'eventAssistancePolicy.scope.resourceId': eventAssistancePolicyScopeResourceId,
+    'eventAssistancePolicy.scope.round': eventAssistancePolicyScopeRound,
+    'eventAssistancePolicy.scope.unitId': eventAssistancePolicyScopeUnitId,
+    'eventAssistancePolicy.setting.authority': eventAssistancePolicySettingAuthority,
+    'eventAssistancePolicy.setting.kind': eventAssistancePolicySettingKind,
+    'eventAssistancePolicy.setting.policyVersion': eventAssistancePolicySettingPolicyVersion,
+    'eventAssistancePolicy.setting.reason': eventAssistancePolicySettingReason,
+    'eventAssistancePolicy.version': eventAssistancePolicyVersion,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,

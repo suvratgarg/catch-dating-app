@@ -16,6 +16,26 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventAssistancePolicy",
+    source: "operations/event_assistance_policy.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistancePolicy.ts"
+  },
+  {
+    name: "EventAssistanceCommand",
+    source: "operations/event_assistance_command.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceCommand.ts"
+  },
+  {
+    name: "EventAssistanceLateJoinInput",
+    source: "operations/event_assistance_late_join_input.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinInput.ts"
+  },
+  {
+    name: "EventAssistanceLateJoinDecision",
+    source: "operations/event_assistance_late_join_decision.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinDecision.ts"
+  },
+  {
     name: "MobileFormState",
     source: "forms/mobile_form_state.schema.json",
     typeOutput: "functions/src/shared/generated/mobileFormState.ts",
@@ -3857,6 +3877,34 @@ async function main() {
   );
   const profileDecisionMigration = readContractJson(
     "migrations/swipes_to_profile_decisions.json"
+  );
+  const eventAssistanceCatalog = readContractJson(
+    "catalogs/event_assistance_workflows.json"
+  );
+  addTextOutput(
+    "functions/src/shared/generated/catalogs/eventAssistanceWorkflowCatalog.ts",
+    tsGeneratedHeader() +
+      "export const eventAssistanceWorkflowCatalog = " +
+      JSON.stringify(eventAssistanceCatalog, null, 2) +
+      " as const;\n"
+  );
+  const assistanceCommon = readContractJson(
+    "shared/event_assistance_common.schema.json"
+  );
+  const workflowKinds = assistanceCommon.definitions.workflowKind.enum;
+  const commandKinds = assistanceCommon.definitions.Command.oneOf.map(
+    (variant) => variant.properties.kind.const
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+      "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n\n" +
+      "enum EventAssistanceWorkflowKind {\n" +
+      workflowKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n\n" +
+      "enum EventAssistanceCommandKind {\n" +
+      commandKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n"
   );
   const bundledSchemas = new Map();
 

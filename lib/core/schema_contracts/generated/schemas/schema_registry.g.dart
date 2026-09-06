@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistancePolicy',
+    source: 'operations/event_assistance_policy.schema.json',
+    schema: schemaEventAssistancePolicySchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCommand',
+    source: 'operations/event_assistance_command.schema.json',
+    schema: schemaEventAssistanceCommandSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceLateJoinInput',
+    source: 'operations/event_assistance_late_join_input.schema.json',
+    schema: schemaEventAssistanceLateJoinInputSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceLateJoinDecision',
+    source: 'operations/event_assistance_late_join_decision.schema.json',
+    schema: schemaEventAssistanceLateJoinDecisionSchema,
+  ),
+  SchemaContractDefinition(
     name: 'MobileFormState',
     source: 'forms/mobile_form_state.schema.json',
     schema: schemaMobileFormStateSchema,
@@ -2659,6 +2679,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistancePolicy': schemaEventAssistancePolicySchema,
+  'EventAssistanceCommand': schemaEventAssistanceCommandSchema,
+  'EventAssistanceLateJoinInput': schemaEventAssistanceLateJoinInputSchema,
+  'EventAssistanceLateJoinDecision': schemaEventAssistanceLateJoinDecisionSchema,
   'MobileFormState': schemaMobileFormStateSchema,
   'OperationRun': schemaOperationRunSchema,
   'OperationWorkItem': schemaOperationWorkItemSchema,
@@ -3190,6 +3214,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'operations/event_assistance_policy.schema.json': schemaEventAssistancePolicySchema,
+  'operations/event_assistance_command.schema.json': schemaEventAssistanceCommandSchema,
+  'operations/event_assistance_late_join_input.schema.json': schemaEventAssistanceLateJoinInputSchema,
+  'operations/event_assistance_late_join_decision.schema.json': schemaEventAssistanceLateJoinDecisionSchema,
   'forms/mobile_form_state.schema.json': schemaMobileFormStateSchema,
   'operations/run.schema.json': schemaOperationRunSchema,
   'operations/work_item.schema.json': schemaOperationWorkItemSchema,

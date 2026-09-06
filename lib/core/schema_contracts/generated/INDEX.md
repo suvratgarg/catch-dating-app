@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `functions/src/shared/generated/eventAssistancePolicy.ts` |
+| EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `functions/src/shared/generated/eventAssistanceCommand.ts` |
+| EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinInput.ts` |
+| EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinDecision.ts` |
 | MobileFormState | `forms/mobile_form_state.schema.json` | `functions/src/shared/generated/mobileFormState.ts` |
 | OperationRun | `operations/run.schema.json` | `functions/src/shared/generated/operationRunContract.ts` |
 | OperationWorkItem | `operations/work_item.schema.json` | `functions/src/shared/generated/operationWorkItemContract.ts` |
@@ -545,6 +549,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistancePolicySchema` | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_policy.g.dart` |
+| `schemaEventAssistanceCommandSchema` | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_command.g.dart` |
+| `schemaEventAssistanceLateJoinInputSchema` | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_input.g.dart` |
+| `schemaEventAssistanceLateJoinDecisionSchema` | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_decision.g.dart` |
 | `schemaMobileFormStateSchema` | MobileFormState | `forms/mobile_form_state.schema.json` | `lib/core/schema_contracts/generated/schemas/mobile_form_state.g.dart` |
 | `schemaOperationRunSchema` | OperationRun | `operations/run.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_run.g.dart` |
 | `schemaOperationWorkItemSchema` | OperationWorkItem | `operations/work_item.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_work_item.g.dart` |

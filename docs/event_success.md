@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.20.1
-updated: 2026-08-31
+version: 1.21.0
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -87,6 +87,40 @@ or rotation publication requires an explicit confirmation. The persisted plan
 is the restart source of truth, so process death resumes the current beat and
 published rounds without a local recovery mode. Revisioned undo and pause are
 not part of the shipped control model.
+
+## Typed event assistance
+
+The event-assistance outcome vocabulary is owned by
+`contracts/catalogs/event_assistance_workflows.json`. Its 46 definitions map
+to correlated policy variants in
+`contracts/shared/event_assistance_common.schema.json`. Command variants bind
+the command kind, payload and live/rehearsal context. Generated TypeScript
+contracts and Dart vocabularies must be regenerated together; the schema check
+requires complete catalog/configuration coverage.
+
+`functions/src/eventSuccess/operations/` owns the pure policy evaluators and
+command-boundary validation. The late-join evaluator accepts explicit time,
+attendance, admission, guidance, participation episode and policy authority.
+Reported intention cannot manufacture physical attendance; confirmed presence
+resolves an older decline. Throttled material updates retain a next evaluation
+time. Effect identities include the execution context and participation episode.
+Live and rehearsal adapters must use this policy with mode-scoped effects;
+the pure evaluator alone does not establish application integration.
+
+The implementation sequence is shared contracts and durable execution, an
+SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow
+families, then verified provider activation. Catalog membership describes an
+outcome contract; it does not assert a registered executor or provider readiness.
+Applicability, implementation availability, missing facts and host settings must
+remain separate. Existing format, attendance, assignment, safety and payment
+owners remain authoritative. Ordinary check-in remains an atomic domain command.
+
+The delivery acceptance includes typed/wire-invalid fixtures, duplicate and
+reordered signals, revision/context fences, provider ambiguity, current consent,
+mode isolation and live/rehearsal parity. Production sends, provider activation,
+full layout redesign, autonomous emergency judgement, new payment/tournament
+engines and continuous background interception require their own implemented
+adapters and acceptance; they are not conferred by these type definitions.
 
 ## Format Mapping And Wiring
 

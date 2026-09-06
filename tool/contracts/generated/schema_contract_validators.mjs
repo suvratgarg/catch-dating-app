@@ -3,6 +3,10 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistancePolicySchema,
+  eventAssistanceCommandSchema,
+  eventAssistanceLateJoinInputSchema,
+  eventAssistanceLateJoinDecisionSchema,
   mobileFormStateSchema,
   operationRunSchema,
   operationWorkItemSchema,
@@ -555,6 +559,10 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistancePolicy = ajv.compile(eventAssistancePolicySchema);
+export const validateEventAssistanceCommand = ajv.compile(eventAssistanceCommandSchema);
+export const validateEventAssistanceLateJoinInput = ajv.compile(eventAssistanceLateJoinInputSchema);
+export const validateEventAssistanceLateJoinDecision = ajv.compile(eventAssistanceLateJoinDecisionSchema);
 export const validateMobileFormState = ajv.compile(mobileFormStateSchema);
 export const validateOperationRun = ajv.compile(operationRunSchema);
 export const validateOperationWorkItem = ajv.compile(operationWorkItemSchema);
