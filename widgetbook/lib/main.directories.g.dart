@@ -35,6 +35,8 @@ import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
     as _widgetbook_workspace_geometry_component_geometry_use_cases;
 import 'package:widgetbook_workspace/geometry/field_transition_prototype.dart'
     as _widgetbook_workspace_geometry_field_transition_prototype;
+import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
@@ -8365,6 +8367,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostSavedAudiencesDirectory',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Membership filters and saved counts',
+                    builder:
+                        _widgetbook_workspace_hosts_host_saved_audience_use_cases
+                            .hostGroupsDirectory,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostSavedAudiencesWorkspace',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8395,6 +8408,72 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route and section states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .hostEditEventRouteAndFormStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Forms',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormMetrics',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unboxed form metrics',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormMetricsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormResponsePrimaryAction',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Application conversion',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormResponsePrimaryActionPreview,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'People conversion',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormResponsePeopleActionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormResponseRelatedActions',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Related People and event actions',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormResponseRelatedActionsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormWorkspaceHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published workspace navigation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormWorkspaceHeaderPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormWorkspaceOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published form overview',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormWorkspaceOverviewPreview,
+                  ),
+                ],
               ),
             ],
           ),

@@ -159,10 +159,10 @@ abstract class CatchField extends StatefulWidget {
     CatchFieldStatus status,
   }) = _RowConfig.nav;
 
-  /// A compact, reorderable navigation row with one inline metadata sentence.
+  /// A reorderable record with a full-width title and supporting metadata.
   ///
   /// The caller owns drag behavior through [reorderHandle]. The field owns the
-  /// left-handle lane, title/metadata hierarchy, divider, press semantics, and
+  /// left-handle lane, naturally wrapping title and metadata, press semantics, and
   /// trailing disclosure affordance.
   const factory CatchField.sortable({
     Key? key,

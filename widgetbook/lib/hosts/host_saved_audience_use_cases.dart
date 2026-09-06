@@ -33,6 +33,34 @@ const _reach = HostAudienceReachSummary(
   byHand: 1,
   unavailable: 0,
 );
+
+@widgetbook.UseCase(
+  name: 'Membership filters and saved counts',
+  type: HostSavedAudiencesDirectory,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
+  overrides: [
+    hostAllSavedAudiencesProvider(_audience.organizerId).overrideWith(
+      (_) async =>
+          HostSavedAudiencePage(audiences: [_audience], nextCursor: null),
+    ),
+  ],
+  child: SizedBox(
+    width: WidgetbookPreviewLayout.wideContractWidth,
+    height: WidgetbookPreviewLayout.hostEditorViewportHeight,
+    child: CustomScrollView(
+      slivers: [
+        HostSavedAudiencesDirectory(
+          organizerId: _audience.organizerId,
+          query: null,
+          onCreate: () {},
+          onOpen: (_) {},
+        ),
+      ],
+    ),
+  ),
+);
 const _options = HostSavedAudienceFilterOptions(
   forms: [
     HostAudienceSourceOption(id: 'application', title: 'Club application'),

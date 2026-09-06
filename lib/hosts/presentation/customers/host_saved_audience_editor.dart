@@ -100,6 +100,7 @@ class _HostSavedAudienceEditorFormState
   HostSavedAudience? _audience;
   String? _pendingCreateRequestId;
   bool _busy = false;
+  Object? _previewError;
   late bool _static;
   late Set<String> _selectedIds;
 
@@ -136,14 +137,16 @@ class _HostSavedAudienceEditorFormState
         resizeToAvoidBottomInset: true,
         topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
           context: context,
-          title: editing ? _audience!.name : context.l10n.hostSavedAudienceNew,
+          title: editing
+              ? context.l10n.hostAudienceEditGroup
+              : context.l10n.hostSavedAudienceNew,
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
         bottomNavigationBar: CatchBottomAction(
           label: editing
-              ? context.l10n.hostSavedAudienceSaveChanges
-              : context.l10n.hostSavedAudienceCreate,
+              ? context.l10n.hostAudienceSaveCheckMembership
+              : context.l10n.hostAudienceCreateCheckMembership,
           buttonKey: const ValueKey('host-saved-audience-save'),
           isLoading: _busy,
           onPressed: _busy ? null : _save,
@@ -169,15 +172,7 @@ class _HostSavedAudienceEditorFormState
                 child: CatchResponsiveSectionLayout(
                   sections: [
                     CatchResponsiveSectionItem(
-                      child: CatchSection.plain(
-                        child: Text(
-                          context.l10n.hostSavedAudienceEditorBody,
-                          style: CatchTextStyles.proseM(context),
-                        ),
-                      ),
-                    ),
-                    CatchResponsiveSectionItem(
-                      child: CatchSection.containedFieldRows(
+                      child: CatchSection.fieldRows(
                         title: context.l10n.hostSavedAudienceDetails,
                         children: [
                           CatchField.input(
@@ -291,12 +286,73 @@ class _HostSavedAudienceEditorFormState
                           ],
                         ),
                       ),
+                    CatchResponsiveSectionItem(
+                      child: CatchSection.divided(
+                        title: context.l10n.hostAudienceWhoWillBelong,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_static)
+                              Text(
+                                context.l10n.hostAudienceSelectedCount(
+                                  count: _selectedIds.length,
+                                ),
+                                style: CatchTextStyles.recordBody(context),
+                              )
+                            else ...[
+                              Text(
+                                _join == HostSavedAudienceJoin.all
+                                    ? context.l10n.hostSavedAudienceMatchAll
+                                    : context.l10n.hostSavedAudienceMatchAny,
+                                style: CatchTextStyles.recordContext(context),
+                              ),
+                              for (final rule in _rules)
+                                if (rule.toPredicate()
+                                    case final predicate?) ...[
+                                  gapH8,
+                                  Text(
+                                    _savedAudienceRuleSummary(
+                                      context,
+                                      predicate,
+                                      filterOptions,
+                                    ),
+                                    style: CatchTextStyles.recordBody(context),
+                                  ),
+                                ],
+                            ],
+                            gapH12,
+                            Text(
+                              context.l10n.hostAudienceMembershipCheckOnSave,
+                              style: CatchTextStyles.supporting(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (_previewError case final error?)
+                      CatchResponsiveSectionItem(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              context.l10n.hostAudienceSavedPreviewFailed,
+                              style: CatchTextStyles.recordTitle(context),
+                            ),
+                            gapH8,
+                            CatchErrorState.fromError(
+                              error,
+                              context: AppErrorContext.customers,
+                              onRetry: _busy ? null : _refreshPreview,
+                            ),
+                          ],
+                        ),
+                      ),
                     if (_audience case final audience?)
                       CatchResponsiveSectionItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
                           footer: Text(
-                            context.l10n.hostSavedAudiencePreviewDisclosure,
+                            context.l10n.hostAudienceSavedGroupPreviewHelp,
                             style: CatchTextStyles.supporting(context),
                           ),
                           children: [
@@ -359,6 +415,7 @@ class _HostSavedAudienceEditorFormState
       return;
     }
     setState(() => _busy = true);
+    var savedSuccessfully = false;
     try {
       final controller = ref.read(hostAudienceControllerProvider);
       final requestId = _audience == null
@@ -375,10 +432,12 @@ class _HostSavedAudienceEditorFormState
           predicates: predicates.cast<HostSavedAudiencePredicate>(),
         ),
       );
+      savedSuccessfully = true;
       if (!mounted) return;
       setState(() {
         _audience = saved;
         _pendingCreateRequestId = null;
+        _previewError = null;
       });
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
@@ -396,7 +455,9 @@ class _HostSavedAudienceEditorFormState
         }
       }
     } on Object catch (error) {
-      if (mounted) {
+      if (mounted && savedSuccessfully) {
+        setState(() => _previewError = error);
+      } else if (mounted) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -418,7 +479,12 @@ class _HostSavedAudienceEditorFormState
           .previewAudience(organizerId: widget.organizerId, audience: audience);
       ref.invalidate(hostSavedAudiencesProvider(widget.organizerId));
       ref.invalidate(hostAllSavedAudiencesProvider(widget.organizerId));
-      if (mounted) setState(() => _audience = preview.audience);
+      if (mounted) {
+        setState(() {
+          _audience = preview.audience;
+          _previewError = null;
+        });
+      }
     } on Object catch (error) {
       if (mounted) {
         showCatchErrorSnackBar(
@@ -500,7 +566,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               draft.kind == _AudienceRuleKind.manualTag,
         )
         .toList(growable: false);
-    return CatchSection.containedFieldRows(
+    return CatchSection.fieldRows(
       title: context.l10n.hostSavedAudienceCondition(number: number),
       trailing: !canRemove
           ? null

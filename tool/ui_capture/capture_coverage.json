@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-31",
+  "updated": "2026-09-06",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -666,108 +666,151 @@
       "captureIds": [
         "host_customers_populated",
         "host_customers_audiences_populated",
-        "host_forms_populated"
+        "host_forms_populated",
+        "host_responses_populated"
       ],
-      "reason": "The production Audience destination has deterministic full-shell captures for People, Audiences, and Forms within one four-mode workspace; broader response, loading, accessibility, and theme states remain future coverage."
+      "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
     },
     {
       "routeId": "hostAddCustomerScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_customer_add"
+        "host_customer_add",
+        "host_add_person"
       ],
-      "reason": "The full-page Add customer route is captured in light and dark themes with its shared Details and Memory field semantics plus pinned primary action."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
     {
       "routeId": "hostCreateSavedAudienceScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_saved_audience_create"
+        "host_saved_audience_create",
+        "host_group_create"
       ],
-      "reason": "The Customers-owned full-page audience authoring route has a deterministic capture with the closed predicate vocabulary and canonical save action."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
     {
       "routeId": "hostSavedAudienceDetailScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_saved_audience_detail"
+        "host_saved_audience_detail",
+        "host_group_overview",
+        "host_group_edit"
       ],
-      "reason": "The Customers-owned full-page audience detail and edit route has a deterministic capture with exact-preview reach context and archive ownership."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
     {
       "routeId": "hostFormTemplatesScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The versioned template gallery is implemented; blank and event-format template capture states remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_templates"
+      ]
     },
     {
       "routeId": "hostFormResponseDetailScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The immutable answer and reviewed-conversion route is implemented; deterministic identity, file, conversion, error, and accessibility captures remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_response_application",
+        "host_form_response_intake",
+        "host_form_response_withdrawn",
+        "host_form_response_large_text"
+      ]
     },
     {
       "routeId": "hostFormBuilderScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_form_builder_draft"
+        "host_form_builder_draft",
+        "host_form_overview",
+        "host_form_questions_phone",
+        "host_form_settings"
       ],
-      "reason": "The responsive draft builder has a deterministic capture for compact and expanded composition; undo, logic, validation, conflict, and post-publication states remain in the focused capture queue."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
     {
       "routeId": "hostFormPreviewScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The shared-renderer preview is implemented; phone, desktop, branching, validation, confirmation, and unavailable capture states remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_preview"
+      ]
     },
     {
       "routeId": "hostFormShareScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The canonical link, tracked link, QR, share, and embed workspace is implemented; deterministic distribution captures remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_share"
+      ]
     },
     {
       "routeId": "hostFormAnalyticsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The precomputed analytics and asynchronous export workspace is implemented; populated, sparse, loading, failure, and export captures remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_results"
+      ]
     },
     {
       "routeId": "hostAudienceAutomationsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "Organizer-wide automation configuration and history are implemented; runtime visual captures remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_audience_automations"
+      ]
     },
     {
       "routeId": "hostFormAutomationsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The rules and paginated run-history workspace is implemented; configured, disabled, partial-failure, and empty capture states remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_form_automations",
+        "host_automation_editor"
+      ]
     },
     {
       "routeId": "hostApplicationsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The provider-neutral application queue is implemented; deterministic populated, empty, import-mapping, error, accessibility, and theme captures are the next visual-evidence tranche."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_applications_populated"
+      ]
     },
     {
       "routeId": "hostApplicationDetailScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P1",
-      "reason": "The application detail and review route is implemented; deterministic answer, outreach, review-mutation, permission, accessibility, and theme captures are the next visual-evidence tranche."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
+      "captureIds": [
+        "host_application_detail"
+      ]
     },
     {
       "routeId": "hostCustomerDetailScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_customer_detail_memory"
+        "host_customer_detail_memory",
+        "host_person_overview",
+        "host_person_details",
+        "host_person_notes",
+        "host_person_history"
       ],
-      "reason": "The nested production customer detail has a deterministic identity, organizer-memory, exact-revenue, event-history, campaign-delivery, and controls capture; alternate identity, coverage, accessibility, and theme variants remain planned."
+      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
     {
       "routeId": "hostCustomersLegacyScreen",

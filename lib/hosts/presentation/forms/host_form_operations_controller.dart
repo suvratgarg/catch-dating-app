@@ -92,6 +92,23 @@ Future<HostFormResponseDetail> hostFormResponseDetail(
     .read(hostFormsRepositoryProvider)
     .getResponseDetail(organizerId: organizerId, responseId: responseId);
 
+/// Applies the immutable response version's server-side conversion rules.
+@riverpod
+Future<bool> hostFormResponseCanApply(
+  Ref ref, {
+  required String organizerId,
+  required String responseId,
+}) async {
+  final preview = await ref
+      .read(hostFormsRepositoryProvider)
+      .previewConversion(
+        organizerId: organizerId,
+        responseId: responseId,
+        kind: HostFormConversionKind.application,
+      );
+  return preview.allowed;
+}
+
 @riverpod
 Future<HostFormAnalytics> hostFormAnalytics(
   Ref ref, {

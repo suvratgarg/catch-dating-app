@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "e0da56ed0c94967244895c8d3473df04c7872efb26ad2216662f9d2a8a18a930",
-    "routeContractSha256": "20c3b0a3b3246b813c5e2f0bed4deb48d45f4673ba532414c658f56818242987",
+    "normalizedFileSha256": "6492855d63a29c9754b0b363b940dfc758e2891b57324486eef6262ef5db9c9f",
+    "routeContractSha256": "a4a0b4b309a2cd5840a71d355897e1f832b0c98b53915ee132e4558ff8272113",
     "goRouteCount": 86,
     "shellBranchCount": 9,
     "enumRouteCount": 71,
@@ -668,7 +668,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!)",
+      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!,initialView:HostFormWorkspaceView.values.where((view)=>view.name==state.uri.queryParameters['view']).firstOrNull)",
       "presentationTarget": "HostFormBuilderScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

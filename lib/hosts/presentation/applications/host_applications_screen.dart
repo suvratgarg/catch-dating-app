@@ -6,25 +6,30 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -61,6 +66,10 @@ class _HostApplicationsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final sourcesProvider = hostSavedAudienceFilterOptionsProvider(
+      widget.organizerId,
+    );
+    final sources = catchAsyncStateFromAsyncValue(ref.watch(sourcesProvider));
     final request = HostApplicationListRequest(
       organizerId: widget.organizerId,
       formId: widget.formId,
@@ -78,12 +87,6 @@ class _HostApplicationsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
-          CatchIconAction(
-            key: const ValueKey('host-applications-import'),
-            icon: CatchIcons.downloadRounded,
-            tooltip: context.l10n.hostApplicationsImport,
-            onPressed: _importing ? null : _pickImport,
-          ),
           CatchAdaptiveSelectionMenu<HostApplicationSort>(
             title: context.l10n.hostApplicationsSort,
             value: _sort,
@@ -108,11 +111,50 @@ class _HostApplicationsScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              context.l10n.hostApplicationsSubtitle,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
+            if (widget.formId case final formId?) ...[
+              Text(
+                hostApplicationFormScopeLabel(context, formId, sources.value),
+                style: CatchTextStyles.recordTitle(context),
+              ),
+              gapH16,
+            ],
+            if (sources.isTerminalError) ...[
+              CatchButton.command(
+                label: context.l10n.hostAudienceRetrySourceNames,
+                onPressed: () => ref.invalidate(sourcesProvider),
+              ),
+              gapH12,
+            ],
+            CatchOptionGroup<String>(
+              options: [
+                CatchOption(
+                  value: 'all',
+                  label: context.l10n.hostAudienceApplicationsAll,
+                ),
+                CatchOption(
+                  value: 'submitted',
+                  label: context.l10n.hostAudienceApplicationsNew,
+                ),
+                CatchOption(
+                  value: 'inReview',
+                  label: context.l10n.hostApplicationsStatusInReview,
+                ),
+              ],
+              selected: _status == null
+                  ? 'all'
+                  : const [
+                      HostApplicationReviewStatus.submitted,
+                      HostApplicationReviewStatus.inReview,
+                    ].contains(_status)
+                  ? _status!.name
+                  : null,
+              variant: CatchOptionGroupVariant.summary,
+              contractExemption:
+                  'Local application review lens; status is passed to the governed request.',
+              onChanged: (value) => setState(
+                () => _status = value == 'all'
+                    ? null
+                    : HostApplicationReviewStatus.values.byName(value),
               ),
             ),
             gapH16,
@@ -132,34 +174,13 @@ class _HostApplicationsScreenState
               ),
             ),
             gapH12,
-            CatchAdaptiveSelectionControl<HostApplicationReviewStatus?>(
+            CatchButton.command(
               key: const ValueKey('host-applications-review-status'),
-              title: context.l10n.hostApplicationsReviewStatusFilter,
-              tooltip: context.l10n.hostApplicationsReviewStatusFilter,
-              items: [
-                CatchSelectionMenuItem(
-                  value: null,
-                  label: context.l10n.hostApplicationsFilterAll,
-                ),
-                for (final status in const [
-                  HostApplicationReviewStatus.submitted,
-                  HostApplicationReviewStatus.inReview,
-                  HostApplicationReviewStatus.approved,
-                  HostApplicationReviewStatus.waitlisted,
-                  HostApplicationReviewStatus.declined,
-                ])
-                  CatchSelectionMenuItem(
-                    value: status,
-                    label: hostApplicationStatusLabel(context, status),
-                  ),
-              ],
-              value: _status,
-              triggerLabel: (selected) =>
-                  context.l10n.hostApplicationsReviewStatusFilterValue(
-                    status: selected.label,
-                  ),
-              icon: CatchIcons.tune,
-              onSelected: (status) => setState(() => _status = status),
+              label: _status == null
+                  ? context.l10n.hostApplicationsReviewStatusFilter
+                  : hostApplicationStatusLabel(context, _status!),
+              icon: Icon(CatchIcons.tune),
+              onPressed: _chooseStatus,
             ),
             gapH16,
             Expanded(
@@ -193,6 +214,7 @@ class _HostApplicationsScreenState
                     children: [
                       _HostApplicationListFrame(
                         applications: state.applications,
+                        sources: sources.value,
                         onOpen: (application) => context.pushNamed(
                           Routes.hostApplicationDetailScreen.name,
                           pathParameters: {
@@ -238,10 +260,42 @@ class _HostApplicationsScreenState
                 },
               ),
             ),
+            CatchButton.command(
+              key: const ValueKey('host-applications-import'),
+              label: context.l10n.hostApplicationsImport,
+              icon: Icon(CatchIcons.downloadRounded),
+              onPressed: _importing ? null : _pickImport,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _chooseStatus() async {
+    final selected = await showCatchSelectionSheet<String>(
+      context: context,
+      title: context.l10n.hostApplicationsReviewStatusFilter,
+      value: _status?.name ?? 'all',
+      items: [
+        CatchSelectionMenuItem(
+          value: 'all',
+          label: context.l10n.hostApplicationsFilterAll,
+        ),
+        for (final status in HostApplicationReviewStatus.values)
+          CatchSelectionMenuItem(
+            value: status.name,
+            label: hostApplicationStatusLabel(context, status),
+          ),
+      ],
+    );
+    if (selected != null && mounted) {
+      setState(
+        () => _status = selected == 'all'
+            ? null
+            : HostApplicationReviewStatus.values.byName(selected),
+      );
+    }
   }
 
   Future<void> _pickImport() async {
@@ -350,96 +404,60 @@ class _HostApplicationImportSheet extends StatelessWidget {
 class _HostApplicationListFrame extends StatelessWidget {
   const _HostApplicationListFrame({
     required this.applications,
+    required this.sources,
     required this.onOpen,
   });
 
   final List<HostApplicationSummary> applications;
+  final HostSavedAudienceFilterOptions? sources;
   final ValueChanged<HostApplicationSummary> onOpen;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line2,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (var index = 0; index < applications.length; index++) ...[
-            _HostApplicationRow(
-              application: applications[index],
-              onTap: () => onOpen(applications[index]),
+    return CatchSection.divided(
+      first: true,
+      children: [
+        for (final application in applications)
+          CatchPersonRow.directory(
+            data: CatchPersonRowData(
+              name: application.applicantDisplayName,
+              seed: application.applicationId,
             ),
-            if (index != applications.length - 1) const CatchDivider.section(),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _HostApplicationRow extends StatelessWidget {
-  const _HostApplicationRow({required this.application, required this.onTap});
-
-  final HostApplicationSummary application;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final submitted = DateFormat.yMMMd().format(application.submittedAt);
-    return Semantics(
-      button: true,
-      label: application.applicantDisplayName,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: CatchInsets.tileContent,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        application.applicantDisplayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                      gapH4,
-                      Text(
-                        '${_sourceLabel(context, application.sourceKind)} · '
-                        '${context.l10n.hostApplicationsSubmittedOn(date: submitted)}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
-                      ),
-                      gapH8,
-                      CatchChip.tag(
-                        label: hostApplicationStatusLabel(
-                          context,
-                          application.reviewStatus,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW12,
-                Icon(CatchIcons.chevronRightRounded, color: t.ink3),
-              ],
+            metadata: Text(
+              hostApplicationContextLabel(
+                context,
+                formId: application.formId,
+                targetKind: application.targetKind,
+                targetId: application.targetId,
+                sources: sources,
+              ),
+              style: CatchTextStyles.supporting(context),
             ),
+            contextContent: Text(
+              '${_sourceLabel(context, application.sourceKind)} · ${DateFormat.yMMMd().format(application.submittedAt)}',
+              style: CatchTextStyles.recordContext(context),
+            ),
+            status: CatchBadge.status(
+              label: hostApplicationStatusLabel(
+                context,
+                application.reviewStatus,
+              ),
+              tone: _applicationStatusTone(application.reviewStatus),
+            ),
+            onTap: () => onOpen(application),
           ),
-        ),
-      ),
+      ],
     );
   }
 }
+
+CatchBadgeTone _applicationStatusTone(HostApplicationReviewStatus status) =>
+    switch (status) {
+      HostApplicationReviewStatus.approved => CatchBadgeTone.success,
+      HostApplicationReviewStatus.declined => CatchBadgeTone.danger,
+      HostApplicationReviewStatus.waitlisted => CatchBadgeTone.warning,
+      _ => CatchBadgeTone.neutral,
+    };
 
 String hostApplicationStatusLabel(
   BuildContext context,

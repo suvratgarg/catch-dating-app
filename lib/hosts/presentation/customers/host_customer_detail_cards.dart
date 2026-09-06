@@ -288,9 +288,6 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeText =
-        MediaQuery.textScalerOf(context).scale(1) >=
-        CatchRecordTokens.largeTextBreakpoint;
     final segment = _hostCustomerPrimarySegment(customer.traits.segments);
     final segmentLabel = segment == null
         ? null
@@ -306,68 +303,60 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
       HostAudienceSegment.newToOrganizer => CatchBadgeTone.success,
       _ => CatchBadgeTone.neutral,
     };
-    final details = Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (showName) ...[
-          Text(displayName, style: CatchTextStyles.name(context)),
-          gapH4,
-        ],
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: CatchSpacing.s2,
-          children: [
-            if (segmentLabel != null)
-              Align(
-                widthFactor: 1,
-                alignment: AlignmentDirectional.centerStart,
-                child: CatchBadge.status(
-                  label: segmentLabel,
-                  tone: segmentTone,
-                ),
+        CatchPersonRow.directory(
+          data: CatchPersonRowData(name: displayName, seed: customer.contactId),
+          status: segmentLabel == null
+              ? null
+              : CatchBadge.status(label: segmentLabel, tone: segmentTone),
+          metadata: Text(
+            [
+              context.l10n.hostCustomersCompactEventCount(
+                count: customer.traits.attendedEventCount,
               ),
-            CatchButton(
+            ].join(' · '),
+            style: CatchTextStyles.supporting(context),
+          ),
+          contextContent: showContacts
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      phoneE164 ?? phonePlaceholder,
+                      key: const ValueKey('host-customer-phone-summary'),
+                      style: CatchTextStyles.recordContext(context),
+                    ),
+                    Text(
+                      email ?? emailPlaceholder,
+                      key: const ValueKey('host-customer-email-summary'),
+                      style: CatchTextStyles.recordContext(context),
+                    ),
+                  ],
+                )
+              : Text(
+                  [
+                    if (phoneE164 != null) context.l10n.hostCustomersPhone,
+                    if (email != null) context.l10n.hostCustomersEmail,
+                    if (phoneE164 == null && email == null)
+                      context.l10n.hostCustomersNotSaved,
+                  ].join(' · '),
+                  style: CatchTextStyles.recordContext(context),
+                ),
+        ),
+        Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchButton.command(
               key: const ValueKey('host-customer-edit-details'),
               label: context.l10n.hostCustomersEditDetails,
-              variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
               onPressed: onEdit,
             ),
             ?primaryAction,
           ],
         ),
-        if (showContacts) ...[
-          gapH4,
-          Text(
-            phoneE164 ?? phonePlaceholder,
-            key: const ValueKey('host-customer-phone-summary'),
-            style: CatchTextStyles.bodyL(context),
-          ),
-          gapH4,
-          Text(
-            email ?? emailPlaceholder,
-            key: const ValueKey('host-customer-email-summary'),
-            style: CatchTextStyles.bodyL(context),
-          ),
-        ],
-      ],
-    );
-    if (usesLargeText) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchPersonAvatar(size: CatchSpacing.s16, name: displayName),
-          gapH16,
-          details,
-        ],
-      );
-    }
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchPersonAvatar(size: CatchSpacing.s16, name: displayName),
-        gapW16,
-        Expanded(child: details),
       ],
     );
   }
@@ -543,14 +532,14 @@ class HostCustomerDetailsSection extends StatelessWidget {
                 ]
               : [
                   for (final entry in formRows)
-                    CatchField.content(
+                    CatchRecordRow(
                       key: ValueKey(
                         'host-customer-submission-${entry.responseId}',
                       ),
                       title:
                           entry.formTitle ??
                           context.l10n.hostCustomersTimelineFormFallback,
-                      body:
+                      metadata:
                           entry.action ==
                               HostCustomerFormTimelineAction.withdrawn
                           ? context.l10n.hostCustomersTimelineFormWithdrawn(

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
@@ -65,6 +66,13 @@ void main() {
               organizerId,
               'capture-application-1',
             ).overrideWithValue(AsyncData(_application(organizerId))),
+            hostSavedAudienceFilterOptionsProvider(
+              organizerId,
+            ).overrideWithValue(
+              const AsyncData<HostSavedAudienceFilterOptions>(
+                HostSavedAudienceFilterOptions.empty(),
+              ),
+            ),
           ],
           device: CaptureDevice.iphone17Pro,
           includeOverlays:
@@ -85,7 +93,12 @@ void main() {
             ),
           ),
           drive: (tester) async {
-            for (final label in ['Overview', 'Details', 'Memory', 'History']) {
+            for (final label in [
+              'Overview',
+              'Details',
+              'Notes & tags',
+              'History',
+            ]) {
               final paragraph = tester.renderObject<RenderParagraph>(
                 find.text(label),
               );
@@ -122,9 +135,17 @@ void main() {
                 await pumpFeatureUi(tester);
               }
               if (view == 'submitted') {
-                await tester.ensureVisible(
-                  find.byKey(const ValueKey('host-customer-submitted-fields')),
+                final submittedDisclosure = find.text(
+                  'Latest submitted details',
                 );
+                await tester.ensureVisible(submittedDisclosure);
+                await tester.tap(submittedDisclosure);
+                await pumpFeatureUi(tester);
+                final submittedFields = find.byKey(
+                  const ValueKey('host-customer-submitted-fields'),
+                );
+                await pumpUntilFound(tester, submittedFields);
+                await tester.ensureVisible(submittedFields);
                 await pumpFeatureUi(tester);
                 expect(find.text('ananya.rao'), findsOneWidget);
                 expect(find.text('Vegetarian'), findsOneWidget);
@@ -150,7 +171,9 @@ void main() {
               await pumpFeatureUi(tester);
               expect(find.byType(HostCustomerRevenueBreakdown), findsOneWidget);
             } else if (view == 'memory' || view.startsWith('history')) {
-              final tab = find.text(view == 'memory' ? 'Memory' : 'History');
+              final tab = find.text(
+                view == 'memory' ? 'Notes & tags' : 'History',
+              );
               await tester.ensureVisible(tab);
               await tester.tap(tab);
               await pumpFeatureUi(tester);

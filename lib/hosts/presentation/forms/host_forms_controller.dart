@@ -702,12 +702,14 @@ class HostFormsController {
     required String requestId,
     required HostFormExportFormat format,
     required Set<HostFormResponseStatus> statuses,
+    String? versionId,
   }) => _repository.requestExport(
     organizerId: organizerId,
     formId: formId,
     requestId: requestId,
     format: format,
     statuses: statuses,
+    versionId: versionId,
   );
 
   Future<HostFormConversionPreview> previewConversion({

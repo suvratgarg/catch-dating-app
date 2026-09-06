@@ -10,6 +10,38 @@ import 'package:flutter_test/flutter_test.dart';
 import 'test_support.dart';
 
 void main() {
+  testWidgets('Sortable titles and metadata remain readable at large text', (
+    tester,
+  ) async {
+    const title = 'What would you like to tell us before your first event?';
+    const metadata = 'Long text · Optional';
+    var opened = false;
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: SingleChildScrollView(
+            child: CatchField.sortable(
+              title: title,
+              metadata: metadata,
+              reorderHandle: const SizedBox.square(dimension: 44),
+              onTap: () => opened = true,
+            ),
+          ),
+        ),
+        textScale: 2,
+      ),
+    );
+    expect(tester.widget<Text>(find.text(title)).maxLines, isNull);
+    expect(
+      tester.getBottomLeft(find.text(title)).dy,
+      lessThan(tester.getTopLeft(find.text(metadata)).dy),
+    );
+    await tester.tap(find.text(title));
+    expect(opened, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'CatchField const modes preserve public identity and state continuity',
     (tester) async {

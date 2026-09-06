@@ -1,7 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -44,8 +41,6 @@ class HostCustomerRow extends StatelessWidget {
             tone: CatchBadgeTone.success,
           )
         : null;
-    final isNew = contact.tags.contains(HostCustomerTag.newToOrganizer);
-    final hasContext = isNew || contact.tags.contains(HostCustomerTag.repeat);
     return CatchPersonRow.directory(
       data: CatchPersonRowData(name: contact.displayName),
       onTap: onTap,
@@ -70,46 +65,12 @@ class HostCustomerRow extends StatelessWidget {
         ),
         key: ValueKey('host-customer-activity-${contact.contactId}'),
       ),
-      contextContent: !hasContext && !contact.whatsappAdminSuppressed
-          ? null
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (hasContext)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ExcludeSemantics(
-                        child: Icon(
-                          isNew
-                              ? CatchIcons.sparkle
-                              : CatchIcons.eventRepeatOutlined,
-                          size: CatchIcon.sm,
-                          color: CatchTokens.of(context).ink2,
-                        ),
-                      ),
-                      gapW6,
-                      Expanded(
-                        child: Text(
-                          isNew
-                              ? context.l10n.hostsHostAudienceSegmentNew
-                              : context
-                                    .l10n
-                                    .hostsOperationalRosterInsightReturning,
-                          style: CatchTextStyles.recordContext(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                if (contact.whatsappAdminSuppressed) ...[
-                  if (hasContext) gapH4,
-                  Text(
-                    context.l10n.hostsHostAudienceContactConsentPaused,
-                    style: CatchTextStyles.recordContext(context),
-                  ),
-                ],
-              ],
-            ),
+      contextContent: contact.whatsappAdminSuppressed
+          ? Text(
+              context.l10n.hostsHostAudienceContactConsentPaused,
+              style: CatchTextStyles.recordContext(context),
+            )
+          : null,
     );
   }
 }

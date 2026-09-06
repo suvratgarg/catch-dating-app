@@ -94,7 +94,7 @@ class _HostFormRendererState extends State<HostFormRenderer> {
               ? context.l10n.hostFormPreviewNoResponses
               : widget.definition.completionTitle,
           textAlign: TextAlign.center,
-          style: CatchTextStyles.monoLabel(context, color: t.ink3),
+          style: CatchTextStyles.recordContext(context),
         ),
       ],
     );

@@ -158,31 +158,83 @@ class HostCustomerDetailOverview extends StatelessWidget {
   final VoidCallback onOpenRevenue;
 
   @override
-  Widget build(BuildContext context) => ComponentResponsiveBuilder(
-    breakpoint: ComponentBreakpoints.sectionPageTwoColumnBreakpoint,
-    compact: (context) => Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        HostCustomerAttendanceCard(customer: customer),
-        gapH24,
-        HostCustomerRevenueCard(
-          revenue: customer.revenue,
-          onOpen: onOpenRevenue,
+  Widget build(BuildContext context) {
+    final largeText =
+        MediaQuery.textScalerOf(context).scale(1) >=
+        CatchRecordTokens.largeTextBreakpoint;
+    final metrics = <Widget>[
+      CatchStatColumn(
+        value: '${customer.traits.attendedEventCount}',
+        label: context.l10n.hostsHostAudienceAttended,
+      ),
+      if (customer.revenue.amounts.isEmpty ||
+          customer.revenue.coverage == HostCustomerRevenueCoverage.unavailable)
+        CatchStatColumn(
+          value: '—',
+          label: context.l10n.hostCustomersDetailRevenue,
         ),
-      ],
-    ),
-    expanded: (context) => Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(child: HostCustomerAttendanceCard(customer: customer)),
-        gapW24,
-        Expanded(
-          child: HostCustomerRevenueCard(
-            revenue: customer.revenue,
-            onOpen: onOpenRevenue,
+      if (customer.revenue.coverage != HostCustomerRevenueCoverage.unavailable)
+        for (final amount in customer.revenue.amounts)
+          CatchStatColumn(
+            value: NumberFormat.simpleCurrency(
+              name: amount.currency,
+            ).format(amount.amountMinor / 100),
+            label:
+                '${context.l10n.hostCustomersDetailRevenue} · ${amount.currency}',
           ),
-        ),
-      ],
-    ),
-  );
+    ];
+    return CatchSection.divided(
+      first: true,
+      title: context.l10n.hostAudienceAtAGlance,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (largeText)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final entry in metrics.indexed) ...[
+                  if (entry.$1 > 0) gapH16,
+                  entry.$2,
+                ],
+              ],
+            )
+          else
+            Wrap(
+              spacing: CatchSpacing.s8,
+              runSpacing: CatchSpacing.s4,
+              children: metrics,
+            ),
+          if (customer.revenue.coverage ==
+              HostCustomerRevenueCoverage.unavailable) ...[
+            gapH8,
+            Text(
+              context.l10n.hostCustomersDetailRevenueUnavailable,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ],
+          if (customer.revenue.coverage ==
+              HostCustomerRevenueCoverage.partial) ...[
+            gapH8,
+            Text(
+              context.l10n.hostCustomersDetailRevenuePartial,
+              style: CatchTextStyles.recordContext(context),
+            ),
+          ],
+          gapH16,
+          CatchField.control(
+            title: context.l10n.hostCustomersDetailAttendance,
+            contractExemption:
+                'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',
+            control: HostCustomerAttendanceCard(customer: customer),
+          ),
+          CatchButton.command(
+            key: const ValueKey('host-customer-revenue-breakdown'),
+            label: context.l10n.hostCustomersViewBreakdown,
+            onPressed: onOpenRevenue,
+          ),
+        ],
+      ),
+    );
+  }
 }

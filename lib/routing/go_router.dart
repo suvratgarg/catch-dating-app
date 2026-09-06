@@ -1023,6 +1023,9 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormBuilderScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
+          initialView: HostFormWorkspaceView.values
+              .where((view) => view.name == state.uri.queryParameters['view'])
+              .firstOrNull,
         ),
       ),
       GoRoute(

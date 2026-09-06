@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
@@ -16,10 +15,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
@@ -67,6 +67,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   String? _query;
   String? _responseQuery;
   HostFormLifecycleStatus? _status;
+  HostFormPurpose? _purpose;
   late HostAudienceView _view;
   late final TabController _tabController;
   String? _responseFormId;
@@ -88,8 +89,18 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   @override
   void didUpdateWidget(covariant HostFormsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialResponses == widget.initialResponses) return;
-    _tabController.animateTo(widget.initialResponses ? 1 : 0);
+    if (oldWidget.initialFormId != widget.initialFormId ||
+        oldWidget.initialOrganizerId != widget.initialOrganizerId) {
+      _responseFormId = widget.initialFormId;
+    }
+    if (oldWidget.initialOrganizerId != widget.initialOrganizerId) {
+      _searchDebounce?.cancel();
+      _query = null;
+      _responseQuery = null;
+    }
+    if (oldWidget.initialResponses != widget.initialResponses) {
+      _tabController.animateTo(widget.initialResponses ? 1 : 0);
+    }
   }
 
   @override
@@ -188,6 +199,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     final request = HostFormListRequest(
       organizerId: selectedClub.id,
       statuses: _status == null ? const {} : {_status!},
+      purposes: _purpose == null ? const {} : {_purpose!},
       query: _query,
     );
     final directory = ref.watch(hostFormsDirectoryControllerProvider(request));
@@ -239,6 +251,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               directory: directory,
               query: _query,
               status: _status,
+              purpose: _purpose,
+              onPurposeChanged: (purpose) => setState(() => _purpose = purpose),
               onStatusChanged: (status) => setState(() => _status = status),
               onCreate: () => _openTemplates(selectedClub.id),
               onOpenForm: _openForm,
@@ -255,9 +269,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                     organizerId: selectedClub.id,
                     query: _responseQuery,
                     formId: _responseFormId,
-                    onClearFormFilter: () => setState(() {
-                      _responseFormId = null;
-                    }),
+                    onFormChanged: (formId) {
+                      setState(() => _responseFormId = formId);
+                      _syncRoute();
+                    },
+                    onClearFormFilter: () {
+                      setState(() => _responseFormId = null);
+                      _syncRoute();
+                    },
                   ),
                 ),
               ],
@@ -301,8 +320,23 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     _searchDebounce?.cancel();
     setState(() {
       _view = nextView;
-      if (nextView == HostAudienceView.responses) _responseFormId = null;
     });
+    _syncRoute();
+  }
+
+  void _syncRoute() {
+    final router = GoRouter.maybeOf(context);
+    if (router == null) return;
+    final uri = router.routeInformationProvider.value.uri;
+    if (uri.path != Routes.hostAudienceScreen.path) return;
+    final query = {...uri.queryParameters, 'view': _view.name};
+    if (_responseFormId case final formId?) {
+      query['formId'] = formId;
+    } else {
+      query.remove('formId');
+    }
+    final next = uri.replace(queryParameters: query);
+    if (next != uri) router.replace(next.toString());
   }
 
   void _selectAudienceView(HostAudienceView view, String organizerId) {
@@ -419,6 +453,8 @@ class _HostFormsLibraryPage extends ConsumerWidget
     required this.directory,
     required this.query,
     required this.status,
+    required this.purpose,
+    required this.onPurposeChanged,
     required this.onStatusChanged,
     required this.onCreate,
     required this.onOpenForm,
@@ -429,6 +465,8 @@ class _HostFormsLibraryPage extends ConsumerWidget
   final AsyncValue<HostFormsDirectoryState> directory;
   final String? query;
   final HostFormLifecycleStatus? status;
+  final HostFormPurpose? purpose;
+  final ValueChanged<HostFormPurpose?> onPurposeChanged;
   final ValueChanged<HostFormLifecycleStatus?> onStatusChanged;
   final VoidCallback onCreate;
   final ValueChanged<HostFormSummary> onOpenForm;
@@ -436,31 +474,32 @@ class _HostFormsLibraryPage extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokens = CatchTokens.of(context);
     return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       slivers: [
         SliverList.list(
           children: [
-            Text(
-              context.l10n.hostFormsSubtitle,
-              style: CatchTextStyles.supporting(context, color: tokens.ink2),
-            ),
-            gapH16,
             CatchOptionGroup<HostFormLifecycleStatus?>(
               options: [
                 CatchOption(
                   value: null,
                   label: context.l10n.hostFormsFilterAll,
                 ),
-                for (final candidate in HostFormLifecycleStatus.values)
+                for (final candidate in [
+                  HostFormLifecycleStatus.published,
+                  HostFormLifecycleStatus.draft,
+                  if (status == HostFormLifecycleStatus.paused ||
+                      status == HostFormLifecycleStatus.archived)
+                    status!,
+                ])
                   CatchOption(
                     value: candidate,
                     label: hostFormStatusLabel(context, candidate),
                   ),
               ],
               selected: status,
+              variant: CatchOptionGroupVariant.summary,
               contractExemption:
                   'The lifecycle rail maps All to no status and every other '
                   'option to one item in the statuses array contract.',
@@ -469,6 +508,25 @@ class _HostFormsLibraryPage extends ConsumerWidget
               showDivider: false,
             ),
             gapH16,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: CatchSpacing.s4,
+              children: [
+                CatchButton.command(
+                  label: purpose == null
+                      ? context.l10n.hostAudienceAllPurposes
+                      : hostFormPurposeLabel(context, purpose!),
+                  icon: Icon(CatchIcons.descriptionOutlined),
+                  onPressed: () => _selectPurpose(context),
+                ),
+                CatchButton.command(
+                  label: context.l10n.hostCustomersFilters,
+                  icon: Icon(CatchIcons.tune),
+                  onPressed: () => _selectStatus(context),
+                ),
+              ],
+            ),
+            gapH8,
             CatchAsyncValueView<HostFormsDirectoryState>(
               value: directory,
               onRetry: () =>
@@ -485,7 +543,8 @@ class _HostFormsLibraryPage extends ConsumerWidget
               ),
               builder: (context, state) {
                 if (state.forms.isEmpty) {
-                  final unfiltered = query == null && status == null;
+                  final unfiltered =
+                      query == null && status == null && purpose == null;
                   return CatchEmptyState(
                     icon: CatchIcons.descriptionOutlined,
                     title: unfiltered
@@ -506,22 +565,39 @@ class _HostFormsLibraryPage extends ConsumerWidget
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CatchSection.fieldRows(
+                    CatchSection.divided(
+                      first: true,
                       children: [
                         for (final form in state.forms)
-                          CatchField.nav(
-                            key: ValueKey('host-form-${form.formId}'),
-                            title: form.title,
-                            body: _hostFormSummaryBody(context, form),
-                            valueText: AppTimeFormatters.compactRelativeTime(
-                              form.lastResponseAt ?? form.updatedAt,
-                            ),
-                            onTap: () => onOpenForm(form),
-                            action: CatchActionMenu<_HostFormRowAction>(
-                              tooltip: context.l10n.hostFormsActions,
-                              items: _hostFormRowActions(context, form),
-                              onSelected: (action) => onRowAction(action, form),
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: CatchRecordRow(
+                                  key: ValueKey('host-form-${form.formId}'),
+                                  title: form.title,
+                                  icon: CatchIcons.descriptionOutlined,
+                                  metadata:
+                                      '${hostFormPurposeLabel(context, form.purpose)} · ${form.lastResponseAt == null ? context.l10n.hostAudienceFormEdited(time: AppTimeFormatters.compactRelativeTime(form.updatedAt)) : context.l10n.hostAudienceFormLastResponse(time: AppTimeFormatters.compactRelativeTime(form.lastResponseAt!))}',
+                                  facts: [
+                                    context.l10n.hostAudienceFormRecordStatus(
+                                      status: hostFormStatusLabel(
+                                        context,
+                                        form.status,
+                                      ),
+                                      count: form.submittedResponseCount,
+                                    ),
+                                  ],
+                                  onTap: () => onOpenForm(form),
+                                ),
+                              ),
+                              CatchActionMenu<_HostFormRowAction>(
+                                tooltip: context.l10n.hostFormsActions,
+                                items: _hostFormRowActions(context, form),
+                                onSelected: (action) =>
+                                    onRowAction(action, form),
+                              ),
+                            ],
                           ),
                       ],
                     ),
@@ -567,18 +643,59 @@ class _HostFormsLibraryPage extends ConsumerWidget
       ],
     );
   }
+
+  Future<void> _selectPurpose(BuildContext context) async {
+    final selected = await showCatchSelectionSheet<String>(
+      context: context,
+      title: context.l10n.hostAudienceFormPurposeFilter,
+      value: purpose?.name ?? 'all',
+      items: [
+        CatchSelectionMenuItem(
+          value: 'all',
+          label: context.l10n.hostAudienceAllPurposes,
+        ),
+        for (final candidate in HostFormPurpose.values)
+          CatchSelectionMenuItem(
+            value: candidate.name,
+            label: hostFormPurposeLabel(context, candidate),
+          ),
+      ],
+    );
+    if (selected != null && context.mounted) {
+      onPurposeChanged(
+        selected == 'all' ? null : HostFormPurpose.values.byName(selected),
+      );
+    }
+  }
+
+  Future<void> _selectStatus(BuildContext context) async {
+    final selected = await showCatchSelectionSheet<String>(
+      context: context,
+      title: context.l10n.hostAudienceFormStatusFilter,
+      value: status?.name ?? 'all',
+      items: [
+        CatchSelectionMenuItem(
+          value: 'all',
+          label: context.l10n.hostAudienceAllStatuses,
+        ),
+        for (final candidate in HostFormLifecycleStatus.values)
+          CatchSelectionMenuItem(
+            value: candidate.name,
+            label: hostFormStatusLabel(context, candidate),
+          ),
+      ],
+    );
+    if (selected != null && context.mounted) {
+      onStatusChanged(
+        selected == 'all'
+            ? null
+            : HostFormLifecycleStatus.values.byName(selected),
+      );
+    }
+  }
 }
 
-String _hostFormSummaryBody(BuildContext context, HostFormSummary form) {
-  final status = hostFormStatusLabel(context, form.status);
-  return context.l10n.hostFormsRowSummary(
-    status: status,
-    count: form.submittedResponseCount,
-    consequence: _hostFormConsequenceSummary(context, form),
-  );
-}
-
-String _hostFormConsequenceSummary(BuildContext context, HostFormSummary form) {
+String hostFormConsequenceSummary(BuildContext context, HostFormSummary form) {
   final projection = form.consequences;
   if (projection.coverage == HostFormConsequenceCoverage.unavailable) {
     return [

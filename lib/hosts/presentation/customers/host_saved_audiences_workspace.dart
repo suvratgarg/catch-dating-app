@@ -1,5 +1,7 @@
 part of 'host_customers_screen.dart';
 
+enum _HostSavedAudienceMembership { all, automatic, manual }
+
 class HostSavedAudiencesWorkspace extends ConsumerWidget
     implements CatchRootScreenPageOwner {
   const HostSavedAudiencesWorkspace({
@@ -16,103 +18,207 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) =>
+      CatchRootScreenPageScrollView.standard(
+        scrollKey: const PageStorageKey<String>('host-customers-audiences'),
+        onRefresh: () async {
+          ref.invalidate(hostSavedAudiencesProvider(organizerId));
+          ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
+          await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
+        },
+        slivers: [
+          HostSavedAudiencesDirectory(
+            organizerId: organizerId,
+            query: query,
+            onCreate: onCreate,
+            onOpen: onOpen,
+          ),
+        ],
+      );
+}
+
+class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
+  const HostSavedAudiencesDirectory({
+    super.key,
+    required this.organizerId,
+    required this.query,
+    required this.onCreate,
+    required this.onOpen,
+  });
+
+  final String organizerId;
+  final String? query;
+  final VoidCallback onCreate;
+  final ValueChanged<HostSavedAudience> onOpen;
+
+  @override
+  ConsumerState<HostSavedAudiencesDirectory> createState() =>
+      _HostSavedAudiencesDirectoryState();
+}
+
+class _HostSavedAudiencesDirectoryState
+    extends ConsumerState<HostSavedAudiencesDirectory> {
+  _HostSavedAudienceMembership _membership = _HostSavedAudienceMembership.all;
+  bool _byName = false;
+  String get organizerId => widget.organizerId;
+  String? get query => widget.query;
+  VoidCallback get onCreate => widget.onCreate;
+  ValueChanged<HostSavedAudience> get onOpen => widget.onOpen;
+
+  @override
+  Widget build(BuildContext context) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return CatchRootScreenPageScrollView.standard(
-      scrollKey: const PageStorageKey<String>('host-customers-audiences'),
-      onRefresh: () async {
-        ref.invalidate(hostSavedAudiencesProvider(organizerId));
-        ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
-        await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
-      },
-      slivers: [
-        SliverList.list(
+    return SliverList.list(
+      children: [
+        Wrap(
+          spacing: CatchSpacing.s4,
+          runSpacing: CatchSpacing.s2,
           children: [
-            Text(
-              context.l10n.hostSavedAudiencesWorkspaceBody,
-              style: CatchTextStyles.proseM(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+            CatchButton.command(
+              label: _byName
+                  ? context.l10n.hostCustomersSortName
+                  : context.l10n.hostAudienceRecentlyChecked,
+              icon: Icon(CatchIcons.sort),
+              onPressed: () => setState(() => _byName = !_byName),
             ),
-            gapH24,
-            CatchSection.fieldRows(
-              children: [
-                CatchField.nav(
-                  title: context.l10n.hostFormAutomationsTitle,
-                  body: context.l10n.hostAutomationOverview,
-                  onTap: () => context.pushNamed(
-                    Routes.hostAudienceAutomationsScreen.name,
-                    queryParameters: {'organizerId': organizerId},
-                  ),
-                ),
-              ],
-            ),
-            gapH24,
-            CatchAsyncValueView<HostSavedAudiencePage>(
-              value: audiences,
-              onRetry: () =>
-                  ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
-              initialLoadTimeout: null,
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-              errorBuilder: (_, error, _) => CatchErrorState.fromError(
-                error,
-                context: AppErrorContext.customers,
-                mode: CatchErrorStateMode.compact,
-                onRetry: () =>
-                    ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
-              ),
-              builder: (context, page) {
-                final visible = _matchingSavedAudiences(page.audiences, query);
-                return CatchSection.divided(
-                  key: const ValueKey('host-saved-audiences-directory'),
-                  first: true,
-                  title: context.l10n.hostSavedAudiencesManage,
-                  count: visible.length,
-                  trailing: CatchTextButton(
-                    key: const ValueKey('host-saved-audience-create'),
-                    label: context.l10n.hostSavedAudienceNew,
-                    onPressed: onCreate,
-                  ),
-                  children: visible.isEmpty
-                      ? [
-                          CatchEmptyState(
-                            icon: CatchIcons.groupsOutlined,
-                            title: query == null
-                                ? context.l10n.hostSavedAudiencesEmptyTitle
-                                : context
-                                      .l10n
-                                      .hostSavedAudiencesSearchEmptyTitle,
-                            message: query == null
-                                ? context.l10n.hostSavedAudiencesEmptyBody
-                                : context
-                                      .l10n
-                                      .hostSavedAudiencesSearchEmptyBody,
-                            layout: CatchEmptyStateLayout.inline,
-                          ),
-                        ]
-                      : [
-                          for (final audience in visible)
-                            CatchField.nav(
-                              key: ValueKey(
-                                'host-saved-audience-${audience.audienceId}',
-                              ),
-                              title: audience.name,
-                              body: _savedAudienceDirectoryBody(
-                                context,
-                                audience,
-                              ),
-                              emphasis: CatchFieldEmphasis.title,
-                              onTap: () => onOpen(audience),
-                            ),
-                        ],
-                );
+            CatchButton.command(
+              label: switch (_membership) {
+                _HostSavedAudienceMembership.automatic =>
+                  context.l10n.hostAudienceAutomaticGroup,
+                _HostSavedAudienceMembership.manual =>
+                  context.l10n.hostAudienceManualGroup,
+                _HostSavedAudienceMembership.all =>
+                  context.l10n.hostAudienceAllGroups,
               },
+              icon: Icon(CatchIcons.tune),
+              onPressed: _chooseMembership,
+            ),
+          ],
+        ),
+        gapH16,
+        CatchAsyncValueView<HostSavedAudiencePage>(
+          value: audiences,
+          onRetry: () =>
+              ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          initialLoadTimeout: null,
+          loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
+          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.customers,
+            mode: CatchErrorStateMode.compact,
+            onRetry: () =>
+                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+          ),
+          builder: (context, page) {
+            final visible =
+                _matchingSavedAudiences(page.audiences, query)
+                    .where(
+                      (audience) => switch (_membership) {
+                        _HostSavedAudienceMembership.automatic =>
+                          !audience.definition.isStatic,
+                        _HostSavedAudienceMembership.manual =>
+                          audience.definition.isStatic,
+                        _HostSavedAudienceMembership.all => true,
+                      },
+                    )
+                    .toList()
+                  ..sort(
+                    (a, b) => _byName
+                        ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
+                        : (b.lastPreviewAt ?? DateTime(0)).compareTo(
+                            a.lastPreviewAt ?? DateTime(0),
+                          ),
+                  );
+            return CatchSection.divided(
+              key: const ValueKey('host-saved-audiences-directory'),
+              first: true,
+              title: context.l10n.hostSavedAudiencesManage,
+              count: visible.length,
+              trailing: CatchTextButton(
+                key: const ValueKey('host-saved-audience-create'),
+                label: context.l10n.hostSavedAudienceNew,
+                onPressed: onCreate,
+              ),
+              children: visible.isEmpty
+                  ? [
+                      CatchEmptyState(
+                        icon: CatchIcons.groupsOutlined,
+                        title:
+                            query == null &&
+                                _membership == _HostSavedAudienceMembership.all
+                            ? context.l10n.hostSavedAudiencesEmptyTitle
+                            : context.l10n.hostSavedAudiencesSearchEmptyTitle,
+                        message:
+                            query == null &&
+                                _membership == _HostSavedAudienceMembership.all
+                            ? context.l10n.hostSavedAudiencesEmptyBody
+                            : context.l10n.hostSavedAudiencesSearchEmptyBody,
+                        layout: CatchEmptyStateLayout.inline,
+                      ),
+                    ]
+                  : [
+                      for (final audience in visible)
+                        CatchRecordRow(
+                          key: ValueKey(
+                            'host-saved-audience-${audience.audienceId}',
+                          ),
+                          title: audience.name,
+                          facts: [
+                            _savedAudienceDirectoryBody(context, audience),
+                          ],
+                          icon: CatchIcons.groupsOutlined,
+                          metadata: audience.definition.isStatic
+                              ? context.l10n.hostAudienceManualGroup
+                              : context.l10n.hostAudienceAutomaticGroup,
+                          onTap: () => onOpen(audience),
+                        ),
+                    ],
+            );
+          },
+        ),
+        gapH24,
+        Text(
+          context.l10n.hostAudienceGroupMembershipHelp,
+          style: CatchTextStyles.supporting(context),
+        ),
+        gapH24,
+        CatchSection.fieldRows(
+          children: [
+            CatchField.nav(
+              title: context.l10n.hostFormAutomationsTitle,
+              onTap: () => context.pushNamed(
+                Routes.hostAudienceAutomationsScreen.name,
+                queryParameters: {'organizerId': organizerId},
+              ),
             ),
           ],
         ),
       ],
     );
+  }
+
+  Future<void> _chooseMembership() async {
+    final selected =
+        await showCatchSelectionSheet<_HostSavedAudienceMembership>(
+          context: context,
+          title: context.l10n.hostAudienceMembershipMode,
+          value: _membership,
+          items: [
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.all,
+              label: context.l10n.hostAudienceAllGroups,
+            ),
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.automatic,
+              label: context.l10n.hostAudienceAutomaticGroup,
+            ),
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.manual,
+              label: context.l10n.hostAudienceManualGroup,
+            ),
+          ],
+        );
+    if (selected != null && mounted) setState(() => _membership = selected);
   }
 }
 
@@ -135,17 +241,8 @@ String _savedAudienceDirectoryBody(
   final countLabel = count == null
       ? context.l10n.hostSavedAudienceNeverPreviewed
       : context.l10n.hostSavedAudiencePeopleCount(count: count);
-  final reach = audience.lastPreviewReachSummary;
-  if (reach == null) return countLabel;
-  final clauses = <String>[
-    if (reach.inCatch > 0)
-      context.l10n.hostAudienceReachCountInCatch(count: reach.inCatch),
-    if (reach.automatic > 0)
-      context.l10n.hostAudienceReachCountAutomatic(count: reach.automatic),
-    if (reach.byHand > 0)
-      context.l10n.hostAudienceReachCountByHand(count: reach.byHand),
-    if (reach.unavailable > 0)
-      context.l10n.hostAudienceReachCountUnavailable(count: reach.unavailable),
-  ];
-  return clauses.isEmpty ? countLabel : '$countLabel\n${clauses.join(' · ')}';
+  final checked = audience.lastPreviewAt;
+  return checked == null
+      ? countLabel
+      : '$countLabel · ${context.l10n.hostAudienceGroupChecked(date: DateFormat.MMMd().format(checked))}';
 }

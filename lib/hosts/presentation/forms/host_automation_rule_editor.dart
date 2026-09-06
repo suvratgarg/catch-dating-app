@@ -164,6 +164,7 @@ class _HostAutomationRuleEditorState
                       gapH16,
                     ],
                     CatchSection.fieldRows(
+                      title: l.hostAudienceAutomationWhen,
                       children: [
                         CatchField.input(
                           key: const ValueKey('automation-name'),
@@ -330,7 +331,7 @@ class _HostAutomationRuleEditorState
                     for (final action in _actions) ...[
                       CatchSection.fieldRows(
                         key: ValueKey(action.id),
-                        title: l.hostAutomationAction,
+                        title: l.hostAudienceAutomationThen,
                         children: [
                           CatchField.select<HostFormAutomationActionKind>(
                             title: l.hostAutomationAction,

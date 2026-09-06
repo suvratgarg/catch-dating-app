@@ -109,14 +109,12 @@ void main() {
                     CatchRecordTokens.verticalPadding * 2 +
                         CatchPlatformTokens.typography.name.fontSize! *
                             CatchPlatformTokens.typography.name.height! +
-                        CatchRecordTokens.titleGap * 2 +
+                        CatchRecordTokens.titleGap +
                         CatchPlatformTokens.typography.secondary.fontSize! *
-                            CatchPlatformTokens.typography.secondary.height! +
-                        CatchPlatformTokens.typography.context.fontSize! *
-                            CatchPlatformTokens.typography.context.height!,
+                            CatchPlatformTokens.typography.secondary.height!,
                     0.1,
                   ),
-                  reason: 'Badges must not change the fourth-option row rhythm',
+                  reason: 'Badges must not change the two-line customer rhythm',
                 );
               }
               rowMetrics.add({

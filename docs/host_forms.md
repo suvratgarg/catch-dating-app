@@ -169,8 +169,13 @@ inside a Customers overflow menu. It provides:
 
 ### Builder
 
-The builder is an autosaved controller-owned workspace with three panes on
-large screens and progressive routes/sheets on phones:
+The form workspace has Overview, Questions, and Responses peers. Published
+forms open Overview; drafts open Questions. Settings is a dedicated view of
+the same autosaved controller, reached from Overview or the action menu.
+Overview leads with form identity, response/question totals, Share and Preview,
+then the latest response and Results, Settings, and Automations destinations.
+
+Questions uses three panes on large screens and progressive editing on phones:
 
 1. **Outline:** sections and questions, reorder, duplicate, delete.
 2. **Canvas:** editable content using canonical Catch field and section
@@ -457,6 +462,9 @@ id validation, rate limits, and response-shape redaction.
 
 ## UX And Design Contract
 
+- Results identify the published version and the submitted-from-started completion
+  denominator. Exports use that exact version. Tracked-link totals are labeled
+  as including all versions because their counters are form-wide.
 - Forms use the light editorial register, hairlines, whitespace, and canonical
   Catch field/section primitives.
 - A form is information, not a stack of decorative cards.

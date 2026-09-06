@@ -2269,7 +2269,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'sortable-inline-metadata',
         description:
-            'A caller-owned drag target sits left of one strong-title plus muted-metadata sentence.',
+            'A drag target sits beside a wrapping title with metadata on its own line.',
         child: CatchField.sortable(
           title: 'Why do you want to join?',
           metadata: 'Long text · Required',
