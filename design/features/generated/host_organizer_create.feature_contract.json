@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-09-05",
   "sourceDigest": "sha256:cc697aa3cf49206660e3248be784e6764f8e3873568c15de575ee9a611002ab6",
-  "resolvedDigest": "sha256:571527cb25953d75ecef4c4b41cf1d8e1ecb3458650c01773ce28a4a7a18a67f",
+  "resolvedDigest": "sha256:29da0c89c5fb77c544a073166047877beb6bba5e339665c03b734a5d9ec84c55",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -1562,10 +1562,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

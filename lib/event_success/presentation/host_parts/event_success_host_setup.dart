@@ -175,7 +175,7 @@ class _SetupTabState extends State<SetupTab> {
           gapH16,
         ],
         if (widget.actionState.hasError) ...[
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             widget.actionState.error!,
             context: AppErrorContext.event,
           ),

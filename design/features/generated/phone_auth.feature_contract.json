@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:8c99c2419256b4e8cf232e233bd1bcc6e3607e5a6078fac001d391a47f3bc653",
-  "resolvedDigest": "sha256:3c7f95beab34f93562e9f63414ffe066cb07a4ad45f9775308e77dadd8d87e3b",
+  "resolvedDigest": "sha256:a7a455253a2e693b397db5d7d29e068687b8045ea871d1318b93c3dbc8d02cac",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -811,10 +811,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

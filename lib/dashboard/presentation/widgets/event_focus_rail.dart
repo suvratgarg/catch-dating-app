@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
@@ -202,7 +202,7 @@ class _EventFocusRailState extends State<EventFocusRail> {
           ),
         ],
         if (widget.checkInState.error != null)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             widget.checkInState.error!,
             context: AppErrorContext.dashboard,
             onRetry: widget.actions.onResetCheckInError,

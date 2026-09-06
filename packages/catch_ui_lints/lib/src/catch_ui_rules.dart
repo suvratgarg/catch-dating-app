@@ -128,7 +128,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         uri == 'package:flutter/src/material/scaffold.dart' &&
         const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
     if ((constructor || publisher) &&
-        !path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
+        !path.endsWith(
+          '/packages/catch_ui/lib/src/components/catch_snack_bar.dart',
+        )) {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,

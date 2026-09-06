@@ -691,7 +691,7 @@ DART
   expect_probe exact catch_status_strip_is_layout_owned 0
 done
 
-probe_path="$probe_root/lib/core/widgets/catch_error_snackbar.dart"
+probe_path="$probe_root/packages/catch_ui/lib/src/components/catch_snack_bar.dart"
 stage_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -707,9 +707,26 @@ DART
 expect_probe exact catch_use_canonical_feedback 0
 expect_code_count "feedback owner is not a status layout" "catch_status_strip_is_layout_owned" 1
 
+# Extraction grants raw feedback ownership only to the exact package helper.
+for feedback_scope in \
+  "packages/catch_ui/lib/src/components/snack_bar_consumer.dart" \
+  "lib/core/widgets/catch_error_snackbar.dart"; do
+  probe_path="$probe_root/$feedback_scope"
+  stage_probe "feedback non-owner $feedback_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+void feedbackConsumer(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: SizedBox.shrink()),
+  );
+}
+DART
+  expect_probe exact catch_use_canonical_feedback 2
+done
+
 probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
 stage_probe "canonical API and same-name non-framework symbols" <<'DART'
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:catch_ui/catch_ui.dart' as ui;
 
@@ -722,7 +739,7 @@ class ScaffoldMessengerState {
 }
 
 List<Object> allowedFeedback(material.BuildContext context) {
-  showCatchSnackBar(context, 'Saved');
+  ui.showCatchSnackBar(context, 'Saved');
   showCatchErrorSnackBar(context, StateError('example'));
   final messenger = ScaffoldMessengerState();
   messenger.showSnackBar(SnackBar());

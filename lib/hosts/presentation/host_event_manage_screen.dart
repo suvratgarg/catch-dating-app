@@ -5,16 +5,15 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -1134,7 +1133,7 @@ class HostInviteLinksList extends StatelessWidget {
         ),
         if (mutationError != null) ...[
           gapH12,
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             mutationError!,
             context: AppErrorContext.event,
           ),
@@ -1557,7 +1556,7 @@ class HostEventActionsSection extends StatelessWidget {
         ),
         if (actionError != null) ...[
           gapH12,
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             actionError!,
             context: AppErrorContext.event,
           ),
@@ -1682,7 +1681,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
             ),
             if (mutation.hasError) ...[
               gapH8,
-              CatchErrorBanner.fromError(
+              CatchLocalizedErrorBanner(
                 (mutation as MutationError).error,
                 context: AppErrorContext.event,
               ),

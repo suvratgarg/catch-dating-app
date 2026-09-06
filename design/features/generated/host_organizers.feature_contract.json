@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:2baa5cfb83ce52f373a3415054c9659817c0d7d1fb95d5fd8e83bb40ecb47548",
+  "resolvedDigest": "sha256:ed4118640f96146f97f4f9a03999c52f9c7baed5a68f855f041445ea2bfaf0b5",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5172,10 +5172,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

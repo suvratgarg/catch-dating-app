@@ -12,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
-
 import 'capture_device.dart';
 
 Future<void> _warmImage(ImageProvider<Object> provider) {

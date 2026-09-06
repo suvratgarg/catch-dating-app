@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:c06ba1c2ed374de441af6bdafa31ff189c7a60e313f320eadb64076c86205be7",
+  "resolvedDigest": "sha256:32c3e0d911e0c924faa59086abbe01ba780098acf02d96ea1174c71d6eb7b2ff",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4475,10 +4475,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

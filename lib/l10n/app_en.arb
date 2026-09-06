@@ -896,7 +896,7 @@
   },
   "coreCatchErrorBannerLabelTryAgain": "Try again",
   "@coreCatchErrorBannerLabelTryAgain": {
-    "description": "Product copy used by lib/core/widgets/catch_error_banner.dart (label).",
+    "description": "Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_error_banner"

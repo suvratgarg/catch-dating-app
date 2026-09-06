@@ -53,6 +53,8 @@ import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
+import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
+    as _widgetbook_workspace_primitives_error_feedback_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
@@ -635,6 +637,27 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Discover list states',
                 builder: _widgetbook_workspace_clubs_club_detail_use_cases
                     .clubDiscoverListStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Core adapters',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Feedback',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedErrorBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped failures and retry policy',
+                builder:
+                    _widgetbook_workspace_primitives_error_feedback_use_cases
+                        .localizedErrorBannerStates,
               ),
             ],
           ),

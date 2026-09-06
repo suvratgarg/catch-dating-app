@@ -738,8 +738,16 @@ switch, resolving the private helper instead of carrying it across the move.
 The two provider-free skeleton placement helpers remain with their app-side
 layout dependencies in individual files until those patterns move. Golden
 discovery includes the Riverpod adapter root so relocation cannot remove its
-classes or designated cases. Mutation banners and notice state still need their
-remaining adapter extraction.
+classes or designated cases. Provider-backed notice state remains for the next
+adapter extraction.
+
+Inline error-banner visuals and the canonical snackbar publisher move to the
+package. Retry banners require caller-resolved labels through `withRetry`.
+App-localized error mapping and mutation-state translation stay with the app
+adapters, preserving retry eligibility and inherited-locale updates. The former
+private localized banner is a public registered adapter with a direct preview.
+The raw-feedback lint follows only the exact package publisher; package-neighbor
+and retired-app-path probes reject bypasses.
 
 ### Phase 4 — One registry, binding grammar
 

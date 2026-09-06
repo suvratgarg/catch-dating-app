@@ -56,7 +56,7 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` plus remaining `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` plus remaining `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` plus remaining mutation-banner/notice owners in `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` plus remaining notice owners in `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
@@ -1543,7 +1543,7 @@ Surface rules:
 | `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
 | `CatchInlineErrorState` | Section/card-level failure | Compact descriptor copy and retry when retryable. |
-| `CatchErrorBanner.fromError` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
+| `CatchLocalizedErrorBanner` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
 | `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
@@ -1564,7 +1564,7 @@ Rules:
 - Full-screen data errors use `CatchErrorScaffold` or `CatchErrorState`.
 - Sliver data errors use `CatchSliverErrorState`.
 - Section errors use `CatchInlineErrorState`.
-- Persistent mutation/form failures use `CatchErrorBanner.fromError` or
+- Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
   `CatchMutationErrorBanner`.
 - Transient action failures use `CatchMutationErrorListener(s)` or
   `showCatchErrorSnackBar`.
@@ -1775,8 +1775,8 @@ Candidate patterns:
 | Backend scanner | `tool/audit/backend_error_candidates.dart` |
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
-| Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
-| Error banner | `lib/core/widgets/catch_error_banner.dart` |
+| Branded error snackbar | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
+| Error banner | `packages/catch_ui/lib/src/components/catch_error_banner.dart` |
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
 | Mutation snackbar listener | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` |
 | Global error handlers | `lib/main.dart` |

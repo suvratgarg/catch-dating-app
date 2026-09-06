@@ -1,0 +1,29 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
+
+@widgetbook.UseCase(
+  name: 'Mapped failures and retry policy',
+  type: CatchLocalizedErrorBanner,
+  path: '[Core adapters]/Feedback',
+)
+Widget localizedErrorBannerStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Localized error banner',
+      catalogId: 'catch.error_banner.localized',
+      children: [
+        CatchLocalizedErrorBanner(
+          const NetworkException('timeout', 'Request timed out.'),
+          onRetry: () {},
+        ),
+        const CatchLocalizedErrorBanner(
+          NetworkException('timeout', 'Request timed out.'),
+        ),
+        CatchLocalizedErrorBanner(
+          const PermissionException('Access denied.'),
+          onRetry: () {},
+        ),
+      ],
+    );

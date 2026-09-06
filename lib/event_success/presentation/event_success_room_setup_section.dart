@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
@@ -64,7 +64,7 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
             body: context.l10n.eventSuccessRoomSetupLoadingBody,
           ),
         if (layoutsState.hasError)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             layoutsState.error!,
             context: AppErrorContext.event,
           ),
@@ -87,10 +87,7 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
               : null,
         ),
         if (saveError != null)
-          CatchErrorBanner.fromError(
-            saveError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(saveError!, context: AppErrorContext.event),
       ],
     );
   }

@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -564,7 +564,7 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (mutationState.participantActionError != null)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             mutationState.participantActionError!,
             context: AppErrorContext.event,
           ),
@@ -892,7 +892,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               ),
               if (mutationState.reportExportError != null) ...[
                 gapH12,
-                CatchErrorBanner.fromError(
+                CatchLocalizedErrorBanner(
                   mutationState.reportExportError!,
                   context: AppErrorContext.event,
                 ),

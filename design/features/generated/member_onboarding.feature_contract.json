@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
-  "resolvedDigest": "sha256:483a89552c75d175984920eb3cd7a4d8e9f4cf1859fe5792d013384f3417051e",
+  "resolvedDigest": "sha256:a79bf1dfa9d1156dee0a6195227e0ce40cad0170a83653c75a16a306ef2f52f6",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2305,10 +2305,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

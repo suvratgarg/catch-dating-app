@@ -6,12 +6,12 @@ import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -139,7 +139,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
             ),
             if (mutationError case final error?) ...[
               gapH12,
-              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+              CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
             ],
             if (showsProviderSource) ...[
               gapH20,
@@ -304,7 +304,7 @@ class _HostOperationalRosterPanelState
             gapH12,
           ],
           if (_mutationError case final error?) ...[
-            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
             gapH12,
           ],
           if (_attendanceOutbox case final outbox?
@@ -322,7 +322,7 @@ class _HostOperationalRosterPanelState
               watchPendingEventRuntimeClaimsProvider(widget.eventId),
             ),
             loadingBuilder: (_) => const SizedBox.shrink(),
-            errorBuilder: (_, error, _) => CatchErrorBanner.fromError(
+            errorBuilder: (_, error, _) => CatchLocalizedErrorBanner(
               error,
               context: AppErrorContext.event,
               onRetry: () => ref.invalidate(
@@ -1414,7 +1414,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
           ),
           if (_error case final error?) ...[
             gapH12,
-            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
           ],
         ],
       ),

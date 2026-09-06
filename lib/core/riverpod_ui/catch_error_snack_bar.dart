@@ -1,26 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-void showCatchSnackBar(
-  BuildContext context,
-  String message, {
-  SnackBarAction? action,
-}) {
-  final t = CatchTokens.of(context);
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      backgroundColor: t.ink,
-      content: Text(
-        message,
-        style: CatchTextStyles.labelL(context, color: t.bg),
-      ),
-      action: action,
-    ),
-  );
-}
 
 void showCatchErrorSnackBar(
   BuildContext context,

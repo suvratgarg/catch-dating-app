@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
@@ -232,10 +232,7 @@ class HostSavedPlacesSection extends StatelessWidget {
       ),
       children: [
         if (loadError != null)
-          CatchErrorBanner.fromError(
-            loadError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(loadError!, context: AppErrorContext.event),
         for (final venue in venues)
           CatchField.nav(
             title: venue.label,
@@ -256,10 +253,7 @@ class HostSavedPlacesSection extends StatelessWidget {
           onTap: !canSave || saving ? null : onSave,
         ),
         if (saveError != null)
-          CatchErrorBanner.fromError(
-            saveError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(saveError!, context: AppErrorContext.event),
       ],
     );
   }

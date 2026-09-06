@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:746fcf525d08c0f8e18233e9406b145388deac6f606961f793d5aa2d60370188",
+  "resolvedDigest": "sha256:c22ca572c8cdcb61d0eaf8d294b49b90a996aa39874e3dc53742c0ed584daa8d",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -5311,10 +5311,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

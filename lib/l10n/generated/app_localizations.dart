@@ -796,7 +796,7 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreCatchAdaptivePickerTextDone;
 
-  /// Product copy used by lib/core/widgets/catch_error_banner.dart (label).
+  /// Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Try again'**
