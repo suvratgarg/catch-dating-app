@@ -30,6 +30,7 @@ class HostTodayFocusScreen extends ConsumerStatefulWidget {
 class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
   HostTodayFocus? _selected;
   HostTodayPreferenceScope? _selectionScope;
+  bool _allowRoutePop = false;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +106,12 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
     }
 
     return PopScope(
-      canPop: !pending,
+      canPop: _allowRoutePop || (!pending && saved?.answered != false),
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !pending && scope != null && saved?.answered == false) {
+          unawaited(_save(scope, null));
+        }
+      },
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostTodayFocusScreenTitle,
@@ -147,8 +153,14 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
   }
 
   void _exit() {
+    if (_allowRoutePop) return;
+    setState(() => _allowRoutePop = true);
     if (context.canPop()) {
-      context.pop();
+      // Rebuild PopScope before the programmatic pop. First-run system Back
+      // follows the same persisted skip path as the visible close control.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.pop();
+      });
     } else {
       context.goNamed(
         Routes.hostTodayScreen.name,

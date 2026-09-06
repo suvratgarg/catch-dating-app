@@ -87,12 +87,7 @@ HostTodayPersonalizationState buildHostTodayPersonalizationState({
 }) {
   // Defer even first-run orientation until the existing operational projection
   // has positively established quiet. Never obstruct a live event or retry UI.
-  final quiet =
-      today.status == HostTodayStatus.empty &&
-      today.featuredEvent == null &&
-      today.attentionItems.isEmpty &&
-      today.attentionIssues.isEmpty &&
-      today.laterEvents.isEmpty;
+  final quiet = isHostTodayQuiet(today);
   final order = switch (preference.focus) {
     HostTodayFocus.audience => const [
       HostTodayMilestone.audience,
@@ -143,3 +138,10 @@ HostTodayPersonalizationState buildHostTodayPersonalizationState({
     ],
   );
 }
+
+bool isHostTodayQuiet(HostTodayState today) =>
+    today.status == HostTodayStatus.empty &&
+    today.featuredEvent == null &&
+    today.attentionItems.isEmpty &&
+    today.attentionIssues.isEmpty &&
+    today.laterEvents.isEmpty;
