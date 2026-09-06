@@ -3362,7 +3362,7 @@ missing canonical evidence, and records zero inferred grants.
 Reference files:
 
 - `lib/clubs/shared/catch_organizer_poster.dart`
-- `lib/core/widgets/catch_person_polaroid.dart`
+- `packages/catch_ui/lib/src/components/catch_person_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/catch_profile_view.dart`
 - `design/components/catch.components.json`

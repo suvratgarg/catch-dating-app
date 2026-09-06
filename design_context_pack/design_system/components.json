@@ -8902,7 +8902,7 @@
       "summary": "Map-adjacent radius ring with an optional readable control-role edge label and accessible label action.",
       "dart": {
         "symbol": "CatchDistanceRing",
-        "file": "lib/core/widgets/catch_distance_ring.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_distance_ring.dart",
         "constructors": [
           "CatchDistanceRing"
         ]
@@ -8977,12 +8977,30 @@
               "label",
               "tappable"
             ],
-            "file": "lib/core/widgets/catch_distance_ring.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_label.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.distance_ring",
               "parentConceptId": "catch.distance_ring",
               "qualifier": "variant",
+              "decisionRef": "contract-family:catch.distance_ring"
+            }
+          },
+          {
+            "id": "catch.distance_ring.viewport",
+            "symbol": "CatchDistanceRingViewport",
+            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_viewport.dart",
+            "summary": "Resolved-diameter geometry and label overhang, owned separately from available-size negotiation and the label surface.",
+            "states": [
+              "ring-only",
+              "edge-label",
+              "tappable-label"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.distance_ring",
+              "parentConceptId": "catch.distance_ring",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.distance_ring"
             }
           }
@@ -15031,7 +15049,7 @@
       "summary": "Canonical portrait-first person material with a quiet identity caption lane and optional contextual overlay.",
       "dart": {
         "symbol": "CatchPersonPolaroid",
-        "file": "lib/core/widgets/catch_person_polaroid.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
         "constructors": [
           "CatchPersonPolaroid"
         ]

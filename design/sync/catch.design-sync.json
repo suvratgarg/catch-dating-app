@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "1073e578d75e64198796c8d1e5d1aa36854c9a116052e962d2af4f0b2faaab4e",
+  "sourceDigest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "1073e578d75e64198796c8d1e5d1aa36854c9a116052e962d2af4f0b2faaab4e",
-    "contractDigest": "1073e578d75e64198796c8d1e5d1aa36854c9a116052e962d2af4f0b2faaab4e"
+    "digest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8",
+    "contractDigest": "9f2a37e7afbe0cb419616bb650748f3e49cfbde3a0a862689a9d0a7fd3ec4bc8"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e4448ff673131350da9de8445e630b5579f253c787c76af6aa15b209c317bc13",
+    "handoffRequestDigest": "193f4dbc2a0fc3b21f22de6316a0b6e9129800b03cef338c0cf272d114d583d2",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 237,
+    "publicClassCount": 238,
     "conceptCount": 68,
-    "memberCount": 151,
-    "membersPerConcept": 2.22,
+    "memberCount": 152,
+    "membersPerConcept": 2.24,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 151,
+      "member": 152,
       "screen": 15
     },
     "collisionCount": 36,
@@ -159,7 +159,8 @@
         "key": "catch.distance_ring",
         "symbols": [
           "CatchDistanceRing",
-          "CatchDistanceRingLabel"
+          "CatchDistanceRingLabel",
+          "CatchDistanceRingViewport"
         ]
       },
       {
@@ -1736,7 +1737,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.distance_ring",
       "dartSymbol": "CatchDistanceRing",
-      "dartFile": "lib/core/widgets/catch_distance_ring.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_distance_ring.dart",
       "figmaName": "Catch/DistanceRing",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1761,7 +1762,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "DistanceRing",
       "claudeAllowed": true,
-      "contractDigest": "bf159f469af1031ee9e4c02b510403b449132e4377bcbb0897a0898c4b0728f7"
+      "contractDigest": "299924414dd375e3a59f4470303391c18d919b5397be41af89b87265412f0e30"
     },
     {
       "contractId": "catch.code_input",
@@ -2824,7 +2825,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.person_polaroid",
       "dartSymbol": "CatchPersonPolaroid",
-      "dartFile": "lib/core/widgets/catch_person_polaroid.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
       "figmaName": "Catch/PersonPolaroid",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2849,7 +2850,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PersonPolaroid",
       "claudeAllowed": true,
-      "contractDigest": "438dbf1d82f7bca0b008e30691ef205a7e25d8f6bf900d32ac877a1451f63117"
+      "contractDigest": "50f48d581d43f5a71aa228a96e22944fc939779c96c63434ed781cb0751af603"
     },
     {
       "contractId": "catch.club_cover",

@@ -724,6 +724,11 @@ Direct short/overflow, scene-size/inset and master-detail breakpoint previews
 cover the four layouts and scene descriptor, retiring five waivers. Master-detail
 source remains at its app owner
 until its state-matrix reference can move in the same slice.
+The person polaroid is classified as L3 entity material: its API contains only
+widget/string/color/callback presentation inputs, so the unchanged renderer
+moves to the package. Distance rings retain their size negotiation and label
+behavior, with a registered viewport member replacing the private body and
+an individual file for the native-map-compatible edge label.
 
 ### Phase 4 — One registry, binding grammar
 

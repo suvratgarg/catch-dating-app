@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

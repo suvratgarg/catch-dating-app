@@ -2088,7 +2088,7 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-entity-material-001-entity-material-composition",
       "prototypeFiles": [
         "lib/clubs/shared/catch_organizer_poster.dart",
-        "lib/core/widgets/catch_person_polaroid.dart",
+        "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
         "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
         "lib/swipes/shared/profile_surface/catch_profile_view.dart",
         "test/clubs/club_hero_app_bar_test.dart",
@@ -2115,7 +2115,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/widgets/catch_person_polaroid.dart",
+          "path": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
           "role": "canonical provider-free person polaroid with portrait media, identity caption, optional context overlay, and callback-only interaction",
           "providerFree": true,
           "status": "aligned"

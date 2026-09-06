@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:55ac39b8796fceef7e0d1ca679bb3d8056ca90b33795fdeb7d35f58d1bc8aee3",
+  "resolvedDigest": "sha256:eaaf689c5a488454fcbc7f5316013c09b7977a6c37f925ef09e1c178d65e765a",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1830,7 +1830,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchPersonPolaroid",
-              "file": "lib/core/widgets/catch_person_polaroid.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
               "constructors": [
                 "CatchPersonPolaroid"
               ]

@@ -51,6 +51,8 @@ import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
+import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
+    as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
@@ -1935,6 +1937,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchDistanceRingContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchDistanceRingViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fixed diameter and edge label',
+                builder:
+                    _widgetbook_workspace_primitives_distance_ring_use_cases
+                        .distanceRingViewportStates,
               ),
             ],
           ),
