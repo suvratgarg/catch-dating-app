@@ -737,4 +737,39 @@ DART
 expect_probe exact catch_use_canonical_feedback 0
 expect_probe exact catch_status_strip_is_layout_owned 0
 
+# L0 definitions own literal values; only the token package receives this
+# exemption. The identical app-local definition must still be diagnosed.
+for token_scope in \
+  "packages/catch_tokens/lib/src/primitives/token_probe.dart" \
+  "lib/events/presentation/widgets/token_probe.dart"; do
+  probe_path="$probe_root/$token_scope"
+  stage_probe "token definition ownership $token_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+const Color tokenProbeColor = Color(0xFF123456);
+DART
+  if [[ "$token_scope" == packages/catch_tokens/* ]]; then
+    expect_probe clean
+  else
+    expect_code_count "app-local token definition" "catch_no_raw_color" 1
+  fi
+done
+
+probe_path="$probe_root/lib/events/presentation/widgets/token_consumer_probe.dart"
+stage_probe "extracted component geometry token consumers" <<'DART'
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:flutter/material.dart';
+
+class TokenConsumerProbe extends StatelessWidget {
+  const TokenConsumerProbe({super.key});
+
+  @override
+  Widget build(BuildContext context) => const SizedBox(
+    width: CatchFormWorkspaceTokens.formBuilderOutlineWidth,
+    height: CatchWelcomeTokens.welcomeReelRowHeight,
+  );
+}
+DART
+expect_probe clean
+
 node tool/lib/lint_probe_batch.mjs "$probe_root" "$probe_manifest" "$dart_bin"

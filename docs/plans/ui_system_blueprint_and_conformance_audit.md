@@ -625,6 +625,18 @@ DoD: old files gone; `flutter analyze` green across workspace members and
 widgetbook; `dart run tool/design_tokens.dart --check` green; goldens
 unchanged (Phase 1 proof of no visual drift); lint probe corpus green.
 
+Implementation: `packages/catch_tokens` is a Flutter-only production dependency
+in the Dart workspace and exports generated scales plus handwritten primitive,
+semantic, and component token units. Its 20 handwritten library files stay
+within D6 (largest: 796 lines). Welcome reel and form-workspace geometry have
+separate token owners; their expressions and the remaining token values are
+preserved. The three migrated originals are deleted, all active consumers use
+the package, generator/discovery paths follow it, and the affected test-size
+ratchet is lowered. The package dependency check rejects non-Flutter packages;
+standard Flutter lints reject undeclared app imports. The workspace analyzer
+explicitly targets the package's `lib` source after a seeded probe demonstrated
+that directory-wide Flutter analysis could skip it.
+
 ### Phase 3 — `packages/catch_ui`
 
 Sub-slices, each independently gated by compiler + goldens:
