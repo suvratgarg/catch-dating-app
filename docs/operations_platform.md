@@ -551,9 +551,12 @@ attempt history, one-time dispatch claiming and late-receipt reconciliation.
 Its transaction contention boundary is independent of run completion, so a
 closed workflow cannot discard a later provider receipt. The workflow will
 reference that private message state instead of treating a work-item action
-receipt as delivery proof. Scheduling, concrete source readers, channel adapters
-and Event Assistance's live executor remain integration work; these primitives
-do not enable Supply Intake publication.
+receipt as delivery proof. `EventMessageWorker` now composes the concrete SMS
+and WhatsApp authority readers and adapters through that one outbox history;
+only the selected channel can claim spending and send. Scheduling, remaining
+workflow source readers, RCS, provider failure reconciliation and Event
+Assistance's live executor remain integration work. These primitives do not
+enable Supply Intake publication.
 
 ## Adding Another Workflow
 

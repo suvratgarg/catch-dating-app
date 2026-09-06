@@ -104,8 +104,25 @@ export class SmsDispatchStore {
 
   outbox(linkId: string): FirestoreMessageOutbox {
     if (!/^[a-f0-9]{32}$/.test(linkId)) throw new Error("Invalid SMS grant id");
-    return new FirestoreMessageOutbox(this.db, async (tx, intent, now) =>
-      (await this.read(tx, intent, linkId, now)).facts, this.clock);
+    return new FirestoreMessageOutbox(this.db, async (tx, intent, now) => {
+      if (intent.permittedRoutes.some((r) => r !== "catchEventSms")) {
+        throw new Error("Multi-route messages require the channel composer");
+      }
+      return this.readFacts(tx, intent, linkId, now);
+    }, this.clock);
+  }
+
+  /** A loaded credential can only make its exact sender snapshot eligible. */
+  async readFacts(tx: Transaction, intent: Intent, linkId: string,
+    now: number, expected?: SmsConfig): Promise<OutboxFacts> {
+    const result = await this.read(tx, intent, linkId, now);
+    if (expected && result.material &&
+        operationContentHash(expected) !==
+          operationContentHash(result.material.config)) {
+      return {gate: result.facts.gate, routes: [{routeId: "catchEventSms",
+        state: {kind: "blocked", reason: "channelUnavailable"}}]};
+    }
+    return result.facts;
   }
 
   /** Exact material and both budget debits commit with the outbox claim. */
@@ -190,16 +207,13 @@ export class SmsDispatchStore {
     const scopes = smsBudgetScopes(context, now);
     const [senderSnap, permissionSnap, grantSnap, attendeeSnap,
       ...budgetSnaps] =
-      await Promise.all([
-        tx.get(this.db.collection(smsCollections.senders).doc(this.senderId)),
-        tx.get(this.db.collection(smsCollections.permissions)
-          .doc(permissionId)),
-        tx.get(this.db.collection(guestCollections.grants).doc(linkId)),
-        tx.get(this.db.collection("eventAttendees").doc(intent.attendeeId)),
-        ...scopes.map((scope) => tx.get(this.db
-          .collection(smsCollections.budgets)
-          .doc(smsBudgetId(this.senderId, scope)))),
-      ]);
+      await tx.getAll(
+        this.db.collection(smsCollections.senders).doc(this.senderId),
+        this.db.collection(smsCollections.permissions).doc(permissionId),
+        this.db.collection(guestCollections.grants).doc(linkId),
+        this.db.collection("eventAttendees").doc(intent.attendeeId),
+        ...scopes.map((scope) => this.db.collection(smsCollections.budgets)
+          .doc(smsBudgetId(this.senderId, scope))));
     if (!senderSnap.exists) return blocked("notProvisioned");
     const config = parseSmsConfig(senderSnap.data());
     if (config.senderId !== this.senderId || config.status !== "ready" ||

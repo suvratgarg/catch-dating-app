@@ -82,8 +82,16 @@ export class WhatsappDispatchStore {
 
   /** Exposed to the shared route composer without granting a send permit. */
   async readFacts(tx: Transaction, intent: Intent, linkId: string,
-    now: number): Promise<OutboxFacts> {
-    return (await this.read(tx, intent, linkId, now)).facts;
+    now: number, expected?: WhatsappSenderConfig): Promise<OutboxFacts> {
+    const result = await this.read(tx, intent, linkId, now);
+    if (expected && result.material && operationContentHash(expected) !==
+        operationContentHash({connection: result.material.connection,
+          policy: result.material.policy})) {
+      return {gate: result.facts.gate,
+        routes: [{routeId: "organizerEventWhatsapp",
+          state: {kind: "blocked", reason: "channelUnavailable"}}]};
+    }
+    return result.facts;
   }
 
   /** Material, both debits and optional native replies share the claim. */

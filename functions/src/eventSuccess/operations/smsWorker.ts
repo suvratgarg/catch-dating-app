@@ -6,6 +6,9 @@ import {
   SmsSubmissionOutcome, parseSmsCredentials,
 } from "./gupshupSmsProvider";
 import type {PermitResult} from "./messageOutbox";
+import type {PreparedMessageChannel, ChannelDispatchResult} from
+  "./messageChannel";
+import type {FirestoreMessageOutbox} from "./firestoreMessageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
 
 export type SmsWorkerResult =
@@ -33,9 +36,24 @@ export class EventSmsWorker {
     if (message.intent.permittedRoutes.some((r) => r !== "catchEventSms")) {
       return {kind: "withheld", reason: "routeCompositionUnavailable"};
     }
+    const channel = await this.prepareChannel(linkId);
+    if (channel.kind === "unavailable") {
+      return {kind: "withheld", reason: channel.reason};
+    }
+    const reservation = await outbox.reserve(messageId);
+    const attempt = reservation.record.attempts.at(-1);
+    if (!attempt || attempt.state.kind !== "reserved") {
+      return {kind: "waiting", decision: reservation.decision};
+    }
+    return channel.dispatchReserved(outbox, messageId, attempt.attemptId);
+  }
+
+  /** All slow secret I/O finishes before the shared route reservation. */
+  async prepareChannel(linkId: string):
+    Promise<PreparedMessageChannel<SmsSubmissionOutcome>> {
     const config = await this.store.sender();
     if (!config || config.status !== "ready") {
-      return {kind: "withheld", reason: "senderUnavailable"};
+      return {kind: "unavailable", reason: "senderUnavailable"};
     }
     // Slow secret I/O precedes the reservation's short authorization window.
     let credentials: SmsCredentials;
@@ -43,21 +61,34 @@ export class EventSmsWorker {
       credentials = parseSmsCredentials(
         await this.credentials.access(config), config.senderId);
     } catch {
-      return {kind: "withheld", reason: "credentialUnavailable"};
+      return {kind: "unavailable", reason: "credentialUnavailable"};
     }
-    const reservation = await outbox.reserve(messageId);
-    const attempt = reservation.record.attempts.at(-1);
-    if (!attempt || attempt.mode !== "live" ||
-        attempt.binding.routeId !== "catchEventSms" ||
-        attempt.binding.provider !== "gupshup" ||
-        attempt.state.kind !== "reserved") {
-      return {kind: "waiting", decision: reservation.decision};
+    return {kind: "ready", routeId: "catchEventSms",
+      readFacts: (tx, intent, now) =>
+        this.store.readFacts(tx, intent, linkId, now, config),
+      dispatchReserved: (outbox, messageId, attemptId) =>
+        this.dispatchReserved(outbox, messageId, attemptId, linkId, config,
+          credentials)};
+  }
+
+  private async dispatchReserved(outbox: FirestoreMessageOutbox,
+    messageId: string, attemptId: string, linkId: string,
+    config: SmsConfig, credentials: SmsCredentials):
+    Promise<ChannelDispatchResult<SmsSubmissionOutcome>> {
+    const record = await outbox.get(messageId);
+    const reserved = record?.attempts.find((a) => a.attemptId === attemptId);
+    if (!reserved || reserved.mode !== "live" ||
+        reserved.binding.routeId !== "catchEventSms" ||
+        reserved.binding.provider !== "gupshup" ||
+        reserved.state.kind !== "reserved") {
+      return {kind: "withheld", reason: "notReserved"};
     }
-    const claim = await outbox.claimLiveDispatch(messageId, attempt.attemptId,
+    const claim = await outbox.claimLiveDispatch(messageId, attemptId,
       this.store.prepare(linkId, config));
     if (claim.kind === "withheld") {
       return {kind: "withheld", reason: claim.reason};
     }
+    const attempt = claim.permit.attempt;
     const material = claim.resource;
     const outcome = await this.provider.send({permit: claim.permit,
       config: material.config, credentials,

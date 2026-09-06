@@ -150,16 +150,21 @@ provider-owned fallback create owned exceptions. Event/guest state, current
 instruction, expiry, permission freshness and attempt limits are checked before
 selection. `deliveryReceipts.ts` preserves delivered/read evidence when delayed
 or contradictory provider statuses arrive, and rejects another sender,
-connection revision, endpoint or provider message id. Provider signature
-verification and callback-to-attempt lookup belong to the upcoming adapters.
+connection revision, endpoint or provider message id. The WhatsApp consumer
+correlates the signed private webhook queue and dispatch evidence; the SMS
+consumer verifies per-attempt report credentials. SMS HTTP ingress and reviewed
+WhatsApp failure finality remain pending.
 
 `FirestoreMessageOutbox` persists immutable intents and at most six attempts in
 the private `eventAssistanceMessages` collection. Re-enqueueing the same scoped
 intent returns its existing history; changed content cannot reuse the identity.
 Reservation and dispatch claiming each re-read trusted domain and permission
-facts in their Firestore transaction. The fact reader is trusted server authority. SMS now supplies a concrete
-event/roster/permission/template/budget reader; other channels still need their
-own readers.
+facts in their Firestore transaction. The fact reader is trusted server authority.
+`EventMessageWorker` composes the concrete SMS and WhatsApp readers through one
+outbox, so both independent permissions and spending limits are checked before
+selection and claim. A prepared credential must match the current sender
+snapshot. Single-channel stores cannot reserve mixed-route intents; RCS remains
+explicitly unavailable.
 
 Only one transaction can claim a reserved live attempt. It records an uncertain
 outcome before returning a short-lived dispatch permit, and the provider runs
@@ -172,10 +177,12 @@ Normalized receipts can update an expired or cancelled message independently
 of its workflow run. They cannot reopen sending. Contradictory evidence creates
 a persistent conflict that withholds new dispatch, including an already
 reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
-or accept a real provider receipt. The SMS worker connects this outbox to a
-Gupshup submission adapter. A scheduled live Operations executor, Host read
-model and rehearsal runtime remain separate integration steps. Terminal cleanup must be added before activation,
-and must retain deduplication state throughout the provider reconciliation
+or accept a real provider receipt. The selected worker connects the outbox to
+Gupshup SMS or Meta WhatsApp outside the transaction. An unknown or accepted
+submission holds all fallback even if its channel later becomes unavailable.
+A scheduled live Operations executor, Host read model and rehearsal runtime
+remain separate integration steps. Terminal cleanup must be added before
+activation and retain deduplication state throughout the provider reconciliation
 window.
 
 `GuestAssistanceStore` supplies the trusted publisher and scoped guest-response

@@ -2160,7 +2160,7 @@ reviewed policy, the original verified recipient, exact consent receipt,
 endpoint STOP evidence, CRM pauses/provider blocks, template and scoped guest
 link. These facts are read in the same transaction as the outbox claim. The
 single-route outbox refuses mixed-route intents; `readFacts` exposes this
-channel to the future shared composer without silently skipping other channels.
+channel to the shared composer without silently skipping other channels.
 The shared message gate caps all event-service routes at 24 hours after the
 current event end, including after a schedule change shortens a previously
 granted consent window.
@@ -2217,9 +2217,43 @@ a conflict. It does not execute guest choices or grant fallback permission.
 Failed or inconsistent provider statuses remain unconfirmed until the provider
 error/finality mapping is reviewed. The configured Meta API version's callback
 echo still requires controlled account verification. Durable queue/reply
-retries, failure classification and the shared
-cross-channel composer remain integration work. These boundaries do not
+retries and failure classification remain integration work. These boundaries do not
 activate automated sending.
+
+### Event Assistance Channel Selection Contract
+
+`EventMessageWorker` uses one immutable intent and one bounded outbox history
+for all permitted channels. It composes the existing SMS and WhatsApp workers;
+it is a trusted port, not a callable, scheduler or registered live executor.
+Only explicitly permitted routes can prepare credentials. Each channel loads
+its pinned secret before reservation; a changed sender snapshot makes that
+prepared channel ineligible. RCS currently returns `notProvisioned` and cannot
+load credentials or dispatch. Missing credentials return `channelUnavailable`.
+A malformed source or inconsistent channel gate fails the whole evaluation.
+
+Every route's event gate, consent, suppression, template, recipient and spending
+facts are read in the same transaction as reservation, and again at claim.
+Channels must agree on the shared event gate and expose exactly their own route.
+The shared policy preserves the intent's route order, tries an eligible untried
+route before retrying a confirmed failed route, and retains retry backoff and
+attempt ceilings. Only the selected channel prepares material, debits its two
+budgets and claims the single provider attempt. The channel-specific stores
+reject mixed-route reservation so callers cannot accidentally omit competing
+channel authority.
+
+A preflight unavailable channel can give way to another independently permitted
+and consented route. After submission, unknown or accepted outcomes hold all
+fallback even if the original sender, credential or consent later disappears.
+Only trusted confirmed technical non-delivery can permit fallback. Policy,
+suppression and invalid-recipient rejections require resolution; conflicting
+delivery evidence stops a pending fallback claim. Raw Meta failed statuses still
+lack a reviewed finality mapping and therefore do not unlock this path. This
+composition does not imply provider activation or guaranteed delivery.
+
+An existing unsent reservation keeps its original channel, sender and permission
+snapshot. Changed or expired authority cannot silently repurpose it. Recovery of
+stale unclaimed reservations, durable reconciliation wakeups, RCS implementation
+and live Operations executor integration remain separate work.
 
 ### Event Assistance SMS Delivery Contract
 
