@@ -87,6 +87,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -94,6 +95,7 @@ import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
@@ -102,6 +104,7 @@ import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -3281,6 +3284,17 @@ Widget _createClubCapture({
   );
 }
 
+Future<void> _driveCreateDisclosure(WidgetTester tester, String key) async {
+  final target = find.byKey(ValueKey(key));
+  await tester.ensureVisible(target);
+  await tester.tap(target);
+  await pumpFeatureUi(tester);
+  if (key == 'host.create_event.customize_guide') {
+    await tester.ensureVisible(find.byType(EventSuccessDefaultsPanel));
+    await pumpFeatureUi(tester);
+  }
+}
+
 Widget _createEventCapture({
   int initialStep = 0,
   bool useDraft = true,
@@ -3573,6 +3587,12 @@ List<Object> _hostCreateEventProviderOverrides({
       _dashboardHostClub.id,
     ).overrideWithValue(clubValue ?? AsyncData<Club?>(_dashboardHostClub)),
     deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+    watchOrganizerEventVenuesProvider(
+      _dashboardHostClub.id,
+    ).overrideWith((ref) => Stream.value(const <OrganizerEventVenue>[])),
+    watchOrganizerEventSuccessLayoutsProvider(
+      _dashboardHostClub.id,
+    ).overrideWith((ref) => Stream.value(const <EventSuccessLayout>[])),
     eventDraftRepositoryProvider.overrideWithValue(
       HostFixtureEventDraftRepository(drafts: drafts),
     ),
@@ -6467,6 +6487,23 @@ final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   id: 'host-event-setup-capture-draft',
   club: _dashboardHostClub,
   savedAt: _captureNow,
+);
+final _hostRuntimeSetupDraft = _hostEventSetupDraft.copyWith(
+  id: 'runtime-create-capture',
+  name: 'Friday supper club',
+  externalBookingMode: true,
+  capacity: '24',
+  description: null,
+  externalBookingProvider: 'generic',
+  runtimeWalkInPolicy: 'hostApproval',
+  admissionPreset: 'openCapacity',
+  minAge: null,
+  maxAge: null,
+  selectedDateMillis: _captureNow
+      .add(const Duration(days: 7))
+      .millisecondsSinceEpoch,
+  selectedStartHour: 19,
+  selectedStartMinute: 0,
 );
 final _hostEventGuideDefaults = EventSuccessDefaults.recommendedForActivity(
   ActivityKind.dinner,
@@ -12252,6 +12289,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_create_event_photos',
+    drive: (tester) =>
+        _driveCreateDisclosure(tester, 'host.create_event.presentation'),
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     precache: _hostMediaCaptureImages,
@@ -12343,7 +12382,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _HostCreateEventMutationCapture(
       mode: _HostCreateEventMutationCaptureMode.submitPending,
-      child: _createEventCapture(initialStep: 4),
+      child: _createEventCapture(initialStep: 2),
     ),
   ),
   ScreenCaptureEntry(
@@ -12353,7 +12392,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _HostCreateEventMutationCapture(
       mode: _HostCreateEventMutationCaptureMode.submitError,
-      child: _createEventCapture(initialStep: 4),
+      child: _createEventCapture(initialStep: 2),
     ),
   ),
   ScreenCaptureEntry(
@@ -12363,11 +12402,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _HostCreateEventMutationCapture(
       mode: _HostCreateEventMutationCaptureMode.submitOffline,
-      child: _createEventCapture(initialStep: 4),
+      child: _createEventCapture(initialStep: 2),
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_create_photo_upload_offline',
+    drive: (tester) =>
+        _driveCreateDisclosure(tester, 'host.create_event.presentation'),
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
@@ -12403,10 +12444,55 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventSetupDraft,
-      initialStep: 3,
+      initialStep: 2,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_runtime_basics',
+    routeIds: const ['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) => _createEventCapture(draft: _hostRuntimeSetupDraft),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_runtime_schedule',
+    routeIds: const ['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) =>
+        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 1),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_runtime_guests',
+    routeIds: const ['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    builder: (context) =>
+        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_runtime_review',
+    routeIds: const ['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    drive: (tester) async {
+      await tester.tap(find.widgetWithText(CatchButton, 'Review event'));
+      await pumpFeatureUi(tester);
+    },
+    builder: (context) =>
+        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_runtime_customize',
+    routeIds: const ['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    providerOverrides: _hostCreateEventProviderOverrides(),
+    drive: (tester) =>
+        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
+    builder: (context) =>
+        _createEventCapture(draft: _hostRuntimeSetupDraft, initialStep: 2),
   ),
   ScreenCaptureEntry(
     id: 'host_create_basics',
@@ -12458,7 +12544,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventSetupDraft,
-      initialStep: 2,
+      initialStep: 1,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
@@ -12469,7 +12555,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) =>
-        _createEventCapture(draft: _hostEventPastScheduleDraft, initialStep: 2),
+        _createEventCapture(draft: _hostEventPastScheduleDraft, initialStep: 1),
   ),
   ScreenCaptureEntry(
     id: 'host_create_policy',
@@ -12480,7 +12566,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventSetupDraft,
-      initialStep: 3,
+      initialStep: 2,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
@@ -12492,7 +12578,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _createEventCapture(
       draft: _hostEventPolicyAgeValidationDraft,
-      initialStep: 3,
+      initialStep: 2,
       showValidation: true,
     ),
   ),
@@ -12502,7 +12588,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) =>
-        _createEventCapture(draft: _hostEventInviteOnlyDraft, initialStep: 3),
+        _createEventCapture(draft: _hostEventInviteOnlyDraft, initialStep: 2),
   ),
   ScreenCaptureEntry(
     id: 'host_create_policy_cohort_caps',
@@ -12510,7 +12596,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) =>
-        _createEventCapture(draft: _hostEventCohortCapsDraft, initialStep: 3),
+        _createEventCapture(draft: _hostEventCohortCapsDraft, initialStep: 2),
   ),
   ScreenCaptureEntry(
     id: 'host_create_policy_dynamic_pricing_disabled',
@@ -12519,7 +12605,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _createEventCapture(
       draft: _hostEventDynamicPricingDisabledDraft,
-      initialStep: 3,
+      initialStep: 2,
     ),
   ),
   ScreenCaptureEntry(
@@ -12529,12 +12615,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _createEventCapture(
       draft: _hostEventDynamicPricingValidationDraft,
-      initialStep: 3,
+      initialStep: 2,
       showValidation: true,
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_create_guide',
+    drive: (tester) => tester.ensureVisible(
+      find.byKey(const ValueKey('host.create_event.customize_guide')),
+    ),
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.createGuide'],
@@ -12542,20 +12631,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventGuideDraft,
-      initialStep: 4,
+      initialStep: 2,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
   ),
   ScreenCaptureEntry(
     id: 'host_create_guide_question_pack',
+    drive: (tester) =>
+        _driveCreateDisclosure(tester, 'host.create_event.customize_guide'),
     routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.reviewTall,
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventGuideDraft,
-      initialStep: 4,
+      initialStep: 2,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
@@ -12582,7 +12673,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventSetupDraft,
-      initialStep: 2,
+      initialStep: 1,
       loadMapTiles: false,
       now: () => _captureNow,
     ),
@@ -12595,7 +12686,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => CreateEventScreen(
       club: _dashboardHostClub,
       initialDraft: _hostEventSetupDraft,
-      initialStep: 4,
+      initialStep: 2,
       loadMapTiles: false,
       now: () => _captureNow,
     ),

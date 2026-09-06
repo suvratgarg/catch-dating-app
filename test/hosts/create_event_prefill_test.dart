@@ -13,6 +13,7 @@ void main() {
     final createdAt = DateTime(2026, 7, 10, 12);
     final event = buildEvent(
       id: 'trivia-42',
+      name: 'Friday trivia',
       clubId: 'club-7',
       startTime: DateTime(2026, 7, 3, 20, 15),
       endTime: DateTime(2026, 7, 3, 22),
@@ -50,6 +51,7 @@ void main() {
 
     expect(prefill.sourceEventId, event.id);
     expect(values.clubId, event.clubId);
+    expect(values.name, 'Friday trivia');
     expect(values.savedAt, createdAt);
     expect(values.activityKind, ActivityKind.openActivity.name);
     expect(values.customActivityLabel, 'Trivia');
@@ -80,6 +82,41 @@ void main() {
 
     expect(CreateEventPrefill.canRepeat(event), isFalse);
   });
+
+  test(
+    'repeating an imported event preserves mode but not the old guest source',
+    () {
+      final event = buildEvent(name: 'Friday supper').copyWith(
+        eventOrigin: const EventOrigin(
+          mode: EventOriginMode.externalCompanion,
+          bookingAuthority: EventBookingAuthority.external,
+          rosterAuthority: EventRosterAuthority.hostImport,
+          provider: ExternalBookingProvider.luma,
+          externalEventId: 'old-booking',
+          externalEventUrl: 'https://lu.ma/old-event',
+        ),
+        runtimeAccess: const EventRuntimeAccess(
+          enabled: true,
+          publicRuntimeId: 'old-room',
+          walkInPolicy: EventRuntimeWalkInPolicy.deny,
+          termsVersion: 'v1',
+        ),
+      );
+      final values = CreateEventPrefill.repeat(
+        event: event,
+        createdAt: DateTime(2026, 9, 4),
+      ).values;
+      expect(values.name, event.name);
+      expect(values.externalBookingMode, isTrue);
+      expect(values.externalBookingProvider, 'luma');
+      expect(values.runtimeWalkInPolicy, 'deny');
+      expect(values.eventSuccessDefaults.enabled, isTrue);
+      expect(values.externalEventId, isNull);
+      expect(values.externalEventUrl, isNull);
+      expect(values.rosterFileFingerprint, isNull);
+      expect(values.selectedDateMillis, isNull);
+    },
+  );
 
   test('repeat prefill preserves composable route operations', () {
     final event = buildEvent(

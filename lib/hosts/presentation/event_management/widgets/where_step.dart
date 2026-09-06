@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class WhereStep extends ConsumerWidget {
   const WhereStep({
     super.key,
+    this.embedded = false,
     required this.formKey,
     required this.organizerId,
     this.autovalidateMode = AutovalidateMode.disabled,
@@ -33,6 +34,8 @@ class WhereStep extends ConsumerWidget {
     required this.currentCapacity,
   });
 
+  /// When composed by the shared editor, its parent owns scrolling and Form.
+  final bool embedded;
   final GlobalKey<FormState> formKey;
   final String organizerId;
   final AutovalidateMode autovalidateMode;
@@ -79,114 +82,118 @@ class WhereStep extends ConsumerWidget {
       }
     }
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchAsyncValueView<List<OrganizerEventVenue>>(
+          value: venuesAsync,
+          errorContext: AppErrorContext.event,
+          onRetry: () =>
+              ref.invalidate(watchOrganizerEventVenuesProvider(organizerId)),
+          loadingBuilder: (_) => HostSavedPlacesSection(
+            venues: const [],
+            selectedVenueId: selectedVenueId,
+            onVenueSelected: onVenueSelected,
+            canSave: currentMeetingLocation != null,
+            saving: saveMutation.isPending,
+            saveError: saveError,
+            onSave: saveCurrentPlace,
+          ),
+          errorBuilder: (_, error, _) => HostSavedPlacesSection(
+            venues: const [],
+            loadError: error,
+            selectedVenueId: selectedVenueId,
+            onVenueSelected: onVenueSelected,
+            canSave: currentMeetingLocation != null,
+            saving: saveMutation.isPending,
+            saveError: saveError,
+            onSave: saveCurrentPlace,
+          ),
+          builder: (_, venues) => HostSavedPlacesSection(
+            venues: venues,
+            selectedVenueId: selectedVenueId,
+            onVenueSelected: onVenueSelected,
+            canSave: currentMeetingLocation != null,
+            saving: saveMutation.isPending,
+            saveError: saveError,
+            onSave: saveCurrentPlace,
+          ),
+        ),
+        CatchFieldLanes.divided(
+          children: [
+            FormField<LocationCoordinate>(
+              key: ValueKey(startingPoint),
+              validator: (_) => startingPoint == null
+                  ? context.l10n.hostsWhereStepVisiblecopyChooseAMeetingLocation
+                  : null,
+              builder: (field) => CatchFieldLanes.single(
+                child: CatchField.nav(
+                  key: CreateEventFormKeys.mapPicker,
+                  title: context.l10n.hostsWhereStepLabelMeetingLocation,
+                  body: startingPoint == null
+                      ? context.l10n.eventsMapPinTileTitleChooseOnMap
+                      : _trimToNull(meetingPointController.text) ??
+                            context.l10n.eventsMapPinTileTitlePinnedLocation,
+                  icon: startingPoint == null
+                      ? CatchIcons.mapOutlined
+                      : CatchIcons.editLocationAltOutlined,
+                  error: field.errorText,
+                  onTap: saveMutation.isPending ? null : onPickLocation,
+                ),
+              ),
+            ),
+            CatchField.input(
+              key: CreateEventFormKeys.meetingPoint,
+              title: context.l10n.hostsWhereStepTitleLocationName,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadMeetingPoint,
+              controller: meetingPointController,
+              enabled: !saveMutation.isPending,
+              inputHint:
+                  context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
+              helperText: startingPoint == null
+                  ? context.l10n.hostsWhereStepHelpertextPickAMapLocation
+                  : context.l10n.hostsWhereStepHelpertextEditThisIfAttendees,
+              icon: CatchIcons.locationOnOutlined,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+              onChanged: onMeetingPointChanged,
+              validator: (value) {
+                if (startingPoint == null) return null;
+                return value == null || value.trim().isEmpty
+                    ? context.l10n.hostsWhereStepVisiblecopyAddALocationName
+                    : null;
+              },
+            ),
+            CatchField.input(
+              key: CreateEventFormKeys.locationDetails,
+              title: context.l10n.hostsWhereStepTitleExtraDirections,
+              contract: CatchContractConstraints
+                  .createEventCallablePayloadLocationDetails,
+              isOptional: true,
+              controller: locationDetailsController,
+              enabled: !saveMutation.isPending,
+              inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
+              helperText:
+                  context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,
+              icon: CatchIcons.infoOutline,
+              maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              onChanged: onLocationDetailsChanged,
+            ),
+          ],
+        ),
+      ],
+    );
+    if (embedded) return content;
     return Form(
       key: formKey,
       autovalidateMode: autovalidateMode,
-      child: ListView(
+      child: SingleChildScrollView(
         padding: CatchInsets.formStepBodyWithBottomActions,
-        children: [
-          CatchAsyncValueView<List<OrganizerEventVenue>>(
-            value: venuesAsync,
-            errorContext: AppErrorContext.event,
-            onRetry: () =>
-                ref.invalidate(watchOrganizerEventVenuesProvider(organizerId)),
-            loadingBuilder: (_) => HostSavedPlacesSection(
-              venues: const [],
-              selectedVenueId: selectedVenueId,
-              onVenueSelected: onVenueSelected,
-              canSave: currentMeetingLocation != null,
-              saving: saveMutation.isPending,
-              saveError: saveError,
-              onSave: saveCurrentPlace,
-            ),
-            errorBuilder: (_, error, _) => HostSavedPlacesSection(
-              venues: const [],
-              loadError: error,
-              selectedVenueId: selectedVenueId,
-              onVenueSelected: onVenueSelected,
-              canSave: currentMeetingLocation != null,
-              saving: saveMutation.isPending,
-              saveError: saveError,
-              onSave: saveCurrentPlace,
-            ),
-            builder: (_, venues) => HostSavedPlacesSection(
-              venues: venues,
-              selectedVenueId: selectedVenueId,
-              onVenueSelected: onVenueSelected,
-              canSave: currentMeetingLocation != null,
-              saving: saveMutation.isPending,
-              saveError: saveError,
-              onSave: saveCurrentPlace,
-            ),
-          ),
-          CatchFieldLanes.divided(
-            children: [
-              FormField<LocationCoordinate>(
-                key: ValueKey(startingPoint),
-                validator: (_) => startingPoint == null
-                    ? context
-                          .l10n
-                          .hostsWhereStepVisiblecopyChooseAMeetingLocation
-                    : null,
-                builder: (field) => CatchFieldLanes.single(
-                  child: CatchField.nav(
-                    key: CreateEventFormKeys.mapPicker,
-                    title: context.l10n.hostsWhereStepLabelMeetingLocation,
-                    body: startingPoint == null
-                        ? context.l10n.eventsMapPinTileTitleChooseOnMap
-                        : _trimToNull(meetingPointController.text) ??
-                              context.l10n.eventsMapPinTileTitlePinnedLocation,
-                    icon: startingPoint == null
-                        ? CatchIcons.mapOutlined
-                        : CatchIcons.editLocationAltOutlined,
-                    error: field.errorText,
-                    onTap: saveMutation.isPending ? null : onPickLocation,
-                  ),
-                ),
-              ),
-              CatchField.input(
-                key: CreateEventFormKeys.meetingPoint,
-                title: context.l10n.hostsWhereStepTitleLocationName,
-                contract: CatchContractConstraints
-                    .createEventCallablePayloadMeetingPoint,
-                controller: meetingPointController,
-                enabled: !saveMutation.isPending,
-                inputHint:
-                    context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
-                helperText: startingPoint == null
-                    ? context.l10n.hostsWhereStepHelpertextPickAMapLocation
-                    : context.l10n.hostsWhereStepHelpertextEditThisIfAttendees,
-                icon: CatchIcons.locationOnOutlined,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                onChanged: onMeetingPointChanged,
-                validator: (value) {
-                  if (startingPoint == null) return null;
-                  return value == null || value.trim().isEmpty
-                      ? context.l10n.hostsWhereStepVisiblecopyAddALocationName
-                      : null;
-                },
-              ),
-              CatchField.input(
-                key: CreateEventFormKeys.locationDetails,
-                title: context.l10n.hostsWhereStepTitleExtraDirections,
-                contract: CatchContractConstraints
-                    .createEventCallablePayloadLocationDetails,
-                isOptional: true,
-                controller: locationDetailsController,
-                enabled: !saveMutation.isPending,
-                inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
-                helperText:
-                    context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,
-                icon: CatchIcons.infoOutline,
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.done,
-                onChanged: onLocationDetailsChanged,
-              ),
-            ],
-          ),
-        ],
+        child: content,
       ),
     );
   }

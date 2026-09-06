@@ -229,7 +229,6 @@ void main() {
           'Meet at the gate',
         );
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
         await _pickFutureDate(tester);
@@ -241,7 +240,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Event policy'), findsOneWidget);
+        expect(find.text('Booking & live guide'), findsOneWidget);
         expect(_fieldToggle('Cohort caps'), findsOneWidget);
         expect(
           find.byWidgetPredicate(
@@ -257,12 +256,11 @@ void main() {
         await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
         await _setEventAgeRange(tester, 21, 35);
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
         expect(find.text('Live event guide'), findsWidgets);
         expect(
-          find.textContaining('Prepare the host guide for this event'),
+          find.textContaining('Optional host tools for running the event.'),
           findsOneWidget,
         );
 
@@ -272,7 +270,7 @@ void main() {
           find.textContaining('Review every section before publishing.'),
           findsOneWidget,
         );
-        await _tapPrimaryButton(tester, 'Schedule event');
+        await _tapPrimaryButton(tester, 'Create event');
         await _pumpTestAnimation(tester);
 
         expect(find.text('Your event is live.'), findsOneWidget);
@@ -362,7 +360,6 @@ void main() {
         'Quiz hall',
       );
       await _pickMapPoint(tester);
-      await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
       await _pickFutureDate(tester);
       await acceptInitialTime(tester);
@@ -371,9 +368,10 @@ void main() {
 
       await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '50');
       await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
-      await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
 
+      await _openCatchField(tester, 'Customize guide');
+      await tester.ensureVisible(find.text('Customize'));
       await tester.tap(find.text('Customize'));
       await _pumpTestAnimation(tester);
 
@@ -454,7 +452,6 @@ void main() {
         'Dance studio',
       );
       await _pickMapPoint(tester);
-      await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
 
       await _pickFutureDate(tester);
@@ -464,11 +461,10 @@ void main() {
 
       await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '24');
       await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
-      await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
       await _tapPrimaryButton(tester, 'Review event');
       await _pumpTestAnimation(tester);
-      await _tapPrimaryButton(tester, 'Schedule event');
+      await _tapPrimaryButton(tester, 'Create event');
       await _pumpTestAnimation(tester);
 
       final created = fakeEventRepository.createdEvent;
@@ -582,7 +578,6 @@ void main() {
         );
         await _pickMapPoint(tester);
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
         await _openCatchField(tester, 'Duration');
@@ -610,7 +605,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Event policy'), findsOneWidget);
+        expect(find.text('Booking & live guide'), findsOneWidget);
       },
     );
 
@@ -629,7 +624,7 @@ void main() {
           selectedStartHour: 13,
           selectedStartMinute: 30,
         ),
-        initialStep: 2,
+        initialStep: 1,
       );
       await _openCreateEventFlow(tester);
 
@@ -655,7 +650,7 @@ void main() {
         find.text('Something went wrong. Please try again.'),
         findsOneWidget,
       );
-      expect(find.text('Schedule event'), findsOneWidget);
+      expect(find.text('Create event'), findsOneWidget);
     });
 
     testWidgets('keeps create-event backend diagnostics out of the banner', (
@@ -692,7 +687,7 @@ void main() {
       expect(find.textContaining('[DEBUG]'), findsNothing);
       expect(find.textContaining('firebase_functions'), findsNothing);
       expect(find.textContaining('additional properties'), findsNothing);
-      expect(find.text('Schedule event'), findsOneWidget);
+      expect(find.text('Create event'), findsOneWidget);
     });
 
     testWidgets('host manage roster renders public profile rows', (
@@ -1183,11 +1178,11 @@ void main() {
         tester,
         now: () => now,
         initialPrefill: prefill,
-        initialStep: 2,
+        initialStep: 1,
       );
       await _openCreateEventFlow(tester);
 
-      expect(find.text('When is the event?'), findsWidgets);
+      expect(find.text('When & where'), findsWidgets);
       expect(find.text('Select a date'), findsOneWidget);
       expect(find.text('8:15 PM'), findsOneWidget);
       expect(find.text('Resume a draft?'), findsNothing);
@@ -1324,7 +1319,6 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
     'Meet at the gate',
   );
   await _pumpTestAnimation(tester);
-  await _tapPrimaryButton(tester, 'Next');
   await _pumpTestAnimation(tester);
 
   await _pickFutureDate(tester);
@@ -1336,11 +1330,10 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
   await _setEventAgeRange(tester, 21, 35);
   await _pumpTestAnimation(tester);
-  await _tapPrimaryButton(tester, 'Next');
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Review event');
   await _pumpTestAnimation(tester);
-  await _tapPrimaryButton(tester, 'Schedule event');
+  await _tapPrimaryButton(tester, 'Create event');
   await _pumpTestAnimation(tester);
 }
 
@@ -1409,6 +1402,10 @@ Future<void> _enterCreateEventText(
   tester.testTextInput.hide();
   await tester.pump();
 
+  if (fieldKey == CreateEventFormKeys.description &&
+      find.byKey(fieldKey).evaluate().isEmpty) {
+    await _openCatchField(tester, 'Description & photos · Optional');
+  }
   final field = find.byKey(fieldKey);
   await Scrollable.ensureVisible(tester.element(field), alignment: 0.25);
   await tester.pump();
@@ -1436,6 +1433,7 @@ Future<void> _dismissKeyboard(WidgetTester tester) async {
 }
 
 Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
+  await tester.ensureVisible(find.byKey(CreateEventFormKeys.datePicker));
   await tester.tap(find.byKey(CreateEventFormKeys.datePicker));
   await _pumpTestAnimation(tester);
   await tester.tap(find.text('${(today ?? DateTime.now()).day}').hitTestable());
@@ -1445,6 +1443,7 @@ Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
 }
 
 Future<void> _pickFutureDate(WidgetTester tester) async {
+  await tester.ensureVisible(find.byKey(CreateEventFormKeys.datePicker));
   await tester.tap(find.byKey(CreateEventFormKeys.datePicker));
   await _pumpTestAnimation(tester);
   await tester.tap(find.byTooltip('Next month'));
@@ -1460,6 +1459,7 @@ Future<void> _pickTimeInInputMode(
   required String hour,
   required String minute,
 }) async {
+  await tester.ensureVisible(find.byKey(CreateEventFormKeys.timePicker));
   await tester.tap(find.byKey(CreateEventFormKeys.timePicker));
   await _pumpTestAnimation(tester);
   await tester.tap(find.byIcon(CatchIcons.keyboardOutlined));

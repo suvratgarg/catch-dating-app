@@ -47,19 +47,6 @@ class EventDetailsStep extends StatefulWidget {
     this.onPickItineraryLocation,
     required this.routeInitialCenter,
     this.loadMapTiles = true,
-    this.externalBookingMode = false,
-    this.externalBookingProvider = ExternalBookingProvider.generic,
-    this.externalEventUrlController,
-    this.externalEventIdController,
-    this.runtimeWalkInPolicy = EventRuntimeWalkInPolicy.hostApproval,
-    this.onExternalBookingProviderChanged,
-    this.onRuntimeWalkInPolicyChanged,
-    this.rosterFileName,
-    this.rosterReadyCount,
-    this.rosterNeedsReviewCount = 0,
-    this.rosterExcludedCount = 0,
-    this.rosterAttached = false,
-    this.onPickRoster,
   });
 
   final GlobalKey<FormState> formKey;
@@ -88,33 +75,19 @@ class EventDetailsStep extends StatefulWidget {
   final EventItineraryLocationPicker? onPickItineraryLocation;
   final LocationCoordinate routeInitialCenter;
   final bool loadMapTiles;
-  final bool externalBookingMode;
-  final ExternalBookingProvider externalBookingProvider;
-  final TextEditingController? externalEventUrlController;
-  final TextEditingController? externalEventIdController;
-  final EventRuntimeWalkInPolicy runtimeWalkInPolicy;
-  final ValueChanged<ExternalBookingProvider>? onExternalBookingProviderChanged;
-  final ValueChanged<EventRuntimeWalkInPolicy>? onRuntimeWalkInPolicyChanged;
-  final String? rosterFileName;
-  final int? rosterReadyCount;
-  final int rosterNeedsReviewCount;
-  final int rosterExcludedCount;
-  final bool rosterAttached;
-  final VoidCallback? onPickRoster;
 
   @override
   State<EventDetailsStep> createState() => _EventDetailsStepState();
 }
 
 class _EventDetailsStepState extends State<EventDetailsStep> {
-  static const _secureUrlScheme = 'https';
   static const _activityField = 'activity';
   static const _interactionField = 'interaction';
   static const _paceField = 'pace';
-  static const _externalProviderField = 'external-provider';
-  static const _walkInPolicyField = 'walk-in-policy';
 
   final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  bool _showPresentation = false;
+  bool _showItinerary = false;
 
   @override
   void initState() {
@@ -142,40 +115,6 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
     }
   }
 
-  String _walkInPolicyLabel(EventRuntimeWalkInPolicy policy) =>
-      switch (policy) {
-        EventRuntimeWalkInPolicy.deny =>
-          context.l10n.hostsEventDetailsStepExternalWalkInDeny,
-        EventRuntimeWalkInPolicy.hostApproval =>
-          context.l10n.hostsEventDetailsStepExternalWalkInApproval,
-        EventRuntimeWalkInPolicy.autoCreate =>
-          context.l10n.hostsEventDetailsStepExternalWalkInAutomatic,
-      };
-
-  String _externalBookingProviderLabel(ExternalBookingProvider provider) =>
-      switch (provider) {
-        ExternalBookingProvider.catchPlatform =>
-          context.l10n.hostsEventDetailsStepExternalProviderCatch,
-        ExternalBookingProvider.generic =>
-          context.l10n.hostsEventDetailsStepExternalProviderOther,
-        ExternalBookingProvider.luma =>
-          context.l10n.hostsEventDetailsStepExternalProviderLuma,
-        ExternalBookingProvider.eventbrite =>
-          context.l10n.hostsEventDetailsStepExternalProviderEventbrite,
-        ExternalBookingProvider.partiful =>
-          context.l10n.hostsEventDetailsStepExternalProviderPartiful,
-        ExternalBookingProvider.posh =>
-          context.l10n.hostsEventDetailsStepExternalProviderPosh,
-        ExternalBookingProvider.bookmyshow =>
-          context.l10n.hostsEventDetailsStepExternalProviderBookMyShow,
-        ExternalBookingProvider.district =>
-          context.l10n.hostsEventDetailsStepExternalProviderDistrict,
-        ExternalBookingProvider.sortmyscene =>
-          context.l10n.hostsEventDetailsStepExternalProviderSortMyScene,
-        ExternalBookingProvider.airbnb =>
-          context.l10n.hostsEventDetailsStepExternalProviderAirbnbExperiences,
-      };
-
   @override
   Widget build(BuildContext context) {
     final activity = ActivityPalette.resolve(
@@ -192,132 +131,6 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
             emptyStateOmitted: true,
             gap: 0,
             children: [
-              if (widget.externalBookingMode) ...[
-                CatchSection.plain(
-                  child: Text(
-                    context.l10n.hostsEventDetailsStepExternalIntro,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: CatchTokens.of(context).primary,
-                    ),
-                  ),
-                ),
-                CatchSection.fieldRows(
-                  children: [
-                    CatchField.action(
-                      key: const ValueKey('host.create_event.roster_file'),
-                      title: context.l10n.hostsCreateEventRosterTitle,
-                      body: widget.rosterFileName == null
-                          ? context.l10n.hostsCreateEventRosterChoose
-                          : widget.rosterAttached
-                          ? context.l10n.hostsCreateEventRosterAttached(
-                              fileName: widget.rosterFileName!,
-                              ready: widget.rosterReadyCount ?? 0,
-                              review: widget.rosterNeedsReviewCount,
-                              excluded: widget.rosterExcludedCount,
-                            )
-                          : context.l10n.hostsCreateEventRosterReattach(
-                              fileName: widget.rosterFileName!,
-                            ),
-                      bodyMaxLines: 4,
-                      valueText: widget.rosterFileName == null
-                          ? context.l10n.hostsCreateEventRosterChoose
-                          : context.l10n.hostsCreateEventRosterReplace,
-                      icon: CatchIcons.cloudUploadOutlined,
-                      onTap: widget.onPickRoster,
-                    ),
-                    CatchField.choices<ExternalBookingProvider>(
-                      key: CreateEventFormKeys.externalBookingProvider,
-                      title: context
-                          .l10n
-                          .hostsEventDetailsStepExternalProviderTitle,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadExternalOriginProvider,
-                      contractValue: (provider) => provider.name,
-                      body: _externalBookingProviderLabel(
-                        widget.externalBookingProvider,
-                      ),
-                      values: ExternalBookingProviderX.externalValues,
-                      itemLabel: _externalBookingProviderLabel,
-                      selected: <ExternalBookingProvider>{
-                        widget.externalBookingProvider,
-                      },
-                      onSelectionChanged: (selection) => widget
-                          .onExternalBookingProviderChanged
-                          ?.call(selection.single),
-                      open: _accordion.isExpanded(_externalProviderField),
-                      onOpenChanged: (open) =>
-                          _setOpen(_externalProviderField, open),
-                      icon: CatchIcons.linkOutlined,
-                    ),
-                    CatchField.input(
-                      key: CreateEventFormKeys.externalEventUrl,
-                      title: context
-                          .l10n
-                          .hostsEventDetailsStepExternalEventUrlTitle,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadExternalOriginExternalEventUrl,
-                      controller: widget.externalEventUrlController!,
-                      isOptional: true,
-                      inputHint: context
-                          .l10n
-                          .hostsEventDetailsStepExternalEventUrlPlaceholder,
-                      icon: CatchIcons.linkRounded,
-                      keyboardType: TextInputType.url,
-                      textInputAction: TextInputAction.next,
-                      validator: (value) {
-                        final normalized = value?.trim() ?? '';
-                        if (normalized.isEmpty) return null;
-                        final uri = Uri.tryParse(normalized);
-                        if (uri == null ||
-                            uri.scheme != _secureUrlScheme ||
-                            uri.host.isEmpty) {
-                          return context
-                              .l10n
-                              .hostsEventDetailsStepExternalEventUrlInvalid;
-                        }
-                        return null;
-                      },
-                    ),
-                    CatchField.input(
-                      key: CreateEventFormKeys.externalEventId,
-                      title: context
-                          .l10n
-                          .hostsEventDetailsStepExternalEventIdTitle,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadExternalOriginExternalEventId,
-                      controller: widget.externalEventIdController!,
-                      isOptional: true,
-                      inputHint: context
-                          .l10n
-                          .hostsEventDetailsStepExternalEventIdPlaceholder,
-                      icon: CatchIcons.confirmationNumberOutlined,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    CatchField.choices<EventRuntimeWalkInPolicy>(
-                      key: CreateEventFormKeys.runtimeWalkInPolicy,
-                      title:
-                          context.l10n.hostsEventDetailsStepExternalWalkInTitle,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadRuntimeWalkInPolicy,
-                      contractValue: (policy) => policy.name,
-                      body: _walkInPolicyLabel(widget.runtimeWalkInPolicy),
-                      values: EventRuntimeWalkInPolicy.values,
-                      itemLabel: _walkInPolicyLabel,
-                      selected: <EventRuntimeWalkInPolicy>{
-                        widget.runtimeWalkInPolicy,
-                      },
-                      onSelectionChanged: (selection) => widget
-                          .onRuntimeWalkInPolicyChanged
-                          ?.call(selection.single),
-                      open: _accordion.isExpanded(_walkInPolicyField),
-                      onOpenChanged: (open) =>
-                          _setOpen(_walkInPolicyField, open),
-                      icon: CatchIcons.peopleOutline,
-                    ),
-                  ],
-                ),
-              ],
               CatchSection.fieldRows(
                 children: [
                   CatchField.input(
@@ -359,20 +172,6 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     open: _accordion.isExpanded(_activityField),
                     onOpenChanged: (open) => _setOpen(_activityField, open),
                     icon: activity.glyph,
-                    iconColor: activity.accent,
-                  ),
-                  CatchField.content(
-                    key: const ValueKey('host.event_format_pack_preview'),
-                    title: context.l10n.hostsEventDetailsStepFormatPackTitle,
-                    body: _formatPackBody(
-                      context,
-                      widget.selectedInteractionModel,
-                    ),
-                    action: CatchBadge(
-                      label: widget.selectedInteractionModel.label,
-                      accentColor: activity.accent,
-                    ),
-                    icon: _formatPackIcon(widget.selectedInteractionModel),
                     iconColor: activity.accent,
                   ),
                   if (widget.selectedActivityKind ==
@@ -509,81 +308,90 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       ),
                     ),
                   ],
-                  CatchField.input(
-                    key: CreateEventFormKeys.description,
-                    title: context.l10n.hostsEventDetailsStepTitleDescription,
-                    contract: CatchContractConstraints
-                        .createEventCallablePayloadDescription,
-                    isOptional: true,
-                    controller: widget.descriptionController,
-                    inputHint: context
-                        .l10n
-                        .hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect,
-                    icon: CatchIcons.editNoteOutlined,
-                    maxLines: 4,
-                    textCapitalization: TextCapitalization.sentences,
-                    textInputAction: TextInputAction.newline,
+                ],
+              ),
+              CatchSection.fieldRows(
+                children: [
+                  Semantics(
+                    expanded: _showPresentation,
+                    child: CatchField.action(
+                      key: const ValueKey('host.create_event.presentation'),
+                      title: context.l10n.hostsCreateEventPresentationTitle,
+                      valueText: _showPresentation
+                          ? context.l10n.hostsCreateEventHideDetails
+                          : context.l10n.hostsCreateEventShowDetails,
+                      icon: CatchIcons.addPhotoAlternateOutlined,
+                      onTap: () => setState(
+                        () => _showPresentation = !_showPresentation,
+                      ),
+                    ),
+                  ),
+                  if (_showPresentation) ...[
+                    CatchField.input(
+                      key: CreateEventFormKeys.description,
+                      title: context.l10n.hostsEventDetailsStepTitleDescription,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadDescription,
+                      isOptional: true,
+                      controller: widget.descriptionController,
+                      inputHint: context
+                          .l10n
+                          .hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect,
+                      icon: CatchIcons.editNoteOutlined,
+                      maxLines: 4,
+                      textCapitalization: TextCapitalization.sentences,
+                      textInputAction: TextInputAction.newline,
+                    ),
+                  ],
+                ],
+              ),
+              if (_showPresentation)
+                CreateEventPhotoPicker(
+                  photos: widget.photoPreviews,
+                  onAddPhotos: widget.onPickPhotos,
+                  onRemovePhoto: widget.onRemovePhoto,
+                  onReorderPhoto: widget.onReorderPhoto,
+                  organizerName: widget.organizerName,
+                  organizerLogoUrl: widget.organizerLogoUrl,
+                ),
+              CatchSection.fieldRows(
+                children: [
+                  Semantics(
+                    expanded: _showItinerary,
+                    child: CatchField.action(
+                      key: const ValueKey('host.create_event.itinerary'),
+                      title: context.l10n.hostsCreateEventItineraryTitle,
+                      valueText: _showItinerary
+                          ? context.l10n.hostsCreateEventHideDetails
+                          : context.l10n.hostsCreateEventShowDetails,
+                      icon: CatchIcons.routeOutlined,
+                      onTap: () =>
+                          setState(() => _showItinerary = !_showItinerary),
+                    ),
                   ),
                 ],
               ),
-              CreateEventPhotoPicker(
-                photos: widget.photoPreviews,
-                onAddPhotos: widget.onPickPhotos,
-                onRemovePhoto: widget.onRemovePhoto,
-                onReorderPhoto: widget.onReorderPhoto,
-                organizerName: widget.organizerName,
-                organizerLogoUrl: widget.organizerLogoUrl,
-              ),
-              if (widget.selectedActivityKind == ActivityKind.openActivity ||
-                  widget.routePlan != null)
-                RouteEventPlanEditor(
-                  activityKind: widget.selectedActivityKind,
-                  plan: widget.routePlan,
-                  onChanged: widget.onRoutePlanChanged,
-                  initialCenter: widget.routeInitialCenter,
-                  loadMapTiles: widget.loadMapTiles,
+              if (_showItinerary) ...[
+                if (widget.selectedActivityKind == ActivityKind.openActivity ||
+                    widget.routePlan != null)
+                  RouteEventPlanEditor(
+                    activityKind: widget.selectedActivityKind,
+                    plan: widget.routePlan,
+                    onChanged: widget.onRoutePlanChanged,
+                    initialCenter: widget.routeInitialCenter,
+                    loadMapTiles: widget.loadMapTiles,
+                  ),
+                EventItineraryEditor(
+                  items: widget.itinerary,
+                  onChanged: widget.onItineraryChanged,
+                  defaultLocation: widget.defaultItineraryLocation,
+                  onPickLocation: widget.onPickItineraryLocation,
                 ),
-              EventItineraryEditor(
-                items: widget.itinerary,
-                onChanged: widget.onItineraryChanged,
-                defaultLocation: widget.defaultItineraryLocation,
-                onPickLocation: widget.onPickItineraryLocation,
-              ),
+              ],
             ],
           ),
         ],
       ),
     );
   }
-
-  String _formatPackBody(
-    BuildContext context,
-    EventInteractionModel interactionModel,
-  ) => switch (interactionModel) {
-    EventInteractionModel.pacePods =>
-      context.l10n.hostsEventDetailsStepFormatPackPacePods,
-    EventInteractionModel.pairedRotations =>
-      context.l10n.hostsEventDetailsStepFormatPackPairedRotations,
-    EventInteractionModel.teamRotations =>
-      context.l10n.hostsEventDetailsStepFormatPackTeamRotations,
-    EventInteractionModel.seatedTable =>
-      context.l10n.hostsEventDetailsStepFormatPackSeatedTable,
-    EventInteractionModel.freeFormMixer =>
-      context.l10n.hostsEventDetailsStepFormatPackFreeFormMixer,
-    EventInteractionModel.hostLedProgram =>
-      context.l10n.hostsEventDetailsStepFormatPackHostLedProgram,
-    EventInteractionModel.openFormat =>
-      context.l10n.hostsEventDetailsStepFormatPackOpenFormat,
-  };
-
-  IconData _formatPackIcon(EventInteractionModel interactionModel) =>
-      switch (interactionModel) {
-        EventInteractionModel.pacePods => CatchIcons.routeOutlined,
-        EventInteractionModel.pairedRotations => CatchIcons.syncAltRounded,
-        EventInteractionModel.teamRotations => CatchIcons.groups2Outlined,
-        EventInteractionModel.seatedTable => CatchIcons.tableRestaurantOutlined,
-        EventInteractionModel.freeFormMixer => CatchIcons.groupsOutlined,
-        EventInteractionModel.hostLedProgram => CatchIcons.ruleFolderOutlined,
-        EventInteractionModel.openFormat => CatchIcons.tuneRounded,
-      };
 }

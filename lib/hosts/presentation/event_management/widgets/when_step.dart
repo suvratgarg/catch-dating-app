@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 class WhenStep extends StatelessWidget {
   const WhenStep({
     super.key,
+    this.embedded = false,
     required this.formKey,
     this.autovalidateMode = AutovalidateMode.disabled,
     required this.dateController,
@@ -21,6 +22,8 @@ class WhenStep extends StatelessWidget {
     this.scheduleErrorText,
   });
 
+  /// When composed by the shared editor, its parent owns scrolling and Form.
+  final bool embedded;
   final GlobalKey<FormState> formKey;
   final AutovalidateMode autovalidateMode;
   final TextEditingController dateController;
@@ -35,74 +38,80 @@ class WhenStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchFieldLanes.divided(
+          children: [
+            FormField<String>(
+              validator: (_) => dateController.text.isEmpty
+                  ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
+                  : null,
+              builder: (field) => CatchFieldLanes.single(
+                child: CatchField.nav(
+                  key: CreateEventFormKeys.datePicker,
+                  title: context.l10n.hostsWhenStepLabelDate,
+                  body: dateController.text.isEmpty
+                      ? context.l10n.hostsWhenStepPlaceholderSelectADate
+                      : dateController.text,
+                  icon: CatchIcons.calendarTodayOutlined,
+                  error: field.errorText,
+                  onTap: onPickDate,
+                ),
+              ),
+            ),
+            FormField<String>(
+              validator: (_) => startTimeController.text.isEmpty
+                  ? context.l10n.hostsWhenStepVisiblecopyRequired
+                  : null,
+              builder: (field) => CatchFieldLanes.single(
+                child: CatchField.nav(
+                  key: CreateEventFormKeys.timePicker,
+                  title: context.l10n.hostsWhenStepLabelStartTime,
+                  body: startTimeController.text.isEmpty
+                      ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
+                      : startTimeController.text,
+                  icon: CatchIcons.scheduleOutlined,
+                  error: field.errorText ?? scheduleErrorText,
+                  onTap: onPickTime,
+                ),
+              ),
+            ),
+            CatchField.stepper(
+              title: context.l10n.hostsWhenStepLabelDuration,
+              contract:
+                  CatchContractConstraints.mobileFormStateEventDurationMinutes,
+              body: formatDuration(durationMinutes),
+              value: durationMinutes,
+              min: CatchBusinessRules.eventMinDurationMinutes,
+              max: CatchBusinessRules.eventMaxDurationMinutes,
+              step: CatchBusinessRules.eventDurationStepMinutes,
+              formatter: (value) => formatDuration(value.round()),
+              decreaseSemanticLabel:
+                  context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
+              increaseSemanticLabel:
+                  context.l10n.hostsWhenStepVisiblecopyIncreaseDuration,
+              onChanged: (value) {
+                if (value < durationMinutes) {
+                  onDecreaseDuration?.call();
+                } else if (value > durationMinutes) {
+                  onIncreaseDuration?.call();
+                }
+              },
+              icon: CatchIcons.timerOutlined,
+            ),
+          ],
+        ),
+      ],
+    );
+    if (embedded) return content;
     return Form(
       key: formKey,
       autovalidateMode: autovalidateMode,
-      child: ListView(
+      child: SingleChildScrollView(
         padding: CatchInsets.formStepBodyWithBottomActions,
-        children: [
-          CatchFieldLanes.divided(
-            children: [
-              FormField<String>(
-                validator: (_) => dateController.text.isEmpty
-                    ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
-                    : null,
-                builder: (field) => CatchFieldLanes.single(
-                  child: CatchField.nav(
-                    key: CreateEventFormKeys.datePicker,
-                    title: context.l10n.hostsWhenStepLabelDate,
-                    body: dateController.text.isEmpty
-                        ? context.l10n.hostsWhenStepPlaceholderSelectADate
-                        : dateController.text,
-                    icon: CatchIcons.calendarTodayOutlined,
-                    error: field.errorText,
-                    onTap: onPickDate,
-                  ),
-                ),
-              ),
-              FormField<String>(
-                validator: (_) => startTimeController.text.isEmpty
-                    ? context.l10n.hostsWhenStepVisiblecopyRequired
-                    : null,
-                builder: (field) => CatchFieldLanes.single(
-                  child: CatchField.nav(
-                    key: CreateEventFormKeys.timePicker,
-                    title: context.l10n.hostsWhenStepLabelStartTime,
-                    body: startTimeController.text.isEmpty
-                        ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
-                        : startTimeController.text,
-                    icon: CatchIcons.scheduleOutlined,
-                    error: field.errorText ?? scheduleErrorText,
-                    onTap: onPickTime,
-                  ),
-                ),
-              ),
-              CatchField.stepper(
-                title: context.l10n.hostsWhenStepLabelDuration,
-                contract: CatchContractConstraints
-                    .mobileFormStateEventDurationMinutes,
-                body: formatDuration(durationMinutes),
-                value: durationMinutes,
-                min: CatchBusinessRules.eventMinDurationMinutes,
-                max: CatchBusinessRules.eventMaxDurationMinutes,
-                step: CatchBusinessRules.eventDurationStepMinutes,
-                formatter: (value) => formatDuration(value.round()),
-                decreaseSemanticLabel:
-                    context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
-                increaseSemanticLabel:
-                    context.l10n.hostsWhenStepVisiblecopyIncreaseDuration,
-                onChanged: (value) {
-                  if (value < durationMinutes) {
-                    onDecreaseDuration?.call();
-                  } else if (value > durationMinutes) {
-                    onIncreaseDuration?.call();
-                  }
-                },
-                icon: CatchIcons.timerOutlined,
-              ),
-            ],
-          ),
-        ],
+        child: content,
       ),
     );
   }

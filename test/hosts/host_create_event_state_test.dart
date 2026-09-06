@@ -19,6 +19,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,8 +30,9 @@ import '../events/events_test_helpers.dart';
 part 'host_create_event_draft_signature_tests.dart';
 
 void main() {
+  final l10n = AppLocalizationsEn();
   final steps = [
-    for (final step in CreateEventWizardStep.values) step.toSpec(),
+    for (final step in CreateEventWizardStep.values) step.toSpec(l10n: l10n),
   ];
 
   test('HostCreateEventRouteState prefers route extra club', () {
@@ -104,7 +106,7 @@ void main() {
       final state = CreateEventWizardState.resolve(
         club: buildClub(),
         activeSteps: steps,
-        currentStep: 3,
+        currentStep: 1,
         submitPending: false,
         saveDraftPending: true,
         mutationError: 'Unable to save draft.',
@@ -112,9 +114,9 @@ void main() {
         inviteCode: null,
       );
 
-      expect(state.title, 'Event policy');
-      expect(state.currentStep, 3);
-      expect(state.totalSteps, 5);
+      expect(state.title, 'When & where');
+      expect(state.currentStep, 1);
+      expect(state.totalSteps, 3);
       expect(state.isLastStep, isFalse);
       expect(state.isLoading, isTrue);
       expect(state.closeIntent, CreateEventWizardCloseIntent.close);
@@ -142,9 +144,9 @@ void main() {
       inviteCode: 'CATCH-DELHI',
     );
 
-    expect(state.currentStep, 4);
-    expect(state.currentStepKind, CreateEventWizardStep.eventSuccessGuide);
-    expect(state.title, 'Live event guide');
+    expect(state.currentStep, 2);
+    expect(state.currentStepKind, CreateEventWizardStep.eventPolicy);
+    expect(state.title, 'Booking & live guide');
     expect(state.isLastStep, isTrue);
     expect(state.closeIntent, CreateEventWizardCloseIntent.close);
     expect(state.previousIntent, CreateEventWizardPreviousIntent.previousStep);
@@ -183,42 +185,37 @@ void main() {
 
   test('CreateEventWizardStep maps canonical form specs', () {
     final eventDetailsFormKey = GlobalKey<FormState>();
-    final meetingLocationFormKey = GlobalKey<FormState>();
     final scheduleFormKey = GlobalKey<FormState>();
     final eventPolicyFormKey = GlobalKey<FormState>();
 
     final stepSpecs = createEventWizardStepSpecs(
       eventDetailsFormKey: eventDetailsFormKey,
-      meetingLocationFormKey: meetingLocationFormKey,
+      l10n: l10n,
       scheduleFormKey: scheduleFormKey,
       eventPolicyFormKey: eventPolicyFormKey,
     );
 
     expect(stepSpecs.map((step) => step.title), [
       'Event basics',
-      'Meeting location',
-      'When is the event?',
-      'Event policy',
-      'Live event guide',
+      'When & where',
+      'Booking & live guide',
     ]);
     expect(formKeyForStep(stepSpecs, 0), eventDetailsFormKey);
-    expect(formKeyForStep(stepSpecs, 1), meetingLocationFormKey);
-    expect(formKeyForStep(stepSpecs, 2), scheduleFormKey);
-    expect(formKeyForStep(stepSpecs, 3), eventPolicyFormKey);
-    expect(formKeyForStep(stepSpecs, 4), isNull);
-    expect(createEventWizardStepValidatesSchedule(2), isTrue);
-    expect(createEventWizardStepValidatesSchedule(1), isFalse);
+    expect(formKeyForStep(stepSpecs, 1), scheduleFormKey);
+    expect(formKeyForStep(stepSpecs, 2), eventPolicyFormKey);
+    expect(formKeyForStep(stepSpecs, 3), isNull);
+    expect(createEventWizardStepValidatesSchedule(1), isTrue);
+    expect(createEventWizardStepValidatesSchedule(0), isFalse);
     expect(createEventWizardStepValidatesSchedule(99), isFalse);
   });
 
   test('CreateEventWizardValidationPlan maps form and schedule policy', () {
     final eventDetailsFormKey = GlobalKey<FormState>();
-    final meetingLocationFormKey = GlobalKey<FormState>();
     final scheduleFormKey = GlobalKey<FormState>();
     final eventPolicyFormKey = GlobalKey<FormState>();
     final stepSpecs = createEventWizardStepSpecs(
       eventDetailsFormKey: eventDetailsFormKey,
-      meetingLocationFormKey: meetingLocationFormKey,
+      l10n: l10n,
       scheduleFormKey: scheduleFormKey,
       eventPolicyFormKey: eventPolicyFormKey,
     );
@@ -322,8 +319,6 @@ void main() {
       CatchFormStepStatus.complete,
       CatchFormStepStatus.complete,
       CatchFormStepStatus.complete,
-      CatchFormStepStatus.complete,
-      CatchFormStepStatus.optional,
     ]);
 
     final missingName = CreateEventWizardReviewState.resolve(
@@ -402,45 +397,96 @@ void main() {
     expect(incomplete.firstIncompleteStep, 0);
   });
 
-  test('external event review requires draft roster reattachment', () {
-    final review = CreateEventWizardReviewState.resolve(
-      activeSteps: steps,
-      name: 'Sunday dinner',
-      activityKind: ActivityKind.dinner,
-      customActivityLabel: '',
-      distance: '',
-      pace: null,
-      externalBookingMode: true,
-      externalEventUrl: 'https://lu.ma/dinner',
-      rosterAttachmentRequired: true,
-      hasStartingPoint: true,
-      meetingPoint: 'Venue',
-      scheduleState: CreateEventScheduleState(
-        selectedDate: DateTime(2026, 8, 20),
-        selectedStartTime: const TimeOfDay(hour: 19, minute: 0),
-      ),
-      now: DateTime(2026, 8, 19),
+  for (final scenario in [
+    (
+      name: 'requires roster reattachment',
+      url: 'https://lu.ma/dinner',
+      reattach: true,
       capacity: '20',
-      rosterReadyCount: 20,
-      price: '0',
-      currencyCode: 'INR',
-      admissionPreset: EventAdmissionPreset.openCapacity,
-      inviteCode: '',
-      cohortCapsEnabled: false,
-      maxMen: '',
-      maxWomen: '',
-      crossPathsPairInventoryEnabled: false,
-      crossPathsPairCapacity: '2',
-      dynamicPricingEnabled: false,
-      dynamicPricingStep: '',
-      dynamicPricingMax: '',
-      minAge: '',
-      maxAge: '',
-    );
+      ready: 20,
+      valid: false,
+    ),
+    (
+      name: 'rejects capacity below roster',
+      url: '',
+      reattach: false,
+      capacity: '19',
+      ready: 20,
+      valid: false,
+    ),
+    (
+      name: 'validates an optional source URL',
+      url: 'http://lu.ma/dinner',
+      reattach: false,
+      capacity: '20',
+      ready: 20,
+      valid: false,
+    ),
+    (
+      name: 'rejects capacity above the contract limit',
+      url: '',
+      reattach: false,
+      capacity: '1001',
+      ready: 20,
+      valid: false,
+    ),
+    (
+      name: 'accepts no roster and no source URL',
+      url: '',
+      reattach: false,
+      capacity: '20',
+      ready: null,
+      valid: true,
+    ),
+    (
+      name: 'accepts an attached capacity-matched roster',
+      url: 'https://lu.ma/dinner',
+      reattach: false,
+      capacity: '20',
+      ready: 20,
+      valid: true,
+    ),
+  ]) {
+    test('external event review ${scenario.name}', () {
+      final review = CreateEventWizardReviewState.resolve(
+        activeSteps: steps,
+        name: 'Sunday dinner',
+        activityKind: ActivityKind.dinner,
+        customActivityLabel: '',
+        distance: '',
+        pace: null,
+        externalBookingMode: true,
+        externalEventUrl: scenario.url,
+        rosterAttachmentRequired: scenario.reattach,
+        hasStartingPoint: true,
+        meetingPoint: 'Venue',
+        scheduleState: CreateEventScheduleState(
+          selectedDate: DateTime(2026, 8, 20),
+          selectedStartTime: const TimeOfDay(hour: 19, minute: 0),
+        ),
+        now: DateTime(2026, 8, 19),
+        capacity: scenario.capacity,
+        rosterReadyCount: scenario.ready,
+        price: '0',
+        currencyCode: 'INR',
+        admissionPreset: EventAdmissionPreset.openCapacity,
+        inviteCode: '',
+        cohortCapsEnabled: false,
+        maxMen: '',
+        maxWomen: '',
+        crossPathsPairInventoryEnabled: false,
+        crossPathsPairCapacity: '2',
+        dynamicPricingEnabled: false,
+        dynamicPricingStep: '',
+        dynamicPricingMax: '',
+        minAge: '',
+        maxAge: '',
+      );
 
-    expect(review.canSubmit, isFalse);
-    expect(review.firstIncompleteStep, 0);
-  });
+      expect(review.canSubmit, scenario.valid);
+      expect(review.firstIncompleteStep, scenario.valid ? null : 2);
+    });
+  }
 
   test('CreateEventPolicyState maps defaults, transitions, and drafts', () {
     const defaults = EventPolicyDefaults(

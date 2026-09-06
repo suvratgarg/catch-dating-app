@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 enum CreateEventWizardCloseIntent { confirmUnsavedChanges, close }
@@ -18,27 +19,27 @@ enum CreateEventSuccessNavigationIntent { manageEvent, backToClub }
 enum CreateEventSuccessNavigationDestination { manageEventRoute, popRoute }
 
 enum CreateEventWizardStep {
-  eventDetails('Event basics'),
-  meetingLocation('Meeting location'),
-  schedule('When is the event?', validatesSchedule: true),
-  eventPolicy('Event policy'),
-  eventSuccessGuide('Live event guide', optional: true);
+  eventDetails,
+  schedule,
+  eventPolicy;
 
-  const CreateEventWizardStep(
-    this.title, {
-    this.validatesSchedule = false,
-    this.optional = false,
-  });
+  bool get validatesSchedule => this == schedule;
 
-  final String title;
-  final bool validatesSchedule;
-  final bool optional;
-
-  CatchFormStepSpec toSpec({GlobalKey<FormState>? formKey}) {
+  CatchFormStepSpec toSpec({
+    required AppLocalizations l10n,
+    bool externalBookingMode = false,
+    GlobalKey<FormState>? formKey,
+  }) {
     return CatchFormStepSpec(
-      title: title,
+      title: switch (this) {
+        eventDetails => l10n.hostsCreateEventBasicsTitle,
+        schedule => l10n.hostsCreateEventWhenWhereTitle,
+        eventPolicy =>
+          externalBookingMode
+              ? l10n.hostsCreateEventGuestsGuideTitle
+              : l10n.hostsCreateEventBookingGuideTitle,
+      },
       formKey: formKey,
-      optional: optional,
     );
   }
 
@@ -49,19 +50,23 @@ enum CreateEventWizardStep {
 }
 
 List<CatchFormStepSpec> createEventWizardStepSpecs({
+  required AppLocalizations l10n,
+  bool externalBookingMode = false,
   required GlobalKey<FormState> eventDetailsFormKey,
-  required GlobalKey<FormState> meetingLocationFormKey,
   required GlobalKey<FormState> scheduleFormKey,
   required GlobalKey<FormState> eventPolicyFormKey,
 }) {
   return [
-    CreateEventWizardStep.eventDetails.toSpec(formKey: eventDetailsFormKey),
-    CreateEventWizardStep.meetingLocation.toSpec(
-      formKey: meetingLocationFormKey,
+    CreateEventWizardStep.eventDetails.toSpec(
+      l10n: l10n,
+      formKey: eventDetailsFormKey,
     ),
-    CreateEventWizardStep.schedule.toSpec(formKey: scheduleFormKey),
-    CreateEventWizardStep.eventPolicy.toSpec(formKey: eventPolicyFormKey),
-    CreateEventWizardStep.eventSuccessGuide.toSpec(),
+    CreateEventWizardStep.schedule.toSpec(l10n: l10n, formKey: scheduleFormKey),
+    CreateEventWizardStep.eventPolicy.toSpec(
+      l10n: l10n,
+      externalBookingMode: externalBookingMode,
+      formKey: eventPolicyFormKey,
+    ),
   ];
 }
 
@@ -181,31 +186,34 @@ class CreateEventWizardReviewState {
         customActivityLabel: customActivityLabel,
         distance: distance,
         pace: pace,
-        externalBookingMode: externalBookingMode,
-        externalEventUrl: externalEventUrl,
-        rosterAttachmentRequired: rosterAttachmentRequired,
       ),
-      hasStartingPoint && meetingPoint.trim().isNotEmpty,
-      scheduleState.selectedStartDateTime?.isAfter(now) == true,
-      _eventPolicyReady(
-        capacity: capacity,
-        rosterReadyCount: rosterReadyCount,
-        price: price,
-        currencyCode: currencyCode,
-        admissionPreset: admissionPreset,
-        inviteCode: inviteCode,
-        cohortCapsEnabled: cohortCapsEnabled,
-        maxMen: maxMen,
-        maxWomen: maxWomen,
-        crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
-        crossPathsPairCapacity: crossPathsPairCapacity,
-        dynamicPricingEnabled: dynamicPricingEnabled,
-        dynamicPricingStep: dynamicPricingStep,
-        dynamicPricingMax: dynamicPricingMax,
-        minAge: minAge,
-        maxAge: maxAge,
-      ),
-      true,
+      hasStartingPoint &&
+          meetingPoint.trim().isNotEmpty &&
+          scheduleState.selectedStartDateTime?.isAfter(now) == true,
+      (!externalBookingMode ||
+              _guestsReady(
+                externalEventUrl: externalEventUrl,
+                rosterAttachmentRequired: rosterAttachmentRequired,
+              )) &&
+          _eventPolicyReady(
+            externalBookingMode: externalBookingMode,
+            capacity: capacity,
+            rosterReadyCount: rosterReadyCount,
+            price: price,
+            currencyCode: currencyCode,
+            admissionPreset: admissionPreset,
+            inviteCode: inviteCode,
+            cohortCapsEnabled: cohortCapsEnabled,
+            maxMen: maxMen,
+            maxWomen: maxWomen,
+            crossPathsPairInventoryEnabled: crossPathsPairInventoryEnabled,
+            crossPathsPairCapacity: crossPathsPairCapacity,
+            dynamicPricingEnabled: dynamicPricingEnabled,
+            dynamicPricingStep: dynamicPricingStep,
+            dynamicPricingMax: dynamicPricingMax,
+            minAge: minAge,
+            maxAge: maxAge,
+          ),
     ];
     final items = <CatchFormStepReviewItem>[
       for (var index = 0; index < activeSteps.length; index++)
@@ -236,18 +244,8 @@ class CreateEventWizardReviewState {
     required String customActivityLabel,
     required String distance,
     required PaceLevel? pace,
-    required bool externalBookingMode,
-    required String externalEventUrl,
-    required bool rosterAttachmentRequired,
   }) {
     if (name.trim().isEmpty) return false;
-    if (rosterAttachmentRequired) return false;
-    if (externalBookingMode && externalEventUrl.trim().isNotEmpty) {
-      final uri = Uri.tryParse(externalEventUrl.trim());
-      if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
-        return false;
-      }
-    }
     if (activityKind == ActivityKind.openActivity) {
       final label = customActivityLabel.trim();
       return label.length >= 3 && label.length <= 64;
@@ -258,6 +256,7 @@ class CreateEventWizardReviewState {
   }
 
   static bool _eventPolicyReady({
+    required bool externalBookingMode,
     required String capacity,
     int? rosterReadyCount,
     required String price,
@@ -276,9 +275,16 @@ class CreateEventWizardReviewState {
     required String maxAge,
   }) {
     final parsedCapacity = int.tryParse(capacity.trim());
-    if (parsedCapacity == null || parsedCapacity < 1) return false;
+    if (parsedCapacity == null || parsedCapacity < 1 || parsedCapacity > 1000) {
+      return false;
+    }
     if (rosterReadyCount != null && parsedCapacity < rosterReadyCount) {
       return false;
+    }
+    // Imported guests do not book through Catch. Hidden ticketing settings
+    // inherited from an organizer or an older draft must not block creation.
+    if (externalBookingMode) {
+      return _ageRangeReady(minAge: minAge, maxAge: maxAge);
     }
     if (parseMajorCurrencyAmountToMinorUnits(
           price,
@@ -313,6 +319,16 @@ class CreateEventWizardReviewState {
 
   static bool _optionalPositiveInt(String value) =>
       value.trim().isEmpty || _requiredPositiveInt(value);
+
+  static bool _guestsReady({
+    required String externalEventUrl,
+    required bool rosterAttachmentRequired,
+  }) {
+    if (rosterAttachmentRequired) return false;
+    if (externalEventUrl.trim().isEmpty) return true;
+    final uri = Uri.tryParse(externalEventUrl.trim());
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty;
+  }
 
   static bool _requiredPositiveInt(String value) {
     final parsed = int.tryParse(value.trim());

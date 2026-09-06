@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-09-04",
   "id": "feature.host_event_create",
   "name": "Host Event Create",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates Host Event Create route resolution, the five-step event wizard, local drafts, media and location selection, event submission, and post-create navigation.",
+  "description": "Orchestrates Host Event Create route resolution, the shared three-stage event wizard (basics, when and where, then guests/booking and guide), local drafts, media and location selection, event submission, and post-create navigation.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -16,7 +16,7 @@
         "included": "Host Event Create route recovery; wizard navigation; activity, schedule, policy, and guide choices; event-photo and meeting-location selection; local draft restore, save, delete, and exit handling; event submission; and success navigation.",
         "excluded": [
           "Raw text-field edits are form data governed by CatchField, form validators, and the event data contracts rather than separately cardinalized actions.",
-          "Host Home launch and repeat-template selection retain Host Home ownership; post-create event administration retains Host Event Manage ownership."
+          "Host Events launch and repeat-template selection retain Host Events ownership; post-create event administration retains Host Event Manage ownership."
         ]
       },
       "bindings": {
@@ -53,7 +53,13 @@
       },
       "dimensions": {
         "route": {"default": "ready", "values": ["ready", "loading", "error", "not_found", "forbidden"]},
-        "step": {"default": "basics", "values": ["basics", "location", "schedule", "policy", "guide", "success"]},
+        "step": {"default": "basics", "values": [
+            "basics",
+            "schedule",
+            "setup",
+            "review",
+            "success"
+          ]},
         "mutation": {"default": "idle", "values": ["idle", "validation", "pending", "error", "settled"]},
         "draft": {"default": "none", "values": ["none", "picker", "restored", "saved", "deleted", "dirty"]},
         "media": {"default": "empty", "values": ["empty", "selected"]},
@@ -61,7 +67,20 @@
         "policy": {"default": "standard", "values": ["standard", "invite_only", "cohort_caps", "dynamic_pricing"]},
         "connectivity": {"default": "online", "values": ["online", "offline"]},
         "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
-        "theme": {"default": "standard", "values": ["standard", "light_dark"]}
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        },
+        "integration": {
+          "default": "catch_booking",
+          "values": [
+            "catch_booking",
+            "runtime_only"
+          ]
+        }
       },
       "actions": [
         {
@@ -360,6 +379,28 @@
           "scopeKeys": ["routeInstanceId", "clubId", "eventId"],
           "outcomes": [{"kind": "side_effect", "id": "host_event_create.success_dismissed_to_caller"}],
           "description": "Pops the successful create flow back to whichever host surface launched it."
+        },
+        {
+          "id": "review_event",
+          "owner": "wizard_state",
+          "codeValue": "review",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "draftSignature"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "runtime_review",
+                "basics_validation",
+                "same_day_time_error",
+                "policy_age_validation"
+              ]
+            }
+          ],
+          "description": "Validates required sections and opens review without creating an event."
         }
       ],
       "stateIds": [
@@ -393,7 +434,12 @@
         "offline",
         "text_scale_2",
         "reduced_motion",
-        "light_dark"
+        "light_dark",
+        "runtime_basics",
+        "runtime_schedule",
+        "runtime_guests",
+        "runtime_review",
+        "runtime_customize"
       ],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "default"}]},
       "scenarioOverrides": {
@@ -411,19 +457,19 @@
         "basics_validation": {"dimensions": {"mutation": "validation"}, "actionCases": [{"id": "correct", "enabledActions": ["next_step", "select_activity", "select_pace", "select_event_photos", "save_draft"]}]},
         "event_photos": {"dimensions": {"media": "selected"}, "actionCases": [{"id": "media", "enabledActions": ["select_event_photos", "remove_event_photo", "reorder_event_photo", "next_step", "save_draft"]}]},
         "custom_activity": {"actionCases": [{"id": "custom", "enabledActions": ["select_activity", "select_interaction_model", "select_event_photos", "next_step", "save_draft"]}]},
-        "where_step_default": {"dimensions": {"step": "location"}, "actionCases": [{"id": "location", "enabledActions": ["previous_step", "open_location_picker", "next_step", "save_draft"]}]},
-        "location_picker_selected": {"dimensions": {"step": "location", "location": "selected"}, "actionCases": [{"id": "picker", "enabledActions": ["search_location", "select_location_suggestion", "set_location_pin", "confirm_location"]}]},
-        "location_picker_offline_search": {"dimensions": {"step": "location", "location": "search", "connectivity": "offline"}, "actionCases": [{"id": "retry_search", "enabledActions": ["search_location", "select_location_suggestion", "set_location_pin"]}]},
+        "where_step_default": {"dimensions": {"step": "schedule"}, "actionCases": [{"id": "location", "enabledActions": ["previous_step", "open_location_picker", "next_step", "save_draft"]}]},
+        "location_picker_selected": {"dimensions": {"step": "schedule", "location": "selected"}, "actionCases": [{"id": "picker", "enabledActions": ["search_location", "select_location_suggestion", "set_location_pin", "confirm_location"]}]},
+        "location_picker_offline_search": {"dimensions": {"step": "schedule", "location": "search", "connectivity": "offline"}, "actionCases": [{"id": "retry_search", "enabledActions": ["search_location", "select_location_suggestion", "set_location_pin"]}]},
         "when_step_default": {"dimensions": {"step": "schedule"}, "actionCases": [{"id": "schedule", "enabledActions": ["previous_step", "select_date", "select_start_time", "adjust_duration", "next_step", "save_draft"]}]},
         "same_day_time_error": {"dimensions": {"step": "schedule", "mutation": "validation"}, "actionCases": [{"id": "correct", "enabledActions": ["previous_step", "select_date", "select_start_time", "adjust_duration", "next_step", "save_draft"]}]},
-        "policy_default": {"dimensions": {"step": "policy"}, "actionCases": [{"id": "policy", "enabledActions": ["previous_step", "select_admission_policy", "toggle_cohort_caps", "toggle_dynamic_pricing", "select_cancellation_policy", "next_step", "save_draft"]}]},
-        "policy_age_validation": {"dimensions": {"step": "policy", "mutation": "validation"}, "actionCases": [{"id": "correct", "enabledActions": ["previous_step", "select_admission_policy", "toggle_cohort_caps", "toggle_dynamic_pricing", "select_cancellation_policy", "next_step", "save_draft"]}]},
-        "invite_only_policy": {"dimensions": {"step": "policy", "policy": "invite_only"}, "actionCases": [{"id": "invite", "enabledActions": ["previous_step", "select_admission_policy", "next_step", "save_draft"]}]},
-        "cohort_caps_policy": {"dimensions": {"step": "policy", "policy": "cohort_caps"}, "actionCases": [{"id": "caps", "enabledActions": ["previous_step", "toggle_cohort_caps", "next_step", "save_draft"]}]},
-        "dynamic_pricing_policy": {"dimensions": {"step": "policy", "policy": "dynamic_pricing"}, "actionCases": [{"id": "pricing", "enabledActions": ["previous_step", "toggle_dynamic_pricing", "next_step", "save_draft"]}]},
-        "event_success_step": {"dimensions": {"step": "guide"}, "actionCases": [{"id": "guide", "enabledActions": ["previous_step", "configure_event_success", "submit_event", "save_draft"]}]},
-        "submit_pending": {"dimensions": {"step": "guide", "mutation": "pending"}},
-        "submit_error": {"dimensions": {"step": "guide", "mutation": "error"}, "actionCases": [{"id": "retry", "enabledActions": ["previous_step", "configure_event_success", "submit_event", "save_draft"]}]},
+        "policy_default": {"dimensions": {"step": "setup"}, "actionCases": [{"id": "policy", "enabledActions": ["previous_step", "select_admission_policy", "toggle_cohort_caps", "toggle_dynamic_pricing", "select_cancellation_policy", "review_event", "save_draft"]}]},
+        "policy_age_validation": {"dimensions": {"step": "setup", "mutation": "validation"}, "actionCases": [{"id": "correct", "enabledActions": ["previous_step", "select_admission_policy", "toggle_cohort_caps", "toggle_dynamic_pricing", "select_cancellation_policy", "review_event", "save_draft"]}]},
+        "invite_only_policy": {"dimensions": {"step": "setup", "policy": "invite_only"}, "actionCases": [{"id": "invite", "enabledActions": ["previous_step", "select_admission_policy", "review_event", "save_draft"]}]},
+        "cohort_caps_policy": {"dimensions": {"step": "setup", "policy": "cohort_caps"}, "actionCases": [{"id": "caps", "enabledActions": ["previous_step", "toggle_cohort_caps", "review_event", "save_draft"]}]},
+        "dynamic_pricing_policy": {"dimensions": {"step": "setup", "policy": "dynamic_pricing"}, "actionCases": [{"id": "pricing", "enabledActions": ["previous_step", "toggle_dynamic_pricing", "review_event", "save_draft"]}]},
+        "event_success_step": {"dimensions": {"step": "setup"}, "actionCases": [{"id": "guide", "enabledActions": ["previous_step", "configure_event_success", "review_event", "save_draft"]}]},
+        "submit_pending": {"dimensions": {"step": "review", "mutation": "pending"}},
+        "submit_error": {"dimensions": {"step": "review", "mutation": "error"}, "actionCases": [{"id": "retry", "enabledActions": ["previous_step", "configure_event_success", "submit_event", "save_draft"]}]},
         "success_manage": {"dimensions": {"step": "success", "mutation": "settled"}, "actionCases": [{"id": "success", "enabledActions": ["manage_created_event", "dismiss_success"]}]},
         "draft_picker_restore": {"dimensions": {"draft": "picker"}, "actionCases": [{"id": "picker", "enabledActions": ["restore_draft", "start_fresh", "delete_draft"]}]},
         "draft_save_update": {"dimensions": {"draft": "saved", "mutation": "settled"}, "actionCases": [{"id": "save", "enabledActions": ["save_draft"]}]},
@@ -438,7 +484,97 @@
         ]},
         "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
         "reduced_motion": {"dimensions": {"accessibility": "reduced_motion"}},
-        "light_dark": {"dimensions": {"theme": "light_dark"}}
+        "light_dark": {
+          "dimensions": {
+            "theme": "light_dark"
+          }
+        },
+        "runtime_basics": {
+          "dimensions": {
+            "integration": "runtime_only",
+            "step": "basics"
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "enabledActions": [
+                "next_step",
+                "select_activity",
+                "save_draft"
+              ]
+            }
+          ]
+        },
+        "runtime_schedule": {
+          "dimensions": {
+            "integration": "runtime_only",
+            "step": "schedule"
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "enabledActions": [
+                "previous_step",
+                "select_date",
+                "select_start_time",
+                "adjust_duration",
+                "open_location_picker",
+                "next_step",
+                "save_draft"
+              ]
+            }
+          ]
+        },
+        "runtime_guests": {
+          "dimensions": {
+            "integration": "runtime_only",
+            "step": "setup"
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "enabledActions": [
+                "previous_step",
+                "review_event",
+                "configure_event_success",
+                "save_draft"
+              ]
+            }
+          ]
+        },
+        "runtime_review": {
+          "dimensions": {
+            "integration": "runtime_only",
+            "step": "review"
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "enabledActions": [
+                "previous_step",
+                "submit_event",
+                "save_draft"
+              ]
+            }
+          ]
+        },
+        "runtime_customize": {
+          "dimensions": {
+            "integration": "runtime_only",
+            "step": "setup"
+          },
+          "actionCases": [
+            {
+              "id": "runtime",
+              "enabledActions": [
+                "previous_step",
+                "review_event",
+                "configure_event_success",
+                "save_draft"
+              ]
+            }
+          ]
+        }
       },
       "requiredEvidence": {"captures": true, "previews": true, "tests": true},
       "evidenceExceptions": [

@@ -7553,6 +7553,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host create event',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CreateEventGuestsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Guest import states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .createEventGuestsSectionCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CreateEventPhotoPicker',
             useCases: [
               _widgetbook.WidgetbookUseCase(

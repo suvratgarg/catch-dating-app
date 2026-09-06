@@ -21,6 +21,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     required this.subtitle,
     this.eventFormat,
     this.targetAttendeeCount,
+    this.showEnableToggle = true,
   });
 
   final EventSuccessDefaults defaults;
@@ -28,6 +29,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
   final ValueChanged<EventSuccessDefaultsUpdate> onChanged;
   final EventFormatSnapshot? eventFormat;
   final int? targetAttendeeCount;
+  final bool showEnableToggle;
   final String title;
   final String subtitle;
 
@@ -61,20 +63,21 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
-        CatchFieldLanes.divided(
-          children: [
-            CatchField.toggle(
-              title: title,
-              contract: CatchContractConstraints
-                  .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
-              body: subtitle,
-              bodyMaxLines: 5,
-              value: normalized.enabled,
-              onChanged: (value) =>
-                  onChanged((current) => current.copyWith(enabled: value)),
-            ),
-          ],
-        ),
+        if (showEnableToggle)
+          CatchFieldLanes.divided(
+            children: [
+              CatchField.toggle(
+                title: title,
+                contract: CatchContractConstraints
+                    .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
+                body: subtitle,
+                bodyMaxLines: 5,
+                value: normalized.enabled,
+                onChanged: (value) =>
+                    onChanged((current) => current.copyWith(enabled: value)),
+              ),
+            ],
+          ),
         if (normalized.enabled)
           EventSuccessSetupBody(
             draft: draft,

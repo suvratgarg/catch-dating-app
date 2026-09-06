@@ -15,9 +15,11 @@ import 'package:flutter/services.dart';
 class EventPolicyStep extends StatelessWidget {
   const EventPolicyStep({
     super.key,
+    this.embedded = false,
     required this.formKey,
     this.autovalidateMode = AutovalidateMode.disabled,
     required this.capacityController,
+    this.onCapacityChanged,
     required this.priceController,
     required this.currencyCode,
     required this.inviteCodeController,
@@ -42,9 +44,12 @@ class EventPolicyStep extends StatelessWidget {
     this.minimumCapacity,
   });
 
+  /// When composed by the shared editor, its parent owns scrolling and Form.
+  final bool embedded;
   final GlobalKey<FormState> formKey;
   final AutovalidateMode autovalidateMode;
   final TextEditingController capacityController;
+  final ValueChanged<String>? onCapacityChanged;
   final TextEditingController priceController;
   final String currencyCode;
   final TextEditingController inviteCodeController;
@@ -71,38 +76,81 @@ class EventPolicyStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Form(
-      key: formKey,
-      autovalidateMode: autovalidateMode,
-      child: ListView(
-        padding: CatchInsets.formStepBodyWithBottomActions,
-        children: [
-          CatchSectionList(
-            emptyStateOmitted: true,
-            gap: 0,
-            children: [
-              CatchSection.plain(
-                child: Text(
-                  externalBookingMode
-                      ? context.l10n.hostsEventPolicyStepExternalOperationsIntro
-                      : context
-                            .l10n
-                            .hostsEventPolicyStepTextConfigureWhoCanBook,
-                  style: CatchTextStyles.supporting(context, color: t.primary),
-                ),
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchSectionList(
+          emptyStateOmitted: true,
+          gap: 0,
+          children: [
+            CatchSection.plain(
+              child: Text(
+                externalBookingMode
+                    ? context.l10n.hostsEventPolicyStepExternalOperationsIntro
+                    : context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
+                style: CatchTextStyles.supporting(context, color: t.primary),
               ),
-              CatchSection.fieldRows(
-                children: [
+            ),
+            CatchSection.fieldRows(
+              children: [
+                CatchField.input(
+                  key: CreateEventFormKeys.capacity,
+                  title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
+                  contract: CatchContractConstraints
+                      .createEventCallablePayloadCapacityLimit,
+                  controller: capacityController,
+                  onChanged: onCapacityChanged,
+                  inputHint: '20',
+                  icon: CatchIcons.peopleOutline,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return context
+                          .l10n
+                          .hostsEventPolicyStepVisiblecopyRequired;
+                    }
+                    final capacity = int.tryParse(value.trim());
+                    if (capacity == null || capacity < 1) {
+                      return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
+                    }
+                    if (capacity > 1000) {
+                      return context
+                          .l10n
+                          .hostsEventPolicyStepVisiblecopyInvalid;
+                    }
+                    final requiredCapacity = minimumCapacity;
+                    if (requiredCapacity != null &&
+                        capacity < requiredCapacity) {
+                      return context.l10n.hostsCreateEventCapacityBelowRoster(
+                        count: requiredCapacity,
+                      );
+                    }
+                    return null;
+                  },
+                ),
+                if (!externalBookingMode)
                   CatchField.input(
-                    key: CreateEventFormKeys.capacity,
-                    title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
+                    key: CreateEventFormKeys.price,
+                    title: context.l10n
+                        .hostsEventPolicyStepTitleBasePriceCurrencycode(
+                          currencyCode: currencyCode,
+                        ),
                     contract: CatchContractConstraints
-                        .createEventCallablePayloadCapacityLimit,
-                    controller: capacityController,
-                    inputHint: '20',
-                    icon: CatchIcons.peopleOutline,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        .createEventCallablePayloadPriceInPaise,
+                    controller: priceController,
+                    inputHint: '0',
+                    icon: CatchIcons.paymentsOutlined,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(context.l10n.hostsEventPolicyStepVisiblecopyDD),
+                      ),
+                    ],
                     textInputAction: TextInputAction.next,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -110,188 +158,145 @@ class EventPolicyStep extends StatelessWidget {
                             .l10n
                             .hostsEventPolicyStepVisiblecopyRequired;
                       }
-                      final capacity = int.tryParse(value.trim());
-                      if (capacity == null || capacity < 1) {
-                        return context.l10n.hostsEventPolicyStepVisiblecopyMin1;
-                      }
-                      final requiredCapacity = minimumCapacity;
-                      if (requiredCapacity != null &&
-                          capacity < requiredCapacity) {
-                        return context.l10n.hostsCreateEventCapacityBelowRoster(
-                          count: requiredCapacity,
-                        );
+                      final amount = parseMajorCurrencyAmountToMinorUnits(
+                        value,
+                        currencyCode: currencyCode,
+                      );
+                      if (amount == null) {
+                        return context
+                            .l10n
+                            .hostsEventPolicyStepVisiblecopyInvalid;
                       }
                       return null;
                     },
                   ),
-                  if (!externalBookingMode)
-                    CatchField.input(
-                      key: CreateEventFormKeys.price,
-                      title: context.l10n
-                          .hostsEventPolicyStepTitleBasePriceCurrencycode(
-                            currencyCode: currencyCode,
-                          ),
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadPriceInPaise,
-                      controller: priceController,
-                      inputHint: '0',
-                      icon: CatchIcons.paymentsOutlined,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
+                if (!externalBookingMode)
+                  CatchField.optionCards<EventAdmissionPreset>(
+                    title:
+                        context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadEventPolicyAdmissionFormat,
+                    contractValue: (preset) => switch (preset) {
+                      EventAdmissionPreset.openCapacity => 'open',
+                      EventAdmissionPreset.inviteOnly => 'inviteOnly',
+                      EventAdmissionPreset.requestToJoin => 'manualApproval',
+                      EventAdmissionPreset.balancedSingles => 'balancedRatio',
+                    },
+                    values: EventAdmissionPreset.values,
+                    itemTitle: (preset) => preset.title(context.l10n),
+                    itemDescription: (preset) =>
+                        preset.description(context.l10n),
+                    selected: admissionPreset,
+                    onChanged: onAdmissionPresetChanged,
+                    icon: CatchIcons.howToRegOutlined,
+                  ),
+                if (!externalBookingMode &&
+                    admissionPreset == EventAdmissionPreset.inviteOnly)
+                  CatchField.input(
+                    key: CreateEventFormKeys.inviteCode,
+                    title: context.l10n.hostsEventPolicyStepTitleInviteCode,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadPrivateAccessInviteCode,
+                    controller: inviteCodeController,
+                    inputHint:
+                        context.l10n.hostsEventPolicyStepPlaceholderCatchDelhi,
+                    helperText:
+                        context.l10n.hostsEventPolicyStepTextTheCodeIsStored,
+                    icon: CatchIcons.lockOutlineRounded,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(
+                          context.l10n.hostsEventPolicyStepVisiblecopyAZaZ09,
+                        ),
                       ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(
-                            context.l10n.hostsEventPolicyStepVisiblecopyDD,
-                          ),
+                    ],
+                    validator:
+                        admissionPreset == EventAdmissionPreset.inviteOnly
+                        ? (value) => inviteCodeValidator(value, context.l10n)
+                        : null,
+                  ),
+                if (!externalBookingMode &&
+                    admissionPreset == EventAdmissionPreset.openCapacity) ...[
+                  CatchField.toggle(
+                    key: CreateEventFormKeys.cohortCapsToggle,
+                    title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
+                    contract: CatchContractConstraints
+                        .mobileFormStateEventCohortCapsEnabled,
+                    body: context
+                        .l10n
+                        .hostsEventPolicyStepBodyOptionallyCapStraightMen,
+                    bodyMaxLines: 5,
+                    value: cohortCapsEnabled,
+                    onChanged: onCohortCapsEnabledChanged,
+                  ),
+                  if (cohortCapsEnabled)
+                    CatchSection.containedFieldRows(
+                      children: [
+                        CatchField.input(
+                          key: CreateEventFormKeys.maxMen,
+                          title: context
+                              .l10n
+                              .hostsEventPolicyStepTitleMaxStraightMen,
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadConstraintsMaxMen,
+                          isOptional: true,
+                          controller: maxMenController,
+                          inputHint: context
+                              .l10n
+                              .hostsEventPolicyStepPlaceholderMaxMen,
+                          icon: CatchIcons.maleOutlined,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          textInputAction: TextInputAction.next,
+                          validator: cohortCapsEnabled
+                              ? (value) => positiveOptionalValidator(
+                                  value,
+                                  context.l10n,
+                                )
+                              : null,
+                        ),
+                        CatchField.input(
+                          key: CreateEventFormKeys.maxWomen,
+                          title: context
+                              .l10n
+                              .hostsEventPolicyStepTitleMaxStraightWomen,
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadConstraintsMaxWomen,
+                          isOptional: true,
+                          controller: maxWomenController,
+                          inputHint: context
+                              .l10n
+                              .hostsEventPolicyStepPlaceholderMaxWomen,
+                          icon: CatchIcons.femaleOutlined,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          textInputAction: TextInputAction.next,
+                          validator: cohortCapsEnabled
+                              ? (value) => positiveOptionalValidator(
+                                  value,
+                                  context.l10n,
+                                )
+                              : null,
                         ),
                       ],
-                      textInputAction: TextInputAction.next,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return context
-                              .l10n
-                              .hostsEventPolicyStepVisiblecopyRequired;
-                        }
-                        final amount = parseMajorCurrencyAmountToMinorUnits(
-                          value,
-                          currencyCode: currencyCode,
-                        );
-                        if (amount == null) {
-                          return context
-                              .l10n
-                              .hostsEventPolicyStepVisiblecopyInvalid;
-                        }
-                        return null;
-                      },
                     ),
-                  if (!externalBookingMode)
-                    CatchField.optionCards<EventAdmissionPreset>(
-                      title:
-                          context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadEventPolicyAdmissionFormat,
-                      contractValue: (preset) => switch (preset) {
-                        EventAdmissionPreset.openCapacity => 'open',
-                        EventAdmissionPreset.inviteOnly => 'inviteOnly',
-                        EventAdmissionPreset.requestToJoin => 'manualApproval',
-                        EventAdmissionPreset.balancedSingles => 'balancedRatio',
-                      },
-                      values: EventAdmissionPreset.values,
-                      itemTitle: (preset) => preset.title(context.l10n),
-                      itemDescription: (preset) =>
-                          preset.description(context.l10n),
-                      selected: admissionPreset,
-                      onChanged: onAdmissionPresetChanged,
-                      icon: CatchIcons.howToRegOutlined,
-                    ),
-                  if (!externalBookingMode &&
-                      admissionPreset == EventAdmissionPreset.inviteOnly)
-                    CatchField.input(
-                      key: CreateEventFormKeys.inviteCode,
-                      title: context.l10n.hostsEventPolicyStepTitleInviteCode,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadPrivateAccessInviteCode,
-                      controller: inviteCodeController,
-                      inputHint: context
-                          .l10n
-                          .hostsEventPolicyStepPlaceholderCatchDelhi,
-                      helperText:
-                          context.l10n.hostsEventPolicyStepTextTheCodeIsStored,
-                      icon: CatchIcons.lockOutlineRounded,
-                      textInputAction: TextInputAction.next,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(
-                            context.l10n.hostsEventPolicyStepVisiblecopyAZaZ09,
-                          ),
-                        ),
-                      ],
-                      validator:
-                          admissionPreset == EventAdmissionPreset.inviteOnly
-                          ? (value) => inviteCodeValidator(value, context.l10n)
-                          : null,
-                    ),
-                  if (!externalBookingMode &&
-                      admissionPreset == EventAdmissionPreset.openCapacity) ...[
-                    CatchField.toggle(
-                      key: CreateEventFormKeys.cohortCapsToggle,
-                      title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
-                      contract: CatchContractConstraints
-                          .mobileFormStateEventCohortCapsEnabled,
-                      body: context
-                          .l10n
-                          .hostsEventPolicyStepBodyOptionallyCapStraightMen,
-                      bodyMaxLines: 5,
-                      value: cohortCapsEnabled,
-                      onChanged: onCohortCapsEnabledChanged,
-                    ),
-                    if (cohortCapsEnabled)
-                      CatchSection.containedFieldRows(
-                        children: [
-                          CatchField.input(
-                            key: CreateEventFormKeys.maxMen,
-                            title: context
-                                .l10n
-                                .hostsEventPolicyStepTitleMaxStraightMen,
-                            contract: CatchContractConstraints
-                                .createEventCallablePayloadConstraintsMaxMen,
-                            isOptional: true,
-                            controller: maxMenController,
-                            inputHint: context
-                                .l10n
-                                .hostsEventPolicyStepPlaceholderMaxMen,
-                            icon: CatchIcons.maleOutlined,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            textInputAction: TextInputAction.next,
-                            validator: cohortCapsEnabled
-                                ? (value) => positiveOptionalValidator(
-                                    value,
-                                    context.l10n,
-                                  )
-                                : null,
-                          ),
-                          CatchField.input(
-                            key: CreateEventFormKeys.maxWomen,
-                            title: context
-                                .l10n
-                                .hostsEventPolicyStepTitleMaxStraightWomen,
-                            contract: CatchContractConstraints
-                                .createEventCallablePayloadConstraintsMaxWomen,
-                            isOptional: true,
-                            controller: maxWomenController,
-                            inputHint: context
-                                .l10n
-                                .hostsEventPolicyStepPlaceholderMaxWomen,
-                            icon: CatchIcons.femaleOutlined,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            textInputAction: TextInputAction.next,
-                            validator: cohortCapsEnabled
-                                ? (value) => positiveOptionalValidator(
-                                    value,
-                                    context.l10n,
-                                  )
-                                : null,
-                          ),
-                        ],
-                      ),
-                  ],
-                  if (!externalBookingMode &&
-                      admissionPreset == EventAdmissionPreset.requestToJoin)
-                    CatchField.read(
-                      title: admissionPreset.title(context.l10n),
-                      body: context
-                          .l10n
-                          .hostsEventPolicyStepTextRequestsAppearInHost,
-                      bodyMaxLines: 3,
-                      icon: CatchIcons.howToRegOutlined,
-                    ),
+                ],
+                if (!externalBookingMode &&
+                    admissionPreset == EventAdmissionPreset.requestToJoin)
+                  CatchField.read(
+                    title: admissionPreset.title(context.l10n),
+                    body: context
+                        .l10n
+                        .hostsEventPolicyStepTextRequestsAppearInHost,
+                    bodyMaxLines: 3,
+                    icon: CatchIcons.howToRegOutlined,
+                  ),
+                if (!externalBookingMode)
                   CatchField.toggle(
                     key: CreateEventFormKeys.crossPathsPairInventoryToggle,
                     title:
@@ -303,178 +308,184 @@ class EventPolicyStep extends StatelessWidget {
                     value: crossPathsPairInventoryEnabled,
                     onChanged: onCrossPathsPairInventoryChanged,
                   ),
-                  if (crossPathsPairInventoryEnabled)
+                if (!externalBookingMode && crossPathsPairInventoryEnabled)
+                  CatchSection.containedFieldRows(
+                    children: [
+                      CatchField.input(
+                        key: CreateEventFormKeys.crossPathsPairCapacity,
+                        title: context
+                            .l10n
+                            .hostsEventPolicyStepTitleCrossPathsPairCapacity,
+                        contract: CatchContractConstraints
+                            .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
+                        controller: crossPathsPairCapacityController,
+                        inputHint: '2',
+                        icon: CatchIcons.peopleOutline,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: crossPathsPairInventoryEnabled
+                            ? (value) {
+                                final pairCapacity = int.tryParse(
+                                  value?.trim() ?? '',
+                                );
+                                final totalCapacity = int.tryParse(
+                                  capacityController.text.trim(),
+                                );
+                                if (pairCapacity == null ||
+                                    pairCapacity < 1 ||
+                                    totalCapacity == null ||
+                                    pairCapacity > totalCapacity) {
+                                  return context
+                                      .l10n
+                                      .hostsEventPolicyStepVisiblecopyInvalid;
+                                }
+                                return null;
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
+                if (!externalBookingMode &&
+                    admissionPreset ==
+                        EventAdmissionPreset.balancedSingles) ...[
+                  CatchField.toggle(
+                    key: CreateEventFormKeys.dynamicPricingToggle,
+                    title: context.l10n.hostsEventPolicyStepTitleDemandPricing,
+                    contract: CatchContractConstraints
+                        .mobileFormStateEventDynamicPricingEnabled,
+                    body: context
+                        .l10n
+                        .hostsEventPolicyStepBodyIncreaseTheStraightMen,
+                    bodyMaxLines: 4,
+                    value: dynamicPricingEnabled,
+                    onChanged: onDynamicPricingChanged,
+                  ),
+                  if (dynamicPricingEnabled)
                     CatchSection.containedFieldRows(
                       children: [
                         CatchField.input(
-                          key: CreateEventFormKeys.crossPathsPairCapacity,
-                          title: context
-                              .l10n
-                              .hostsEventPolicyStepTitleCrossPathsPairCapacity,
+                          key: CreateEventFormKeys.dynamicPricingStep,
+                          title: context.l10n
+                              .hostsEventPolicyStepTitleStepCurrencycode(
+                                currencyCode: currencyCode,
+                              ),
                           contract: CatchContractConstraints
-                              .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
-                          controller: crossPathsPairCapacityController,
-                          inputHint: '2',
-                          icon: CatchIcons.peopleOutline,
+                              .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
+                          controller: dynamicPricingStepController,
+                          inputHint: '250',
+                          icon: CatchIcons.trendingUpRounded,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                           ],
-                          validator: crossPathsPairInventoryEnabled
-                              ? (value) {
-                                  final pairCapacity = int.tryParse(
-                                    value?.trim() ?? '',
-                                  );
-                                  final totalCapacity = int.tryParse(
-                                    capacityController.text.trim(),
-                                  );
-                                  if (pairCapacity == null ||
-                                      pairCapacity < 1 ||
-                                      totalCapacity == null ||
-                                      pairCapacity > totalCapacity) {
-                                    return context
-                                        .l10n
-                                        .hostsEventPolicyStepVisiblecopyInvalid;
-                                  }
-                                  return null;
-                                }
+                          textInputAction: TextInputAction.next,
+                          validator: dynamicPricingEnabled
+                              ? (value) => positiveRequiredValidator(
+                                  value,
+                                  context.l10n,
+                                )
+                              : null,
+                        ),
+                        CatchField.input(
+                          key: CreateEventFormKeys.dynamicPricingMax,
+                          title: context.l10n
+                              .hostsEventPolicyStepTitleMaxCurrencycode(
+                                currencyCode: currencyCode,
+                              ),
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
+                          controller: dynamicPricingMaxController,
+                          inputHint: '1500',
+                          icon: CatchIcons.priceChangeOutlined,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          textInputAction: TextInputAction.next,
+                          validator: dynamicPricingEnabled
+                              ? (value) => positiveRequiredValidator(
+                                  value,
+                                  context.l10n,
+                                )
                               : null,
                         ),
                       ],
                     ),
-                  if (!externalBookingMode &&
-                      admissionPreset ==
-                          EventAdmissionPreset.balancedSingles) ...[
-                    CatchField.toggle(
-                      key: CreateEventFormKeys.dynamicPricingToggle,
-                      title:
-                          context.l10n.hostsEventPolicyStepTitleDemandPricing,
-                      contract: CatchContractConstraints
-                          .mobileFormStateEventDynamicPricingEnabled,
-                      body: context
-                          .l10n
-                          .hostsEventPolicyStepBodyIncreaseTheStraightMen,
-                      bodyMaxLines: 4,
-                      value: dynamicPricingEnabled,
-                      onChanged: onDynamicPricingChanged,
-                    ),
-                    if (dynamicPricingEnabled)
-                      CatchSection.containedFieldRows(
-                        children: [
-                          CatchField.input(
-                            key: CreateEventFormKeys.dynamicPricingStep,
-                            title: context.l10n
-                                .hostsEventPolicyStepTitleStepCurrencycode(
-                                  currencyCode: currencyCode,
-                                ),
-                            contract: CatchContractConstraints
-                                .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
-                            controller: dynamicPricingStepController,
-                            inputHint: '250',
-                            icon: CatchIcons.trendingUpRounded,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            textInputAction: TextInputAction.next,
-                            validator: dynamicPricingEnabled
-                                ? (value) => positiveRequiredValidator(
-                                    value,
-                                    context.l10n,
-                                  )
-                                : null,
-                          ),
-                          CatchField.input(
-                            key: CreateEventFormKeys.dynamicPricingMax,
-                            title: context.l10n
-                                .hostsEventPolicyStepTitleMaxCurrencycode(
-                                  currencyCode: currencyCode,
-                                ),
-                            contract: CatchContractConstraints
-                                .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
-                            controller: dynamicPricingMaxController,
-                            inputHint: '1500',
-                            icon: CatchIcons.priceChangeOutlined,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            textInputAction: TextInputAction.next,
-                            validator: dynamicPricingEnabled
-                                ? (value) => positiveRequiredValidator(
-                                    value,
-                                    context.l10n,
-                                  )
-                                : null,
-                          ),
-                        ],
-                      ),
-                  ],
-                  EventAgeRangeField(
-                    key: CreateEventFormKeys.minAge,
-                    minAgeController: minAgeController,
-                    maxAgeController: maxAgeController,
-                    minimumContract: CatchContractConstraints
-                        .createEventCallablePayloadConstraintsMinAge,
-                    maximumContract: CatchContractConstraints
-                        .createEventCallablePayloadConstraintsMaxAge,
-                  ),
-                  ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: priceController,
-                    builder: (context, price, _) {
-                      final priceInMinorUnits =
-                          parseMajorCurrencyAmountToMinorUnits(
-                            price.text,
-                            currencyCode: currencyCode,
-                          );
-                      if (externalBookingMode || priceInMinorUnits == 0) {
-                        return const SizedBox.shrink();
-                      }
-                      return CatchField.optionCards<EventCancellationPolicyId>(
-                        title: context
-                            .l10n
-                            .hostsEventPolicyStepLabelCancellationPolicy,
-                        contract: CatchContractConstraints
-                            .createEventCallablePayloadEventPolicyCancellationPolicyId,
-                        contractValue: (value) => value.name,
-                        values: EventCancellationPolicyId.values
-                            .where((value) => value.isApplicable)
-                            .toList(growable: false),
-                        itemTitle: (policyId) => policyFor(policyId).title,
-                        itemDescription: (policyId) =>
-                            policyFor(policyId).attendeeSummary,
-                        selected: cancellationPolicyId.isApplicable
-                            ? cancellationPolicyId
-                            : EventCancellationPolicyId.standard,
-                        onChanged: onCancellationPolicyChanged,
-                        icon: CatchIcons.ruleOutlined,
-                      );
-                    },
-                  ),
                 ],
-              ),
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: priceController,
-                builder: (context, price, _) {
-                  final priceInMinorUnits =
-                      parseMajorCurrencyAmountToMinorUnits(
-                        price.text,
-                        currencyCode: currencyCode,
-                      );
-                  if (externalBookingMode || priceInMinorUnits == 0) {
-                    return const SizedBox.shrink();
-                  }
-                  return CatchSection.divided(
-                    child: Text(
-                      context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
+                EventAgeRangeField(
+                  key: CreateEventFormKeys.minAge,
+                  minAgeController: minAgeController,
+                  maxAgeController: maxAgeController,
+                  minimumContract: CatchContractConstraints
+                      .createEventCallablePayloadConstraintsMinAge,
+                  maximumContract: CatchContractConstraints
+                      .createEventCallablePayloadConstraintsMaxAge,
+                ),
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: priceController,
+                  builder: (context, price, _) {
+                    final priceInMinorUnits =
+                        parseMajorCurrencyAmountToMinorUnits(
+                          price.text,
+                          currencyCode: currencyCode,
+                        );
+                    if (externalBookingMode || priceInMinorUnits == 0) {
+                      return const SizedBox.shrink();
+                    }
+                    return CatchField.optionCards<EventCancellationPolicyId>(
+                      title: context
+                          .l10n
+                          .hostsEventPolicyStepLabelCancellationPolicy,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadEventPolicyCancellationPolicyId,
+                      contractValue: (value) => value.name,
+                      values: EventCancellationPolicyId.values
+                          .where((value) => value.isApplicable)
+                          .toList(growable: false),
+                      itemTitle: (policyId) => policyFor(policyId).title,
+                      itemDescription: (policyId) =>
+                          policyFor(policyId).attendeeSummary,
+                      selected: cancellationPolicyId.isApplicable
+                          ? cancellationPolicyId
+                          : EventCancellationPolicyId.standard,
+                      onChanged: onCancellationPolicyChanged,
+                      icon: CatchIcons.ruleOutlined,
+                    );
+                  },
+                ),
+              ],
+            ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: priceController,
+              builder: (context, price, _) {
+                final priceInMinorUnits = parseMajorCurrencyAmountToMinorUnits(
+                  price.text,
+                  currencyCode: currencyCode,
+                );
+                if (externalBookingMode || priceInMinorUnits == 0) {
+                  return const SizedBox.shrink();
+                }
+                return CatchSection.divided(
+                  child: Text(
+                    context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+    if (embedded) return content;
+    return Form(
+      key: formKey,
+      autovalidateMode: autovalidateMode,
+      child: SingleChildScrollView(
+        padding: CatchInsets.formStepBodyWithBottomActions,
+        child: content,
       ),
     );
   }
