@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.11
+version: 2.7.13
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
@@ -31,9 +31,11 @@ and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
 GitHub Actions and Xcode Cloud read that contract;
 `bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
 Functions Node engine, or an Apple-native workflow runner drifts. Keep the
-Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
-7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
-visual-smoke workflows use `macos-26`.
+Apple runner major aligned with the minimum Xcode major. The repository enforces
+Xcode 26.2.0 or newer for the locked Firebase Apple SDK 12.18.0. Although
+`connectivity_plus` 7.x requires only Xcode 26.1.1 or newer, Firebase sets the
+higher repository minimum. Native build, release, and hosted visual-smoke
+workflows use `macos-26`.
 
 ## Deployment Image Retention and Cost Alerts
 
@@ -456,6 +458,28 @@ No production Hosting caller may list `*.test.mjs` in its push filter. Test
 changes are validated by CI; they do not alter deployable bytes and therefore
 cannot authorize an Admin, Marketing, or Host production promotion.
 
+### Shared iOS dependency policy
+
+Edit `ios/Podfile.template` and
+`ios/Flutter/CatchBuildSettings.xcconfig.template`, then run
+`node tool/platform/sync_ios_pod_policy.mjs --write` before native builds. The
+root, Consumer and Host Podfiles and Runner settings are generated verbatim;
+their separate Pod lockfiles, plugin graphs and app targets remain independent.
+`platform:ios-pod-policy` checks freshness in every selected iOS-native lane,
+and the existing compile-codegen catalog selects the same check before commit.
+A checkout with current generated files needs no extra generation step.
+Generator or template edits retain both iOS validation builds and freshness
+checks. They authorize a mobile release only when the generated native files
+change; unchanged output must not create another TestFlight release.
+
+Each generated Podfile contains the complete policy. Do not replace it with a
+runtime Ruby import: Flutter's warm-checkout pod-install decision and
+CocoaPods' checksum observe the Podfile itself. The generator writes only
+changed outputs and never updates dependency locks or installation receipts,
+so no-op generation avoids extra installs and failed installs remain pending.
+The app's explicit-module setting and the Podfile's pod-target setting apply
+to different build targets; both remain required while CocoaPods is in use.
+
 ### Dependency maintenance
 
 GitHub-native Dependabot is the sole routine dependency-update service. It
@@ -472,12 +496,21 @@ packages, and 38 packages blocked by coordinated constraints or major-version
 boundaries. Do not describe the `flutter pub get` summary as 38 independent
 patches.
 
-iOS remains on CocoaPods. The currently locked `razorpay_flutter` and
-`google_maps_flutter_ios` packages do not ship Swift Package Manager manifests;
-`health` does. The FirebaseFirestore prebuilt-pod graph has a separate
-duplicate-symbol boundary. Remove `enable-swift-package-manager:
-false` only in a dedicated migration after both conditions are resolved and
-Consumer plus Host iOS builds pass together.
+iOS remains on CocoaPods. A Consumer simulator experiment with Flutter 3.44.9
+resolved and linked Firebase Apple SDK 12.18.0 through SwiftPM with the locked
+Maps/Razorpay CocoaPods fallback, but failed permission-policy parity:
+`geolocator_apple` 2.3.14 loses the Podfile's
+`BYPASS_PERMISSION_LOCATION_ALWAYS=1` define and compiles Always-location code
+back into the app. Both architectures reproduced the difference against newly
+compiled CocoaPods objects. That Flutter version has no supported per-plugin
+opt-out. Revisit when a supported package or fallback preserves this policy;
+the upstream [permission-policy issue](https://github.com/Baseflow/flutter-geolocator/issues/1763)
+and [proposed fix](https://github.com/Baseflow/flutter-geolocator/pull/1788)
+describe the missing support. Before enabling SwiftPM, prove the compiled
+permission selector is absent, Firebase has one verified binary distribution
+owner, Maps/Razorpay versions and role/flavor settings are preserved, and
+Consumer plus Host release builds pass. Keep existing explicit-module settings
+until their removal has native proof.
 
 `tool/app_targets.json#appleNativeDependencies` binds the checked-in
 `firebase_core` and `cloud_firestore` Flutter versions to the Firebase Apple SDK
@@ -570,7 +603,12 @@ For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
 merged PR, successful pre-merge CI, required-reviewer approval history, completed
 review job, and equality of the reviewed PR tree with the exact packaged source
 tree. Delivery and the promoter independently repeat this read-only verification
-before authentication. Evidence that is missing, expired, unavailable or bound
+before authentication. The client pins REST API `2022-11-28` because this proof
+requires the exact `merge_commit_sha` field. GitHub's
+[2026 API contract removes that field from all PR responses](https://docs.github.com/en/rest/about-the-rest-api/breaking-changes?apiVersion=2026-03-10).
+The CLI regression exercises version-sensitive HTTP responses; API upgrades
+must preserve exact merge identity before changing this pin.
+Evidence that is missing, expired, unavailable or bound
 to different source retains `prod` review. Source pattern matching cannot prove
 that business logic is free of permission changes and is not used as approval.
 Verified Functions no-ops need no runtime approval. `backend-review` has no
@@ -1270,6 +1308,45 @@ same artifact and checkpoint binding, identifies the first incomplete stage,
 and resumes there. It cannot skip ahead; replay of an already-passed stage is
 idempotent and does not rewrite prior proof.
 
+Before any selected backend stage mutates, the Firebase adapter preflights the
+whole plan's local Functions helper protocol and runtime imports, project aliases,
+permission-sync command, source export/secret parsing, and exact deployment
+batches. Historical packages retain their original supported callable scope.
+
+Functions deployment and postconditions are separate subphases. Every exact
+Firebase batch must return success before the adapter records deployment proof;
+callable IAM sync and source-bound live parity must still pass before the
+Functions stage is complete. A batch failure stops later batches and cannot be
+converted into success by logging or a subsequent shell command.
+
+The portable `catch.delivery-checkpoints/v2` file remains unchanged. Its existing
+checkpoint artifact may also contain `functions-deployment.json` with schema
+`catch.firebase-functions-deployment/v1`. This companion binds the package and
+source attempt, environment/project scope, base SHA, exact target set, and a
+SHA-256 hash of the materialized project params file. It records every selected
+Function's ACTIVE generation-two deployment: latest successful build, resolved
+Storage source generation, update time, service, and revision. An independent
+Cloud Run read must show the same service UID/generation, fully observed ready
+state, latest created/ready revision, and all untagged traffic on that revision.
+The companion stores hashes and deployment identities, never params or tokens.
+
+Explicit recovery independently verifies the historical Delivery attempt,
+artifact id, name and archive digest, and both allowlisted JSON entries before
+writing either restored file. It never extracts archive paths. At the first
+incomplete Functions stage, the adapter compares the companion to the current
+verified package, exact materialized inputs and fresh Functions/Cloud Run state.
+Only an exact match permits `--functions-postconditions-only`, avoiding another
+Cloud Build while repeating IAM sync and parity. This local executor option does
+not itself authorize recovery; the verified workflow owns that decision.
+
+An older v2 checkpoint with no companion replays the full Functions stage. A
+missing target, partial deployment, changed source/configuration, or unexpected
+live deployment/serving drift fails explicitly before permissions or deployment
+mutate. Do not synthesize a companion from logs or delete a mismatching proof to
+bypass this stop. Resolve the mismatch through an exact source-bound recovery
+review. The companion has the checkpoint's existing retention and does not
+advance either environment's delivery position or replace successful dev proof.
+
 Provenance, source-bound recovery authorizations, completion receipts, cursors,
 and checkpoints are CI or bounded recovery artifacts, not tracked repository
 state. Writes must be atomic so interruption cannot publish partial proof.
@@ -1628,12 +1705,17 @@ quotas for this repository's large function inventory. This
 keeps legacy live Functions, such as old run/run-club callables, deployed until
 a deliberate cleanup plan removes them. Exact `functions:<name>` requests use
 the same Functions phase. Planner errors and empty or malformed target sets fail
-before any deploy begins. After the Functions phase, the helper discovers every
-live callable-labeled v2 Function and synchronizes `roles/run.invoker` on its
-exact Cloud Run service before continuing to rules. The deploy identity
-therefore needs permission to list Cloud Functions and get/set Cloud Run IAM
-policies. Delivery additionally owns artifact verification, checkpointing, and
-the index-`READY` wait; invoking this helper directly is not normal promotion.
+before any deploy begins. After the Functions phase, packaged callable-invoker
+helpers advertising scope protocol 1 receive the exact selected Function targets
+via `--targets`. They filter the live v2 Function inventory to those targets and
+synchronize `roles/run.invoker` only on their callable Cloud Run services before
+continuing to rules. Historical packages without that protocol retain their
+original full callable reconciliation; invoking the callable-invoker helper
+directly without `--targets` also retains full reconciliation. The deploy
+identity therefore needs permission to list Cloud Functions and get/set Cloud
+Run IAM policies. Delivery additionally owns artifact verification,
+checkpointing, and the index-`READY` wait; invoking this helper directly is not
+normal promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
 
@@ -1658,6 +1740,17 @@ are separate from standard backend delivery. A source merge does not update an
 installed instance. Review and apply only the intended instance's configuration;
 then compare live parameters and version against the reviewed source. A blanket
 Extensions deployment is not the organizer analytics migration procedure.
+
+Firebase's [Extensions deprecation guidance](https://firebase.google.com/docs/extensions/faq-and-troubleshooting)
+sets March 31, 2027 as the end of managed installation, reconfiguration,
+upgrades and removal. Existing resources continue running, subject to their
+underlying runtime support. The September 1, 2026 guidance still describes
+installed-user migration tools as forthcoming. Keep active exports and their
+history in place; assess the official self-managed replacement when its
+installed-instance migration procedure is available. Before switching ownership,
+verify trigger delivery, historical/latest-row parity, parameters, IAM and
+rollback against the existing instances. Publisher SDK instructions alone do
+not establish a safe migration for Catch's installed exports.
 
 Host analytics uses BigQuery as its reporting source. Run the existing source
 check before deployment or refresh:

@@ -11,6 +11,7 @@ import {
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
 import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
+import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -29,6 +30,76 @@ function plan(path, mode = "pr", sourceGraph = graph) {
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
+
+test("iOS policy inputs and outputs retain native builds and generated freshness", () => {
+  const generator = graph.compileCodegen.find((entry) => entry.id === "platform.ios-pod-policy");
+  assert.ok(generator);
+  assert.equal(generator.checkCommand, "node tool/platform/sync_ios_pod_policy.mjs --check");
+  for (const file of [...generator.inputs, ...generator.outputs]) {
+    const toolingOnly = generator.inputs.includes(file);
+    const expectedRole = file.startsWith("apps/host/") ? "host"
+      : file.startsWith("apps/consumer/") ? "consumer" : null;
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, file);
+      assert.deepEqual(result.operations.ciTargets, ["flutter_build_ios", "tools"], file);
+      assert.deepEqual(result.operations.checkIds, ["platform:ios-pod-policy"], file);
+      assert.deepEqual(result.operations.codegenIds, [generator.id], file);
+      assert.deepEqual(result.operations.deployGroups, [], file);
+      assert.deepEqual(result.operations.buildTargets, toolingOnly ? ["consumer-ios", "host-ios"] : [], file);
+      if (toolingOnly) assert.deepEqual(deriveAppRoles(result), ["consumer", "host"], file);
+      assert.deepEqual(result.operations.releaseTargets, mode === "main" && !toolingOnly
+        ? (expectedRole ? [`${expectedRole}-ios`] : ["consumer-ios", "host-ios"]) : [], file);
+      assert.deepEqual(result.operations.releaseRoles, mode === "main" && !toolingOnly
+        ? (expectedRole ? [expectedRole] : ["consumer", "host"]) : [], file);
+      const tools = planAffectedToolChecks({changedPaths: [file],
+        manifest: toolsManifest, componentGraph: graph, mode});
+      assert.equal(tools.mode, "affected", file);
+      assert.ok(tools.toolIds.includes("platform:ios-pod-policy"), file);
+      assert.ok(tools.toolIds.includes("git:pre-commit-generated-artifacts"), file);
+      assert.deepEqual(tools.setupRequirements, ["node"], file);
+    }
+    assert.deepEqual(planPreCommitActions({graph, stagedPaths: [file]}).triggeredGeneratorIds,
+      [generator.id], file);
+  }
+  const testOnly = plan("tool/platform/sync_ios_pod_policy.test.mjs", "main");
+  assert.deepEqual(testOnly.operations.ciTargets, ["tools"]);
+  assert.deepEqual(testOnly.operations.releaseTargets, []);
+  const changedConsumerOutput = planAffected({graph, mode: "main",
+    changedPaths: [...generator.inputs, "apps/consumer/ios/Podfile"]});
+  assert.deepEqual(changedConsumerOutput.operations.releaseTargets, ["consumer-ios"]);
+  assert.deepEqual(changedConsumerOutput.operations.releaseRoles, ["consumer"]);
+  // The native profiles also cover ordinary app metadata. Their freshness gate
+  // must not turn an unrelated iOS edit into the full Tools setup/matrix.
+  for (const file of ["ios/Runner/Info.plist", "apps/host/ios/Runner/Info.plist",
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json"]) {
+    const tools = planAffectedToolChecks({changedPaths: [file],
+      manifest: toolsManifest, componentGraph: graph, mode: "pr"});
+    assert.equal(tools.mode, "affected", file);
+    assert.ok(tools.toolIds.includes("platform:ios-pod-policy"), file);
+    assert.deepEqual(tools.setupRequirements, ["node"], file);
+  }
+});
+
+test("shared screenshot runner validates every React caller with only its required setup", () => {
+  const file = "tool/web/check_storybook_visuals.mjs";
+  for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+    const result = plan(file, mode);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.directComponents, ["web.shared"]);
+    assert.deepEqual(result.affectedComponents, ["web.admin", "web.marketing"]);
+    assert.deepEqual(result.operations.ciTargets, ["admin", "marketing", "tools"]);
+    for (const key of ["deployGroups", "releaseTargets", "releaseRoles", "codegenIds", "buildTargets"]) {
+      assert.deepEqual(result.operations[key], [], key);
+    }
+    const tools = planAffectedToolChecks({changedPaths: [file],
+      manifest: toolsManifest, componentGraph: graph, mode});
+    assert.equal(tools.mode, "affected");
+    assert.ok(tools.toolIds.includes("web:storybook-visuals"));
+    assert.deepEqual(tools.setupRequirements, ["node", "root-npm", "playwright"]);
+    assert.equal(tools.repositoryView, "full");
+  }
+});
 
 test("component graph validates and affected edges cannot authorize release", () => {
   assert.deepEqual(validateComponentGraph(graph), []);
@@ -78,6 +149,7 @@ test("backend-only delivery controls validate the backend without granting mutat
     "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
     "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
     "tool/ci/firebase_delivery_workflow.test.mjs",
+    "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs",
   ];
   for (const file of paths) {
     assert.ok(fs.existsSync(new URL(`../../${file}`, import.meta.url)), file);
@@ -90,7 +162,7 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.deepEqual(result.operations.releaseTargets, []);
       assert.deepEqual(result.operations.releaseRoles, []);
       for (const check of ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package",
-        "ci:firebase-delivery-workflow", "ci:backend-source-review"]) {
+        "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }
@@ -478,7 +550,7 @@ test("native and Firebase role fixtures retain platform-specific validation", ()
 
   const packageIos = plan("apps/host/ios/Runner/Info.plist", "main");
   assert.deepEqual(packageIos.directComponents, ["app.host.native.ios"]);
-  assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios"]);
+  assert.deepEqual(packageIos.operations.ciTargets, ["flutter_build_ios", "tools"]);
   assert.deepEqual(packageIos.operations.releaseTargets, ["host-ios"]);
   assert.deepEqual(packageIos.operations.releaseRoles, ["host"]);
 

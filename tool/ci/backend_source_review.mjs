@@ -94,7 +94,9 @@ async function main() {
   const request = async (endpoint) => {
     const response = await fetch(`https://api.github.com/${endpoint}`, {
       headers: {Accept: "application/vnd.github+json", Authorization: `Bearer ${process.env.GH_TOKEN ?? ""}`,
-        "X-GitHub-Api-Version": "2026-03-10"}, signal: AbortSignal.timeout(15000),
+        // Exact merge identity requires this supported response contract.
+        // The 2026-03-10 API removes merge_commit_sha from all PR responses.
+        "X-GitHub-Api-Version": "2022-11-28"}, signal: AbortSignal.timeout(15000),
     });
     if (!response.ok) throw new Error(`GitHub review lookup returned HTTP ${response.status}`);
     return response.json();

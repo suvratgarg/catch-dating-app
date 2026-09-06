@@ -267,3 +267,192 @@ test("release guidance routes Remote Config outside the bounded backend helper",
     /firebase_with_env\.sh[^\n]*deploy --only remoteconfig/u,
   );
 });
+
+function executorFixture(t) {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-firebase-executor-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
+  const sourceRoot = path.join(directory, "source checkout");
+  const functionsDir = "build/delivery/deploy tree/functions";
+  const write = (relativePath, contents, mode) => {
+    const destination = path.join(directory, relativePath);
+    fs.mkdirSync(path.dirname(destination), {recursive: true});
+    fs.writeFileSync(destination, contents, mode ? {mode} : undefined);
+  };
+  for (const relativePath of [
+    "tool/deploy_firebase_targets.sh",
+    "tool/firebase_with_env.sh",
+    "tool/firebase/plan_firebase_deploy_targets.mjs",
+    "tool/firebase/list_firebase_function_targets.mjs",
+    "tool/firebase/check_deploy_parity.mjs",
+    "tool/firebase/check_environment_readiness.mjs",
+  ]) {
+    write(relativePath, fs.readFileSync(path.join(repoRoot, relativePath)), 0o755);
+  }
+  write("tool/firebase/check_deploy_ref.mjs", "// Git freshness is independently tested.\n");
+  const aliases = JSON.stringify({projects: {dev: "demo-project"}});
+  write(".firebaserc", aliases);
+  write("source checkout/.firebaserc", aliases);
+  write("source checkout/functions/src/index.ts", 'export {alpha, beta} from "./handlers";\n');
+  write("source checkout/functions/src/handlers.ts", 'const secret = defineSecret("EXAMPLE_SECRET");\n');
+  write(`${functionsDir}/package.json`, JSON.stringify({scripts: {
+    "sync:callable-invokers": "node scripts/set-callable-invokers-public.cjs",
+  }}));
+  const helperPath = `${functionsDir}/scripts/set-callable-invokers-public.cjs`;
+  const helper = (version) => write(helperPath,
+    'require("node:fs").appendFileSync(process.env.EXECUTOR_EVENTS, "helper-load\\n");\n' +
+    `module.exports = ${JSON.stringify(version === undefined ? {} : {functionTargetScopeVersion: version})};\n`);
+  helper(1);
+  write("bin/firebase", '#!/bin/sh\n' +
+    'if [ "$1" = functions:list ]; then\n' +
+    '  printf \'{"status":"success","result":[{"id":"alpha"},{"id":"beta"}]}\\n\'\n' +
+    'else\n  printf \'deploy:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\nfi\n', 0o755);
+  write("bin/gcloud", '#!/bin/sh\nprintf \'[{"name":"projects/demo-project/secrets/EXAMPLE_SECRET"}]\\n\'\n', 0o755);
+  write("bin/npm", '#!/bin/sh\nprintf \'sync:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n', 0o755);
+  write("bin/sleep", "#!/bin/sh\nexit 0\n", 0o755);
+  const eventsFile = path.join(directory, "events");
+  const run = (targets = "firestore:indexes,functions:alpha,functions:beta,firestore:rules", environment = "dev", preflight = false) => {
+    fs.rmSync(eventsFile, {force: true});
+    const mode = preflight === true ? ["--preflight"] : typeof preflight === "string" ? [preflight] : [];
+    const result = spawnSync("bash", ["tool/deploy_firebase_targets.sh", ...mode, environment, targets], {
+      cwd: directory,
+      encoding: "utf8",
+      env: {...process.env,
+        PATH: `${path.join(directory, "bin")}${path.delimiter}${process.env.PATH}`,
+        CATCH_DELIVERY_FUNCTIONS_DIR: functionsDir,
+        CATCH_FIREBASE_SOURCE_ROOT: sourceRoot,
+        EXECUTOR_EVENTS: eventsFile,
+      },
+    });
+    return {...result, events: fs.existsSync(eventsFile) ?
+      fs.readFileSync(eventsFile, "utf8").trim().split("\n") : []};
+  };
+  return {directory, functionsDir, helper, helperPath, run, write};
+}
+
+test("executor preflights packaged Functions before indexes and preserves legacy callable scope", (t) => {
+  const fixture = executorFixture(t);
+  for (const version of [1, undefined]) {
+    fixture.helper(version);
+    const result = fixture.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.events[0], "helper-load", "Compatibility must be tested before any deploy.");
+    assert.deepEqual(result.events.filter((event) => event.startsWith("deploy:")), [
+      "deploy:--project dev deploy --only firestore:indexes --non-interactive",
+      "deploy:--project dev deploy --only functions:alpha,functions:beta --non-interactive",
+      "deploy:--project dev deploy --only firestore:rules --non-interactive",
+    ]);
+    assert.deepEqual(result.events.filter((event) => event.startsWith("sync:")), [
+      `sync:--prefix ${fixture.functionsDir} run sync:callable-invokers -- demo-project` +
+        (version === 1 ? " --targets functions:alpha,functions:beta" : ""),
+    ], "Only the post-deploy step may invoke the permission-writing npm command.");
+  }
+});
+
+test("executor exposes a preflight-only boundary for the whole ordered Delivery plan", (t) => {
+  const fixture = executorFixture(t);
+  const result = fixture.run(undefined, "dev", true);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Local Firebase deployment prerequisites passed/);
+  assert.deepEqual(result.events, ["helper-load"]);
+  fixture.helper(2);
+  const unsupported = fixture.run(undefined, "dev", true);
+  assert.notEqual(unsupported.status, 0);
+  assert.match(unsupported.stderr, /Unsupported packaged callable scope protocol/);
+  assert.deepEqual(unsupported.events, ["helper-load"]);
+});
+
+test("Functions executor subphases separate deployment from permissions and reject mixed target groups", (t) => {
+  const fixture = executorFixture(t);
+  const selected = "functions:alpha,functions:beta";
+  const deploy = fixture.run(selected, "dev", "--functions-deploy-only");
+  assert.equal(deploy.status, 0, deploy.stderr);
+  assert.equal(deploy.events.filter((event) => event.startsWith("deploy:")).length, 1);
+  assert.equal(deploy.events.filter((event) => event.startsWith("sync:")).length, 0);
+  const postconditions = fixture.run(selected, "dev", "--functions-postconditions-only");
+  assert.equal(postconditions.status, 0, postconditions.stderr);
+  assert.equal(postconditions.events.filter((event) => event.startsWith("deploy:")).length, 0);
+  assert.equal(postconditions.events.filter((event) => event.startsWith("sync:")).length, 1);
+  for (const mode of ["--functions-deploy-only", "--functions-postconditions-only"]) {
+    const mixed = fixture.run(`firestore:indexes,${selected}`, "dev", mode);
+    assert.notEqual(mixed.status, 0);
+    assert.match(mixed.stderr, /exactly one Functions target group/);
+    assert.deepEqual(mixed.events, []);
+  }
+});
+
+test("a failed Function batch cannot execute later batches or callable postconditions", (t) => {
+  const fixture = executorFixture(t);
+  const names = Array.from({length: 21}, (_, index) => `fn${String(index).padStart(2, "0")}`);
+  fixture.write("source checkout/functions/src/index.ts", `export {${names.join(",")}} from "./handlers";\n`);
+  fixture.write("bin/firebase", '#!/bin/sh\nprintf \'deploy:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n' +
+    'case "$*" in *functions:fn10*) exit 9 ;; esac\n', 0o755);
+  fixture.write("bin/sleep", '#!/bin/sh\nprintf \'sleep:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n', 0o755);
+  for (const mode of [false, "--functions-deploy-only"]) {
+    const result = fixture.run(names.map((name) => `functions:${name}`).join(","), "dev", mode);
+    assert.equal(result.status, 9);
+    const deployments = result.events.filter((event) => event.startsWith("deploy:"));
+    assert.equal(deployments.length, 4, "First batch succeeds and the second retries three times.");
+    assert.equal(deployments.filter((event) => event.includes("functions:fn20")).length, 0);
+    assert.equal(result.events.filter((event) => event.startsWith("sync:")).length, 0);
+    assert.deepEqual(result.events.filter((event) => event.startsWith("sleep:")), ["sleep:10", "sleep:60", "sleep:60"],
+      "The exhausted final attempt must not spend another minute waiting for a retry that cannot happen.");
+    assert.match(result.stderr, /exhausted all three attempts/);
+  }
+});
+
+test("failed callable postconditions propagate without running parity or subsequent rules", (t) => {
+  const fixture = executorFixture(t);
+  fixture.write("bin/npm", '#!/bin/sh\nprintf \'sync:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\nexit 8\n', 0o755);
+  fixture.write("bin/firebase", '#!/bin/sh\nprintf \'deploy:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n', 0o755);
+  for (const mode of [false, "--functions-postconditions-only"]) {
+    const result = fixture.run(mode ? "functions:alpha,functions:beta" : undefined, "dev", mode);
+    assert.equal(result.status, 8);
+    assert.equal(result.events.filter((event) => event.includes("functions:list") || event.includes("firestore:rules")).length, 0);
+  }
+});
+
+test("executor rejects all local Functions preflight failures before any Firebase mutation", async (t) => {
+  const cases = [
+    ["unsupported helper protocol", (f) => f.helper(2), /Unsupported packaged callable scope protocol/],
+    ["missing helper", (f) => fs.unlinkSync(path.join(f.directory, f.helperPath)), /Cannot find module/],
+    ["missing helper runtime dependency", (f) => f.write(f.helperPath,
+      'require("missing-fixture-only-dependency");\n'), /Cannot find module/],
+    ["invalid helper source", (f) => f.write(f.helperPath, "module.exports = {;\n"), /SyntaxError/],
+    ["missing npm script", (f) => f.write(`${f.functionsDir}/package.json`, "{}"), /require the sync:callable-invokers npm script/],
+    ["invalid package JSON", (f) => f.write(`${f.functionsDir}/package.json`, "{broken"), /SyntaxError/],
+    ["invalid project id", (f) => f.write(".firebaserc", JSON.stringify({projects: {dev: "invalid project"}})), /Invalid Firebase project id/],
+    ["foreign source project", (f) => f.write("source checkout/.firebaserc",
+      JSON.stringify({projects: {dev: "other-project"}})), /Firebase projects differ/],
+    ["missing source project", (f) => f.write("source checkout/.firebaserc", "{}"), /Firebase projects differ/],
+    ["invalid source project JSON", (f) => f.write("source checkout/.firebaserc", "{broken"), /SyntaxError/],
+    ["unparseable secret declaration", (f) => f.write("source checkout/functions/src/handlers.ts",
+      "const name = 'EXAMPLE_SECRET'; const secret = defineSecret(name);\n"), /must use a literal name/],
+    ["empty source export inventory", (f) => f.write("source checkout/functions/src/index.ts", "export {};\n"), /No Firebase function exports/],
+  ];
+  for (const [label, mutate, error] of cases) {
+    await t.test(label, (subtest) => {
+      const fixture = executorFixture(subtest);
+      mutate(fixture);
+      for (const mode of [false, true, "--functions-deploy-only", "--functions-postconditions-only"]) {
+        const result = fixture.run(typeof mode === "string" ? "functions:alpha,functions:beta" : undefined, "dev", mode);
+        assert.notEqual(result.status, 0, `${label} (${mode}): unexpected success`);
+        assert.match(result.stderr, error, label);
+        assert.deepEqual(result.events.filter((event) => /^(deploy|sync):/.test(event)), [],
+          `${label}: no deployment or permission mutation is allowed`);
+      }
+    });
+  }
+});
+
+test("executor rules-only plans need no Functions helper and unknown environments fail before deploy", (t) => {
+  const fixture = executorFixture(t);
+  fs.rmSync(path.join(fixture.directory, fixture.functionsDir), {recursive: true});
+  const rules = fixture.run("firestore:rules");
+  assert.equal(rules.status, 0, rules.stderr);
+  assert.deepEqual(rules.events, ["deploy:--project dev deploy --only firestore:rules --non-interactive"]);
+  const unknown = fixture.run("firestore:rules", "other");
+  assert.notEqual(unknown.status, 0);
+  assert.match(unknown.stderr, /Unsupported environment/);
+  assert.deepEqual(unknown.events, []);
+});

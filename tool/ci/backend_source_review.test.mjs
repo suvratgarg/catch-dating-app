@@ -1,4 +1,9 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {reviewedBackendPromotion} from "./backend_source_review.mjs";
 
@@ -44,12 +49,70 @@ test("a real source review admits the identical merged tree without changing imm
   assert.equal(f.plan.productionPromotion.environment, "prod");
 });
 
+test("the deployed CLI requests the API contract that supplies exact merge evidence", () => {
+  const f = fixture();
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-source-review-"));
+  try {
+    const hook = path.join(directory, "github-api.mjs");
+    const calls = path.join(directory, "requests.json");
+    // Run the actual CLI, including its HTTP headers. The 2026 API removed
+    // merge_commit_sha from both associated-PR and full-PR responses.
+    fs.writeFileSync(hook, `
+      import assert from "node:assert/strict";
+      import childProcess from "node:child_process";
+      import fs from "node:fs";
+      import {syncBuiltinESMExports} from "node:module";
+      const values = ${JSON.stringify(f.values)};
+      const calls = [];
+      childProcess.execFileSync = (command, args) => {
+        assert.equal(command, "git");
+        assert.deepEqual(args, ["-C", ${JSON.stringify(directory)}, "rev-parse", "${source}^{tree}"]);
+        return "${tree}\\n";
+      };
+      syncBuiltinESMExports();
+      globalThis.fetch = async (url, options) => {
+        assert.ok(url.startsWith("https://api.github.com/"));
+        assert.equal(options.headers.Authorization, "Bearer fixture-token");
+        const endpoint = url.slice("https://api.github.com/".length);
+        assert.ok(Object.hasOwn(values, endpoint), endpoint);
+        const version = options.headers["X-GitHub-Api-Version"];
+        assert.ok(["2022-11-28", "2026-03-10"].includes(version));
+        calls.push({endpoint, version});
+        fs.writeFileSync(${JSON.stringify(calls)}, JSON.stringify(calls));
+        const value = structuredClone(values[endpoint]);
+        if (version === "2026-03-10") {
+          for (const entry of Array.isArray(value) ? value : [value]) delete entry.merge_commit_sha;
+        }
+        return {ok: true, json: async () => value};
+      };
+    `);
+    const cli = fileURLToPath(new URL("./backend_source_review.mjs", import.meta.url));
+    const result = spawnSync(process.execPath, ["--import", hook, cli,
+      "--source-root", directory, "--repository", "owner/repo"], {
+      input: JSON.stringify(f.plan), encoding: "utf8", timeout: 10000,
+      env: {...process.env, GH_TOKEN: "fixture-token", NODE_OPTIONS: ""},
+    });
+    assert.equal(result.status, 0, result.stderr || result.error?.message);
+    const verified = JSON.parse(result.stdout);
+    assert.equal(verified.productionPromotion.environment, "prod-backend");
+    assert.deepEqual(verified.targets, f.plan.targets);
+    const requests = JSON.parse(fs.readFileSync(calls, "utf8"));
+    assert.ok(requests.some(({endpoint}) => endpoint === `${f.prefix}/pulls/3`));
+    assert.ok(requests.some(({endpoint}) => endpoint === `${f.prefix}/actions/runs/11/approvals`));
+    assert.ok(requests.every(({version}) => version === "2022-11-28"));
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
+});
+
 const mutations = {
   "unrestricted branches": (v, p) => { v[`${p}/environments/backend-review`].deployment_branch_policy = null; },
   "broad branch rule": (v, p) => { v[`${p}/environments/backend-review/deployment-branch-policies`].branch_policies[0].name = "*"; },
   "different reviewed bytes": (v, p) => { v[`${p}/git/commits/${head}`].tree.sha = "d".repeat(40); },
   "unmerged PR": (v, p) => { v[`${p}/pulls/3`].merged = false; },
   "different merge commit": (v, p) => { v[`${p}/pulls/3`].merge_commit_sha = head; },
+  "missing associated merge identity": (v, p) => { delete v[`${p}/commits/${source}/pulls?per_page=100`][0].merge_commit_sha; },
+  "missing merged commit identity": (v, p) => { delete v[`${p}/pulls/3`].merge_commit_sha; },
   "fork source": (v, p) => { v[`${p}/pulls/3`].head.repo.id = 43; },
   "different destination": (v, p) => { v[`${p}/pulls/3`].base.ref = "dev"; },
   "missing review requirement": (v, p) => { v[`${p}/environments/backend-review`].protection_rules = []; },
