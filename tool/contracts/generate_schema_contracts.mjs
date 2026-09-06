@@ -16,6 +16,31 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventWhatsappPermissionDocument",
+    source: "firestore/event_assistance_whatsapp_permissions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPermissionDocument.ts",
+  },
+  {
+    name: "EventWhatsappConsentReceiptDocument",
+    source: "firestore/event_assistance_whatsapp_consent_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts",
+  },
+  {
+    name: "GetEventWhatsappPreferenceCallablePayload",
+    source: "callables/get_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts",
+  },
+  {
+    name: "SetEventWhatsappPreferenceCallablePayload",
+    source: "callables/set_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts",
+  },
+  {
+    name: "EventWhatsappPreferenceCallableResponse",
+    source: "callable_responses/event_whatsapp_preference_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts",
+  },
+  {
     name: "EventWhatsappPolicyDocument",
     source: "firestore/event_assistance_whatsapp_policies.schema.json",
     typeOutput: "functions/src/shared/generated/eventWhatsappPolicyDocument.ts",

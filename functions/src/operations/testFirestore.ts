@@ -167,6 +167,10 @@ export class FakeFirestore {
     this.docs.set(path, structuredClone(value));
   }
 
+  remove(path: string): void {
+    this.docs.delete(path);
+  }
+
   entries(): Array<[string, FakeData]> {
     return [...this.docs.entries()].map(([path, value]) =>
       [path, structuredClone(value)]);

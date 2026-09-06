@@ -26947,6 +26947,363 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventWhatsappConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentCopyHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.copyHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentCopyVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.copyVersion',
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappConsentReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.currentReceiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceCopyVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentEvidencePhoneVerifiedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.phoneVerifiedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceSubjectUid = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.displayPhoneNumber',
+    maxLength: 32,
+    minLength: 7,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentSenderProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventWhatsappPolicyDocumentActivationApprovalId = CatchContractFieldConstraints(
     path: 'eventWhatsappPolicyDocument.activation.approvalId',
     maxLength: 160,
@@ -27182,6 +27539,125 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['eventTitle', 'instruction', 'responseUrl', 'responseUrlSuffix'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'senderUnavailable', 'eventClosed', 'notAdmitted', 'verifyPhone'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewCanEnable = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.canEnable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewConsentText = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.consent.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewConsentVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.consent.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.phoneLastFour',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderBindingHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.bindingHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.displayPhoneNumber',
+    maxLength: 32,
+    minLength: 7,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventWhatsappReplyBindingDocumentAttemptId = CatchContractFieldConstraints(
@@ -30085,6 +30561,33 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getOrganizerApplicationDetailCallablePayloadApplicationId = CatchContractFieldConstraints(
@@ -60105,6 +60608,68 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['returned', 'departed', 'unresolved'],
   );
 
+  static const setEventWhatsappPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionSenderHash = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setOrganizerFormAutomationStateCallablePayloadEnabled = CatchContractFieldConstraints(
     path: 'setOrganizerFormAutomationStateCallablePayload.enabled',
     required: true,
@@ -72012,6 +72577,53 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.uid': eventWaitlistOfferDocumentUid,
     'eventWaitlistOfferDocument.updatedAt._nanoseconds': eventWaitlistOfferDocumentUpdatedAtNanoseconds,
     'eventWaitlistOfferDocument.updatedAt._seconds': eventWaitlistOfferDocumentUpdatedAtSeconds,
+    'eventWhatsappConsentReceiptDocument.actorUid': eventWhatsappConsentReceiptDocumentActorUid,
+    'eventWhatsappConsentReceiptDocument.appliedRevision': eventWhatsappConsentReceiptDocumentAppliedRevision,
+    'eventWhatsappConsentReceiptDocument.attendeeGeneration': eventWhatsappConsentReceiptDocumentAttendeeGeneration,
+    'eventWhatsappConsentReceiptDocument.attendeeId': eventWhatsappConsentReceiptDocumentAttendeeId,
+    'eventWhatsappConsentReceiptDocument.context.eventId': eventWhatsappConsentReceiptDocumentContextEventId,
+    'eventWhatsappConsentReceiptDocument.context.mode': eventWhatsappConsentReceiptDocumentContextMode,
+    'eventWhatsappConsentReceiptDocument.context.organizerId': eventWhatsappConsentReceiptDocumentContextOrganizerId,
+    'eventWhatsappConsentReceiptDocument.copyHash': eventWhatsappConsentReceiptDocumentCopyHash,
+    'eventWhatsappConsentReceiptDocument.copyVersion': eventWhatsappConsentReceiptDocumentCopyVersion,
+    'eventWhatsappConsentReceiptDocument.createdAt': eventWhatsappConsentReceiptDocumentCreatedAt,
+    'eventWhatsappConsentReceiptDocument.decision': eventWhatsappConsentReceiptDocumentDecision,
+    'eventWhatsappConsentReceiptDocument.permissionHash': eventWhatsappConsentReceiptDocumentPermissionHash,
+    'eventWhatsappConsentReceiptDocument.receiptId': eventWhatsappConsentReceiptDocumentReceiptId,
+    'eventWhatsappConsentReceiptDocument.recipientEndpointId': eventWhatsappConsentReceiptDocumentRecipientEndpointId,
+    'eventWhatsappConsentReceiptDocument.requestHash': eventWhatsappConsentReceiptDocumentRequestHash,
+    'eventWhatsappConsentReceiptDocument.routeId': eventWhatsappConsentReceiptDocumentRouteId,
+    'eventWhatsappConsentReceiptDocument.schemaVersion': eventWhatsappConsentReceiptDocumentSchemaVersion,
+    'eventWhatsappConsentReceiptDocument.senderHash': eventWhatsappConsentReceiptDocumentSenderHash,
+    'eventWhatsappConsentReceiptDocument.senderId': eventWhatsappConsentReceiptDocumentSenderId,
+    'eventWhatsappConsentReceiptDocument.source': eventWhatsappConsentReceiptDocumentSource,
+    'eventWhatsappPermissionDocument.attendeeGeneration': eventWhatsappPermissionDocumentAttendeeGeneration,
+    'eventWhatsappPermissionDocument.attendeeId': eventWhatsappPermissionDocumentAttendeeId,
+    'eventWhatsappPermissionDocument.context.eventId': eventWhatsappPermissionDocumentContextEventId,
+    'eventWhatsappPermissionDocument.context.mode': eventWhatsappPermissionDocumentContextMode,
+    'eventWhatsappPermissionDocument.context.organizerId': eventWhatsappPermissionDocumentContextOrganizerId,
+    'eventWhatsappPermissionDocument.currentReceiptId': eventWhatsappPermissionDocumentCurrentReceiptId,
+    'eventWhatsappPermissionDocument.evidence.acceptedAt': eventWhatsappPermissionDocumentEvidenceAcceptedAt,
+    'eventWhatsappPermissionDocument.evidence.copyVersion': eventWhatsappPermissionDocumentEvidenceCopyVersion,
+    'eventWhatsappPermissionDocument.evidence.phoneVerifiedAt': eventWhatsappPermissionDocumentEvidencePhoneVerifiedAt,
+    'eventWhatsappPermissionDocument.evidence.receiptId': eventWhatsappPermissionDocumentEvidenceReceiptId,
+    'eventWhatsappPermissionDocument.evidence.senderHash': eventWhatsappPermissionDocumentEvidenceSenderHash,
+    'eventWhatsappPermissionDocument.evidence.subjectUid': eventWhatsappPermissionDocumentEvidenceSubjectUid,
+    'eventWhatsappPermissionDocument.expiresAt': eventWhatsappPermissionDocumentExpiresAt,
+    'eventWhatsappPermissionDocument.permissionId': eventWhatsappPermissionDocumentPermissionId,
+    'eventWhatsappPermissionDocument.phoneE164': eventWhatsappPermissionDocumentPhoneE164,
+    'eventWhatsappPermissionDocument.purpose': eventWhatsappPermissionDocumentPurpose,
+    'eventWhatsappPermissionDocument.recipientEndpointId': eventWhatsappPermissionDocumentRecipientEndpointId,
+    'eventWhatsappPermissionDocument.revision': eventWhatsappPermissionDocumentRevision,
+    'eventWhatsappPermissionDocument.routeId': eventWhatsappPermissionDocumentRouteId,
+    'eventWhatsappPermissionDocument.schemaVersion': eventWhatsappPermissionDocumentSchemaVersion,
+    'eventWhatsappPermissionDocument.sender.displayName': eventWhatsappPermissionDocumentSenderDisplayName,
+    'eventWhatsappPermissionDocument.sender.displayPhoneNumber': eventWhatsappPermissionDocumentSenderDisplayPhoneNumber,
+    'eventWhatsappPermissionDocument.sender.providerAccountId': eventWhatsappPermissionDocumentSenderProviderAccountId,
+    'eventWhatsappPermissionDocument.sender.providerPhoneNumberId': eventWhatsappPermissionDocumentSenderProviderPhoneNumberId,
+    'eventWhatsappPermissionDocument.senderId': eventWhatsappPermissionDocumentSenderId,
+    'eventWhatsappPermissionDocument.status': eventWhatsappPermissionDocumentStatus,
+    'eventWhatsappPermissionDocument.updatedAt': eventWhatsappPermissionDocumentUpdatedAt,
     'eventWhatsappPolicyDocument.activation.approvalId': eventWhatsappPolicyDocumentActivationApprovalId,
     'eventWhatsappPolicyDocument.activation.approvedAt': eventWhatsappPolicyDocumentActivationApprovedAt,
     'eventWhatsappPolicyDocument.activation.validUntil': eventWhatsappPolicyDocumentActivationValidUntil,
@@ -72042,6 +72654,22 @@ abstract final class CatchContractConstraints {
     'eventWhatsappPolicyDocument.templates.items.variables.items.maxCharacters': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsMaxCharacters,
     'eventWhatsappPolicyDocument.templates.items.variables.items.providerName': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsProviderName,
     'eventWhatsappPolicyDocument.templates.items.variables.items.source': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsSource,
+    'eventWhatsappPreferenceCallableResponse.outcome': eventWhatsappPreferenceCallableResponseOutcome,
+    'eventWhatsappPreferenceCallableResponse.view.attendeeId': eventWhatsappPreferenceCallableResponseViewAttendeeId,
+    'eventWhatsappPreferenceCallableResponse.view.availability': eventWhatsappPreferenceCallableResponseViewAvailability,
+    'eventWhatsappPreferenceCallableResponse.view.canEnable': eventWhatsappPreferenceCallableResponseViewCanEnable,
+    'eventWhatsappPreferenceCallableResponse.view.consent.text': eventWhatsappPreferenceCallableResponseViewConsentText,
+    'eventWhatsappPreferenceCallableResponse.view.consent.version': eventWhatsappPreferenceCallableResponseViewConsentVersion,
+    'eventWhatsappPreferenceCallableResponse.view.eventId': eventWhatsappPreferenceCallableResponseViewEventId,
+    'eventWhatsappPreferenceCallableResponse.view.expiresAt': eventWhatsappPreferenceCallableResponseViewExpiresAt,
+    'eventWhatsappPreferenceCallableResponse.view.phoneLastFour': eventWhatsappPreferenceCallableResponseViewPhoneLastFour,
+    'eventWhatsappPreferenceCallableResponse.view.preference': eventWhatsappPreferenceCallableResponseViewPreference,
+    'eventWhatsappPreferenceCallableResponse.view.revision': eventWhatsappPreferenceCallableResponseViewRevision,
+    'eventWhatsappPreferenceCallableResponse.view.sender.bindingHash': eventWhatsappPreferenceCallableResponseViewSenderBindingHash,
+    'eventWhatsappPreferenceCallableResponse.view.sender.displayName': eventWhatsappPreferenceCallableResponseViewSenderDisplayName,
+    'eventWhatsappPreferenceCallableResponse.view.sender.displayPhoneNumber': eventWhatsappPreferenceCallableResponseViewSenderDisplayPhoneNumber,
+    'eventWhatsappPreferenceCallableResponse.view.senderId': eventWhatsappPreferenceCallableResponseViewSenderId,
+    'eventWhatsappPreferenceCallableResponse.view.serverTime': eventWhatsappPreferenceCallableResponseViewServerTime,
     'eventWhatsappReplyBindingDocument.attemptId': eventWhatsappReplyBindingDocumentAttemptId,
     'eventWhatsappReplyBindingDocument.attemptScopeHash': eventWhatsappReplyBindingDocumentAttemptScopeHash,
     'eventWhatsappReplyBindingDocument.attendeeGeneration': eventWhatsappReplyBindingDocumentAttendeeGeneration,
@@ -72435,6 +73063,9 @@ abstract final class CatchContractConstraints {
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
+    'getEventWhatsappPreferenceCallablePayload.attendeeId': getEventWhatsappPreferenceCallablePayloadAttendeeId,
+    'getEventWhatsappPreferenceCallablePayload.eventId': getEventWhatsappPreferenceCallablePayloadEventId,
+    'getEventWhatsappPreferenceCallablePayload.senderId': getEventWhatsappPreferenceCallablePayloadSenderId,
     'getOrganizerApplicationDetailCallablePayload.applicationId': getOrganizerApplicationDetailCallablePayloadApplicationId,
     'getOrganizerApplicationDetailCallablePayload.organizerId': getOrganizerApplicationDetailCallablePayloadOrganizerId,
     'getOrganizerApplicationDetailCallableResponse.answers': getOrganizerApplicationDetailCallableResponseAnswers,
@@ -76580,6 +77211,14 @@ abstract final class CatchContractConstraints {
     'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId': setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId,
     'setEventSuccessAccountabilityResolutionCallablePayload.eventId': setEventSuccessAccountabilityResolutionCallablePayloadEventId,
     'setEventSuccessAccountabilityResolutionCallablePayload.resolution': setEventSuccessAccountabilityResolutionCallablePayloadResolution,
+    'setEventWhatsappPreferenceCallablePayload.attendeeId': setEventWhatsappPreferenceCallablePayloadAttendeeId,
+    'setEventWhatsappPreferenceCallablePayload.decision.copyVersion': setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion,
+    'setEventWhatsappPreferenceCallablePayload.decision.kind': setEventWhatsappPreferenceCallablePayloadDecisionKind,
+    'setEventWhatsappPreferenceCallablePayload.decision.senderHash': setEventWhatsappPreferenceCallablePayloadDecisionSenderHash,
+    'setEventWhatsappPreferenceCallablePayload.eventId': setEventWhatsappPreferenceCallablePayloadEventId,
+    'setEventWhatsappPreferenceCallablePayload.expectedRevision': setEventWhatsappPreferenceCallablePayloadExpectedRevision,
+    'setEventWhatsappPreferenceCallablePayload.requestId': setEventWhatsappPreferenceCallablePayloadRequestId,
+    'setEventWhatsappPreferenceCallablePayload.senderId': setEventWhatsappPreferenceCallablePayloadSenderId,
     'setOrganizerFormAutomationStateCallablePayload.enabled': setOrganizerFormAutomationStateCallablePayloadEnabled,
     'setOrganizerFormAutomationStateCallablePayload.expectedRevision': setOrganizerFormAutomationStateCallablePayloadExpectedRevision,
     'setOrganizerFormAutomationStateCallablePayload.organizerId': setOrganizerFormAutomationStateCallablePayloadOrganizerId,

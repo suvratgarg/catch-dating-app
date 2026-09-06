@@ -2088,6 +2088,47 @@ Message actions pin a draft campaign revision and generated campaigns carry
 server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
 
+### Event Service WhatsApp Consent Contract
+
+`eventAssistanceWhatsappPermissions` binds the event, attendee creation
+generation, verified subject and recipient endpoint to an explicit organizer
+sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
+copy version, displayed sender hash and complete resulting permission hash.
+Future-event announcement consent remains separate and is never read as an
+Event Assistance grant. This schema currently supports verified-participant
+decisions; native STOP and independent message-link withdrawal remain required
+integration work before automated WhatsApp dispatch is enabled.
+
+The App-Check-protected `getEventWhatsappPreference` and
+`setEventWhatsappPreference` callables require the roster's linked UID. Scope
+includes the exact sender ID; most-recently-updated connection selection cannot
+silently switch consent. Grants additionally require the matching signed phone
+claim, an admitted participant, eligible event, reviewed sender policy and
+current verified sender identity. The client submits only scope, decision,
+expected revision, request ID, copy version and the previously displayed sender
+hash. Provider identities, recipient number, consent copy and evidence times
+come from trusted server data. The response exposes the sender display name and
+business number, masked recipient number and preference state; no provider
+account IDs or credentials are exposed.
+
+Credential rotation and health-sync revisions preserve permission. A changed
+provider account or sending phone requires fresh consent. Display-name updates
+do not erase a saved grant, but a new grant must match the newly displayed
+identity. Consent expires no later than 24 hours after the event end captured
+at grant time; dispatch must also recheck the current event window. Sender
+readiness is independent of a recorded enabled preference.
+
+Permission and receipt commit in one transaction. Exact replays return current
+state, while revision conflicts cannot reverse a later withdrawal. A first
+opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
+preserves the old recipient/sender evidence even after either changes, and
+paused, deleted or malformed sender provisioning cannot obstruct it. These
+authenticated APIs still require a current authorized event/roster identity;
+they do not replace independent message-link withdrawal. Client access to both
+collections is denied, including with an admin claim. Guest UI integration,
+suppression/STOP handling, budgets, live dispatch and sender activation remain
+separate delivery work.
+
 ### Event Assistance SMS Delivery Contract
 
 The canonical `event_assistance_sms.schema.json` vocabulary supplies private

@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `functions/src/shared/generated/eventWhatsappPermissionDocument.ts` |
+| EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts` |
+| GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts` |
+| SetEventWhatsappPreferenceCallablePayload | `callables/set_event_whatsapp_preference_payload.schema.json` | `functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts` |
+| EventWhatsappPreferenceCallableResponse | `callable_responses/event_whatsapp_preference_response.schema.json` | `functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts` |
 | EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `functions/src/shared/generated/eventWhatsappPolicyDocument.ts` |
 | EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts` |
 | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts` |
@@ -576,6 +581,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventWhatsappPermissionDocumentSchema` | EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_permission_document.g.dart` |
+| `schemaEventWhatsappConsentReceiptDocumentSchema` | EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_consent_receipt_document.g.dart` |
+| `schemaGetEventWhatsappPreferenceCallablePayloadSchema` | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_preference_callable_payload.g.dart` |
+| `schemaSetEventWhatsappPreferenceCallablePayloadSchema` | SetEventWhatsappPreferenceCallablePayload | `callables/set_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_whatsapp_preference_callable_payload.g.dart` |
+| `schemaEventWhatsappPreferenceCallableResponseSchema` | EventWhatsappPreferenceCallableResponse | `callable_responses/event_whatsapp_preference_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart` |
 | `schemaEventWhatsappPolicyDocumentSchema` | EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_policy_document.g.dart` |
 | `schemaEventWhatsappReplyBindingDocumentSchema` | EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_reply_binding_document.g.dart` |
 | `schemaEventAssistanceSmsWithdrawalGrantDocumentSchema` | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_grant_document.g.dart` |
@@ -1140,6 +1150,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventWhatsappPreferenceCallableRequest | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart` |
 | GetEventAssistanceSmsWithdrawalCallableRequest | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_withdrawal_callable_request.g.dart` |
 | WithdrawEventAssistanceSmsCallableRequest | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_assistance_sms_callable_request.g.dart` |
 | GetEventAssistanceSmsPreferenceCallableRequest | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart` |
@@ -1364,6 +1375,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |

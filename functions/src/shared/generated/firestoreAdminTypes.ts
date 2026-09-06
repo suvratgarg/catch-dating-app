@@ -537,6 +537,36 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventWhatsappPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventWhatsappConsentReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  requestHash: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  senderId: string;
+  routeId: "organizerEventWhatsapp";
+  actorUid: string;
+  recipientEndpointId: string;
+  decision: "grant" | "revoke";
+  copyVersion: null | "catch-event-service-whatsapp-v1";
+  copyHash: null | string;
+  appliedRevision: number;
+  createdAt: number;
+  permissionHash: string;
+  source: "verifiedParticipant";
+  linkId: null;
+  senderHash: string;
+}
+
 /**
  * Reviewed event-service template and spend policy for one existing organizer-owned WhatsApp sender. This policy alone grants no guest consent or send authority.
  */

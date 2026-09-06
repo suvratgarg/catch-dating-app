@@ -77,6 +77,8 @@ export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";
+export {getEventWhatsappPreference, setEventWhatsappPreference} from
+  "./eventSuccess/operations/whatsappPreferenceHandlers";
 export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,

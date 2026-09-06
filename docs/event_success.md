@@ -265,8 +265,13 @@ provider's button positions. Content hashes are rechecked before those IDs are
 constructed. Both joining updates and operational notices use this renderer;
 acknowledgements keep their instruction revision and help categories retain
 their exact meaning. A policy record alone grants no recipient permission.
-Event-specific WhatsApp consent, budget reservation and the live dispatch
-composition remain necessary before this material can be submitted.
+Event-specific WhatsApp consent now has verified-participant get/set callables,
+explicit sender identity, revision-fenced permission and immutable receipt
+contracts. They do not read organizer announcement permission. Invalid sender
+provisioning blocks new grants while preserving withdrawal. The owning data
+contract describes identity, expiry and replay semantics. Guest UI wiring,
+independent withdrawal/STOP, budget reservation and the live dispatch composition
+remain necessary before this material can be submitted.
 
 ### SMS submission and spending boundary
 

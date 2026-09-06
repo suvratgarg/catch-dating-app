@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventWhatsappPermissionDocument',
+    source: 'firestore/event_assistance_whatsapp_permissions.schema.json',
+    schema: schemaEventWhatsappPermissionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventWhatsappConsentReceiptDocument',
+    source: 'firestore/event_assistance_whatsapp_consent_receipts.schema.json',
+    schema: schemaEventWhatsappConsentReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventWhatsappPreferenceCallablePayload',
+    source: 'callables/get_event_whatsapp_preference_payload.schema.json',
+    schema: schemaGetEventWhatsappPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetEventWhatsappPreferenceCallablePayload',
+    source: 'callables/set_event_whatsapp_preference_payload.schema.json',
+    schema: schemaSetEventWhatsappPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventWhatsappPreferenceCallableResponse',
+    source: 'callable_responses/event_whatsapp_preference_response.schema.json',
+    schema: schemaEventWhatsappPreferenceCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventWhatsappPolicyDocument',
     source: 'firestore/event_assistance_whatsapp_policies.schema.json',
     schema: schemaEventWhatsappPolicyDocumentSchema,
@@ -2814,6 +2839,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventWhatsappPermissionDocument': schemaEventWhatsappPermissionDocumentSchema,
+  'EventWhatsappConsentReceiptDocument': schemaEventWhatsappConsentReceiptDocumentSchema,
+  'GetEventWhatsappPreferenceCallablePayload': schemaGetEventWhatsappPreferenceCallablePayloadSchema,
+  'SetEventWhatsappPreferenceCallablePayload': schemaSetEventWhatsappPreferenceCallablePayloadSchema,
+  'EventWhatsappPreferenceCallableResponse': schemaEventWhatsappPreferenceCallableResponseSchema,
   'EventWhatsappPolicyDocument': schemaEventWhatsappPolicyDocumentSchema,
   'EventWhatsappReplyBindingDocument': schemaEventWhatsappReplyBindingDocumentSchema,
   'EventAssistanceSmsWithdrawalGrantDocument': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
@@ -3376,6 +3406,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_whatsapp_permissions.schema.json': schemaEventWhatsappPermissionDocumentSchema,
+  'firestore/event_assistance_whatsapp_consent_receipts.schema.json': schemaEventWhatsappConsentReceiptDocumentSchema,
+  'callables/get_event_whatsapp_preference_payload.schema.json': schemaGetEventWhatsappPreferenceCallablePayloadSchema,
+  'callables/set_event_whatsapp_preference_payload.schema.json': schemaSetEventWhatsappPreferenceCallablePayloadSchema,
+  'callable_responses/event_whatsapp_preference_response.schema.json': schemaEventWhatsappPreferenceCallableResponseSchema,
   'firestore/event_assistance_whatsapp_policies.schema.json': schemaEventWhatsappPolicyDocumentSchema,
   'firestore/event_assistance_whatsapp_reply_bindings.schema.json': schemaEventWhatsappReplyBindingDocumentSchema,
   'firestore/event_assistance_sms_withdrawal_grants.schema.json': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
