@@ -1954,8 +1954,8 @@ class _TypeSpec {
 String _typeStyleSummary(TextStyle style) {
   final family = switch (style.fontFamily) {
     null => 'inherited',
-    'Archivo' => 'Archivo',
-    'IBM Plex Mono' => 'IBM Plex Mono',
+    'packages/catch_ui/Archivo' => 'Archivo',
+    'packages/catch_ui/IBM Plex Mono' => 'IBM Plex Mono',
     final family => family,
   };
   final size = style.fontSize == null ? '-' : _number(style.fontSize!);
