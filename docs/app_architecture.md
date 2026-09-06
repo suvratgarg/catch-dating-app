@@ -67,6 +67,9 @@ activity-domain palette to `CatchTheme`; it does not define another theme.
 `CatchTabViewportScope` owns route-neutral active-page and bottom-obstruction
 metrics for shared layouts. App tab identities and route selection stay in the
 app; anchored, floating, and absent bars keep their existing clearance rules.
+`CatchStatusStrip` and its publication scope own persistent header rendering;
+`CatchScreenScaffold` owns the Material surface, safe area and keyboard resize
+in the shared package. Connectivity and rehearsal state remain app callers.
 
 ### Placement decision tree
 

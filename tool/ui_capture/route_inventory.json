@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "80f53cf55ae7e133b8886064cfb7f6f1a70c7c03aca903c3e30525d7e5275125",
+    "normalizedFileSha256": "b6128feb18ea371e7f221becdc231704203a8c8c5eff72ac0f73a446d952d383",
     "routeContractSha256": "a4a0b4b309a2cd5840a71d355897e1f832b0c98b53915ee132e4558ff8272113",
     "goRouteCount": 86,
     "shellBranchCount": 9,
@@ -1215,7 +1215,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 383,
+      "line": 382,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1224,7 +1224,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 433,
+      "line": 432,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",

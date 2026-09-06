@@ -14,7 +14,7 @@ const routeTopBarBuilderPattern =
 const canonicalRouteScaffoldPath =
   "lib/core/widgets/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
-  "lib/core/widgets/catch_screen_scaffold.dart";
+  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart";
 const canonicalScreenScaffoldSymbol = "CatchScreenScaffold";
 const rawChromePattern =
   /\b(AppBar|SliverAppBar|CupertinoNavigationBar|CupertinoSliverNavigationBar)\s*\(/gu;
@@ -363,10 +363,11 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
 
 function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) {
   const result = new Map();
-  const libRoot = path.join(root, "lib");
-  if (!fs.existsSync(libRoot)) return result;
+  const roots = ["lib", "packages/catch_ui/lib"]
+    .map((relativePath) => path.join(root, relativePath))
+    .filter((absolutePath) => fs.existsSync(absolutePath));
 
-  for (const absolutePath of walkDartFiles(libRoot)) {
+  for (const absolutePath of roots.flatMap((sourceRoot) => [...walkDartFiles(sourceRoot)])) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
     if (relativePath === canonicalRouteScaffoldPath) continue;
     const source = maskDartCommentsAndStrings(

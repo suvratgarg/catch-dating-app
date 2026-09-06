@@ -1997,7 +1997,7 @@
       "summary": "Durable header context, placed below the complete primary tab rail by canonical screen owners; distinct from transient notices and local errors.",
       "dart": {
         "symbol": "CatchStatusStrip",
-        "file": "lib/core/widgets/catch_status_strip.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_status_strip.dart",
         "constructors": [
           "CatchStatusStrip"
         ]
@@ -2054,7 +2054,7 @@
           {
             "id": "catch.status_strip.scope",
             "symbol": "CatchStatusStripScope",
-            "file": "lib/core/widgets/catch_status_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_status_strip_scope.dart",
             "summary": "Inherited publication scope, consumed once by canonical screen owners and cleared for nested body content.",
             "states": [
               "empty",
@@ -7525,7 +7525,7 @@
               "workspace-owned-insets",
               "keyboard-resize"
             ],
-            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",

@@ -13,7 +13,7 @@
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",
-      "maxLines": 2185
+      "maxLines": 2184
     },
     {
       "path": "test/explore/explore_view_model_test.dart",

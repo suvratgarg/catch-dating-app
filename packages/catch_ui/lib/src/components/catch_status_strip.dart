@@ -1,65 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_status_strip_data.dart';
+import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
-
-/// Durable context, not a queued notification or a mutation failure.
-/// Callers supply truthful state and actions; screen owners choose placement.
-@immutable
-class CatchStatusStripData {
-  const CatchStatusStripData({
-    required this.id,
-    required this.label,
-    required this.message,
-    required this.icon,
-    required this.color,
-    this.actions = const [],
-  });
-
-  final String id;
-  final String label;
-  final String message;
-  final IconData icon;
-  final Color color;
-  final List<CatchStatusStripAction> actions;
-}
-
-@immutable
-class CatchStatusStripAction {
-  const CatchStatusStripAction({
-    required this.label,
-    required this.onPressed,
-    this.icon,
-  });
-
-  /// Visible copy for a text action; accessible tooltip for an icon action.
-  final String label;
-  final VoidCallback onPressed;
-  final IconData? icon;
-}
-
-/// Publishes context without drawing it. Canonical screen owners consume this
-/// scope once, below their title and optional primary rail, and clear it for
-/// nested content. The app publishes connectivity above the route navigator;
-/// route-specific rehearsal context is supplied to its scaffold's typed slot.
-class CatchStatusStripScope extends InheritedWidget {
-  const CatchStatusStripScope({
-    super.key,
-    required this.statuses,
-    required super.child,
-  });
-
-  final List<CatchStatusStripData> statuses;
-
-  static List<CatchStatusStripData> of(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<CatchStatusStripScope>()
-          ?.statuses ??
-      const [];
-
-  @override
-  bool updateShouldNotify(CatchStatusStripScope oldWidget) =>
-      statuses != oldWidget.statuses;
-}
 
 /// Full-width persistent header bands with common icon, label/detail and action
 /// lanes. No timer, close control, overlay positioning or business-state reads.

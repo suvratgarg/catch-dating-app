@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "3e78568458f0138383b24897f05e3c2d7333f7bfc66c4e7dcdf3c39b31964170",
+  "sourceDigest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3e78568458f0138383b24897f05e3c2d7333f7bfc66c4e7dcdf3c39b31964170",
-    "contractDigest": "3e78568458f0138383b24897f05e3c2d7333f7bfc66c4e7dcdf3c39b31964170"
+    "digest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e",
+    "contractDigest": "aea4aacd8079e4a5d39a4b63fde76d0bbb7c0952ca515b311c7536ac5dcaae3e"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9b0b31273390421ab36f6d4498a18aeeb5f939bbeff6d89f13e067e6bffd1ba5",
+    "handoffRequestDigest": "3f004eb3a31580de56ba8cdb8a84317e3ce7bbf2d38b4821b7d0f0873c2d5363",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -785,7 +785,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.status_strip",
       "dartSymbol": "CatchStatusStrip",
-      "dartFile": "lib/core/widgets/catch_status_strip.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_status_strip.dart",
       "figmaName": "Catch/StatusStrip",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -810,7 +810,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StatusStrip",
       "claudeAllowed": true,
-      "contractDigest": "196f55de7a6f72af37d0f824c1c0bc55f6fe1e57c7803d88243c764a5c75c3de"
+      "contractDigest": "ee38316a94474dfb0378966b5a9554c3f41c32f607c88b075ed3f7a984fce129"
     },
     {
       "contractId": "catch.field",
@@ -1532,7 +1532,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "65f76e1acb05599b6d14758659ea91503b067d4f7045ace0bc65a48c1b75e653"
+      "contractDigest": "73c4f5dfb179382023c1a51b8098d3eb6ea0e0c19aa79a3d5588fd7aea690048"
     },
     {
       "contractId": "catch.section_stack",

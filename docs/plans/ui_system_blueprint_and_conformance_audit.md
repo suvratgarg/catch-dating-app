@@ -702,6 +702,9 @@ The route-neutral `CatchTabViewportScope` owns inherited active-page and bottom-
 obstruction metrics; app tab identities remain app-side. Pattern discovery is
 included in the same corpus coverage and runner so moving a placement owner
 cannot remove its existing golden cases.
+Persistent status rendering/publication and the basic screen scaffold also move
+without changing their bodies. Their app state publishers and the root-header/
+scroll compositions remain at their current owners for the next pattern slices.
 
 ### Phase 4 — One registry, binding grammar
 
