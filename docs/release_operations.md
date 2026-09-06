@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.12
+version: 2.7.13
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
@@ -31,9 +31,11 @@ and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
 GitHub Actions and Xcode Cloud read that contract;
 `bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
 Functions Node engine, or an Apple-native workflow runner drifts. Keep the
-Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
-7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
-visual-smoke workflows use `macos-26`.
+Apple runner major aligned with the minimum Xcode major. The repository enforces
+Xcode 26.2.0 or newer for the locked Firebase Apple SDK 12.18.0. Although
+`connectivity_plus` 7.x requires only Xcode 26.1.1 or newer, Firebase sets the
+higher repository minimum. Native build, release, and hosted visual-smoke
+workflows use `macos-26`.
 
 ## Deployment Image Retention and Cost Alerts
 
@@ -1698,12 +1700,17 @@ quotas for this repository's large function inventory. This
 keeps legacy live Functions, such as old run/run-club callables, deployed until
 a deliberate cleanup plan removes them. Exact `functions:<name>` requests use
 the same Functions phase. Planner errors and empty or malformed target sets fail
-before any deploy begins. After the Functions phase, the helper discovers every
-live callable-labeled v2 Function and synchronizes `roles/run.invoker` on its
-exact Cloud Run service before continuing to rules. The deploy identity
-therefore needs permission to list Cloud Functions and get/set Cloud Run IAM
-policies. Delivery additionally owns artifact verification, checkpointing, and
-the index-`READY` wait; invoking this helper directly is not normal promotion.
+before any deploy begins. After the Functions phase, packaged callable-invoker
+helpers advertising scope protocol 1 receive the exact selected Function targets
+via `--targets`. They filter the live v2 Function inventory to those targets and
+synchronize `roles/run.invoker` only on their callable Cloud Run services before
+continuing to rules. Historical packages without that protocol retain their
+original full callable reconciliation; invoking the callable-invoker helper
+directly without `--targets` also retains full reconciliation. The deploy
+identity therefore needs permission to list Cloud Functions and get/set Cloud
+Run IAM policies. Delivery additionally owns artifact verification,
+checkpointing, and the index-`READY` wait; invoking this helper directly is not
+normal promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
 
