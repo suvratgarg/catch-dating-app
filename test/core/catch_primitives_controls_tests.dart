@@ -23,21 +23,33 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    final inline = find.textContaining('Full name', findRichText: true);
-    expect(inline, findsOneWidget);
+    final field = find.byType(CatchField);
+    final title = find.text('Full name');
+    final metadata = find.text('Short text · Required');
+    expect(field, findsOneWidget);
+    expect(title, findsOneWidget);
+    expect(metadata, findsOneWidget);
     expect(
       tester.getCenter(find.byKey(const ValueKey('sortable-handle'))).dx,
-      lessThan(tester.getTopLeft(inline).dx),
+      lessThan(tester.getTopLeft(title).dx),
+    );
+    expect(
+      tester.getTopLeft(metadata).dx,
+      closeTo(tester.getTopLeft(title).dx, 0.5),
+    );
+    expect(
+      tester.getTopLeft(metadata).dy,
+      greaterThan(tester.getBottomLeft(title).dy),
     );
     final chevron = find.byIcon(CatchIcons.chevronRightRounded);
     expect(chevron, findsOneWidget);
     expect(
       tester.getCenter(find.byKey(const ValueKey('sortable-handle'))).dy,
-      closeTo(tester.getCenter(inline).dy, 0.5),
+      closeTo(tester.getCenter(field).dy, 0.5),
     );
     expect(
       tester.getCenter(chevron).dy,
-      closeTo(tester.getCenter(inline).dy, 0.5),
+      closeTo(tester.getCenter(field).dy, 0.5),
     );
   });
 
