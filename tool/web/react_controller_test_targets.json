@@ -163,6 +163,11 @@
       "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
       "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventSmsWithdrawalController.ts",
+      "test": "website/src/features/eventMessaging/useEventSmsWithdrawalController.test.tsx",
+      "status": "required"
     }
   ]
 }

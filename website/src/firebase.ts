@@ -1,3 +1,6 @@
+import type {GetEventAssistanceSmsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload";
+import type {WithdrawEventAssistanceSmsCallablePayload} from "../../functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload";
+import type {EventAssistanceSmsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse";
 import type {GetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload";
 import type {SetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload";
 import type {EventAssistanceSmsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse";
@@ -988,4 +991,17 @@ export async function setEventAssistanceSmsPreference(
 ): Promise<EventAssistanceSmsPreferenceCallableResponse> {
   return invokeWebsiteCallable("setEventAssistanceSmsPreference", payload,
     eventRuntimeFirebaseConfigured, "Event text preferences");
+}
+
+export async function getEventAssistanceSmsWithdrawal(
+  payload: GetEventAssistanceSmsWithdrawalCallablePayload
+): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceSmsWithdrawal", payload,
+    eventRuntimeFirebaseConfigured, "Event text withdrawal");
+}
+export async function withdrawEventAssistanceSms(
+  payload: WithdrawEventAssistanceSmsCallablePayload
+): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("withdrawEventAssistanceSms", payload,
+    eventRuntimeFirebaseConfigured, "Event text withdrawal");
 }

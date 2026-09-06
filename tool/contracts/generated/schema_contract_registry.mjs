@@ -1,41 +1,37 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
-export const eventAssistanceSmsConsentReceiptDocumentSchema = {
+export const eventAssistanceSmsWithdrawalGrantDocumentSchema = {
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schemaVersion",
-    "receiptId",
-    "requestHash",
+    "linkId",
+    "permissionId",
     "context",
     "attendeeId",
     "attendeeGeneration",
+    "subjectUid",
     "senderId",
-    "routeId",
-    "actorUid",
     "recipientEndpointId",
-    "decision",
-    "copyVersion",
-    "copyHash",
-    "appliedRevision",
-    "createdAt",
-    "permissionHash"
+    "guestGrantHash",
+    "permissionRevisionAtIssue",
+    "issuedAt",
+    "expiresAt"
   ],
   "properties": {
     "schemaVersion": {
-      "type": "integer",
       "const": 1
     },
-    "receiptId": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "permissionId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "requestHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
     },
     "context": {
       "type": "object",
@@ -74,17 +70,13 @@ export const eventAssistanceSmsConsentReceiptDocumentSchema = {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
     },
-    "senderId": {
+    "subjectUid": {
       "type": "string",
       "minLength": 1,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
-    "routeId": {
-      "type": "string",
-      "const": "catchEventSms"
-    },
-    "actorUid": {
+    "senderId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 160,
@@ -96,50 +88,428 @@ export const eventAssistanceSmsConsentReceiptDocumentSchema = {
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
-    "decision": {
+    "guestGrantHash": {
       "type": "string",
-      "enum": [
-        "grant",
-        "revoke"
-      ]
+      "pattern": "^[a-f0-9]{64}$"
     },
-    "copyVersion": {
-      "anyOf": [
-        {
-          "type": "null"
-        },
-        {
-          "type": "string",
-          "const": "catch-event-service-sms-v1"
-        }
-      ]
-    },
-    "copyHash": {
-      "anyOf": [
-        {
-          "type": "null"
-        },
-        {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        }
-      ]
-    },
-    "appliedRevision": {
+    "permissionRevisionAtIssue": {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
     },
-    "createdAt": {
+    "issuedAt": {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
     },
-    "permissionHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   },
+  "title": "EventAssistanceSmsWithdrawalGrantDocument",
+  "x-firestore-collection": "eventAssistanceSmsWithdrawalGrants",
+  "x-firestore-path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "event-service SMS dispatch and withdrawal"
+};
+
+export const getEventAssistanceSmsWithdrawalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "title": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const withdrawEventAssistanceSmsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_event_assistance_sms_payload.schema.json",
+  "title": "WithdrawEventAssistanceSmsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "requestId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventAssistanceSmsWithdrawalCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_sms_withdrawal_response.schema.json",
+  "title": "EventAssistanceSmsWithdrawalCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverTime",
+        "revision",
+        "preference",
+        "expiresAt"
+      ],
+      "properties": {
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
+export const eventAssistanceSmsConsentReceiptDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "grant",
+            "revoke"
+          ]
+        },
+        "copyVersion": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            }
+          ]
+        },
+        "copyHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "verifiedParticipant"
+        },
+        "linkId": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "actorUid": {
+          "type": "null"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "const": "revoke"
+        },
+        "copyVersion": {
+          "type": "null"
+        },
+        "copyHash": {
+          "type": "null"
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "messageLink"
+        },
+        "linkId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
+      }
+    }
+  ],
   "title": "EventAssistanceSmsConsentReceiptDocument",
   "x-firestore-collection": "eventAssistanceSmsConsentReceipts",
   "x-firestore-path": "eventAssistanceSmsConsentReceipts/{receiptId}",

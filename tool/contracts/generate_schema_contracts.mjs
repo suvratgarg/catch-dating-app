@@ -16,6 +16,35 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "EventAssistanceSmsWithdrawalGrantDocument",
+  "source": "firestore/event_assistance_sms_withdrawal_grants.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "source": "callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts"
+  ]
+},
+{
+  "name": "WithdrawEventAssistanceSmsCallablePayload",
+  "source": "callables/withdraw_event_assistance_sms_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsWithdrawalCallableResponse",
+  "source": "callable_responses/event_assistance_sms_withdrawal_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsWithdrawalCallableResponse.ts"
+  ]
+},
+{
   "name": "EventAssistanceSmsConsentReceiptDocument",
   "source": "firestore/event_assistance_sms_consent_receipts.schema.json",
   "typeOutput": "functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts"

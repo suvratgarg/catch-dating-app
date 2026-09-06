@@ -222,11 +222,19 @@ stale read results and scopes pending state to the current account and event.
 The control is hidden when there is no preference and enabling is unavailable;
 an existing grant retains a withdrawal control when the sender is paused.
 
-This covers successful web registration and guest runtime entry points only.
+Web registration and guest runtime supply verified opt-in and withdrawal.
+The SMS dispatch claim additionally issues narrow withdrawal authority for its
+response link. The guest update page loads that text preference independently
+of instruction availability, so guests can stop texts after cancellation or
+instruction expiry. The link cannot enable texts, change registration, expose
+identity or reopen event instructions. Its current-revision check prevents an
+old withdrawal request from undoing a later verified opt-in. Revoked links and
+replacement recipients cannot act on the original permission.
+
 Waitlist marketing preferences do not authorize event-service texts. Consumer
-app controls, opt-out from a standalone message link after event cancellation,
-provider inbound opt-out handling and deployed verification remain integration
-work; no sender has been activated by these controls.
+app controls, provider inbound opt-out handling, deployed verification and
+retention cleanup remain integration work; no sender has been activated by
+these controls.
 
 `EventSmsWorker` loads an exact numbered Secret Manager credential before the
 short reservation window. The resource claim atomically debits both spending

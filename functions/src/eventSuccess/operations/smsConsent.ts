@@ -21,7 +21,8 @@ export const SMS_CONSENT_HASH = operationContentHash([
 export function parseSmsConsentReceipt(value: unknown): ConsentReceipt {
   if (!validateEventAssistanceSmsConsentReceiptDocument(value) ||
       (value.decision === "grant" ?
-        value.copyVersion !== SMS_CONSENT_VERSION ||
+        value.source !== "verifiedParticipant" ||
+          value.copyVersion !== SMS_CONSENT_VERSION ||
           value.copyHash !== SMS_CONSENT_HASH :
         value.copyVersion !== null || value.copyHash !== null)) {
     throw new Error("Invalid event SMS consent receipt");
@@ -34,7 +35,7 @@ export function smsPermissionHasReceipt(
   permission: Permission, receipt: ConsentReceipt | null
 ): boolean {
   return permission.status === "granted" && receipt !== null &&
-    receipt.decision === "grant" &&
+    receipt.decision === "grant" && receipt.source === "verifiedParticipant" &&
     permission.currentReceiptId === receipt.receiptId &&
     permission.evidence.receiptId === receipt.receiptId &&
     permission.evidence.subjectUid === receipt.actorUid &&

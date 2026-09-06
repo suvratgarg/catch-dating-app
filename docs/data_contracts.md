@@ -2065,7 +2065,29 @@ stores neither message content nor the guest URL secret. Conservative debits
 remain charged across uncertain outcomes and provider rejections until an
 explicit reconciliation implementation accounts for them. They are spending
 reservations, not billing receipts. Firestore clients, including admins, cannot
-read or write any of these five collections.
+read or write any of these six collections.
+
+`eventAssistanceSmsWithdrawalGrants` is created in the same transaction as a
+live SMS dispatch claim. It binds the original guest-link hash to one permission,
+attendee generation, subject, sender and phone endpoint. Its separate lifetime
+ends with the permission captured at dispatch. An expired instruction does not
+expire this narrowly scoped ability to withdraw; it grants no event read/reply
+access. A revoked guest grant invalidates both uses. Reusing a link for a new
+recipient or a longer consent lifetime requires a fresh grant before dispatch.
+
+`getEventAssistanceSmsWithdrawal` and `withdrawEventAssistanceSms` require that
+bearer capability, App Check and network/credential rate limits. They need no
+current event, roster or sender status, so cancellation cannot obstruct opt-out.
+They expose only text status, revision and validity, with no name, phone or event
+identifier. Changing the permission's attendee generation, subject or endpoint
+invalidates the old capability. Only an explicit mutation withdraws permission;
+link reads and previews never do. Its immutable consent receipt uses
+`source: messageLink`, the link id and `actorUid: null`; authenticated preference
+receipts use `source: verifiedParticipant` and their verified UID. A bearer
+receipt can never grant consent. Replayed withdrawals return current state,
+including later verified opt-in, and stale revisions require a new explicit
+choice. Retention must keep the guest grant, withdrawal binding and deduplication
+receipts through this capability's lifetime and provider reconciliation window.
 
 ### Event Assistance Guest Response Contract
 

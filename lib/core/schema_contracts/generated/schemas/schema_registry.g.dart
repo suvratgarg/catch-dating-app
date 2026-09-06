@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceSmsWithdrawalGrantDocument',
+    source: 'firestore/event_assistance_sms_withdrawal_grants.schema.json',
+    schema: schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventAssistanceSmsWithdrawalCallablePayload',
+    source: 'callables/get_event_assistance_sms_withdrawal_payload.schema.json',
+    schema: schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WithdrawEventAssistanceSmsCallablePayload',
+    source: 'callables/withdraw_event_assistance_sms_payload.schema.json',
+    schema: schemaWithdrawEventAssistanceSmsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsWithdrawalCallableResponse',
+    source: 'callable_responses/event_assistance_sms_withdrawal_response.schema.json',
+    schema: schemaEventAssistanceSmsWithdrawalCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceSmsConsentReceiptDocument',
     source: 'firestore/event_assistance_sms_consent_receipts.schema.json',
     schema: schemaEventAssistanceSmsConsentReceiptDocumentSchema,
@@ -2784,6 +2804,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceSmsWithdrawalGrantDocument': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
+  'GetEventAssistanceSmsWithdrawalCallablePayload': schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema,
+  'WithdrawEventAssistanceSmsCallablePayload': schemaWithdrawEventAssistanceSmsCallablePayloadSchema,
+  'EventAssistanceSmsWithdrawalCallableResponse': schemaEventAssistanceSmsWithdrawalCallableResponseSchema,
   'EventAssistanceSmsConsentReceiptDocument': schemaEventAssistanceSmsConsentReceiptDocumentSchema,
   'GetEventAssistanceSmsPreferenceCallablePayload': schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema,
   'SetEventAssistanceSmsPreferenceCallablePayload': schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,
@@ -3340,6 +3364,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_sms_withdrawal_grants.schema.json': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
+  'callables/get_event_assistance_sms_withdrawal_payload.schema.json': schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema,
+  'callables/withdraw_event_assistance_sms_payload.schema.json': schemaWithdrawEventAssistanceSmsCallablePayloadSchema,
+  'callable_responses/event_assistance_sms_withdrawal_response.schema.json': schemaEventAssistanceSmsWithdrawalCallableResponseSchema,
   'firestore/event_assistance_sms_consent_receipts.schema.json': schemaEventAssistanceSmsConsentReceiptDocumentSchema,
   'callables/get_event_assistance_sms_preference_payload.schema.json': schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema,
   'callables/set_event_assistance_sms_preference_payload.schema.json': schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,

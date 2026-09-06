@@ -3,8 +3,6 @@ import type {EventAssistanceSmsPermissionDocument as Permission} from
   "../../shared/generated/eventAssistanceSmsPermissionDocument";
 import type {EventAssistanceSmsBudgetDocument as Budget} from
   "../../shared/generated/eventAssistanceSmsBudgetDocument";
-import {validateEventAssistanceSmsPermissionDocument} from
-  "../../shared/generated/validators/eventAssistanceSmsPermissionDocument";
 import {validateEventAssistanceSmsBudgetDocument} from
   "../../shared/generated/validators/eventAssistanceSmsBudgetDocument";
 import {validateEventAssistanceSmsDispatchDocument} from
@@ -16,46 +14,40 @@ import {
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import type {GuestLinkSigningKeys} from "./guestLinkTokens";
 import {
-  guestCollections, guestIdentity, parseGrant, readGuestSourceFacts,
+  Grant, guestCollections, parseGrant, readGuestSourceFacts,
   requireDocumentId,
 } from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
 import type {RouteReadiness} from "./messagingPolicy";
 import {
-  parseSmsConfig, renderEventSms, RenderedSms, SmsConfig, smsEndpointId,
+  parseSmsConfig, renderEventSms, RenderedSms, SmsConfig,
 } from "./smsProtocol";
 export {smsEndpointId} from "./smsProtocol";
+export {smsCollections, smsPermissionId, parseSmsPermission} from
+  "./smsPermissionRecords";
+import {smsCollections, smsPermissionId, parseSmsPermission} from
+  "./smsPermissionRecords";
+import {newSmsWithdrawalGrant, parseSmsWithdrawalGrant,
+  smsWithdrawalMatchesPermission, SMS_WITHDRAWAL_GRANTS} from
+  "./smsWithdrawalRecords";
 
 import {
   parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS, smsPermissionHasReceipt,
 } from "./smsConsent";
 
 export type {Permission, Budget};
-export const smsCollections = {
-  senders: "eventAssistanceSmsSenders",
-  permissions: "eventAssistanceSmsPermissions",
-  budgets: "eventAssistanceSmsBudgets",
-  dispatches: "eventAssistanceSmsDispatches",
-} as const;
 type Intent = MessageRecord["intent"];
 export interface SmsMaterial {
   config: SmsConfig;
   permission: Permission;
   rendered: RenderedSms;
   grantId: string;
+  grant: Grant;
   budgets: [Budget, Budget];
 }
 type MaterialResult = {facts: OutboxFacts; material: SmsMaterial | null};
 type BlockReason = Extract<RouteReadiness["state"], {kind: "blocked"}>[
   "reason"];
-
-export function smsPermissionId(context: Permission["context"],
-  attendeeId: string, senderId: string): string {
-  requireDocumentId(senderId);
-  return "sms-permission:" + operationContentHash([
-    guestIdentity(context, attendeeId), senderId, "catchEventSms",
-  ]);
-}
 
 export function smsBudgetScopes(context: Permission["context"], now: number):
   [Budget["scope"], Budget["scope"]] {
@@ -66,21 +58,6 @@ export function smsBudgetScopes(context: Permission["context"], now: number):
 
 export function smsBudgetId(senderId: string, scope: Budget["scope"]): string {
   return "sms-budget:" + operationContentHash([senderId, scope]);
-}
-
-export function parseSmsPermission(value: unknown): Permission {
-  if (!validateEventAssistanceSmsPermissionDocument(value) ||
-      value.permissionId !== smsPermissionId(value.context,
-        value.attendeeId, value.senderId) ||
-      value.recipientEndpointId !== smsEndpointId(value.context,
-        value.attendeeId, value.phoneE164) ||
-      (value.evidence !== null &&
-        (value.expiresAt <= value.evidence.acceptedAt ||
-         value.updatedAt < Math.max(value.evidence.acceptedAt,
-           value.evidence.phoneVerifiedAt)))) {
-    throw new Error("Invalid event-service SMS permission");
-  }
-  return value;
 }
 
 export function parseSmsBudget(value: unknown): Budget {
@@ -147,6 +124,17 @@ export class SmsDispatchStore {
         .doc(attempt.attemptId);
       if ((await tx.get(dispatchRef)).exists) return {kind: "withheld"};
       const {config, permission, rendered, budgets} = material;
+      const withdrawalRef = this.db.collection(SMS_WITHDRAWAL_GRANTS)
+        .doc(linkId);
+      const withdrawalSnap = await tx.get(withdrawalRef);
+      const withdrawal = withdrawalSnap.exists ?
+        parseSmsWithdrawalGrant(withdrawalSnap.data()) :
+        newSmsWithdrawalGrant(permission, material.grant, now);
+      if (withdrawal.linkId !== linkId ||
+          !smsWithdrawalMatchesPermission(withdrawal, permission) ||
+          withdrawal.guestGrantHash !== operationContentHash(material.grant) ||
+          withdrawal.expiresAt < permission.expiresAt ||
+          withdrawal.issuedAt > now) return {kind: "withheld"};
       const dispatch = {schemaVersion: 1, attemptId: attempt.attemptId,
         messageId: record.messageId, senderId: config.senderId,
         bindingRevision: config.revision,
@@ -170,6 +158,7 @@ export class SmsDispatchStore {
       return {kind: "ready", value: material,
         validUntil: route.state.validUntil, commit: () => {
           tx.create(dispatchRef, dispatch);
+          if (!withdrawalSnap.exists) tx.create(withdrawalRef, withdrawal);
           for (const budget of debited) {
             tx.set(this.db.collection(smsCollections.budgets)
               .doc(budget.budgetId), budget);
@@ -257,18 +246,19 @@ export class SmsDispatchStore {
     const validUntil = Math.min(now + 30_000, gate.validUntil,
       permission.expiresAt, rendered.validUntil,
       ...budgets.map((b) => b.endsAt));
-    return {material: {config, permission, rendered, grantId: linkId, budgets},
-      facts: {gate, routes: [{routeId: "catchEventSms", state: {
-        kind: "eligible", checkedAt: now, validUntil,
-        permissionRevision: "sms-authority:" + operationContentHash([
-          config, permission, grant, rendered.payloadHash,
-        ]), candidate: {mode: "live", binding: {
-          routeId: "catchEventSms", transport: "sms", provider: "gupshup",
-          senderIdentity: "catchPlatform", senderId: this.senderId,
-          bindingRevision: config.revision,
-          recipientEndpointId: permission.recipientEndpointId,
-          fallbackOwner: "catch",
-        }},
-      }}]}};
+    return {material: {config, permission, rendered, grantId: linkId,
+      grant, budgets},
+    facts: {gate, routes: [{routeId: "catchEventSms", state: {
+      kind: "eligible", checkedAt: now, validUntil,
+      permissionRevision: "sms-authority:" + operationContentHash([
+        config, permission, grant, rendered.payloadHash,
+      ]), candidate: {mode: "live", binding: {
+        routeId: "catchEventSms", transport: "sms", provider: "gupshup",
+        senderIdentity: "catchPlatform", senderId: this.senderId,
+        bindingRevision: config.revision,
+        recipientEndpointId: permission.recipientEndpointId,
+        fallbackOwner: "catch",
+      }},
+    }}]}};
   }
 }

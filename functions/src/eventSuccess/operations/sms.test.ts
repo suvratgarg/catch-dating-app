@@ -1,3 +1,9 @@
+import type {CallableRequest} from "firebase-functions/v2/https";
+import {SmsWithdrawalStore} from "./smsWithdrawalStore";
+import {SMS_WITHDRAWAL_GRANTS, newSmsWithdrawalGrant} from
+  "./smsWithdrawalRecords";
+import {SMS_CONSENT_RECEIPTS, parseSmsConsentReceipt} from "./smsConsent";
+import {withdrawEventAssistanceSmsHandler} from "./smsWithdrawalHandlers";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
@@ -138,7 +144,8 @@ async function harness(realDb?: Firestore, id = "test") {
   const messageId = assistanceMessageId(intent);
   return {db, fake, clock, context, attendeeId, attendeePath,
     sender, senderPath, guest, guests, thread, link,
-    permission, permissionPath, budgetPaths, store, credentials, requests,
+    permission, permissionPath, preferences, budgetPaths, store,
+    credentials, requests,
     transport, provider, worker, write, read, intent, messageId, paths};
 }
 
@@ -514,3 +521,192 @@ test("SMS cannot silently bypass WhatsApp or RCS selection", async () => {
     reason: "routeCompositionUnavailable"});
   assert.equal(h.requests.length, 0);
 });
+
+async function withdrawalHarness(realDb?: Firestore, id = "withdrawal") {
+  const h = await harness(realDb, id);
+  const withdrawal = new SmsWithdrawalStore(h.db, () => h.clock.now);
+  const credential = {linkId: h.link.linkId, secret: h.link.secret};
+  const request = {...credential, requestId: "stop-texts", expectedRevision: 1};
+  return {...h, withdrawal, credential, request};
+}
+
+test("SMS claim installs withdrawal authority without exposing guest identity",
+  async () => {
+    const h = await withdrawalHarness();
+    await assert.rejects(h.withdrawal.get(h.credential), /unavailable/);
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const view = await h.withdrawal.get(h.credential);
+    assert.equal(view.view.preference, "enabled");
+    for (const hidden of [h.link.secret, h.attendeeId, h.permission.phoneE164,
+      h.permission.evidence!.subjectUid, h.context.eventId]) {
+      assert.equal(JSON.stringify(view).includes(hidden), false);
+    }
+    assert.ok(await h.read(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId));
+    assert.equal(JSON.stringify(h.fake.entries()).includes(h.link.secret),
+      false);
+  });
+
+test("withdrawal survives expired instructions, cancellation and paused sender",
+  async () => {
+    const h = await withdrawalHarness();
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const roster = await h.read(h.attendeePath);
+    h.clock.now = h.link.expiresAt + 1;
+    await h.write("events/" + h.context.eventId,
+      {...(await h.read("events/" + h.context.eventId)), status: "cancelled"});
+    await h.write(h.senderPath, {...h.sender, status: "paused"});
+    await assert.rejects(h.guests.getView(h.link.linkId, h.link.secret),
+      /unavailable/);
+    const result = await h.withdrawal.withdraw(h.request);
+    assert.equal(result.view.preference, "disabled");
+    const permission = parseSmsPermission(await h.read(h.permissionPath));
+    const receipt = parseSmsConsentReceipt(await h.read(SMS_CONSENT_RECEIPTS +
+      "/" + permission.currentReceiptId));
+    assert.equal(receipt.source, "messageLink");
+    assert.equal(receipt.actorUid, null);
+    assert.equal(receipt.linkId, h.link.linkId);
+    assert.deepEqual(await h.read(h.attendeePath), roster);
+    assert.equal(h.requests.length, 1);
+  });
+
+test("old withdrawal requests cannot undo later verified consent",
+  async () => {
+    const h = await withdrawalHarness();
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    await h.withdrawal.withdraw(h.request);
+    const actor = {uid: "guest-uid", phone: "+919999999999"};
+    const scope = {eventId: h.context.eventId, attendeeId: h.attendeeId};
+    assert.equal((await h.preferences.get(actor, scope)).view.preference,
+      "disabled");
+    h.clock.now++;
+    await h.preferences.set(actor, {...scope, requestId: "enable-again",
+      expectedRevision: 2, decision: {kind: "grant",
+        copyVersion: "catch-event-service-sms-v1"}});
+    assert.equal((await h.withdrawal.withdraw(h.request)).view.preference,
+      "enabled");
+    const stale = await h.withdrawal.withdraw({...h.request,
+      requestId: "old-tab"});
+    assert.equal(stale.outcome, "conflict");
+    assert.equal(stale.view.revision, 3);
+    await assert.rejects(h.withdrawal.withdraw({...h.request,
+      expectedRevision: 3}), /new text withdrawal request/);
+    await h.withdrawal.withdraw({...h.request, requestId: "stop-current",
+      expectedRevision: 3});
+    assert.equal((await h.preferences.get(actor, scope)).view.preference,
+      "disabled");
+  });
+
+test("withdrawal rejects changed credentials, revocation and replacement scope",
+  async () => {
+    for (const change of ["secret", "revoked", "generation", "subject",
+      "expiry", "clock"]) {
+      const h = await withdrawalHarness();
+      await h.worker.dispatch(h.messageId, h.link.linkId);
+      if (change === "secret") h.credential.secret = "z".repeat(43);
+      if (change === "revoked") await h.guests.revokeLink(h.link.linkId);
+      if (change === "generation") {
+        await h.write(h.permissionPath,
+          {...h.permission, attendeeGeneration: "c".repeat(64)});
+      }
+      if (change === "subject") {
+        await h.write(h.permissionPath,
+          {...h.permission, evidence: {...h.permission.evidence,
+            subjectUid: "replacement-guest"}});
+      }
+      if (change === "expiry") h.clock.now = h.permission.expiresAt;
+      if (change === "clock") h.clock.now--;
+      await assert.rejects(h.withdrawal.get(h.credential), /unavailable/,
+        change);
+    }
+  });
+
+test("failed claims and failed withdrawals leave no partial changes",
+  async () => {
+    const h = await withdrawalHarness();
+    const outbox = h.store.outbox(h.link.linkId);
+    const reserved = await outbox.reserve(h.messageId);
+    h.fake.failNextCommit = true;
+    await assert.rejects(outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.sender)), /interruption/);
+    assert.equal(await h.read(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId),
+      undefined);
+    await outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.sender));
+    const before = h.fake.entries();
+    h.fake.failNextCommit = true;
+    await assert.rejects(h.withdrawal.withdraw(h.request), /interruption/);
+    assert.deepEqual(h.fake.entries(), before);
+    await h.withdrawal.withdraw(h.request);
+    assert.equal((await h.withdrawal.get(h.credential)).view.preference,
+      "disabled");
+  });
+
+test("unauthenticated withdrawal callable permits only a scoped stop action",
+  async () => {
+    const h = await withdrawalHarness();
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const rates: string[] = [];
+    const deps = {firestore: () => h.db, now: () => h.clock.now,
+      checkRateLimit: async (_db: Firestore, identity: string) => {
+        rates.push(identity);
+      }};
+    const request = {data: h.request, rawRequest: {ip: "127.0.0.1"}} as
+      CallableRequest<unknown>;
+    await assert.rejects(withdrawEventAssistanceSmsHandler({...request,
+      data: {...h.request, decision: "grant"}}, deps), /additional properties/);
+    assert.equal(rates.length, 0);
+    const response = await withdrawEventAssistanceSmsHandler(request, deps);
+    assert.equal(response.view.preference, "disabled");
+    assert.equal(rates.length, 2);
+    assert.equal(JSON.stringify(rates).includes(h.link.secret), false);
+  });
+
+test("Firestore deduplicates competing message-link withdrawals", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const id = randomUUID();
+  const app = initializeApp({projectId: "demo-catch-rules"}, "withdraw-" + id);
+  try {
+    const h = await withdrawalHarness(getFirestore(app), id);
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const results = await Promise.all(Array.from({length: 8}, () =>
+      h.withdrawal.withdraw(h.request)));
+    assert.equal(results.filter((r) => r.outcome === "applied").length, 1);
+    assert.equal(results.filter((r) => r.outcome === "replayed").length, 7);
+    assert.equal((await h.withdrawal.get(h.credential)).view.revision, 2);
+  } finally {
+    await deleteApp(app);
+  }
+});
+
+test("withdrawing through a sent link suppresses another queued SMS",
+  async () => {
+    const h = await withdrawalHarness();
+    await h.worker.dispatch(h.messageId, h.link.linkId);
+    const next: Intent = {...h.intent, intentId: "next-update",
+      workflow: {kind: "lateJoin", occurrenceId: "next-stop"}};
+    const thread = await h.guests.publishMessage(next, null);
+    const link = await h.guests.issueLink(thread.threadId, "next-link", keys);
+    const nextId = assistanceMessageId(next);
+    await h.store.outbox(link.linkId).reserve(nextId);
+    await h.withdrawal.withdraw(h.request);
+    await h.worker.dispatch(nextId, link.linkId);
+    assert.equal(h.requests.length, 1);
+  });
+
+test("SMS withholds a withdrawal binding stored under the wrong link",
+  async () => {
+    const h = await withdrawalHarness();
+    const grant = parseGrant(await h.read(guestCollections.grants +
+      "/" + h.link.linkId));
+    const authority = newSmsWithdrawalGrant(h.permission, grant, h.clock.now);
+    await h.write(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId,
+      {...authority, linkId: "c".repeat(32)});
+    const result = await h.worker.dispatch(h.messageId, h.link.linkId);
+    assert.equal(result.kind, "withheld");
+    assert.equal(h.requests.length, 0);
+  });

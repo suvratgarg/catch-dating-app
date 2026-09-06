@@ -5,6 +5,10 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventAssistanceSmsWithdrawalGrantDocumentSchema} from "./schemas/eventAssistanceSmsWithdrawalGrantDocument";
+export {getEventAssistanceSmsWithdrawalCallablePayloadSchema} from "./schemas/getEventAssistanceSmsWithdrawalInput";
+export {withdrawEventAssistanceSmsCallablePayloadSchema} from "./schemas/withdrawEventAssistanceSmsInput";
+export {eventAssistanceSmsWithdrawalCallableResponseSchema} from "./schemas/eventAssistanceSmsWithdrawalOutput";
 export {eventAssistanceSmsConsentReceiptDocumentSchema} from "./schemas/eventAssistanceSmsConsentReceiptDocument";
 export {getEventAssistanceSmsPreferenceCallablePayloadSchema} from "./schemas/getEventAssistanceSmsPreferenceInput";
 export {setEventAssistanceSmsPreferenceCallablePayloadSchema} from "./schemas/setEventAssistanceSmsPreferenceInput";

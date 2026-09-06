@@ -40,3 +40,10 @@ it("confirms the recorded response without presenting another action", () => {
   expect(screen.getByText("I’m on my way").getAttribute("role")).toBe("status");
   expect(screen.queryByRole("button", {name: "I’m on my way"})).toBeNull();
 });
+
+it("retains text withdrawal controls when event instructions are closed", () => {
+  render(<EventAssistanceView screen={{kind: "unavailable", reason: "eventClosed"}}
+    submit={() => undefined} refresh={() => undefined} refreshing={false}
+    textPreferences={<p>Event text withdrawal remains available</p>} />);
+  expect(screen.getByText("Event text withdrawal remains available")).toBeTruthy();
+});

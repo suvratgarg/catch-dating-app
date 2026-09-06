@@ -15095,15 +15095,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
-  static const eventAssistanceSmsConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
-    path: 'eventAssistanceSmsConsentReceiptDocument.actorUid',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-  );
-
   static const eventAssistanceSmsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsConsentReceiptDocument.appliedRevision',
     required: true,
@@ -15152,17 +15143,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
-  static const eventAssistanceSmsConsentReceiptDocumentCopyHash = CatchContractFieldConstraints(
-    path: 'eventAssistanceSmsConsentReceiptDocument.copyHash',
-    valueTypes: <String>['string'],
-    pattern: '^[a-f0-9]{64}\$',
-  );
-
-  static const eventAssistanceSmsConsentReceiptDocumentCopyVersion = CatchContractFieldConstraints(
-    path: 'eventAssistanceSmsConsentReceiptDocument.copyVersion',
-    valueTypes: <String>['string'],
-  );
-
   static const eventAssistanceSmsConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsConsentReceiptDocument.createdAt',
     required: true,
@@ -15175,7 +15155,13 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSmsConsentReceiptDocument.decision',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
   );
 
   static const eventAssistanceSmsConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
@@ -15229,6 +15215,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventAssistanceSmsDispatchDocumentAttemptId = CatchContractFieldConstraints(
@@ -15877,6 +15869,163 @@ abstract final class CatchContractConstraints {
 
   static const eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsSenderDocument.templates.items.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled', 'expired'],
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentPermissionRevisionAtIssue = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.permissionRevisionAtIssue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.subjectUid',
     maxLength: 160,
     minLength: 1,
     required: true,
@@ -28241,6 +28390,20 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSmsWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsWithdrawalCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventAssistanceSmsWithdrawalCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsWithdrawalCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
   static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
@@ -67544,6 +67707,37 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const withdrawEventAssistanceSmsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
   static const withdrawOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'withdrawOrganizerFormResponseCallablePayload.requestId',
     required: true,
@@ -69660,17 +69854,15 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsConfig.templates.items.revision': eventAssistanceSmsConfigTemplatesItemsRevision,
     'eventAssistanceSmsConfig.templates.items.status': eventAssistanceSmsConfigTemplatesItemsStatus,
     'eventAssistanceSmsConfig.templates.items.templateId': eventAssistanceSmsConfigTemplatesItemsTemplateId,
-    'eventAssistanceSmsConsentReceiptDocument.actorUid': eventAssistanceSmsConsentReceiptDocumentActorUid,
     'eventAssistanceSmsConsentReceiptDocument.appliedRevision': eventAssistanceSmsConsentReceiptDocumentAppliedRevision,
     'eventAssistanceSmsConsentReceiptDocument.attendeeGeneration': eventAssistanceSmsConsentReceiptDocumentAttendeeGeneration,
     'eventAssistanceSmsConsentReceiptDocument.attendeeId': eventAssistanceSmsConsentReceiptDocumentAttendeeId,
     'eventAssistanceSmsConsentReceiptDocument.context.eventId': eventAssistanceSmsConsentReceiptDocumentContextEventId,
     'eventAssistanceSmsConsentReceiptDocument.context.mode': eventAssistanceSmsConsentReceiptDocumentContextMode,
     'eventAssistanceSmsConsentReceiptDocument.context.organizerId': eventAssistanceSmsConsentReceiptDocumentContextOrganizerId,
-    'eventAssistanceSmsConsentReceiptDocument.copyHash': eventAssistanceSmsConsentReceiptDocumentCopyHash,
-    'eventAssistanceSmsConsentReceiptDocument.copyVersion': eventAssistanceSmsConsentReceiptDocumentCopyVersion,
     'eventAssistanceSmsConsentReceiptDocument.createdAt': eventAssistanceSmsConsentReceiptDocumentCreatedAt,
     'eventAssistanceSmsConsentReceiptDocument.decision': eventAssistanceSmsConsentReceiptDocumentDecision,
+    'eventAssistanceSmsConsentReceiptDocument.linkId': eventAssistanceSmsConsentReceiptDocumentLinkId,
     'eventAssistanceSmsConsentReceiptDocument.permissionHash': eventAssistanceSmsConsentReceiptDocumentPermissionHash,
     'eventAssistanceSmsConsentReceiptDocument.receiptId': eventAssistanceSmsConsentReceiptDocumentReceiptId,
     'eventAssistanceSmsConsentReceiptDocument.recipientEndpointId': eventAssistanceSmsConsentReceiptDocumentRecipientEndpointId,
@@ -69678,6 +69870,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsConsentReceiptDocument.routeId': eventAssistanceSmsConsentReceiptDocumentRouteId,
     'eventAssistanceSmsConsentReceiptDocument.schemaVersion': eventAssistanceSmsConsentReceiptDocumentSchemaVersion,
     'eventAssistanceSmsConsentReceiptDocument.senderId': eventAssistanceSmsConsentReceiptDocumentSenderId,
+    'eventAssistanceSmsConsentReceiptDocument.source': eventAssistanceSmsConsentReceiptDocumentSource,
     'eventAssistanceSmsDispatchDocument.attemptId': eventAssistanceSmsDispatchDocumentAttemptId,
     'eventAssistanceSmsDispatchDocument.bindingRevision': eventAssistanceSmsDispatchDocumentBindingRevision,
     'eventAssistanceSmsDispatchDocument.budgetIds': eventAssistanceSmsDispatchDocumentBudgetIds,
@@ -69762,6 +69955,26 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsSenderDocument.templates.items.revision': eventAssistanceSmsSenderDocumentTemplatesItemsRevision,
     'eventAssistanceSmsSenderDocument.templates.items.status': eventAssistanceSmsSenderDocumentTemplatesItemsStatus,
     'eventAssistanceSmsSenderDocument.templates.items.templateId': eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId,
+    'eventAssistanceSmsWithdrawalCallableResponse.outcome': eventAssistanceSmsWithdrawalCallableResponseOutcome,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.expiresAt': eventAssistanceSmsWithdrawalCallableResponseViewExpiresAt,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.preference': eventAssistanceSmsWithdrawalCallableResponseViewPreference,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.revision': eventAssistanceSmsWithdrawalCallableResponseViewRevision,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.serverTime': eventAssistanceSmsWithdrawalCallableResponseViewServerTime,
+    'eventAssistanceSmsWithdrawalGrantDocument.attendeeGeneration': eventAssistanceSmsWithdrawalGrantDocumentAttendeeGeneration,
+    'eventAssistanceSmsWithdrawalGrantDocument.attendeeId': eventAssistanceSmsWithdrawalGrantDocumentAttendeeId,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.eventId': eventAssistanceSmsWithdrawalGrantDocumentContextEventId,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.mode': eventAssistanceSmsWithdrawalGrantDocumentContextMode,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.organizerId': eventAssistanceSmsWithdrawalGrantDocumentContextOrganizerId,
+    'eventAssistanceSmsWithdrawalGrantDocument.expiresAt': eventAssistanceSmsWithdrawalGrantDocumentExpiresAt,
+    'eventAssistanceSmsWithdrawalGrantDocument.guestGrantHash': eventAssistanceSmsWithdrawalGrantDocumentGuestGrantHash,
+    'eventAssistanceSmsWithdrawalGrantDocument.issuedAt': eventAssistanceSmsWithdrawalGrantDocumentIssuedAt,
+    'eventAssistanceSmsWithdrawalGrantDocument.linkId': eventAssistanceSmsWithdrawalGrantDocumentLinkId,
+    'eventAssistanceSmsWithdrawalGrantDocument.permissionId': eventAssistanceSmsWithdrawalGrantDocumentPermissionId,
+    'eventAssistanceSmsWithdrawalGrantDocument.permissionRevisionAtIssue': eventAssistanceSmsWithdrawalGrantDocumentPermissionRevisionAtIssue,
+    'eventAssistanceSmsWithdrawalGrantDocument.recipientEndpointId': eventAssistanceSmsWithdrawalGrantDocumentRecipientEndpointId,
+    'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion': eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion,
+    'eventAssistanceSmsWithdrawalGrantDocument.senderId': eventAssistanceSmsWithdrawalGrantDocumentSenderId,
+    'eventAssistanceSmsWithdrawalGrantDocument.subjectUid': eventAssistanceSmsWithdrawalGrantDocumentSubjectUid,
     'eventAssistanceThreadDocument.attendeeId': eventAssistanceThreadDocumentAttendeeId,
     'eventAssistanceThreadDocument.context.eventId': eventAssistanceThreadDocumentContextEventId,
     'eventAssistanceThreadDocument.context.mode': eventAssistanceThreadDocumentContextMode,
@@ -71462,6 +71675,8 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
     'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
     'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'getEventAssistanceSmsWithdrawalCallablePayload.linkId': getEventAssistanceSmsWithdrawalCallablePayloadLinkId,
+    'getEventAssistanceSmsWithdrawalCallablePayload.secret': getEventAssistanceSmsWithdrawalCallablePayloadSecret,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
@@ -76895,6 +77110,10 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.sources.items.type': websiteHostListingProjectionSourcesItemsType,
     'websiteHostListingProjection.sourceSummary': websiteHostListingProjectionSourceSummary,
     'websiteHostListingProjection.status': websiteHostListingProjectionStatus,
+    'withdrawEventAssistanceSmsCallablePayload.expectedRevision': withdrawEventAssistanceSmsCallablePayloadExpectedRevision,
+    'withdrawEventAssistanceSmsCallablePayload.linkId': withdrawEventAssistanceSmsCallablePayloadLinkId,
+    'withdrawEventAssistanceSmsCallablePayload.requestId': withdrawEventAssistanceSmsCallablePayloadRequestId,
+    'withdrawEventAssistanceSmsCallablePayload.secret': withdrawEventAssistanceSmsCallablePayloadSecret,
     'withdrawOrganizerFormResponseCallablePayload.requestId': withdrawOrganizerFormResponseCallablePayloadRequestId,
     'withdrawOrganizerFormResponseCallablePayload.responseId': withdrawOrganizerFormResponseCallablePayloadResponseId,
     'withdrawOrganizerFormResponseCallablePayload.withdrawalToken': withdrawOrganizerFormResponseCallablePayloadWithdrawalToken,

@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts` |
+| GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts` |
+| WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload.ts` |
+| EventAssistanceSmsWithdrawalCallableResponse | `callable_responses/event_assistance_sms_withdrawal_response.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse.ts` |
 | EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts` |
 | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts` |
 | SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts` |
@@ -570,6 +574,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceSmsWithdrawalGrantDocumentSchema` | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_grant_document.g.dart` |
+| `schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema` | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_withdrawal_callable_payload.g.dart` |
+| `schemaWithdrawEventAssistanceSmsCallablePayloadSchema` | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_assistance_sms_callable_payload.g.dart` |
+| `schemaEventAssistanceSmsWithdrawalCallableResponseSchema` | EventAssistanceSmsWithdrawalCallableResponse | `callable_responses/event_assistance_sms_withdrawal_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_callable_response.g.dart` |
 | `schemaEventAssistanceSmsConsentReceiptDocumentSchema` | EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_consent_receipt_document.g.dart` |
 | `schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema` | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_preference_callable_payload.g.dart` |
 | `schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema` | SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart` |
@@ -1128,6 +1136,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceSmsWithdrawalCallableRequest | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_withdrawal_callable_request.g.dart` |
+| WithdrawEventAssistanceSmsCallableRequest | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_assistance_sms_callable_request.g.dart` |
 | GetEventAssistanceSmsPreferenceCallableRequest | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart` |
 | GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
 | SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |

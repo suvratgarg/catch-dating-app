@@ -2069,6 +2069,18 @@
       "migrationNotes": [
         "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes."
       ]
+    },
+    {
+      "id": "eventAssistanceSmsWithdrawalGrants",
+      "path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceSmsWithdrawalGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service SMS dispatch and withdrawal",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire."
+      ]
     }
   ]
 }

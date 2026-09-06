@@ -1,4 +1,7 @@
 export const eventMessagingCopy = {
+  withdrawalScope: "Turn off Catch text updates for this event. Your registration and event access will stay the same.",
+  withdrawalSaved: "Text updates for this event are off.",
+  withdrawalChanged: "Text updates are currently on. Your preference changed elsewhere; tap again if you want to turn them off.",
   title: "Event text updates",
   loading: "Loading your text preferences…",
   loadFailed: "Your text preference could not be loaded.",

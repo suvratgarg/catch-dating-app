@@ -51,6 +51,7 @@ options when specific functions need higher or lower limits.
 | `createEventVenueSession` | `src/events/venueSessions.ts` | Create a short-lived signed venue session for attendee self-check-in |
 | `getEventSuccessPresenceSummary` / `heartbeatEventSuccessPresence` | `src/eventSuccess/presence.ts` | Maintain private attendee liveness and return the Host-safe presence summary |
 | `resolveEventSuccessLateArrival` | `src/eventSuccess/lateArrivals.ts` | Record a revision-fenced Host resolution for a late or returning attendee |
+| `getEventAssistanceSmsWithdrawal` / `withdrawEventAssistanceSms` | `src/eventSuccess/operations/smsWithdrawalHandlers.ts` | Stop original event texts from the SMS link, independently of instruction expiry and event cancellation |
 | `getEventAssistanceSmsPreference` / `setEventAssistanceSmsPreference` | `src/eventSuccess/operations/smsPreferenceHandlers.ts` | Read and update verified participant event-service SMS choices with immutable receipts and withdrawal fences |
 | `getEventSuccessConversationGraph` / `submitEventSuccessConversationGraph` | `src/eventSuccess/conversationGraph.ts` | Read and submit attendee-private, consent-gated conversation outcomes |
 | `setEventSuccessAccountabilityResolution` | `src/eventSuccess/accountability.ts` | Acknowledge the configured completion sweep and resolve checked-in attendees |

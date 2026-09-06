@@ -71,6 +71,9 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms,
+} from "./eventSuccess/operations/smsWithdrawalHandlers";
+export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";

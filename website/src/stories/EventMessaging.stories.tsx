@@ -1,3 +1,6 @@
+import {EventSmsWithdrawalCard} from "../features/eventMessaging/EventSmsWithdrawalPanel";
+import {EventAssistanceView} from "../features/eventAssistance/EventAssistancePage";
+import {eventMessagingCopy} from "../content/eventMessaging";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventSmsPreferenceCard} from "../features/eventMessaging/EventSmsPreferencePanel";
@@ -44,3 +47,31 @@ function Preview({initial}: {initial: EventMessagingState}) {
       refresh={() => setState(ready)} />
   </EventRuntimePanel></EventRuntimeFrame>;
 }
+
+export const MessageWithdrawal: Story = {
+  parameters: {catchComponent: {id: "event_sms_withdrawal_card",
+    routeIds: ["event_assistance"], states: ["enabled", "disabled", "uncertain", "error", "loading", "closed-instructions"]}},
+  render: () => <WithdrawalPreview />,
+};
+export const MessageWithdrawalSaved: Story = {render: () => <WithdrawalPreview preference="disabled" />};
+export const MessageWithdrawalUncertain: Story = {render: () => <WithdrawalPreview uncertain />};
+export const MessageWithdrawalError: Story = {render: () => <WithdrawalPreview kind="error" />};
+export const MessageWithdrawalLoading: Story = {render: () => <WithdrawalPreview kind="loading" />};
+
+function WithdrawalPreview({preference = "enabled", uncertain = false, kind = "ready"}: {
+  preference?: "enabled" | "disabled"; uncertain?: boolean; kind?: "ready" | "error" | "loading";
+}) {
+  const [saved, setSaved] = useState(false);
+  const card = <EventSmsWithdrawalCard state={kind !== "ready" ? {kind} : {kind,
+    view: {preference: saved ? "disabled" : preference, revision: 1, serverTime: 1000, expiresAt: 100_000},
+    pending: false, uncertain: uncertain && !saved, notice: uncertain && !saved ? eventMessagingCopy.uncertain : ""}}
+    withdraw={() => setSaved(true)} refresh={() => undefined} />;
+  return <EventAssistanceView screen={{kind: "unavailable", reason: "eventClosed"}}
+    refreshing={false} refresh={() => undefined} submit={() => undefined} textPreferences={card} />;
+}
+
+export const EventSectionStack: Story = {
+  parameters: {catchComponent: {id: "event_runtime_section_stack",
+    routeIds: ["event_assistance"], states: ["sections", "closed-instructions"]}},
+  render: () => <WithdrawalPreview />,
+};

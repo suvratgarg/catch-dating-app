@@ -4342,7 +4342,8 @@ describe("firestore.rules", () => {
         "eventAssistanceGuestGrants", "eventAssistanceCases",
         "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
         "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
-        "eventAssistanceSmsConsentReceipts"]) {
+        "eventAssistanceSmsConsentReceipts",
+        "eventAssistanceSmsWithdrawalGrants"]) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});
         for (const client of [testEnv.unauthenticatedContext().firestore(),
           authedDb("host-1"), authedDb("admin-1", {admin: true})]) {

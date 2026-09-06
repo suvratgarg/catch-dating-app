@@ -12,7 +12,7 @@ import {
 } from "./guestRecords";
 import {
   Permission, parseSmsPermission, smsCollections, smsPermissionId,
-} from "./smsDispatchStore";
+} from "./smsPermissionRecords";
 import {parseSmsConfig, SmsConfig, smsEndpointId} from "./smsProtocol";
 import {
   CATCH_EVENT_SMS_SENDER_ID, ConsentReceipt, parseSmsConsentReceipt,
@@ -103,7 +103,8 @@ export class SmsPreferenceStore {
           previous?.expiresAt ?? Math.max(now, facts.source.eventEnd),
         updatedAt: now});
       const receipt = parseSmsConsentReceipt({schemaVersion: 1, receiptId,
-        requestHash, context: facts.context, attendeeId: input.attendeeId,
+        requestHash, source: "verifiedParticipant", linkId: null,
+        context: facts.context, attendeeId: input.attendeeId,
         attendeeGeneration: facts.source.attendeeGeneration,
         senderId: this.senderId, routeId: "catchEventSms", actorUid: actor.uid,
         recipientEndpointId: permission.recipientEndpointId,

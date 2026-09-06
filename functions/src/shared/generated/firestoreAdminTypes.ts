@@ -537,10 +537,10 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
-export interface EventAssistanceSmsConsentReceiptDocument {
+export interface EventAssistanceSmsWithdrawalGrantDocument {
   schemaVersion: 1;
-  receiptId: string;
-  requestHash: string;
+  linkId: string;
+  permissionId: string;
   context: {
     mode: "live";
     organizerId: string;
@@ -548,16 +548,17 @@ export interface EventAssistanceSmsConsentReceiptDocument {
   };
   attendeeId: string;
   attendeeGeneration: string;
+  subjectUid: string;
   senderId: string;
-  routeId: "catchEventSms";
-  actorUid: string;
   recipientEndpointId: string;
-  decision: "grant" | "revoke";
-  copyVersion: null | "catch-event-service-sms-v1";
-  copyHash: null | string;
-  appliedRevision: number;
-  createdAt: number;
-  permissionHash: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+export interface EventAssistanceSmsConsentReceiptDocument {
+  [k: string]: unknown;
 }
 
 export interface EventAssistanceSmsSenderDocument {
