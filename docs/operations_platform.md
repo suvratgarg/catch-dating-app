@@ -522,6 +522,33 @@ Reconciliation is a first-class recurring child run rather than an in-place
 mutation. Event velocity is measured as fresh future inventory, not cumulative
 historical output.
 
+### Trusted worker checkpoints
+
+`FirestoreOperationsRepository.commitWorkItemAction` commits one work-item
+revision and its immutable action receipt in the same Firestore transaction.
+The transaction re-reads the owning run, item and lease, checks the run's
+execution deadline and the worker's current fencing token, and rejects stale
+revisions or scope changes. Receipt ids hash the run, item and idempotency key
+as an ordered JSON array; the receipt binds the complete resulting checkpoint.
+An exact retry returns the committed receipt and latest item without repeating
+the write. Changed evidence under the same key fails closed.
+
+`FirestoreOperationLeaseRepository` retains one deterministic lease document
+per resource in `operationLeases`. Acquisition and renewal use the live server
+clock, leases last at most two minutes, and replacing an expired or released
+lease increments its fencing token. These documents must not receive TTL
+cleanup while a resource can be executed: deleting one would reset its fence.
+An expired acquisition cannot be resurrected by replaying its key. Rehearsal
+virtual time must never be injected as the worker lease clock.
+
+These are trusted persistence primitives, not authorization or a provider
+executor. A worker must resolve current scoped authority and domain policy,
+reserve an external attempt durably, call the provider outside the transaction,
+and reconcile ambiguous provider outcomes. A receipt saying that an attempt
+was reserved is not proof that a message was delivered. Scheduling, channel
+adapters and Event Assistance's registered executor are separate integration
+work; adding these primitives does not enable Supply Intake publication.
+
 ## Adding Another Workflow
 
 Before a second admin workflow adopts this platform:
