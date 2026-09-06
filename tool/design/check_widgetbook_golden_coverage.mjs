@@ -9,7 +9,7 @@ const waiverPath = path.join(
   repoRoot,
   "widgetbook/test/support/golden_coverage_waivers.json",
 );
-const coreRoot = "lib/core/widgets/";
+const coreRoots = ["lib/core/widgets/", "packages/catch_ui/lib/src/primitives/"];
 const waiverLimit = 20;
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const annotationKey = (row) =>
@@ -41,7 +41,7 @@ export function validateGoldenCoverage({
     }
   }
   const designatedCases = registeredCases.filter((row) =>
-    row.typeFile?.startsWith(coreRoot)
+    coreRoots.some((root) => row.typeFile?.startsWith(root))
   );
   if (designatedCases.length === 0) {
     failures.push("No registered core/widgets Widgetbook golden ids were found");

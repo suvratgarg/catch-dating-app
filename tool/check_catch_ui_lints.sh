@@ -68,17 +68,17 @@ expect_probe() {
 
 stage_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
+import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:flutter/cupertino.dart';
@@ -483,8 +483,8 @@ done < <(
 )
 
 stage_probe "transparent and token-backed clean cases" <<'DART'
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class CatchUiLintProbe extends StatelessWidget {

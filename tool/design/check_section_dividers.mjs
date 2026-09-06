@@ -14,7 +14,7 @@ const customFieldLeadingPattern =
 const thinSectionWrapperPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+StatelessWidget\s*\{/gu;
 const allowedRawDividerFiles = new Set([
-  "lib/core/widgets/catch_divider.dart",
+  "packages/catch_ui/lib/src/primitives/catch_divider.dart",
   "lib/core/widgets/catch_section_layout.dart",
   "lib/core/widgets/event_ticket_surface.dart",
 ]);

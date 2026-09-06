@@ -5240,6 +5240,7 @@
         "node --check tool/design/component_concepts.mjs",
         "node --test tool/design/component_concepts.test.mjs",
         "node --check tool/design/check_component_contracts.mjs",
+        "node --test tool/design/check_component_contracts.test.mjs",
         "node tool/design/check_component_contracts.mjs"
       ],
       "role": "finder"

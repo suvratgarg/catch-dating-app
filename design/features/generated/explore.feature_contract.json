@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:38c9f455d72f3d1fc458b02aff0e52a6100d9121d102d4ad25b7699566efd6a9",
+  "resolvedDigest": "sha256:9132f0544297dbdf3bbcfd601240d399935e673dc7a274a6adc0208aff3c570a",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1841,7 +1841,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

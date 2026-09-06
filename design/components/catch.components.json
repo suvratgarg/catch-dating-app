@@ -1,9 +1,9 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-04",
+  "updated": "2026-09-06",
   "sourceOfTruth": {
-    "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
+    "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
     "designTools": "Figma and Claude Design may compose these contracts, but they do not own production widget implementation.",
     "handoff": "Design handoffs should name contract ids and props. Arbitrary JSX/CSS is proposal material until mapped to these contracts."
@@ -299,7 +299,7 @@
               "danger",
               "bordered"
             ],
-            "file": "lib/core/widgets/catch_status_dot.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_status_dot.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -483,7 +483,7 @@
       },
       "dart": {
         "symbol": "CatchSectionLabel",
-        "file": "lib/core/widgets/catch_section_label.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
         "constructors": [
           "CatchSectionLabel"
         ]
@@ -1414,7 +1414,7 @@
           {
             "id": "catch.error_state.icon",
             "symbol": "CatchErrorIcon",
-            "file": "lib/core/widgets/catch_error_icon.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_error_icon.dart",
             "summary": "Shared branded icon medallion composed by app-facing and framework-facing error surfaces.",
             "states": [
               "default",
@@ -3566,7 +3566,7 @@
           {
             "id": "catch.section.label",
             "symbol": "CatchSectionLabel",
-            "file": "lib/core/widgets/catch_section_label.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
             "summary": "Activity-accent eyebrow label for section introductions with optional leading glyph and bounded text.",
             "states": [
               "label",
@@ -4001,7 +4001,7 @@
       "summary": "Indeterminate progress indicator for unknown, compact, or one-off work where content-shaped placeholders are not useful.",
       "dart": {
         "symbol": "CatchLoadingIndicator",
-        "file": "lib/core/widgets/catch_loading_indicator.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart",
         "constructors": [
           "CatchLoadingIndicator"
         ]
@@ -4399,7 +4399,7 @@
       "summary": "Public text-role atom family for uppercase kicker labels and single-line mono metadata labels.",
       "dart": {
         "symbol": "CatchKicker",
-        "file": "lib/core/widgets/catch_kicker.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_kicker.dart",
         "constructors": [
           "CatchKicker"
         ]
@@ -4486,7 +4486,7 @@
           {
             "id": "catch.typography.mono_label",
             "symbol": "CatchMonoLabel",
-            "file": "lib/core/widgets/catch_mono_label.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_mono_label.dart",
             "summary": "Single-line mono metadata label for cards, rails, distances, and compact facts.",
             "states": [
               "metadata",
@@ -5101,7 +5101,7 @@
           {
             "id": "catch.sheet.grabber",
             "symbol": "CatchBottomSheetGrabber",
-            "file": "lib/core/widgets/catch_bottom_sheet_grabber.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_bottom_sheet_grabber.dart",
             "summary": "Centered sheet drag affordance used by bottom-sheet and draggable-sheet shells.",
             "states": [
               "default",
@@ -5695,7 +5695,7 @@
       "summary": "Decorative square icon tile for quick actions, data cards, and compact labeled rows where the icon is content rather than a tappable command.",
       "dart": {
         "symbol": "CatchIconTile",
-        "file": "lib/core/widgets/catch_icon_tile.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
         "constructors": [
           "CatchIconTile"
         ]
@@ -5840,7 +5840,7 @@
       "summary": "Shared one-line control chrome for fields, selects, steppers, search controls, and compact picker triggers.",
       "dart": {
         "symbol": "CatchControlShell",
-        "file": "lib/core/widgets/catch_control_shell.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_control_shell.dart",
         "constructors": [
           "CatchControlShell"
         ]
@@ -6325,7 +6325,7 @@
       "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted notes, inline messages, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
-        "file": "lib/core/widgets/catch_surface.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
         "constructors": [
           "CatchSurface",
           "CatchSurface.card",
@@ -8394,7 +8394,7 @@
       "summary": "Canonical remote and bundled image primitive with decode sizing, branded fallback, loading hook, and semantic-label support.",
       "dart": {
         "symbol": "CatchNetworkImage",
-        "file": "lib/core/widgets/catch_network_image.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_network_image.dart",
         "constructors": [
           "CatchNetworkImage"
         ]
@@ -8491,7 +8491,7 @@
           {
             "id": "catch.network_image.fallback",
             "symbol": "CatchNetworkImageFallback",
-            "file": "lib/core/widgets/catch_network_image.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_network_image_fallback.dart",
             "summary": "Direct branded image fallback renderer used by network and asset image loading failures.",
             "states": [
               "default",
@@ -10754,7 +10754,7 @@
       "summary": "Compact page/progress dot indicator with selected-width emphasis, semantic label support, and motion-token transitions.",
       "dart": {
         "symbol": "CatchPageDots",
-        "file": "lib/core/widgets/catch_page_dots.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_page_dots.dart",
         "constructors": [
           "CatchPageDots"
         ]
@@ -11703,7 +11703,7 @@
       "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
       "dart": {
         "symbol": "CatchRowPressSurface",
-        "file": "lib/core/widgets/catch_row_press_surface.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_row_press_surface.dart",
         "constructors": [
           "CatchRowPressSurface"
         ]
@@ -12440,7 +12440,7 @@
       "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media.",
       "dart": {
         "symbol": "CatchGradedImage",
-        "file": "lib/core/widgets/catch_graded_image.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_graded_image.dart",
         "constructors": [
           "CatchGradedImage"
         ]
@@ -12633,7 +12633,7 @@
           {
             "id": "catch.detail_media.scrim",
             "symbol": "CatchScrim",
-            "file": "lib/core/widgets/catch_scrim.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_scrim.dart",
             "summary": "Shared photo scrim renderer for detail heroes, photo frames, and profile hero tinting.",
             "states": [
               "detail-hero",

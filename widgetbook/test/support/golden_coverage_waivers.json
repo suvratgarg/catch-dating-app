@@ -80,7 +80,7 @@
     },
     {
       "class": "CatchFractionalMaxWidth",
-      "file": "lib/core/widgets/catch_fractional_max_width.dart",
+      "file": "packages/catch_ui/lib/src/primitives/catch_fractional_max_width.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Layout helper still needs a directly registered geometry golden case."
@@ -108,14 +108,14 @@
     },
     {
       "class": "CatchPagerFocusBoundary",
-      "file": "lib/core/widgets/catch_pager_focus_boundary.dart",
+      "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Focus-boundary render object still needs a registered behavior fixture."
     },
     {
       "class": "CatchScaledPreferredSize",
-      "file": "lib/core/widgets/catch_scaled_preferred_size.dart",
+      "file": "packages/catch_ui/lib/src/primitives/catch_scaled_preferred_size.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Preferred-size adapter still needs a directly registered geometry case."

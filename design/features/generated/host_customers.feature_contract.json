@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:dcb239062def9d111c990923cb0e5125929545758d4bfa0c0e8b9bbfe0b9e62c",
+  "resolvedDigest": "sha256:f0e83d83dd91e747eb6426ee6a3045cb76969d845f970a4feb0626f092e9b6aa",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6263,7 +6263,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

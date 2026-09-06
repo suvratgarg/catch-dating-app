@@ -41,7 +41,7 @@ test("source-derived widget classification passes its structural and semantic co
     widget.baseClass === "InheritedWidget",
   ));
   assert.ok(classification.widgets.some((widget) =>
-    widget.file === "lib/core/widgets/catch_pager_focus_boundary.dart" &&
+    widget.file === "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart" &&
     widget.name === "CatchPagerFocusBoundary" &&
     widget.baseClass === "SingleChildRenderObjectWidget",
   ));

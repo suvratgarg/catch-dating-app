@@ -232,18 +232,22 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
   }
 }
 
-// Keep the pre-extraction denominator literal: every public Catch* class,
-// including descriptors, controllers and generated provider types. A class
-// without a visual surface must receive an explicit coverage disposition.
+// Preserve the migration denominator across both source homes: every public
+// Catch* core class, including descriptors and controllers, remains inventoried
+// when moved into the package. Nonvisual classes need an explicit disposition.
 List<Map<String, Object?>> _coreSurface() {
-  final files =
-      Directory('lib/core/widgets')
-          .listSync(recursive: true)
-          .whereType<File>()
-          .map((file) => file.path)
-          .where((path) => path.endsWith('.dart'))
-          .toList()
-        ..sort();
+  final files = [
+    for (final root in [
+      'lib/core/widgets',
+      'packages/catch_ui/lib/src/primitives',
+    ])
+      if (Directory(root).existsSync())
+        ...Directory(root)
+            .listSync(recursive: true)
+            .whereType<File>()
+            .map((file) => file.path)
+            .where((path) => path.endsWith('.dart')),
+  ]..sort();
   return [
     for (final file in files)
       for (final node in _unit(file).declarations.whereType<ClassDeclaration>())

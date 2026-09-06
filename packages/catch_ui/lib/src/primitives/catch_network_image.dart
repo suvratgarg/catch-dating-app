@@ -1,5 +1,4 @@
-import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/primitives/catch_network_image_fallback.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical network-image primitive — the single seam every remote image in
@@ -90,35 +89,5 @@ class CatchNetworkImage extends StatelessWidget {
   static bool _isBundledAsset(String url) {
     final trimmed = url.trim();
     return trimmed.startsWith('assets/') || trimmed.startsWith('packages/');
-  }
-}
-
-class CatchNetworkImageFallback extends StatelessWidget {
-  const CatchNetworkImageFallback({
-    super.key,
-    this.backgroundColor,
-    this.iconColor,
-    this.icon,
-    this.iconSize = CatchIcon.md,
-  });
-
-  final Color? backgroundColor;
-  final Color? iconColor;
-  final IconData? icon;
-  final double iconSize;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return ColoredBox(
-      color: backgroundColor ?? t.surface,
-      child: Center(
-        child: Icon(
-          icon ?? CatchIcons.imageOutlined,
-          color: iconColor ?? t.ink3,
-          size: iconSize,
-        ),
-      ),
-    );
   }
 }

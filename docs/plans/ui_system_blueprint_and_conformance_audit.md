@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.7.0
+version: 1.8.0
 updated: 2026-09-06
 owner: app_architecture
 status: active
@@ -667,8 +667,16 @@ helpers, and bundled font/license assets into `catch_ui/lib/src/foundations`.
 as the activity-palette adapter. Branded styles use package-qualified font
 families, and the existing golden loader resolves the same bundled bytes.
 The package boundary permits only Flutter, `catch_tokens`, and Phosphor;
-workspace analysis explicitly visits its library and test sources. All later
-Phase 3 sub-slices remain pending.
+workspace analysis explicitly visits its library and test sources.
+
+Phase 3b moves the provider-free surface, control shell, row-press surface,
+text/icon atoms, gap values, image loading/grade/scrim, dividers, indicators,
+and focused sizing/reveal protocols into `catch_ui/src/primitives`. The image
+fallback has its own file. Each original app file is deleted. Golden discovery
+counts both remaining app classes and extracted primitives, preserving every
+pre-move class and case instead of losing coverage at the package boundary.
+Components, patterns/adapters, entity materials, and final public-barrel cleanup
+remain the later Phase 3 sub-slices.
 
 ### Phase 4 — One registry, binding grammar
 

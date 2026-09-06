@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
+import {isComponentSourcePath} from "./lib/component_source_path.mjs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {
   conceptMetrics,
@@ -225,8 +226,8 @@ function validateContractMembers(members, component, label, {memberIds, memberSy
     if (!member?.id || !member.id.startsWith(`${label}.`)) {
       failures.push(`${memberLabel}: member id must be nested under ${label}`);
     }
-    if (sourcePath && !/^lib\/.+\.dart$/u.test(sourcePath)) {
-      failures.push(`${memberLabel}: member file must be under lib/**.dart`);
+    if (sourcePath && !isComponentSourcePath(sourcePath)) {
+      failures.push(`${memberLabel}: member file must be under lib/**.dart or packages/catch_ui/lib/**.dart`);
     }
     if (sourcePath && !fs.existsSync(fromRepo(sourcePath))) {
       failures.push(`${memberLabel}: member file does not exist: ${sourcePath}`);

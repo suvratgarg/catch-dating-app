@@ -51,13 +51,17 @@ Map<String, bool> _coreGoldenDesignations() {
   return {
     for (final row in _inventoryRows(inventory['cases']))
       if (row['typeFile'] is String &&
-          ((row['typeFile'] as String).startsWith('lib/core/widgets/')) &&
+          _isGoldenSource(row['typeFile'] as String) &&
           registrations.containsKey(_annotationKey(row)))
         registrations[_annotationKey(row)]!:
             (row['file'] as String).startsWith('widgetbook/lib/primitives/') ||
             (row['file'] as String).startsWith('widgetbook/lib/geometry/'),
   };
 }
+
+bool _isGoldenSource(String path) =>
+    path.startsWith('lib/core/widgets/') ||
+    path.startsWith('packages/catch_ui/lib/src/primitives/');
 
 String _corpusStem(String id) {
   final legacy = _referenceCases[id];

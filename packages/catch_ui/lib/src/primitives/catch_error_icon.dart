@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
 
 /// Shared icon medallion for branded error surfaces.

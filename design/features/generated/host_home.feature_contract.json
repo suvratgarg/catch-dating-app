@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:2f32d77fc4a7430e28daf736b4f6a98ab1e7e6964027f2949c5f1fd8e1282ccc",
+  "resolvedDigest": "sha256:7cb7f598d19c7ec207329754321d850014a226fae3b79427e27ddd97e5f3052d",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -2018,7 +2018,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

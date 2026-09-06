@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:c7d51c1c53d5f7b3af01a1ac45156bca613cbedda70e0a27ab5905a1ee5a3252",
+  "resolvedDigest": "sha256:8853f5a80c39c40c29b853182a8c9af5dfec75da4c662e62b4220e047b9281f7",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4854,7 +4854,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

@@ -66,7 +66,7 @@ common_globs=(
   --glob '!**/*_controller.dart'
   --glob '!**/*_notifier.dart'
   --glob '!**/data/**'
-  --glob '!lib/core/theme/catch_spacing.dart'
+  --glob '!packages/catch_ui/lib/src/primitives/catch_gap.dart'
   --glob '!build/**'
 )
 

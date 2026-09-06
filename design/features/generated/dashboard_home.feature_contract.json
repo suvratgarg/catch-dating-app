@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
-  "resolvedDigest": "sha256:7b45dfca1d798b45a54d4fa930516fd1ca7b89600aae6230fc5c0863f1170b2f",
+  "resolvedDigest": "sha256:e23dc2a683158560d3070079382bcb7b63b3972b0da2bec3cdb5100657ba22b6",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1646,7 +1646,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

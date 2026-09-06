@@ -1,4 +1,4 @@
-/// Catch shared presentation foundations.
+/// Catch shared presentation foundations and primitives.
 library;
 
 export 'src/foundations/catch_font_licenses.dart';
@@ -7,3 +7,25 @@ export 'src/foundations/catch_icons.dart';
 export 'src/foundations/catch_text_styles.dart';
 export 'src/foundations/catch_theme.dart';
 export 'src/foundations/catch_transitions.dart';
+
+export 'src/primitives/catch_bottom_sheet_grabber.dart';
+export 'src/primitives/catch_control_shell.dart';
+export 'src/primitives/catch_divider.dart';
+export 'src/primitives/catch_error_icon.dart';
+export 'src/primitives/catch_fractional_max_width.dart';
+export 'src/primitives/catch_gap.dart';
+export 'src/primitives/catch_graded_image.dart';
+export 'src/primitives/catch_icon_tile.dart';
+export 'src/primitives/catch_kicker.dart';
+export 'src/primitives/catch_loading_indicator.dart';
+export 'src/primitives/catch_mono_label.dart';
+export 'src/primitives/catch_network_image.dart';
+export 'src/primitives/catch_network_image_fallback.dart';
+export 'src/primitives/catch_page_dots.dart';
+export 'src/primitives/catch_pager_focus_boundary.dart';
+export 'src/primitives/catch_row_press_surface.dart';
+export 'src/primitives/catch_scaled_preferred_size.dart';
+export 'src/primitives/catch_scrim.dart';
+export 'src/primitives/catch_section_label.dart';
+export 'src/primitives/catch_status_dot.dart';
+export 'src/primitives/catch_surface.dart';

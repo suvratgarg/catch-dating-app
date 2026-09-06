@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:a204eec89f00ba9550f36d8c2bdc3ebcfba6ace4588c1cefa6b26799c004dfcc",
+  "resolvedDigest": "sha256:43216114558d37c1bd0bfbf805f79ff3c90532dc2a8a21ed27abe667f851f774",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5297,7 +5297,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

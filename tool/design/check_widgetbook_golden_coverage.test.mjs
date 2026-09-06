@@ -161,3 +161,17 @@ test("keeps generated public Catch classes in the denominator", () => {
     /CatchGeneratedProvider.*missing registered/u,
   );
 });
+
+
+test("preserves coverage when primitives move across the package boundary", () => {
+  const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
+    "lib/core/widgets/", "packages/catch_ui/lib/src/primitives/",
+  ));
+  const result = validate(moved);
+  assert.deepEqual(result.failures, []);
+  assert.equal(result.surfaceCount, 3);
+  assert.equal(result.coveredCount, 3);
+  assert.equal(result.designatedCaseCount, 2);
+  moved.inventory.generated.pop();
+  assert.match(validate(moved).failures.join("\n"), /CatchIndirect.*missing registered/u);
+});
