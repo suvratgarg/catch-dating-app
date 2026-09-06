@@ -8,7 +8,6 @@ import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart'
 import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';

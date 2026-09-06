@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
-  "resolvedDigest": "sha256:b90133367afcb0f3c24959d94f3979a5b48bc63f111c4fefae40f3f8a39af7aa",
+  "resolvedDigest": "sha256:fdc2c5ba85408a3e580b6177ea32deae4c2868342b7bf9051c0fda90f04c5e2c",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1569,7 +1569,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

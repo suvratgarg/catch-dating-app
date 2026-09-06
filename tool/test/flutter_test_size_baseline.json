@@ -5,7 +5,7 @@
   "allowedFindings": [
     {
       "path": "test/chats/chat_screen_test.dart",
-      "maxLines": 2082
+      "maxLines": 2081
     },
     {
       "path": "test/core/widgets/catch_field/input_test.dart",

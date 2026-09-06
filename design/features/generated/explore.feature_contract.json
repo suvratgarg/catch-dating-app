@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:34df5ef48c7bce9abb2b37d70833e88a685055e61ec151e1879cd7ffac15ddd8",
+  "resolvedDigest": "sha256:55ac39b8796fceef7e0d1ca679bb3d8056ca90b33795fdeb7d35f58d1bc8aee3",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1734,7 +1734,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

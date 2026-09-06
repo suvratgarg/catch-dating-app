@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:d2e957ceeab139b12ec648273585a6faa01a3785d6137dcc04d32993a646f60b",
+  "resolvedDigest": "sha256:b3b8c54010f1a661e085b7224deb7953ce7ad859767e0eab4eccea848b82043e",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -810,7 +810,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

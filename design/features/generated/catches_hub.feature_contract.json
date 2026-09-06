@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
-  "resolvedDigest": "sha256:6bbcd414a0e5f53fdd6b678b3d87b9593ab944c9a6afa1bf6a9e12625be1bab1",
+  "resolvedDigest": "sha256:7ab278858f06f536c4330733ddc1c5f28782b0a4489236ce121e4e38303baa72",
   "feature": {
     "id": "feature.catches_hub",
     "name": "Catches Hub",
@@ -769,7 +769,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

@@ -683,8 +683,13 @@ remain the later Phase 3 sub-slices.
 Phase 3c begins with provider-free badges, icon actions, status displays, charts,
 record rows, section headers, and timestamp layout. These component bodies and
 caller-owned copy are preserved at their package home; original files are
-deleted and their exact corpus coverage follows the move. The l10n-coupled
-field/section/sheet families remain the next component extraction group.
+deleted and their exact corpus coverage follows the move. Buttons and index
+rows follow, with button label/loading anatomy in individual files. Share-card
+footers receive their existing localized brand label from app callers;
+step progress receives a caller-owned counter formatter. The latter has only
+catalog/test consumers, so its unused app-catalog entry is removed. The copy
+ownership gate scans the package as well as the app. The remaining l10n-coupled
+field/section/sheet families retain their later extraction work.
 
 ### Phase 4 — One registry, binding grammar
 

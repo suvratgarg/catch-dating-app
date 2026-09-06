@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:e0a168b71ba8de596203b7346b5b81f9dd70fe52c0f7bfa3fb655777fb8fa71f",
+  "resolvedDigest": "sha256:a9fa53b96ce61abaab75836becb6383fe8604d9c11f1ccef8f4a693d611f3433",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5137,7 +5137,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

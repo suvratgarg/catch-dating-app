@@ -1,6 +1,5 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CatchStepProgress extends StatelessWidget {
@@ -8,6 +7,7 @@ class CatchStepProgress extends StatelessWidget {
     super.key,
     required this.currentStep,
     required this.totalSteps,
+    required this.counterLabelBuilder,
     this.label,
     this.showCounter = true,
   }) : assert(totalSteps > 0),
@@ -15,6 +15,9 @@ class CatchStepProgress extends StatelessWidget {
 
   final int currentStep;
   final int totalSteps;
+
+  /// Formats the clamped one-based step and total using caller-owned copy.
+  final String Function(int step, int total) counterLabelBuilder;
   final String? label;
   final bool showCounter;
 
@@ -42,10 +45,7 @@ class CatchStepProgress extends StatelessWidget {
                 const Spacer(),
               if (showCounter)
                 Text(
-                  context.l10n.coreCatchStepProgressTextValue1Totalsteps(
-                    value1: clampedStep + 1,
-                    totalSteps: totalSteps,
-                  ),
+                  counterLabelBuilder(clampedStep + 1, totalSteps),
                   style: CatchTextStyles.labelL(context, color: t.ink2),
                 ),
             ],

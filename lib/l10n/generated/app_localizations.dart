@@ -910,7 +910,7 @@ abstract class AppLocalizations {
   /// **'New match'**
   String get coreCatchPersonRowLabelNewMatch;
 
-  /// Product copy used by lib/core/widgets/catch_share_card_footer.dart (Text).
+  /// Brand footer copy supplied by chat, organizer, and event share-card callers.
   ///
   /// In en, this message translates to:
   /// **'CATCH'**
@@ -7094,15 +7094,6 @@ abstract class AppLocalizations {
   String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
     required int clampedStep,
     required int total,
-  });
-
-  /// Product copy used by lib/core/widgets/catch_step_progress.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}/{totalSteps}'**
-  String coreCatchStepProgressTextValue1Totalsteps({
-    required Object value1,
-    required Object totalSteps,
   });
 
   /// Product copy used by lib/core/widgets/catch_top_bar.dart (label).

@@ -15,6 +15,7 @@ const _copyArgumentNames = <String>{
   'attendeeExperience',
   'attendeePromise',
   'body',
+  'brandLabel',
   'caption',
   'ctaLabel',
   'description',
@@ -92,6 +93,7 @@ const _copyMemberNames = <String>{
   'badgeLabel',
   'body',
   'bodyFor',
+  'brandLabel',
   'cancelDetail',
   'clusterLabel',
   'countLabel',
@@ -262,10 +264,17 @@ Future<void> main(List<String> arguments) async {
 }
 
 ScanResult scanMobileCopy(Directory root) {
-  final lib = Directory('${root.path}/lib');
+  final sourceRoots = [
+    Directory('${root.path}/lib'),
+    Directory('${root.path}/packages/catch_ui/lib'),
+  ];
   final files =
-      lib
-          .listSync(recursive: true, followLinks: false)
+      sourceRoots
+          .where((directory) => directory.existsSync())
+          .expand(
+            (directory) =>
+                directory.listSync(recursive: true, followLinks: false),
+          )
           .whereType<File>()
           .where((file) => _isCandidate(file.path, root.path))
           .toList()
@@ -716,6 +725,42 @@ Widget build(BuildContext context) => Text('Fixture title');
     throw StateError('File exemption escaped its developer-only boundary.');
   } on FormatException {
     // Expected: production surfaces cannot hide copy with a file exemption.
+  }
+  final fixtureRoot = Directory.systemTemp.createTempSync('catch-copy-roots-');
+  try {
+    for (final entry in const {
+      'lib/example.dart': "Widget build() => Text('App copy');",
+      'packages/catch_ui/lib/src/components/example.dart':
+          "Widget build() => Text('Package copy');",
+      'packages/catch_ui/lib/src/components/caller_copy.dart':
+          'Widget build(String label) => Text(label);',
+      'packages/catch_ui/lib/example.g.dart':
+          "Widget generated() => Text('Generated copy');",
+      'packages/catch_ui/test/example_test.dart':
+          "Widget fixture() => Text('Test copy');",
+    }.entries) {
+      final file = File('${fixtureRoot.path}/${entry.key}');
+      file.parent.createSync(recursive: true);
+      file.writeAsStringSync(entry.value);
+    }
+    final scan = scanMobileCopy(fixtureRoot);
+    final found = scan.findings.map((finding) => finding.text).toSet();
+    if (scan.checkedFiles != 3 ||
+        scan.findings.length != 2 ||
+        !found.containsAll({'App copy', 'Package copy'})) {
+      throw StateError('App/package copy-root self-test failed: $found');
+    }
+    try {
+      scanDartSource(
+        'packages/catch_ui/lib/src/components/example.dart',
+        fixtureSource,
+      );
+      throw StateError('A package widget hid copy with a file exemption.');
+    } on FormatException {
+      // Shared production components cannot opt out as developer fixtures.
+    }
+  } finally {
+    fixtureRoot.deleteSync(recursive: true);
   }
   stdout.writeln('Mobile copy ownership scanner self-test passed.');
 }

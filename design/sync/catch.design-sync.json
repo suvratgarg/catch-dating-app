@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "770c5060e3728beb815730f224c7fddfc76487b81d4b972cbc50f89776d3239e",
+  "sourceDigest": "fc21ac55d512c129f78cf08ebe15341c5f738935fa3f971921ce2acfb89af62c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "770c5060e3728beb815730f224c7fddfc76487b81d4b972cbc50f89776d3239e",
-    "contractDigest": "770c5060e3728beb815730f224c7fddfc76487b81d4b972cbc50f89776d3239e"
+    "digest": "fc21ac55d512c129f78cf08ebe15341c5f738935fa3f971921ce2acfb89af62c",
+    "contractDigest": "fc21ac55d512c129f78cf08ebe15341c5f738935fa3f971921ce2acfb89af62c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "229f3e23f872e84e9590a5ab31b78c86a990627d2b6db99a29a5b5169823e839",
+    "handoffRequestDigest": "44ed46405cfd92b6f59e6d61724565bc9a54273c04706e4b8f21106a50d56bbc",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 227,
+    "publicClassCount": 228,
     "conceptCount": 68,
-    "memberCount": 141,
-    "membersPerConcept": 2.07,
+    "memberCount": 142,
+    "membersPerConcept": 2.09,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 141,
+      "member": 142,
       "screen": 15
     },
     "collisionCount": 36,
@@ -390,6 +390,7 @@
           "CatchBrandedSheetHeader",
           "CatchDraggableSheetShell",
           "CatchPlainSheetHeader",
+          "CatchShareCardFooter",
           "CatchShareCardSheet"
         ]
       },
@@ -588,7 +589,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.button",
       "dartSymbol": "CatchButton",
-      "dartFile": "lib/core/widgets/catch_button.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_button.dart",
       "figmaName": "Catch/Button",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -613,7 +614,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Button",
       "claudeAllowed": true,
-      "contractDigest": "346819b44fdf9c682249b9c71848a132426020c601937d0535fa30899cc0bf9f"
+      "contractDigest": "fee8e8b75b88195adeb4dfe36225af7054070e8996f11574c86d6735d14d9d00"
     },
     {
       "contractId": "catch.chip",
@@ -1175,7 +1176,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "0372dc4e867f09830621b293f20d8696492b0a1b9ece0b1258ca0a851395f8ca"
+      "contractDigest": "fff878de3770db76f344440d881a052fc4ae657dee1eea27ba38f7f511e978ea"
     },
     {
       "contractId": "catch.icon_button",
@@ -2007,7 +2008,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "b8ab84b5023ae4d995ee72d1ecadebad4e00ac74d2babdc5155f7c46ff85ee45"
+      "contractDigest": "308551e240013e572ff1846a64defebd8519be3efbcd3d6b70662ea88224f5d9"
     },
     {
       "contractId": "catch.tab_bar",
@@ -2750,7 +2751,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.index_row",
       "dartSymbol": "CatchIndexRow",
-      "dartFile": "lib/core/widgets/catch_index_row.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_index_row.dart",
       "figmaName": "Catch/IndexRow",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2775,7 +2776,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "IndexRow",
       "claudeAllowed": true,
-      "contractDigest": "9fe1df8656180aab0ee12e4d8f94fdab26946d85fa111cae4d3d68a38eb603c2"
+      "contractDigest": "d515a5efddc92efc95f3c14da793188ce1b895656c1b8af9ab5b7db3afd894af"
     },
     {
       "contractId": "catch.organizer_poster",

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:401717db58c0e473d4f18c2c86e4db9efd16507c92f836c5e375875e8e8bc41c",
-  "resolvedDigest": "sha256:1ede7a3c870ac4600b46b6d28e7b02b1a8ba73df0fdfe011ad6ec22f5556389e",
+  "resolvedDigest": "sha256:19633adf64f9bc3b3cb9a81dbf06b9e63855785388cf45e8079d617ae4288024",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -3885,7 +3885,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

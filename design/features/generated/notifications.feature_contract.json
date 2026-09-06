@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
-  "resolvedDigest": "sha256:f30378f171110a2f3d376b4c25c6c0d22f1c33d2a7574b66be9127987dde4fcf",
+  "resolvedDigest": "sha256:f8b570a2c8778c8138f8f00adecae112fb64a1ef7e80e59420a8926ef2cd6a78",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1115,7 +1115,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

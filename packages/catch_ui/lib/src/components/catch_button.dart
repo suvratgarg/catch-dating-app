@@ -1,5 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_button_label.dart';
+import 'package:catch_ui/src/components/catch_button_loading_dots.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchButtonVariant { primary, secondary, ghost, danger, light }
@@ -324,86 +327,6 @@ class _CatchButtonState extends State<CatchButton> {
             child: interactive,
           )
         : interactive;
-  }
-}
-
-class CatchButtonLabel extends StatelessWidget {
-  const CatchButtonLabel({
-    super.key,
-    required this.label,
-    required this.color,
-    required this.textStyle,
-    this.icon,
-    this.gap = CatchSpacing.micro6,
-    this.fullWidth = false,
-    this.allowMultiline = false,
-  });
-
-  final String label;
-  final Color color;
-  final Widget? icon;
-  final double gap;
-  final bool fullWidth;
-  final bool allowMultiline;
-  final TextStyle textStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final iconWidget = icon;
-    final labelWidget = Text(
-      label,
-      maxLines: allowMultiline ? null : 1,
-      overflow: allowMultiline ? TextOverflow.visible : TextOverflow.ellipsis,
-      textAlign: TextAlign.center,
-      style: textStyle.copyWith(color: color),
-    );
-    final content = Row(
-      mainAxisSize: allowMultiline && fullWidth
-          ? MainAxisSize.max
-          : MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (iconWidget != null) ...[
-          IconTheme(
-            data: IconThemeData(color: color, size: CatchIcon.md),
-            child: iconWidget,
-          ),
-          SizedBox(width: gap),
-        ],
-        Flexible(child: labelWidget),
-      ],
-    );
-
-    return content;
-  }
-}
-
-class CatchButtonLoadingDots extends StatelessWidget {
-  const CatchButtonLoadingDots({super.key, required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      key: const ValueKey('catch-button-loading'),
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(3, (index) {
-        return Padding(
-          padding: EdgeInsets.only(left: index == 0 ? 0 : CatchSpacing.s1),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: color.withValues(
-                alpha: CatchOpacity.loadingDotAlphas[index],
-              ),
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-            ),
-            child: const SizedBox.square(dimension: CatchSpacing.micro6),
-          ),
-        );
-      }),
-    );
   }
 }
 

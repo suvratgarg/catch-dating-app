@@ -102,7 +102,7 @@ void main() {
   test('state class methods are folded into owning widget fingerprints', () {
     final result = extractFingerprints(
       repoRoot: repoRoot,
-      files: ['lib/core/widgets/catch_button.dart'],
+      files: ['packages/catch_ui/lib/src/components/catch_button.dart'],
       generatedAt: DateTime.utc(2026, 7, 2),
     );
     expect(result['failures'], isEmpty);

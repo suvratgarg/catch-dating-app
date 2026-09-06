@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:5ff6879f74d39427a04007b10f012e1b8795ed0ea9136521e1de804ec9bbab1b",
+  "resolvedDigest": "sha256:63b510b8c941e5b731039d03d14b211db82a8166a932a27ecec6fdbf58f6fb35",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2039,7 +2039,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

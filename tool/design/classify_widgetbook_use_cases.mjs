@@ -214,8 +214,8 @@ export function applyScreenScopeDispositions(result, policy) {
 function selfTest() {
   const component = {
     file: "widgetbook/lib/primitives/sample.dart", builder: "sample",
-    type: "CatchButton", name: "Default", typeFile: "lib/core/widgets/catch_button.dart",
-    productionReferences: [{symbol: "CatchButton", file: "lib/core/widgets/catch_button.dart", base: "StatelessWidget", ui: true}],
+    type: "CatchButton", name: "Default", typeFile: "packages/catch_ui/lib/src/components/catch_button.dart",
+    productionReferences: [{symbol: "CatchButton", file: "packages/catch_ui/lib/src/components/catch_button.dart", base: "StatelessWidget", ui: true}],
     wrappers: [],
   };
   const body = {...component, type: "ExampleBody", typeFile: "lib/example/presentation/widgets/example_body.dart",

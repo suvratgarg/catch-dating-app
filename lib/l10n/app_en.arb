@@ -1048,7 +1048,7 @@
   },
   "coreCatchShareCardFooterTextCatch": "CATCH",
   "@coreCatchShareCardFooterTextCatch": {
-    "description": "Product copy used by lib/core/widgets/catch_share_card_footer.dart (Text).",
+    "description": "Brand footer copy supplied by chat, organizer, and event share-card callers.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_share_card_footer"
@@ -8192,17 +8192,6 @@
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_step_flow_header"
-  },
-  "coreCatchStepProgressTextValue1Totalsteps": "{value1}/{totalSteps}",
-  "@coreCatchStepProgressTextValue1Totalsteps": {
-    "description": "Product copy used by lib/core/widgets/catch_step_progress.dart (Text).",
-    "placeholders": {
-      "value1": {},
-      "totalSteps": {}
-    },
-    "x-audience": "shared",
-    "x-owner": "product",
-    "x-surface": "core.widgets.catch_step_progress"
   },
   "coreCatchTopBarLabelViewNameProfile": "View {name} profile",
   "@coreCatchTopBarLabelViewNameProfile": {

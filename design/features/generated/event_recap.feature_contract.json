@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
-  "resolvedDigest": "sha256:ce02b630d6de98ac9ed0327b65a6bbf08d358c512d382b400b4ea0205f2377ea",
+  "resolvedDigest": "sha256:abac65b8e1a551a05440cf41c51d61dd6cec211900a723efa9ada4a5daa20033",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -898,7 +898,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

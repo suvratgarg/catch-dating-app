@@ -201,7 +201,7 @@ scan_raw_material_buttons() {
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_adaptive_picker.dart' \
-    --glob '!lib/core/widgets/catch_button.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_button.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_text_button.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"

@@ -777,9 +777,10 @@ void _registerCatchPrimitivesControlsTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchStepProgress(
+            counterLabelBuilder: (step, total) => '$step/$total',
             label: 'Profile setup',
             currentStep: 1,
             totalSteps: 5,

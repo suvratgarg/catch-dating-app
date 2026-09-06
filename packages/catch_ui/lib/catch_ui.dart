@@ -1,17 +1,23 @@
-/// Catch shared presentation foundations and primitives.
+/// Catch shared presentation foundations, primitives, and components.
 library;
 
 export 'src/components/catch_analytics_bar.dart';
 export 'src/components/catch_badge.dart';
+export 'src/components/catch_button.dart';
+export 'src/components/catch_button_label.dart';
+export 'src/components/catch_button_loading_dots.dart';
 export 'src/components/catch_count_badge.dart';
 export 'src/components/catch_count_pill.dart';
 export 'src/components/catch_icon_action.dart';
 export 'src/components/catch_icon_button.dart';
+export 'src/components/catch_index_row.dart';
 export 'src/components/catch_inline_status.dart';
 export 'src/components/catch_mini_bar_chart.dart';
 export 'src/components/catch_record_row.dart';
 export 'src/components/catch_section_header.dart';
+export 'src/components/catch_share_card_footer.dart';
 export 'src/components/catch_stat_column.dart';
+export 'src/components/catch_step_progress.dart';
 export 'src/components/catch_text_button.dart';
 export 'src/components/catch_timestamped_message_text.dart';
 export 'src/components/catch_vertical_section.dart';

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:719eeea2e8499c5be573723109d578493813cb3e2a93a871e534d6de5e5f2e79",
+  "resolvedDigest": "sha256:7eb427d32f138b5b43a3c1e9ba9a29ce53ce5b83c70d014017dc12c665de11d1",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -3178,7 +3178,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

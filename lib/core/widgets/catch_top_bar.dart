@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -13,7 +12,7 @@ import 'package:flutter/material.dart';
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
     show CatchContractConstraints, CatchContractFieldConstraints;
 export 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-export 'package:catch_ui/catch_ui.dart';
+export 'package:catch_ui/catch_ui.dart' show CatchIconAction;
 
 part 'catch_top_bar_components.dart';
 

@@ -14,7 +14,6 @@ import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
@@ -44,13 +43,11 @@ import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -69,6 +66,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -1336,9 +1334,15 @@ Widget catchStepProgressCatalogStates(BuildContext context) {
         label: 'counter / unlabeled',
         child: Column(
           children: [
-            CatchStepProgress(currentStep: 1, totalSteps: 5, label: 'Basics'),
+            CatchStepProgress(
+              counterLabelBuilder: (step, total) => '$step/$total',
+              currentStep: 1,
+              totalSteps: 5,
+              label: 'Basics',
+            ),
             SizedBox(height: CatchSpacing.s4),
             CatchStepProgress(
+              counterLabelBuilder: (step, total) => '$step/$total',
               currentStep: 3,
               totalSteps: 5,
               showCounter: false,
@@ -3410,14 +3414,18 @@ Widget catchShareCardFooterCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
     title: 'CatchShareCardFooter',
     catalogId: 'core.widgets.catch_share_card_footer',
-    children: const [
+    children: [
       _StateCard(
         label: 'default',
-        child: CatchShareCardFooter(trailing: 'Curated singles event'),
+        child: CatchShareCardFooter(
+          brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
+          trailing: 'Curated singles event',
+        ),
       ),
       _StateCard(
         label: 'long trailing',
         child: CatchShareCardFooter(
+          brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Hosted by The Longest Possible Club Collective',
         ),
       ),

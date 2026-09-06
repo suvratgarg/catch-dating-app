@@ -2393,7 +2393,10 @@ is committed. An allowlist entry is only appropriate for a technical
 identifier, test/demo fixture, or user-authored value and must contain a narrow
 reason.
 
-The ownership gate covers more than direct `Text(...)` calls: copy-shaped
+The ownership gate scans both app `lib/` and `packages/catch_ui/lib/`.
+Shared components receive caller-localized strings and formatters; they never
+import the app catalog or introduce English defaults. The gate covers more than
+direct `Text(...)` calls: copy-shaped
 named arguments, default parameters and constructor initializers,
 presentation-state members, validation/share/status helpers, snackbar and
 confirmation helpers, and Event Success display-enum arguments are all

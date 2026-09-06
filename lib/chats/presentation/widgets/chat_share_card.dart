@@ -4,7 +4,6 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -102,6 +101,7 @@ class ChatShareCard extends StatelessWidget {
             ),
             gapH14,
             CatchShareCardFooter(
+              brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
               trailing: chatContextStampFor(event),
               trailingColor: accent,
             ),

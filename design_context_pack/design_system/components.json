@@ -536,7 +536,7 @@
       "summary": "Canonical action button for product CTAs, destructive actions, and secondary commands.",
       "dart": {
         "symbol": "CatchButton",
-        "file": "lib/core/widgets/catch_button.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_button.dart",
         "constructors": [
           "CatchButton",
           "CatchButton.command",
@@ -733,7 +733,7 @@
           {
             "id": "catch.button.label",
             "symbol": "CatchButtonLabel",
-            "file": "lib/core/widgets/catch_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_button_label.dart",
             "summary": "Direct button label renderer for icon, loading, and typography composition.",
             "states": [
               "label",
@@ -751,7 +751,7 @@
           {
             "id": "catch.button.loading_dots",
             "symbol": "CatchButtonLoadingDots",
-            "file": "lib/core/widgets/catch_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_button_loading_dots.dart",
             "summary": "Direct loading-dot renderer used inside loading buttons.",
             "states": [
               "primary",
@@ -5251,6 +5251,23 @@
               "conceptId": "catch.sheet",
               "parentConceptId": "catch.sheet",
               "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.sheet"
+            }
+          },
+          {
+            "id": "catch.sheet.share_card_footer",
+            "symbol": "CatchShareCardFooter",
+            "file": "packages/catch_ui/lib/src/components/catch_share_card_footer.dart",
+            "summary": "Shared brand footer for card previews, with caller-localized brand and trailing copy.",
+            "states": [
+              "default",
+              "long-trailing"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.sheet"
             }
           },
@@ -10143,7 +10160,7 @@
               "partial",
               "complete"
             ],
-            "file": "lib/core/widgets/catch_step_progress.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_step_progress.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.step_header",
@@ -14462,7 +14479,7 @@
       "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
       "dart": {
         "symbol": "CatchIndexRow",
-        "file": "lib/core/widgets/catch_index_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_index_row.dart",
         "constructors": [
           "CatchIndexRow"
         ]

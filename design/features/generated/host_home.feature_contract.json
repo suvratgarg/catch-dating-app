@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:77fcefc32e1a211a5f5d89954ae70d9af6c55e18da1b1a20e0d5a812d0f8ff5d",
+  "resolvedDigest": "sha256:2b2102602bbbcb3dcc5212ab3e2468ebe0bcccf88b9ea781834e8f65d6b2b02f",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1894,7 +1894,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",

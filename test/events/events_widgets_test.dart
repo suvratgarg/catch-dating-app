@@ -3,14 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -756,7 +754,11 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              const CatchStepProgress(currentStep: 1, totalSteps: 4),
+              CatchStepProgress(
+                currentStep: 1,
+                totalSteps: 4,
+                counterLabelBuilder: (step, total) => '$step/$total',
+              ),
               CatchButton(
                 label: 'Next',
                 onPressed: () => footerTapped = true,

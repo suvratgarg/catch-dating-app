@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:6143d43e67fc770b0a17234078b33ed2c4ea48ec9fc45edb7cef737b2779c215",
+  "resolvedDigest": "sha256:d4d559cabf15a0a9b4357156a4579f771a03f314f42ebe21e151dfe5206befd7",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1109,7 +1109,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
