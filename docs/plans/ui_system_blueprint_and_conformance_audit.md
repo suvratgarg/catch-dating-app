@@ -713,6 +713,12 @@ individual package owners with unchanged bodies. Search and OTP keep app-side
 constraint validation and localization until their remaining D2 extraction.
 A direct text-input catalog matrix covers empty, populated and disabled states
 at both themes and text scale 2.0, retiring its former coverage waiver.
+Menus, their anchor/row owners, bottom docks, draggable sheet shells and inline
+message surfaces also move with unchanged bodies. Anchored menu placement gains
+direct top/bottom previews while retaining route-neutral obstruction metrics.
+The shared package enables the Catch analyzer plugin at its own analysis root.
+Exact foundation-definition and raw-control ownership follows the moved files;
+seeded package-neighbor probes prevent extraction from bypassing enforcement.
 
 ### Phase 4 — One registry, binding grammar
 

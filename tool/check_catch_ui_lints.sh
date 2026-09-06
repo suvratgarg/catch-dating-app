@@ -757,6 +757,58 @@ DART
   fi
 done
 
+# Menu overlays are owned by the exact package anchor, not neighboring files.
+for menu_scope in \
+  "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" \
+  "packages/catch_ui/lib/src/components/menu_anchor_consumer.dart" \
+  "lib/core/widgets/catch_menu.dart"; do
+  probe_path="$probe_root/$menu_scope"
+  stage_probe "menu anchor ownership $menu_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget menuProbe() => MenuAnchor(menuChildren: const []);
+DART
+  if [[ "$menu_scope" == "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" ]]; then
+    expect_probe exact catch_no_raw_button_control 0
+    expect_probe clean
+  else
+    expect_probe exact catch_no_raw_button_control 1
+  fi
+done
+
+# Extracted L1 definitions retain their exact ownership; a new neighbor does not.
+for foundation_scope in \
+  "packages/catch_ui/lib/src/foundations/catch_text_styles.dart" \
+  "packages/catch_ui/lib/src/foundations/typography_consumer.dart"; do
+  probe_path="$probe_root/$foundation_scope"
+  stage_probe "foundation definition ownership $foundation_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+const probeStyle = TextStyle();
+DART
+  if [[ "$foundation_scope" == "packages/catch_ui/lib/src/foundations/catch_text_styles.dart" ]]; then
+    expect_probe clean
+  else
+    expect_probe exact catch_no_raw_text_style 1
+  fi
+done
+
+for image_scope in \
+  "packages/catch_ui/lib/src/primitives/catch_network_image.dart" \
+  "packages/catch_ui/lib/src/primitives/network_image_consumer.dart"; do
+  probe_path="$probe_root/$image_scope"
+  stage_probe "network image ownership $image_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget imageProbe(String url) => Image.network(url);
+DART
+  if [[ "$image_scope" == "packages/catch_ui/lib/src/primitives/catch_network_image.dart" ]]; then
+    expect_probe clean
+  else
+    expect_probe exact catch_no_raw_network_image 1
+  fi
+done
+
 # L0 definitions own literal values; only the token package receives this
 # exemption. The identical app-local definition must still be diagnosed.
 for token_scope in \

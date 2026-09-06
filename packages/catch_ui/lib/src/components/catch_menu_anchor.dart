@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_menu.dart';
+import 'package:catch_ui/src/components/catch_menu_item.dart';
+import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:flutter/material.dart';
-
-enum CatchMenuItemRole { action, choice }
 
 typedef CatchMenuAnchorBuilder =
     Widget Function(
@@ -12,35 +12,6 @@ typedef CatchMenuAnchorBuilder =
       MenuController controller,
       Widget? child,
     );
-
-class CatchMenuItem<T> {
-  const CatchMenuItem({
-    required this.value,
-    required this.label,
-    this.sublabel,
-    this.icon,
-    this.selected = false,
-    this.danger = false,
-    this.enabled = true,
-    this.role = CatchMenuItemRole.action,
-    this.startsSection = false,
-    this.onSelected,
-  }) : assert(
-         !selected || role == CatchMenuItemRole.choice,
-         'Only choice rows can be selected.',
-       );
-
-  final T value;
-  final String label;
-  final String? sublabel;
-  final IconData? icon;
-  final bool selected;
-  final bool danger;
-  final bool enabled;
-  final CatchMenuItemRole role;
-  final bool startsSection;
-  final ValueChanged<T>? onSelected;
-}
 
 /// Anchors a Catch menu and matches its panel to the local trigger lane.
 class CatchMenuAnchor<T> extends StatefulWidget {
@@ -191,148 +162,3 @@ const _catchMenuAnchorStyle = MenuStyle(
   surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
   padding: WidgetStatePropertyAll(EdgeInsets.zero),
 );
-
-/// Handoff `Menu`: anchored surface panel of selectable rows.
-class CatchMenu<T> extends StatelessWidget {
-  const CatchMenu({
-    super.key,
-    required this.items,
-    this.onSelected,
-    this.width,
-  });
-
-  final List<CatchMenuItem<T>> items;
-  final void Function(T value, CatchMenuItem<T> item)? onSelected;
-  final double? width;
-
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final viewportHeight = math.max(
-      0.0,
-      mediaQuery.size.height - mediaQuery.padding.vertical,
-    );
-    final maxHeight = CatchLayout.menuMaxHeightFor(viewportHeight);
-
-    return CatchSurface(
-      elevation: CatchSurfaceElevation.overlay,
-      radius: CatchRadius.md,
-      borderRole: CatchBorderRole.boundary,
-      padding: EdgeInsets.zero,
-      width: width,
-      clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: SingleChildScrollView(
-          primary: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final indexed in items.indexed) ...[
-                if (indexed.$1 > 0 && indexed.$2.startsSection)
-                  const CatchDivider.fieldRow(indent: 0),
-                CatchMenuRow<T>(item: indexed.$2, onSelected: onSelected),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CatchMenuRow<T> extends StatelessWidget {
-  const CatchMenuRow({super.key, required this.item, required this.onSelected});
-
-  final CatchMenuItem<T> item;
-  final void Function(T value, CatchMenuItem<T> item)? onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = _menuItemColor(t, item);
-    final onTap = item.enabled
-        ? () {
-            item.onSelected?.call(item.value);
-            onSelected?.call(item.value, item);
-          }
-        : null;
-
-    return Semantics(
-      button: item.role == CatchMenuItemRole.action,
-      enabled: item.enabled,
-      selected: item.selected,
-      inMutuallyExclusiveGroup: item.role == CatchMenuItemRole.choice,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: CatchLayout.menuRowMinHeight,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.micro14,
-                vertical: CatchLayout.menuRowVerticalPadding,
-              ),
-              child: Row(
-                children: [
-                  if (item.icon != null) ...[
-                    Icon(
-                      item.icon,
-                      size: CatchLayout.menuRowIconSize,
-                      color: item.danger ? t.danger : t.ink2,
-                    ),
-                    const SizedBox(width: CatchLayout.menuRowGap),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          item.label,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.labelL(context, color: color),
-                        ),
-                        if (item.sublabel != null &&
-                            item.sublabel!.trim().isNotEmpty) ...[
-                          const SizedBox(height: CatchSpacing.micro2),
-                          Text(
-                            item.sublabel!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.menuSupporting(
-                              context,
-                              color: t.ink3,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (item.selected) ...[
-                    const SizedBox(width: CatchLayout.menuRowGap),
-                    Icon(
-                      CatchIcons.check,
-                      size: CatchLayout.menuRowCheckSize,
-                      color: t.ink,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-Color _menuItemColor<T>(CatchTokens t, CatchMenuItem<T> item) {
-  if (!item.enabled) return t.ink3;
-  if (item.danger) return t.danger;
-  return t.ink;
-}

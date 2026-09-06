@@ -169,6 +169,15 @@ const _excludedPathFragments = <String>[
   '/lib/l10n/generated/',
 ];
 
+// These exact L1 definitions replace the former core/theme owners.
+// Neighboring foundation files remain checked like any other shared source.
+const _foundationDefinitionPaths = <String>{
+  '/packages/catch_ui/lib/src/foundations/catch_fonts.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_icons.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_theme.dart',
+};
+
 const _spacingNamedArguments = <String>{
   'height',
   'width',
@@ -757,6 +766,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   bool _isAppPath(String path) {
     return path.contains('/lib/') &&
         !_excludedPathFragments.any(path.contains) &&
+        !_foundationDefinitionPaths.any(path.endsWith) &&
         !path.endsWith('.g.dart') &&
         !path.endsWith('.freezed.dart');
   }
@@ -793,7 +803,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
-    return path.contains('/lib/core/widgets/') ||
+    return path.contains('/packages/catch_ui/lib/src/') ||
+        path.contains('/lib/core/widgets/') ||
         path.contains('/lib/core/presentation/') ||
         path.contains('/presentation/');
   }
@@ -983,7 +994,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (typeName == 'Image' &&
         constructorName == 'network' &&
-        !_isCoreWidgetPrimitivePath) {
+        !_isCoreWidgetPrimitivePath &&
+        !path.endsWith(
+          '/packages/catch_ui/lib/src/primitives/catch_network_image.dart',
+        )) {
       _reportAtNode(node, CatchUiLayoutRules.noRawNetworkImage);
     }
 
@@ -2133,7 +2147,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchMenuImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_menu.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_menu_anchor.dart',
+    );
   }
 
   bool get _isCatchTextButtonImplementationPath {

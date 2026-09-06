@@ -55,6 +55,8 @@ import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
+import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
+    as _widgetbook_workspace_primitives_menu_anchor_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
@@ -2747,6 +2749,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchScrimContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Menus',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMenuAnchor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bottom anchored menu',
+                builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
+                    .catchMenuAnchorBottom,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Top anchored menu',
+                builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
+                    .catchMenuAnchorTop,
               ),
             ],
           ),

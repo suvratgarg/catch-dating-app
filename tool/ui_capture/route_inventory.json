@@ -1197,7 +1197,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 840,
+      "line": 839,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1206,7 +1206,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1018,
+      "line": 1017,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",

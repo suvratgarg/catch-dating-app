@@ -116,3 +116,12 @@ test("UI source and tests both receive explicit analyzer targets", () => {
     args: ["analyze", "lib", "test", "--fatal-infos"],
   });
 });
+
+// Catch UI is excluded from root analysis, so its own options must retain the
+// semantic plugin when source moves across that package boundary.
+test("the shared UI package enables the Catch semantic lint plugin", () => {
+  const optionsUrl = new URL("../../packages/catch_ui/analysis_options.yaml", import.meta.url);
+  const options = fs.readFileSync(optionsUrl, "utf8");
+  assert.match(options, /^plugins:\n  catch_ui_lints:\n    path: \.\.\/catch_ui_lints$/mu);
+  assert.ok(fs.existsSync(new URL("../catch_ui_lints/pubspec.yaml", optionsUrl)));
+});

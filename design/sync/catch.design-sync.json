@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "560f6d6588fe39c08925ebcafd4d4739cf0fadbb8615987798e54d54cfa6e8b2",
+  "sourceDigest": "958f592b2f5d66748c6cba61e33b85a440549302109432df4b32360152d54b56",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "560f6d6588fe39c08925ebcafd4d4739cf0fadbb8615987798e54d54cfa6e8b2",
-    "contractDigest": "560f6d6588fe39c08925ebcafd4d4739cf0fadbb8615987798e54d54cfa6e8b2"
+    "digest": "958f592b2f5d66748c6cba61e33b85a440549302109432df4b32360152d54b56",
+    "contractDigest": "958f592b2f5d66748c6cba61e33b85a440549302109432df4b32360152d54b56"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b61e51f455027d3d35e7c3d2516e6d5e179474cd8da954d4ef4fce913e3ce6fc",
+    "handoffRequestDigest": "bb82f7b9a8dd2dec3c494f0f8236dea02dcba1356fc6b8abe26264b134d9da60",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1181,7 +1181,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "72ff00ff6ae0e6f87859b8f3fc07405bba33d5a77cacc2cbb36aa307b49d5dac"
+      "contractDigest": "95b48d64338d615b5d14191d453a40ef295c4c35d5a12d29708d4994863ebac5"
     },
     {
       "contractId": "catch.icon_button",
@@ -1220,7 +1220,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.menu",
       "dartSymbol": "CatchMenu",
-      "dartFile": "lib/core/widgets/catch_menu.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_menu.dart",
       "figmaName": "Catch/Menu",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1245,7 +1245,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "16496b47fb40d72946e0698f5444d5bdb7986f2e75d1caa392c8a10c982a29e9"
+      "contractDigest": "163bdc8b7d7a9c9a940f4f802f089a60d7559ce77b5380f764a0667e934541db"
     },
     {
       "contractId": "catch.icon_tile",
@@ -1405,7 +1405,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Surface",
       "claudeAllowed": true,
-      "contractDigest": "27fca35e64b4312916b29dc511fff5f221eabbc1fda4d37813d17135ac2c0db9"
+      "contractDigest": "42e850352008eae2125d06a172c07de1dbe24c98bf4763a48dd4ab4f553f5924"
     },
     {
       "contractId": "catch.top_bar",
@@ -2052,7 +2052,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.bottom_dock",
       "dartSymbol": "CatchBottomDock",
-      "dartFile": "lib/core/widgets/catch_bottom_dock.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
       "figmaName": "Catch/BottomDock",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2077,7 +2077,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "BottomDock",
       "claudeAllowed": true,
-      "contractDigest": "51757cb6e93b6095ebc472d625cf77b539390d3f339f3038571b381fe5c1e683"
+      "contractDigest": "442b56c66d30670d07667cd16bf658068c2a32f9bf3b2136eecc94e6651c84bd"
     },
     {
       "contractId": "catch.confirm_dialog",

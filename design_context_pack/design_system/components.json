@@ -5290,7 +5290,7 @@
           {
             "id": "catch.sheet.draggable_shell",
             "symbol": "CatchDraggableSheetShell",
-            "file": "lib/core/widgets/catch_draggable_sheet_shell.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_draggable_sheet_shell.dart",
             "summary": "Persistent draggable sheet shell with optional handle, top radius, and raised shadow.",
             "states": [
               "with-handle",
@@ -5641,7 +5641,7 @@
       "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
-        "file": "lib/core/widgets/catch_menu.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
         "constructors": [
           "CatchMenu"
         ]
@@ -5732,7 +5732,7 @@
           {
             "id": "catch.menu.anchor",
             "symbol": "CatchMenuAnchor",
-            "file": "lib/core/widgets/catch_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_menu_anchor.dart",
             "summary": "Canonical low-level anchored menu owner; applies the shell-aware viewport boundary before rendering typed CatchMenu rows.",
             "states": [
               "closed",
@@ -5752,7 +5752,7 @@
           {
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
-            "file": "lib/core/widgets/catch_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_menu_row.dart",
             "summary": "Direct menu-row renderer with explicit action or mutually-exclusive choice semantics.",
             "states": [
               "action",
@@ -6733,7 +6733,7 @@
               "danger",
               "with-action"
             ],
-            "file": "lib/core/widgets/src/catch_inline_message_surface.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_inline_message_surface.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.surface",
@@ -10508,7 +10508,7 @@
       "summary": "Anchored bottom utility surface for chat inputs, filter actions, and compact controls above the device safe area.",
       "dart": {
         "symbol": "CatchBottomDock",
-        "file": "lib/core/widgets/catch_bottom_dock.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
         "constructors": [
           "CatchBottomDock"
         ]

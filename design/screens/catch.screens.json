@@ -21145,7 +21145,7 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "lib/core/widgets/catch_bottom_dock.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
             "symbol": "CatchBottomDock"
           },
           {
@@ -22363,7 +22363,7 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_bottom_dock.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
               "symbol": "CatchBottomDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",

@@ -194,3 +194,29 @@ class _WidgetbookTextControllerScopeState
   @override
   Widget build(BuildContext context) => widget.builder(context, _controller);
 }
+
+/// Opens a catalog menu after its production anchor has completed layout.
+class WidgetbookOpenMenuScope extends StatefulWidget {
+  const WidgetbookOpenMenuScope({super.key, required this.builder});
+
+  final Widget Function(BuildContext, MenuController) builder;
+
+  @override
+  State<WidgetbookOpenMenuScope> createState() =>
+      _WidgetbookOpenMenuScopeState();
+}
+
+class _WidgetbookOpenMenuScopeState extends State<WidgetbookOpenMenuScope> {
+  final _controller = MenuController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.open();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _controller);
+}
