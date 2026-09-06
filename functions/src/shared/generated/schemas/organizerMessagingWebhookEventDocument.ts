@@ -6,7 +6,7 @@ export const organizerMessagingWebhookEventDocumentSchema: Record<string, unknow
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_messaging_webhook_events.schema.json",
   "title": "OrganizerMessagingWebhookEventDocument",
-  "description": "Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.",
+  "description": "Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerMessagingWebhookEvents",
@@ -85,6 +85,116 @@ export const organizerMessagingWebhookEventDocumentSchema: Record<string, unknow
       ],
       "minLength": 1,
       "maxLength": 240
+    },
+    "providerAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "callbackData": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "inboundReply": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "templateQuickReply"
+            },
+            "payload": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "replyButton"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "const": "listReply"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        }
+      ]
     },
     "deliveryStatus": {
       "type": [

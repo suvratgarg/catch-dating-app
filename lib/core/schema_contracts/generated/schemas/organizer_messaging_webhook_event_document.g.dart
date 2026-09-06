@@ -8,7 +8,7 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_messaging_webhook_events.schema.json',
   'title': 'OrganizerMessagingWebhookEventDocument',
-  'description': 'Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.',
+  'description': 'Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerMessagingWebhookEvents',
@@ -87,6 +87,116 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 240,
+    },
+    'providerAccountId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[0-9]{1,32}\$',
+    },
+    'providerPhoneNumberId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[0-9]{1,32}\$',
+    },
+    'callbackData': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 512,
+    },
+    'inboundReply': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'label',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'templateQuickReply',
+            },
+            'payload': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'id',
+            'label',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'replyButton',
+            },
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'id',
+            'label',
+            'description',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'listReply',
+            },
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'description': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 4096,
+            },
+          },
+        },
+      ],
     },
     'deliveryStatus': <String, Object?>{
       'type': <Object?>[

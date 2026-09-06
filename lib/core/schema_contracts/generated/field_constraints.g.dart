@@ -51674,6 +51674,13 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
+  static const organizerMessagingWebhookEventDocumentCallbackData = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.callbackData',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessagingWebhookEventDocumentConnectionId = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.connectionId',
     maxLength: 180,
@@ -51748,6 +51755,42 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMessagingWebhookEventDocumentInboundReplyDescription = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.description',
+    maxLength: 4096,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.id',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.kind',
+    required: true,
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyLabel = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.label',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyPayload = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.payload',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessagingWebhookEventDocumentIsStop = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.isStop',
     required: true,
@@ -51787,6 +51830,12 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const organizerMessagingWebhookEventDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerAccountId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
   static const organizerMessagingWebhookEventDocumentProviderErrorCode = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.providerErrorCode',
     valueTypes: <String>['integer'],
@@ -51821,6 +51870,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerPhoneNumberId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
   );
 
   static const organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged = CatchContractFieldConstraints(
@@ -74901,6 +74956,7 @@ abstract final class CatchContractConstraints {
     'organizerMessagingSetupCallableResponse.templates.items.variableNames': organizerMessagingSetupCallableResponseTemplatesItemsVariableNames,
     'organizerMessagingSetupCallableResponse.templates.items.variableNames.items': organizerMessagingSetupCallableResponseTemplatesItemsVariableNamesItems,
     'organizerMessagingWebhookEventDocument.attemptCount': organizerMessagingWebhookEventDocumentAttemptCount,
+    'organizerMessagingWebhookEventDocument.callbackData': organizerMessagingWebhookEventDocumentCallbackData,
     'organizerMessagingWebhookEventDocument.connectionId': organizerMessagingWebhookEventDocumentConnectionId,
     'organizerMessagingWebhookEventDocument.contextProviderMessageId': organizerMessagingWebhookEventDocumentContextProviderMessageId,
     'organizerMessagingWebhookEventDocument.createdAt._nanoseconds': organizerMessagingWebhookEventDocumentCreatedAtNanoseconds,
@@ -74912,17 +74968,24 @@ abstract final class CatchContractConstraints {
     'organizerMessagingWebhookEventDocument.expiresAt._seconds': organizerMessagingWebhookEventDocumentExpiresAtSeconds,
     'organizerMessagingWebhookEventDocument.hasReply': organizerMessagingWebhookEventDocumentHasReply,
     'organizerMessagingWebhookEventDocument.inboundBody': organizerMessagingWebhookEventDocumentInboundBody,
+    'organizerMessagingWebhookEventDocument.inboundReply.description': organizerMessagingWebhookEventDocumentInboundReplyDescription,
+    'organizerMessagingWebhookEventDocument.inboundReply.id': organizerMessagingWebhookEventDocumentInboundReplyId,
+    'organizerMessagingWebhookEventDocument.inboundReply.kind': organizerMessagingWebhookEventDocumentInboundReplyKind,
+    'organizerMessagingWebhookEventDocument.inboundReply.label': organizerMessagingWebhookEventDocumentInboundReplyLabel,
+    'organizerMessagingWebhookEventDocument.inboundReply.payload': organizerMessagingWebhookEventDocumentInboundReplyPayload,
     'organizerMessagingWebhookEventDocument.isStop': organizerMessagingWebhookEventDocumentIsStop,
     'organizerMessagingWebhookEventDocument.organizerId': organizerMessagingWebhookEventDocumentOrganizerId,
     'organizerMessagingWebhookEventDocument.processedAt._nanoseconds': organizerMessagingWebhookEventDocumentProcessedAtNanoseconds,
     'organizerMessagingWebhookEventDocument.processedAt._seconds': organizerMessagingWebhookEventDocumentProcessedAtSeconds,
     'organizerMessagingWebhookEventDocument.processingStatus': organizerMessagingWebhookEventDocumentProcessingStatus,
     'organizerMessagingWebhookEventDocument.provider': organizerMessagingWebhookEventDocumentProvider,
+    'organizerMessagingWebhookEventDocument.providerAccountId': organizerMessagingWebhookEventDocumentProviderAccountId,
     'organizerMessagingWebhookEventDocument.providerErrorCode': organizerMessagingWebhookEventDocumentProviderErrorCode,
     'organizerMessagingWebhookEventDocument.providerEventId': organizerMessagingWebhookEventDocumentProviderEventId,
     'organizerMessagingWebhookEventDocument.providerMessageId': organizerMessagingWebhookEventDocumentProviderMessageId,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds': organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds,
+    'organizerMessagingWebhookEventDocument.providerPhoneNumberId': organizerMessagingWebhookEventDocumentProviderPhoneNumberId,
     'organizerPolicyGapReviewDecisionDocument.checklist.behaviorStillDisabledAcknowledged': organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged,
     'organizerPolicyGapReviewDecisionDocument.checklist.costAndSafetyReviewed': organizerPolicyGapReviewDecisionDocumentChecklistCostAndSafetyReviewed,
     'organizerPolicyGapReviewDecisionDocument.checklist.implementationOwnerReviewed': organizerPolicyGapReviewDecisionDocumentChecklistImplementationOwnerReviewed,
