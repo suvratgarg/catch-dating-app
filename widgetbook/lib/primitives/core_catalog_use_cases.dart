@@ -16,7 +16,6 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';

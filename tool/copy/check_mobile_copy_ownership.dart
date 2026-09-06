@@ -19,6 +19,8 @@ const _copyArgumentNames = <String>{
   'caption',
   'ctaLabel',
   'debugDetailsLabel',
+  'decreaseTooltip',
+  'increaseTooltip',
   'description',
   'detail',
   'emptyMessage',
@@ -103,6 +105,8 @@ const _copyMemberNames = <String>{
   'countLabel',
   'defaultAttendeePrompt',
   'debugDetailsLabel',
+  'decreaseTooltip',
+  'increaseTooltip',
   'description',
   'deleteDetail',
   'displayLabel',
@@ -712,6 +716,8 @@ class SharedCopy {
     this.optionalLabel = 'Optional',
     this.optionalSuffix = ' (optional)',
     this.debugDetailsLabel = 'Developer details',
+    this.decreaseTooltip = 'Decrease',
+    this.increaseTooltip = 'Increase',
   });
   String optionalSemantics(String label) => '$label, optional';
   String get diagnosticMessage => 'Internal diagnostic only';
@@ -730,11 +736,13 @@ final copy = SharedCopy(
   final sharedCopyKinds = sharedCopyFindings
       .map((finding) => finding.kind)
       .toSet();
-  if (sharedCopyFindings.length != 8 ||
+  if (sharedCopyFindings.length != 10 ||
       !sharedCopyKinds.containsAll({
         'default:optionalLabel',
         'default:optionalSuffix',
         'default:debugDetailsLabel',
+        'default:decreaseTooltip',
+        'default:increaseTooltip',
         'member:optionalSemantics',
         'argument:optionalLabel',
         'argument:optionalSuffix',

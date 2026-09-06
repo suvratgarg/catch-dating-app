@@ -152,6 +152,8 @@ void _registerCatchPrimitivesCompositionTests() {
               ),
               const SizedBox(height: 12),
               CatchNumberStepper(
+                decreaseTooltip: 'Decrease',
+                increaseTooltip: 'Increase',
                 key: const Key('control-number-stepper'),
                 value: 60,
                 min: 30,

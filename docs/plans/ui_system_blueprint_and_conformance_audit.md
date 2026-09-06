@@ -693,8 +693,11 @@ framework-error displays also receive resolved copy through the app presentation
 adapter, including screen-reader labels and the debug-details disclosure. Their
 public badge/disclosure anatomy has individual files. Provider-free bottom-sheet
 chrome, day headers, metadata rows, and metric strips retain their public APIs
-and layout behavior in individual package files. The remaining l10n-coupled
-field/section/sheet families retain their later extraction work.
+and layout behavior in individual package files. Hero backdrops and journey-step
+anatomy follow the same ownership rule. Number steppers receive explicit caller
+tooltips; their previous English defaults had no production consumers. The
+remaining l10n-coupled field/section/sheet families retain their later extraction
+work.
 
 ### Phase 4 — One registry, binding grammar
 

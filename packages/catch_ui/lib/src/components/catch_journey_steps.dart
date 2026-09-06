@@ -1,14 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_journey_step.dart';
+import 'package:catch_ui/src/components/catch_journey_step_node.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
-
-/// One step in a [CatchJourneySteps] sequence.
-class CatchJourneyStep {
-  const CatchJourneyStep({required this.title, this.body});
-
-  final String title;
-  final String? body;
-}
 
 /// Design-system `JourneySteps` (`components/events/JourneySteps`): a numbered,
 /// line-traced sequence — the Itinerary grammar applied to ordered steps. A mono
@@ -92,29 +87,6 @@ class CatchJourneySteps extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class CatchJourneyStepNode extends StatelessWidget {
-  const CatchJourneyStepNode({super.key, this.accent});
-
-  final Color? accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      width: CatchLayout.journeyStepsNodeExtent,
-      height: CatchLayout.journeyStepsNodeExtent,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: t.bg,
-        border: Border.all(
-          color: accent ?? t.primary,
-          width: CatchStroke.avatarRing,
-        ),
-      ),
     );
   }
 }

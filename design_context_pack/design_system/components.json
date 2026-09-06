@@ -6167,7 +6167,7 @@
       "summary": "Canonical numeric increment/decrement control with bounded step logic, accessible tooltips, and Catch control-shell chrome.",
       "dart": {
         "symbol": "CatchNumberStepper",
-        "file": "lib/core/widgets/catch_number_stepper.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_number_stepper.dart",
         "constructors": [
           "CatchNumberStepper"
         ]
@@ -7271,7 +7271,7 @@
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
         "symbol": "CatchJourneySteps",
-        "file": "lib/core/widgets/catch_journey_steps.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_journey_steps.dart",
         "constructors": [
           "CatchJourneySteps"
         ]
@@ -7335,7 +7335,7 @@
           {
             "id": "catch.journey_steps.node",
             "symbol": "CatchJourneyStepNode",
-            "file": "lib/core/widgets/catch_journey_steps.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_journey_step_node.dart",
             "summary": "Direct journey-step node renderer for step status, icon, and connector composition.",
             "states": [
               "default",
@@ -12724,7 +12724,7 @@
       "summary": "Canonical detail-page media backdrop state for photo-backed and branded-fallback heroes with optional scrim treatment.",
       "dart": {
         "symbol": "CatchDetailHeroBackdrop",
-        "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart",
         "constructors": [
           "CatchDetailHeroBackdrop"
         ]
@@ -12788,7 +12788,7 @@
           {
             "id": "catch.detail_media.fallback",
             "symbol": "CatchDetailHeroFallback",
-            "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_detail_hero_fallback.dart",
             "summary": "Direct detail-hero fallback renderer for no-photo media states.",
             "states": [
               "gradient"

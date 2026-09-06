@@ -3,6 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('number stepper uses caller tooltips and keeps range controls', (
+    tester,
+  ) async {
+    final changes = <num>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: Scaffold(
+          body: CatchNumberStepper(
+            value: 0,
+            min: 0,
+            max: 2,
+            formatValue: (value) => '$value places',
+            decreaseTooltip: 'Réduire',
+            increaseTooltip: 'Augmenter',
+            onChanged: changes.add,
+          ),
+        ),
+      ),
+    );
+    expect(find.byTooltip('Réduire'), findsOneWidget);
+    expect(find.byTooltip('Augmenter'), findsOneWidget);
+    await tester.tap(find.byTooltip('Réduire'));
+    expect(changes, isEmpty);
+    await tester.tap(find.byTooltip('Augmenter'));
+    expect(changes, [1]);
+  });
+
   testWidgets('optional field labels preserve caller copy at large text', (
     tester,
   ) async {

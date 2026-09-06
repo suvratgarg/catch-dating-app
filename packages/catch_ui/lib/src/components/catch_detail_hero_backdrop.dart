@@ -1,5 +1,7 @@
-import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_detail_hero_fallback.dart';
+import 'package:catch_ui/src/primitives/catch_graded_image.dart';
+import 'package:catch_ui/src/primitives/catch_network_image.dart';
+import 'package:catch_ui/src/primitives/catch_scrim.dart';
 import 'package:flutter/material.dart';
 
 class CatchDetailHeroBackdrop extends StatelessWidget {
@@ -36,30 +38,6 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
           const CatchDetailHeroFallback(),
         if (showScrim) const CatchScrim.detailHero(),
       ],
-    );
-  }
-}
-
-class CatchDetailHeroFallback extends StatelessWidget {
-  const CatchDetailHeroFallback({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            t.accent,
-            Color.lerp(t.accent, t.ink, 0.36)!,
-            Color.lerp(t.primary, t.ink, 0.50)!,
-          ],
-        ),
-      ),
-      child: const SizedBox.expand(),
     );
   }
 }

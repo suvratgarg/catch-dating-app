@@ -1,5 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_control_shell.dart';
 import 'package:flutter/material.dart';
 
 class CatchNumberStepper extends StatelessWidget {
@@ -13,8 +15,8 @@ class CatchNumberStepper extends StatelessWidget {
     this.step = 1,
     this.onDecrease,
     this.onIncrease,
-    this.decreaseTooltip = 'Decrease',
-    this.increaseTooltip = 'Increase',
+    required this.decreaseTooltip,
+    required this.increaseTooltip,
     this.enabled = true,
   });
 

@@ -15,7 +15,6 @@ import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -24,10 +23,8 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
@@ -4161,6 +4158,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'interactive',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 2,
           min: 1,
           max: 5,
@@ -4171,6 +4170,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'min-bound',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 1,
           min: 1,
           max: 5,
@@ -4181,6 +4182,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'max-bound',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 5,
           min: 1,
           max: 5,
@@ -4191,6 +4194,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'disabled',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 2,
           formatValue: whole,
           enabled: false,
@@ -4200,6 +4205,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'custom-step',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 30,
           min: 0,
           max: 90,
@@ -4211,6 +4218,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'custom-format',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 1499,
           step: 100,
           formatValue: (value) => 'Rs ${value.toStringAsFixed(0)}',

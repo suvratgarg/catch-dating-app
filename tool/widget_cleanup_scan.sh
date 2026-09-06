@@ -271,7 +271,7 @@ scan_raw_number_steppers() {
     "${common_globs[@]}" \
     'Icons\.(add|remove)_rounded|Icons\.(add|remove)\b' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_number_stepper.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_number_stepper.dart' || true)"
 
   local output=""
   while IFS=: read -r file line _; do
