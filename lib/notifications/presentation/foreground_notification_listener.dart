@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/foreground_notification.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';

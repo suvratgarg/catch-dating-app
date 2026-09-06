@@ -26,7 +26,6 @@ import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
@@ -8514,23 +8513,29 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
         label: 'fallback-initials',
         child: CatchPersonAvatar(size: 56, name: 'Dev Malhotra'),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'activity-context',
         child: CatchPersonAvatar(
           size: 56,
           name: 'Run club',
           initials: 'RC',
-          activityKind: ActivityKind.socialRun,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'activity-dim',
         child: CatchPersonAvatar(
           size: 56,
           name: 'Dinner',
           initials: 'DN',
-          activityKind: ActivityKind.dinner,
-          activityDim: true,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
+          dim: true,
         ),
       ),
       _StateCard(
@@ -8566,9 +8571,13 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
           shape: CatchPersonAvatarShape.square,
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'count',
-        child: CatchPersonAvatar.count(size: 48, count: 19),
+        child: CatchPersonAvatar.count(
+          countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
+          size: 48,
+          count: 19,
+        ),
       ),
     ],
   );
@@ -8649,7 +8658,10 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         label: 'run',
         child: CatchVeiledPersonAvatar(
           size: 48,
-          activityKind: ActivityKind.socialRun,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
           borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
@@ -8658,7 +8670,10 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         label: 'dinner',
         child: CatchVeiledPersonAvatar(
           size: 48,
-          activityKind: ActivityKind.dinner,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
           borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
@@ -8673,7 +8688,7 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
   path: '[Core primitives]/People',
 )
 Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchActivityInitialsPlaceholder',
     contractId: 'catch.person_avatar.activity_initials',
     states: ['initials', 'dim', 'empty'],
@@ -8683,7 +8698,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.socialRun,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.socialRun,
+            ).avatarColors,
             initials: 'SR',
             size: 56,
           ),
@@ -8694,7 +8712,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.dinner,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.dinner,
+            ).avatarColors,
             initials: 'DN',
             size: 56,
             dim: true,
@@ -8706,7 +8727,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.yoga,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.yoga,
+            ).avatarColors,
             initials: '',
             size: 56,
           ),

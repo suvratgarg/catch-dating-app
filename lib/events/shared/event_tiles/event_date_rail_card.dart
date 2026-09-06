@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
@@ -153,11 +154,17 @@ class EventDateRailCard extends StatelessWidget {
                     if (showAttendeeSignal && event.signedUpCount > 0) ...[
                       gapH8,
                       CatchPersonAvatarStack(
+                        countLabelBuilder: catchAvatarCountLabelBuilder(
+                          context.l10n,
+                        ),
                         items: const [],
                         totalCount: event.signedUpCount,
                         size: 24,
                         veiledCount: event.signedUpCount,
-                        activityKind: event.activityKind,
+                        veiledColors: ActivityPalette.resolve(
+                          context,
+                          event.activityKind,
+                        ).avatarColors,
                       ),
                     ],
                     gapH8,

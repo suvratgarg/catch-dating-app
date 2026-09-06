@@ -25,3 +25,7 @@ CatchPrivacyBadgeCopy catchPrivacyBadgeCopy(AppLocalizations l10n) =>
       hostCanSeeLabel: l10n.coreCatchPrivacyBadgeLabelHostCanSee,
       catchPrivateLabel: l10n.coreCatchPrivacyBadgeLabelCatchPrivate,
     );
+
+/// Formats avatar overflow counts at the app's localization boundary.
+String Function(int) catchAvatarCountLabelBuilder(AppLocalizations l10n) =>
+    (count) => l10n.coreCatchPersonAvatarTextCount(count: count);

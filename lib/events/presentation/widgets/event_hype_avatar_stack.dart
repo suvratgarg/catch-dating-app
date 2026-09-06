@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -71,12 +74,16 @@ class EventHypeAvatarStack extends StatelessWidget {
     if (totalCount <= 0) return const SizedBox.shrink();
     if (obscured) {
       return CatchPersonAvatarStack(
+        countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
         items: const [],
         totalCount: totalCount,
         size: size,
         limit: limit,
         veiledCount: totalCount,
-        activityKind: activityKind,
+        veiledColors: ActivityPalette.resolve(
+          context,
+          activityKind,
+        ).avatarColors,
         showOverflowCount: showOverflowCount,
       );
     }
@@ -87,6 +94,7 @@ class EventHypeAvatarStack extends StatelessWidget {
         : items;
 
     return CatchPersonAvatarStack(
+      countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
       items: visibleItems,
       totalCount: totalCount,
       size: size,

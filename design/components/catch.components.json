@@ -11581,7 +11581,7 @@
       "summary": "Canonical person/avatar bubble for photos, deterministic initials, activity-context fallback, rings, status dots, obscured states, square host shapes, and overflow counts.",
       "dart": {
         "symbol": "CatchPersonAvatar",
-        "file": "lib/core/widgets/catch_person_avatar.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_person_avatar.dart",
         "constructors": [
           "CatchPersonAvatar",
           "CatchPersonAvatar.count"
@@ -11669,35 +11669,25 @@
             ]
           },
           {
-            "name": "activityKind",
-            "type": "enum",
+            "name": "colors",
+            "type": "object",
             "required": false,
-            "dartType": "ActivityKind?",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
+            "dartType": "CatchAvatarColors?",
+            "notes": "Caller-resolved accent/deep/soft colors; no app activity model is read by the renderer."
           },
           {
-            "name": "activityDim",
+            "name": "dim",
             "type": "bool",
             "required": false,
             "default": false,
             "dartType": "bool"
+          },
+          {
+            "name": "countLabelBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "String Function(int)?",
+            "notes": "Required by CatchPersonAvatar.count and CatchPersonAvatarStack; formats the actual overflow count using caller-owned copy."
           },
           {
             "name": "count",
@@ -11731,7 +11721,7 @@
         ],
         "dartRoles": [
           "CatchNetworkImage",
-          "ActivityPalette.resolve",
+          "CatchAvatarColors",
           "CatchTextStyles.avatarCount",
           "CatchLayout.avatarStatusDotExtent",
           "CatchPersonAvatarStack"
@@ -11739,8 +11729,23 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.person_avatar.colors",
+            "symbol": "CatchAvatarColors",
+            "file": "packages/catch_ui/lib/src/components/catch_avatar_colors.dart",
+            "summary": "Presentation-only accent, deep and soft colors supplied by callers to avatar fallbacks and veils.",
+            "states": ["caller-resolved"],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
+          },
+          {
             "id": "catch.person_avatar.stack",
             "symbol": "CatchPersonAvatarStack",
+            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_stack.dart",
             "summary": "Stacked person-avatar composition with overlap, border, and overflow-count handling.",
             "states": [
               "two-avatars",
@@ -11759,7 +11764,7 @@
           {
             "id": "catch.person_avatar.shell",
             "symbol": "CatchPersonAvatarShell",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_shell.dart",
             "summary": "Direct person-avatar shell renderer for shape, image, fallback, and adornment composition.",
             "states": [
               "circle",
@@ -11776,7 +11781,7 @@
           {
             "id": "catch.person_avatar.obscured_content",
             "symbol": "CatchObscuredAvatarContent",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_obscured_avatar_content.dart",
             "summary": "Direct obscured-avatar content renderer.",
             "states": [
               "default"
@@ -11792,7 +11797,7 @@
           {
             "id": "catch.person_avatar.veiled",
             "symbol": "CatchVeiledPersonAvatar",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_veiled_person_avatar.dart",
             "summary": "Direct veiled-avatar renderer for obscured people in stacks and cards.",
             "states": [
               "run",
@@ -11809,7 +11814,7 @@
           {
             "id": "catch.person_avatar.activity_initials",
             "symbol": "CatchActivityInitialsPlaceholder",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_activity_initials_placeholder.dart",
             "summary": "Direct activity-context initials placeholder renderer.",
             "states": [
               "initials",
@@ -11827,7 +11832,7 @@
           {
             "id": "catch.person_avatar.initials",
             "symbol": "CatchInitialsAvatarPlaceholder",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_initials_avatar_placeholder.dart",
             "summary": "Direct initials placeholder renderer for person avatars.",
             "states": [
               "derived",

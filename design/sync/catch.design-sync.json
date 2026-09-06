@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "f5ad643b638208d8c15e1ae1f5588c3c143ef2daf62c03e58c37bd3553ad7e19",
+  "sourceDigest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "f5ad643b638208d8c15e1ae1f5588c3c143ef2daf62c03e58c37bd3553ad7e19",
-    "contractDigest": "f5ad643b638208d8c15e1ae1f5588c3c143ef2daf62c03e58c37bd3553ad7e19"
+    "digest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86",
+    "contractDigest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7594f9982f46ab1c323a4c1f7a2905eb0b52b74b4a7ae0f4eb483aeb1c620e9b",
+    "handoffRequestDigest": "830704f8cf9e3f9e924fffdb2f87c7850a97b9445b97ecb38611965a50f97399",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 239,
+    "publicClassCount": 240,
     "conceptCount": 68,
-    "memberCount": 153,
-    "membersPerConcept": 2.25,
+    "memberCount": 154,
+    "membersPerConcept": 2.26,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 153,
+      "member": 154,
       "screen": 15
     },
     "collisionCount": 36,
@@ -329,6 +329,7 @@
         "key": "catch.person_avatar",
         "symbols": [
           "CatchActivityInitialsPlaceholder",
+          "CatchAvatarColors",
           "CatchInitialsAvatarPlaceholder",
           "CatchObscuredAvatarContent",
           "CatchPersonAvatar",
@@ -2282,7 +2283,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.person_avatar",
       "dartSymbol": "CatchPersonAvatar",
-      "dartFile": "lib/core/widgets/catch_person_avatar.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_person_avatar.dart",
       "figmaName": "Catch/PersonAvatar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2298,8 +2299,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 12,
-      "figmaExpectedPropertyDigest": "516beb5196e4430e7b8770d510ac8e9f8237e9babcc47ef3a7f85d589571ce70",
+      "figmaExpectedPropertyCount": 11,
+      "figmaExpectedPropertyDigest": "550dd568262484aea0bbcc19ace6a1f3acf9e7006f29712681a873bcd070d45c",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2307,7 +2308,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PersonAvatar",
       "claudeAllowed": true,
-      "contractDigest": "d64421eb146d29a8e55a1ee91a0e634bdcc2ab6e08252521317cae47f9fcb566"
+      "contractDigest": "e5c893cd10f8c4f31c207a3b7efd640a235e3590d5d49cbcace2367aeaef25cf"
     },
     {
       "contractId": "catch.record_row",

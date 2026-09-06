@@ -8044,7 +8044,7 @@
   },
   "coreCatchPersonAvatarTextCount": "+{count}",
   "@coreCatchPersonAvatarTextCount": {
-    "description": "Product copy used by lib/core/widgets/catch_person_avatar.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).",
     "placeholders": {
       "count": {}
     },

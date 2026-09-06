@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
@@ -33,7 +34,6 @@ import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
@@ -3653,20 +3653,30 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
               name: 'Host Team',
               shape: CatchPersonAvatarShape.square,
             ),
-            const CatchPersonAvatar(
+            CatchPersonAvatar(
               size: 48,
               name: 'Social run',
               initials: 'SR',
-              activityKind: ActivityKind.socialRun,
+              colors: ActivityPalette.resolve(
+                context,
+                ActivityKind.socialRun,
+              ).avatarColors,
             ),
-            const CatchPersonAvatar(
+            CatchPersonAvatar(
               size: 48,
               name: 'Dinner',
               initials: 'DN',
-              activityKind: ActivityKind.dinner,
-              activityDim: true,
+              colors: ActivityPalette.resolve(
+                context,
+                ActivityKind.dinner,
+              ).avatarColors,
+              dim: true,
             ),
-            const CatchPersonAvatar.count(size: 48, count: 8),
+            CatchPersonAvatar.count(
+              size: 48,
+              count: 8,
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
+            ),
           ],
         ),
       ),
@@ -3680,7 +3690,7 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
   path: '[Core catalog]/People',
 )
 Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
-  return const WidgetbookCatalogFrame(
+  return WidgetbookCatalogFrame(
     title: 'CatchPersonAvatarStack',
     catalogId: 'core.widgets.catch_person_avatar_stack',
     children: [
@@ -3689,6 +3699,7 @@ Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             CatchPersonAvatarStack(
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
               items: [
                 CatchPersonAvatarItem(name: 'Aarav Kapoor', initials: 'AK'),
                 CatchPersonAvatarItem(name: 'Riya Shah', initials: 'RS'),
@@ -3697,10 +3708,14 @@ Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
               totalCount: 8,
             ),
             CatchPersonAvatarStack(
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
               items: [CatchPersonAvatarItem(name: 'Visible guest')],
               totalCount: 6,
               veiledCount: 3,
-              activityKind: ActivityKind.dinner,
+              veiledColors: ActivityPalette.resolve(
+                context,
+                ActivityKind.dinner,
+              ).avatarColors,
             ),
           ],
         ),

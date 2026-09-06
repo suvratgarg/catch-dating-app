@@ -6977,7 +6977,7 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get coreCatchNoticeTooltipDismiss;
 
-  /// Product copy used by lib/core/widgets/catch_person_avatar.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).
   ///
   /// In en, this message translates to:
   /// **'+{count}'**

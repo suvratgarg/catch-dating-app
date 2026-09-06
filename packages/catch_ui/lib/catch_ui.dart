@@ -1,7 +1,9 @@
 /// Catch shared presentation foundations, primitives, and components.
 library;
 
+export 'src/components/catch_activity_initials_placeholder.dart';
 export 'src/components/catch_analytics_bar.dart';
+export 'src/components/catch_avatar_colors.dart';
 export 'src/components/catch_badge.dart';
 export 'src/components/catch_bottom_dock.dart';
 export 'src/components/catch_bottom_sheet_scaffold.dart';
@@ -33,6 +35,7 @@ export 'src/components/catch_framework_error_view.dart';
 export 'src/components/catch_icon_action.dart';
 export 'src/components/catch_icon_button.dart';
 export 'src/components/catch_index_row.dart';
+export 'src/components/catch_initials_avatar_placeholder.dart';
 export 'src/components/catch_inline_message_surface.dart';
 export 'src/components/catch_inline_status.dart';
 export 'src/components/catch_journey_step.dart';
@@ -53,6 +56,12 @@ export 'src/components/catch_metric_strip_divider.dart';
 export 'src/components/catch_metric_strip_item.dart';
 export 'src/components/catch_mini_bar_chart.dart';
 export 'src/components/catch_number_stepper.dart';
+export 'src/components/catch_obscured_avatar_content.dart';
+export 'src/components/catch_person_avatar.dart';
+export 'src/components/catch_person_avatar_item.dart';
+export 'src/components/catch_person_avatar_shape.dart';
+export 'src/components/catch_person_avatar_shell.dart';
+export 'src/components/catch_person_avatar_stack.dart';
 export 'src/components/catch_person_polaroid.dart';
 export 'src/components/catch_plain_sheet_header.dart';
 export 'src/components/catch_privacy_badge.dart';
@@ -68,6 +77,7 @@ export 'src/components/catch_status_strip_scope.dart';
 export 'src/components/catch_step_progress.dart';
 export 'src/components/catch_text_button.dart';
 export 'src/components/catch_timestamped_message_text.dart';
+export 'src/components/catch_veiled_person_avatar.dart';
 export 'src/components/catch_vertical_section.dart';
 export 'src/foundations/catch_font_licenses.dart';
 export 'src/foundations/catch_fonts.dart';

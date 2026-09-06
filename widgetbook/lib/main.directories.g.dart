@@ -49,6 +49,8 @@ import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
     as _widgetbook_workspace_onboarding_onboarding_use_cases;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
+import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
+    as _widgetbook_workspace_primitives_avatar_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
@@ -3053,6 +3055,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchActivityInitialsPlaceholderContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAvatarColors',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Caller colors and count copy',
+                builder: _widgetbook_workspace_primitives_avatar_use_cases
+                    .avatarCallerColors,
               ),
             ],
           ),

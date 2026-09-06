@@ -729,6 +729,12 @@ widget/string/color/callback presentation inputs, so the unchanged renderer
 moves to the package. Distance rings retain their size negotiation and label
 behavior, with a registered viewport member replacing the private body and
 an individual file for the native-map-compatible edge label.
+Person avatars and their clipping, obscuring, initials, veil and stack anatomy
+also move into individual package files. App callers resolve activity colors
+through the existing palette and pass count-label formatters through the app
+copy adapter. Failed-image fallback, theme changes, rings, veils and stack
+ordering retain their existing behavior; the shared API has no activity model
+or app-localization dependency.
 
 AsyncValue box/sliver boundaries, their state translator, mutation-error listeners
 and mutation-message translation move to `lib/core/riverpod_ui`. Each public
