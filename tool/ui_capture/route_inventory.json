@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "5bd1836b768788979cd61d2f750a91fd6e46eac28dd09f1af67c04492c8e8552",
+    "normalizedFileSha256": "80f53cf55ae7e133b8886064cfb7f6f1a70c7c03aca903c3e30525d7e5275125",
     "routeContractSha256": "a4a0b4b309a2cd5840a71d355897e1f832b0c98b53915ee132e4558ff8272113",
     "goRouteCount": 86,
     "shellBranchCount": 9,
@@ -1170,7 +1170,7 @@
     {
       "siteId": "material-page:lib/core/widgets/ordered_photo_picker.dart:1",
       "sourcePath": "lib/core/widgets/ordered_photo_picker.dart",
-      "line": 209,
+      "line": 202,
       "ordinal": 1,
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
       "presentationTarget": "OrderedPhotoManagerScreen",
@@ -1188,7 +1188,7 @@
     {
       "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:1",
       "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
-      "line": 366,
+      "line": 364,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",
@@ -1197,7 +1197,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 844,
+      "line": 840,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1206,7 +1206,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1022,
+      "line": 1018,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1233,7 +1233,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
-      "line": 302,
+      "line": 301,
       "ordinal": 1,
       "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
       "presentationTarget": "RoutePathBuilderScreen",
@@ -1251,7 +1251,7 @@
     {
       "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:1",
       "sourcePath": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 65,
+      "line": 61,
       "ordinal": 1,
       "presentationExpression": "(_)=>ProfilePhotoEditorScreen(index:index,photo:photo,initialImageBytes:initialImageBytes,canDelete:canDelete)",
       "presentationTarget": "ProfilePhotoEditorScreen",

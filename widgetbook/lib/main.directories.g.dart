@@ -1970,6 +1970,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTimestampedMessageText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTimestampedMessageContractStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -2730,6 +2741,12 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookComponent(
             name: 'CatchFadeScaleViewport',
             useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchMotionViewportContractStates,
+              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Resting and transition poses',
                 builder:

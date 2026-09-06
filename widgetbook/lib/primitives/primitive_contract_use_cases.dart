@@ -9488,6 +9488,75 @@ class _NotificationFrame extends StatelessWidget {
   }
 }
 
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFadeScaleViewport,
+  path: '[Core primitives]/Motion',
+)
+Widget catchMotionViewportContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'Motion viewport',
+    contractId: 'catch.motion_viewport',
+    states: const ['initial', 'mid-transition', 'settled'],
+    children: [
+      for (final pose in const [
+        ('initial', 0.0),
+        ('mid-transition', 0.5),
+        ('settled', 1.0),
+      ])
+        _StateCard(
+          label: pose.$1,
+          child: CatchFadeScaleViewport(
+            animation: AlwaysStoppedAnimation<double>(pose.$2),
+            child: CatchSurface.card(
+              child: Text(
+                'Route content',
+                style: CatchTextStyles.bodyM(context),
+              ),
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTimestampedMessageText,
+  path: '[Core primitives]/Data display',
+)
+Widget catchTimestampedMessageContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'Timestamped message',
+    contractId: 'catch.timestamped_message',
+    states: const [
+      'inline-timestamp',
+      'stacked-timestamp',
+      'empty-message',
+      'large-text',
+    ],
+    children: [
+      for (final example in const [
+        ('inline-timestamp', 'Hi!', '19:30', 240.0),
+        ('stacked-timestamp', 'See you', '19:30', 80.0),
+        ('empty-message', '', '19:30', 240.0),
+      ])
+        _StateCard(
+          label: example.$1,
+          child: SizedBox(
+            width: example.$4,
+            child: CatchTimestampedMessageText(
+              text: example.$2,
+              timestamp: example.$3,
+              textStyle: CatchTextStyles.bodyM(context),
+              timestampStyle: CatchTextStyles.numericMeta(context),
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
 class _ContractScreen extends StatelessWidget {
   const _ContractScreen({
     required this.title,
