@@ -10,6 +10,10 @@ import type {EventAssistanceGuestResponse} from
   "../../shared/generated/eventAssistanceGuestResponse";
 import type {EventAssistanceMessageIntent} from
   "../../shared/generated/eventAssistanceMessageIntent";
+import type {EventAssistanceSmsConfig} from
+  "../../shared/generated/eventAssistanceSmsConfig";
+import type {EventWhatsappPolicyDocument} from
+  "../../shared/generated/eventWhatsappPolicyDocument";
 import type {communicationRoutes} from
   "../../communications/communicationRoutes";
 
@@ -31,6 +35,18 @@ export function assertCorrelatedWireTypes(
   // @ts-expect-error Late joining requires an individual participation episode.
   const invalidScope: LateJoin["scope"] = {kind: "event", eventId: "event-1"};
   void [invalidCheckIn, invalidIntent, invalidScope];
+}
+
+export function assertEventTemplatePurposeCoverage(): void {
+  type Purpose = "joiningUpdate" | Extract<EventAssistanceMessageIntent,
+    {kind: "operationalNotice"}>["noticeKind"];
+  type Sms = EventAssistanceSmsConfig["templates"][number]["purpose"];
+  type Whatsapp = EventWhatsappPolicyDocument["templates"][number]["purpose"];
+  const sms: [Purpose] extends [Sms] ?
+    [Sms] extends [Purpose] ? true : never : never = true;
+  const whatsapp: [Purpose] extends [Whatsapp] ?
+    [Whatsapp] extends [Purpose] ? true : never : never = true;
+  void [sms, whatsapp];
 }
 
 export function assertCorrelatedMessagingTypes(

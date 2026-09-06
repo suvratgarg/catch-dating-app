@@ -218,6 +218,7 @@ export 'event_success_wingman_request_document.g.dart';
 export 'event_venue_session_document.g.dart';
 export 'event_venue_session_redemption_document.g.dart';
 export 'event_waitlist_offer_document.g.dart';
+export 'event_whatsapp_policy_document.g.dart';
 export 'event_whatsapp_reply_binding_document.g.dart';
 export 'explore_search_callable_payload.g.dart';
 export 'explore_search_callable_response.g.dart';

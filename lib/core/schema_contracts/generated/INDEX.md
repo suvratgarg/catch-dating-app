@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `functions/src/shared/generated/eventWhatsappPolicyDocument.ts` |
 | EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts` |
 | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts` |
 | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts` |
@@ -575,6 +576,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventWhatsappPolicyDocumentSchema` | EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_policy_document.g.dart` |
 | `schemaEventWhatsappReplyBindingDocumentSchema` | EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_reply_binding_document.g.dart` |
 | `schemaEventAssistanceSmsWithdrawalGrantDocumentSchema` | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_grant_document.g.dart` |
 | `schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema` | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_withdrawal_callable_payload.g.dart` |

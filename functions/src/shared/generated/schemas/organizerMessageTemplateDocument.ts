@@ -160,6 +160,22 @@ export const organizerMessageTemplateDocumentSchema: Record<string, unknown> = {
         "UNKNOWN"
       ]
     },
+    "buttonUrls": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "providerUpdatedAt": {
       "anyOf": [
         {

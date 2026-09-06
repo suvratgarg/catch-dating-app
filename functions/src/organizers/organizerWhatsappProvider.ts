@@ -1,6 +1,7 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
+import {operationContentHash} from "../operations/durableActions";
 import type {OrganizerMessageTemplateDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -37,6 +38,8 @@ export interface MetaTemplateSnapshot {
   buttonKinds: OrganizerMessageTemplateDocument["buttonKinds"];
   buttonLabels?: Array<string | null>;
   parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
+  buttonUrls?: Array<string | null>;
+  contentHash?: string;
 }
 
 export interface MetaQuickReplyPayload {
@@ -525,6 +528,7 @@ function parseTemplate(
   const bindings: MetaTemplateSnapshot["parameterBindings"] = [];
   const buttonKinds: MetaTemplateSnapshot["buttonKinds"] = [];
   const buttonLabels: Array<string | null> = [];
+  const buttonUrls: Array<string | null> = [];
   let hasMediaHeader = false;
   for (const rawComponent of arrayValue(item.components)) {
     const component = recordValue(rawComponent);
@@ -539,6 +543,8 @@ function parseTemplate(
         buttonKinds.push(kind);
         const label = stringValue(button.text);
         buttonLabels.push(label && label.length <= 1024 ? label : null);
+        const url = stringValue(button.url);
+        buttonUrls.push(url && url.length <= 2048 ? url : null);
         if (kind === "URL") {
           urlButtonParameters(button, buttonIndex).forEach(
             (variableName, position) => {
@@ -578,6 +584,10 @@ function parseTemplate(
     hasMediaHeader,
     buttonKinds,
     buttonLabels,
+    buttonUrls,
+    contentHash: operationContentHash([providerTemplateId, name, language,
+      item.category ?? null, item.parameter_format ?? null,
+      item.components ?? null]),
     parameterFormat: item.parameter_format === "NAMED" ||
       item.parameter_format === "POSITIONAL" ? item.parameter_format :
       "UNKNOWN",

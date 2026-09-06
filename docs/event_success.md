@@ -247,6 +247,27 @@ result is resumed after delivery evidence arrives. Reply handling itself never
 sends an acknowledgement or fallback. Retention must preserve binding evidence
 through outbox reconciliation before activation.
 
+### Reviewed WhatsApp message material
+
+`whatsappTemplate.ts` composes a current synchronized template, the server-only
+`eventAssistanceWhatsappPolicies` policy, a message intent and its guest grant.
+Review binds provider content and send metadata together; changed template
+copy, variable destinations, category, sender ownership or native action
+semantics cannot inherit the old review. Quotes declare a maximum message cost,
+currency and supported recipient prefixes; they are neither actual prices nor
+spending debits. Template freshness, review, quote and guest-link expiry bound
+the prepared material's lifetime.
+
+Every template retains a scoped guest-page link. Native buttons can offer a
+subset of the approved choices without removing the others from that page.
+Native payload indices follow the frozen choice order independently of the
+provider's button positions. Content hashes are rechecked before those IDs are
+constructed. Both joining updates and operational notices use this renderer;
+acknowledgements keep their instruction revision and help categories retain
+their exact meaning. A policy record alone grants no recipient permission.
+Event-specific WhatsApp consent, budget reservation and the live dispatch
+composition remain necessary before this material can be submitted.
+
 ### SMS submission and spending boundary
 
 `SmsDispatchStore` reads the current sender, exact guest generation/linked UID

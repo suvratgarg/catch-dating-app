@@ -49,6 +49,11 @@ export interface OrganizerMessageTemplateDocument {
    */
   buttonLabels?: (string | null)[];
   parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
+  /**
+   * @maxItems 10
+   */
+  buttonUrls?: (string | null)[];
+  contentHash?: string;
   providerUpdatedAt: {
     _seconds: number;
     _nanoseconds: number;

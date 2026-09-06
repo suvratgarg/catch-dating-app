@@ -162,6 +162,22 @@ const schemaOrganizerMessageTemplateDocumentSchema = <String, Object?>{
         'UNKNOWN',
       ],
     },
+    'buttonUrls': <String, Object?>{
+      'type': 'array',
+      'maxItems': 10,
+      'items': <String, Object?>{
+        'type': <Object?>[
+          'string',
+          'null',
+        ],
+        'minLength': 1,
+        'maxLength': 2048,
+      },
+    },
+    'contentHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
     'providerUpdatedAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

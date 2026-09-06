@@ -775,6 +775,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceWhatsappPolicies/{senderId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceMessages/{messageId} {
       allow read, write: if false;
     }

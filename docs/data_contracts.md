@@ -151,14 +151,38 @@ this consumer to the live sender and its durable deferred-reply scheduling
 remains integration work. These bindings have no TTL yet; activation requires
 retention aligned with the outbox's reconciliation window.
 
-Approved template snapshots now retain optional `parameterFormat` and
-index-aligned `buttonLabels` alongside their existing parameter bindings and
+Approved template snapshots now retain optional `parameterFormat`,
+index-aligned `buttonLabels` and `buttonUrls`, and a `contentHash` of provider
+identity, category, parameter format and complete raw components (including
+body/footer/buttons). They retain the existing parameter bindings and
 button kinds. Older documents still validate; native quick-reply sending
 requires complete labels and a known format when variables are present. The
 Meta adapter binds every quick-reply slot to an exact expected label and unique
 payload, preserves parameter text, and emits names for named header/body
 parameters. This metadata does not establish event-service consent or map a
 label to a domain action; the trusted dispatch composition owns that mapping.
+
+`eventAssistanceWhatsappPolicies/{senderId}` is a server-only reviewed policy
+for one organizer connection and provider account/phone. Its strict schema
+binds each supported message purpose to a template document, stable snapshot
+hash, complete variable sources, exact native action/label/slot mappings,
+maximum template age, recipient-prefix quote and bounded activation window.
+Native action selectors distinguish joining intent, acknowledgement and all
+four help categories. The template-purpose unions for SMS, WhatsApp and message
+intents are checked for exact equality by TypeScript.
+
+`renderEventWhatsapp` requires current matching metadata, a scoped guest grant,
+exact instruction content and a complete webpage response path even when only
+a subset of choices fits native buttons. Dynamic URL buttons accept only the
+Catch event-update base and its grant suffix. Variables cannot be silently
+trimmed or truncated; prepared-content hashes fence native payload numbering.
+The snapshot hash includes provider content evidence and send metadata while
+excluding sync timestamps. It detects edits observed by synchronization, not
+provider-side changes after that read. Activation must enforce the reviewed
+editing and synchronization policy. This record does not create consent,
+debit spending or authorize dispatch; provisioning and composition with those
+transactional resources remain required. Guest URL secrets stay in worker
+memory, outside the policy and outbox.
 
 `OrganizerTokenStore.accessBound` requires a numbered version in the configured
 vault and the exact organizer/connection envelope. It rejects raw migration

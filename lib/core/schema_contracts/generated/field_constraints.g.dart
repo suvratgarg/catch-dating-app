@@ -26947,6 +26947,243 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventWhatsappPolicyDocumentActivationApprovalId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentMaxTemplateAgeSeconds = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.maxTemplateAgeSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 60,
+    maximum: 86400,
+  );
+
+  static const eventWhatsappPolicyDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteMaxMicrosPerMessage = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.maxMicrosPerMessage',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRecipientPrefixes = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.recipientPrefixes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 250,
+    uniqueItems: true,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRecipientPrefixesItems = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.recipientPrefixes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{0,3}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappPolicyDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplates = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickReplies = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsAction = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['onMyWay', 'notComing', 'joinLater', 'helpLogistics', 'helpAccessibility', 'helpSafety', 'helpOther', 'acknowledge'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsButtonIndex = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.buttonIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsTemplateHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariables = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4096,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsProviderName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.providerName',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsSource = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl', 'responseUrlSuffix'],
+  );
+
   static const eventWhatsappReplyBindingDocumentAttemptId = CatchContractFieldConstraints(
     path: 'eventWhatsappReplyBindingDocument.attemptId',
     required: true,
@@ -51565,6 +51802,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMessageTemplateDocumentButtonUrls = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonUrls',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const organizerMessageTemplateDocumentButtonUrlsItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonUrls.items',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessageTemplateDocumentCategory = CatchContractFieldConstraints(
     path: 'organizerMessageTemplateDocument.category',
     required: true,
@@ -51578,6 +51829,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.contentHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const organizerMessageTemplateDocumentHasMediaHeader = CatchContractFieldConstraints(
@@ -71755,6 +72012,36 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.uid': eventWaitlistOfferDocumentUid,
     'eventWaitlistOfferDocument.updatedAt._nanoseconds': eventWaitlistOfferDocumentUpdatedAtNanoseconds,
     'eventWaitlistOfferDocument.updatedAt._seconds': eventWaitlistOfferDocumentUpdatedAtSeconds,
+    'eventWhatsappPolicyDocument.activation.approvalId': eventWhatsappPolicyDocumentActivationApprovalId,
+    'eventWhatsappPolicyDocument.activation.approvedAt': eventWhatsappPolicyDocumentActivationApprovedAt,
+    'eventWhatsappPolicyDocument.activation.validUntil': eventWhatsappPolicyDocumentActivationValidUntil,
+    'eventWhatsappPolicyDocument.maxTemplateAgeSeconds': eventWhatsappPolicyDocumentMaxTemplateAgeSeconds,
+    'eventWhatsappPolicyDocument.organizerId': eventWhatsappPolicyDocumentOrganizerId,
+    'eventWhatsappPolicyDocument.providerAccountId': eventWhatsappPolicyDocumentProviderAccountId,
+    'eventWhatsappPolicyDocument.providerPhoneNumberId': eventWhatsappPolicyDocumentProviderPhoneNumberId,
+    'eventWhatsappPolicyDocument.quote.currency': eventWhatsappPolicyDocumentQuoteCurrency,
+    'eventWhatsappPolicyDocument.quote.maxMicrosPerMessage': eventWhatsappPolicyDocumentQuoteMaxMicrosPerMessage,
+    'eventWhatsappPolicyDocument.quote.recipientPrefixes': eventWhatsappPolicyDocumentQuoteRecipientPrefixes,
+    'eventWhatsappPolicyDocument.quote.recipientPrefixes.items': eventWhatsappPolicyDocumentQuoteRecipientPrefixesItems,
+    'eventWhatsappPolicyDocument.quote.revision': eventWhatsappPolicyDocumentQuoteRevision,
+    'eventWhatsappPolicyDocument.quote.validUntil': eventWhatsappPolicyDocumentQuoteValidUntil,
+    'eventWhatsappPolicyDocument.revision': eventWhatsappPolicyDocumentRevision,
+    'eventWhatsappPolicyDocument.schemaVersion': eventWhatsappPolicyDocumentSchemaVersion,
+    'eventWhatsappPolicyDocument.senderId': eventWhatsappPolicyDocumentSenderId,
+    'eventWhatsappPolicyDocument.status': eventWhatsappPolicyDocumentStatus,
+    'eventWhatsappPolicyDocument.templates': eventWhatsappPolicyDocumentTemplates,
+    'eventWhatsappPolicyDocument.templates.items.purpose': eventWhatsappPolicyDocumentTemplatesItemsPurpose,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies': eventWhatsappPolicyDocumentTemplatesItemsQuickReplies,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.action': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsAction,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.buttonIndex': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsButtonIndex,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.choiceId': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsChoiceId,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.label': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsLabel,
+    'eventWhatsappPolicyDocument.templates.items.templateDocumentId': eventWhatsappPolicyDocumentTemplatesItemsTemplateDocumentId,
+    'eventWhatsappPolicyDocument.templates.items.templateHash': eventWhatsappPolicyDocumentTemplatesItemsTemplateHash,
+    'eventWhatsappPolicyDocument.templates.items.variables': eventWhatsappPolicyDocumentTemplatesItemsVariables,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.maxCharacters': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsMaxCharacters,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.providerName': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsProviderName,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.source': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsSource,
     'eventWhatsappReplyBindingDocument.attemptId': eventWhatsappReplyBindingDocumentAttemptId,
     'eventWhatsappReplyBindingDocument.attemptScopeHash': eventWhatsappReplyBindingDocumentAttemptScopeHash,
     'eventWhatsappReplyBindingDocument.attendeeGeneration': eventWhatsappReplyBindingDocumentAttendeeGeneration,
@@ -75148,8 +75435,11 @@ abstract final class CatchContractConstraints {
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
     'organizerMessageTemplateDocument.buttonLabels': organizerMessageTemplateDocumentButtonLabels,
     'organizerMessageTemplateDocument.buttonLabels.items': organizerMessageTemplateDocumentButtonLabelsItems,
+    'organizerMessageTemplateDocument.buttonUrls': organizerMessageTemplateDocumentButtonUrls,
+    'organizerMessageTemplateDocument.buttonUrls.items': organizerMessageTemplateDocumentButtonUrlsItems,
     'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
     'organizerMessageTemplateDocument.connectionId': organizerMessageTemplateDocumentConnectionId,
+    'organizerMessageTemplateDocument.contentHash': organizerMessageTemplateDocumentContentHash,
     'organizerMessageTemplateDocument.hasMediaHeader': organizerMessageTemplateDocumentHasMediaHeader,
     'organizerMessageTemplateDocument.language': organizerMessageTemplateDocumentLanguage,
     'organizerMessageTemplateDocument.name': organizerMessageTemplateDocumentName,

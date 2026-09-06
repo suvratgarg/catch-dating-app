@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  eventWhatsappPolicyDocumentSchema,
   eventWhatsappReplyBindingDocumentSchema,
   eventAssistanceSmsWithdrawalGrantDocumentSchema,
   getEventAssistanceSmsWithdrawalCallablePayloadSchema,
@@ -585,6 +586,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventWhatsappPolicyDocument = ajv.compile(eventWhatsappPolicyDocumentSchema);
 export const validateEventWhatsappReplyBindingDocument = ajv.compile(eventWhatsappReplyBindingDocumentSchema);
 export const validateEventAssistanceSmsWithdrawalGrantDocument = ajv.compile(eventAssistanceSmsWithdrawalGrantDocumentSchema);
 export const validateGetEventAssistanceSmsWithdrawalCallablePayload = ajv.compile(getEventAssistanceSmsWithdrawalCallablePayloadSchema);

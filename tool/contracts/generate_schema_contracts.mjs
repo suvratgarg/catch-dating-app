@@ -16,6 +16,11 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventWhatsappPolicyDocument",
+    source: "firestore/event_assistance_whatsapp_policies.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPolicyDocument.ts",
+  },
+  {
     name: "EventWhatsappReplyBindingDocument",
     source: "firestore/event_assistance_whatsapp_reply_bindings.schema.json",
     typeOutput: "functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts",
