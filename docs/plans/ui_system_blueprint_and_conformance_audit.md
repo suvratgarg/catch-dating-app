@@ -691,7 +691,9 @@ catalog/test consumers, so its unused app-catalog entry is removed. The copy
 ownership gate scans the package as well as the app. Optional field labels and
 framework-error displays also receive resolved copy through the app presentation
 adapter, including screen-reader labels and the debug-details disclosure. Their
-public badge/disclosure anatomy has individual files. The remaining l10n-coupled
+public badge/disclosure anatomy has individual files. Provider-free bottom-sheet
+chrome, day headers, metadata rows, and metric strips retain their public APIs
+and layout behavior in individual package files. The remaining l10n-coupled
 field/section/sheet families retain their later extraction work.
 
 ### Phase 4 — One registry, binding grammar

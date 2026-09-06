@@ -1,7 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_badge.dart';
+import 'package:catch_ui/src/components/catch_branded_sheet_header.dart';
+import 'package:catch_ui/src/components/catch_plain_sheet_header.dart';
+import 'package:catch_ui/src/primitives/catch_bottom_sheet_grabber.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
 
 Future<T?> showCatchBottomSheet<T>({
@@ -101,10 +105,11 @@ class CatchBottomSheetScaffold extends StatelessWidget {
     final effectivePadding = requestedPadding.copyWith(
       bottom: math.max(requestedPadding.bottom, minimumBottomPadding),
     );
-    final right = _hasText(badge)
+    final right = (badge?.isNotEmpty ?? false)
         ? CatchBadge.functional(label: badge!, tone: badgeTone)
         : trailing;
-    final hasHeader = _hasText(title) || glyph != null || right != null;
+    final hasHeader =
+        (title?.isNotEmpty ?? false) || glyph != null || right != null;
 
     final content = DecoratedBox(
       decoration: BoxDecoration(
@@ -152,113 +157,3 @@ class CatchBottomSheetScaffold extends StatelessWidget {
     return scrollable ? SingleChildScrollView(child: content) : content;
   }
 }
-
-class CatchPlainSheetHeader extends StatelessWidget {
-  const CatchPlainSheetHeader({
-    super.key,
-    this.title,
-    this.subtitle,
-    this.trailing,
-  });
-
-  final String? title;
-  final String? subtitle;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_hasText(title))
-                Text(title!, style: CatchTextStyles.titleL(context)),
-              if (_hasText(subtitle)) ...[
-                gapH6,
-                Text(
-                  subtitle!,
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (trailing != null) ...[
-          const SizedBox(width: CatchLayout.sheetHeaderGap),
-          trailing!,
-        ],
-      ],
-    );
-  }
-}
-
-class CatchBrandedSheetHeader extends StatelessWidget {
-  const CatchBrandedSheetHeader({
-    super.key,
-    required this.glyph,
-    this.title,
-    this.subtitle,
-    this.trailing,
-  });
-
-  final IconData glyph;
-  final String? title;
-  final String? subtitle;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: t.ink,
-            borderRadius: BorderRadius.circular(
-              CatchLayout.sheetGlyphTileRadius,
-            ),
-          ),
-          child: SizedBox.square(
-            dimension: CatchLayout.sheetGlyphTileSize,
-            child: Icon(
-              glyph,
-              size: CatchLayout.sheetGlyphIconSize,
-              color: t.primaryInk,
-            ),
-          ),
-        ),
-        const SizedBox(width: CatchLayout.sheetHeaderGap),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_hasText(title))
-                Text(title!, style: CatchTextStyles.titleL(context)),
-              if (_hasText(subtitle)) ...[
-                gapH2,
-                Text(
-                  subtitle!,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-              ],
-            ],
-          ),
-        ),
-        if (trailing != null) ...[
-          const SizedBox(width: CatchLayout.sheetHeaderGap),
-          trailing!,
-        ],
-      ],
-    );
-  }
-}
-
-bool _hasText(String? value) => value != null && value.isNotEmpty;

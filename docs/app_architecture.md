@@ -728,7 +728,7 @@ branch on medium or expanded layouts, but the route remains the selection
 authority and must preserve compact full-screen behavior.
 
 Bottom sheets must be opened through `showCatchBottomSheet` from
-`lib/core/widgets/catch_bottom_sheet.dart`. The helper presents on the root
+`packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart`. The helper presents on the root
 navigator by default, which keeps drawers above shell chrome. Do not call
 Flutter's raw `showModalBottomSheet` directly from production code unless this
 policy test is intentionally updated.

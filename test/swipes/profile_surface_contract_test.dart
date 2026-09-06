@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';

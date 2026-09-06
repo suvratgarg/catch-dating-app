@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:a9fa53b96ce61abaab75836becb6383fe8604d9c11f1ccef8f4a693d611f3433",
+  "resolvedDigest": "sha256:56164a3f102d670bec6918e6bcfcfacb5b513a15702e6b235b33e34423799e15",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5270,7 +5270,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchBottomSheetScaffold",
-              "file": "lib/core/widgets/catch_bottom_sheet.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
               "constructors": [
                 "CatchBottomSheetScaffold"
               ]

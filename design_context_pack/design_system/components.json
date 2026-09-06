@@ -3666,7 +3666,7 @@
           {
             "id": "catch.section.day_header",
             "symbol": "CatchDaySectionHeader",
-            "file": "lib/core/widgets/catch_day_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_day_section_header.dart",
             "summary": "Chronological section header for day-grouped feeds with optional count and sticky sliver delegate support.",
             "states": [
               "regular",
@@ -3686,7 +3686,7 @@
           {
             "id": "catch.section.day_header_count",
             "symbol": "CatchDaySectionHeaderCount",
-            "file": "lib/core/widgets/catch_day_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_day_section_header_count.dart",
             "summary": "Direct animated numeric count renderer used by CatchDaySectionHeader.",
             "states": [
               "single-digit",
@@ -4780,7 +4780,7 @@
       "summary": "Canonical compact value-over-label metric rail for detail stats and summary data pairs.",
       "dart": {
         "symbol": "CatchMetricStrip",
-        "file": "lib/core/widgets/catch_metric_strip.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_metric_strip.dart",
         "constructors": [
           "CatchMetricStrip"
         ]
@@ -4911,7 +4911,7 @@
           {
             "id": "catch.metric_strip.meta_dot_row",
             "symbol": "CatchMetaDotRow",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_dot_row.dart",
             "summary": "Dot-separated inline metadata row for event and club cards with optional icons and trailing strong metadata.",
             "states": [
               "entries",
@@ -4931,7 +4931,7 @@
           {
             "id": "catch.metric_strip.meta_entry_flow",
             "symbol": "CatchMetaEntryFlow",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_flow.dart",
             "summary": "Direct dot-separated metadata flow renderer used by CatchMetaDotRow.",
             "states": [
               "entries",
@@ -4951,7 +4951,7 @@
           {
             "id": "catch.metric_strip.meta_entry_view",
             "symbol": "CatchMetaEntryView",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_view.dart",
             "summary": "Direct metadata entry renderer for optional icon, color override, strong trailing weight, and ellipsis behavior.",
             "states": [
               "label",
@@ -4971,7 +4971,7 @@
           {
             "id": "catch.metric_strip.cell",
             "symbol": "CatchMetricStripCell",
-            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_cell.dart",
             "summary": "Direct metric-strip value/label cell renderer.",
             "states": [
               "default",
@@ -4990,7 +4990,7 @@
           {
             "id": "catch.metric_strip.divider",
             "symbol": "CatchMetricStripDivider",
-            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_divider.dart",
             "summary": "Direct metric-strip divider renderer.",
             "states": [
               "default",
@@ -5057,7 +5057,7 @@
       "summary": "Canonical sheet-shell family for rounded bottom-sheet surfaces, grabber handles, draggable persistent shells, and share-card sheet presentation.",
       "dart": {
         "symbol": "CatchBottomSheetScaffold",
-        "file": "lib/core/widgets/catch_bottom_sheet.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
         "constructors": [
           "CatchBottomSheetScaffold"
         ]
@@ -5274,7 +5274,7 @@
           {
             "id": "catch.sheet.plain_header",
             "symbol": "CatchPlainSheetHeader",
-            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart",
             "summary": "Direct plain sheet-header renderer for title, subtitle, badge, and trailing content.",
             "states": [
               "title-subtitle",
@@ -5292,7 +5292,7 @@
           {
             "id": "catch.sheet.branded_header",
             "symbol": "CatchBrandedSheetHeader",
-            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart",
             "summary": "Direct branded sheet-header renderer with glyph, title, subtitle, badge, and trailing content.",
             "states": [
               "title-subtitle",
@@ -14362,7 +14362,7 @@
       "summary": "Single icon-and-label metadata line for compact factual context; distinct from structural section labels.",
       "dart": {
         "symbol": "CatchMetaRow",
-        "file": "lib/core/widgets/catch_meta_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_meta_row.dart",
         "constructors": [
           "CatchMetaRow"
         ]
