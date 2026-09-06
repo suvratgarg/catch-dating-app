@@ -35,6 +35,14 @@ export interface MetaTemplateSnapshot {
   }>;
   hasMediaHeader: boolean;
   buttonKinds: OrganizerMessageTemplateDocument["buttonKinds"];
+  buttonLabels?: Array<string | null>;
+  parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
+}
+
+export interface MetaQuickReplyPayload {
+  buttonIndex: number;
+  label: string;
+  payload: string;
 }
 
 export interface MetaSendResult {
@@ -46,6 +54,8 @@ export class MetaProviderError extends Error {
     message: string,
     readonly providerCode: number | null,
     readonly httpStatus: number | null,
+    readonly disposition: "requestNotSent" | "outcomeUnknown" =
+    "outcomeUnknown",
   ) {
     super(message);
   }
@@ -98,6 +108,42 @@ export class OrganizerTokenStore {
   async disable(versionResource: string): Promise<void> {
     await this.client.disableSecretVersion({name: versionResource});
   }
+
+  /** New dispatches require a pinned version and its exact sender envelope. */
+  async accessBound(params: {
+    versionResource: string; organizerId: string; connectionId: string;
+  }): Promise<string> {
+    try {
+      const parts = params.versionResource.split("/");
+      if (parts.length !== 6 || parts[0] !== "projects" ||
+          !/^[A-Za-z0-9:-]+$/u.test(parts[1]) ||
+          /\s/u.test(params.versionResource) ||
+          parts[2] !== "secrets" || parts[3] !== this.secretId ||
+          parts[4] !== "versions" || !/^[1-9][0-9]*$/u.test(parts[5]) ||
+          !params.organizerId || !params.connectionId) {
+        throw new Error("Invalid credential scope");
+      }
+      const [version] = await this.client.accessSecretVersion({
+        name: params.versionResource,
+      });
+      const data = version.payload?.data;
+      if (!data || data.length > 8192) throw new Error("Invalid credential");
+      const value = recordValue(JSON.parse(data.toString("utf8")));
+      if (Object.keys(value).sort().join(",") !==
+          "accessToken,connectionId,organizerId,schema" ||
+          value.schema !== "catch.organizer-whatsapp-token/v1" ||
+          value.organizerId !== params.organizerId ||
+          value.connectionId !== params.connectionId ||
+          typeof value.accessToken !== "string" ||
+          value.accessToken.length < 1 || value.accessToken.length > 4096 ||
+          /\s/u.test(value.accessToken)) {
+        throw new Error("Invalid credential binding");
+      }
+      return value.accessToken;
+    } catch {
+      throw new Error("Organizer sender credential unavailable.");
+    }
+  }
 }
 
 function parseStoredCredential(value: string): {accessToken: string} {
@@ -118,6 +164,7 @@ export class MetaWhatsappProvider {
   constructor(
     private readonly config: MetaWhatsappConfig,
     private readonly fetchImpl: typeof fetch = fetch,
+    private readonly clock: () => number = Date.now,
   ) {}
 
   async exchangeAuthorizationCode(code: string): Promise<string> {
@@ -214,7 +261,7 @@ export class MetaWhatsappProvider {
     const first = this.graphUrl(`${params.wabaId}/message_templates`);
     first.searchParams.set(
       "fields",
-      "id,name,language,status,category,components",
+      "id,name,language,status,category,components,parameter_format",
     );
     first.searchParams.set("limit", "200");
     let next: URL | null = first;
@@ -224,6 +271,10 @@ export class MetaWhatsappProvider {
         method: "GET",
         headers: {Authorization: `Bearer ${params.accessToken}`},
       });
+      if (!Array.isArray(body.data)) {
+        throw new MetaProviderError("Invalid Meta template inventory.",
+          null, null);
+      }
       for (const item of arrayValue(body.data)) {
         const parsed = parseTemplate(recordValue(item));
         if (parsed) templates.push(parsed);
@@ -240,18 +291,32 @@ export class MetaWhatsappProvider {
     toE164: string;
     template: MetaTemplateSnapshot;
     variables: Record<string, string>;
+    quickReplyPayloads?: MetaQuickReplyPayload[];
+    callbackData?: string;
+    deadline?: number;
   }): Promise<MetaSendResult> {
+    assertRecipient(params.toE164);
     const components = renderComponents(params.template, params.variables);
+    if (params.quickReplyPayloads !== undefined) {
+      components.push(...renderQuickReplies(
+        params.template, params.quickReplyPayloads,
+      ));
+    }
+    assertCallbackData(params.callbackData);
     const body = await this.authorizedRequest(
       `${params.phoneNumberId}/messages`,
       params.accessToken,
       {
         method: "POST",
+        deadline: params.deadline,
+        maxResponseBytes: 8192,
         body: {
           messaging_product: "whatsapp",
           recipient_type: "individual",
           to: params.toE164.slice(1),
           type: "template",
+          ...(params.callbackData === undefined ? {} :
+            {biz_opaque_callback_data: params.callbackData}),
           template: {
             name: params.template.name,
             language: {code: params.template.language},
@@ -260,16 +325,7 @@ export class MetaWhatsappProvider {
         },
       },
     );
-    const message = recordValue(arrayValue(body.messages)[0]);
-    const providerMessageId = stringValue(message.id);
-    if (!providerMessageId) {
-      throw new MetaProviderError(
-        "Meta accepted no message identifier.",
-        null,
-        null,
-      );
-    }
-    return {providerMessageId};
+    return parseSendResult(body);
   }
 
   async sendText(params: {
@@ -277,12 +333,16 @@ export class MetaWhatsappProvider {
     phoneNumberId: string;
     toE164: string;
     body: string;
+    deadline?: number;
   }): Promise<MetaSendResult> {
+    assertRecipient(params.toE164);
     const response = await this.authorizedRequest(
       `${params.phoneNumberId}/messages`,
       params.accessToken,
       {
         method: "POST",
+        deadline: params.deadline,
+        maxResponseBytes: 8192,
         body: {
           messaging_product: "whatsapp",
           recipient_type: "individual",
@@ -292,16 +352,7 @@ export class MetaWhatsappProvider {
         },
       },
     );
-    const message = recordValue(arrayValue(response.messages)[0]);
-    const providerMessageId = stringValue(message.id);
-    if (!providerMessageId) {
-      throw new MetaProviderError(
-        "Meta accepted no message identifier.",
-        null,
-        null,
-      );
-    }
-    return {providerMessageId};
+    return parseSendResult(response);
   }
 
   async unsubscribe(params: {
@@ -322,6 +373,8 @@ export class MetaWhatsappProvider {
       method: "GET" | "POST" | "DELETE";
       query?: Record<string, string>;
       body?: Record<string, unknown>;
+      deadline?: number;
+      maxResponseBytes?: number;
     },
   ): Promise<Record<string, unknown>> {
     const url = this.graphUrl(path);
@@ -335,52 +388,78 @@ export class MetaWhatsappProvider {
         ...(options.body ? {"Content-Type": "application/json"} : {}),
       },
       ...(options.body ? {body: JSON.stringify(options.body)} : {}),
-    });
+    }, options.deadline, options.maxResponseBytes);
   }
 
   private graphUrl(path: string): URL {
+    if (!/^v[1-9][0-9]*\.[0-9]+$/u.test(this.config.graphVersion) ||
+        /\s/u.test(this.config.graphVersion) ||
+        !/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/u.test(path) ||
+        /\s/u.test(path)) {
+      throw new MetaProviderError("Invalid Meta request path.", null, null,
+        "requestNotSent");
+    }
     return new URL(
       `https://graph.facebook.com/${this.config.graphVersion}/${path}`,
     );
   }
 
   private safePagingUrl(value: string): URL {
-    const url = new URL(value);
-    if (url.protocol !== "https:" || url.hostname !== "graph.facebook.com") {
+    try {
+      const url = new URL(value);
+      if (url.origin !== "https://graph.facebook.com" ||
+          url.username || url.password || url.hash) {
+        throw new Error("Unsafe URL");
+      }
+      return url;
+    } catch {
       throw new MetaProviderError("Unsafe Meta pagination URL.", null, null);
     }
-    return url;
   }
 
   private async requestJson(
     url: URL,
     init: RequestInit,
+    deadline?: number,
+    maxResponseBytes = 2 * 1024 * 1024,
   ): Promise<Record<string, unknown>> {
+    const now = this.clock();
+    if (!Number.isSafeInteger(now) || now < 0 || (deadline !== undefined &&
+        (!Number.isSafeInteger(deadline) || now >= deadline))) {
+      throw new MetaProviderError("Meta dispatch deadline expired.", null,
+        null, "requestNotSent");
+    }
     let response: Response;
+    let body: Record<string, unknown>;
     try {
       response = await this.fetchImpl(url, {
         ...init,
-        signal: AbortSignal.timeout(15_000),
+        redirect: "error",
+        signal: AbortSignal.timeout(Math.min(15_000,
+          deadline === undefined ? 15_000 : deadline - now)),
       });
-    } catch (error) {
+    } catch {
       throw new MetaProviderError(
-        error instanceof Error ? error.message : "Meta request failed.",
+        "Meta request outcome is unknown.",
         null,
         null,
       );
     }
-    const text = await response.text();
-    let body: Record<string, unknown> = {};
     try {
-      body = recordValue(JSON.parse(text));
+      const parsed = JSON.parse(await boundedResponse(response,
+        maxResponseBytes));
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("Invalid response");
+      }
+      body = parsed;
     } catch {
-      // Avoid including provider bodies because they may contain credentials.
+      throw new MetaProviderError("Invalid Meta response.", null,
+        response.status);
     }
     if (!response.ok || body.error) {
       const error = recordValue(body.error);
       throw new MetaProviderError(
-        stringValue(error.message) ??
-          `Meta request failed (${response.status}).`,
+        `Meta request failed (${response.status}).`,
         numberValue(error.code),
         response.status,
       );
@@ -415,6 +494,8 @@ function renderComponents(
       parameters: sorted.map((binding) => ({
         type: "text",
         text: requiredVariable(variables, binding.variableName),
+        ...(template.parameterFormat === "NAMED" && component !== "button" ?
+          {parameter_name: binding.variableName} : {}),
       })),
     };
   });
@@ -424,8 +505,8 @@ function requiredVariable(
   variables: Record<string, string>,
   variableName: string,
 ): string {
-  const value = variables[variableName]?.trim();
-  if (!value) {
+  const value = variables[variableName];
+  if (typeof value !== "string" || !value.trim()) {
     throw new HttpsError(
       "failed-precondition",
       `Template variable ${variableName} is missing.`,
@@ -443,6 +524,7 @@ function parseTemplate(
   if (!providerTemplateId || !name || !language) return null;
   const bindings: MetaTemplateSnapshot["parameterBindings"] = [];
   const buttonKinds: MetaTemplateSnapshot["buttonKinds"] = [];
+  const buttonLabels: Array<string | null> = [];
   let hasMediaHeader = false;
   for (const rawComponent of arrayValue(item.components)) {
     const component = recordValue(rawComponent);
@@ -455,6 +537,8 @@ function parseTemplate(
         const button = recordValue(rawButton);
         const kind = normalizeButtonKind(stringValue(button.type));
         buttonKinds.push(kind);
+        const label = stringValue(button.text);
+        buttonLabels.push(label && label.length <= 1024 ? label : null);
         if (kind === "URL") {
           urlButtonParameters(button, buttonIndex).forEach(
             (variableName, position) => {
@@ -472,7 +556,7 @@ function parseTemplate(
     }
     if (type !== "HEADER" && type !== "BODY") continue;
     const componentName = type.toLocaleLowerCase("en") as "header" | "body";
-    const names = namedParameters(component.example);
+    const names = namedParameters(component.example, componentName);
     names.forEach((variableName, position) =>
       bindings.push({
         variableName,
@@ -493,6 +577,10 @@ function parseTemplate(
     parameterBindings: bindings,
     hasMediaHeader,
     buttonKinds,
+    buttonLabels,
+    parameterFormat: item.parameter_format === "NAMED" ||
+      item.parameter_format === "POSITIONAL" ? item.parameter_format :
+      "UNKNOWN",
   };
 }
 
@@ -512,14 +600,98 @@ function urlButtonParameters(
     [];
 }
 
-function namedParameters(value: unknown): string[] {
+function namedParameters(value: unknown,
+  component: "header" | "body" = "body"): string[] {
   const example = recordValue(value);
-  const named = arrayValue(example.body_text_named_params)
+  const named = arrayValue(example[`${component}_text_named_params`])
     .map((item) => stringValue(recordValue(item).param_name))
     .filter((item): item is string => item !== null);
   if (named.length > 0) return named;
-  const positional = arrayValue(example.body_text)[0];
-  return arrayValue(positional).map((_, index) => `body_${index + 1}`);
+  const positional = component === "body" ?
+    arrayValue(example.body_text)[0] : example.header_text;
+  return arrayValue(positional).map((_, index) => `${component}_${index + 1}`);
+}
+
+function renderQuickReplies(template: MetaTemplateSnapshot,
+  replies: MetaQuickReplyPayload[]): Array<Record<string, unknown>> {
+  const slots = template.buttonKinds.flatMap((kind, index) =>
+    kind === "QUICK_REPLY" ? [index] : []);
+  if (!Array.isArray(replies) || replies.length < 1 || replies.length > 10 ||
+      replies.length !== slots.length ||
+      template.buttonLabels?.length !== template.buttonKinds.length ||
+      (template.parameterBindings.length > 0 &&
+        template.parameterFormat !== "NAMED" &&
+        template.parameterFormat !== "POSITIONAL")) {
+    throw new HttpsError("failed-precondition",
+      "Template reply metadata is unavailable.");
+  }
+  const used = new Set<number>();
+  const payloads = new Set<string>();
+  return replies.map((reply) => {
+    if (!Number.isInteger(reply.buttonIndex) ||
+        !slots.includes(reply.buttonIndex) || used.has(reply.buttonIndex) ||
+        typeof reply.label !== "string" || !reply.label.trim() ||
+        reply.label !== template.buttonLabels?.[reply.buttonIndex] ||
+        typeof reply.payload !== "string" || !reply.payload.trim() ||
+        reply.payload.length > 1024 || payloads.has(reply.payload) ||
+        template.parameterBindings.some((b) =>
+          b.component === "button" && b.buttonIndex === reply.buttonIndex)) {
+      throw new HttpsError("failed-precondition",
+        "Native reply does not match the approved template button.");
+    }
+    used.add(reply.buttonIndex);
+    payloads.add(reply.payload);
+    return {type: "button", sub_type: "quick_reply",
+      index: String(reply.buttonIndex),
+      parameters: [{type: "payload", payload: reply.payload}]};
+  });
+}
+
+function assertRecipient(value: string): void {
+  if (!/^\+[1-9][0-9]{6,14}$/u.test(value) || /\s/u.test(value)) {
+    throw new MetaProviderError("Invalid WhatsApp recipient.", null, null,
+      "requestNotSent");
+  }
+}
+
+function parseSendResult(body: Record<string, unknown>): MetaSendResult {
+  const messages = arrayValue(body.messages);
+  const providerMessageId = stringValue(recordValue(messages[0]).id);
+  if (messages.length !== 1 || !providerMessageId ||
+      providerMessageId.length > 512 || /\s/u.test(providerMessageId)) {
+    throw new MetaProviderError("Meta returned no unique message identifier.",
+      null, null);
+  }
+  return {providerMessageId};
+}
+
+function assertCallbackData(value: string | undefined): void {
+  if (value !== undefined && (typeof value !== "string" ||
+      value.length < 1 || value.length > 512 || !value.trim())) {
+    throw new MetaProviderError("Invalid WhatsApp callback data.", null, null,
+      "requestNotSent");
+  }
+}
+
+async function boundedResponse(response: Response,
+  maxBytes: number): Promise<string> {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("Missing Meta response body");
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      size += value.length;
+      if (size > maxBytes) throw new Error("Oversized Meta response");
+      chunks.push(value);
+    }
+    return Buffer.concat(chunks).toString("utf8");
+  } finally {
+    await reader.cancel().catch(() => undefined);
+    reader.releaseLock();
+  }
 }
 
 function normalizeCategory(

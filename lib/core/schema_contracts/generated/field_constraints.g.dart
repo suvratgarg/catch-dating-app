@@ -51551,6 +51551,20 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['URL', 'PHONE_NUMBER', 'QUICK_REPLY', 'COPY_CODE', 'UNKNOWN'],
   );
 
+  static const organizerMessageTemplateDocumentButtonLabels = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonLabels',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const organizerMessageTemplateDocumentButtonLabelsItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonLabels.items',
+    maxLength: 1024,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessageTemplateDocumentCategory = CatchContractFieldConstraints(
     path: 'organizerMessageTemplateDocument.category',
     required: true,
@@ -51629,6 +51643,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const organizerMessageTemplateDocumentParameterFormat = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterFormat',
+    valueTypes: <String>['string'],
+    enumValues: <String>['NAMED', 'POSITIONAL', 'UNKNOWN'],
   );
 
   static const organizerMessageTemplateDocumentProviderTemplateId = CatchContractFieldConstraints(
@@ -75126,6 +75146,8 @@ abstract final class CatchContractConstraints {
     'organizerManualSendTaskDocument.updatedByUid': organizerManualSendTaskDocumentUpdatedByUid,
     'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
+    'organizerMessageTemplateDocument.buttonLabels': organizerMessageTemplateDocumentButtonLabels,
+    'organizerMessageTemplateDocument.buttonLabels.items': organizerMessageTemplateDocumentButtonLabelsItems,
     'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
     'organizerMessageTemplateDocument.connectionId': organizerMessageTemplateDocumentConnectionId,
     'organizerMessageTemplateDocument.hasMediaHeader': organizerMessageTemplateDocumentHasMediaHeader,
@@ -75137,6 +75159,7 @@ abstract final class CatchContractConstraints {
     'organizerMessageTemplateDocument.parameterBindings.items.component': organizerMessageTemplateDocumentParameterBindingsItemsComponent,
     'organizerMessageTemplateDocument.parameterBindings.items.position': organizerMessageTemplateDocumentParameterBindingsItemsPosition,
     'organizerMessageTemplateDocument.parameterBindings.items.variableName': organizerMessageTemplateDocumentParameterBindingsItemsVariableName,
+    'organizerMessageTemplateDocument.parameterFormat': organizerMessageTemplateDocumentParameterFormat,
     'organizerMessageTemplateDocument.providerTemplateId': organizerMessageTemplateDocumentProviderTemplateId,
     'organizerMessageTemplateDocument.providerUpdatedAt._nanoseconds': organizerMessageTemplateDocumentProviderUpdatedAtNanoseconds,
     'organizerMessageTemplateDocument.providerUpdatedAt._seconds': organizerMessageTemplateDocumentProviderUpdatedAtSeconds,

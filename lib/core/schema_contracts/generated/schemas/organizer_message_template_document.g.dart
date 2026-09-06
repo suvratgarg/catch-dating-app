@@ -142,6 +142,26 @@ const schemaOrganizerMessageTemplateDocumentSchema = <String, Object?>{
         ],
       },
     },
+    'buttonLabels': <String, Object?>{
+      'type': 'array',
+      'maxItems': 10,
+      'items': <String, Object?>{
+        'type': <Object?>[
+          'string',
+          'null',
+        ],
+        'minLength': 1,
+        'maxLength': 1024,
+      },
+    },
+    'parameterFormat': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'NAMED',
+        'POSITIONAL',
+        'UNKNOWN',
+      ],
+    },
     'providerUpdatedAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

@@ -140,6 +140,26 @@ export const organizerMessageTemplateDocumentSchema: Record<string, unknown> = {
         ]
       }
     },
+    "buttonLabels": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "minLength": 1,
+        "maxLength": 1024
+      }
+    },
+    "parameterFormat": {
+      "type": "string",
+      "enum": [
+        "NAMED",
+        "POSITIONAL",
+        "UNKNOWN"
+      ]
+    },
     "providerUpdatedAt": {
       "anyOf": [
         {

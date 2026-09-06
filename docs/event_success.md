@@ -234,8 +234,15 @@ pre-event action past event end.
 
 The binding and consumer are invocable server services with signed-queue and
 Firestore race tests. The webhook trigger does not invoke this consumer yet.
-WhatsApp sending, native-button rendering, delivery correlation and durable
-retry scheduling must be connected together so an early reply's `waiting`
+The existing Meta adapter can render template quick-reply payloads against
+complete approved button metadata, retain named/positional parameters, attach
+bounded callback correlation, read sender-bound credentials and enforce a
+pre-I/O dispatch deadline. These adapter capabilities are not yet connected to
+Event Assistance's permission, budget and dispatch transaction. Optional
+callback echo and finality still need account/version verification.
+
+WhatsApp dispatch, delivery correlation and durable retry scheduling must be
+connected together so an early reply's `waiting`
 result is resumed after delivery evidence arrives. Reply handling itself never
 sends an acknowledgement or fallback. Retention must preserve binding evidence
 through outbox reconciliation before activation.

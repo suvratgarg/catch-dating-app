@@ -4755,6 +4755,11 @@ export interface OrganizerMessageTemplateDocument {
     | "COPY_CODE"
     | "UNKNOWN"
   )[];
+  /**
+   * @maxItems 10
+   */
+  buttonLabels?: (string | null)[];
+  parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
   providerUpdatedAt: FirebaseFirestore.Timestamp | null;
   syncedAt: FirebaseFirestore.Timestamp;
 }

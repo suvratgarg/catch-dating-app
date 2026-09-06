@@ -151,6 +151,24 @@ this consumer to the live sender and its durable deferred-reply scheduling
 remains integration work. These bindings have no TTL yet; activation requires
 retention aligned with the outbox's reconciliation window.
 
+Approved template snapshots now retain optional `parameterFormat` and
+index-aligned `buttonLabels` alongside their existing parameter bindings and
+button kinds. Older documents still validate; native quick-reply sending
+requires complete labels and a known format when variables are present. The
+Meta adapter binds every quick-reply slot to an exact expected label and unique
+payload, preserves parameter text, and emits names for named header/body
+parameters. This metadata does not establish event-service consent or map a
+label to a domain action; the trusted dispatch composition owns that mapping.
+
+`OrganizerTokenStore.accessBound` requires a numbered version in the configured
+vault and the exact organizer/connection envelope. It rejects raw migration
+tokens, mismatched scope and unknown envelope fields. Provider transport
+rejects redirects, bounds response reads, redacts transport/provider errors and
+checks a supplied deadline immediately before I/O. Once I/O starts, an uncertain
+response cannot prove non-delivery. Optional callback data is correlation only;
+its echo and status semantics require verification against the configured
+provider account/version before Event Assistance activates it.
+
 ### Event Dress Rehearsal Isolation Contract
 
 Event rehearsal is a separate bounded domain with four callable-owned,
