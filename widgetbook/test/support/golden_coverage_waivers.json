@@ -9,13 +9,6 @@
       "reason": "Nonvisual ChangeNotifier has no independent renderable golden surface."
     },
     {
-      "class": "CatchTextInput",
-      "file": "lib/core/widgets/catch_field_edit.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Part-owned low-level editor is not exposed as a Widgetbook annotation type."
-    },
-    {
       "class": "CatchFieldVisibilityScope",
       "file": "lib/core/widgets/catch_field_scopes.dart",
       "owner": "ui_system_program",

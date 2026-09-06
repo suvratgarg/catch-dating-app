@@ -59,6 +59,8 @@ import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dar
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
+import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
+    as _widgetbook_workspace_primitives_text_input_use_cases;
 import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
     as _widgetbook_workspace_profiles_profile_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -2506,6 +2508,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSearchFieldContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTextInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_text_input_use_cases
+                    .catchTextInputContractStates,
               ),
             ],
           ),

@@ -156,3 +156,41 @@ class _WidgetbookCaseScopeState extends State<WidgetbookCaseScope> {
     child: Builder(builder: widget.builder),
   );
 }
+
+/// Owns the lifetime of a text controller used by a catalog case.
+class WidgetbookTextControllerScope extends StatefulWidget {
+  const WidgetbookTextControllerScope({
+    super.key,
+    required this.initialText,
+    required this.builder,
+  });
+
+  final String initialText;
+  final Widget Function(BuildContext, TextEditingController) builder;
+
+  @override
+  State<WidgetbookTextControllerScope> createState() =>
+      _WidgetbookTextControllerScopeState();
+}
+
+class _WidgetbookTextControllerScopeState
+    extends State<WidgetbookTextControllerScope> {
+  late final _controller = TextEditingController(text: widget.initialText);
+
+  @override
+  void didUpdateWidget(covariant WidgetbookTextControllerScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialText != widget.initialText) {
+      _controller.text = widget.initialText;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _controller);
+}

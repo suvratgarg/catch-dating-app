@@ -737,6 +737,26 @@ DART
 expect_probe exact catch_use_canonical_feedback 0
 expect_probe exact catch_status_strip_is_layout_owned 0
 
+# Only the exact shared text-entry primitive owns the raw TextField. Its
+# package neighbor and retired app path remain ordinary consumers.
+for input_scope in \
+  "packages/catch_ui/lib/src/primitives/catch_text_input.dart" \
+  "packages/catch_ui/lib/src/primitives/text_input_consumer.dart" \
+  "lib/core/widgets/catch_text_input.dart"; do
+  probe_path="$probe_root/$input_scope"
+  stage_probe "text input ownership $input_scope" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget inputProbe() => const TextField();
+DART
+  if [[ "$input_scope" == "packages/catch_ui/lib/src/primitives/catch_text_input.dart" ]]; then
+    expect_probe exact catch_no_raw_button_control 0
+    expect_probe clean
+  else
+    expect_probe exact catch_no_raw_button_control 1
+  fi
+done
+
 # L0 definitions own literal values; only the token package receives this
 # exemption. The identical app-local definition must still be diagnosed.
 for token_scope in \

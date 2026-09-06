@@ -2763,6 +2763,24 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.field.text_input",
+            "symbol": "CatchTextInput",
+            "file": "packages/catch_ui/lib/src/primitives/catch_text_input.dart",
+            "summary": "Shared low-level platform text-entry owner used by specialized field compositions.",
+            "states": [
+              "empty",
+              "populated",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.geometry_scope",
             "symbol": "CatchFieldGeometryScope",
             "summary": "Ambient semantic geometry contract that independently publishes content-gutter ownership, interaction bleed, and whether fields own a rounded silhouette or inherit corners from one section clip. CatchSectionFocusSurface field-row surfaces publish one hairline of bleed plus section-clipped geometry; omitted bleed preserves the divided container-gutter default.",
@@ -8945,7 +8963,7 @@
       "summary": "Static one-time-code visual row for handoff previews and externally managed code-entry state.",
       "dart": {
         "symbol": "CatchCodeInput",
-        "file": "lib/core/widgets/catch_otp_code_field.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_code_input.dart",
         "constructors": [
           "CatchCodeInput"
         ]
@@ -9037,6 +9055,7 @@
           {
             "id": "catch.code_input.otp_code_field",
             "symbol": "CatchOtpCodeField",
+            "file": "lib/core/widgets/catch_otp_code_field.dart",
             "summary": "Real one-time-code text input that composes CatchCodeInput visual cells over one hidden platform TextField.",
             "states": [
               "empty",
@@ -9057,7 +9076,7 @@
           {
             "id": "catch.code_input.row",
             "symbol": "CatchCodeInputRow",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_code_input_row.dart",
             "summary": "Direct code-input row renderer for fixed-length verification cells.",
             "states": [
               "empty",
@@ -9075,7 +9094,7 @@
           {
             "id": "catch.code_input.cell",
             "symbol": "CatchCodeInputCell",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart",
             "summary": "Direct single code-input cell renderer.",
             "states": [
               "digit",
@@ -9093,7 +9112,7 @@
           {
             "id": "catch.code_input.caret",
             "symbol": "CatchCodeInputCaret",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_caret.dart",
             "summary": "Direct active-caret renderer used inside code-input cells.",
             "states": [
               "default",

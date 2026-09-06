@@ -708,6 +708,11 @@ scroll compositions remain at their current owners for the next pattern slices.
 Privacy badges receive their three translated visibility labels through the app
 copy adapter. Their fixed mode-to-icon pairing and single accessible label are
 preserved in the package; no app catalog is imported.
+The low-level text-entry primitive and code-input row/cell/caret visuals have
+individual package owners with unchanged bodies. Search and OTP keep app-side
+constraint validation and localization until their remaining D2 extraction.
+A direct text-input catalog matrix covers empty, populated and disabled states
+at both themes and text scale 2.0, retiring its former coverage waiver.
 
 ### Phase 4 — One registry, binding grammar
 

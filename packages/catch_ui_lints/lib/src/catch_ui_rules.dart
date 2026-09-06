@@ -2143,7 +2143,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchTextInputImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_text_input.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/primitives/catch_text_input.dart',
+    );
   }
 
   bool get _isCatchRangeSliderImplementationPath {
