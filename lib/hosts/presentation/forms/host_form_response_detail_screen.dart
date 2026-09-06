@@ -124,6 +124,8 @@ class _HostFormResponseDetailScreenState
               CatchFieldLanes.single(
                 child: CatchField.control(
                   title: context.l10n.hostAudienceSubmissionDetails,
+                  contractExemption:
+                      'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
                   control: _ResponseTechnicalDetails(detail: value),
                 ),
               ),

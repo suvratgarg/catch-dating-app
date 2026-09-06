@@ -1,5 +1,7 @@
 part of 'host_customers_screen.dart';
 
+enum _HostSavedAudienceMembership { all, automatic, manual }
+
 class HostSavedAudiencesWorkspace extends ConsumerWidget
     implements CatchRootScreenPageOwner {
   const HostSavedAudiencesWorkspace({
@@ -56,7 +58,7 @@ class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
 
 class _HostSavedAudiencesDirectoryState
     extends ConsumerState<HostSavedAudiencesDirectory> {
-  String _membership = 'all';
+  _HostSavedAudienceMembership _membership = _HostSavedAudienceMembership.all;
   bool _byName = false;
   String get organizerId => widget.organizerId;
   String? get query => widget.query;
@@ -81,9 +83,12 @@ class _HostSavedAudiencesDirectoryState
             ),
             CatchButton.command(
               label: switch (_membership) {
-                'automatic' => context.l10n.hostAudienceAutomaticGroup,
-                'manual' => context.l10n.hostAudienceManualGroup,
-                _ => context.l10n.hostAudienceAllGroups,
+                _HostSavedAudienceMembership.automatic =>
+                  context.l10n.hostAudienceAutomaticGroup,
+                _HostSavedAudienceMembership.manual =>
+                  context.l10n.hostAudienceManualGroup,
+                _HostSavedAudienceMembership.all =>
+                  context.l10n.hostAudienceAllGroups,
               },
               icon: Icon(CatchIcons.tune),
               onPressed: _chooseMembership,
@@ -109,9 +114,11 @@ class _HostSavedAudiencesDirectoryState
                 _matchingSavedAudiences(page.audiences, query)
                     .where(
                       (audience) => switch (_membership) {
-                        'automatic' => !audience.definition.isStatic,
-                        'manual' => audience.definition.isStatic,
-                        _ => true,
+                        _HostSavedAudienceMembership.automatic =>
+                          !audience.definition.isStatic,
+                        _HostSavedAudienceMembership.manual =>
+                          audience.definition.isStatic,
+                        _HostSavedAudienceMembership.all => true,
                       },
                     )
                     .toList()
@@ -136,10 +143,14 @@ class _HostSavedAudiencesDirectoryState
                   ? [
                       CatchEmptyState(
                         icon: CatchIcons.groupsOutlined,
-                        title: query == null && _membership == 'all'
+                        title:
+                            query == null &&
+                                _membership == _HostSavedAudienceMembership.all
                             ? context.l10n.hostSavedAudiencesEmptyTitle
                             : context.l10n.hostSavedAudiencesSearchEmptyTitle,
-                        message: query == null && _membership == 'all'
+                        message:
+                            query == null &&
+                                _membership == _HostSavedAudienceMembership.all
                             ? context.l10n.hostSavedAudiencesEmptyBody
                             : context.l10n.hostSavedAudiencesSearchEmptyBody,
                         layout: CatchEmptyStateLayout.inline,
@@ -187,25 +198,26 @@ class _HostSavedAudiencesDirectoryState
   }
 
   Future<void> _chooseMembership() async {
-    final selected = await showCatchSelectionSheet<String>(
-      context: context,
-      title: context.l10n.hostAudienceMembershipMode,
-      value: _membership,
-      items: [
-        CatchSelectionMenuItem(
-          value: 'all',
-          label: context.l10n.hostAudienceAllGroups,
-        ),
-        CatchSelectionMenuItem(
-          value: 'automatic',
-          label: context.l10n.hostAudienceAutomaticGroup,
-        ),
-        CatchSelectionMenuItem(
-          value: 'manual',
-          label: context.l10n.hostAudienceManualGroup,
-        ),
-      ],
-    );
+    final selected =
+        await showCatchSelectionSheet<_HostSavedAudienceMembership>(
+          context: context,
+          title: context.l10n.hostAudienceMembershipMode,
+          value: _membership,
+          items: [
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.all,
+              label: context.l10n.hostAudienceAllGroups,
+            ),
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.automatic,
+              label: context.l10n.hostAudienceAutomaticGroup,
+            ),
+            CatchSelectionMenuItem(
+              value: _HostSavedAudienceMembership.manual,
+              label: context.l10n.hostAudienceManualGroup,
+            ),
+          ],
+        );
     if (selected != null && mounted) setState(() => _membership = selected);
   }
 }

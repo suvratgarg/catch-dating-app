@@ -84,6 +84,8 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                   child: CatchField.control(
                     key: const ValueKey('host-add-customer-memory'),
                     title: context.l10n.hostCustomersInitialNote,
+                    contractExemption:
+                        'Disclosure for the nested initial-note input, which uses the generated create-contact binding.',
                     isOptional: true,
                     control: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

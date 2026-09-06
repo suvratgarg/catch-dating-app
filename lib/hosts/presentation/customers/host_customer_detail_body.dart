@@ -224,6 +224,8 @@ class HostCustomerDetailOverview extends StatelessWidget {
           gapH16,
           CatchField.control(
             title: context.l10n.hostCustomersDetailAttendance,
+            contractExemption:
+                'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',
             control: HostCustomerAttendanceCard(customer: customer),
           ),
           CatchButton.command(

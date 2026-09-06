@@ -95,6 +95,8 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
             CatchFieldLanes.single(
               child: CatchField.control(
                 title: context.l10n.hostCustomersLatestSubmittedDetails,
+                contractExemption:
+                    'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
                 control: HostCustomerApplicationSnapshot(
                   organizerId: organizerId,
                   applicationId: state.applications.first.applicationId,

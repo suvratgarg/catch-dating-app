@@ -168,6 +168,8 @@ class _HostFormAutomationsScreenState
                 CatchFieldLanes.single(
                   child: CatchField.control(
                     title: context.l10n.hostAudienceAutomationShortcuts,
+                    contractExemption:
+                        'Action group that creates server-validated automation presets; no scalar field value is persisted.',
                     control: Wrap(
                       spacing: CatchSpacing.s3,
                       runSpacing: CatchSpacing.s3,
@@ -221,6 +223,8 @@ class _HostFormAutomationsScreenState
                                 .firstOrNull
                                 ?.name ??
                             context.l10n.hostFormAutomationsTitle,
+                        contractExemption:
+                            'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',
                         body:
                             '${_runStatusLabel(context, run.status)} · ${AppTimeFormatters.compactRelativeTime(run.createdAt)}',
                         control: Text(

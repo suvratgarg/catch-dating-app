@@ -252,6 +252,8 @@ class _HostApplicationDetailScreenState
                   CatchFieldLanes.single(
                     child: CatchField.control(
                       title: context.l10n.hostApplicationReviewTitle,
+                      contractExemption:
+                          'Disclosure for review actions; the nested note uses the generated review payload binding.',
                       initiallyOpen:
                           application.reviewStatus ==
                               HostApplicationReviewStatus.submitted ||
