@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:63b510b8c941e5b731039d03d14b211db82a8166a932a27ecec6fdbf58f6fb35",
+  "resolvedDigest": "sha256:eb7f637645c2157991d8cf62d8d8bd0ea1bbc25cc1be1ab4265ef7f03a26cc21",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2063,7 +2063,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

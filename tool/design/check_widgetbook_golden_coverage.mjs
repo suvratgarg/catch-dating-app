@@ -13,6 +13,7 @@ const coreRoots = [
   "lib/core/widgets/",
   "packages/catch_ui/lib/src/primitives/",
   "packages/catch_ui/lib/src/components/",
+  "packages/catch_ui/lib/src/patterns/",
 ];
 const waiverLimit = 20;
 const simpleType = (value) => value?.replace(/<.*>/u, "");

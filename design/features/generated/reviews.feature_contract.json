@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:f278cdcf885d8812284a71afb418e1f79e6c0dec3ed8b2c3ed0c5f7978bb4fee",
+  "resolvedDigest": "sha256:16bb98cc6d19b4ff2fe6f3698ca85680a0332ebc258e97cdc658aa6b9e291c7a",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1122,7 +1122,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

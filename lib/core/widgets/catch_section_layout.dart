@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -309,7 +308,7 @@ class CatchScrollTerminalPadding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = includeSafeArea
-        ? AppShellActiveTab.scrollTerminalClearanceOf(context, extra: extra)
+        ? CatchTabViewportScope.scrollTerminalClearanceOf(context, extra: extra)
         : extra;
     return SizedBox(height: height);
   }
@@ -608,7 +607,9 @@ class CatchResponsiveSectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomObstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final bottomObstruction = CatchTabViewportScope.bottomOverlayInsetOf(
+      context,
+    );
     return CatchFieldVisibilityScope(
       bottomObstruction: bottomObstruction,
       child: CatchScreenBody(

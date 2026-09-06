@@ -241,6 +241,7 @@ List<Map<String, Object?>> _coreSurface() {
       'lib/core/widgets',
       'packages/catch_ui/lib/src/primitives',
       'packages/catch_ui/lib/src/components',
+      'packages/catch_ui/lib/src/patterns',
     ])
       if (Directory(root).existsSync())
         ...Directory(root)

@@ -62,7 +62,8 @@ Map<String, bool> _coreGoldenDesignations() {
 bool _isGoldenSource(String path) =>
     path.startsWith('lib/core/widgets/') ||
     path.startsWith('packages/catch_ui/lib/src/primitives/') ||
-    path.startsWith('packages/catch_ui/lib/src/components/');
+    path.startsWith('packages/catch_ui/lib/src/components/') ||
+    path.startsWith('packages/catch_ui/lib/src/patterns/');
 
 String _corpusStem(String id) {
   final legacy = _referenceCases[id];
@@ -96,7 +97,7 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(coreGoldenIds, hasLength(257));
+    expect(coreGoldenIds, hasLength(258));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

@@ -98,3 +98,53 @@ Widget heroViewportStates(BuildContext context) => WidgetbookCatalogFrame(
     ),
   ],
 );
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTabViewportScope,
+  path: '[Core patterns]/Viewport',
+)
+Widget tabViewportContractStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Tab viewport',
+      catalogId: 'catch.screen_body.tab_viewport_scope',
+      children: [
+        for (final placement in CatchTabViewportScopePlacement.values)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CatchMonoLabel(
+                placement.name,
+                color: CatchTokens.of(context).ink2,
+              ),
+              gapH8,
+              SizedBox(
+                height: 160,
+                child: CatchSurface(
+                  padding: EdgeInsets.zero,
+                  child: CatchTabViewportScope(
+                    index: 0,
+                    bottomBarPlacement: placement,
+                    bottomOverlayInset:
+                        placement == CatchTabViewportScopePlacement.floating
+                        ? 56
+                        : 0,
+                    child: CatchStateViewport(
+                      child: ColoredBox(
+                        color: CatchTokens.of(context).primarySoft,
+                        child: Center(
+                          child: Text(
+                            'Visible state region',
+                            style: CatchTextStyles.bodyM(context),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
-  "resolvedDigest": "sha256:abac65b8e1a551a05440cf41c51d61dd6cec211900a723efa9ada4a5daa20033",
+  "resolvedDigest": "sha256:e8b68e4863a424754bfd57b0c7fd3943b500c3f2594bd94b519e9c1bfce5f13c",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -911,7 +911,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -143,7 +142,7 @@ void main() {
             'runner-1',
           ).overrideWith((ref) => Stream.value([activeRun])),
         ],
-        child: AppShellActiveTab(
+        child: CatchTabViewportScope(
           index: appShellHomeTabIndex,
           child: MaterialApp(
             theme: AppTheme.dark,
@@ -232,7 +231,7 @@ void main() {
             'runner-1',
           ).overrideWith((ref) => Stream.value(const <Event>[])),
         ],
-        child: AppShellActiveTab(
+        child: CatchTabViewportScope(
           index: appShellHomeTabIndex,
           child: MaterialApp(
             theme: AppTheme.light,

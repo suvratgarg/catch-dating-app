@@ -7,7 +7,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
@@ -911,9 +910,9 @@ Widget _app({
     child: MaterialApp(
       theme: AppTheme.light,
       home: floatingBottomOverlayInset > 0
-          ? AppShellActiveTab(
+          ? CatchTabViewportScope(
               index: appShellChatsTabIndex,
-              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomBarPlacement: CatchTabViewportScopePlacement.floating,
               bottomOverlayInset: floatingBottomOverlayInset,
               child: route,
             )

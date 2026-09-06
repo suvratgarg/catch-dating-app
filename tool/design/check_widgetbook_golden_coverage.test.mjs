@@ -163,7 +163,7 @@ test("keeps generated public Catch classes in the denominator", () => {
 });
 
 
-for (const layer of ["primitives", "components"]) {
+for (const layer of ["primitives", "components", "patterns"]) {
   test(`preserves coverage when ${layer} move across the package boundary`, () => {
     const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
       "lib/core/widgets/", `packages/catch_ui/lib/src/${layer}/`,

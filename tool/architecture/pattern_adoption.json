@@ -483,7 +483,7 @@
       ],
       "adopters": [
         {
-          "path": "lib/core/widgets/catch_empty_state.dart",
+          "path": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
           "role": "reference CatchStateViewport geometry shared by box and sliver empty/error placement; preserves responsive overflow while shifting the optical center above floating shell chrome",
           "providerFree": true,
           "status": "aligned"

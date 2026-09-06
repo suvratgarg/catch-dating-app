@@ -230,10 +230,10 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
               viewInsets: EdgeInsets.only(bottom: 300),
             ),
-            child: AppShellActiveTab(
+            child: CatchTabViewportScope(
               index: appShellHomeTabIndex,
               bottomOverlayInset: 102,
-              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomBarPlacement: CatchTabViewportScopePlacement.floating,
               child: CatchScrollTerminalPadding(
                 key: terminalPaddingKey,
                 extra: 10,
@@ -267,9 +267,9 @@ void main() {
             padding: EdgeInsets.only(bottom: 34),
             viewPadding: EdgeInsets.only(bottom: 34),
           ),
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
-            bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+            bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
             child: CatchScrollTerminalPadding(
               key: terminalPaddingKey,
               extra: 10,
@@ -303,7 +303,7 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
               viewInsets: EdgeInsets.only(bottom: 300),
             ),
-            child: AppShellActiveTab(
+            child: CatchTabViewportScope(
               index: appShellHomeTabIndex,
               child: CatchScrollTerminalPadding(
                 key: terminalPaddingKey,

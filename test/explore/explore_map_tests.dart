@@ -609,7 +609,7 @@ void _registerExploreMapTests() {
               padding: EdgeInsets.only(bottom: bottomSafeArea),
               viewPadding: EdgeInsets.only(bottom: bottomSafeArea),
             ),
-            child: AppShellActiveTab(
+            child: CatchTabViewportScope(
               index: appShellClubsTabIndex,
               bottomOverlayInset: shellBottomOverlayInset,
               child: ExploreScreen(),

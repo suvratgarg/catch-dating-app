@@ -161,9 +161,9 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const AppShellActiveTab(
+          home: const CatchTabViewportScope(
             index: 1,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             bottomOverlayInset: 100,
             child: Scaffold(
               key: ValueKey('box-state-scaffold'),
@@ -195,9 +195,9 @@ void _registerCatchPrimitivesErrorAsyncTests() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.light,
-            home: AppShellActiveTab(
+            home: CatchTabViewportScope(
               index: 1,
-              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomBarPlacement: CatchTabViewportScopePlacement.floating,
               bottomOverlayInset: 100,
               child: Scaffold(
                 key: const ValueKey('state-scaffold'),

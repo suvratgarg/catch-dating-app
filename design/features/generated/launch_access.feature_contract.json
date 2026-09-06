@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:ba846cfead2c9f156fffc91b71a2116a38d4bf30cf8eb64fb9bffe49ad1f7e23",
+  "resolvedDigest": "sha256:52b854e661c71c985d70b8d8c484856ea24b91b235cde6c82003cd25be7df095",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -880,7 +880,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

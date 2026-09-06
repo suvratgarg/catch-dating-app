@@ -4,7 +4,6 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_c
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';

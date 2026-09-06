@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:de2d1f31ac4a6f8edd50cf6ebb4138a833cb426f8f96c36d40379c24b8a09176",
+  "resolvedDigest": "sha256:2aaa5b1dd4e1896d912a9e427c0b043056dbfb5b41cfbc3e4f1c5bffe13306e8",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1452,7 +1452,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

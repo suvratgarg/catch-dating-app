@@ -18,7 +18,6 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -819,10 +818,11 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
                     builder: (context) {
                       final overlay = CatchTabBar.reservedBottomInset(context);
                       final total = overlay + CatchSpacing.screenPb;
-                      return AppShellActiveTab(
+                      return CatchTabViewportScope(
                         index: appShellHomeTabIndex,
                         bottomOverlayInset: overlay,
-                        bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                        bottomBarPlacement:
+                            CatchTabViewportScopePlacement.floating,
                         child: clearanceBand(
                           '${total.toStringAsFixed(0)} px · overlay + breathing',
                         ),
@@ -839,9 +839,9 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
                   'The scaffold reserves the bar; this adds breathing.',
               child: MediaQuery(
                 data: previewMediaQuery,
-                child: AppShellActiveTab(
+                child: CatchTabViewportScope(
                   index: appShellHomeTabIndex,
-                  bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+                  bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
                   child: clearanceBand(
                     '${CatchSpacing.screenPb.toStringAsFixed(0)} px · breathing',
                   ),
@@ -1696,10 +1696,10 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
         label: 'box body / floating-shell optical center',
         child: SizedBox(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CatchStateViewport(
               child: CatchEmptyState(
                 icon: CatchIcons.calendarTodayOutlined,
@@ -1728,10 +1728,10 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
         label: 'floating-shell optical center',
         child: SizedBox(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CustomScrollView(
               slivers: [
                 CatchSliverStateViewport(

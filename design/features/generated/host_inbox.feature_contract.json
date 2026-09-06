@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:d7f55aea04f72908d20eebd73ae937be3506b23dc575b42479875100f406c571",
+  "resolvedDigest": "sha256:378771aa5d4c83f6c03e984e20011773c23a2ce9126394fab9a8c90be0718c69",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4707,7 +4707,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

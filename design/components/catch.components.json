@@ -1079,7 +1079,7 @@
       "summary": "Canonical success-empty-state composition for stacked or inline empty content, optional icon, optional action, and optional contained surface.",
       "dart": {
         "symbol": "CatchEmptyState",
-        "file": "lib/core/widgets/catch_empty_state.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
         "constructors": [
           "CatchEmptyState"
         ]
@@ -1198,7 +1198,7 @@
           {
             "id": "catch.empty_state.content",
             "symbol": "CatchEmptyStateContent",
-            "file": "lib/core/widgets/catch_empty_state.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_empty_state_content.dart",
             "summary": "Direct empty-state content renderer for title, message, action, and layout variants.",
             "states": [
               "stacked",
@@ -1216,7 +1216,7 @@
           {
             "id": "catch.empty_state.icon",
             "symbol": "CatchEmptyStateIcon",
-            "file": "lib/core/widgets/catch_empty_state.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_empty_state_icon.dart",
             "summary": "Direct empty-state icon renderer for plain and bubble icon treatments.",
             "states": [
               "plain",
@@ -1228,6 +1228,61 @@
               "conceptId": "catch.empty_state",
               "parentConceptId": "catch.empty_state",
               "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.state_viewport",
+            "symbol": "CatchStateViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_state_viewport.dart",
+            "summary": "Box placement that accounts for the inherited bottom obstruction when centering terminal content.",
+            "states": [
+              "without-overlay",
+              "floating-overlay",
+              "overlay-opt-out"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.sliver_state_viewport",
+            "symbol": "CatchSliverStateViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_state_viewport.dart",
+            "summary": "Sliver placement for terminal content with the same bottom-obstruction geometry and bounded scroll-body constraints.",
+            "states": [
+              "without-overlay",
+              "floating-overlay",
+              "overlay-opt-out"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.sliver_empty_state",
+            "symbol": "CatchSliverEmptyState",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_empty_state.dart",
+            "summary": "Sliver-native empty content combining the canonical empty-state renderer and terminal-state viewport.",
+            "states": [
+              "stacked",
+              "inline",
+              "with-action",
+              "floating-overlay"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.empty_state"
             }
           }
@@ -7649,6 +7704,26 @@
             "states": [
               "editable-content",
               "inner-reveal"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.tab_viewport_scope",
+            "symbol": "CatchTabViewportScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart",
+            "summary": "Route-neutral active-page and bottom-obstruction scope; anchored, floating and absent bars preserve their distinct terminal-clearance rules.",
+            "states": [
+              "no-bar",
+              "anchored",
+              "floating",
+              "safe-area",
+              "active-index"
             ],
             "governance": {
               "conceptRole": "member",

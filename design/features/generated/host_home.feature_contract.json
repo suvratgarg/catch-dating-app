@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:2b2102602bbbcb3dcc5212ab3e2468ebe0bcccf88b9ea781834e8f65d6b2b02f",
+  "resolvedDigest": "sha256:8bda78c68beae7d6915c785f9110a1b3d54c1d622a4fffb527e617efa514a2fd",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1907,7 +1907,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

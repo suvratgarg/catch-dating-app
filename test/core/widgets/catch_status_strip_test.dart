@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -241,9 +240,9 @@ void main() {
     (tester) async {
       _size(tester);
       await tester.pumpWidget(
-        AppShellActiveTab(
+        CatchTabViewportScope(
           index: 0,
-          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
           bottomOverlayInset: 96,
           child: _app(),
         ),

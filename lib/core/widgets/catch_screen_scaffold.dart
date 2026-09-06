@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -442,7 +441,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final obstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final obstruction = CatchTabViewportScope.bottomOverlayInsetOf(context);
     final statuses = CatchStatusStripScope.of(context);
     Widget scrollView;
     if (primaryRail == null) {

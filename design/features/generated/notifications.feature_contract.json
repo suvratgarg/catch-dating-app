@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
-  "resolvedDigest": "sha256:f8b570a2c8778c8138f8f00adecae112fb64a1ef7e80e59420a8926ef2cd6a78",
+  "resolvedDigest": "sha256:76ade7118d41890630d8214ca2ace61dc2eb56400b1e0bcb9a1c9cff2b721f84",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1078,7 +1078,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

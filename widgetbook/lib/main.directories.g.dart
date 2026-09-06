@@ -1769,6 +1769,27 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookCategory(
+    name: 'Core patterns',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Viewport',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabViewportScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .tabViewportContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
     name: 'Core primitives',
     children: [
       _widgetbook.WidgetbookFolder(

@@ -9,7 +9,7 @@
         {"text": "final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0", "minimumOccurrences": 1},
         {"text": "final candidateTabBarFloats =", "minimumOccurrences": 1},
         {"text": "body: candidateTabBarFloats", "minimumOccurrences": 1},
-        {"text": "AppShellBottomBarPlacement.none", "minimumOccurrences": 1}
+        {"text": "CatchTabViewportScopePlacement.none", "minimumOccurrences": 1}
       ],
       "forbids": [
         {"text": "body: tabBarFloats"},
@@ -25,7 +25,7 @@
       ],
       "forbids": [
         {"text": "CatchTabBar.floatsFor(context)"},
-        {"text": "AppShellActiveTab("}
+        {"text": "CatchTabViewportScope("}
       ]
     },
     {
@@ -38,7 +38,7 @@
       ],
       "forbids": [
         {"text": "CatchTabBar.floatsFor(context)"},
-        {"text": "AppShellActiveTab("}
+        {"text": "CatchTabViewportScope("}
       ]
     }
   ],

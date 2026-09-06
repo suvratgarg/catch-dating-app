@@ -697,7 +697,11 @@ and layout behavior in individual package files. Hero backdrops and journey-step
 anatomy follow the same ownership rule. Number steppers receive explicit caller
 tooltips; their previous English defaults had no production consumers. The
 remaining l10n-coupled field/section/sheet families retain their later extraction
-work.
+work. Empty-state renderers and box/sliver placement also move into the package.
+The route-neutral `CatchTabViewportScope` owns inherited active-page and bottom-
+obstruction metrics; app tab identities remain app-side. Pattern discovery is
+included in the same corpus coverage and runner so moving a placement owner
+cannot remove its existing golden cases.
 
 ### Phase 4 — One registry, binding grammar
 

@@ -12,7 +12,6 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
@@ -80,7 +79,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final activeIndex = AppShellActiveTab.maybeIndexOf(context);
+    final activeIndex = CatchTabViewportScope.maybeIndexOf(context);
     if (activeIndex == null) return;
     final isActive = activeIndex == appShellClubsTabIndex;
     final shouldRefresh = _wasExploreTabActive == false && isActive;
@@ -778,7 +777,7 @@ bool exploreShowsAccountControls({
 }) => authResolved && uid != null;
 
 double _mapLauncherBottomOffset(BuildContext context) {
-  return AppShellActiveTab.bottomOverlayClearanceOf(
+  return CatchTabViewportScope.bottomOverlayClearanceOf(
     context,
     minimum: CatchSpacing.s5,
   );

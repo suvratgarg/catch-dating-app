@@ -55,7 +55,7 @@ section under 120 lines.
 | L1 | foundations | theme wiring, typography, icons, motion | `packages/catch_ui/lib/src/foundations` | unchanged | L0 |
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` plus remaining `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
-| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
+| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` plus remaining `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
 | L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
@@ -64,6 +64,9 @@ Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
 The package owns its branded fonts and licenses and depends only on Flutter,
 `catch_tokens`, and Phosphor. `AppTheme` remains an app adapter that adds the
 activity-domain palette to `CatchTheme`; it does not define another theme.
+`CatchTabViewportScope` owns route-neutral active-page and bottom-obstruction
+metrics for shared layouts. App tab identities and route selection stay in the
+app; anchored, floating, and absent bars keep their existing clearance rules.
 
 ### Placement decision tree
 
@@ -734,7 +737,7 @@ Flutter's raw `showModalBottomSheet` directly from production code unless this
 policy test is intentionally updated.
 
 Root-screen overlays that still coexist with the floating tab bar should use
-`AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)`; feature
+`CatchTabViewportScope.bottomOverlayClearanceOf(context, minimum: ...)`; feature
 code should not recompute the tab-bar height, safe-area subtraction, or platform
 floating inset. Root scroll views without tab chrome should end with a semantic
 terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
@@ -742,7 +745,7 @@ bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
 
-`AppShellBottomBarPlacement` is the shell-to-scroll-owner contract:
+`CatchTabViewportScopePlacement` is the shell-to-scroll-owner contract:
 `floating` publishes the complete physical obstruction and terminal padding
 consumes it; `anchored` means the scaffold already reduced the body viewport,
 so only the requested breathing room is added; `none` (and routes outside a
@@ -753,7 +756,7 @@ screens consume that contract through `CatchScrollTerminalPadding` or
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
 not by focus. While that inset is nonzero, bottom navigation is omitted, the
 consumer shell also omits its guest auth CTA, floating `extendBody` behavior is
-disabled, and `AppShellActiveTab.bottomOverlayInset` is zero. Floating shells
+disabled, and `CatchTabViewportScope.bottomOverlayInset` is zero. Floating shells
 keep the route body in the same stack position while removing only the bottom
 navigation sibling, so the focused editable element, text, cursor selection,
 and keyboard connection survive the inset transition. Medium and expanded
@@ -770,7 +773,7 @@ destinations and compact Host destinations keep the existing platform-aware
 bottom bar. Authenticated Host destinations additionally provide a medium rail
 and expanded sidebar. The scaffold selects among those supplied widgets from
 the available width and always publishes the resulting bottom obstruction
-through `AppShellActiveTab`:
+through `CatchTabViewportScope`:
 
 ```dart
 CatchAdaptiveTabScaffold(
@@ -783,7 +786,7 @@ CatchAdaptiveTabScaffold(
 ```
 
 Side navigation consumes horizontal layout space and therefore publishes
-`AppShellBottomBarPlacement.none` with zero bottom obstruction. Root scroll
+`CatchTabViewportScopePlacement.none` with zero bottom obstruction. Root scroll
 owners continue to use `CatchScrollTerminalPadding` or
 `CatchSliverTerminalPadding`; they never special-case tablet or desktop
 navigation. `AppShellNavigationBar` remains the sole destination adapter, so
