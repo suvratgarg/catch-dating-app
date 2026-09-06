@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceMessageDocumentSchema,
   eventAssistanceMessageIntentSchema,
   eventAssistanceDeliveryAttemptSchema,
   eventAssistanceGuestResponseSchema,
@@ -562,6 +563,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceMessageDocument = ajv.compile(eventAssistanceMessageDocumentSchema);
 export const validateEventAssistanceMessageIntent = ajv.compile(eventAssistanceMessageIntentSchema);
 export const validateEventAssistanceDeliveryAttempt = ajv.compile(eventAssistanceDeliveryAttemptSchema);
 export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceGuestResponseSchema);

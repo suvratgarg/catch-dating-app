@@ -153,7 +153,8 @@ export function prepareDeliveryAttempt(input: DeliveryEvaluationInput):
   const base = {
     schemaVersion: 1,
     attemptId: "attempt:" + operationContentHash([
-      intent.intentId, intent.revision, routeId, decision.ordinal,
+      intent.context, intent.intentId, intent.revision,
+      routeId, decision.ordinal,
     ]),
     intentId: intent.intentId,
     intentRevision: intent.revision,
@@ -225,7 +226,8 @@ export function resolveGuestChoice(input: {
     return {kind: "rejected", reason: "expired"};
   }
   const responseId = "response:" + operationContentHash([
-    intent.intentId, intent.revision, scope.source.kind, submission.requestId,
+    intent.context, intent.intentId, intent.revision,
+    scope.source.kind, submission.requestId,
   ]);
   const existing = input.existingResponse;
   if (existing) {

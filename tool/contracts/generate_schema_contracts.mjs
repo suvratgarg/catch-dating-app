@@ -16,6 +16,11 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventAssistanceMessageDocument",
+    source: "firestore/event_assistance_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageDocument.ts",
+  },
+  {
     name: "EventAssistanceMessageIntent",
     source: "operations/event_assistance_message_intent.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceMessageIntent.ts",

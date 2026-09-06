@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceMessageDocument',
+    source: 'firestore/event_assistance_messages.schema.json',
+    schema: schemaEventAssistanceMessageDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceMessageIntent',
     source: 'operations/event_assistance_message_intent.schema.json',
     schema: schemaEventAssistanceMessageIntentSchema,
@@ -2694,6 +2699,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceMessageDocument': schemaEventAssistanceMessageDocumentSchema,
   'EventAssistanceMessageIntent': schemaEventAssistanceMessageIntentSchema,
   'EventAssistanceDeliveryAttempt': schemaEventAssistanceDeliveryAttemptSchema,
   'EventAssistanceGuestResponse': schemaEventAssistanceGuestResponseSchema,
@@ -3232,6 +3238,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_messages.schema.json': schemaEventAssistanceMessageDocumentSchema,
   'operations/event_assistance_message_intent.schema.json': schemaEventAssistanceMessageIntentSchema,
   'operations/event_assistance_delivery_attempt.schema.json': schemaEventAssistanceDeliveryAttemptSchema,
   'operations/event_assistance_guest_response.schema.json': schemaEventAssistanceGuestResponseSchema,

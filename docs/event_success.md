@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.22.0
+version: 1.23.0
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
@@ -122,7 +122,7 @@ Operations;
 the Functions adapter validates the same schemas before invoking it. Changing
 the policy therefore requires both generated-output parity and runtime tests.
 The local shadow factory does not load live event facts or send messages.
-Trusted worker scheduling, the channel outbox, the guest response boundary,
+Trusted worker scheduling, source fact readers, the guest response boundary,
 and the Host/rehearsal application adapters remain integration work.
 
 `contracts/shared/event_assistance_messaging.schema.json` separates immutable
@@ -151,7 +151,31 @@ instruction, expiry, permission freshness and attempt limits are checked before
 selection. `deliveryReceipts.ts` preserves delivered/read evidence when delayed
 or contradictory provider statuses arrive, and rejects another sender,
 connection revision, endpoint or provider message id. Provider signature
-verification and durable receipt correlation belong to the upcoming adapters.
+verification and callback-to-attempt lookup belong to the upcoming adapters.
+
+`FirestoreMessageOutbox` persists immutable intents and at most six attempts in
+the private `eventAssistanceMessages` collection. Re-enqueueing the same scoped
+intent returns its existing history; changed content cannot reuse the identity.
+Reservation and dispatch claiming each re-read trusted domain and permission
+facts in their Firestore transaction. The injected fact reader is a port for
+the upcoming event/roster/permission adapters, not client-supplied authority.
+
+Only one transaction can claim a reserved live attempt. It records an uncertain
+outcome before returning a short-lived dispatch permit, and the provider runs
+after commit. An interrupted claim therefore requires reconciliation; replay
+does not grant another send. Provider adapters must check permit expiry and use
+the attempt id for provider idempotency when supported. This boundary does not
+claim exactly-once delivery by an external provider.
+
+Normalized receipts can update an expired or cancelled message independently
+of its workflow run. They cannot reopen sending. Contradictory evidence creates
+a persistent conflict that withholds new dispatch, including an already
+reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
+or accept a real provider receipt. The outbox is not yet wired to a scheduler,
+live sender, guest endpoint, Host read model or rehearsal runtime; those remain
+separate integration steps. Terminal cleanup must be added before activation,
+and must retain deduplication state throughout the provider reconciliation
+window.
 
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow

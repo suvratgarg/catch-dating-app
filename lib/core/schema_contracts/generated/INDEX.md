@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `functions/src/shared/generated/eventAssistanceMessageDocument.ts` |
 | EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `functions/src/shared/generated/eventAssistanceMessageIntent.ts` |
 | EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts` |
 | EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `functions/src/shared/generated/eventAssistanceGuestResponse.ts` |
@@ -552,6 +553,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceMessageDocumentSchema` | EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_document.g.dart` |
 | `schemaEventAssistanceMessageIntentSchema` | EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_intent.g.dart` |
 | `schemaEventAssistanceDeliveryAttemptSchema` | EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_delivery_attempt.g.dart` |
 | `schemaEventAssistanceGuestResponseSchema` | EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_response.g.dart` |

@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventAssistanceMessageDocumentSchema} from "./schemas/eventAssistanceMessageDocument";
 export {eventAssistanceMessageIntentSchema} from "./schemas/eventAssistanceMessageIntent";
 export {eventAssistanceDeliveryAttemptSchema} from "./schemas/eventAssistanceDeliveryAttempt";
 export {eventAssistanceGuestResponseSchema} from "./schemas/eventAssistanceGuestResponse";

@@ -1,6 +1,6 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.4.0
+version: 4.5.0
 updated: 2026-09-06
 owner: host_tooling
 status: active
@@ -1286,9 +1286,10 @@ and event, rather than inheriting campaign or follow permission. This sender
 configuration is the initial implementation assumption; provider onboarding
 must verify the actual registered sender and delegated event-service authority.
 
-These routes are currently contracts and delivery-policy code. Provider
-adapters, the guest response page, durable dispatch and Host setup/readiness
-integration remain pending. Their presence in the registry must not be shown
+These routes currently have contracts, delivery-policy code and a private
+durable outbox. Provider adapters, the guest response page, trusted scheduling
+and Host setup/readiness integration remain pending. The outbox alone does not
+send messages. Their presence in the registry must not be shown
 as a connected or usable sender. `supportsReplies` describes native replies:
 SMS is false until a particular sender supports inbound messages; its planned
 response path is the scoped guest webpage. Arbitrary host scheduling remains

@@ -731,6 +731,10 @@ service cloud.firestore {
 
     // Durable business-workflow state. Trusted operations workers use the
     // Admin SDK; browser and mobile clients never access these records directly.
+    match /eventAssistanceMessages/{messageId} {
+      allow read, write: if false;
+    }
+
     match /operationRuns/{runId} {
       allow read, write: if false;
     }

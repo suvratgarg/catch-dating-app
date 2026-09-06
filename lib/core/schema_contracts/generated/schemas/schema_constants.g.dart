@@ -146,6 +146,7 @@ export 'event_assistance_delivery_attempt.g.dart';
 export 'event_assistance_guest_response.g.dart';
 export 'event_assistance_late_join_decision.g.dart';
 export 'event_assistance_late_join_input.g.dart';
+export 'event_assistance_message_document.g.dart';
 export 'event_assistance_message_intent.g.dart';
 export 'event_assistance_policy.g.dart';
 export 'event_attendee_attendance_receipt_document.g.dart';

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.43.0
-updated: 2026-09-04
+version: 1.44.0
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -103,6 +103,33 @@ obligation, and post-event reconciliation stay blocked until their owning
 domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
+
+### Event Service Outbox Contract
+
+`eventAssistanceMessages/{messageId}` is server-only delivery state owned by
+trusted Event Assistance workers. Its canonical Firestore schema embeds the
+portable message intent and delivery-attempt contracts. The id hashes execution
+context, intent identity and revision; the immutable intent holds one guest
+episode and bounded choices. Delivery attempts and guest response identities
+also bind the execution context. Recipient endpoints are opaque references;
+provider credentials and guest bearer grants remain outside this record.
+
+Firestore transactions arbitrate immutable enqueue, attempt reservation,
+one-time live dispatch claiming, closure and normalized receipt merging. The
+history is capped at six attempts. Reservation and claiming use the same
+transaction to read current event/guest/permission facts through the trusted
+reader port. A claim commits an uncertain attempt before yielding permission
+for provider I/O. Duplicate claims do not return that permission, and delayed
+receipts remain reconcilable after closure. Contradictory delivery evidence is
+sticky and blocks further dispatch pending an owned resolution.
+
+No browser or mobile client can read or write this collection directly, even
+with an admin claim. Guest responses still require the separate scoped grant
+and owning-domain mutation boundary; this outbox does not grant attendee access
+or turn self-reported intention into attendance. Scheduling, provider activation,
+the concrete source readers and terminal cleanup remain delivery work. The
+collection currently has no TTL; executable or reconcilable deduplication state
+must not be deleted merely because the message's instruction has expired.
 
 ### Event Dress Rehearsal Isolation Contract
 

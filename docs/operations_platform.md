@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.10.0
+version: 1.11.0
 updated: 2026-09-06
 owner: operations_platform
 status: active
@@ -545,9 +545,15 @@ These are trusted persistence primitives, not authorization or a provider
 executor. A worker must resolve current scoped authority and domain policy,
 reserve an external attempt durably, call the provider outside the transaction,
 and reconcile ambiguous provider outcomes. A receipt saying that an attempt
-was reserved is not proof that a message was delivered. Scheduling, channel
-adapters and Event Assistance's registered executor are separate integration
-work; adding these primitives does not enable Supply Intake publication.
+was reserved is not proof that a message was delivered. Event Assistance's
+private `FirestoreMessageOutbox` now owns immutable message intents, bounded
+attempt history, one-time dispatch claiming and late-receipt reconciliation.
+Its transaction contention boundary is independent of run completion, so a
+closed workflow cannot discard a later provider receipt. The workflow will
+reference that private message state instead of treating a work-item action
+receipt as delivery proof. Scheduling, concrete source readers, channel adapters
+and Event Assistance's live executor remain integration work; these primitives
+do not enable Supply Intake publication.
 
 ## Adding Another Workflow
 

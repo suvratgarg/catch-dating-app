@@ -43,7 +43,8 @@ export type DeliveryDecision =
   | {kind: "refreshFacts"; reason: "eventFactsStale" | "routeFactsStale"}
   | {kind: "wait"; notBefore: number; reason: "retryBackoff"}
   | {kind: "hostDecision"; reason: "noEligibleRoute" | "attemptLimit" |
-      "policyRejected" | "recipientNeedsReview" | "providerOwnsFallback"}
+      "policyRejected" | "recipientNeedsReview" | "providerOwnsFallback" |
+      "conflictingDeliveryEvidence"}
   | {kind: "dispatch"; ordinal: number; candidate: DispatchCandidate;
     authorization: DeliveryAttempt["authorization"]};
 
