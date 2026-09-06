@@ -603,7 +603,12 @@ For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
 merged PR, successful pre-merge CI, required-reviewer approval history, completed
 review job, and equality of the reviewed PR tree with the exact packaged source
 tree. Delivery and the promoter independently repeat this read-only verification
-before authentication. Evidence that is missing, expired, unavailable or bound
+before authentication. The client pins REST API `2022-11-28` because this proof
+requires the exact `merge_commit_sha` field. GitHub's
+[2026 API contract removes that field from all PR responses](https://docs.github.com/en/rest/about-the-rest-api/breaking-changes?apiVersion=2026-03-10).
+The CLI regression exercises version-sensitive HTTP responses; API upgrades
+must preserve exact merge identity before changing this pin.
+Evidence that is missing, expired, unavailable or bound
 to different source retains `prod` review. Source pattern matching cannot prove
 that business logic is free of permission changes and is not used as approval.
 Verified Functions no-ops need no runtime approval. `backend-review` has no
