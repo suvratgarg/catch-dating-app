@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -25,10 +26,8 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
-import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -502,20 +501,36 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
     title: 'CatchFormFieldLabel',
     catalogId: 'core.widgets.catch_form_field_label',
     children: [
-      const _StateCard(
+      _StateCard(
         label: 'required / optional / error / large',
         child: _InlineWrap(
           children: [
-            CatchFormFieldLabel(label: 'Name'),
-            CatchFormFieldLabel(label: 'Note', isOptional: true),
-            CatchFormFieldLabel(label: 'Activity', hasError: true),
-            CatchFormFieldLabel(label: 'Host copy', large: true),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Name',
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Note',
+              isOptional: true,
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Activity',
+              hasError: true,
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Host copy',
+              large: true,
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'field inline optional suffix',
         child: CatchFormFieldLabel.inline(
+          copy: catchFormFieldLabelCopy(context.l10n),
           label: 'Religion',
           isOptional: true,
           style: CatchTextStyles.fieldRowTitle(context),
@@ -1993,6 +2008,7 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchFrameworkErrorView(
+            copy: catchFrameworkErrorCopy(context.l10n),
             details: FlutterErrorDetails(
               exception: StateError('Widgetbook sample framework failure'),
             ),
@@ -2010,19 +2026,21 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
-  return const WidgetbookCatalogFrame(
+  return WidgetbookCatalogFrame(
     title: 'CatchFrameworkErrorDebugDetails',
     catalogId: 'core.widgets.catch_framework_error_debug_details',
     children: [
       _StateCard(
         label: 'collapsed',
         child: CatchFrameworkErrorDebugDetails(
+          label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
         ),
       ),
       _StateCard(
         label: 'expanded',
         child: CatchFrameworkErrorDebugDetails(
+          label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
           initiallyExpanded: true,
         ),

@@ -844,7 +844,7 @@ abstract class AppLocalizations {
   /// **'Saved'**
   String get coreCatchFieldSemanticSaved;
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Optional'**
@@ -880,13 +880,13 @@ abstract class AppLocalizations {
   /// **'Enter a valid {field}'**
   String coreCatchFormValidationPattern({required String field});
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get coreCatchFrameworkErrorViewTextSomethingWentWrong;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Developer details'**
@@ -7013,7 +7013,7 @@ abstract class AppLocalizations {
   /// **'Clear {value1}'**
   String coreCatchFieldTooltipClearValue1({required Object value1});
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label}, optional'**
@@ -10648,7 +10648,7 @@ abstract class AppLocalizations {
   /// **'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.'**
   String get coreBlockUserDialogMessageYouWillStopSeeing;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'This screen hit a temporary app error. Please go back or try again in a moment.'**

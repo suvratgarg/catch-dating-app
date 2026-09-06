@@ -952,7 +952,7 @@
   },
   "coreCatchFormFieldLabelTextOptional": "Optional",
   "@coreCatchFormFieldLabelTextOptional": {
-    "description": "Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
@@ -1013,14 +1013,14 @@
   },
   "coreCatchFrameworkErrorViewTextSomethingWentWrong": "Something went wrong",
   "@coreCatchFrameworkErrorViewTextSomethingWentWrong": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
   },
   "coreCatchFrameworkErrorViewTextDeveloperDetails": "Developer details",
   "@coreCatchFrameworkErrorViewTextDeveloperDetails": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
@@ -8083,7 +8083,7 @@
   },
   "coreCatchFormFieldLabelLabelLabelOptional": "{label}, optional",
   "@coreCatchFormFieldLabelLabelLabelOptional": {
-    "description": "Product copy used by lib/core/widgets/catch_form_field_label.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "placeholders": {
       "label": {}
     },
@@ -12351,7 +12351,7 @@
   },
   "coreCatchFrameworkErrorViewTextThisScreenHitA": "This screen hit a temporary app error. Please go back or try again in a moment.",
   "@coreCatchFrameworkErrorViewTextThisScreenHitA": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"

@@ -210,6 +210,7 @@ extension _CatchFieldEdit on _CatchFieldState {
             if (effectiveShowLabel &&
                 !_useFloatingLabel(effectiveVariant, effectiveShowLabel)) ...[
               CatchFormFieldLabel.inline(
+                copy: catchFormFieldLabelCopy(context.l10n),
                 label: _title ?? '',
                 style: _fieldCaptionTextStyle(
                   context,

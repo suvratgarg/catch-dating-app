@@ -87,6 +87,7 @@ class CatchFieldContentRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchFormFieldLabel.inline(
+          copy: catchFormFieldLabelCopy(context.l10n),
           label: title.trim(),
           style: _fieldValueTextStyle(
             context,

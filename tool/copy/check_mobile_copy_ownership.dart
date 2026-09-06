@@ -18,6 +18,7 @@ const _copyArgumentNames = <String>{
   'brandLabel',
   'caption',
   'ctaLabel',
+  'debugDetailsLabel',
   'description',
   'detail',
   'emptyMessage',
@@ -40,6 +41,9 @@ const _copyArgumentNames = <String>{
   'linkLabel',
   'message',
   'note',
+  'optionalLabel',
+  'optionalSuffix',
+  'optionalSemantics',
   'placeholder',
   'prompt',
   'proof',
@@ -98,6 +102,7 @@ const _copyMemberNames = <String>{
   'clusterLabel',
   'countLabel',
   'defaultAttendeePrompt',
+  'debugDetailsLabel',
   'description',
   'deleteDetail',
   'displayLabel',
@@ -116,6 +121,9 @@ const _copyMemberNames = <String>{
   'missingStartingPointMessage',
   'name',
   'peoplePerLabel',
+  'optionalLabel',
+  'optionalSuffix',
+  'optionalSemantics',
   'placeholder',
   'reasonLabel',
   'runTimesLabel',
@@ -494,10 +502,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     return null;
   }
 
-  bool _isCopyMemberName(String name) {
-    if (_diagnosticName.hasMatch(name)) return false;
-    return _copyMemberNames.contains(name);
-  }
+  // Exact display-copy names include the visible debug-details disclosure label.
+  bool _isCopyMemberName(String name) => _copyMemberNames.contains(name);
 
   bool _isCopyFunctionName(String name) {
     if (_diagnosticName.hasMatch(name)) return false;
@@ -699,6 +705,43 @@ Widget buildForm(BuildContext context) => Column(children: [
       'Mobile copy scanner missed extended UI-copy shapes: '
       '$missedShapeFindings',
     );
+  }
+  const sharedCopySource = r'''
+class SharedCopy {
+  const SharedCopy({
+    this.optionalLabel = 'Optional',
+    this.optionalSuffix = ' (optional)',
+    this.debugDetailsLabel = 'Developer details',
+  });
+  String optionalSemantics(String label) => '$label, optional';
+  String get diagnosticMessage => 'Internal diagnostic only';
+}
+final copy = SharedCopy(
+  optionalLabel: 'Optional field',
+  optionalSuffix: ' (not required)',
+  debugDetailsLabel: 'Technical details',
+  optionalSemantics: (label) => '$label, not required',
+);
+''';
+  final sharedCopyFindings = scanDartSource(
+    'packages/catch_ui/lib/src/components/example_copy.dart',
+    sharedCopySource,
+  );
+  final sharedCopyKinds = sharedCopyFindings
+      .map((finding) => finding.kind)
+      .toSet();
+  if (sharedCopyFindings.length != 8 ||
+      !sharedCopyKinds.containsAll({
+        'default:optionalLabel',
+        'default:optionalSuffix',
+        'default:debugDetailsLabel',
+        'member:optionalSemantics',
+        'argument:optionalLabel',
+        'argument:optionalSuffix',
+        'argument:debugDetailsLabel',
+        'argument:optionalSemantics',
+      })) {
+    throw StateError('Shared display-copy ownership gaps: $sharedCopyFindings');
   }
   const exceptionSource = '''
 void fail() => throw BackendOperationException(

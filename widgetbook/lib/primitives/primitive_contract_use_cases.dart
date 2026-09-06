@@ -24,7 +24,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
@@ -1978,7 +1977,7 @@ Widget catchChipContractStates(BuildContext context) {
   path: '[Core primitives]/Inputs',
 )
 Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchFormFieldOptionalBadge',
     contractId: 'catch.field.form_field_label.optional_badge',
     states: ['default', 'error'],
@@ -1987,8 +1986,13 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
         label: 'badge states',
         child: _InlineWrap(
           children: [
-            CatchFormFieldOptionalBadge(),
-            CatchFormFieldOptionalBadge(hasError: true),
+            CatchFormFieldOptionalBadge(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+            ),
+            CatchFormFieldOptionalBadge(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+              hasError: true,
+            ),
           ],
         ),
       ),

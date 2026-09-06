@@ -1,12 +1,26 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_form_field_optional_badge.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
+
+/// Already-localized optional-field copy supplied by the caller.
+class CatchFormFieldLabelCopy {
+  const CatchFormFieldLabelCopy({
+    required this.optionalLabel,
+    required this.optionalSuffix,
+    required this.optionalSemantics,
+  });
+
+  final String optionalLabel;
+  final String optionalSuffix;
+  final String Function(String label) optionalSemantics;
+}
 
 class CatchFormFieldLabel extends StatelessWidget {
   const CatchFormFieldLabel({
     super.key,
     required this.label,
+    required this.copy,
     this.isOptional = false,
     this.hasError = false,
     this.large = false,
@@ -17,6 +31,7 @@ class CatchFormFieldLabel extends StatelessWidget {
   const CatchFormFieldLabel.inline({
     super.key,
     required this.label,
+    required this.copy,
     required this.style,
     this.isOptional = false,
     this.hasError = false,
@@ -25,6 +40,7 @@ class CatchFormFieldLabel extends StatelessWidget {
        large = false;
 
   final String label;
+  final CatchFormFieldLabelCopy copy;
   final bool isOptional;
   final bool hasError;
   final bool large;
@@ -63,7 +79,7 @@ class CatchFormFieldLabel extends StatelessWidget {
         children: [
           Flexible(child: labelText),
           Text(
-            context.l10n.coreCatchFieldTextOptionalSuffix,
+            copy.optionalSuffix,
             style: effectiveStyle.copyWith(
               color: hasError ? t.danger : t.ink3,
               fontWeight: FontWeight.w500,
@@ -73,18 +89,14 @@ class CatchFormFieldLabel extends StatelessWidget {
         ],
       );
       return Semantics(
-        label: context.l10n.coreCatchFormFieldLabelLabelLabelOptional(
-          label: label,
-        ),
+        label: copy.optionalSemantics(label),
         excludeSemantics: true,
         child: text,
       );
     }
 
     return Semantics(
-      label: isOptional
-          ? context.l10n.coreCatchFormFieldLabelLabelLabelOptional(label: label)
-          : label,
+      label: isOptional ? copy.optionalSemantics(label) : label,
       excludeSemantics: true,
       child: Row(
         children: [
@@ -97,41 +109,12 @@ class CatchFormFieldLabel extends StatelessWidget {
           ),
           if (showOptionalBadge) ...[
             const SizedBox(width: CatchSpacing.s2),
-            CatchFormFieldOptionalBadge(hasError: hasError),
+            CatchFormFieldOptionalBadge(
+              label: copy.optionalLabel,
+              hasError: hasError,
+            ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class CatchFormFieldOptionalBadge extends StatelessWidget {
-  const CatchFormFieldOptionalBadge({super.key, this.hasError = false});
-
-  final bool hasError;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = hasError ? t.danger : t.ink3;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.micro6,
-        vertical: CatchSpacing.micro2,
-      ),
-      decoration: BoxDecoration(
-        color: hasError
-            ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
-            : t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-      ),
-      child: Text(
-        context.l10n.coreCatchFormFieldLabelTextOptional,
-        style: CatchTextStyles.supporting(
-          context,
-          color: color,
-        ).copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }

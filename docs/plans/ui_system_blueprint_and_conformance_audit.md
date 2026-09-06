@@ -688,7 +688,10 @@ rows follow, with button label/loading anatomy in individual files. Share-card
 footers receive their existing localized brand label from app callers;
 step progress receives a caller-owned counter formatter. The latter has only
 catalog/test consumers, so its unused app-catalog entry is removed. The copy
-ownership gate scans the package as well as the app. The remaining l10n-coupled
+ownership gate scans the package as well as the app. Optional field labels and
+framework-error displays also receive resolved copy through the app presentation
+adapter, including screen-reader labels and the debug-details disclosure. Their
+public badge/disclosure anatomy has individual files. The remaining l10n-coupled
 field/section/sheet families retain their later extraction work.
 
 ### Phase 4 — One registry, binding grammar

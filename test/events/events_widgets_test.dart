@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
@@ -29,6 +29,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
@@ -57,7 +58,11 @@ void main() {
         Scaffold(
           body: Column(
             children: [
-              const CatchFormFieldLabel(label: 'Distance', large: true),
+              CatchFormFieldLabel(
+                copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+                label: 'Distance',
+                large: true,
+              ),
               _TestPickerTile(
                 icon: CatchIcons.calendarTodayOutlined,
                 value: null,

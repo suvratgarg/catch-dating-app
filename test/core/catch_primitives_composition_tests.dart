@@ -216,7 +216,13 @@ void _registerCatchPrimitivesCompositionTests() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(const CatchFormFieldLabel(label: 'Instagram', isOptional: true)),
+      _wrap(
+        CatchFormFieldLabel(
+          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+          label: 'Instagram',
+          isOptional: true,
+        ),
+      ),
     );
 
     expect(find.text('Instagram'), findsOneWidget);
