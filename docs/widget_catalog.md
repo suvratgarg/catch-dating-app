@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 3.11.0
-updated: 2026-09-04
+version: 3.12.0
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -45,8 +45,11 @@ prose inventory conventions a generator could not reproduce.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. The foundation specimens below mount
-those same production values. Theme wiring, typography, and icon assets remain
-in `lib/core/theme` until Phase 3; this extraction moves no widget identity.
+those same production values. Theme wiring, typography, icons, motion, and bundled font assets now live
+in `packages/catch_ui/lib/src/foundations`, consumed through
+`package:catch_ui/catch_ui.dart`. `AppTheme` retains the app-specific activity
+palette. Component and pattern widgets remain at their current app paths
+until their Phase 3 slices.
 
 `CatchStatusStrip` (`lib/core/widgets/catch_status_strip.dart`) owns durable
 offline/rehearsal header anatomy, wrapping and 44 pt actions.
@@ -266,7 +269,7 @@ Widgetbook callers.
 | `CatchActivityInitialsPlaceholder` | `lib/core/widgets/catch_person_avatar.dart:396` | Direct activity-register avatar fallback for people shown in activity-grounded surfaces. Resolves activity pigment through `ActivityPalette`, renders mono initials over an activity gradient with screen-print texture, and supports dim veil states. |
 | `CatchActivityChip` | `lib/core/widgets/catch_activity_chip.dart:8` | Handoff activity tag for typed `ActivityKind` values. Resolves label/glyph/pigment through `ActivityPalette`, supports soft and primary registers, optional label override, and optional tap semantics. Use for registry-backed activity labels instead of feature-local colored chip helpers. |
 | `CatchActivityMapPin` | `lib/core/widgets/catch_activity_map_pin.dart:9` | Handoff map pin for activity-colored map marks. Resolves pigment through `ActivityPalette`, supports resting/selected sizing, uppercases optional selected flag text, and owns the subtle pin shadow used on map canvases. |
-| `CatchMapRevealTransition` | `lib/core/motion/catch_transitions.dart:48` | Map-route transition surface that leaves the native platform view stationary while a token-colored paper veil opens from the Explore launcher origin. Reduced-motion settings remove the veil and present the map immediately. |
+| `CatchMapRevealTransition` | `packages/catch_ui/lib/src/foundations/catch_transitions.dart` | Map-route transition surface that leaves the native platform view stationary while a token-colored paper veil opens from the Explore launcher origin. Reduced-motion settings remove the veil and present the map immediately. |
 | `CatchDistanceRing` | `lib/core/widgets/catch_distance_ring.dart:6` | Handoff map radius ring for static map canvases and previews. Renders a 170px default circular ink ring with 1.2px stroke and an optional readable, naturally wrapping control-role label pill anchored to the top edge. `CatchDistanceRingLabel` exposes that same branded edge label for geographically accurate native map circles, preserving caller casing. Shared surface keyboard/press behavior and explicit spoken labels retain activation. |
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | `CatchBadge.status` is a natural-height, sentence-case rounded rectangle with readable positive/attention/affinity tones. Other named recipes retain the handoff `Badge` status pill used for spots-left indicators, distance/pace pills, event requirement chips, status labels, compact metadata, and action-column outcomes. Supports functional tones including `gold`, `size.action` 33px alignment, optional leading icons, optional uppercase labels, and activity-accent tinting. |
 | `CatchCountBadge` | `lib/core/widgets/catch_count_badge.dart:7` | Anchored 99+ count marker for icon and navigation glyph overlays. Renders the child alone when count is zero, reserves the shared app-shell badge box when active, and uses the primary/primaryInk pill recipe from the badge family. Registered as formal component contract `catch.badge.count_badge`; Widgetbook contract states cover hidden, count, and overflow-count. |

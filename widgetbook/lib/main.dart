@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/services.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -10,40 +9,7 @@ import 'main.directories.g.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _loadCatchPackageFonts();
   runApp(const ProviderScope(child: CatchWidgetbookApp()));
-}
-
-Future<void> _loadCatchPackageFonts() async {
-  final archivo = FontLoader('Archivo')
-    ..addFont(
-      rootBundle.load(
-        'packages/catch_dating_app/assets/fonts/Archivo-Roman-VF.ttf',
-      ),
-    );
-  final plexMono = FontLoader('IBM Plex Mono')
-    ..addFont(
-      rootBundle.load(
-        'packages/catch_dating_app/assets/fonts/IBMPlexMono-Regular.ttf',
-      ),
-    )
-    ..addFont(
-      rootBundle.load(
-        'packages/catch_dating_app/assets/fonts/IBMPlexMono-Medium.ttf',
-      ),
-    )
-    ..addFont(
-      rootBundle.load(
-        'packages/catch_dating_app/assets/fonts/IBMPlexMono-SemiBold.ttf',
-      ),
-    )
-    ..addFont(
-      rootBundle.load(
-        'packages/catch_dating_app/assets/fonts/IBMPlexMono-Bold.ttf',
-      ),
-    );
-
-  await Future.wait([archivo.load(), plexMono.load()]);
 }
 
 @widgetbook.App()

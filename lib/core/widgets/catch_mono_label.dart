@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Single-line mono label for compact metadata in cards and rails.

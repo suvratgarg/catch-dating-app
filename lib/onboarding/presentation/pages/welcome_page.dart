@@ -4,12 +4,12 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_scene_viewport.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -257,7 +257,9 @@ class WelcomeScene extends StatelessWidget {
       math.max(0.0, viewportHeight - wheelTop),
     );
     final catchTop = CatchWelcomeTokens.welcomeReelCatchTopFor(mediaPadding);
-    final catchLeft = CatchWelcomeTokens.welcomeReelCatchLeftForWidth(sceneWidth);
+    final catchLeft = CatchWelcomeTokens.welcomeReelCatchLeftForWidth(
+      sceneWidth,
+    );
     final rightInset = CatchWelcomeTokens.welcomeReelRightForWidth(sceneWidth);
     final focusedPhraseIndex = welcomeFocusedPhraseIndex(
       spinValue: spinValue,
@@ -279,7 +281,9 @@ class WelcomeScene extends StatelessWidget {
       mediaPadding.bottom + CatchSpacing.s4,
     );
     final ctaTop =
-        viewportHeight - buttonsBottom - CatchWelcomeTokens.welcomeCtaApproxHeight;
+        viewportHeight -
+        buttonsBottom -
+        CatchWelcomeTokens.welcomeCtaApproxHeight;
     final minBodyTop = catchTop + CatchWelcomeTokens.welcomeHeadlineToBodyGap;
     final maxBodyTop = math.max(
       minBodyTop,
@@ -475,7 +479,8 @@ class WelcomeFocusLockup extends StatelessWidget {
             ),
           );
     final phraseBox = phraseBoxes.isEmpty ? null : phraseBoxes.first;
-    final underlineTop = painter.height + CatchWelcomeTokens.welcomeReelUnderlineGap;
+    final underlineTop =
+        painter.height + CatchWelcomeTokens.welcomeReelUnderlineGap;
     final contentHeight = phraseBox == null
         ? painter.height
         : math.max(
@@ -712,7 +717,9 @@ class ReelRow extends StatelessWidget {
         opacity: effectiveOpacity.clamp(0, 1).toDouble(),
         child: Padding(
           padding: EdgeInsets.only(
-            left: CatchWelcomeTokens.welcomeReelObjectLeftForWidth(viewportWidth),
+            left: CatchWelcomeTokens.welcomeReelObjectLeftForWidth(
+              viewportWidth,
+            ),
             right: CatchWelcomeTokens.welcomeReelRightForWidth(viewportWidth),
           ),
           child: Align(
@@ -778,7 +785,10 @@ class RevealEntrance extends StatelessWidget {
     return Opacity(
       opacity: progress,
       child: Transform.translate(
-        offset: Offset(0, (1 - progress) * CatchWelcomeTokens.welcomeRevealOffsetY),
+        offset: Offset(
+          0,
+          (1 - progress) * CatchWelcomeTokens.welcomeRevealOffsetY,
+        ),
         child: child,
       ),
     );
@@ -786,7 +796,8 @@ class RevealEntrance extends StatelessWidget {
 }
 
 double _welcomeTrackOffset({required double spinValue, required bool landed}) {
-  final trackH = welcomePhraseBank.length * CatchWelcomeTokens.welcomeReelRowHeight;
+  final trackH =
+      welcomePhraseBank.length * CatchWelcomeTokens.welcomeReelRowHeight;
   final base =
       CatchWelcomeTokens.welcomeReelLandingOffset(welcomeLandingIndex) % trackH;
   if (landed) return base;

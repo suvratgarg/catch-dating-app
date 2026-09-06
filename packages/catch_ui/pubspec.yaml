@@ -1,0 +1,40 @@
+name: catch_ui
+description: Catch shared presentation foundations, primitives, components, and patterns.
+version: 0.1.0
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  catch_tokens:
+    path: ../catch_tokens
+  phosphor_flutter: ^2.1.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/fonts/OFL-Archivo.txt
+    - assets/fonts/OFL-IBMPlexMono.txt
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo-Roman-VF.ttf
+    - family: IBM Plex Mono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/IBMPlexMono-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBMPlexMono-Bold.ttf
+          weight: 700

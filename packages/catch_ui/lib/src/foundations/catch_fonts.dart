@@ -78,6 +78,7 @@ abstract final class CatchFonts {
   }) {
     return TextStyle(
       fontFamily: voiceFamily,
+      package: 'catch_ui',
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: FontStyle.normal,
@@ -148,6 +149,7 @@ abstract final class CatchFonts {
   }) {
     return TextStyle(
       fontFamily: monoFamily,
+      package: 'catch_ui',
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: height,

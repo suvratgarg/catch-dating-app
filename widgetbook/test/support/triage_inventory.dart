@@ -43,6 +43,11 @@ String? _resolveUri(String from, String? uri) {
   if (uri.startsWith('package:widgetbook_workspace/')) {
     return uri.replaceFirst('package:widgetbook_workspace/', 'widgetbook/lib/');
   }
+  for (final package in ['catch_ui', 'catch_tokens']) {
+    if (uri.startsWith('package:$package/')) {
+      return uri.replaceFirst('package:$package/', 'packages/$package/lib/');
+    }
+  }
   if (uri.startsWith('package:')) return null;
   return Uri.parse(from).resolve(uri).path;
 }
@@ -151,7 +156,9 @@ Map<String, Object?> _reach(String path, String builder) {
       if (target == null) continue;
       if (target.startsWith('widgetbook/lib/')) {
         pending.add((target, ref));
-      } else if (target.startsWith('lib/')) {
+      } else if (target.startsWith('lib/') ||
+          target.startsWith('packages/catch_ui/lib/') ||
+          target.startsWith('packages/catch_tokens/lib/')) {
         final declaration = _members(target)[ref];
         if (declaration is ClassDeclaration || _isUiDeclaration(declaration)) {
           production['$target:$ref'] = {

@@ -70,8 +70,8 @@ stage_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -397,7 +397,7 @@ expect_code_count \
 
 probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
 stage_probe "Host route-edge async-state violation" <<'DART'
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -542,7 +542,7 @@ expect_code_count \
   1
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';

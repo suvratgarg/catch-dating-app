@@ -933,3 +933,17 @@ test("Flutter token package selects both app builds and visual coverage without 
     assert.ok(!result.operations.ciTargets.includes(target), target);
   }
 });
+
+test("Flutter UI package selects both app builds and visual coverage without React", () => {
+  const result = plan("packages/catch_ui/lib/src/foundations/catch_theme.dart");
+  assert.deepEqual(result.directComponents, ["app.ui"]);
+  for (const owner of ["app.shared", "app.consumer", "app.host", "app.design"]) {
+    assert.ok(result.affectedComponents.includes(owner), owner);
+  }
+  for (const target of ["flutter", "flutter_build_android", "flutter_build_ios", "flutter_build_web", "visual_integration"]) {
+    assert.ok(result.operations.ciTargets.includes(target), target);
+  }
+  for (const target of ["admin", "marketing", "functions"]) {
+    assert.ok(!result.operations.ciTargets.includes(target), target);
+  }
+});

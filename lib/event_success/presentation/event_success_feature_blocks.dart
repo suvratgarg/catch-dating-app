@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -16,6 +14,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_conver
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 const EdgeInsets _moduleToggleRowGap = EdgeInsets.only(bottom: CatchSpacing.s2);

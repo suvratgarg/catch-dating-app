@@ -13,8 +13,8 @@ void registerCatchFontLicenses() {
 
   LicenseRegistry.addLicense(() async* {
     const licenses = <String, String>{
-      'Archivo': 'assets/fonts/OFL-Archivo.txt',
-      'IBM Plex Mono': 'assets/fonts/OFL-IBMPlexMono.txt',
+      'Archivo': 'packages/catch_ui/assets/fonts/OFL-Archivo.txt',
+      'IBM Plex Mono': 'packages/catch_ui/assets/fonts/OFL-IBMPlexMono.txt',
     };
     for (final entry in licenses.entries) {
       yield LicenseEntryWithLineBreaks(<String>[

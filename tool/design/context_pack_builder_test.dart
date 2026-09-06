@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -96,8 +95,8 @@ Generated sources:
 - design/components/catch.components.json
 - packages/catch_tokens/lib/catch_tokens.dart
 - lib/core/theme/activity_palette.dart
-- lib/core/theme/catch_text_styles.dart
-- lib/core/theme/catch_fonts.dart
+- packages/catch_ui/lib/src/foundations/catch_text_styles.dart
+- packages/catch_ui/lib/src/foundations/catch_fonts.dart
 - test/ui_captures/catalog/screen_capture_catalog.dart
 
 Regenerate:
@@ -116,15 +115,18 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     final dark = _themeExtension<CatchTokens>(AppTheme.dark);
     final generatedSpacing = _doubleConstants(
       'GeneratedCatchSpacingTokens',
-      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
+      sourcePath:
+          'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final generatedRadius = _doubleConstants(
       'GeneratedCatchRadiusTokens',
-      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
+      sourcePath:
+          'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final generatedLayout = _doubleConstants(
       'GeneratedCatchLayoutTokens',
-      sourcePath: 'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
+      sourcePath:
+          'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final spacing = _doubleConstants(
       'CatchSpacing',
@@ -305,7 +307,7 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     final light = _snapshotStyles(await _pumpTheme(tester, AppTheme.light));
     final dark = _snapshotStyles(await _pumpTheme(tester, AppTheme.dark));
     final source = File(
-      'lib/core/theme/catch_text_styles.dart',
+      'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
     ).readAsStringSync();
     final publicMethodNames = _publicTextStyleMethodNames(source);
     final accountedNames = <String>{
@@ -323,7 +325,7 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
 
     return {
       'version': 1,
-      'source': 'lib/core/theme/catch_text_styles.dart',
+      'source': 'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
       'families': {
         'voice': CatchFonts.voiceFamily,
         'function': CatchFonts.functionFamily,
@@ -435,7 +437,8 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
   }) {
     return {
       'role': role,
-      'family': style.fontFamily,
+      // The design export and its CSS use the typeface name, not Dart's asset namespace.
+      'family': style.fontFamily?.replaceFirst('packages/catch_ui/', ''),
       'size': style.fontSize,
       'weight': style.fontWeight?.value,
       'lineHeight': style.height,

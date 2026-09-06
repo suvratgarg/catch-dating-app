@@ -45,8 +45,7 @@ import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -15899,16 +15898,29 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      uidProvider.overrideWithValue(const AsyncData<String?>(HostOperationsFixtures.hostUid)),
-      hostOperableClubsProvider(HostOperationsFixtures.hostUid).overrideWithValue(
-        AsyncData<List<Club>>([HostOperationsFixtures.primaryClub])),
-      hostFormsDirectoryControllerProvider.overrideWith2((_) => _CaptureHostFormsDirectoryController()),
-      hostFormResponsesControllerProvider.overrideWith2((_) => _AudienceCaptureResponses()),
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(HostOperationsFixtures.hostUid),
+      ),
+      hostOperableClubsProvider(
+        HostOperationsFixtures.hostUid,
+      ).overrideWithValue(
+        AsyncData<List<Club>>([HostOperationsFixtures.primaryClub]),
+      ),
+      hostFormsDirectoryControllerProvider.overrideWith2(
+        (_) => _CaptureHostFormsDirectoryController(),
+      ),
+      hostFormResponsesControllerProvider.overrideWith2(
+        (_) => _AudienceCaptureResponses(),
+      ),
     ],
     builder: (_) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience?view=responses', activeIndex: 2,
-      child: HostFormsScreen(initialOrganizerId: HostOperationsFixtures.primaryClub.id,
-        initialResponses: true)),
+      initialLocation: '/host/audience?view=responses',
+      activeIndex: 2,
+      child: HostFormsScreen(
+        initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+        initialResponses: true,
+      ),
+    ),
     includeOverlays: true,
   ),
   ScreenCaptureEntry(

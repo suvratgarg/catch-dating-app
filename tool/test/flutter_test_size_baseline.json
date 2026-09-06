@@ -9,7 +9,7 @@
     },
     {
       "path": "test/core/widgets/catch_field/input_test.dart",
-      "maxLines": 1286
+      "maxLines": 1285
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",

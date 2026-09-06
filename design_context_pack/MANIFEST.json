@@ -5,8 +5,8 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "90442db049fb415c540442938d7d8244b00a1e37b303ce170d8085a98fb344d9",
-      "bytes": 1123
+      "sha256": "d7274179845f7aab8d1850c069056392460583b8bf46c1fbcd0a5989c7d0ad23",
+      "bytes": 1169
     },
     {
       "path": "design_system/activity_palette.json",
@@ -25,8 +25,8 @@
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "239a4e67a7b154b808ee0b4628671ce43b5e35f469f75ce98b036cb72d7c7e4d",
-      "bytes": 42634
+      "sha256": "633dfc0e74c91adb1498b77bb0063ced546960fc882b2e88d79ba4f9a3480ac8",
+      "bytes": 42795
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -40,8 +40,8 @@
     },
     {
       "path": "design_system/typography.json",
-      "sha256": "b4f5c860bad9182cede2f79544e19cb89da306371c0bf7087bb3c887df9e85aa",
-      "bytes": 30936
+      "sha256": "22885e0cbc4a00cedfcbfec7a1958c82091bff2f2dd23dc07998b4944c0ce4fd",
+      "bytes": 30959
     },
     {
       "path": "gallery/manifest.json",

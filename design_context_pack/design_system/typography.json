@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source": "lib/core/theme/catch_text_styles.dart",
+  "source": "packages/catch_ui/lib/src/foundations/catch_text_styles.dart",
   "families": {
     "voice": "Archivo",
     "function": "Roboto",

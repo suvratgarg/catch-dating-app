@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.6.0
+version: 1.7.0
 updated: 2026-09-06
 owner: app_architecture
 status: active
@@ -637,6 +637,9 @@ standard Flutter lints reject undeclared app imports. The workspace analyzer
 explicitly targets the package's `lib` source after a seeded probe demonstrated
 that directory-wide Flutter analysis could skip it.
 
+The owner closed the Phase 2 gate by approving PR #365 for merge and
+authorizing continuation. It merged as `8ba30b124288c4f36a7f39850d07a50bbc672fd6`.
+
 ### Phase 3 — `packages/catch_ui`
 
 Sub-slices, each independently gated by compiler + goldens:
@@ -657,6 +660,15 @@ DoD per slice: moved files deleted at origin; workspace analyze green;
 goldens unchanged or intentionally re-baselined with review; `catch_ui`
 pubspec contains no riverpod/firebase/app dependency (checked by a one-line
 manifest assertion, replacing the scanners it obsoletes).
+
+Phase 3a moves the font registry, semantic text styles, icon facade, motion
+helpers, and bundled font/license assets into `catch_ui/lib/src/foundations`.
+`CatchTheme` owns feature-neutral Material wiring; the app retains `AppTheme`
+as the activity-palette adapter. Branded styles use package-qualified font
+families, and the existing golden loader resolves the same bundled bytes.
+The package boundary permits only Flutter, `catch_tokens`, and Phosphor;
+workspace analysis explicitly visits its library and test sources. All later
+Phase 3 sub-slices remain pending.
 
 ### Phase 4 — One registry, binding grammar
 

@@ -16,6 +16,14 @@ export const packageGraphPolicy = Object.freeze({
     requiredPlugins: [],
     forbiddenPlugins: [],
   },
+  catch_ui: {
+    projectRoot: "packages/catch_ui",
+    requiredPackages: ["flutter", "catch_tokens", "phosphor_flutter"],
+    allowedPackages: ["flutter", "catch_tokens", "phosphor_flutter"],
+    forbiddenPackages: [],
+    requiredPlugins: [],
+    forbiddenPlugins: [],
+  },
   consumer: {
     projectRoot: "apps/consumer",
     requiredPackages: ["health", "razorpay_flutter"],
@@ -81,7 +89,7 @@ export function validateRoleGraph({
   }
   for (const packageName of declaredPackages) {
     if (contract.allowedPackages && !contract.allowedPackages.includes(packageName)) {
-      findings.push(`${role}: dependency '${packageName}' is outside the Flutter-only token boundary.`);
+      findings.push(`${role}: dependency '${packageName}' is outside the ${role === "catch_tokens" ? "Flutter-only token" : "presentation-only UI"} boundary.`);
     }
   }
   for (const pluginName of contract.requiredPlugins) {

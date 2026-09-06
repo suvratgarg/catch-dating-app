@@ -2,8 +2,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart' show ClubHostRole;
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
     show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';

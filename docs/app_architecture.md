@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.26.0
+version: 1.27.0
 updated: 2026-09-06
 owner: app_architecture
 status: active
@@ -52,13 +52,18 @@ section under 120 lines.
 | Level | Name | Contents | Home today | Target home | May depend on |
 |---|---|---|---|---|---|
 | L0 | tokens | scale values, semantic roles | `packages/catch_tokens` | unchanged | Flutter SDK only |
-| L1 | foundations | theme wiring, typography, icons, motion | `lib/core/theme/**` | `packages/catch_ui` | L0 |
+| L1 | foundations | theme wiring, typography, icons, motion | `packages/catch_ui/lib/src/foundations` | unchanged | L0 |
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `lib/core/widgets/**` | `packages/catch_ui` | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
 | L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
+
+Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
+The package owns its branded fonts and licenses and depends only on Flutter,
+`catch_tokens`, and Phosphor. `AppTheme` remains an app adapter that adds the
+activity-domain palette to `CatchTheme`; it does not define another theme.
 
 ### Placement decision tree
 

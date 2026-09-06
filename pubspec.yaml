@@ -25,6 +25,7 @@ workspace:
   - apps/consumer
   - apps/host
   - packages/catch_tokens
+  - packages/catch_ui
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,6 +34,8 @@ workspace:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  catch_ui:
+    path: packages/catch_ui
   catch_tokens:
     path: packages/catch_tokens
   flutter:
@@ -182,29 +185,9 @@ flutter:
     - assets/audio/event_success/
     - assets/audio/celebration/
     - assets/motion/event_success/
-    - assets/fonts/OFL-Archivo.txt
-    - assets/fonts/OFL-IBMPlexMono.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
-  # Catch's three-role type system. Archivo is the voice/headline face, the
-  # platform system font is the function/body face, and IBM Plex Mono is data.
-  # Fonts are bundled for release/offline safety.
-  fonts:
-    - family: Archivo
-      fonts:
-        - asset: assets/fonts/Archivo-Roman-VF.ttf
-    - family: IBM Plex Mono
-      fonts:
-        - asset: assets/fonts/IBMPlexMono-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/IBMPlexMono-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/IBMPlexMono-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/IBMPlexMono-Bold.ttf
-          weight: 700
