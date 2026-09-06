@@ -2170,7 +2170,8 @@
           "rejects an owner outside the registered layout family",
           "requires header-owned roots to declare their top edge",
           "analyzer rejects prefixed, aliased, direct, and indirect Scaffold ownership",
-          "analysis contexts own root, Consumer, and Host production sources"
+          "analysis contexts own app and shared UI production sources",
+          "only the exact package scaffold owns the Material construction"
         ]
       }
     },

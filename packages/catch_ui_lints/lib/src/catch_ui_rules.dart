@@ -103,9 +103,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     }
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchStatusStrip' &&
-        uri ==
-            'package:catch_dating_app/core/widgets/catch_status_strip.dart' &&
+        uri == 'package:catch_ui/src/components/catch_status_strip.dart' &&
         !const {
+          '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/lib/core/widgets/catch_route_scaffold.dart',
@@ -262,8 +262,9 @@ const _manualAsyncSnapshotMembers = <String>{
 const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
 
 const _lowLevelTypographyOwnerPaths = <String>{
-  '/lib/core/widgets/catch_bottom_sheet.dart',
-  '/lib/core/widgets/catch_empty_state.dart',
+  '/packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart',
+  '/packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart',
+  '/packages/catch_ui/lib/src/components/catch_empty_state.dart',
   '/lib/core/widgets/catch_search_field.dart',
 };
 
@@ -1291,7 +1292,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isThemeIndependentArtAllow(int offset) {
     final isKnownArtPath =
-        path.endsWith('/lib/core/widgets/catch_graded_image.dart') ||
+        path.endsWith(
+          '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
+        ) ||
         path.endsWith('/lib/core/widgets/event_activity_visuals.dart') ||
         path.endsWith('/lib/events/presentation/widgets/event_pins_map.dart');
     return isKnownArtPath &&
@@ -2134,7 +2137,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchTextButtonImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_text_button.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_text_button.dart',
+    );
   }
 
   bool get _isCatchTextInputImplementationPath {

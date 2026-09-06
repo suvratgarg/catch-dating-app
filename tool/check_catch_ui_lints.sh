@@ -603,13 +603,14 @@ expect_code_count \
   "catch_no_async_flush_hack" \
   1
 
-# The feedback rule must resolve framework identities across every app root,
+# The feedback rule must resolve framework identities across app and package roots,
 # including core widgets (no broad primitive exemption), aliases and tear-offs.
 for feedback_scope in \
   "lib/hosts/presentation/feedback_probe.dart" \
   "apps/consumer/lib/feedback_probe.dart" \
   "apps/host/lib/feedback_probe.dart" \
-  "lib/core/widgets/feedback_probe.dart"; do
+  "lib/core/widgets/feedback_probe.dart" \
+  "packages/catch_ui/lib/src/components/feedback_probe.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "resolved feedback $feedback_scope" <<'DART'
 import 'package:flutter/material.dart' as material;
@@ -636,7 +637,7 @@ DART
   expect_code_count "resolved feedback $feedback_scope" "catch_use_canonical_feedback" 9
   expect_probe exact catch_use_canonical_feedback 9
   stage_probe "status placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
+import 'package:catch_ui/catch_ui.dart' as ui;
 typedef StripAlias = ui.CatchStatusStrip;
 List<Object> forbiddenPlacement() => [
   const ui.CatchStatusStrip(statuses: []),
@@ -677,10 +678,14 @@ final foreground = FirebaseMessaging.onMessage;
 DART
 expect_probe exact catch_notification_delivery_is_service_owned 0
 
-for status_owner in catch_screen_scaffold catch_tabbed_screen catch_route_scaffold; do
-  probe_path="$probe_root/lib/core/widgets/$status_owner.dart"
+for status_owner in \
+  "lib/core/widgets/catch_screen_scaffold.dart" \
+  "lib/core/widgets/catch_tabbed_screen.dart" \
+  "lib/core/widgets/catch_route_scaffold.dart" \
+  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart"; do
+  probe_path="$probe_root/$status_owner"
   stage_probe "status owner $status_owner" <<'DART'
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+import 'package:catch_ui/catch_ui.dart';
 final status = CatchStatusStrip(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 0
@@ -689,7 +694,7 @@ done
 probe_path="$probe_root/lib/core/widgets/catch_error_snackbar.dart"
 stage_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
+import 'package:catch_ui/catch_ui.dart';
 
 final misplaced = CatchStatusStrip(statuses: const []);
 
@@ -706,7 +711,7 @@ probe_path="$probe_root/lib/consumer/presentation/feedback_probe.dart"
 stage_probe "canonical API and same-name non-framework symbols" <<'DART'
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart' as ui;
+import 'package:catch_ui/catch_ui.dart' as ui;
 
 class SnackBar {}
 class MaterialBanner {}

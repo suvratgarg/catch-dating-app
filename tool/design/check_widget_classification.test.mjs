@@ -36,7 +36,7 @@ test("source-derived widget classification passes its structural and semantic co
     widget.name === "HostPlatformApp",
   ));
   assert.ok(classification.widgets.some((widget) =>
-    widget.file === "lib/core/presentation/app_shell_active_tab.dart" &&
+    widget.file === "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart" &&
     widget.name === "CatchTabViewportScope" &&
     widget.baseClass === "InheritedWidget",
   ));
