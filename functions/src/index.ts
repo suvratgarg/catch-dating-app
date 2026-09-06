@@ -71,6 +71,10 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  getEventAssistanceSmsPreference,
+  setEventAssistanceSmsPreference,
+} from "./eventSuccess/operations/smsPreferenceHandlers";
+export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,
 } from "./eventSuccess/operations/guestHandlers";

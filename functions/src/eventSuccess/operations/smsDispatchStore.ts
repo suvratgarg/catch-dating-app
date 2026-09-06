@@ -26,6 +26,10 @@ import {
 } from "./smsProtocol";
 export {smsEndpointId} from "./smsProtocol";
 
+import {
+  parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS, smsPermissionHasReceipt,
+} from "./smsConsent";
+
 export type {Permission, Budget};
 export const smsCollections = {
   senders: "eventAssistanceSmsSenders",
@@ -70,9 +74,10 @@ export function parseSmsPermission(value: unknown): Permission {
         value.attendeeId, value.senderId) ||
       value.recipientEndpointId !== smsEndpointId(value.context,
         value.attendeeId, value.phoneE164) ||
-      value.expiresAt <= value.evidence.acceptedAt ||
-      value.updatedAt < Math.max(value.evidence.acceptedAt,
-        value.evidence.phoneVerifiedAt)) {
+      (value.evidence !== null &&
+        (value.expiresAt <= value.evidence.acceptedAt ||
+         value.updatedAt < Math.max(value.evidence.acceptedAt,
+           value.evidence.phoneVerifiedAt)))) {
     throw new Error("Invalid event-service SMS permission");
   }
   return value;
@@ -208,6 +213,14 @@ export class SmsDispatchStore {
     }
     if (!permissionSnap.exists) return blocked("missingPermission");
     const permission = parseSmsPermission(permissionSnap.data());
+    if (permission.status !== "granted") return blocked("suppressed");
+    const consentSnap = await tx.get(this.db.collection(SMS_CONSENT_RECEIPTS)
+      .doc(permission.currentReceiptId));
+    const consent = consentSnap.exists ?
+      parseSmsConsentReceipt(consentSnap.data()) : null;
+    if (!smsPermissionHasReceipt(permission, consent)) {
+      return blocked("missingPermission");
+    }
     const source = await readGuestSourceFacts(this.db, tx, context,
       intent.attendeeId);
     const attendee = attendeeSnap.data();
@@ -219,7 +232,6 @@ export class SmsDispatchStore {
         permission.updatedAt > now || permission.expiresAt <= now) {
       return blocked("missingPermission");
     }
-    if (permission.status !== "granted") return blocked("suppressed");
     if (!grantSnap.exists) return blocked("templateUnavailable");
     const grant = parseGrant(grantSnap.data());
     if (grant.linkId !== linkId) return blocked("templateUnavailable");

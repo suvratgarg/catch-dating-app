@@ -158,6 +158,11 @@
       "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
       "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
+      "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
+      "status": "required"
     }
   ]
 }

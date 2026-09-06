@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts` |
+| GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts` |
+| SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts` |
+| EventAssistanceSmsPreferenceCallableResponse | `callable_responses/event_assistance_sms_preference_response.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse.ts` |
 | EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts` |
 | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts` |
 | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts` |
@@ -566,6 +570,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceSmsConsentReceiptDocumentSchema` | EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_consent_receipt_document.g.dart` |
+| `schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema` | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_preference_callable_payload.g.dart` |
+| `schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema` | SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart` |
+| `schemaEventAssistanceSmsPreferenceCallableResponseSchema` | EventAssistanceSmsPreferenceCallableResponse | `callable_responses/event_assistance_sms_preference_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart` |
 | `schemaEventAssistanceSmsSenderDocumentSchema` | EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_sender_document.g.dart` |
 | `schemaEventAssistanceSmsPermissionDocumentSchema` | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_permission_document.g.dart` |
 | `schemaEventAssistanceSmsBudgetDocumentSchema` | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_budget_document.g.dart` |
@@ -1120,6 +1128,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceSmsPreferenceCallableRequest | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart` |
 | GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
 | SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
@@ -1341,6 +1350,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |

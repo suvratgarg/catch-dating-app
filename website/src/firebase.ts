@@ -1,3 +1,6 @@
+import type {GetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload";
+import type {SetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload";
+import type {EventAssistanceSmsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse";
 import type {EventAssistanceGuestViewCallableResponse} from "../../functions/src/shared/generated/eventAssistanceGuestViewCallableResponse";
 import type {GetEventAssistanceGuestViewCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload";
 import type {SubmitEventAssistanceGuestChoiceCallablePayload} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
@@ -971,4 +974,18 @@ export async function submitEventAssistanceGuestChoice(
 ): Promise<SubmitEventAssistanceGuestChoiceCallableResponse> {
   return invokeWebsiteCallable("submitEventAssistanceGuestChoice", payload,
     eventRuntimeFirebaseConfigured, "Event updates");
+}
+
+export async function getEventAssistanceSmsPreference(
+  payload: GetEventAssistanceSmsPreferenceCallablePayload
+): Promise<EventAssistanceSmsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceSmsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event text preferences");
+}
+
+export async function setEventAssistanceSmsPreference(
+  payload: SetEventAssistanceSmsPreferenceCallablePayload
+): Promise<EventAssistanceSmsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("setEventAssistanceSmsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event text preferences");
 }

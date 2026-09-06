@@ -5,7 +5,7 @@
     "prebuild": "node scripts/clean-lib.cjs",
     "build": "tsc",
     "test": "npm run build && node scripts/run-tests.cjs",
-    "test:rules": "npm run build && node --test --test-concurrency=1 test/firestore.rules.test.cjs test/storage.rules.test.cjs lib/eventSuccess/operations/messageOutbox.test.js lib/eventSuccess/operations/guestAssistance.test.js lib/eventSuccess/operations/sms.test.js",
+    "test:rules": "npm run build && node --test --test-concurrency=1 test/firestore.rules.test.cjs test/storage.rules.test.cjs lib/eventSuccess/operations/messageOutbox.test.js lib/eventSuccess/operations/guestAssistance.test.js lib/eventSuccess/operations/sms.test.js lib/eventSuccess/operations/smsPreference.test.js",
     "build:watch": "tsc --watch",
     "serve": "npm run build && node scripts/run-local-emulators.cjs",
     "start": "npm run serve",

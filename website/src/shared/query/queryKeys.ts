@@ -8,6 +8,10 @@ export const websiteQueryKeys = {
       [...websiteQueryKeys.claims.requests(), listingId ?? "none"] as const,
     requests: () => [...websiteQueryKeys.claims.all(), "requests"] as const,
   },
+  eventMessaging: {
+    smsPreference: (instance: string, identity: string) =>
+      [...websiteQueryKeys.all, "event-messaging", "sms-preference", instance, identity] as const,
+  },
   eventRuntime: {
     conversationGraph: (eventId: string | null) =>
       [...websiteQueryKeys.all, "event-runtime", "conversation-graph",

@@ -3240,6 +3240,62 @@
         ]
       },
       "notes": "Uses existing runtime primitives for a scoped event update. Stories are deterministic; promotion requires reviewed visual baselines."
+    },
+    {
+      "id": "event_sms_preference_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventSmsPreferencePanel.tsx",
+      "exportName": "EventSmsPreferencePanel",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "uncertain",
+          "unavailable",
+          "loading",
+          "error"
+        ]
+      },
+      "notes": "Optional verified event text preferences shared by successful registration and guest runtime. Sender availability never grants consent; the existing event-service copy is returned by the server."
+    },
+    {
+      "id": "event_sms_preference_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventSmsPreferencePanel.tsx",
+      "exportName": "EventSmsPreferenceCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "uncertain",
+          "unavailable",
+          "loading",
+          "error"
+        ],
+        "story": "website/src/stories/EventMessaging.stories.tsx",
+        "exportName": "Preference"
+      },
+      "notes": "Optional verified event text preferences shared by successful registration and guest runtime. Sender availability never grants consent; the existing event-service copy is returned by the server."
     }
   ]
 }

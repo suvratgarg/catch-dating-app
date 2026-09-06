@@ -2019,7 +2019,7 @@
       "read": "server only",
       "write": "server only",
       "migrationNotes": [
-        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
       ]
     },
     {
@@ -2031,7 +2031,7 @@
       "read": "server only",
       "write": "server only",
       "migrationNotes": [
-        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
       ]
     },
     {
@@ -2043,7 +2043,7 @@
       "read": "server only",
       "write": "server only",
       "migrationNotes": [
-        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
       ]
     },
     {
@@ -2055,7 +2055,19 @@
       "read": "server only",
       "write": "server only",
       "migrationNotes": [
-        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsConsentReceipts",
+      "path": "eventAssistanceSmsConsentReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceSmsConsentReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes."
       ]
     }
   ]

@@ -15095,6 +15095,142 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceSmsConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentCopyHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.copyHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentCopyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.copyVersion',
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceSmsDispatchDocumentAttemptId = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsDispatchDocument.attemptId',
     maxLength: 160,
@@ -15298,6 +15434,15 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceSmsPermissionDocumentCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.currentReceiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsPermissionDocument.evidence.acceptedAt',
     required: true,
@@ -15410,11 +15555,97 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSmsPermissionDocument.status',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['granted', 'revoked'],
   );
 
   static const eventAssistanceSmsPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'senderUnavailable', 'eventClosed', 'notAdmitted', 'verifyPhone'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewCanEnable = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.canEnable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewConsentText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.consent.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewConsentVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.consent.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.phoneLastFour',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.serverTime',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -27994,6 +28225,24 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
+  static const getEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSmsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'getEventInviteLinkTokenCallablePayload.eventId',
     maxLength: 180,
@@ -28830,6 +29079,13 @@ abstract final class CatchContractConstraints {
   static const getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items',
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRuntimeBootstrapCallableResponseParticipantEventAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.eventAttendeeId',
+    maxLength: 160,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -59009,6 +59265,52 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAttendeeAttendanceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventAttendeeAttendanceCallablePayload.attendeeId',
     maxLength: 180,
@@ -69358,6 +69660,24 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsConfig.templates.items.revision': eventAssistanceSmsConfigTemplatesItemsRevision,
     'eventAssistanceSmsConfig.templates.items.status': eventAssistanceSmsConfigTemplatesItemsStatus,
     'eventAssistanceSmsConfig.templates.items.templateId': eventAssistanceSmsConfigTemplatesItemsTemplateId,
+    'eventAssistanceSmsConsentReceiptDocument.actorUid': eventAssistanceSmsConsentReceiptDocumentActorUid,
+    'eventAssistanceSmsConsentReceiptDocument.appliedRevision': eventAssistanceSmsConsentReceiptDocumentAppliedRevision,
+    'eventAssistanceSmsConsentReceiptDocument.attendeeGeneration': eventAssistanceSmsConsentReceiptDocumentAttendeeGeneration,
+    'eventAssistanceSmsConsentReceiptDocument.attendeeId': eventAssistanceSmsConsentReceiptDocumentAttendeeId,
+    'eventAssistanceSmsConsentReceiptDocument.context.eventId': eventAssistanceSmsConsentReceiptDocumentContextEventId,
+    'eventAssistanceSmsConsentReceiptDocument.context.mode': eventAssistanceSmsConsentReceiptDocumentContextMode,
+    'eventAssistanceSmsConsentReceiptDocument.context.organizerId': eventAssistanceSmsConsentReceiptDocumentContextOrganizerId,
+    'eventAssistanceSmsConsentReceiptDocument.copyHash': eventAssistanceSmsConsentReceiptDocumentCopyHash,
+    'eventAssistanceSmsConsentReceiptDocument.copyVersion': eventAssistanceSmsConsentReceiptDocumentCopyVersion,
+    'eventAssistanceSmsConsentReceiptDocument.createdAt': eventAssistanceSmsConsentReceiptDocumentCreatedAt,
+    'eventAssistanceSmsConsentReceiptDocument.decision': eventAssistanceSmsConsentReceiptDocumentDecision,
+    'eventAssistanceSmsConsentReceiptDocument.permissionHash': eventAssistanceSmsConsentReceiptDocumentPermissionHash,
+    'eventAssistanceSmsConsentReceiptDocument.receiptId': eventAssistanceSmsConsentReceiptDocumentReceiptId,
+    'eventAssistanceSmsConsentReceiptDocument.recipientEndpointId': eventAssistanceSmsConsentReceiptDocumentRecipientEndpointId,
+    'eventAssistanceSmsConsentReceiptDocument.requestHash': eventAssistanceSmsConsentReceiptDocumentRequestHash,
+    'eventAssistanceSmsConsentReceiptDocument.routeId': eventAssistanceSmsConsentReceiptDocumentRouteId,
+    'eventAssistanceSmsConsentReceiptDocument.schemaVersion': eventAssistanceSmsConsentReceiptDocumentSchemaVersion,
+    'eventAssistanceSmsConsentReceiptDocument.senderId': eventAssistanceSmsConsentReceiptDocumentSenderId,
     'eventAssistanceSmsDispatchDocument.attemptId': eventAssistanceSmsDispatchDocumentAttemptId,
     'eventAssistanceSmsDispatchDocument.bindingRevision': eventAssistanceSmsDispatchDocumentBindingRevision,
     'eventAssistanceSmsDispatchDocument.budgetIds': eventAssistanceSmsDispatchDocumentBudgetIds,
@@ -69383,6 +69703,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsPermissionDocument.context.eventId': eventAssistanceSmsPermissionDocumentContextEventId,
     'eventAssistanceSmsPermissionDocument.context.mode': eventAssistanceSmsPermissionDocumentContextMode,
     'eventAssistanceSmsPermissionDocument.context.organizerId': eventAssistanceSmsPermissionDocumentContextOrganizerId,
+    'eventAssistanceSmsPermissionDocument.currentReceiptId': eventAssistanceSmsPermissionDocumentCurrentReceiptId,
     'eventAssistanceSmsPermissionDocument.evidence.acceptedAt': eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt,
     'eventAssistanceSmsPermissionDocument.evidence.copyVersion': eventAssistanceSmsPermissionDocumentEvidenceCopyVersion,
     'eventAssistanceSmsPermissionDocument.evidence.phoneVerifiedAt': eventAssistanceSmsPermissionDocumentEvidencePhoneVerifiedAt,
@@ -69399,6 +69720,18 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsPermissionDocument.senderId': eventAssistanceSmsPermissionDocumentSenderId,
     'eventAssistanceSmsPermissionDocument.status': eventAssistanceSmsPermissionDocumentStatus,
     'eventAssistanceSmsPermissionDocument.updatedAt': eventAssistanceSmsPermissionDocumentUpdatedAt,
+    'eventAssistanceSmsPreferenceCallableResponse.outcome': eventAssistanceSmsPreferenceCallableResponseOutcome,
+    'eventAssistanceSmsPreferenceCallableResponse.view.attendeeId': eventAssistanceSmsPreferenceCallableResponseViewAttendeeId,
+    'eventAssistanceSmsPreferenceCallableResponse.view.availability': eventAssistanceSmsPreferenceCallableResponseViewAvailability,
+    'eventAssistanceSmsPreferenceCallableResponse.view.canEnable': eventAssistanceSmsPreferenceCallableResponseViewCanEnable,
+    'eventAssistanceSmsPreferenceCallableResponse.view.consent.text': eventAssistanceSmsPreferenceCallableResponseViewConsentText,
+    'eventAssistanceSmsPreferenceCallableResponse.view.consent.version': eventAssistanceSmsPreferenceCallableResponseViewConsentVersion,
+    'eventAssistanceSmsPreferenceCallableResponse.view.eventId': eventAssistanceSmsPreferenceCallableResponseViewEventId,
+    'eventAssistanceSmsPreferenceCallableResponse.view.expiresAt': eventAssistanceSmsPreferenceCallableResponseViewExpiresAt,
+    'eventAssistanceSmsPreferenceCallableResponse.view.phoneLastFour': eventAssistanceSmsPreferenceCallableResponseViewPhoneLastFour,
+    'eventAssistanceSmsPreferenceCallableResponse.view.preference': eventAssistanceSmsPreferenceCallableResponseViewPreference,
+    'eventAssistanceSmsPreferenceCallableResponse.view.revision': eventAssistanceSmsPreferenceCallableResponseViewRevision,
+    'eventAssistanceSmsPreferenceCallableResponse.view.serverTime': eventAssistanceSmsPreferenceCallableResponseViewServerTime,
     'eventAssistanceSmsSenderDocument.activation.approvedAt': eventAssistanceSmsSenderDocumentActivationApprovedAt,
     'eventAssistanceSmsSenderDocument.activation.senderApprovalId': eventAssistanceSmsSenderDocumentActivationSenderApprovalId,
     'eventAssistanceSmsSenderDocument.activation.useCaseApprovalId': eventAssistanceSmsSenderDocumentActivationUseCaseApprovalId,
@@ -71127,6 +71460,8 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
+    'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
+    'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
@@ -71238,6 +71573,7 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.clubId': getEventRuntimeBootstrapCallableResponseParticipantClubId,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.eventAttendeeId': getEventRuntimeBootstrapCallableResponseParticipantEventAttendeeId,
     'getEventRuntimeBootstrapCallableResponse.participant.eventId': getEventRuntimeBootstrapCallableResponseParticipantEventId,
     'getEventRuntimeBootstrapCallableResponse.participant.organizerId': getEventRuntimeBootstrapCallableResponseParticipantOrganizerId,
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds,
@@ -75402,6 +75738,12 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssistanceSmsPreferenceCallablePayload.attendeeId': setEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
+    'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion': setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion,
+    'setEventAssistanceSmsPreferenceCallablePayload.decision.kind': setEventAssistanceSmsPreferenceCallablePayloadDecisionKind,
+    'setEventAssistanceSmsPreferenceCallablePayload.eventId': setEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision': setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision,
+    'setEventAssistanceSmsPreferenceCallablePayload.requestId': setEventAssistanceSmsPreferenceCallablePayloadRequestId,
     'setEventAttendeeAttendanceCallablePayload.attendeeId': setEventAttendeeAttendanceCallablePayloadAttendeeId,
     'setEventAttendeeAttendanceCallablePayload.clientOperationId': setEventAttendeeAttendanceCallablePayloadClientOperationId,
     'setEventAttendeeAttendanceCallablePayload.desiredCheckedIn': setEventAttendeeAttendanceCallablePayloadDesiredCheckedIn,

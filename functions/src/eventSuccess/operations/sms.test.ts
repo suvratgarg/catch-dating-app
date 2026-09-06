@@ -12,7 +12,7 @@ import {GuestLinkSigningKeys} from "./guestLinkTokens";
 import {assistanceMessageId} from "./messageOutbox";
 import {
   SmsDispatchStore, smsCollections, smsBudgetScopes, smsBudgetId,
-  smsPermissionId, smsEndpointId, Permission, Budget, parseSmsBudget,
+  smsPermissionId, Budget, parseSmsBudget, parseSmsPermission,
 } from "./smsDispatchStore";
 import {parseSmsConfig, renderEventSms, smsSegments, SmsConfig} from
   "./smsProtocol";
@@ -21,6 +21,7 @@ import {
   SmsCredentials,
 } from "./gupshupSmsProvider";
 import {EventSmsWorker} from "./smsWorker";
+import {SmsPreferenceStore} from "./smsPreferenceStore";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
@@ -89,22 +90,18 @@ async function harness(realDb?: Firestore, id = "test") {
     }}]};
   const thread = await guests.publishMessage(intent, null);
   const link = await guests.issueLink(thread.threadId, "send-1", keys);
-  const permission: Permission = {schemaVersion: 1,
-    permissionId: smsPermissionId(context, attendeeId, sender.senderId),
-    revision: 1, context, attendeeId,
-    attendeeGeneration: guest.attendeeGeneration, senderId: sender.senderId,
-    routeId: "catchEventSms", purpose: "eventService",
-    phoneE164: "+919999999999",
-    recipientEndpointId: smsEndpointId(context, attendeeId, "+919999999999"),
-    status: "granted", evidence: {receiptId: "fixture-opt-in",
-      copyVersion: "catch-event-service-sms-v1", subjectUid: "guest-uid",
-      acceptedAt: start - 1000, phoneVerifiedAt: start - 1000},
-    expiresAt: start + 3_600_000, updatedAt: start};
   const permissionPath = smsCollections.permissions + "/" +
-    permission.permissionId;
+    smsPermissionId(context, attendeeId, sender.senderId);
   const senderPath = smsCollections.senders + "/" + sender.senderId;
   await write(senderPath, sender);
-  await write(permissionPath, permission);
+  const preferences = new SmsPreferenceStore(db, () => clock.now,
+    sender.senderId);
+  await preferences.set({uid: "guest-uid", phone: "+919999999999"}, {
+    eventId: context.eventId, attendeeId, requestId: "fixture-opt-in",
+    expectedRevision: null, decision: {kind: "grant",
+      copyVersion: "catch-event-service-sms-v1"},
+  });
+  const permission = parseSmsPermission(await read(permissionPath));
   const budgetPaths: string[] = [];
   for (const scope of smsBudgetScopes(context, start)) {
     const begins = scope.kind === "senderDay" ?
@@ -302,8 +299,9 @@ test("fresh source changes withhold a previously reserved send", async () => {
         {...h.permission, status: "revoked"});
     }
     if (change === "expiredPermission") {
+      h.clock.now++;
       await h.write(h.permissionPath,
-        {...h.permission, expiresAt: start});
+        {...h.permission, expiresAt: h.clock.now});
     }
     if (change === "grant") await h.guests.revokeLink(h.link.linkId);
     if (change === "sender") {

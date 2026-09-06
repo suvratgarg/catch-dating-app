@@ -2039,9 +2039,23 @@ implies readiness.
 attendee creation generation, verified subject, phone endpoint and sender.
 The exact consent-copy version, receipt, timestamps, expiry and withdrawal
 state are required. Organizer marketing preference records are not permission
-for this route. There is currently no client or callable that can manufacture
-these approval or permission records; the participant capture and provisioning
-boundaries must be implemented before live activation.
+for this route. The App-Check-protected preference callables require the roster's
+linked Firebase UID. A grant additionally requires the signed phone claim to
+match the roster phone and an admitted guest in an eligible event. Client input
+contains only event/attendee scope, decision, copy version, expected revision
+and request ID. Sender identity, number and evidence timestamps come from the
+server. Revocation can proceed without a ready sender or current phone claim.
+
+`eventAssistanceSmsConsentReceipts` records each exact decision atomically with
+its permission revision. Grant receipts pin the displayed copy hash and the
+hash of the complete resulting permission; dispatch requires that matching
+receipt. Receipt timestamps record when the signed phone claim was checked,
+not when a new OTP was sent. Revision conflicts return current state; replaying
+an earlier grant cannot reverse a later withdrawal. An initial opt-out writes a
+revoked tombstone with no fabricated consent evidence. Recreated roster entries
+cannot inherit consent. Responses reveal only the participant's masked number,
+status, availability and consent text; there is no client collection access.
+Sender approval and activation remain separate trusted provisioning steps.
 
 `eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
 Asia/Kolkata. A trusted worker atomically charges both ceilings with the
@@ -2051,7 +2065,7 @@ stores neither message content nor the guest URL secret. Conservative debits
 remain charged across uncertain outcomes and provider rejections until an
 explicit reconciliation implementation accounts for them. They are spending
 reservations, not billing receipts. Firestore clients, including admins, cannot
-read or write any of these four collections.
+read or write any of these five collections.
 
 ### Event Assistance Guest Response Contract
 

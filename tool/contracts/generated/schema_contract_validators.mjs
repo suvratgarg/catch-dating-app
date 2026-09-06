@@ -3,6 +3,10 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceSmsConsentReceiptDocumentSchema,
+  getEventAssistanceSmsPreferenceCallablePayloadSchema,
+  setEventAssistanceSmsPreferenceCallablePayloadSchema,
+  eventAssistanceSmsPreferenceCallableResponseSchema,
   eventAssistanceSmsSenderDocumentSchema,
   eventAssistanceSmsPermissionDocumentSchema,
   eventAssistanceSmsBudgetDocumentSchema,
@@ -576,6 +580,10 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceSmsConsentReceiptDocument = ajv.compile(eventAssistanceSmsConsentReceiptDocumentSchema);
+export const validateGetEventAssistanceSmsPreferenceCallablePayload = ajv.compile(getEventAssistanceSmsPreferenceCallablePayloadSchema);
+export const validateSetEventAssistanceSmsPreferenceCallablePayload = ajv.compile(setEventAssistanceSmsPreferenceCallablePayloadSchema);
+export const validateEventAssistanceSmsPreferenceCallableResponse = ajv.compile(eventAssistanceSmsPreferenceCallableResponseSchema);
 export const validateEventAssistanceSmsSenderDocument = ajv.compile(eventAssistanceSmsSenderDocumentSchema);
 export const validateEventAssistanceSmsPermissionDocument = ajv.compile(eventAssistanceSmsPermissionDocumentSchema);
 export const validateEventAssistanceSmsBudgetDocument = ajv.compile(eventAssistanceSmsBudgetDocumentSchema);

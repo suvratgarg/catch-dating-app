@@ -16,6 +16,35 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "EventAssistanceSmsConsentReceiptDocument",
+  "source": "firestore/event_assistance_sms_consent_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/get_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "SetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/set_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/setEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsPreferenceCallableResponse",
+  "source": "callable_responses/event_assistance_sms_preference_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsPreferenceCallableResponse.ts"
+  ]
+},
+{
   "name": "EventAssistanceSmsSenderDocument",
   "source": "firestore/event_assistance_sms_senders.schema.json",
   "typeOutput": "functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts"

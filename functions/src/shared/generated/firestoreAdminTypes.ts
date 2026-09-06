@@ -537,6 +537,29 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceSmsConsentReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  requestHash: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  senderId: string;
+  routeId: "catchEventSms";
+  actorUid: string;
+  recipientEndpointId: string;
+  decision: "grant" | "revoke";
+  copyVersion: null | "catch-event-service-sms-v1";
+  copyHash: null | string;
+  appliedRevision: number;
+  createdAt: number;
+  permissionHash: string;
+}
+
 export interface EventAssistanceSmsSenderDocument {
   schemaVersion: 1;
   senderId: string;
@@ -599,31 +622,7 @@ export interface EventAssistanceSmsSenderDocument {
 }
 
 export interface EventAssistanceSmsPermissionDocument {
-  schemaVersion: 1;
-  permissionId: string;
-  revision: number;
-  context: {
-    mode: "live";
-    organizerId: string;
-    eventId: string;
-  };
-  attendeeId: string;
-  attendeeGeneration: string;
-  senderId: string;
-  routeId: "catchEventSms";
-  purpose: "eventService";
-  phoneE164: string;
-  recipientEndpointId: string;
-  status: "granted" | "revoked";
-  evidence: {
-    receiptId: string;
-    copyVersion: "catch-event-service-sms-v1";
-    acceptedAt: number;
-    phoneVerifiedAt: number;
-    subjectUid: string;
-  };
-  expiresAt: number;
-  updatedAt: number;
+  [k: string]: unknown;
 }
 
 export interface EventAssistanceSmsBudgetDocument {

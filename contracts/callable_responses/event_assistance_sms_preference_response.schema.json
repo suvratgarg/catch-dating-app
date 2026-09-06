@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_sms_preference_response.schema.json",
+  "title": "EventAssistanceSmsPreferenceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "$ref": "../shared/event_assistance_sms.schema.json#/definitions/PreferenceView"
+    }
+  }
+}

@@ -1092,6 +1092,17 @@ attendee web route, or the Consumer app according to capability. A web RSVP
 creates/links the same operational attendee record consumed by Host mobile and
 web; it does not require or silently create a dating profile.
 
+Verified event-service SMS preferences are owned by `features/eventMessaging`
+and composed by successful public registration and the guest runtime. The import
+scanner permits these two consumers; messaging does not depend on either page.
+The optional control appears after a confirmed roster place and on the guest's
+venue/live page using only their own bootstrap `eventAttendeeId`. It never grants
+organizer marketing permission. Auth changes and event/attendee changes discard
+pending presentation state; unknown submissions retry the same request ID.
+Server revision and time keep stale reads from replacing a confirmed choice.
+Sender provisioning, additional opt-out entry points and provider activation
+remain separate work. Rehearsal never mounts this live preference controller.
+
 ### No-Download Event Runtime And Invite Landing
 
 The React marketing runtime owns the following non-SEO transactional routes:

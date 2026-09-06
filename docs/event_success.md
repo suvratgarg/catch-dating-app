@@ -212,8 +212,21 @@ integration steps; recording a help case does not yet notify a Host.
 and phone, event-service permission, revocable guest grant, approved template,
 and event/sender-day budgets in the same transaction as dispatch authority.
 A permission must use the Catch event-service copy and verified subject;
-existing organizer marketing opt-ins cannot grant this purpose. Permission
-capture and its verification/withdrawal UI still need integration.
+existing organizer marketing opt-ins cannot grant this purpose. Verified guest
+registration and the no-download runtime now offer optional event text controls
+through `getEventAssistanceSmsPreference` and `setEventAssistanceSmsPreference`.
+The server records exact consent receipts with the current permission and
+requires their matching hash before dispatch. Repeat requests are idempotent;
+withdrawal fences old grants. The website reuses uncertain request IDs, rejects
+stale read results and scopes pending state to the current account and event.
+The control is hidden when there is no preference and enabling is unavailable;
+an existing grant retains a withdrawal control when the sender is paused.
+
+This covers successful web registration and guest runtime entry points only.
+Waitlist marketing preferences do not authorize event-service texts. Consumer
+app controls, opt-out from a standalone message link after event cancellation,
+provider inbound opt-out handling and deployed verification remain integration
+work; no sender has been activated by these controls.
 
 `EventSmsWorker` loads an exact numbered Secret Manager credential before the
 short reservation window. The resource claim atomically debits both spending
@@ -246,8 +259,8 @@ Firestore emulator, not an enabled provider integration. Gupshup is the first
 candidate adapter; account selection and actual use-case/DLT approvals remain
 unconfirmed. This bounded worker only accepts SMS-only intents; multi-route
 intents are withheld until a shared reader can assess all permitted channels.
-Before activation, implement participant consent capture, audited
-sender/budget provisioning, live Operations scheduling, authenticated delivery
+Before activation, complete the remaining consent/withdrawal entry points,
+audited sender/budget provisioning, live Operations scheduling, authenticated delivery
 callbacks and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,

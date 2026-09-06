@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceSmsConsentReceiptDocument',
+    source: 'firestore/event_assistance_sms_consent_receipts.schema.json',
+    schema: schemaEventAssistanceSmsConsentReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventAssistanceSmsPreferenceCallablePayload',
+    source: 'callables/get_event_assistance_sms_preference_payload.schema.json',
+    schema: schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetEventAssistanceSmsPreferenceCallablePayload',
+    source: 'callables/set_event_assistance_sms_preference_payload.schema.json',
+    schema: schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsPreferenceCallableResponse',
+    source: 'callable_responses/event_assistance_sms_preference_response.schema.json',
+    schema: schemaEventAssistanceSmsPreferenceCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceSmsSenderDocument',
     source: 'firestore/event_assistance_sms_senders.schema.json',
     schema: schemaEventAssistanceSmsSenderDocumentSchema,
@@ -2764,6 +2784,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceSmsConsentReceiptDocument': schemaEventAssistanceSmsConsentReceiptDocumentSchema,
+  'GetEventAssistanceSmsPreferenceCallablePayload': schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  'SetEventAssistanceSmsPreferenceCallablePayload': schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  'EventAssistanceSmsPreferenceCallableResponse': schemaEventAssistanceSmsPreferenceCallableResponseSchema,
   'EventAssistanceSmsSenderDocument': schemaEventAssistanceSmsSenderDocumentSchema,
   'EventAssistanceSmsPermissionDocument': schemaEventAssistanceSmsPermissionDocumentSchema,
   'EventAssistanceSmsBudgetDocument': schemaEventAssistanceSmsBudgetDocumentSchema,
@@ -3316,6 +3340,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_sms_consent_receipts.schema.json': schemaEventAssistanceSmsConsentReceiptDocumentSchema,
+  'callables/get_event_assistance_sms_preference_payload.schema.json': schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  'callables/set_event_assistance_sms_preference_payload.schema.json': schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema,
+  'callable_responses/event_assistance_sms_preference_response.schema.json': schemaEventAssistanceSmsPreferenceCallableResponseSchema,
   'firestore/event_assistance_sms_senders.schema.json': schemaEventAssistanceSmsSenderDocumentSchema,
   'firestore/event_assistance_sms_permissions.schema.json': schemaEventAssistanceSmsPermissionDocumentSchema,
   'firestore/event_assistance_sms_budgets.schema.json': schemaEventAssistanceSmsBudgetDocumentSchema,

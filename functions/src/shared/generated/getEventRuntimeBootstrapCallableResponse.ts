@@ -188,6 +188,7 @@ export interface GetEventRuntimeBootstrapCallableResponse {
     };
   };
   participant: null | {
+    eventAttendeeId?: string | null;
     accessStatus:
       | "needsClaim"
       | "pendingApproval"

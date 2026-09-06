@@ -1,3 +1,4 @@
+import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {
@@ -242,6 +243,9 @@ export function EventRuntimePage() {
           body={eventRuntimeCopy.venueBody}
         >
           {event ? <EventArrivalGuidance event={event} /> : null}
+          {event && controller.bootstrap?.participant?.eventAttendeeId ?
+            <EventSmsPreferencePanel eventId={event.eventId}
+              attendeeId={controller.bootstrap.participant.eventAttendeeId} /> : null}
           <FormStatus status={controller.status} />
         </EventRuntimePanel>
       ) : null}
@@ -724,6 +728,9 @@ function LiveEventRuntime({
       ) : null}
 
       <FormStatus status={controller.status} />
+      {controller.bootstrap?.participant?.eventAttendeeId ?
+        <EventSmsPreferencePanel eventId={event.eventId}
+          attendeeId={controller.bootstrap.participant.eventAttendeeId} /> : null}
       <EventRuntimePrivacy>{eventRuntimeCopy.privacyNote}</EventRuntimePrivacy>
     </EventRuntimeLive>
   );
