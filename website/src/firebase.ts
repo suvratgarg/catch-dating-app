@@ -1,3 +1,6 @@
+import type {GetEventWhatsappWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload";
+import type {WithdrawEventWhatsappCallablePayload} from "../../functions/src/shared/generated/withdrawEventWhatsappCallablePayload";
+import type {EventWhatsappWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse";
 import type {GetEventAssistanceSmsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload";
 import type {WithdrawEventAssistanceSmsCallablePayload} from "../../functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload";
 import type {EventAssistanceSmsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse";
@@ -1004,4 +1007,17 @@ export async function withdrawEventAssistanceSms(
 ): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
   return invokeWebsiteCallable("withdrawEventAssistanceSms", payload,
     eventRuntimeFirebaseConfigured, "Event text withdrawal");
+}
+
+export async function getEventWhatsappWithdrawal(
+  payload: GetEventWhatsappWithdrawalCallablePayload
+): Promise<EventWhatsappWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("getEventWhatsappWithdrawal", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
+}
+export async function withdrawEventWhatsapp(
+  payload: WithdrawEventWhatsappCallablePayload
+): Promise<EventWhatsappWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("withdrawEventWhatsapp", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
 }

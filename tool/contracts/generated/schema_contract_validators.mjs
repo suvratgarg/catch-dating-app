@@ -3,6 +3,10 @@
 
 import {createRequire} from "node:module";
 import {
+  eventWhatsappWithdrawalGrantDocumentSchema,
+  getEventWhatsappWithdrawalCallablePayloadSchema,
+  withdrawEventWhatsappCallablePayloadSchema,
+  eventWhatsappWithdrawalCallableResponseSchema,
   eventWhatsappBudgetDocumentSchema,
   eventWhatsappDispatchDocumentSchema,
   organizerWhatsappEndpointStopDocumentSchema,
@@ -594,6 +598,10 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventWhatsappWithdrawalGrantDocument = ajv.compile(eventWhatsappWithdrawalGrantDocumentSchema);
+export const validateGetEventWhatsappWithdrawalCallablePayload = ajv.compile(getEventWhatsappWithdrawalCallablePayloadSchema);
+export const validateWithdrawEventWhatsappCallablePayload = ajv.compile(withdrawEventWhatsappCallablePayloadSchema);
+export const validateEventWhatsappWithdrawalCallableResponse = ajv.compile(eventWhatsappWithdrawalCallableResponseSchema);
 export const validateEventWhatsappBudgetDocument = ajv.compile(eventWhatsappBudgetDocumentSchema);
 export const validateEventWhatsappDispatchDocument = ajv.compile(eventWhatsappDispatchDocumentSchema);
 export const validateOrganizerWhatsappEndpointStopDocument = ajv.compile(organizerWhatsappEndpointStopDocumentSchema);

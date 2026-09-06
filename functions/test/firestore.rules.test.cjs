@@ -4344,6 +4344,7 @@ describe("firestore.rules", () => {
         "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
         "eventAssistanceSmsConsentReceipts",
         "eventAssistanceSmsWithdrawalGrants",
+        "eventAssistanceWhatsappWithdrawalGrants",
         "eventAssistanceWhatsappReplyBindings",
         "eventAssistanceWhatsappPolicies",
         "eventAssistanceWhatsappBudgets",

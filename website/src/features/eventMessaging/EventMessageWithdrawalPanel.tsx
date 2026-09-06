@@ -1,20 +1,22 @@
 import {useMemo} from "react";
 import type {GetEventAssistanceSmsWithdrawalCallablePayload as Credential} from "../../shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload";
 import {Button, EventRuntimeModule, FormStatus} from "../../shared/ui/primitives";
-import {eventMessagingCopy as copy} from "../../content/eventMessaging";
-import {useEventSmsWithdrawalController, type SmsWithdrawalState} from "./useEventSmsWithdrawalController";
+import {eventMessagingCopy, eventWhatsappMessagingCopy} from "../../content/eventMessaging";
+import {useEventMessageWithdrawalController, type MessageWithdrawalState, type MessageWithdrawalChannel} from "./useEventMessageWithdrawalController";
 
-export function EventSmsWithdrawalPanel({credential}: {credential: Credential | null}) {
+export function EventMessageWithdrawalPanel({credential, channel = "sms"}: {credential: Credential | null; channel?: MessageWithdrawalChannel}) {
   // An opaque React key discards the prior scope without exposing its secret.
-  const scope = useMemo(() => crypto.randomUUID(), [credential?.linkId, credential?.secret]);
-  return <ScopedSmsWithdrawalPanel key={scope} credential={credential} />;
+  const scope = useMemo(() => crypto.randomUUID(), [credential?.linkId, credential?.secret, channel]);
+  return <ScopedMessageWithdrawalPanel key={scope} credential={credential} channel={channel} />;
 }
-function ScopedSmsWithdrawalPanel({credential}: {credential: Credential | null}) {
-  return <EventSmsWithdrawalCard {...useEventSmsWithdrawalController(credential)} />;
+function ScopedMessageWithdrawalPanel({credential, channel}: {credential: Credential | null; channel: MessageWithdrawalChannel}) {
+  return <EventMessageWithdrawalCard channel={channel} {...useEventMessageWithdrawalController(credential, channel)} />;
 }
-export function EventSmsWithdrawalCard({state, withdraw, refresh}: {
-  state: SmsWithdrawalState; withdraw: () => void; refresh: () => void;
+export function EventMessageWithdrawalCard({state, withdraw, refresh, channel = "sms"}: {
+  channel?: MessageWithdrawalChannel;
+  state: MessageWithdrawalState; withdraw: () => void; refresh: () => void;
 }) {
+  const copy = channel === "sms" ? eventMessagingCopy : eventWhatsappMessagingCopy;
   if (state.kind === "hidden") return null;
   return <EventRuntimeModule title={copy.title}>
     {state.kind === "loading" ? <p role="status">{copy.loading}</p> : null}
@@ -23,7 +25,7 @@ export function EventSmsWithdrawalCard({state, withdraw, refresh}: {
       <Button type="button" variant="ghost" onClick={refresh}>{copy.refresh}</Button>
     </> : null}
     {state.kind === "ready" ? <>
-      <p>{copy.withdrawalScope}</p>
+      {state.uncertain || state.view.preference === "enabled" ? <p>{copy.withdrawalScope}</p> : null}
       {state.uncertain || state.view.preference === "enabled" ?
         <Button type="button" variant="ghost" onClick={withdraw} disabled={state.pending}
           loading={state.pending} loadingLabel={copy.saving}>

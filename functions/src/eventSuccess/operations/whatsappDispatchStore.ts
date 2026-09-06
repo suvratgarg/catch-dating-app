@@ -24,6 +24,9 @@ import {whatsappConsentSender} from "./whatsappConsentSender";
 import {Permission, parseWhatsappPermission, WHATSAPP_PERMISSIONS,
   whatsappPermissionId} from "./whatsappPermissionRecords";
 import {whatsappEndpointHash} from "./whatsappReplyProtocol";
+import {newWhatsappWithdrawalGrant, parseWhatsappWithdrawalGrant,
+  whatsappWithdrawalMatchesPermission, WHATSAPP_WITHDRAWAL_GRANTS} from
+  "./whatsappWithdrawalRecords";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {parseWhatsappBudget, WhatsappBudget, WHATSAPP_BUDGETS,
   WHATSAPP_DISPATCHES, whatsappBudgetId, whatsappBudgetScopes} from
@@ -108,6 +111,17 @@ export class WhatsappDispatchStore {
           r.choiceId))(tx, record, attempt, now) : null;
       if (native?.kind === "withheld") return {kind: "withheld"};
       const {connection, policy, permission, rendered, budgets} = material;
+      const withdrawalRef = this.db.collection(WHATSAPP_WITHDRAWAL_GRANTS)
+        .doc(linkId);
+      const withdrawalSnap = await tx.get(withdrawalRef);
+      const withdrawal = withdrawalSnap.exists ?
+        parseWhatsappWithdrawalGrant(withdrawalSnap.data()) :
+        newWhatsappWithdrawalGrant(permission, material.grant, now);
+      if (withdrawal.linkId !== linkId ||
+          !whatsappWithdrawalMatchesPermission(withdrawal, permission) ||
+          withdrawal.guestGrantHash !== operationContentHash(material.grant) ||
+          withdrawal.expiresAt < permission.expiresAt ||
+          withdrawal.issuedAt > now) return {kind: "withheld"};
       const dispatch = {schemaVersion: 1, attemptId: attempt.attemptId,
         messageId: record.messageId, context: record.intent.context,
         senderId: this.senderId, bindingRevision: connection.revision,
@@ -138,6 +152,7 @@ export class WhatsappDispatchStore {
           native?.validUntil ?? route.state.validUntil), commit: () => {
           tx.create(ref, dispatch);
           native?.commit();
+          if (!withdrawalSnap.exists) tx.create(withdrawalRef, withdrawal);
           for (const budget of debited) {
             tx.set(this.db.collection(WHATSAPP_BUDGETS).doc(budget.budgetId),
               budget);

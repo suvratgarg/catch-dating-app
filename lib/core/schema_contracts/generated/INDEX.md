@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts` |
+| GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts` |
+| WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts` |
+| EventWhatsappWithdrawalCallableResponse | `callable_responses/event_whatsapp_withdrawal_response.schema.json` | `functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse.ts` |
 | EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `functions/src/shared/generated/eventWhatsappBudgetDocument.ts` |
 | EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/eventWhatsappDispatchDocument.ts` |
 | OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts` |
@@ -584,6 +588,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventWhatsappWithdrawalGrantDocumentSchema` | EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_withdrawal_grant_document.g.dart` |
+| `schemaGetEventWhatsappWithdrawalCallablePayloadSchema` | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_withdrawal_callable_payload.g.dart` |
+| `schemaWithdrawEventWhatsappCallablePayloadSchema` | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_whatsapp_callable_payload.g.dart` |
+| `schemaEventWhatsappWithdrawalCallableResponseSchema` | EventWhatsappWithdrawalCallableResponse | `callable_responses/event_whatsapp_withdrawal_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_withdrawal_callable_response.g.dart` |
 | `schemaEventWhatsappBudgetDocumentSchema` | EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_budget_document.g.dart` |
 | `schemaEventWhatsappDispatchDocumentSchema` | EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_dispatch_document.g.dart` |
 | `schemaOrganizerWhatsappEndpointStopDocumentSchema` | OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_whatsapp_endpoint_stop_document.g.dart` |
@@ -1156,6 +1164,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventWhatsappWithdrawalCallableRequest | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_withdrawal_callable_request.g.dart` |
+| WithdrawEventWhatsappCallableRequest | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_whatsapp_callable_request.g.dart` |
 | GetEventWhatsappPreferenceCallableRequest | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart` |
 | GetEventAssistanceSmsWithdrawalCallableRequest | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_withdrawal_callable_request.g.dart` |
 | WithdrawEventAssistanceSmsCallableRequest | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_assistance_sms_callable_request.g.dart` |

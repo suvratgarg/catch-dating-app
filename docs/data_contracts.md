@@ -2095,10 +2095,9 @@ generation, verified subject and recipient endpoint to an explicit organizer
 sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
 copy version, displayed sender hash and complete resulting permission hash.
 Future-event announcement consent remains separate and is never read as an
-Event Assistance grant. This schema supports verified-participant decisions;
-authenticated endpoint STOP evidence also suppresses the saved preference.
-Independent message-link withdrawal remains required integration work before
-automated WhatsApp dispatch is enabled.
+Event Assistance grant. The receipt union distinguishes verified-participant
+decisions from revocation-only message-link decisions with a null actor UID.
+Authenticated endpoint STOP evidence also suppresses the saved preference.
 
 The App-Check-protected `getEventWhatsappPreference` and
 `setEventWhatsappPreference` callables require the roster's linked UID. Scope
@@ -2131,10 +2130,28 @@ opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
 preserves the old recipient/sender evidence even after either changes, and
 paused, deleted or malformed sender provisioning cannot obstruct it. These
 authenticated APIs still require a current authorized event/roster identity;
-they do not replace independent message-link withdrawal. Client access to both
-collections is denied, including with an admin claim. Guest UI integration,
-live provider submission, independent withdrawal and sender activation remain
-separate delivery work.
+the independent message-link withdrawal APIs below require neither. Client
+access to permission and receipt collections is denied, including with an admin
+claim. Verified opt-in UI and sender activation remain separate delivery work.
+
+`eventAssistanceWhatsappWithdrawalGrants/{linkId}` commits with the dispatch
+claim, debits and native reply binding. It pins the original event, attendee
+generation, verified subject, recipient endpoint and provider account/phone to
+the immutable guest grant hash. A changed identity or longer consent lifetime
+requires a new link for dispatch; an existing link cannot silently acquire that
+authority. The grant exposes no secret or recipient phone number.
+
+`getEventWhatsappWithdrawal` and `withdrawEventWhatsapp` are App-Check-protected,
+network- and credential-rate-limited bearer callables. They return only the
+permission state, revision and validity. Withdrawal has the original consent
+lifetime and needs no current event, roster, sender or instruction availability.
+An expired instruction never regains read/reply authority. Revoked links and
+replacement recipients, subjects or provider identities cannot act. Withdrawal
+writes a revocation-only immutable receipt and permission revision atomically;
+replaying an old request returns the current state without undoing later consent.
+A new stop requires the currently displayed revision. It leaves SMS permission,
+registration, check-in and organizer announcement preferences untouched. Retain
+the guest grant, withdrawal grant and request receipts through this lifetime.
 
 ### Event Service WhatsApp Dispatch Contract
 
@@ -2199,8 +2216,8 @@ a conflict. It does not execute guest choices or grant fallback permission.
 
 Failed or inconsistent provider statuses remain unconfirmed until the provider
 error/finality mapping is reviewed. The configured Meta API version's callback
-echo still requires controlled account verification. Independent message-link
-withdrawal, durable queue/reply retries, failure classification and the shared
+echo still requires controlled account verification. Durable queue/reply
+retries, failure classification and the shared
 cross-channel composer remain integration work. These boundaries do not
 activate automated sending.
 

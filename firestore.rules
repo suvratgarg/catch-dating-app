@@ -739,6 +739,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceWhatsappWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceSmsWithdrawalGrants/{linkId} {
       allow read, write: if false;
     }

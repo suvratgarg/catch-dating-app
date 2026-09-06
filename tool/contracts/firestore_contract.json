@@ -2071,6 +2071,18 @@
       ]
     },
     {
+      "id": "eventAssistanceWhatsappWithdrawalGrants",
+      "path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service WhatsApp dispatch and withdrawal",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Issued with the atomic dispatch claim; revocation only for the original event, subject, recipient and provider sender. Retain the referenced guest grant through this independent consent lifetime."
+      ]
+    },
+    {
       "id": "eventAssistanceSmsWithdrawalGrants",
       "path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
       "rulesMatch": "/eventAssistanceSmsWithdrawalGrants/{linkId}",

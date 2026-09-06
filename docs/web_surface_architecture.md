@@ -1131,11 +1131,12 @@ The React marketing runtime owns the following non-SEO transactional routes:
   full attendee runtime or check-in. Marketing initialization, attribution and
   events are excluded. The secret never enters query keys or mutation variables;
   private cache state is discarded when the page instance unmounts. A separate
-  SMS withdrawal controller uses the same bearer link with narrower authority:
-  it can stop the original event text purpose through its consent window, even
-  if the instruction pane is closed. It returns no guest identity and provides
-  no enable action. A changed secret remounts its controller using an opaque
-  key; reads and mutations never keep the secret in query/mutation state.
+  shared message-withdrawal controller uses the same bearer link with narrower
+  authority and independent SMS/WhatsApp ports. It can stop only the original
+  channel permission through its consent window, even if instructions are
+  closed. An unissued channel hides its control. No guest identity or enable
+  action is exposed. A changed secret or channel remounts the controller using
+  an opaque key; secrets never enter query/mutation state.
   Withdrawal retries reuse the request id and confirmed changes reject stale
   reads. Reads poll
   only while visible, refresh on reconnect/focus, and use conservative server

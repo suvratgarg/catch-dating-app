@@ -165,8 +165,8 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/eventMessaging/useEventSmsWithdrawalController.ts",
-      "test": "website/src/features/eventMessaging/useEventSmsWithdrawalController.test.tsx",
+      "source": "website/src/features/eventMessaging/useEventMessageWithdrawalController.ts",
+      "test": "website/src/features/eventMessaging/useEventMessageWithdrawalController.test.tsx",
       "status": "required"
     }
   ]

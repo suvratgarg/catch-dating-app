@@ -19,14 +19,22 @@ import {parseMessageIntent} from "./messageProtocol";
 import {assistanceMessageId} from "./messageOutbox";
 import type {MessageRecord} from "./messageOutbox";
 import {WhatsappPreferenceStore} from "./whatsappPreferenceStore";
-import {WHATSAPP_CONSENT_VERSION} from "./whatsappConsent";
+import {WHATSAPP_CONSENT_VERSION, WHATSAPP_CONSENT_RECEIPTS,
+  parseWhatsappConsentReceipt} from "./whatsappConsent";
 import {WhatsappDispatchStore} from "./whatsappDispatchStore";
 import {EventWhatsappWorker} from "./whatsappWorker";
 import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
 import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
-import {whatsappEndpointHash, WHATSAPP_REPLY_BINDINGS} from
+import {WhatsappWithdrawalStore} from "./whatsappWithdrawalStore";
+import {WHATSAPP_WITHDRAWAL_GRANTS} from "./whatsappWithdrawalRecords";
+import {getEventWhatsappWithdrawalHandler, withdrawEventWhatsappHandler} from
+  "./whatsappWithdrawalHandlers";
+import {Permission, WHATSAPP_PERMISSIONS, whatsappPermissionId,
+  whatsappSenderHash} from "./whatsappPermissionRecords";
+import {whatsappEndpointId, whatsappEndpointHash, WHATSAPP_REPLY_BINDINGS} from
   "./whatsappReplyProtocol";
+import type {CallableRequest} from "firebase-functions/v2/https";
 import {whatsappBudgetScopes, whatsappBudgetId, WHATSAPP_BUDGETS,
   WHATSAPP_DISPATCHES} from "./whatsappSpend";
 import {WHATSAPP_POLICIES, whatsappTemplateSnapshot, WhatsappPolicy} from
@@ -172,6 +180,14 @@ async function harness(realDb?: Firestore, id = "test") {
 }
 
 type Harness = Awaited<ReturnType<typeof harness>>;
+function withdrawal(h: Harness) {
+  const store = new WhatsappWithdrawalStore(h.db, () => h.clock.now);
+  const credential = {linkId: h.link.linkId, secret: h.link.secret};
+  const input = {...credential, requestId: "withdraw", expectedRevision: 1};
+  const permissionPath = WHATSAPP_PERMISSIONS + "/" +
+    whatsappPermissionId(h.context, h.scope.attendeeId, h.scope.senderId);
+  return {store, credential, input, permissionPath};
+}
 function worker(h: Harness, fetchImpl: typeof fetch,
   credential = async () => "fixture-token") {
   const provider = new MetaWhatsappProvider({appId: "fixture",
@@ -208,6 +224,164 @@ async function queuedStatus(h: Harness, correlation: string, status: string,
   return "omwe_" + createHash("sha256").update(identity)
     .digest("hex").slice(0, 48);
 }
+
+test("WhatsApp withdrawal authority is issued atomically with dispatch",
+  async () => {
+    const h = await harness();
+    const w = withdrawal(h);
+    await assert.rejects(w.store.get(w.credential), /unavailable/);
+    const reserved = await h.reserve();
+    h.fake.failNextCommit = true;
+    await assert.rejects(h.outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.expected)), /interruption/);
+    assert.equal(await h.read(WHATSAPP_WITHDRAWAL_GRANTS + "/" +
+      h.link.linkId), undefined);
+    await h.claim();
+    const view = await w.store.get(w.credential);
+    assert.equal(view.view.preference, "enabled");
+    const authority = await h.read(WHATSAPP_WITHDRAWAL_GRANTS + "/" +
+      h.link.linkId);
+    assert.equal(authority!.providerPhoneNumberId,
+      h.expected.connection.phoneNumberId);
+    const serialized = JSON.stringify([authority, view]);
+    assert.equal(serialized.includes(h.actor.phone), false);
+    assert.equal(serialized.includes(h.link.secret), false);
+  });
+
+test("WhatsApp withdrawal survives expired instructions and deleted sources",
+  async () => {
+    const h = await harness();
+    await h.claim();
+    h.clock.now = start + 1_800_001;
+    h.fake.remove("events/" + h.context.eventId);
+    h.fake.remove(h.attendeePath);
+    h.fake.remove(h.senderPath);
+    h.fake.remove(h.policyPath);
+    const w = withdrawal(h);
+    const before = await h.read(w.permissionPath);
+    h.fake.failNextCommit = true;
+    await assert.rejects(w.store.withdraw(w.input), /interruption/);
+    assert.deepEqual(await h.read(w.permissionPath), before);
+    const result = await w.store.withdraw(w.input);
+    assert.equal(result.view.preference, "disabled");
+    const permission = await h.read(w.permissionPath);
+    assert.deepEqual(permission!.evidence, before!.evidence);
+    const receipt = parseWhatsappConsentReceipt(await h.read(
+      WHATSAPP_CONSENT_RECEIPTS + "/" + permission!.currentReceiptId));
+    assert.equal(receipt.source, "messageLink");
+    assert.equal(receipt.actorUid, null);
+    assert.equal(receipt.decision, "revoke");
+    assert.equal(receipt.linkId, h.link.linkId);
+    assert.throws(() => parseWhatsappConsentReceipt({...receipt,
+      decision: "grant"}), /Invalid/);
+    assert.throws(() => parseWhatsappConsentReceipt({...receipt,
+      actorUid: h.actor.uid}), /Invalid/);
+    assert.equal(JSON.stringify(receipt).includes(h.link.secret), false);
+  });
+
+test("old WhatsApp withdrawals cannot reverse a later explicit grant",
+  async () => {
+    const h = await harness();
+    await h.claim();
+    const w = withdrawal(h);
+    await w.store.withdraw(w.input);
+    h.clock.now += 1000;
+    await h.preferences.set(h.actor, {...h.grant, requestId: "reenable",
+      expectedRevision: 2});
+    const before = await h.read(w.permissionPath);
+    assert.equal((await w.store.withdraw(w.input)).view.preference, "enabled");
+    assert.equal((await w.store.withdraw({...w.input, requestId: "stale"}))
+      .outcome, "conflict");
+    await assert.rejects(w.store.withdraw({...w.input, expectedRevision: 3}),
+      /new WhatsApp withdrawal request/);
+    assert.deepEqual(await h.read(w.permissionPath), before);
+    assert.equal((await w.store.withdraw({...w.input,
+      requestId: "stop-current", expectedRevision: 3})).view.preference,
+    "disabled");
+  });
+
+test("WhatsApp withdrawal cannot cross recipient, subject or provider identity",
+  async () => {
+    for (const field of ["phone", "subject", "generation", "account", "sender",
+      "secret", "revokedLink", "expired", "otherLink"] as const) {
+      const h = await harness();
+      await h.claim();
+      const w = withdrawal(h);
+      const value = (await h.read(w.permissionPath))!;
+      const evidence = {...value.evidence as Record<string, unknown>};
+      if (field === "phone") {
+        value.phoneE164 = "+919999999998";
+        value.recipientEndpointId = whatsappEndpointId(value.phoneE164);
+      }
+      if (field === "subject") evidence.subjectUid = "different-user";
+      if (field === "generation") value.attendeeGeneration = "f".repeat(64);
+      if (field === "account" || field === "sender") {
+        const sender = {...value.sender as Permission["sender"]};
+        sender[field === "account" ? "providerAccountId" :
+          "providerPhoneNumberId"] = "555555";
+        value.sender = sender;
+        evidence.senderHash = whatsappSenderHash(h.context.organizerId,
+          h.scope.senderId, sender);
+      }
+      value.evidence = evidence;
+      await h.write(w.permissionPath, value);
+      if (field === "secret") w.input.secret = "a".repeat(43);
+      if (field === "expired") h.clock.now = start + 3600_000 + 86_400_000;
+      if (field === "otherLink") w.input.linkId = "a".repeat(32);
+      if (field === "revokedLink") {
+        const path = "eventAssistanceGuestGrants/" + h.link.linkId;
+        await h.write(path, {...(await h.read(path)), revokedAt: start});
+      }
+      await assert.rejects(w.store.withdraw(w.input), /unavailable/, field);
+    }
+  });
+
+test("WhatsApp link withdrawal suppresses another queued send only",
+  async () => {
+    const h = await harness();
+    await h.claim();
+    const next = {...h.intent, intentId: "next-message", workflow: {
+      kind: "lateJoin" as const, occurrenceId: "s2"}};
+    const thread = await h.guests.publishMessage(next, null);
+    const link = await h.guests.issueLink(thread.threadId, "next", keys);
+    const outbox = h.store.outbox(link.linkId);
+    const id = assistanceMessageId(next);
+    const reserved = await outbox.reserve(id);
+    const w = withdrawal(h);
+    const event = await h.read("events/" + h.context.eventId);
+    const attendee = await h.read(h.attendeePath);
+    await w.store.withdraw(w.input);
+    assert.equal((await outbox.claimLiveDispatch(id,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(link.linkId, h.expected))).kind, "withheld");
+    assert.deepEqual(await h.read("events/" + h.context.eventId), event);
+    assert.deepEqual(await h.read(h.attendeePath), attendee);
+    assert.equal(h.fake.entries().some(([path]) =>
+      path.startsWith("eventAssistanceSmsPermissions/")), false);
+  });
+
+test("bearer WhatsApp callables validate and rate-limit a revocation-only API",
+  async () => {
+    const h = await harness();
+    await h.claim();
+    const w = withdrawal(h);
+    const calls: string[] = [];
+    const deps = {firestore: () => h.db, now: () => h.clock.now,
+      checkRateLimit: async (_db: unknown, identity: string) => {
+        calls.push(identity);
+      }};
+    const request = (data: unknown) => ({data,
+      rawRequest: {ip: "127.0.0.1"}} as unknown as CallableRequest<unknown>);
+    await assert.rejects(withdrawEventWhatsappHandler(request({...w.input,
+      decision: "grant"}), deps), {code: "invalid-argument"});
+    assert.equal(calls.length, 0);
+    await getEventWhatsappWithdrawalHandler(request(w.credential), deps);
+    const result = await withdrawEventWhatsappHandler(request(w.input), deps);
+    assert.equal(result.view.preference, "disabled");
+    assert.equal(calls.length, 4);
+    assert.equal(JSON.stringify(calls).includes(h.link.secret), false);
+  });
 
 test("WhatsApp worker claims once and sends the exact reviewed native payload",
   async () => {
@@ -710,6 +884,11 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
       r.disposition === "applied").length, 1);
     assert.equal((await h.outbox.get(h.messageId))!.attempts[0].state.kind,
       "delivered");
+    const w = withdrawal(h);
+    const withdrawals = await Promise.all(Array.from({length: 8}, () =>
+      w.store.withdraw(w.input)));
+    assert.equal(withdrawals.filter((r) => r.outcome === "applied").length, 1);
+    assert.equal((await w.store.get(w.credential)).view.revision, 2);
     // Different outboxes must contend on spending, not just on message CAS.
     const shared = await harness(getFirestore(app), id + "-shared");
     for (const path of shared.budgetPaths) {

@@ -537,6 +537,28 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventWhatsappWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+}
+
 /**
  * Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.
  */
@@ -632,29 +654,7 @@ export interface EventWhatsappPermissionDocument {
 }
 
 export interface EventWhatsappConsentReceiptDocument {
-  schemaVersion: 1;
-  receiptId: string;
-  requestHash: string;
-  context: {
-    mode: "live";
-    organizerId: string;
-    eventId: string;
-  };
-  attendeeId: string;
-  attendeeGeneration: string;
-  senderId: string;
-  routeId: "organizerEventWhatsapp";
-  actorUid: string;
-  recipientEndpointId: string;
-  decision: "grant" | "revoke";
-  copyVersion: null | "catch-event-service-whatsapp-v1";
-  copyHash: null | string;
-  appliedRevision: number;
-  createdAt: number;
-  permissionHash: string;
-  source: "verifiedParticipant";
-  linkId: null;
-  senderHash: string;
+  [k: string]: unknown;
 }
 
 /**

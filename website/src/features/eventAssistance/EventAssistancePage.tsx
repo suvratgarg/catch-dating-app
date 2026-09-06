@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {EventSmsWithdrawalPanel} from "../eventMessaging/EventSmsWithdrawalPanel";
+import {EventMessageWithdrawalPanel} from "../eventMessaging/EventMessageWithdrawalPanel";
 import {eventAssistanceCopy as copy} from "../../content/eventAssistance";
 import {
   Button, EventRuntimeActionGrid, EventRuntimeFrame, EventRuntimeLoading,
@@ -11,7 +11,10 @@ import {useEventAssistanceController} from "./useEventAssistanceController";
 export function EventAssistancePage({credential}: {credential: Credential | null}) {
   const controller = useEventAssistanceController(credential);
   return <EventAssistanceView {...controller}
-    textPreferences={<EventSmsWithdrawalPanel credential={credential} />} />;
+    textPreferences={<>
+      <EventMessageWithdrawalPanel credential={credential} channel="sms" />
+      <EventMessageWithdrawalPanel credential={credential} channel="whatsapp" />
+    </>} />;
 }
 
 export function EventAssistanceView({screen, submit, refresh, refreshing, textPreferences}: {

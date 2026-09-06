@@ -74,6 +74,9 @@ export {
   getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms,
 } from "./eventSuccess/operations/smsWithdrawalHandlers";
 export {
+  getEventWhatsappWithdrawal, withdrawEventWhatsapp,
+} from "./eventSuccess/operations/whatsappWithdrawalHandlers";
+export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";

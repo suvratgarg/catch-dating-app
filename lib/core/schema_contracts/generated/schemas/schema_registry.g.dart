@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventWhatsappWithdrawalGrantDocument',
+    source: 'firestore/event_assistance_whatsapp_withdrawal_grants.schema.json',
+    schema: schemaEventWhatsappWithdrawalGrantDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventWhatsappWithdrawalCallablePayload',
+    source: 'callables/get_event_whatsapp_withdrawal_payload.schema.json',
+    schema: schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WithdrawEventWhatsappCallablePayload',
+    source: 'callables/withdraw_event_whatsapp_payload.schema.json',
+    schema: schemaWithdrawEventWhatsappCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventWhatsappWithdrawalCallableResponse',
+    source: 'callable_responses/event_whatsapp_withdrawal_response.schema.json',
+    schema: schemaEventWhatsappWithdrawalCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventWhatsappBudgetDocument',
     source: 'firestore/event_whatsapp_budgets.schema.json',
     schema: schemaEventWhatsappBudgetDocumentSchema,
@@ -2854,6 +2874,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventWhatsappWithdrawalGrantDocument': schemaEventWhatsappWithdrawalGrantDocumentSchema,
+  'GetEventWhatsappWithdrawalCallablePayload': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
+  'WithdrawEventWhatsappCallablePayload': schemaWithdrawEventWhatsappCallablePayloadSchema,
+  'EventWhatsappWithdrawalCallableResponse': schemaEventWhatsappWithdrawalCallableResponseSchema,
   'EventWhatsappBudgetDocument': schemaEventWhatsappBudgetDocumentSchema,
   'EventWhatsappDispatchDocument': schemaEventWhatsappDispatchDocumentSchema,
   'OrganizerWhatsappEndpointStopDocument': schemaOrganizerWhatsappEndpointStopDocumentSchema,
@@ -3424,6 +3448,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_whatsapp_withdrawal_grants.schema.json': schemaEventWhatsappWithdrawalGrantDocumentSchema,
+  'callables/get_event_whatsapp_withdrawal_payload.schema.json': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
+  'callables/withdraw_event_whatsapp_payload.schema.json': schemaWithdrawEventWhatsappCallablePayloadSchema,
+  'callable_responses/event_whatsapp_withdrawal_response.schema.json': schemaEventWhatsappWithdrawalCallableResponseSchema,
   'firestore/event_whatsapp_budgets.schema.json': schemaEventWhatsappBudgetDocumentSchema,
   'firestore/event_whatsapp_dispatches.schema.json': schemaEventWhatsappDispatchDocumentSchema,
   'firestore/organizer_whatsapp_endpoint_stops.schema.json': schemaOrganizerWhatsappEndpointStopDocumentSchema,

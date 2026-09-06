@@ -1,6 +1,245 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventWhatsappWithdrawalGrantDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "linkId",
+    "permissionId",
+    "context",
+    "attendeeId",
+    "attendeeGeneration",
+    "subjectUid",
+    "senderId",
+    "recipientEndpointId",
+    "guestGrantHash",
+    "permissionRevisionAtIssue",
+    "issuedAt",
+    "expiresAt",
+    "providerAccountId",
+    "providerPhoneNumberId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "permissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "eventId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "subjectUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestGrantHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionRevisionAtIssue": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    }
+  },
+  "title": "EventWhatsappWithdrawalGrantDocument",
+  "x-firestore-collection": "eventAssistanceWhatsappWithdrawalGrants",
+  "x-firestore-path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "event-service WhatsApp dispatch and withdrawal"
+};
+
+export const getEventWhatsappWithdrawalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_whatsapp_withdrawal_payload.schema.json",
+  "title": "GetEventWhatsappWithdrawalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const withdrawEventWhatsappCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_event_whatsapp_payload.schema.json",
+  "title": "WithdrawEventWhatsappCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "requestId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventWhatsappWithdrawalCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_whatsapp_withdrawal_response.schema.json",
+  "title": "EventWhatsappWithdrawalCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverTime",
+        "revision",
+        "preference",
+        "expiresAt"
+      ],
+      "properties": {
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
 export const eventWhatsappBudgetDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_whatsapp_budgets.schema.json",
@@ -869,158 +1108,295 @@ export const eventWhatsappPermissionDocumentSchema = {
 };
 
 export const eventWhatsappConsentReceiptDocumentSchema = {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schemaVersion",
-    "receiptId",
-    "requestHash",
-    "context",
-    "attendeeId",
-    "attendeeGeneration",
-    "senderId",
-    "routeId",
-    "actorUid",
-    "recipientEndpointId",
-    "decision",
-    "copyVersion",
-    "copyHash",
-    "appliedRevision",
-    "createdAt",
-    "permissionHash",
-    "source",
-    "linkId",
-    "senderHash"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "type": "integer",
-      "const": 1
-    },
-    "receiptId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "requestHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "context": {
+  "oneOf": [
+    {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "mode",
-        "organizerId",
-        "eventId"
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId",
+        "senderHash"
       ],
       "properties": {
-        "mode": {
-          "type": "string",
-          "const": "live"
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
         },
-        "organizerId": {
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         },
-        "eventId": {
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        }
-      }
-    },
-    "attendeeId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "attendeeGeneration": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "senderId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "routeId": {
-      "type": "string",
-      "const": "organizerEventWhatsapp"
-    },
-    "actorUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "recipientEndpointId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "grant",
-        "revoke"
-      ]
-    },
-    "copyVersion": {
-      "anyOf": [
-        {
-          "type": "null"
         },
-        {
+        "routeId": {
           "type": "string",
-          "const": "catch-event-service-whatsapp-v1"
-        }
-      ]
-    },
-    "copyHash": {
-      "anyOf": [
-        {
+          "const": "organizerEventWhatsapp"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "grant",
+            "revoke"
+          ]
+        },
+        "copyVersion": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "const": "catch-event-service-whatsapp-v1"
+            }
+          ]
+        },
+        "copyHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "verifiedParticipant"
+        },
+        "linkId": {
           "type": "null"
         },
-        {
+        "senderHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
         }
-      ]
+      }
     },
-    "appliedRevision": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 9007199254740991
-    },
-    "createdAt": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 9007199254740991
-    },
-    "permissionHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "source": {
-      "type": "string",
-      "const": "verifiedParticipant"
-    },
-    "linkId": {
-      "type": "null"
-    },
-    "senderHash": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId",
+        "senderHash"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "organizerEventWhatsapp"
+        },
+        "actorUid": {
+          "type": "null"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "const": "revoke"
+        },
+        "copyVersion": {
+          "type": "null"
+        },
+        "copyHash": {
+          "type": "null"
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "messageLink"
+        },
+        "linkId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "senderHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
-  },
+  ],
   "title": "EventWhatsappConsentReceiptDocument",
   "x-firestore-collection": "eventAssistanceWhatsappConsentReceipts",
   "x-firestore-path": "eventAssistanceWhatsappConsentReceipts/{receiptId}",

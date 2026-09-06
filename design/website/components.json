@@ -3298,14 +3298,14 @@
       "notes": "Optional verified event text preferences shared by successful registration and guest runtime. Sender availability never grants consent; the existing event-service copy is returned by the server."
     },
     {
-      "id": "event_sms_withdrawal_panel",
+      "id": "event_message_withdrawal_panel",
       "kind": "supporting-component",
       "routeIds": [
         "event_assistance"
       ],
       "owner": "features/eventMessaging",
-      "source": "website/src/features/eventMessaging/EventSmsWithdrawalPanel.tsx",
-      "exportName": "EventSmsWithdrawalPanel",
+      "source": "website/src/features/eventMessaging/EventMessageWithdrawalPanel.tsx",
+      "exportName": "EventMessageWithdrawalPanel",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -3317,20 +3317,21 @@
           "uncertain",
           "error",
           "loading",
-          "closed-instructions"
+          "closed-instructions",
+          "whatsapp"
         ]
       },
-      "notes": "Message-link authority can only withdraw the original event text purpose. Independent of instruction availability; no phone, guest identity, auth session or enable action is exposed."
+      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
     },
     {
-      "id": "event_sms_withdrawal_card",
+      "id": "event_message_withdrawal_card",
       "kind": "supporting-component",
       "routeIds": [
         "event_assistance"
       ],
       "owner": "features/eventMessaging",
-      "source": "website/src/features/eventMessaging/EventSmsWithdrawalPanel.tsx",
-      "exportName": "EventSmsWithdrawalCard",
+      "source": "website/src/features/eventMessaging/EventMessageWithdrawalPanel.tsx",
+      "exportName": "EventMessageWithdrawalCard",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -3342,12 +3343,13 @@
           "uncertain",
           "error",
           "loading",
-          "closed-instructions"
+          "closed-instructions",
+          "whatsapp"
         ],
         "story": "website/src/stories/EventMessaging.stories.tsx",
         "exportName": "MessageWithdrawal"
       },
-      "notes": "Message-link authority can only withdraw the original event text purpose. Independent of instruction availability; no phone, guest identity, auth session or enable action is exposed."
+      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
     },
     {
       "id": "event_runtime_section_stack",

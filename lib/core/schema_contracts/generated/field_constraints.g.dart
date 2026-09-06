@@ -27079,15 +27079,6 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
-  static const eventWhatsappConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
-    path: 'eventWhatsappConsentReceiptDocument.actorUid',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-  );
-
   static const eventWhatsappConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
     path: 'eventWhatsappConsentReceiptDocument.appliedRevision',
     required: true,
@@ -27136,17 +27127,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
-  static const eventWhatsappConsentReceiptDocumentCopyHash = CatchContractFieldConstraints(
-    path: 'eventWhatsappConsentReceiptDocument.copyHash',
-    valueTypes: <String>['string'],
-    pattern: '^[a-f0-9]{64}\$',
-  );
-
-  static const eventWhatsappConsentReceiptDocumentCopyVersion = CatchContractFieldConstraints(
-    path: 'eventWhatsappConsentReceiptDocument.copyVersion',
-    valueTypes: <String>['string'],
-  );
-
   static const eventWhatsappConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
     path: 'eventWhatsappConsentReceiptDocument.createdAt',
     required: true,
@@ -27159,7 +27139,13 @@ abstract final class CatchContractConstraints {
     path: 'eventWhatsappConsentReceiptDocument.decision',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
   );
 
   static const eventWhatsappConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
@@ -28217,6 +28203,177 @@ abstract final class CatchContractConstraints {
 
   static const eventWhatsappReplyBindingDocumentSenderId = CatchContractFieldConstraints(
     path: 'eventWhatsappReplyBindingDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled', 'expired'],
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentPermissionRevisionAtIssue = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.permissionRevisionAtIssue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.subjectUid',
     maxLength: 160,
     minLength: 1,
     required: true,
@@ -30961,6 +31118,20 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappWithdrawalCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventWhatsappWithdrawalCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventWhatsappWithdrawalCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
   static const getOrganizerApplicationDetailCallablePayloadApplicationId = CatchContractFieldConstraints(
@@ -69312,6 +69483,37 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
+  static const withdrawEventWhatsappCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const withdrawEventWhatsappCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const withdrawEventWhatsappCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const withdrawEventWhatsappCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
   static const withdrawOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'withdrawOrganizerFormResponseCallablePayload.requestId',
     required: true,
@@ -73066,17 +73268,15 @@ abstract final class CatchContractConstraints {
     'eventWhatsappBudgetDocument.startsAt': eventWhatsappBudgetDocumentStartsAt,
     'eventWhatsappBudgetDocument.status': eventWhatsappBudgetDocumentStatus,
     'eventWhatsappBudgetDocument.updatedAt': eventWhatsappBudgetDocumentUpdatedAt,
-    'eventWhatsappConsentReceiptDocument.actorUid': eventWhatsappConsentReceiptDocumentActorUid,
     'eventWhatsappConsentReceiptDocument.appliedRevision': eventWhatsappConsentReceiptDocumentAppliedRevision,
     'eventWhatsappConsentReceiptDocument.attendeeGeneration': eventWhatsappConsentReceiptDocumentAttendeeGeneration,
     'eventWhatsappConsentReceiptDocument.attendeeId': eventWhatsappConsentReceiptDocumentAttendeeId,
     'eventWhatsappConsentReceiptDocument.context.eventId': eventWhatsappConsentReceiptDocumentContextEventId,
     'eventWhatsappConsentReceiptDocument.context.mode': eventWhatsappConsentReceiptDocumentContextMode,
     'eventWhatsappConsentReceiptDocument.context.organizerId': eventWhatsappConsentReceiptDocumentContextOrganizerId,
-    'eventWhatsappConsentReceiptDocument.copyHash': eventWhatsappConsentReceiptDocumentCopyHash,
-    'eventWhatsappConsentReceiptDocument.copyVersion': eventWhatsappConsentReceiptDocumentCopyVersion,
     'eventWhatsappConsentReceiptDocument.createdAt': eventWhatsappConsentReceiptDocumentCreatedAt,
     'eventWhatsappConsentReceiptDocument.decision': eventWhatsappConsentReceiptDocumentDecision,
+    'eventWhatsappConsentReceiptDocument.linkId': eventWhatsappConsentReceiptDocumentLinkId,
     'eventWhatsappConsentReceiptDocument.permissionHash': eventWhatsappConsentReceiptDocumentPermissionHash,
     'eventWhatsappConsentReceiptDocument.receiptId': eventWhatsappConsentReceiptDocumentReceiptId,
     'eventWhatsappConsentReceiptDocument.recipientEndpointId': eventWhatsappConsentReceiptDocumentRecipientEndpointId,
@@ -73215,6 +73415,28 @@ abstract final class CatchContractConstraints {
     'eventWhatsappReplyBindingDocument.replyKind': eventWhatsappReplyBindingDocumentReplyKind,
     'eventWhatsappReplyBindingDocument.schemaVersion': eventWhatsappReplyBindingDocumentSchemaVersion,
     'eventWhatsappReplyBindingDocument.senderId': eventWhatsappReplyBindingDocumentSenderId,
+    'eventWhatsappWithdrawalCallableResponse.outcome': eventWhatsappWithdrawalCallableResponseOutcome,
+    'eventWhatsappWithdrawalCallableResponse.view.expiresAt': eventWhatsappWithdrawalCallableResponseViewExpiresAt,
+    'eventWhatsappWithdrawalCallableResponse.view.preference': eventWhatsappWithdrawalCallableResponseViewPreference,
+    'eventWhatsappWithdrawalCallableResponse.view.revision': eventWhatsappWithdrawalCallableResponseViewRevision,
+    'eventWhatsappWithdrawalCallableResponse.view.serverTime': eventWhatsappWithdrawalCallableResponseViewServerTime,
+    'eventWhatsappWithdrawalGrantDocument.attendeeGeneration': eventWhatsappWithdrawalGrantDocumentAttendeeGeneration,
+    'eventWhatsappWithdrawalGrantDocument.attendeeId': eventWhatsappWithdrawalGrantDocumentAttendeeId,
+    'eventWhatsappWithdrawalGrantDocument.context.eventId': eventWhatsappWithdrawalGrantDocumentContextEventId,
+    'eventWhatsappWithdrawalGrantDocument.context.mode': eventWhatsappWithdrawalGrantDocumentContextMode,
+    'eventWhatsappWithdrawalGrantDocument.context.organizerId': eventWhatsappWithdrawalGrantDocumentContextOrganizerId,
+    'eventWhatsappWithdrawalGrantDocument.expiresAt': eventWhatsappWithdrawalGrantDocumentExpiresAt,
+    'eventWhatsappWithdrawalGrantDocument.guestGrantHash': eventWhatsappWithdrawalGrantDocumentGuestGrantHash,
+    'eventWhatsappWithdrawalGrantDocument.issuedAt': eventWhatsappWithdrawalGrantDocumentIssuedAt,
+    'eventWhatsappWithdrawalGrantDocument.linkId': eventWhatsappWithdrawalGrantDocumentLinkId,
+    'eventWhatsappWithdrawalGrantDocument.permissionId': eventWhatsappWithdrawalGrantDocumentPermissionId,
+    'eventWhatsappWithdrawalGrantDocument.permissionRevisionAtIssue': eventWhatsappWithdrawalGrantDocumentPermissionRevisionAtIssue,
+    'eventWhatsappWithdrawalGrantDocument.providerAccountId': eventWhatsappWithdrawalGrantDocumentProviderAccountId,
+    'eventWhatsappWithdrawalGrantDocument.providerPhoneNumberId': eventWhatsappWithdrawalGrantDocumentProviderPhoneNumberId,
+    'eventWhatsappWithdrawalGrantDocument.recipientEndpointId': eventWhatsappWithdrawalGrantDocumentRecipientEndpointId,
+    'eventWhatsappWithdrawalGrantDocument.schemaVersion': eventWhatsappWithdrawalGrantDocumentSchemaVersion,
+    'eventWhatsappWithdrawalGrantDocument.senderId': eventWhatsappWithdrawalGrantDocumentSenderId,
+    'eventWhatsappWithdrawalGrantDocument.subjectUid': eventWhatsappWithdrawalGrantDocumentSubjectUid,
     'exploreSearchCallablePayload.cityName': exploreSearchCallablePayloadCityName,
     'exploreSearchCallablePayload.limit': exploreSearchCallablePayloadLimit,
     'exploreSearchCallablePayload.query': exploreSearchCallablePayloadQuery,
@@ -73586,6 +73808,8 @@ abstract final class CatchContractConstraints {
     'getEventWhatsappPreferenceCallablePayload.attendeeId': getEventWhatsappPreferenceCallablePayloadAttendeeId,
     'getEventWhatsappPreferenceCallablePayload.eventId': getEventWhatsappPreferenceCallablePayloadEventId,
     'getEventWhatsappPreferenceCallablePayload.senderId': getEventWhatsappPreferenceCallablePayloadSenderId,
+    'getEventWhatsappWithdrawalCallablePayload.linkId': getEventWhatsappWithdrawalCallablePayloadLinkId,
+    'getEventWhatsappWithdrawalCallablePayload.secret': getEventWhatsappWithdrawalCallablePayloadSecret,
     'getOrganizerApplicationDetailCallablePayload.applicationId': getOrganizerApplicationDetailCallablePayloadApplicationId,
     'getOrganizerApplicationDetailCallablePayload.organizerId': getOrganizerApplicationDetailCallablePayloadOrganizerId,
     'getOrganizerApplicationDetailCallableResponse.answers': getOrganizerApplicationDetailCallableResponseAnswers,
@@ -78894,6 +79118,10 @@ abstract final class CatchContractConstraints {
     'withdrawEventAssistanceSmsCallablePayload.linkId': withdrawEventAssistanceSmsCallablePayloadLinkId,
     'withdrawEventAssistanceSmsCallablePayload.requestId': withdrawEventAssistanceSmsCallablePayloadRequestId,
     'withdrawEventAssistanceSmsCallablePayload.secret': withdrawEventAssistanceSmsCallablePayloadSecret,
+    'withdrawEventWhatsappCallablePayload.expectedRevision': withdrawEventWhatsappCallablePayloadExpectedRevision,
+    'withdrawEventWhatsappCallablePayload.linkId': withdrawEventWhatsappCallablePayloadLinkId,
+    'withdrawEventWhatsappCallablePayload.requestId': withdrawEventWhatsappCallablePayloadRequestId,
+    'withdrawEventWhatsappCallablePayload.secret': withdrawEventWhatsappCallablePayloadSecret,
     'withdrawOrganizerFormResponseCallablePayload.requestId': withdrawOrganizerFormResponseCallablePayloadRequestId,
     'withdrawOrganizerFormResponseCallablePayload.responseId': withdrawOrganizerFormResponseCallablePayloadResponseId,
     'withdrawOrganizerFormResponseCallablePayload.withdrawalToken': withdrawOrganizerFormResponseCallablePayloadWithdrawalToken,

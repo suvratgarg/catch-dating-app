@@ -16,6 +16,36 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "EventWhatsappWithdrawalGrantDocument",
+    "source": "firestore/event_assistance_whatsapp_withdrawal_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts"
+  },
+  {
+    "name": "GetEventWhatsappWithdrawalCallablePayload",
+    "source": "callables/get_event_whatsapp_withdrawal_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventWhatsappWithdrawalCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "WithdrawEventWhatsappCallablePayload",
+    "source": "callables/withdraw_event_whatsapp_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/withdrawEventWhatsappCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventWhatsappWithdrawalCallableResponse",
+    "source": "callable_responses/event_whatsapp_withdrawal_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventWhatsappWithdrawalCallableResponse.ts"
+    ]
+  },
+
+  {
     name: "EventWhatsappBudgetDocument",
     source: "firestore/event_whatsapp_budgets.schema.json",
     typeOutput: "functions/src/shared/generated/eventWhatsappBudgetDocument.ts",

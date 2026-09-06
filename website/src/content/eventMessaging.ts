@@ -21,3 +21,21 @@ export const eventMessagingCopy = {
   rejected: "This change could not be saved. Refresh your preference before trying again.",
   uncertain: "We could not confirm the change. Retry to check whether it was saved.",
 } as const;
+
+export const eventWhatsappMessagingCopy = {
+  ...eventMessagingCopy,
+  title: "Event WhatsApp updates",
+  loading: "Loading your WhatsApp preference…",
+  loadFailed: "Your WhatsApp preference could not be loaded.",
+  withdrawalScope: "Turn off WhatsApp updates from the organizer for this event. Your registration and event access will stay the same.",
+  withdrawalSaved: "WhatsApp updates for this event are off.",
+  withdrawalChanged: "Your WhatsApp preference changed elsewhere. Tap again if you want to turn updates off.",
+  turnOn: "Turn on event WhatsApp updates",
+  turnOff: "Turn off WhatsApp updates",
+  enabled: "Event WhatsApp updates are on.",
+  disabled: "Event WhatsApp updates are off.",
+  expired: "WhatsApp updates for this event have ended.",
+  unavailable: "WhatsApp updates are currently unavailable.",
+  savedOn: "Event WhatsApp updates are now on.",
+  savedOff: "Event WhatsApp updates are now off.",
+} as const;
