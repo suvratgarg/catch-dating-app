@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 void main() {
   testWidgets('shared error banner uses caller copy without app localization', (
     tester,
@@ -58,12 +60,12 @@ void main() {
     );
 
     await tester.pumpWidget(frame(const Locale('en')));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Try again'));
     expect(find.text('Try again'), findsOneWidget);
 
     // Reuse the same banner instances: localization must be read at build time.
     await tester.pumpWidget(frame(const Locale('fr')));
-    await tester.pumpAndSettle();
+    await pumpUntilFound(tester, find.text('Réessayer'));
     expect(find.text('Délai dépassé.'), findsOneWidget);
     expect(find.text('Accès refusé.'), findsOneWidget);
     expect(find.text('Réessayer'), findsOneWidget);
