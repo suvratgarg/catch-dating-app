@@ -10,7 +10,7 @@ import {mergeDeliveryReceipt, VerifiedDeliveryReceipt} from
 import {
   assistanceMessageId, canClaimLiveAttempt, evaluateOutbox,
   MessageRecord, newMessageRecord, OutboxFacts, parseMessageRecord,
-  PermitResult,
+  PermitResult, LiveAttempt, LiveDispatchPermit,
 } from "./messageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
 
@@ -23,6 +23,12 @@ export const EVENT_ASSISTANCE_MESSAGES = "eventAssistanceMessages";
 export type ReadOutboxFacts = (
   transaction: Transaction, intent: MessageRecord["intent"], now: number
 ) => Promise<OutboxFacts>;
+
+/** Trusted transaction preparation; commit stages writes without more reads. */
+export type PrepareDispatchResource<T> = (
+  tx: Transaction, record: MessageRecord, attempt: LiveAttempt, now: number
+) => Promise<{kind: "ready"; value: T; validUntil: number;
+  commit: () => void} | {kind: "withheld"}>;
 
 /**
  * Private delivery persistence used by the Operations worker. CAS on one
@@ -86,9 +92,10 @@ export class FirestoreMessageOutbox {
     });
   }
 
-  async claimLiveDispatch(
-    messageId: string, attemptId: string
-  ): Promise<PermitResult> {
+  async claimLiveDispatch<T = undefined>(
+    messageId: string, attemptId: string,
+    prepareResource?: PrepareDispatchResource<T>
+  ): Promise<PermitResult<T>> {
     return this.db.runTransaction(async (transaction) => {
       const record = await this.read(transaction, messageId);
       const facts = await this.readFacts(transaction, record.intent,
@@ -96,17 +103,58 @@ export class FirestoreMessageOutbox {
       const now = this.now(record.updatedAt);
       const result = canClaimLiveAttempt(record, attemptId, facts, now);
       if (result.kind === "withheld") return {...result, record};
+      const resource = prepareResource ? await prepareResource(transaction,
+        record, result.attempt, now) : null;
+      if (resource?.kind === "withheld") {
+        return {kind: "withheld", record, reason: "resourceUnavailable"};
+      }
+      const committedAt = this.now(now);
+      const validUntil = Math.min(result.validUntil,
+        resource?.validUntil ?? result.validUntil);
+      if (!Number.isSafeInteger(validUntil) || committedAt >= validUntil) {
+        return {kind: "withheld", record, reason: "authorizationExpired"};
+      }
+      // Debit and payload evidence commit with the single-send claim.
+      resource?.commit();
       const attempt = {...result.attempt, state: {
-        kind: "unknown" as const, at: now, providerMessageId: null,
-        reason: "workerInterrupted" as const, reconcileAfter: now + 120_000,
+        kind: "unknown" as const, at: committedAt, providerMessageId: null,
+        reason: "workerInterrupted" as const,
+        reconcileAfter: committedAt + 120_000,
       }};
       const next = this.write(transaction, record, {...record,
         attempts: record.attempts.map((a) =>
-          a.attemptId === attemptId ? attempt : a)}, now);
-      return {kind: "claimed", record: next, permit: {
-        messageId, intent: record.intent, attempt,
-        validUntil: result.validUntil,
-      }};
+          a.attemptId === attemptId ? attempt : a)}, committedAt);
+      return {kind: "claimed", record: next,
+        resource: resource?.value as T, permit: {
+          messageId, intent: record.intent, attempt,
+          validUntil,
+        }};
+    });
+  }
+
+  /** Only for a worker that proves permit expiry prevented all provider I/O. */
+  async recordExpiredBeforeSend(permit: LiveDispatchPermit):
+    Promise<MessageRecord> {
+    return this.db.runTransaction(async (tx) => {
+      const record = await this.read(tx, permit.messageId);
+      const attempt = record.attempts.find((a) =>
+        a.attemptId === permit.attempt.attemptId);
+      const now = this.now(record.updatedAt);
+      if (now < permit.validUntil ||
+          operationContentHash(record.intent) !==
+            operationContentHash(permit.intent) ||
+          !attempt || attempt.mode !== "live") {
+        throw new Error("Unsent evidence is outside the expired permit");
+      }
+      if (operationContentHash(attempt) !==
+          operationContentHash(permit.attempt) ||
+          attempt.state.kind !== "unknown" ||
+          attempt.state.reason !== "workerInterrupted") return record;
+      return this.write(tx, record, {...record,
+        attempts: record.attempts.map((a) => a.attemptId !== attempt.attemptId ?
+          a : {...a, state: {kind: "notDispatched", at: now,
+            reason: "expired"}}),
+      }, now);
     });
   }
 

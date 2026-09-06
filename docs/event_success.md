@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.23.0
+version: 1.24.0
 updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
@@ -157,8 +157,9 @@ verification and callback-to-attempt lookup belong to the upcoming adapters.
 the private `eventAssistanceMessages` collection. Re-enqueueing the same scoped
 intent returns its existing history; changed content cannot reuse the identity.
 Reservation and dispatch claiming each re-read trusted domain and permission
-facts in their Firestore transaction. The injected fact reader is a port for
-the upcoming event/roster/permission adapters, not client-supplied authority.
+facts in their Firestore transaction. The fact reader is trusted server authority. SMS now supplies a concrete
+event/roster/permission/template/budget reader; other channels still need their
+own readers.
 
 Only one transaction can claim a reserved live attempt. It records an uncertain
 outcome before returning a short-lived dispatch permit, and the provider runs
@@ -171,9 +172,9 @@ Normalized receipts can update an expired or cancelled message independently
 of its workflow run. They cannot reopen sending. Contradictory evidence creates
 a persistent conflict that withholds new dispatch, including an already
 reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
-or accept a real provider receipt. The outbox is not yet wired to a scheduler,
-live sender, Host read model or rehearsal runtime; those remain
-separate integration steps. Terminal cleanup must be added before activation,
+or accept a real provider receipt. The SMS worker connects this outbox to a
+Gupshup submission adapter. A scheduled live Operations executor, Host read
+model and rehearsal runtime remain separate integration steps. Terminal cleanup must be added before activation,
 and must retain deduplication state throughout the provider reconciliation
 window.
 
@@ -204,6 +205,54 @@ read/reply boundary and the existing web runtime primitives. Key provisioning,
 the live workflow publisher, Host case projection/resolution and rehearsal
 response adapter remain separate
 integration steps; recording a help case does not yet notify a Host.
+
+### SMS submission and spending boundary
+
+`SmsDispatchStore` reads the current sender, exact guest generation/linked UID
+and phone, event-service permission, revocable guest grant, approved template,
+and event/sender-day budgets in the same transaction as dispatch authority.
+A permission must use the Catch event-service copy and verified subject;
+existing organizer marketing opt-ins cannot grant this purpose. Permission
+capture and its verification/withdrawal UI still need integration.
+
+`EventSmsWorker` loads an exact numbered Secret Manager credential before the
+short reservation window. The resource claim atomically debits both spending
+ceilings and records the exact material hash with the outbox's single-send
+claim. A competing message cannot spend the same remaining budget. Payload,
+recipient, template, config and permission changes invalidate the reservation,
+even if a provisioning writer failed to advance its revision. Only hashes and
+scope/cost evidence enter dispatch records; credentials and the response-link
+secret remain in worker memory. The sender-day window is Asia/Kolkata.
+
+`smsProtocol.ts` renders exact approved DLT template parts with bounded
+variables. It never truncates or rewrites the instruction to fit a widget or
+SMS limit. GSM extension characters and Unicode pairs are counted when packing
+segments. Overlong content, missing approval, expired quote or insufficient
+budget withholds delivery. The configured rate ceiling is conservative spend
+control, not a claim about the provider's final invoice.
+
+`GupshupSmsProvider` submits one HTTPS POST with the configured entity, header,
+template and alphanumeric attempt correlation. Correlation is not provider
+idempotency. It checks the permit immediately before I/O; acceptance is stored
+separately from delivery. Unknown/malformed responses, transport loss and the
+provider's auto-resubmitting maintenance response remain uncertain and cannot
+cause fallback. Explicit account/policy/recipient rejection needs resolution.
+If permit expiry provably prevented provider I/O, the attempt is recorded as
+not dispatched. Debits are conservatively retained until reconciliation;
+there is no automatic refund or release on timeout or rejection.
+
+This is an invocable server worker tested with an injected transport and the
+Firestore emulator, not an enabled provider integration. Gupshup is the first
+candidate adapter; account selection and actual use-case/DLT approvals remain
+unconfirmed. This bounded worker only accepts SMS-only intents; multi-route
+intents are withheld until a shared reader can assess all permitted channels.
+Before activation, implement participant consent capture, audited
+sender/budget provisioning, live Operations scheduling, authenticated delivery
+callbacks and lookup/reconciliation, provider freshness/expiry behavior,
+financial reconciliation and retention. Provision the guest signing key and
+verify the deployed branded response route. No fabricated approval receipt,
+fixture permission or quote can satisfy live onboarding. WhatsApp/RCS routing
+and Host/rehearsal projections remain later delivery slices.
 
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow

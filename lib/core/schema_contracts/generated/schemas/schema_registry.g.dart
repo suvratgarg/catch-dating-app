@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceSmsSenderDocument',
+    source: 'firestore/event_assistance_sms_senders.schema.json',
+    schema: schemaEventAssistanceSmsSenderDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsPermissionDocument',
+    source: 'firestore/event_assistance_sms_permissions.schema.json',
+    schema: schemaEventAssistanceSmsPermissionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsBudgetDocument',
+    source: 'firestore/event_assistance_sms_budgets.schema.json',
+    schema: schemaEventAssistanceSmsBudgetDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsDispatchDocument',
+    source: 'firestore/event_assistance_sms_dispatches.schema.json',
+    schema: schemaEventAssistanceSmsDispatchDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSmsConfig',
+    source: 'operations/event_assistance_sms_config.schema.json',
+    schema: schemaEventAssistanceSmsConfigSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceGuestDocument',
     source: 'firestore/event_assistance_guests.schema.json',
     schema: schemaEventAssistanceGuestDocumentSchema,
@@ -2739,6 +2764,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceSmsSenderDocument': schemaEventAssistanceSmsSenderDocumentSchema,
+  'EventAssistanceSmsPermissionDocument': schemaEventAssistanceSmsPermissionDocumentSchema,
+  'EventAssistanceSmsBudgetDocument': schemaEventAssistanceSmsBudgetDocumentSchema,
+  'EventAssistanceSmsDispatchDocument': schemaEventAssistanceSmsDispatchDocumentSchema,
+  'EventAssistanceSmsConfig': schemaEventAssistanceSmsConfigSchema,
   'EventAssistanceGuestDocument': schemaEventAssistanceGuestDocumentSchema,
   'EventAssistanceThreadDocument': schemaEventAssistanceThreadDocumentSchema,
   'EventAssistanceGuestGrantDocument': schemaEventAssistanceGuestGrantDocumentSchema,
@@ -3286,6 +3316,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_sms_senders.schema.json': schemaEventAssistanceSmsSenderDocumentSchema,
+  'firestore/event_assistance_sms_permissions.schema.json': schemaEventAssistanceSmsPermissionDocumentSchema,
+  'firestore/event_assistance_sms_budgets.schema.json': schemaEventAssistanceSmsBudgetDocumentSchema,
+  'firestore/event_assistance_sms_dispatches.schema.json': schemaEventAssistanceSmsDispatchDocumentSchema,
+  'operations/event_assistance_sms_config.schema.json': schemaEventAssistanceSmsConfigSchema,
   'firestore/event_assistance_guests.schema.json': schemaEventAssistanceGuestDocumentSchema,
   'firestore/event_assistance_threads.schema.json': schemaEventAssistanceThreadDocumentSchema,
   'firestore/event_assistance_guest_grants.schema.json': schemaEventAssistanceGuestGrantDocumentSchema,

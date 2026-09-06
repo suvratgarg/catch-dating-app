@@ -537,6 +537,149 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceSmsSenderDocument {
+  schemaVersion: 1;
+  senderId: string;
+  revision: number;
+  provider: "gupshup";
+  senderIdentity: "catchPlatform";
+  country: "IN";
+  status: "inactive" | "ready" | "paused";
+  mask: string;
+  principalEntityId: string;
+  credentialVersion: string;
+  activation: {
+    useCaseApprovalId: string;
+    senderApprovalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  maxSegments: number;
+  quote: {
+    revision: number;
+    currency: "INR";
+    maxMicrosPerSegment: number;
+    validUntil: number;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 32
+   */
+  templates: {
+    templateId: string;
+    revision: number;
+    purpose:
+      | "joiningUpdate"
+      | "joiningInstructions"
+      | "planChanged"
+      | "guestRequirement"
+      | "assignmentChanged"
+      | "participationCheck"
+      | "eventCancelled"
+      | "eventFinished"
+      | "followUp";
+    dltTemplateId: string;
+    status: "pending" | "approved" | "paused";
+    /**
+     * @minItems 1
+     * @maxItems 16
+     */
+    parts: (
+      | {
+          kind: "literal";
+          text: string;
+        }
+      | {
+          kind: "variable";
+          name: "eventTitle" | "instruction" | "responseUrl";
+          maxCharacters: number;
+        }
+    )[];
+  }[];
+}
+
+export interface EventAssistanceSmsPermissionDocument {
+  schemaVersion: 1;
+  permissionId: string;
+  revision: number;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  senderId: string;
+  routeId: "catchEventSms";
+  purpose: "eventService";
+  phoneE164: string;
+  recipientEndpointId: string;
+  status: "granted" | "revoked";
+  evidence: {
+    receiptId: string;
+    copyVersion: "catch-event-service-sms-v1";
+    acceptedAt: number;
+    phoneVerifiedAt: number;
+    subjectUid: string;
+  };
+  expiresAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceSmsBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: "INR";
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceSmsDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  senderId: string;
+  bindingRevision: number;
+  configHash: string;
+  permissionId: string;
+  permissionRevision: number;
+  recipientEndpointId: string;
+  payloadHash: string;
+  templateId: string;
+  templateRevision: number;
+  quoteRevision: number;
+  grantId: string;
+  encoding: "gsm7" | "unicode";
+  segments: number;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  createdAt: number;
+}
+
 export interface EventAssistanceGuestDocument {
   schemaVersion: 1;
   guestId: string;

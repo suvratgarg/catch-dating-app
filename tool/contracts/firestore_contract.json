@@ -2009,6 +2009,54 @@
       "migrationNotes": [
         "Tool-owned manifest used to delete prior synthetic seed data safely."
       ]
+    },
+    {
+      "id": "eventAssistanceSmsSenders",
+      "path": "eventAssistanceSmsSenders/{senderId}",
+      "rulesMatch": "/eventAssistanceSmsSenders/{senderId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsPermissions",
+      "path": "eventAssistanceSmsPermissions/{permissionId}",
+      "rulesMatch": "/eventAssistanceSmsPermissions/{permissionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsBudgets",
+      "path": "eventAssistanceSmsBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceSmsBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsDispatches",
+      "path": "eventAssistanceSmsDispatches/{attemptId}",
+      "rulesMatch": "/eventAssistanceSmsDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Provisioning, participant consent capture and provider activation are separate integration gates. No client may approve a sender or grant permission."
+      ]
     }
   ]
 }

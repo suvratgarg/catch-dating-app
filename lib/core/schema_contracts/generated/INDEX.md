@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts` |
+| EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts` |
+| EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts` |
+| EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts` |
+| EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConfig.ts` |
 | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
 | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
 | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts` |
@@ -561,6 +566,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceSmsSenderDocumentSchema` | EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_sender_document.g.dart` |
+| `schemaEventAssistanceSmsPermissionDocumentSchema` | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_permission_document.g.dart` |
+| `schemaEventAssistanceSmsBudgetDocumentSchema` | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_budget_document.g.dart` |
+| `schemaEventAssistanceSmsDispatchDocumentSchema` | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_dispatch_document.g.dart` |
+| `schemaEventAssistanceSmsConfigSchema` | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_config.g.dart` |
 | `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
 | `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |
 | `schemaEventAssistanceGuestGrantDocumentSchema` | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_grant_document.g.dart` |

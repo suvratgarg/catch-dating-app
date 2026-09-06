@@ -2026,6 +2026,33 @@ Message actions pin a draft campaign revision and generated campaigns carry
 server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
 
+### Event Assistance SMS Delivery Contract
+
+The canonical `event_assistance_sms.schema.json` vocabulary supplies private
+sender, permission, budget and dispatch documents. `eventAssistanceSmsSenders`
+records explicit use-case/header approval, the exact numbered credential
+reference, approved template parts and a bounded INR rate quote. It contains
+no provider password. Missing, inactive, paused or expired configuration never
+implies readiness.
+
+`eventAssistanceSmsPermissions` binds Catch event-service SMS to an event,
+attendee creation generation, verified subject, phone endpoint and sender.
+The exact consent-copy version, receipt, timestamps, expiry and withdrawal
+state are required. Organizer marketing preference records are not permission
+for this route. There is currently no client or callable that can manufacture
+these approval or permission records; the participant capture and provisioning
+boundaries must be implemented before live activation.
+
+`eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
+Asia/Kolkata. A trusted worker atomically charges both ceilings with the
+outbox claim. `eventAssistanceSmsDispatches` keeps one immutable attempt debit,
+rendered-material hash and sender/template/permission/quote references. It
+stores neither message content nor the guest URL secret. Conservative debits
+remain charged across uncertain outcomes and provider rejections until an
+explicit reconciliation implementation accounts for them. They are spending
+reservations, not billing receipts. Firestore clients, including admins, cannot
+read or write any of these four collections.
+
 ### Event Assistance Guest Response Contract
 
 `eventAssistanceGuests` stores the event/attendee binding, exact roster creation

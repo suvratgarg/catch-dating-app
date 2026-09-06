@@ -14732,6 +14732,927 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventAssistanceSmsBudgetDocumentApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentBudgetId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentChargedMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentEndsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentLimitMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeDay = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentStartsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigActivationSenderApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.senderApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigActivationUseCaseApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.useCaseApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigCountry = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.country',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.credentialVersion',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventAssistanceSmsConfigMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.mask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
+  );
+
+  static const eventAssistanceSmsConfigMaxSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.maxSegments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsConfigPrincipalEntityId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.principalEntityId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsConfigProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigQuoteMaxMicrosPerSegment = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.maxMicrosPerSegment',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventAssistanceSmsConfigQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsConfigSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventAssistanceSmsConfigTemplates = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsDltTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.dltTemplateId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsParts = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 16,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1200,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsName = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.name',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.text',
+    maxLength: 1200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'paused'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBudgetIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.budgetIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBudgetIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.budgetIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentConfigHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.configHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentEncoding = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.encoding',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gsm7', 'unicode'],
+  );
+
+  static const eventAssistanceSmsDispatchDocumentGrantId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.permissionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.quoteRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.segments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentTemplateRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.templateRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceCopyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidencePhoneVerifiedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.phoneVerifiedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceSubjectUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+91[6-9][0-9]{9}\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['granted', 'revoked'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationSenderApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.senderApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationUseCaseApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.useCaseApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentCountry = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.country',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.credentialVersion',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.mask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentMaxSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.maxSegments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsSenderDocumentPrincipalEntityId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.principalEntityId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteMaxMicrosPerSegment = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.maxMicrosPerSegment',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplates = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsDltTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.dltTemplateId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsParts = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 16,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1200,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsName = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.name',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.text',
+    maxLength: 1200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'paused'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceThreadDocumentAttendeeId = CatchContractFieldConstraints(
     path: 'eventAssistanceThreadDocument.attendeeId',
     maxLength: 160,
@@ -68390,6 +69311,124 @@ abstract final class CatchContractConstraints {
     'eventAssistancePolicy.setting.policyVersion': eventAssistancePolicySettingPolicyVersion,
     'eventAssistancePolicy.setting.reason': eventAssistancePolicySettingReason,
     'eventAssistancePolicy.version': eventAssistancePolicyVersion,
+    'eventAssistanceSmsBudgetDocument.approvalId': eventAssistanceSmsBudgetDocumentApprovalId,
+    'eventAssistanceSmsBudgetDocument.budgetId': eventAssistanceSmsBudgetDocumentBudgetId,
+    'eventAssistanceSmsBudgetDocument.chargedMicros': eventAssistanceSmsBudgetDocumentChargedMicros,
+    'eventAssistanceSmsBudgetDocument.currency': eventAssistanceSmsBudgetDocumentCurrency,
+    'eventAssistanceSmsBudgetDocument.endsAt': eventAssistanceSmsBudgetDocumentEndsAt,
+    'eventAssistanceSmsBudgetDocument.limitMicros': eventAssistanceSmsBudgetDocumentLimitMicros,
+    'eventAssistanceSmsBudgetDocument.revision': eventAssistanceSmsBudgetDocumentRevision,
+    'eventAssistanceSmsBudgetDocument.schemaVersion': eventAssistanceSmsBudgetDocumentSchemaVersion,
+    'eventAssistanceSmsBudgetDocument.scope.context.eventId': eventAssistanceSmsBudgetDocumentScopeContextEventId,
+    'eventAssistanceSmsBudgetDocument.scope.context.mode': eventAssistanceSmsBudgetDocumentScopeContextMode,
+    'eventAssistanceSmsBudgetDocument.scope.context.organizerId': eventAssistanceSmsBudgetDocumentScopeContextOrganizerId,
+    'eventAssistanceSmsBudgetDocument.scope.day': eventAssistanceSmsBudgetDocumentScopeDay,
+    'eventAssistanceSmsBudgetDocument.scope.kind': eventAssistanceSmsBudgetDocumentScopeKind,
+    'eventAssistanceSmsBudgetDocument.senderId': eventAssistanceSmsBudgetDocumentSenderId,
+    'eventAssistanceSmsBudgetDocument.startsAt': eventAssistanceSmsBudgetDocumentStartsAt,
+    'eventAssistanceSmsBudgetDocument.status': eventAssistanceSmsBudgetDocumentStatus,
+    'eventAssistanceSmsBudgetDocument.updatedAt': eventAssistanceSmsBudgetDocumentUpdatedAt,
+    'eventAssistanceSmsConfig.activation.approvedAt': eventAssistanceSmsConfigActivationApprovedAt,
+    'eventAssistanceSmsConfig.activation.senderApprovalId': eventAssistanceSmsConfigActivationSenderApprovalId,
+    'eventAssistanceSmsConfig.activation.useCaseApprovalId': eventAssistanceSmsConfigActivationUseCaseApprovalId,
+    'eventAssistanceSmsConfig.activation.validUntil': eventAssistanceSmsConfigActivationValidUntil,
+    'eventAssistanceSmsConfig.country': eventAssistanceSmsConfigCountry,
+    'eventAssistanceSmsConfig.credentialVersion': eventAssistanceSmsConfigCredentialVersion,
+    'eventAssistanceSmsConfig.mask': eventAssistanceSmsConfigMask,
+    'eventAssistanceSmsConfig.maxSegments': eventAssistanceSmsConfigMaxSegments,
+    'eventAssistanceSmsConfig.principalEntityId': eventAssistanceSmsConfigPrincipalEntityId,
+    'eventAssistanceSmsConfig.provider': eventAssistanceSmsConfigProvider,
+    'eventAssistanceSmsConfig.quote.currency': eventAssistanceSmsConfigQuoteCurrency,
+    'eventAssistanceSmsConfig.quote.maxMicrosPerSegment': eventAssistanceSmsConfigQuoteMaxMicrosPerSegment,
+    'eventAssistanceSmsConfig.quote.revision': eventAssistanceSmsConfigQuoteRevision,
+    'eventAssistanceSmsConfig.quote.validUntil': eventAssistanceSmsConfigQuoteValidUntil,
+    'eventAssistanceSmsConfig.revision': eventAssistanceSmsConfigRevision,
+    'eventAssistanceSmsConfig.schemaVersion': eventAssistanceSmsConfigSchemaVersion,
+    'eventAssistanceSmsConfig.senderId': eventAssistanceSmsConfigSenderId,
+    'eventAssistanceSmsConfig.senderIdentity': eventAssistanceSmsConfigSenderIdentity,
+    'eventAssistanceSmsConfig.status': eventAssistanceSmsConfigStatus,
+    'eventAssistanceSmsConfig.templates': eventAssistanceSmsConfigTemplates,
+    'eventAssistanceSmsConfig.templates.items.dltTemplateId': eventAssistanceSmsConfigTemplatesItemsDltTemplateId,
+    'eventAssistanceSmsConfig.templates.items.parts': eventAssistanceSmsConfigTemplatesItemsParts,
+    'eventAssistanceSmsConfig.templates.items.parts.items.kind': eventAssistanceSmsConfigTemplatesItemsPartsItemsKind,
+    'eventAssistanceSmsConfig.templates.items.parts.items.maxCharacters': eventAssistanceSmsConfigTemplatesItemsPartsItemsMaxCharacters,
+    'eventAssistanceSmsConfig.templates.items.parts.items.name': eventAssistanceSmsConfigTemplatesItemsPartsItemsName,
+    'eventAssistanceSmsConfig.templates.items.parts.items.text': eventAssistanceSmsConfigTemplatesItemsPartsItemsText,
+    'eventAssistanceSmsConfig.templates.items.purpose': eventAssistanceSmsConfigTemplatesItemsPurpose,
+    'eventAssistanceSmsConfig.templates.items.revision': eventAssistanceSmsConfigTemplatesItemsRevision,
+    'eventAssistanceSmsConfig.templates.items.status': eventAssistanceSmsConfigTemplatesItemsStatus,
+    'eventAssistanceSmsConfig.templates.items.templateId': eventAssistanceSmsConfigTemplatesItemsTemplateId,
+    'eventAssistanceSmsDispatchDocument.attemptId': eventAssistanceSmsDispatchDocumentAttemptId,
+    'eventAssistanceSmsDispatchDocument.bindingRevision': eventAssistanceSmsDispatchDocumentBindingRevision,
+    'eventAssistanceSmsDispatchDocument.budgetIds': eventAssistanceSmsDispatchDocumentBudgetIds,
+    'eventAssistanceSmsDispatchDocument.budgetIds.items': eventAssistanceSmsDispatchDocumentBudgetIdsItems,
+    'eventAssistanceSmsDispatchDocument.configHash': eventAssistanceSmsDispatchDocumentConfigHash,
+    'eventAssistanceSmsDispatchDocument.createdAt': eventAssistanceSmsDispatchDocumentCreatedAt,
+    'eventAssistanceSmsDispatchDocument.encoding': eventAssistanceSmsDispatchDocumentEncoding,
+    'eventAssistanceSmsDispatchDocument.grantId': eventAssistanceSmsDispatchDocumentGrantId,
+    'eventAssistanceSmsDispatchDocument.maxCostMicros': eventAssistanceSmsDispatchDocumentMaxCostMicros,
+    'eventAssistanceSmsDispatchDocument.messageId': eventAssistanceSmsDispatchDocumentMessageId,
+    'eventAssistanceSmsDispatchDocument.payloadHash': eventAssistanceSmsDispatchDocumentPayloadHash,
+    'eventAssistanceSmsDispatchDocument.permissionId': eventAssistanceSmsDispatchDocumentPermissionId,
+    'eventAssistanceSmsDispatchDocument.permissionRevision': eventAssistanceSmsDispatchDocumentPermissionRevision,
+    'eventAssistanceSmsDispatchDocument.quoteRevision': eventAssistanceSmsDispatchDocumentQuoteRevision,
+    'eventAssistanceSmsDispatchDocument.recipientEndpointId': eventAssistanceSmsDispatchDocumentRecipientEndpointId,
+    'eventAssistanceSmsDispatchDocument.schemaVersion': eventAssistanceSmsDispatchDocumentSchemaVersion,
+    'eventAssistanceSmsDispatchDocument.segments': eventAssistanceSmsDispatchDocumentSegments,
+    'eventAssistanceSmsDispatchDocument.senderId': eventAssistanceSmsDispatchDocumentSenderId,
+    'eventAssistanceSmsDispatchDocument.templateId': eventAssistanceSmsDispatchDocumentTemplateId,
+    'eventAssistanceSmsDispatchDocument.templateRevision': eventAssistanceSmsDispatchDocumentTemplateRevision,
+    'eventAssistanceSmsPermissionDocument.attendeeGeneration': eventAssistanceSmsPermissionDocumentAttendeeGeneration,
+    'eventAssistanceSmsPermissionDocument.attendeeId': eventAssistanceSmsPermissionDocumentAttendeeId,
+    'eventAssistanceSmsPermissionDocument.context.eventId': eventAssistanceSmsPermissionDocumentContextEventId,
+    'eventAssistanceSmsPermissionDocument.context.mode': eventAssistanceSmsPermissionDocumentContextMode,
+    'eventAssistanceSmsPermissionDocument.context.organizerId': eventAssistanceSmsPermissionDocumentContextOrganizerId,
+    'eventAssistanceSmsPermissionDocument.evidence.acceptedAt': eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt,
+    'eventAssistanceSmsPermissionDocument.evidence.copyVersion': eventAssistanceSmsPermissionDocumentEvidenceCopyVersion,
+    'eventAssistanceSmsPermissionDocument.evidence.phoneVerifiedAt': eventAssistanceSmsPermissionDocumentEvidencePhoneVerifiedAt,
+    'eventAssistanceSmsPermissionDocument.evidence.receiptId': eventAssistanceSmsPermissionDocumentEvidenceReceiptId,
+    'eventAssistanceSmsPermissionDocument.evidence.subjectUid': eventAssistanceSmsPermissionDocumentEvidenceSubjectUid,
+    'eventAssistanceSmsPermissionDocument.expiresAt': eventAssistanceSmsPermissionDocumentExpiresAt,
+    'eventAssistanceSmsPermissionDocument.permissionId': eventAssistanceSmsPermissionDocumentPermissionId,
+    'eventAssistanceSmsPermissionDocument.phoneE164': eventAssistanceSmsPermissionDocumentPhoneE164,
+    'eventAssistanceSmsPermissionDocument.purpose': eventAssistanceSmsPermissionDocumentPurpose,
+    'eventAssistanceSmsPermissionDocument.recipientEndpointId': eventAssistanceSmsPermissionDocumentRecipientEndpointId,
+    'eventAssistanceSmsPermissionDocument.revision': eventAssistanceSmsPermissionDocumentRevision,
+    'eventAssistanceSmsPermissionDocument.routeId': eventAssistanceSmsPermissionDocumentRouteId,
+    'eventAssistanceSmsPermissionDocument.schemaVersion': eventAssistanceSmsPermissionDocumentSchemaVersion,
+    'eventAssistanceSmsPermissionDocument.senderId': eventAssistanceSmsPermissionDocumentSenderId,
+    'eventAssistanceSmsPermissionDocument.status': eventAssistanceSmsPermissionDocumentStatus,
+    'eventAssistanceSmsPermissionDocument.updatedAt': eventAssistanceSmsPermissionDocumentUpdatedAt,
+    'eventAssistanceSmsSenderDocument.activation.approvedAt': eventAssistanceSmsSenderDocumentActivationApprovedAt,
+    'eventAssistanceSmsSenderDocument.activation.senderApprovalId': eventAssistanceSmsSenderDocumentActivationSenderApprovalId,
+    'eventAssistanceSmsSenderDocument.activation.useCaseApprovalId': eventAssistanceSmsSenderDocumentActivationUseCaseApprovalId,
+    'eventAssistanceSmsSenderDocument.activation.validUntil': eventAssistanceSmsSenderDocumentActivationValidUntil,
+    'eventAssistanceSmsSenderDocument.country': eventAssistanceSmsSenderDocumentCountry,
+    'eventAssistanceSmsSenderDocument.credentialVersion': eventAssistanceSmsSenderDocumentCredentialVersion,
+    'eventAssistanceSmsSenderDocument.mask': eventAssistanceSmsSenderDocumentMask,
+    'eventAssistanceSmsSenderDocument.maxSegments': eventAssistanceSmsSenderDocumentMaxSegments,
+    'eventAssistanceSmsSenderDocument.principalEntityId': eventAssistanceSmsSenderDocumentPrincipalEntityId,
+    'eventAssistanceSmsSenderDocument.provider': eventAssistanceSmsSenderDocumentProvider,
+    'eventAssistanceSmsSenderDocument.quote.currency': eventAssistanceSmsSenderDocumentQuoteCurrency,
+    'eventAssistanceSmsSenderDocument.quote.maxMicrosPerSegment': eventAssistanceSmsSenderDocumentQuoteMaxMicrosPerSegment,
+    'eventAssistanceSmsSenderDocument.quote.revision': eventAssistanceSmsSenderDocumentQuoteRevision,
+    'eventAssistanceSmsSenderDocument.quote.validUntil': eventAssistanceSmsSenderDocumentQuoteValidUntil,
+    'eventAssistanceSmsSenderDocument.revision': eventAssistanceSmsSenderDocumentRevision,
+    'eventAssistanceSmsSenderDocument.schemaVersion': eventAssistanceSmsSenderDocumentSchemaVersion,
+    'eventAssistanceSmsSenderDocument.senderId': eventAssistanceSmsSenderDocumentSenderId,
+    'eventAssistanceSmsSenderDocument.senderIdentity': eventAssistanceSmsSenderDocumentSenderIdentity,
+    'eventAssistanceSmsSenderDocument.status': eventAssistanceSmsSenderDocumentStatus,
+    'eventAssistanceSmsSenderDocument.templates': eventAssistanceSmsSenderDocumentTemplates,
+    'eventAssistanceSmsSenderDocument.templates.items.dltTemplateId': eventAssistanceSmsSenderDocumentTemplatesItemsDltTemplateId,
+    'eventAssistanceSmsSenderDocument.templates.items.parts': eventAssistanceSmsSenderDocumentTemplatesItemsParts,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.kind': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsKind,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.maxCharacters': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsMaxCharacters,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.name': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsName,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.text': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsText,
+    'eventAssistanceSmsSenderDocument.templates.items.purpose': eventAssistanceSmsSenderDocumentTemplatesItemsPurpose,
+    'eventAssistanceSmsSenderDocument.templates.items.revision': eventAssistanceSmsSenderDocumentTemplatesItemsRevision,
+    'eventAssistanceSmsSenderDocument.templates.items.status': eventAssistanceSmsSenderDocumentTemplatesItemsStatus,
+    'eventAssistanceSmsSenderDocument.templates.items.templateId': eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId,
     'eventAssistanceThreadDocument.attendeeId': eventAssistanceThreadDocumentAttendeeId,
     'eventAssistanceThreadDocument.context.eventId': eventAssistanceThreadDocumentContextEventId,
     'eventAssistanceThreadDocument.context.mode': eventAssistanceThreadDocumentContextMode,

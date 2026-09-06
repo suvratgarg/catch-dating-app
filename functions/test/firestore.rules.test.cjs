@@ -4339,7 +4339,9 @@ describe("firestore.rules", () => {
     it("keeps event-service messages private to trusted workers", async () => {
       for (const collectionName of ["eventAssistanceMessages",
         "eventAssistanceGuests", "eventAssistanceThreads",
-        "eventAssistanceGuestGrants", "eventAssistanceCases"]) {
+        "eventAssistanceGuestGrants", "eventAssistanceCases",
+        "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
+        "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches"]) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});
         for (const client of [testEnv.unauthenticatedContext().firestore(),
           authedDb("host-1"), authedDb("admin-1", {admin: true})]) {

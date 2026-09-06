@@ -15,6 +15,31 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+{
+  "name": "EventAssistanceSmsSenderDocument",
+  "source": "firestore/event_assistance_sms_senders.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsPermissionDocument",
+  "source": "firestore/event_assistance_sms_permissions.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsBudgetDocument",
+  "source": "firestore/event_assistance_sms_budgets.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsDispatchDocument",
+  "source": "firestore/event_assistance_sms_dispatches.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts"
+},
+  {
+    name: "EventAssistanceSmsConfig",
+    source: "operations/event_assistance_sms_config.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceSmsConfig.ts",
+  },
   {
     "name": "EventAssistanceGuestDocument",
     "source": "firestore/event_assistance_guests.schema.json",

@@ -89,11 +89,12 @@ export interface LiveDispatchPermit {
   attempt: LiveAttempt;
   validUntil: number;
 }
-export type PermitResult =
-  | {kind: "claimed"; record: MessageRecord; permit: LiveDispatchPermit}
+export type PermitResult<T = undefined> =
+  | {kind: "claimed"; record: MessageRecord;
+      permit: LiveDispatchPermit; resource: T}
   | {kind: "withheld"; record: MessageRecord;
       reason: "notReserved" | "rehearsal" | "authorityChanged" |
-        "authorizationExpired" | "deliveryConflict"};
+        "authorizationExpired" | "deliveryConflict" | "resourceUnavailable"};
 
 /**
  * Remove just the unsent reservation when re-evaluating fresh authority. Its
