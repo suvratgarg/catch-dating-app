@@ -1,14 +1,173 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
+import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../clubs/clubs_test_helpers.dart' show buildClub;
 
 void main() {
   final club = buildClub().copyWith(ownerUserId: 'owner');
+
+  group('scoped provider', () {
+    final scope = HostTodayPreferenceScope(
+      accountId: 'owner',
+      organizerId: club.id,
+    );
+
+    test('a stale account does not subscribe to organizer data', () {
+      var organizerReads = 0;
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData('other-owner')),
+          hostOperableClubsProvider('owner').overrideWith((ref) {
+            organizerReads++;
+            return AsyncData([club]);
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final evidence = container.read(hostTodayRoadmapProvider(scope));
+
+      expect(organizerReads, 0);
+      expect(evidence.audience, HostTodayMilestoneProgress.unknown);
+      expect(evidence.payouts, HostTodayMilestoneProgress.unknown);
+      expect(evidence.canManagePayouts, isFalse);
+    });
+
+    test('missing or unavailable membership does not read CRM or payouts', () {
+      for (final membership in <AsyncValue<List<Club>>>[
+        const AsyncLoading(),
+        AsyncError(StateError('Membership unavailable'), StackTrace.empty),
+        const AsyncData([]),
+        AsyncData([club.copyWith(id: 'different-organizer')]),
+      ]) {
+        var audienceReads = 0;
+        var payoutReads = 0;
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData('owner')),
+            hostOperableClubsProvider('owner').overrideWithValue(membership),
+            hostCrmSummaryProvider(club.id).overrideWith((ref) async {
+              audienceReads++;
+              return _summary(club.id, count: 1);
+            }),
+            watchHostPaymentAccountsProvider('owner').overrideWith((ref) {
+              payoutReads++;
+              return Stream.value([_account('owner', ready: true)]);
+            }),
+          ],
+        );
+
+        final evidence = container.read(hostTodayRoadmapProvider(scope));
+
+        expect(audienceReads, 0);
+        expect(payoutReads, 0);
+        expect(evidence.organizerPage, HostTodayMilestoneProgress.unknown);
+        expect(evidence.canManagePayouts, isFalse);
+        container.dispose();
+      }
+    });
+
+    test(
+      'an authorized cohost reads CRM but not owner payment accounts',
+      () async {
+        final cohostScope = HostTodayPreferenceScope(
+          accountId: 'cohost',
+          organizerId: club.id,
+        );
+        var payoutReads = 0;
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData('cohost')),
+            hostOperableClubsProvider(
+              'cohost',
+            ).overrideWithValue(AsyncData([club])),
+            hostCrmSummaryProvider(
+              club.id,
+            ).overrideWith((ref) async => _summary(club.id, count: 1)),
+            watchHostPaymentAccountsProvider('cohost').overrideWith((ref) {
+              payoutReads++;
+              return Stream.value([_account('cohost', ready: true)]);
+            }),
+          ],
+        );
+        addTearDown(container.dispose);
+        container.listen(hostTodayRoadmapProvider(cohostScope), (_, _) {});
+        await container.read(hostCrmSummaryProvider(club.id).future);
+
+        final evidence = container.read(hostTodayRoadmapProvider(cohostScope));
+
+        expect(evidence.audience, HostTodayMilestoneProgress.complete);
+        expect(evidence.payouts, HostTodayMilestoneProgress.unknown);
+        expect(evidence.canManagePayouts, isFalse);
+        expect(payoutReads, 0);
+      },
+    );
+
+    test(
+      'pending evidence updates from real results and clears on sign-out',
+      () async {
+        final identity = StreamController<String?>();
+        final audience = Completer<HostCrmSummary>();
+        final accounts = StreamController<List<HostPaymentAccount>>();
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => identity.stream),
+            hostOperableClubsProvider(
+              'owner',
+            ).overrideWithValue(AsyncData([club])),
+            hostCrmSummaryProvider(
+              club.id,
+            ).overrideWith((ref) => audience.future),
+            watchHostPaymentAccountsProvider(
+              'owner',
+            ).overrideWith((ref) => accounts.stream),
+          ],
+        );
+        addTearDown(() async {
+          container.dispose();
+          await accounts.close();
+          await identity.close();
+        });
+        container.listen(hostTodayRoadmapProvider(scope), (_, _) {});
+        identity.add('owner');
+        await container.read(uidProvider.future);
+        var evidence = container.read(hostTodayRoadmapProvider(scope));
+        expect(evidence.audience, HostTodayMilestoneProgress.unknown);
+        expect(evidence.payouts, HostTodayMilestoneProgress.unknown);
+
+        audience.complete(_summary(club.id, count: 2));
+        accounts.add([_account('owner', ready: true)]);
+        await container.read(hostCrmSummaryProvider(club.id).future);
+        await container.read(watchHostPaymentAccountsProvider('owner').future);
+        evidence = container.read(hostTodayRoadmapProvider(scope));
+        expect(evidence.audience, HostTodayMilestoneProgress.complete);
+        expect(evidence.payouts, HostTodayMilestoneProgress.complete);
+
+        final signedOut = Completer<void>();
+        container.listen(uidProvider, (_, next) {
+          if (next case AsyncData(value: null)) signedOut.complete();
+        });
+        identity.add(null);
+        await signedOut.future;
+        evidence = container.read(hostTodayRoadmapProvider(scope));
+        expect(evidence.audience, HostTodayMilestoneProgress.unknown);
+        expect(evidence.payouts, HostTodayMilestoneProgress.unknown);
+        expect(evidence.canManagePayouts, isFalse);
+      },
+    );
+  });
 
   test('unknown dependencies are not treated as completed or empty', () {
     final evidence = buildHostTodayRoadmapEvidence(
