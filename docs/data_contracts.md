@@ -131,6 +131,26 @@ activation, route permission readers and terminal cleanup remain delivery work. 
 collection currently has no TTL; executable or reconcilable deduplication state
 must not be deleted merely because the message's instruction has expired.
 
+### Event Service Native Reply Contract
+
+`eventAssistanceWhatsappReplyBindings/{attemptId}` is an immutable, server-only
+choice mapping committed with a claimed live outbox attempt. Its schema pins
+intent and attempt hashes, original sender/account/phone, recipient endpoint,
+roster generation, guest episode and revision, response kind and offered choice
+IDs. It contains no phone number, credential or guest webpage secret. The
+correlation ID alone grants no action authority.
+
+`WhatsappReplyStore.consumeQueued` reads signature-verified evidence from the
+existing private `organizerMessagingWebhookEvents` queue. Exact sender,
+recipient and original provider message correlation precede the shared
+`applyGuestChoice` transaction. Unknown delivery correlation yields a waiting
+result; expired, replaced or mismatched authority cannot execute a choice.
+The webpage and provider consumer share response deduplication and case/intent
+writes. Neither can change attendance, assignment or registration. Connecting
+this consumer to the live sender and its durable deferred-reply scheduling
+remains integration work. These bindings have no TTL yet; activation requires
+retention aligned with the outbox's reconciliation window.
+
 ### Event Dress Rehearsal Isolation Contract
 
 Event rehearsal is a separate bounded domain with four callable-owned,

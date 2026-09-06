@@ -771,6 +771,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceWhatsappReplyBindings/{attemptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceMessages/{messageId} {
       allow read, write: if false;
     }

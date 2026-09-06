@@ -206,6 +206,40 @@ the live workflow publisher, Host case projection/resolution and rehearsal
 response adapter remain separate
 integration steps; recording a help case does not yet notify a Host.
 
+### WhatsApp native reply boundary
+
+`WhatsappReplyStore` freezes the exact offered choices in the private
+`eventAssistanceWhatsappReplyBindings` collection as part of the outbox's
+single dispatch-claim transaction. The mapping pins the immutable intent and
+attempt authority, original sender/account/phone, recipient endpoint, roster
+generation, participation episode and guest revision. Native IDs are opaque
+correlation, not bearer grants. This resource does not authorize sending;
+the live sender must compose it with event-service consent, approved template,
+credential and spending authority.
+
+The consumer reads an event ID from the existing signature-verified private
+WhatsApp queue. It checks sender and recipient ownership again, matches the
+exact native reply kind and the provider's original message ID, then resolves
+the stored choice. Unknown original-message correlation returns `waiting`
+without a domain effect. Display labels, free text and callback data cannot
+select an action. Changed instructions, roster generation, phone, episode or
+participation revision cannot inherit the old choice's authority.
+
+Web and WhatsApp responses use `applyGuestChoice` in the same message/guest
+transaction. Concurrent responses have one winner, help requests create one
+owned case, and reported joining intent cannot change physical attendance or
+registration. Safety requests retain their restricted owner. Server time is
+sampled again after source reads, and the shared event gate cannot extend a
+pre-event action past event end.
+
+The binding and consumer are invocable server services with signed-queue and
+Firestore race tests. The webhook trigger does not invoke this consumer yet.
+WhatsApp sending, native-button rendering, delivery correlation and durable
+retry scheduling must be connected together so an early reply's `waiting`
+result is resumed after delivery evidence arrives. Reply handling itself never
+sends an acknowledgement or fallback. Retention must preserve binding evidence
+through outbox reconciliation before activation.
+
 ### SMS submission and spending boundary
 
 `SmsDispatchStore` reads the current sender, exact guest generation/linked UID

@@ -26947,6 +26947,197 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventWhatsappReplyBindingDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attemptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttemptScopeHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attemptScopeHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoices = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoicesItemsNativeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices.items.nativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ce-wa1\\.[a-f0-9]{64}\\.([0-9]|1[0-9])\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.guestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^guest:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentGuestRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentIntentHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentReplyKind = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.replyKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['templateQuickReply', 'replyButton', 'listReply'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventWhatsappReplyBindingDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const exploreSearchCallablePayloadCityName = CatchContractFieldConstraints(
     path: 'exploreSearchCallablePayload.cityName',
     maxLength: 120,
@@ -71544,6 +71735,31 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.uid': eventWaitlistOfferDocumentUid,
     'eventWaitlistOfferDocument.updatedAt._nanoseconds': eventWaitlistOfferDocumentUpdatedAtNanoseconds,
     'eventWaitlistOfferDocument.updatedAt._seconds': eventWaitlistOfferDocumentUpdatedAtSeconds,
+    'eventWhatsappReplyBindingDocument.attemptId': eventWhatsappReplyBindingDocumentAttemptId,
+    'eventWhatsappReplyBindingDocument.attemptScopeHash': eventWhatsappReplyBindingDocumentAttemptScopeHash,
+    'eventWhatsappReplyBindingDocument.attendeeGeneration': eventWhatsappReplyBindingDocumentAttendeeGeneration,
+    'eventWhatsappReplyBindingDocument.attendeeId': eventWhatsappReplyBindingDocumentAttendeeId,
+    'eventWhatsappReplyBindingDocument.bindingRevision': eventWhatsappReplyBindingDocumentBindingRevision,
+    'eventWhatsappReplyBindingDocument.choices': eventWhatsappReplyBindingDocumentChoices,
+    'eventWhatsappReplyBindingDocument.choices.items.choiceId': eventWhatsappReplyBindingDocumentChoicesItemsChoiceId,
+    'eventWhatsappReplyBindingDocument.choices.items.nativeId': eventWhatsappReplyBindingDocumentChoicesItemsNativeId,
+    'eventWhatsappReplyBindingDocument.context.eventId': eventWhatsappReplyBindingDocumentContextEventId,
+    'eventWhatsappReplyBindingDocument.context.mode': eventWhatsappReplyBindingDocumentContextMode,
+    'eventWhatsappReplyBindingDocument.context.organizerId': eventWhatsappReplyBindingDocumentContextOrganizerId,
+    'eventWhatsappReplyBindingDocument.createdAt': eventWhatsappReplyBindingDocumentCreatedAt,
+    'eventWhatsappReplyBindingDocument.endpointHash': eventWhatsappReplyBindingDocumentEndpointHash,
+    'eventWhatsappReplyBindingDocument.episodeId': eventWhatsappReplyBindingDocumentEpisodeId,
+    'eventWhatsappReplyBindingDocument.expiresAt': eventWhatsappReplyBindingDocumentExpiresAt,
+    'eventWhatsappReplyBindingDocument.guestId': eventWhatsappReplyBindingDocumentGuestId,
+    'eventWhatsappReplyBindingDocument.guestRevision': eventWhatsappReplyBindingDocumentGuestRevision,
+    'eventWhatsappReplyBindingDocument.intentHash': eventWhatsappReplyBindingDocumentIntentHash,
+    'eventWhatsappReplyBindingDocument.messageId': eventWhatsappReplyBindingDocumentMessageId,
+    'eventWhatsappReplyBindingDocument.providerAccountId': eventWhatsappReplyBindingDocumentProviderAccountId,
+    'eventWhatsappReplyBindingDocument.providerPhoneNumberId': eventWhatsappReplyBindingDocumentProviderPhoneNumberId,
+    'eventWhatsappReplyBindingDocument.recipientEndpointId': eventWhatsappReplyBindingDocumentRecipientEndpointId,
+    'eventWhatsappReplyBindingDocument.replyKind': eventWhatsappReplyBindingDocumentReplyKind,
+    'eventWhatsappReplyBindingDocument.schemaVersion': eventWhatsappReplyBindingDocumentSchemaVersion,
+    'eventWhatsappReplyBindingDocument.senderId': eventWhatsappReplyBindingDocumentSenderId,
     'exploreSearchCallablePayload.cityName': exploreSearchCallablePayloadCityName,
     'exploreSearchCallablePayload.limit': exploreSearchCallablePayloadLimit,
     'exploreSearchCallablePayload.query': exploreSearchCallablePayloadQuery,

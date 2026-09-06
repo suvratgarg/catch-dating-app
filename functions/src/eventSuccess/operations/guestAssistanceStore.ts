@@ -8,14 +8,12 @@ import type {
   SubmitEventAssistanceGuestChoiceCallableResponse as SubmitResult,
 } from
   "../../shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
-import {validateEventAssistanceCaseDocument} from
-  "../../shared/generated/validators/eventAssistanceCaseDocument";
 import {operationContentHash} from "../../operations/durableActions";
-import {assertCommandContext, assertCommandRole} from "./commands";
+import {applyGuestChoice} from "./guestChoiceActions";
 import {
   assistanceMessageId, MessageRecord, newMessageRecord, parseMessageRecord,
 } from "./messageOutbox";
-import {parseMessageIntent, resolveGuestChoice} from "./messageProtocol";
+import {parseMessageIntent} from "./messageProtocol";
 import {sameMessageContext} from "./messagingPolicy";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {
@@ -227,73 +225,20 @@ export class GuestAssistanceStore {
       if (view.status !== "ready") {
         return {result: {kind: "rejected", reason: "noLongerNeeded"}, view};
       }
-      const choice = resolveGuestChoice({intent: message.intent,
-        lifecycle: message.lifecycle, submission: input,
+      const result = applyGuestChoice(this.db, tx, {
+        guest, message, submission: input,
+        expectedGuestRevision: input.expectedGuestRevision,
         scope: {context: grant.context, eventId: grant.context.eventId,
           attendeeId: grant.attendeeId, episodeId: grant.episodeId,
           validUntil: grant.expiresAt,
           source: {kind: "guestWeb", linkId: grant.linkId}},
         gate: {kind: "allow", checkedAt: now,
           validUntil: Math.min(message.intent.expiresAt, grant.expiresAt),
-          instructionRevision: view.instructionRevision},
-        now, existingResponse: message.response});
-      if (choice.kind === "rejected") return {result: choice, view};
-      if (choice.kind === "replayed") {
-        return {result: {kind: "replayed"}, view};
-      }
-      const response = choice.response;
-      if (response.value.kind === "joinIntent" &&
-          guest.revision !== input.expectedGuestRevision) {
-        return {result: {kind: "rejected", reason: "guestStateChanged"}, view};
-      }
-      let nextGuest = guest;
-      switch (response.value.kind) {
-      case "joinIntent": {
-        const command = {kind: "setJoinIntent" as const,
-          context: guest.context, eventId: guest.context.eventId,
-          operationId: response.responseId,
-          payload: {attendeeId: guest.attendeeId, episodeId: guest.episodeId,
-            expectedParticipationRevision: input.expectedGuestRevision,
-            intent: response.value.intention}};
-        assertCommandContext(command, guest.context);
-        assertCommandRole(command, ["guestSelf"]);
-        nextGuest = parseGuest({...guest, intention: command.payload.intent,
-          revision: guest.revision + 1, updatedAt: now});
-        tx.set(this.db.collection(guestCollections.guests).doc(guest.guestId),
-          nextGuest);
-        break;
-      }
-      case "requestHelp": {
-        const category = response.value.category;
-        const request = {schemaVersion: 1,
-          caseId: "case:" + operationContentHash(response.responseId),
-          guestId: guest.guestId, context: guest.context,
-          attendeeId: guest.attendeeId, episodeId: guest.episodeId,
-          responseId: response.responseId, messageId: message.messageId,
-          status: "open", category, receivedAt: now,
-          owner: category === "comfortSafety" ?
-            "authorizedSafetyOperator" : "eventLead"};
-        if (!validateEventAssistanceCaseDocument(request)) {
-          throw new Error("Guest request failed its ownership contract");
-        }
-        tx.create(this.db.collection(guestCollections.cases)
-          .doc(request.caseId),
-        request);
-        break;
-      }
-      case "acknowledge": break;
-      default: {
-        const unhandled: never = response.value;
-        throw new Error("Unhandled guest response: " + unhandled);
-      }
-      }
-      const nextMessage = parseMessageRecord({...message, response,
-        lifecycle: "responded", revision: message.revision + 1,
-        updatedAt: now});
-      tx.set(this.db.collection(EVENT_ASSISTANCE_MESSAGES)
-        .doc(message.messageId), nextMessage);
-      return {result: {kind: "accepted"}, view: this.project({...resolved,
-        guest: nextGuest, message: nextMessage}, now)};
+          instructionRevision: view.instructionRevision}, now,
+      });
+      if (result.kind === "rejected") return {result, view};
+      return {result: {kind: result.kind}, view: this.project({...resolved,
+        guest: result.guest, message: result.message}, now)};
     });
   }
 
@@ -307,10 +252,10 @@ export class GuestAssistanceStore {
     const now = this.now();
     if (!matchesGuestSecret(grant, secret) || grant.revokedAt !== null ||
         grant.issuedAt > now || grant.expiresAt <= now) throw unavailable();
-    const [guestSnap, threadSnap] = await Promise.all([
-      tx.get(this.db.collection(guestCollections.guests).doc(grant.guestId)),
-      tx.get(this.db.collection(guestCollections.threads).doc(grant.threadId)),
-    ]);
+    const [guestSnap, threadSnap] = await tx.getAll(
+      this.db.collection(guestCollections.guests).doc(grant.guestId),
+      this.db.collection(guestCollections.threads).doc(grant.threadId),
+    );
     const guest = parseGuest(guestSnap.data());
     const thread = parseThread(threadSnap.data());
     if (guest.guestId !== grant.guestId ||

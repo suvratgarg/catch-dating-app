@@ -16,10 +16,10 @@ export async function readEventAssistanceMessageGate(
   }
   const guestId = guestIdentity(intent.context, intent.attendeeId);
   const threadId = threadIdentity(intent);
-  const [guestSnap, threadSnap] = await Promise.all([
-    tx.get(db.collection(guestCollections.guests).doc(guestId)),
-    tx.get(db.collection(guestCollections.threads).doc(threadId)),
-  ]);
+  const [guestSnap, threadSnap] = await tx.getAll(
+    db.collection(guestCollections.guests).doc(guestId),
+    db.collection(guestCollections.threads).doc(threadId),
+  );
   if (!guestSnap.exists || !threadSnap.exists) {
     return {kind: "stop", reason: "notAdmitted"};
   }
@@ -47,7 +47,8 @@ export async function readEventAssistanceMessageGate(
     }
   }
   return {kind: "allow", checkedAt: now,
-    validUntil: Math.min(now + 30_000, intent.expiresAt),
+    validUntil: Math.min(now + 30_000, intent.expiresAt,
+      source.eventEnd > now ? source.eventEnd : Number.MAX_SAFE_INTEGER),
     instructionRevision: intent.kind === "joiningUpdate" ?
       intent.guidance.revision : intent.instructionRevision};
 }

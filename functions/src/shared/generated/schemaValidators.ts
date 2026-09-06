@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateEventWhatsappReplyBindingDocument} from "./validators/eventWhatsappReplyBindingDocument";
 export {validateEventAssistanceSmsWithdrawalGrantDocument} from "./validators/eventAssistanceSmsWithdrawalGrantDocument";
 export {validateGetEventAssistanceSmsWithdrawalCallablePayload} from "./validators/getEventAssistanceSmsWithdrawalInput";
 export {validateWithdrawEventAssistanceSmsCallablePayload} from "./validators/withdrawEventAssistanceSmsInput";

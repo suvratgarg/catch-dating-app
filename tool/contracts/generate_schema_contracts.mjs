@@ -15,6 +15,11 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {
+    name: "EventWhatsappReplyBindingDocument",
+    source: "firestore/event_assistance_whatsapp_reply_bindings.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts",
+  },
 {
   "name": "EventAssistanceSmsWithdrawalGrantDocument",
   "source": "firestore/event_assistance_sms_withdrawal_grants.schema.json",

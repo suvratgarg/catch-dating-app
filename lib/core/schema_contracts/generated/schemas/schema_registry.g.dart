@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventWhatsappReplyBindingDocument',
+    source: 'firestore/event_assistance_whatsapp_reply_bindings.schema.json',
+    schema: schemaEventWhatsappReplyBindingDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceSmsWithdrawalGrantDocument',
     source: 'firestore/event_assistance_sms_withdrawal_grants.schema.json',
     schema: schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
@@ -2804,6 +2809,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventWhatsappReplyBindingDocument': schemaEventWhatsappReplyBindingDocumentSchema,
   'EventAssistanceSmsWithdrawalGrantDocument': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
   'GetEventAssistanceSmsWithdrawalCallablePayload': schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema,
   'WithdrawEventAssistanceSmsCallablePayload': schemaWithdrawEventAssistanceSmsCallablePayloadSchema,
@@ -3364,6 +3370,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_whatsapp_reply_bindings.schema.json': schemaEventWhatsappReplyBindingDocumentSchema,
   'firestore/event_assistance_sms_withdrawal_grants.schema.json': schemaEventAssistanceSmsWithdrawalGrantDocumentSchema,
   'callables/get_event_assistance_sms_withdrawal_payload.schema.json': schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema,
   'callables/withdraw_event_assistance_sms_payload.schema.json': schemaWithdrawEventAssistanceSmsCallablePayloadSchema,

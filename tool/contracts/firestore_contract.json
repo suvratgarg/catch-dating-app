@@ -2081,6 +2081,18 @@
       "migrationNotes": [
         "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire."
       ]
+    },
+    {
+      "id": "eventAssistanceWhatsappReplyBindings",
+      "path": "eventAssistanceWhatsappReplyBindings/{attemptId}",
+      "rulesMatch": "/eventAssistanceWhatsappReplyBindings/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance WhatsApp dispatch and reply boundary",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable reply choices are committed with a claimed live attempt. They do not grant sending authority. Keep correlation through the outbox reconciliation window; live sender integration and retention remain activation work."
+      ]
     }
   ]
 }
