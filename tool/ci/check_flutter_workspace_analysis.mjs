@@ -41,7 +41,12 @@ export function buildWorkspaceAnalysisPlan(snapshot = createRepositorySnapshot()
             command: "dart",
             args: ["analyze", "--format", "machine", "--fatal-infos"],
           }
-        : {phase: "analyze", directory: entry.directory, command: "flutter", args: ["analyze", "--fatal-infos", "--no-pub"]}),
+        // The root excludes nested packages. Flutter's directory-wide analyzer
+        // can report success without visiting catch_tokens; an explicit Dart
+        // source target is required (verified with a seeded unresolved symbol).
+        : entry.directory === "packages/catch_tokens"
+          ? {phase: "analyze", directory: entry.directory, command: "dart", args: ["analyze", "lib", "--fatal-infos"]}
+          : {phase: "analyze", directory: entry.directory, command: "flutter", args: ["analyze", "--fatal-infos", "--no-pub"]}),
     ],
   };
 }

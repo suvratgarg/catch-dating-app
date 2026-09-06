@@ -1071,9 +1071,10 @@
         "version": "2.1.0"
       },
       "applies_to": [
-        "lib/**"
+        "lib/**",
+        "packages/catch_tokens/**"
       ],
-      "instruction": "Theme tokens, typography, app theme, spacing, radius, motion, icon sizes, and compatibility layout helpers should live under lib/core/theme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
+      "instruction": "L0 generated scales, semantic roles, and component tokens live in packages/catch_tokens, whose only production dependency is Flutter. Theme wiring, typography, and icon assets remain under lib/core/theme until Phase 3 extraction. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
       "sunset_when": [
         "Legacy spacing compatibility usage is either migrated or intentionally documented"
       ],
@@ -1083,6 +1084,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "platform:app-package-graphs",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#token-tier-model"
+        },
         {
           "tool": "design:host-event-field-contracts",
           "stage": "scanner-gate",

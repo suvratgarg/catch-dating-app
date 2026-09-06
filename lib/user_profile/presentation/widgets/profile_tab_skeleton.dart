@@ -1,6 +1,4 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -8,6 +6,8 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_tokens/catch_tokens.dart'
+    show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:flutter/material.dart';
 
 class ProfileTabSkeletonSliverBody extends StatelessWidget {

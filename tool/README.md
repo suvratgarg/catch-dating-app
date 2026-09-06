@@ -242,6 +242,9 @@ resolves the root Dart workspace once plus each standalone nested package, then
 analyzes root, Consumer, Host, Widgetbook, lint/plugin, icon-package, example,
 and tooling packages sequentially with info diagnostics fatal. Root analysis
 uses the deterministic `dart analyze --format machine` Catch-plugin path.
+The token package uses `dart analyze lib --fatal-infos`: a seeded unresolved
+symbol proved that directory-wide `flutter analyze` can report success while
+skipping this root-excluded workspace package.
 
 This intentionally uses the Node standard library rather than adopting Melos.
 Melos was evaluated, but Catch needs exhaustive package discovery and one
@@ -284,7 +287,8 @@ section in `analysis_options.yaml`. The deterministic CLI load path is a
 repository-root `dart analyze`; CI caches that one machine-diagnostic census
 and applies each severity gate to the exact diagnostic-code field.
 The Catch UI plugin runs across handwritten `lib/**` while exempting
-`lib/core/theme/**` token definitions and generated code.
+`packages/catch_tokens/lib/**` token definitions, `lib/core/theme/**` foundations,
+and generated code.
 
 Smoke wrappers stay in `tool/` because CI needs deterministic proof that the
 plugins are loaded:
@@ -953,7 +957,9 @@ network-free, and the standard design-parity gate owns freshness.
 
 The canonical UI primitive source is `design/tokens/catch.tokens.json`. It
 generates the customer website token CSS, website font assets, and Flutter Dart
-constants consumed by `lib/core/theme`.
+constants in `packages/catch_tokens/lib/generated/catch_design_tokens.g.dart`.
+The Flutter-only `catch_tokens` workspace package exports these scales and its
+handwritten semantic/component tokens to the apps and Widgetbook.
 
 ```sh
 dart run tool/design_tokens.dart

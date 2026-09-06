@@ -4,10 +4,10 @@ import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/consumer_bootstrap.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -237,7 +237,7 @@ void main() {
     expect(tester.getTopLeft(staticFinder), tester.getTopLeft(reelFinder));
     expect(
       tester.getTopLeft(staticFinder).dy,
-      closeTo(CatchLayout.welcomeReelCatchTopFor(padding), 0.1),
+      closeTo(CatchWelcomeTokens.welcomeReelCatchTopFor(padding), 0.1),
     );
 
     final staticText = tester.widget<Text>(

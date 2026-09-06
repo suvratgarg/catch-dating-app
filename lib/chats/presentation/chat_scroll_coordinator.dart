@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 class ChatScrollCoordinator {

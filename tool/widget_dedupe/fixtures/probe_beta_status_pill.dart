@@ -2,7 +2,7 @@
 
 import 'package:flutter/widgets.dart';
 
-import '../../../lib/core/theme/catch_tokens.dart';
+import '../../../packages/catch_tokens/lib/catch_tokens.dart';
 
 class ProbeBetaStatusPill extends StatelessWidget {
   const ProbeBetaStatusPill({super.key, required this.label});

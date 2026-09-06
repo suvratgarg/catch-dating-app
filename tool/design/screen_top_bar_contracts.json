@@ -3,7 +3,7 @@
   "logicalName": "catch-screen-top-bar-ownership",
   "rootScreenManifestPath": "tool/design/root_screen_composition_contracts.json",
   "screenGeometry": {
-    "tokenPath": "lib/core/theme/catch_tokens.dart",
+    "tokenPath": "packages/catch_tokens/lib/src/semantic/catch_insets.dart",
     "token": "screenTitleBlock",
     "topInset": "CatchSpacing.s0"
   },

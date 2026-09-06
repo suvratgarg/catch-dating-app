@@ -26,6 +26,20 @@ void main() {
       generatedAt: DateTime.utc(2026, 7, 2),
     );
     expect(result['failures'], isEmpty);
+    expect(result['version'], 2);
+    expect(result['tokenClassSources'], [
+      'packages/catch_tokens/lib',
+      'lib/core/theme',
+    ]);
+    expect(
+      result['tokenClasses'],
+      containsAll([
+        'CatchSpacing',
+        'CatchTokens',
+        'CatchWelcomeTokens',
+        'CatchTextStyles',
+      ]),
+    );
     final widgets = {
       for (final widget in result['widgets'] as List<Object?>)
         (widget as Map<String, Object?>)['name'] as String: widget,

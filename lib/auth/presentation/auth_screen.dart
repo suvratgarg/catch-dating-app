@@ -3,9 +3,9 @@ import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
 import 'package:catch_dating_app/auth/presentation/otp_page.dart';
 import 'package:catch_dating_app/auth/presentation/phone_page.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -43,6 +43,11 @@ prose inventory conventions a generator could not reproduce.
 
 ## Canonical Usage Decisions
 
+L0 token definitions live in `packages/catch_tokens` and are consumed through
+`package:catch_tokens/catch_tokens.dart`. The foundation specimens below mount
+those same production values. Theme wiring, typography, and icon assets remain
+in `lib/core/theme` until Phase 3; this extraction moves no widget identity.
+
 `CatchStatusStrip` (`lib/core/widgets/catch_status_strip.dart`) owns durable
 offline/rehearsal header anatomy, wrapping and 44 pt actions.
 `CatchStatusStripScope` publishes context without rendering it; canonical

@@ -14,6 +14,7 @@ function snapshot(pubspecs) {
 }
 
 const repositoryPubspecs = {
+  "packages/catch_tokens/pubspec.yaml": "name: catch_tokens\nresolution: workspace\n",
   "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
   "apps/host/pubspec.yaml": "name: catch_host_app\nresolution: workspace\n",
   "pubspec.yaml": "name: catch_dating_app\nworkspace:\n  - apps/host\n",
@@ -24,13 +25,17 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(
     plan.packages.map((entry) => entry.directory),
-    ["", "apps/host", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "tool/widget_dedupe", "widgetbook"],
   );
   assert.deepEqual(
     plan.steps.filter((step) => step.phase === "resolve").map((step) => step.directory),
     ["", "tool/widget_dedupe", "widgetbook"],
   );
-  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 4);
+  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 5);
+  assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_tokens" && step.phase === "analyze"), {
+    phase: "analyze", directory: "packages/catch_tokens", command: "dart",
+    args: ["analyze", "lib", "--fatal-infos"],
+  });
   assert.deepEqual(plan.steps.find((step) => step.directory === "" && step.phase === "analyze"), {
     phase: "analyze",
     directory: "",
@@ -53,7 +58,7 @@ test("every nested package is analyzed from its own package boundary", () => {
     .map((step) => step.directory);
   assert.deepEqual(
     analyzedDirectories,
-    ["", "apps/host", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "tool/widget_dedupe", "widgetbook"],
   );
 });
 
@@ -80,7 +85,7 @@ test("root diagnostics are captured from the only root analysis invocation", (t)
   let rootCalls = 0;
   runWorkspaceAnalysis({snapshot: snapshot(repositoryPubspecs), rootDiagnosticsDir: directory,
     runner(command, args, options) {
-      if (command === "dart" && args[0] === "analyze") {
+      if (options.cwd === "/repo" && command === "dart" && args[0] === "analyze") {
         rootCalls += 1;
         assert.deepEqual(options.stdio, ["inherit", "pipe", "pipe"]);
         return {status: 0, stdout: "", stderr: ""};

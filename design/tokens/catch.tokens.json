@@ -6,13 +6,13 @@
       "dtcg": "Design Tokens Format Module 2025.10",
       "sources": [
         "docs/design_language.md",
-        "lib/core/theme/catch_tokens.dart",
+        "packages/catch_tokens/lib/catch_tokens.dart",
         "lib/core/theme/activity_palette.dart",
         "lib/core/theme/catch_fonts.dart",
         "lib/core/theme/catch_text_styles.dart"
       ],
       "dart": {
-        "output": "lib/core/theme/generated/catch_design_tokens.g.dart"
+        "output": "packages/catch_tokens/lib/generated/catch_design_tokens.g.dart"
       },
       "website": {
         "output": "packages/web-config/generated/catch-tokens.css",

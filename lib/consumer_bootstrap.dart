@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -388,15 +388,15 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                       constraints.maxHeight,
                     );
                     final sceneWidth = size.width
-                        .clamp(0, CatchLayout.welcomeMaxWidth)
+                        .clamp(0, CatchWelcomeTokens.welcomeMaxWidth)
                         .toDouble();
-                    final catchLeft = CatchLayout.welcomeReelCatchLeftForWidth(
+                    final catchLeft = CatchWelcomeTokens.welcomeReelCatchLeftForWidth(
                       sceneWidth,
                     );
-                    final rightInset = CatchLayout.welcomeReelRightForWidth(
+                    final rightInset = CatchWelcomeTokens.welcomeReelRightForWidth(
                       sceneWidth,
                     );
-                    final catchTop = CatchLayout.welcomeReelCatchTopFor(
+                    final catchTop = CatchWelcomeTokens.welcomeReelCatchTopFor(
                       media.padding,
                     );
 

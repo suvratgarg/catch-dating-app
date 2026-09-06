@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
 import 'package:flutter/foundation.dart';
 
 /// Constant profile data selected by Flutter's native target. In profile and

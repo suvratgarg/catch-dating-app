@@ -144,6 +144,9 @@ Dynamic Type behavior.
 
 > The old serif/custom-sans direction is retired. Keep the swap centralized in
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
+Generated Flutter scales and handwritten L0 roles live in `packages/catch_tokens`,
+imported through `package:catch_tokens/catch_tokens.dart`. App theme wiring and
+activity-domain color mapping remain in `lib/core/theme`.
 
 **Legibility-first craft:**
 - **Single Archivo width — 78% (ratified 2026-07-06).** The DS

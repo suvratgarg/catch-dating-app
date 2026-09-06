@@ -1066,7 +1066,7 @@ function fixtureRoot({
   );
   if (includeRootContracts) {
     write(root, configuredRootSurface.path, rootSource);
-    write(root, "lib/core/theme/catch_tokens.dart", tokenSource);
+    write(root, "packages/catch_tokens/lib/src/semantic/catch_insets.dart", tokenSource);
   }
   if (extraSource != null) {
     write(root, "lib/new/new_screen.dart", extraSource);
@@ -1135,7 +1135,7 @@ function fixtureRoot({
     manifest.rootScreenManifestPath =
       "tool/design/root_screen_composition_contracts.json";
     manifest.screenGeometry = {
-      tokenPath: "lib/core/theme/catch_tokens.dart",
+      tokenPath: "packages/catch_tokens/lib/src/semantic/catch_insets.dart",
       token: "screenTitleBlock",
       topInset: "CatchSpacing.s0",
     };
@@ -1154,3 +1154,16 @@ function write(root, relativePath, contents) {
   fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
   fs.writeFileSync(absolutePath, contents);
 }
+
+
+test("screen geometry rejects app-local and escaped token sources", (t) => {
+  for (const tokenPath of ["lib/core/theme/local.dart", "packages/catch_tokens/lib/../../local.dart"]) {
+    const root = fixtureRoot({source: "Scaffold(appBar: CatchScreenTopBar(title: 'Review'));", contract: screenContract()});
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const file = path.join(root, "tool/design/screen_top_bar_contracts.json");
+    const manifest = JSON.parse(fs.readFileSync(file, "utf8"));
+    manifest.screenGeometry.tokenPath = tokenPath;
+    fs.writeFileSync(file, JSON.stringify(manifest));
+    assert.ok(checkScreenTopBarContracts({root}).findings.some((finding) => finding.code === "invalid-screen-geometry-path"));
+  }
+});

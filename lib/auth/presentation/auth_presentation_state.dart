@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 
 class AuthPhoneEntryViewState {
   const AuthPhoneEntryViewState({

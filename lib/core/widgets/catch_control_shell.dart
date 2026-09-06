@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/theme/catch_platform_tokens.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 enum CatchControlSize { floating, compact, md }

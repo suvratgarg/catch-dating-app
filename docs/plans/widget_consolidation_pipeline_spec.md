@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_pipeline_spec
-version: 0.3.2
-updated: 2026-08-10
+version: 0.4.0
+updated: 2026-09-06
 owner: widget_consolidation
 status: ready_for_execution
 ---
@@ -200,7 +200,7 @@ Walk each method body pre-order and emit tokens:
 |---|---|---|
 | `InstanceCreationExpression`, or `MethodInvocation` whose method name starts with an uppercase letter | `W:<Name>` | The widget-construction skeleton. Use the constructor name incl. named constructors (`W:CatchButton.ghost`). |
 | Each argument label of the above | fine stream: `A:<label>` in source order; **coarse stream: labels sorted within each `ArgumentList`**; positional args emit `A:_` | v0.2.0: source-order labels made argument permutations look like different code (measured: killed the `DarkPill` family match). Sort per `ArgumentList` node in the coarse stream. |
-| `PrefixedIdentifier` / `PropertyAccess` whose prefix is a design-token class | fine stream: `T:<Class>.<member>` verbatim; **coarse stream: `T:<Class>` only** | Token classes: everything under `lib/core/theme/` — enumerate at runtime (do not hardcode). v0.2.0: verbatim members are feature-namespaced (`CatchOpacity.manualQaPillFill` vs `.revealSurfaceFill`), so cross-feature clones could never match; measured impact on the `DarkPill` pair: Jaccard 0.087 → 0.44 after coarsening. Verbatim members still power the packet "token deltas" section. |
+| `PrefixedIdentifier` / `PropertyAccess` whose prefix is a design-token class | fine stream: `T:<Class>.<member>` verbatim; **coarse stream: `T:<Class>` only** | Token classes: everything under `packages/catch_tokens/lib/` plus the remaining `lib/core/theme/` foundations — enumerate at runtime (do not hardcode). v0.2.0: verbatim members are feature-namespaced (`CatchOpacity.manualQaPillFill` vs `.revealSurfaceFill`), so cross-feature clones could never match; measured impact on the `DarkPill` pair: Jaccard 0.087 → 0.44 after coarsening. Verbatim members still power the packet "token deltas" section. |
 | String literal | `S` | Rename-invariant. |
 | Numeric literal | `N` | |
 | Boolean literal | `B` | |
@@ -260,9 +260,9 @@ shingle basis changed. Do not adjust the Jaccard thresholds themselves.
 
 ```jsonc
 {
-  "version": 1,
+  "version": 2,
   "generatedAt": "2026-07-02T…",
-  "tokenClassSource": "lib/core/theme",
+  "tokenClassSources": ["packages/catch_tokens/lib", "lib/core/theme"],
   "widgets": [ { /* fields from §4.4, incl. shingles */ } ],
   "failures": [ {"name": "...", "file": "...", "reason": "..."} ]
 }

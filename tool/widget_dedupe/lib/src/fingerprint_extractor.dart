@@ -8,6 +8,8 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
+const _tokenClassSources = ['packages/catch_tokens/lib', 'lib/core/theme'];
+
 Map<String, Object?> extractFingerprints({
   required String repoRoot,
   List<String>? files,
@@ -195,9 +197,9 @@ Map<String, Object?> extractFingerprints({
   });
 
   return {
-    'version': 1,
+    'version': 2,
     'generatedAt': (generatedAt ?? DateTime.now().toUtc()).toIso8601String(),
-    'tokenClassSource': 'lib/core/theme',
+    'tokenClassSources': _tokenClassSources,
     'tokenClasses': tokenClasses.toList()..sort(),
     'widgets': widgets,
     'failures': failures,
@@ -228,20 +230,22 @@ _ClassificationRegistry _readClassificationRegistry(
 }
 
 Set<String> _collectTokenClasses(String repoRoot) {
-  final root = Directory(p.join(repoRoot, 'lib/core/theme'));
-  if (!root.existsSync()) return const {};
   final classes = <String>{};
-  for (final entity in root.listSync(recursive: true)) {
-    if (entity is! File || !entity.path.endsWith('.dart')) continue;
-    final parsed = parseString(
-      content: entity.readAsStringSync(),
-      path: entity.path,
-      throwIfDiagnostics: false,
-    );
-    for (final declaration
-        in parsed.unit.declarations.whereType<ClassDeclaration>()) {
-      final name = _className(declaration);
-      if (!name.startsWith('_')) classes.add(name);
+  for (final source in _tokenClassSources) {
+    final root = Directory(p.join(repoRoot, source));
+    if (!root.existsSync()) continue;
+    for (final entity in root.listSync(recursive: true)) {
+      if (entity is! File || !entity.path.endsWith('.dart')) continue;
+      final parsed = parseString(
+        content: entity.readAsStringSync(),
+        path: entity.path,
+        throwIfDiagnostics: false,
+      );
+      for (final declaration
+          in parsed.unit.declarations.whereType<ClassDeclaration>()) {
+        final name = _className(declaration);
+        if (!name.startsWith('_')) classes.add(name);
+      }
     }
   }
   return classes;

@@ -1092,11 +1092,12 @@ function validateScreenGeometryManifest(manifest, findings, manifestPath) {
   const geometry = manifest.screenGeometry;
   if (geometry == null) return;
   if (typeof geometry !== "object") return;
-  if (typeof geometry.tokenPath !== "string" || !geometry.tokenPath.startsWith("lib/")) {
+  if (typeof geometry.tokenPath !== "string" ||
+      !/^packages\/catch_tokens\/lib\/(?:[a-z_]+\/)*[a-z_]+\.dart$/u.test(geometry.tokenPath)) {
     findings.push({
       code: "invalid-screen-geometry-path",
       path: manifestPath,
-      message: "screenGeometry.tokenPath must be lib-relative.",
+      message: "screenGeometry.tokenPath must name a Dart source inside packages/catch_tokens/lib.",
     });
   }
   if (typeof geometry.token !== "string" || geometry.token.length === 0) {

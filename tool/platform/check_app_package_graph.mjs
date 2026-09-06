@@ -8,6 +8,14 @@ const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRoot = path.resolve(moduleDir, "../..");
 
 export const packageGraphPolicy = Object.freeze({
+  catch_tokens: {
+    projectRoot: "packages/catch_tokens",
+    requiredPackages: ["flutter"],
+    allowedPackages: ["flutter"],
+    forbiddenPackages: [],
+    requiredPlugins: [],
+    forbiddenPlugins: [],
+  },
   consumer: {
     projectRoot: "apps/consumer",
     requiredPackages: ["health", "razorpay_flutter"],
@@ -69,6 +77,11 @@ export function validateRoleGraph({
   for (const packageName of contract.forbiddenPackages) {
     if (declaredPackages.has(packageName)) {
       findings.push(`${role}: forbidden package '${packageName}' is present.`);
+    }
+  }
+  for (const packageName of declaredPackages) {
+    if (contract.allowedPackages && !contract.allowedPackages.includes(packageName)) {
+      findings.push(`${role}: dependency '${packageName}' is outside the Flutter-only token boundary.`);
     }
   }
   for (const pluginName of contract.requiredPlugins) {
