@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

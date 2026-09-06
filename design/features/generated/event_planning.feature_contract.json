@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:97df805bbe2daabce7533748f701952a3e87e5d8fe7262eba90363efccfcc2c1",
+  "resolvedDigest": "sha256:b1df797aa70afd2cbfffbfa9f447a8e0df95d93a12b4b20ed0c3da8985c77421",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -864,7 +864,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",

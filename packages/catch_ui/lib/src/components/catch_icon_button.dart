@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_count_badge.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchIconButtonVariant { bordered, float, plain }

@@ -202,7 +202,7 @@ scan_raw_material_buttons() {
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_adaptive_picker.dart' \
     --glob '!lib/core/widgets/catch_button.dart' \
-    --glob '!lib/core/widgets/catch_text_button.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_text_button.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then

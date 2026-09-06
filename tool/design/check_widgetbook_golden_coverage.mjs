@@ -9,7 +9,11 @@ const waiverPath = path.join(
   repoRoot,
   "widgetbook/test/support/golden_coverage_waivers.json",
 );
-const coreRoots = ["lib/core/widgets/", "packages/catch_ui/lib/src/primitives/"];
+const coreRoots = [
+  "lib/core/widgets/",
+  "packages/catch_ui/lib/src/primitives/",
+  "packages/catch_ui/lib/src/components/",
+];
 const waiverLimit = 20;
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const annotationKey = (row) =>

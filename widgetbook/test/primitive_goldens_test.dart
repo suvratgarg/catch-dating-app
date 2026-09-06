@@ -61,7 +61,8 @@ Map<String, bool> _coreGoldenDesignations() {
 
 bool _isGoldenSource(String path) =>
     path.startsWith('lib/core/widgets/') ||
-    path.startsWith('packages/catch_ui/lib/src/primitives/');
+    path.startsWith('packages/catch_ui/lib/src/primitives/') ||
+    path.startsWith('packages/catch_ui/lib/src/components/');
 
 String _corpusStem(String id) {
   final legacy = _referenceCases[id];

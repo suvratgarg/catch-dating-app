@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:9132f0544297dbdf3bbcfd601240d399935e673dc7a274a6adc0208aff3c570a",
+  "resolvedDigest": "sha256:34df5ef48c7bce9abb2b37d70833e88a685055e61ec151e1879cd7ffac15ddd8",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1761,7 +1761,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchCountPill",
-              "file": "lib/core/widgets/catch_count_pill.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_count_pill.dart",
               "constructors": [
                 "CatchCountPill.label"
               ]
@@ -1817,7 +1817,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",

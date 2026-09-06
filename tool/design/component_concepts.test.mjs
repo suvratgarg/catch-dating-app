@@ -120,7 +120,7 @@ test("canonical and uncontracted public widgets cannot evade normalized collisio
   const rows = [
     {
       name: "CatchBadge",
-      file: "lib/core/widgets/catch_badge.dart",
+      file: "packages/catch_ui/lib/src/components/catch_badge.dart",
       classKind: "widget",
       visibility: "public",
       conceptRole: "concept",

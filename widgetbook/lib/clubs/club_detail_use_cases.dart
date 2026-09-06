@@ -26,7 +26,6 @@ import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import "package:catch_dating_app/core/widgets/catch_meta_row.dart";
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';

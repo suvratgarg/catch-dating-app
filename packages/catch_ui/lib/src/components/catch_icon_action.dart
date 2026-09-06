@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 
 /// Tooltip-wrapped icon action used by top bars and floating chrome.

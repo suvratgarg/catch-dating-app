@@ -1,13 +1,26 @@
 /// Catch shared presentation foundations and primitives.
 library;
 
+export 'src/components/catch_analytics_bar.dart';
+export 'src/components/catch_badge.dart';
+export 'src/components/catch_count_badge.dart';
+export 'src/components/catch_count_pill.dart';
+export 'src/components/catch_icon_action.dart';
+export 'src/components/catch_icon_button.dart';
+export 'src/components/catch_inline_status.dart';
+export 'src/components/catch_mini_bar_chart.dart';
+export 'src/components/catch_record_row.dart';
+export 'src/components/catch_section_header.dart';
+export 'src/components/catch_stat_column.dart';
+export 'src/components/catch_text_button.dart';
+export 'src/components/catch_timestamped_message_text.dart';
+export 'src/components/catch_vertical_section.dart';
 export 'src/foundations/catch_font_licenses.dart';
 export 'src/foundations/catch_fonts.dart';
 export 'src/foundations/catch_icons.dart';
 export 'src/foundations/catch_text_styles.dart';
 export 'src/foundations/catch_theme.dart';
 export 'src/foundations/catch_transitions.dart';
-
 export 'src/primitives/catch_bottom_sheet_grabber.dart';
 export 'src/primitives/catch_control_shell.dart';
 export 'src/primitives/catch_divider.dart';

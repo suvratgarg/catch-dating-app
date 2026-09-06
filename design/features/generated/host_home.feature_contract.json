@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:7cb7f598d19c7ec207329754321d850014a226fae3b79427e27ddd97e5f3052d",
+  "resolvedDigest": "sha256:77fcefc32e1a211a5f5d89954ae70d9af6c55e18da1b1a20e0d5a812d0f8ff5d",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1975,7 +1975,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchRecordRow",
-              "file": "lib/core/widgets/catch_record_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
               "constructors": [
                 "CatchRecordRow"
               ]

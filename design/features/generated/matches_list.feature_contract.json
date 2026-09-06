@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:87ce5375054e658555f49211023d6217e4e722d86db38a3b59fe1885cd657f86",
+  "resolvedDigest": "sha256:977acb4cf97a3395297a2cbd8d81177c067f0b78d5a30b1ebf78d5a415fc7c83",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -884,7 +884,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",

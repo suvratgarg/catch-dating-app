@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
-  "resolvedDigest": "sha256:fe95cdac3e71cc498b8ca8b26f7ea020e5473eaebc61305a5889900e18f1e783",
+  "resolvedDigest": "sha256:6bbcd414a0e5f53fdd6b678b3d87b9593ab944c9a6afa1bf6a9e12625be1bab1",
   "feature": {
     "id": "feature.catches_hub",
     "name": "Catches Hub",
@@ -750,7 +750,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",

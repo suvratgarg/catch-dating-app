@@ -105,7 +105,7 @@
       "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
-        "file": "lib/core/widgets/catch_badge.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
         "constructors": [
           "CatchBadge",
           "CatchBadge.functional",
@@ -279,7 +279,7 @@
               "overflow-count",
               "standalone"
             ],
-            "file": "lib/core/widgets/catch_count_badge.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_count_badge.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -320,7 +320,7 @@
               "live",
               "scaled"
             ],
-            "file": "lib/core/widgets/catch_inline_status.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_inline_status.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -698,7 +698,7 @@
           {
             "id": "catch.button.text",
             "symbol": "CatchTextButton",
-            "file": "lib/core/widgets/catch_text_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_text_button.dart",
             "summary": "Text-only action with naturally wrapping labels, native disabled/keyboard semantics, optional FocusNode forwarding, and a platform minimum that local minimumSize, shrinkWrap, or compact density cannot reduce.",
             "states": [
               "primary",
@@ -3546,7 +3546,7 @@
           {
             "id": "catch.section.header",
             "symbol": "CatchSectionHeader",
-            "file": "lib/core/widgets/catch_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_section_header.dart",
             "summary": "Standard section title row with optional trailing action, uppercase, heavy, and custom padding/style states.",
             "states": [
               "plain",
@@ -3665,7 +3665,7 @@
           {
             "id": "catch.section.vertical_section",
             "symbol": "CatchVerticalSection",
-            "file": "lib/core/widgets/catch_vertical_section.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_vertical_section.dart",
             "summary": "Titled vertical list section with standard section header and separated embedded rows.",
             "states": [
               "embedded-list",
@@ -4560,17 +4560,17 @@
     },
     {
       "id": "catch.mini_bar_chart",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchMiniBarChart",
       "status": "active",
       "kind": "primitive",
       "summary": "Compact mini bar chart for dense metric panels and data-coverage summaries.",
       "dart": {
         "symbol": "CatchMiniBarChart",
-        "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_mini_bar_chart.dart",
         "constructors": [
           "CatchMiniBarChart"
         ]
@@ -4662,7 +4662,27 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.mini_bar_chart.bar",
+            "symbol": "CatchAnalyticsBar",
+            "file": "packages/catch_ui/lib/src/components/catch_analytics_bar.dart",
+            "summary": "Single bottom-anchored fractional bar for composed analytics panels.",
+            "states": [
+              "zero-stub",
+              "fractional",
+              "maximum"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.mini_bar_chart",
+              "parentConceptId": "catch.mini_bar_chart",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.mini_bar_chart"
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -4810,7 +4830,7 @@
           {
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchStatColumn",
-            "file": "lib/core/widgets/catch_stat_column.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_stat_column.dart",
             "summary": "Vertical value-over-label metric member using the platform metric role and readable supporting label, with natural-height wrapping, optional icons, centered alignment, and surfaced single-stat blocks.",
             "states": [
               "plain",
@@ -5257,22 +5277,22 @@
     },
     {
       "id": "catch.icon_button",
-        "enforcement": {
-          "code": "catch_icon_button_requires_tooltip",
-          "codes": [
-            "catch_no_raw_icon_source",
-            "catch_no_raw_icon_size"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "IconButton(onPressed: () {}, icon: const Icon(Icons.add))"
-        },
+      "enforcement": {
+        "code": "catch_icon_button_requires_tooltip",
+        "codes": [
+          "catch_no_raw_icon_source",
+          "catch_no_raw_icon_size"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "IconButton(onPressed: () {}, icon: const Icon(Icons.add))"
+      },
       "name": "CatchIconButton",
       "status": "active",
       "kind": "primitive",
       "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
       "dart": {
         "symbol": "CatchIconButton",
-        "file": "lib/core/widgets/catch_icon_button.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
         "constructors": [
           "CatchIconButton",
           "CatchIconButton.icon",
@@ -5400,7 +5420,29 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.icon_button.action",
+            "symbol": "CatchIconAction",
+            "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
+            "summary": "Required-tooltip icon action adapter for top bars and floating chrome.",
+            "states": [
+              "enabled",
+              "disabled",
+              "bordered",
+              "float",
+              "plain"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.icon_button",
+              "parentConceptId": "catch.icon_button",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.icon_button"
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -10663,7 +10705,7 @@
       "summary": "Labelled floating action with a required callback, optional icon, and typed count overlay.",
       "dart": {
         "symbol": "CatchCountPill",
-        "file": "lib/core/widgets/catch_count_pill.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_count_pill.dart",
         "constructors": [
           "CatchCountPill.label"
         ]
@@ -11612,7 +11654,7 @@
       "summary": "Natural-height read-only record with heading, important facts, evidence metadata, prose, semantic marker and optional navigation.",
       "dart": {
         "symbol": "CatchRecordRow",
-        "file": "lib/core/widgets/catch_record_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
         "constructors": [
           "CatchRecordRow"
         ]
@@ -15145,6 +15187,119 @@
         "notes": [
           "Callers own route state, animation lifetimes, Hero tags, and child content."
         ]
+      }
+    },
+    {
+      "id": "catch.timestamped_message",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchTimestampedMessageText",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Message text with a caller-formatted timestamp on the final line when it fits, or directly below it.",
+      "dart": {
+        "symbol": "CatchTimestampedMessageText",
+        "file": "packages/catch_ui/lib/src/components/catch_timestamped_message_text.dart",
+        "constructors": [
+          "CatchTimestampedMessageText"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TimestampedMessage",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TimestampedMessage",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "text",
+            "type": "string",
+            "dartType": "String",
+            "required": true
+          },
+          {
+            "name": "timestamp",
+            "type": "string",
+            "dartType": "String",
+            "required": true
+          },
+          {
+            "name": "textStyle",
+            "type": "object",
+            "dartType": "TextStyle",
+            "required": true
+          },
+          {
+            "name": "timestampStyle",
+            "type": "object",
+            "dartType": "TextStyle",
+            "required": true
+          }
+        ],
+        "states": [
+          "inline-timestamp",
+          "stacked-timestamp",
+          "empty-message",
+          "large-text"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.micro3"
+        ],
+        "dartRoles": [
+          "CatchSpacing.s2",
+          "CatchSpacing.micro3"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Measure both caller-supplied text styles at the active text scale; move the timestamp below the message when the final line has insufficient space."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Callers provide already-localized message and timestamp strings and semantic text styles. The component owns line measurement and timestamp placement."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.timestamped_message",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.timestamped_message"
+      },
+      "surfaces": {
+        "flutter": "CatchTimestampedMessageText"
       }
     }
   ]

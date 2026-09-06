@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a8c781d10f212a6e6a93cc33a6d8355ff7f94bf2195e98d1c5da67444edd5c9a",
-  "resolvedDigest": "sha256:43db1be864b679135cf6edf5e7e4c317b4a6c78a902653f9e2590d46523e6dce",
+  "resolvedDigest": "sha256:fc057c10f1fd4fca8572368f8fd4d9410f2760ed4ef94fa1a678e4d1638c15cf",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -1236,7 +1236,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",

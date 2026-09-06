@@ -240,6 +240,7 @@ List<Map<String, Object?>> _coreSurface() {
     for (final root in [
       'lib/core/widgets',
       'packages/catch_ui/lib/src/primitives',
+      'packages/catch_ui/lib/src/components',
     ])
       if (Directory(root).existsSync())
         ...Directory(root)

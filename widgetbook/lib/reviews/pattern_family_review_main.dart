@@ -2,11 +2,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart' show ClubHostRole;
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
     show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart'
     show CatchPersonNewMatchDot, CatchPersonUnreadCountPill;
 import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';

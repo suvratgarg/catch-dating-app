@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

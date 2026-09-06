@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Lays out a chat timestamp on the final message line when it fits, otherwise

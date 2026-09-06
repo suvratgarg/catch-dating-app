@@ -680,6 +680,12 @@ pre-move class and case instead of losing coverage at the package boundary.
 Components, patterns/adapters, entity materials, and final public-barrel cleanup
 remain the later Phase 3 sub-slices.
 
+Phase 3c begins with provider-free badges, icon actions, status displays, charts,
+record rows, section headers, and timestamp layout. These component bodies and
+caller-owned copy are preserved at their package home; original files are
+deleted and their exact corpus coverage follows the move. The l10n-coupled
+field/section/sheet families remain the next component extraction group.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
