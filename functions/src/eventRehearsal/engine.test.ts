@@ -3,8 +3,11 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import type {EventRehearsalDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {createEventRehearsalCallablePayloadSchema} from
+  "../shared/generated/schemas/createEventRehearsalInput";
 import {
   applyRehearsalBehavior,
+  applyRehearsalCues,
   applyRehearsalGuestAction,
   applyRehearsalSpatialAction,
   buildRehearsalActors,
@@ -97,13 +100,109 @@ test("scenario cues are emitted only when their minute is crossed", () => {
       "lateAndNoShow",
       now.toMillis(),
       now.toMillis() + 9 * 60000,
-      now.toMillis() + 16 * 60000
+      now.toMillis() + 16 * 60000,
+      12
     ),
     [
       {atMinute: 10, behavior: "arriveLate", actorIndex: 2},
       {atMinute: 15, behavior: "markNoShow", actorIndex: 5},
     ]
   );
+});
+
+test("every scheduled scenario works at every supported roster size", () => {
+  const properties = createEventRehearsalCallablePayloadSchema.properties as {
+    scenarioId: {enum: EventRehearsalDocument["scenarioId"][]};
+    actorCount: {minimum: number; maximum: number};
+  };
+  const {minimum, maximum} = properties.actorCount;
+  const start = now.toMillis();
+  for (const scenarioId of properties.scenarioId.enum) {
+    const authored = cuesBetween(scenarioId, start, start,
+      start + 120 * 60000, maximum);
+    for (let count = minimum; count <= maximum; count++) {
+      const cues = cuesBetween(scenarioId, start, start,
+        start + 120 * 60000, count);
+      assert.equal(cues.length, authored.length, scenarioId);
+      assert.deepEqual(cues.map(({atMinute, behavior}) =>
+        ({atMinute, behavior})),
+      authored.map(({atMinute, behavior}) => ({atMinute, behavior})));
+      const roles = new Map<number, number>();
+      for (const [index, cue] of cues.entries()) {
+        assert.ok(cue.actorIndex >= 0 && cue.actorIndex < count, scenarioId);
+        const role = authored[index].actorIndex;
+        if (roles.has(role)) assert.equal(cue.actorIndex, roles.get(role));
+        roles.set(role, cue.actorIndex);
+        if (role < count) assert.equal(cue.actorIndex, role);
+      }
+      assert.equal(new Set(roles.values()).size, roles.size,
+        "Independent scenario roles must not collapse onto one guest");
+      const partitioned = Array.from({length: 120}, (_, minute) =>
+        cuesBetween(scenarioId, start, start + minute * 60000,
+          start + (minute + 1) * 60000, count)).flat();
+      assert.deepEqual(partitioned, cues, scenarioId);
+      const actors = buildRehearsalActors("session-1", count, 42, now);
+      const batched = applyRehearsalCues(actors, cues, now);
+      const stepped = partitioned.reduce((current, cue) =>
+        applyRehearsalCues(current, [cue], now), actors);
+      assert.deepEqual(batched, stepped, scenarioId);
+    }
+  }
+});
+
+test("default roster includes both capacity-scenario guests", () => {
+  const start = now.toMillis();
+  const cues = cuesBetween("rosterAndCapacity", start, start,
+    start + 15 * 60000, 12);
+  assert.deepEqual(cues, [
+    {atMinute: 12, behavior: "leaveEarly", actorIndex: 4},
+    {atMinute: 13, behavior: "walkIn", actorIndex: 0},
+  ]);
+  const actors = buildRehearsalActors("session-1", 12, 42, now);
+  const next = applyRehearsalCues(actors, cues, now);
+  assert.equal(next[4].status, "departed");
+  assert.equal(next[0].status, "walkIn");
+  assert.equal(next.filter((actor) => actor.status === "expected").length, 10);
+  assert.ok(actors.every((actor) => actor.status === "expected"));
+});
+
+test("small rosters retain one guest across exit and return", () => {
+  const start = now.toMillis();
+  const actors = buildRehearsalActors("session-1", 2, 42, now);
+  const exit = cuesBetween("earlyExitAndReturn", start, start,
+    start + 20 * 60000, 2);
+  const returning = cuesBetween("earlyExitAndReturn", start,
+    start + 20 * 60000, start + 40 * 60000, 2);
+  assert.equal(exit[0].actorIndex, returning[0].actorIndex);
+  const departed = applyRehearsalCues(actors, exit, now);
+  assert.equal(departed[0].status, "departed");
+  const restored = applyRehearsalCues(departed, returning, now);
+  assert.equal(restored[0].status, "returned");
+  assert.equal(restored[1].status, "expected");
+});
+
+test("clock batches preserve earlier effects on the same guest", () => {
+  const actors = buildRehearsalActors("session-1", 2, 42, now);
+  const next = applyRehearsalCues(actors, [
+    {atMinute: 2, behavior: "leaveEarly", actorIndex: 0},
+    {atMinute: 1, behavior: "arrive", actorIndex: 0},
+  ], now);
+  assert.equal(next[0].status, "departed");
+  assert.equal(next[0].confirmedLayoutUnitId, actors[0].layoutUnitId);
+  assert.equal(actors[0].status, "expected");
+  assert.equal(actors[0].confirmedLayoutUnitId, null);
+  assert.deepEqual(next[1], actors[1]);
+});
+
+test("scenario scheduling rejects unsupported or missing rosters", () => {
+  const start = now.toMillis();
+  for (const count of [0, 1, 1.5, 51, NaN, Infinity]) {
+    assert.throws(() => cuesBetween("smoothRun", start, start,
+      start + 15 * 60000, count));
+  }
+  assert.throws(() => applyRehearsalCues([], [
+    {atMinute: 1, behavior: "arrive", actorIndex: 0},
+  ], now));
 });
 
 test("behavior simulation retains privacy and safety state", () => {

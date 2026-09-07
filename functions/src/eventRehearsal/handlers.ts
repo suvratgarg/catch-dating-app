@@ -87,6 +87,7 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   actorAtMoment,
   applyRehearsalBehavior,
+  applyRehearsalCues,
   applyRehearsalGuestAction,
   applyRehearsalSpatialAction,
   buildRehearsalActors,
@@ -297,31 +298,24 @@ export async function controlEventRehearsalHandler(
         "EventRehearsalActorDocument"
       ),
     })).sort((a, b) => a.value.actorId.localeCompare(b.value.actorId));
-    const cueMap = new Map<number, ReturnType<typeof cuesBetween>[number]>();
-    if (data.action === "advanceClock") {
-      for (const cue of cuesBetween(
-        session.scenarioId,
-        session.virtualStartedAt.toMillis(),
-        session.virtualNow.toMillis(),
-        resolved.virtualNowMillis
-      )) {
-        cueMap.set(cue.actorIndex, cue);
-      }
-    }
-    for (const [index, actor] of actorDocuments.entries()) {
-      const cue = cueMap.get(index);
-      const atMoment = actorAtMoment(
-        actor.value,
-        momentForStep(resolved.activeStepIndex),
-        now
+    if (actorDocuments.length !== session.actorCount) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Practice guests are missing. Reset this rehearsal before continuing."
       );
-      const next = cue ? applyRehearsalBehavior(
-        atMoment,
-        cue.behavior,
-        actorDocuments.map((item) => item.value.actorId),
-        now
-      ) : atMoment;
-      tx.set(actor.ref, next);
+    }
+    const cues = data.action === "advanceClock" ? cuesBetween(
+      session.scenarioId,
+      session.virtualStartedAt.toMillis(),
+      session.virtualNow.toMillis(),
+      resolved.virtualNowMillis,
+      session.actorCount
+    ) : [];
+    const nextActors = applyRehearsalCues(actorDocuments.map((actor) =>
+      actorAtMoment(actor.value, momentForStep(resolved.activeStepIndex), now)
+    ), cues, now);
+    for (const [index, actor] of actorDocuments.entries()) {
+      tx.set(actor.ref, nextActors[index]);
     }
     tx.create(actionRef, actionDocument({
       sessionId: data.sessionId,

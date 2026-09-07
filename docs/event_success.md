@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.58.0
+version: 1.59.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -117,6 +117,19 @@ An explicit arrival action restores that physical fact. Host and guest callable
 projections carry connection state separately, with native attention counts and
 the guest connection notice retaining that distinction. The new assistance
 policy/command rehearsal adapter remains separate integration work.
+
+Scheduled rehearsal behaviors now resolve their guests against the configured
+2–50-person roster. Existing guest indices remain stable when present; roles
+outside a smaller roster use distinct available guests. Mapping uses the whole
+scenario, so exit/return and disconnect/reconnect pairs retain the same guest
+across separate clock advances. The default 12-person roster therefore includes
+the capacity scenario's walk-in instead of silently dropping its fifteenth-guest
+cue. Clock jumps apply every crossed behavior in time order, preserving earlier
+state changes. An incomplete stored roster blocks control until reset. Tests
+cover every scenario and supported roster size, partitioned clock advances and
+rehearsal-only state; scenarios driven by manual Host actions gain no invented
+automatic cues. This changes existing rehearsal execution without new schemas
+or live-event effects.
 
 `eventRehearsal/assistanceMessages.ts` now provides pure transitions over the
 existing typed message record for practice outreach, delivery outcomes and

@@ -209,13 +209,53 @@ export function cuesBetween(
   scenarioId: EventRehearsalDocument["scenarioId"],
   startMillis: number,
   fromMillis: number,
-  toMillis: number
+  toMillis: number,
+  actorCount: number
 ): ScenarioCue[] {
+  if (!Number.isInteger(actorCount) || actorCount < 2 ||
+      actorCount > REHEARSAL_MAX_ACTORS) {
+    throw new Error("Rehearsal scenarios need 2–50 practice guests.");
+  }
+  // Resolve the whole scenario before filtering time. Paired cues must keep
+  // the same guest even when the clock crosses them in separate requests.
+  const cues = scenarioCues[scenarioId];
+  const roles = [...new Set(cues.map((cue) => cue.actorIndex))];
+  const occupied = new Set(roles.filter((index) => index < actorCount));
+  const assignments = new Map<number, number>();
+  for (const role of roles) {
+    let index = role;
+    if (index >= actorCount) {
+      index = 0;
+      while (occupied.has(index)) index++;
+      if (index >= actorCount) {
+        throw new Error("Rehearsal scenario needs more distinct guests.");
+      }
+    }
+    occupied.add(index);
+    assignments.set(role, index);
+  }
   const fromMinute = Math.floor((fromMillis - startMillis) / 60000);
   const toMinute = Math.floor((toMillis - startMillis) / 60000);
-  return scenarioCues[scenarioId].filter(
+  return cues.filter(
     (cue) => cue.atMinute > fromMinute && cue.atMinute <= toMinute
-  );
+  ).map((cue) => ({...cue, actorIndex: assignments.get(cue.actorIndex)!}));
+}
+
+/** Apply every crossed cue in time order, retaining earlier state changes. */
+export function applyRehearsalCues(
+  actors: EventRehearsalActorDocument[],
+  cues: ScenarioCue[],
+  now: FirebaseFirestore.Timestamp
+): EventRehearsalActorDocument[] {
+  const next = [...actors];
+  const actorIds = actors.map((actor) => actor.actorId);
+  for (const cue of [...cues].sort((a, b) => a.atMinute - b.atMinute)) {
+    const actor = next[cue.actorIndex];
+    if (!actor) throw new Error("Rehearsal scenario guest is unavailable.");
+    next[cue.actorIndex] = applyRehearsalBehavior(
+      actor, cue.behavior, actorIds, now);
+  }
+  return next;
 }
 
 /** Applies a synthetic behavior to an actor while retaining safety state. */
