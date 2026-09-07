@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -129,6 +130,7 @@ class WhereStep extends ConsumerWidget {
                   : null,
               builder: (field) => CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.mapPicker,
                   title: context.l10n.hostsWhereStepLabelMeetingLocation,
                   body: startingPoint == null
@@ -144,6 +146,7 @@ class WhereStep extends ConsumerWidget {
               ),
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.meetingPoint,
               title: context.l10n.hostsWhereStepTitleLocationName,
               contract: CatchContractConstraints
@@ -167,6 +170,7 @@ class WhereStep extends ConsumerWidget {
               },
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.locationDetails,
               title: context.l10n.hostsWhereStepTitleExtraDirections,
               contract: CatchContractConstraints
@@ -235,6 +239,7 @@ class HostSavedPlacesSection extends StatelessWidget {
           CatchLocalizedErrorBanner(loadError!, context: AppErrorContext.event),
         for (final venue in venues)
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: venue.label,
             body: venue.meetingLocation.address ?? venue.meetingLocation.name,
             valueText: selectedVenueId == venue.venueId
@@ -245,6 +250,7 @@ class HostSavedPlacesSection extends StatelessWidget {
             onTap: saving ? null : () => onVenueSelected(venue),
           ),
         CatchField.action(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.add,
           status: saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
           title: selectedVenueId == null

@@ -1004,6 +1004,7 @@ class _EventSuccessOutcomeRecorderState
               children: [
                 for (var index = 0; index < widget.units.length; index++)
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'event_success.outcome.${widget.nextRoundIndex}.${widget.units[index].id}',
                     ),

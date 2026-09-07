@@ -590,21 +590,25 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 title: 'Running',
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.speedOutlined,
                     title: 'Pace range',
                     body: '9:00-9:00/km',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.straightenOutlined,
                     title: 'Preferred distances',
                     body: '5 km, 10 km, 21 km',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.directionsRunOutlined,
                     title: 'Why I event',
                     body: 'Weight loss',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.wbTwilightOutlined,
                     title: 'Favorite event times',
                     body: 'Early morning, Morning',
@@ -628,11 +632,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 first: true,
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.formatQuoteRounded,
                     title: 'A perfect event with me looks like...',
                     body: 'Catch me if you can',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.formatQuoteRounded,
                     title: 'After an event, you can usually find me...',
                     body: 'ABCD',
@@ -657,11 +663,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 ),
                 children: [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.shieldOutlined,
                     title: 'Blocked users',
                     valueText: '0',
                   ),
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.visibilityOutlined,
                     title: 'Who can see you',
                     valueText: 'Runners on my events',
@@ -1007,11 +1015,13 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
                     UpdateUserProfilePatch(displayName: value as String),
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 icon: CatchIcons.cakeOutlined,
                 title: 'Date of birth',
                 body: '16/07/1994 (31 years)',
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 icon: CatchIcons.groupOutlined,
                 title: 'Gender',
                 body: 'Woman',
@@ -1376,6 +1386,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
           child: Column(
             children: [
               CatchField.choices<Language>(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
                 itemLabel: (value) => value.label,
@@ -1384,6 +1395,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 onSelectionChanged: (_) {},
               ),
               CatchField.choices<Language>(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
                 itemLabel: (value) => value.label,
@@ -1559,6 +1571,7 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: CatchFormRowList<_WidgetbookFormPatch>(
+            fieldCopy: catchFieldCopy(context.l10n),
             title: 'About you',
             rows: [
               CatchFormReadRow<_WidgetbookFormPatch>(

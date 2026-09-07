@@ -21,6 +21,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchFormRowList<_Patch>(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           title: 'About you',
           rows: [
             CatchFormReadRow<_Patch>(
@@ -43,6 +44,7 @@ void main() {
               icon: CatchIcons.tuneRounded,
               label: 'Custom',
               build: (context, scope) => CatchField.control(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Custom',
                 open: scope.isExpanded,
                 onOpenChanged: (_) => scope.toggle(),
@@ -126,6 +128,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchFormRowList<_Patch>(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           rows: [
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
@@ -171,6 +174,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchFormRowList<_Patch>(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           textCommitMode: CatchFormTextCommitMode.onBlur,
           rows: [
             CatchFormTextRow<_Patch>(

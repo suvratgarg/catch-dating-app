@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -137,6 +138,7 @@ class HostTeamManagementSection extends ConsumerWidget {
       children: [
         if (canManage && actionError != null)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostTeamManagementSectionTitleHostTeam,
             body: mutationErrorMessage(
               actionError,
@@ -148,6 +150,7 @@ class HostTeamManagementSection extends ConsumerWidget {
           ),
         if (hosts.isEmpty)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .hostsHostTeamManagementSectionTextNoHostTeamMembers,
@@ -166,6 +169,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             ),
         if (canManage)
           CatchField.add(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
             icon: CatchIcons.personAddAlt1Rounded,
             onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
@@ -288,6 +292,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: host.displayName,
         body: host.role == ClubHostRole.owner
             ? context.l10n.clubsClubIdentityAtomsLabelOwner
@@ -440,6 +445,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
         children: [
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title:
                   context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
               contract: CatchContractConstraints

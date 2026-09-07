@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -123,6 +124,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.number:
         field = _HostFormSchemaBoundary(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             initialValue: switch (answer) {
@@ -154,6 +156,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
         };
         field = _HostFormSchemaBoundary(
           child: CatchField.choices<String>(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             contract: CatchContractConstraints
@@ -180,6 +183,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.acknowledgement:
         field = _HostFormSchemaBoundary(
           child: CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
@@ -193,6 +197,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.file:
         field = _HostFormSchemaBoundary(
           child: CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
@@ -205,6 +210,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.signature:
         field = _HostFormSchemaBoundary(
           child: CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,

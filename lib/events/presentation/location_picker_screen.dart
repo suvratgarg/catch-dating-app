@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_controller.dart';
@@ -438,6 +439,7 @@ class PlaceSearchPanel extends StatelessWidget {
       children: [
         CatchFieldLanes.single(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title:
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
             contract:

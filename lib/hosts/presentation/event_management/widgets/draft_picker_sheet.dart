@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -217,6 +218,7 @@ class DraftCard extends StatelessWidget {
 
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: draft.summary,
         body: context.l10n.hostsDraftPickerSheetTextSavedTouppercase(
           toUpperCase: _formatRelative(draft.savedAt).toUpperCase(),

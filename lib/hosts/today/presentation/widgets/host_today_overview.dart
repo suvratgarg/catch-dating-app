@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -519,6 +520,7 @@ class HostTodayAttentionCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: data.title,
         body: data.body,
         emphasis: CatchFieldEmphasis.title,
@@ -560,6 +562,7 @@ class HostTodayEventRow extends StatelessWidget {
               '${data.event.startTime.day} ${data.monthLabel}';
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: data.event.title,
         body: data.event.locationName,
         emphasis: CatchFieldEmphasis.title,

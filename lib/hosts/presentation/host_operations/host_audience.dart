@@ -76,6 +76,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                   )
                 else ...[
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title:
                         connection.verifiedName ??
                         context.l10n.hostsHostAudienceWhatsappSender,
@@ -83,6 +84,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                     valueText: _connectionStatusLabel(context, connection),
                   ),
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostAudienceTemplates,
                     body: context.l10n.hostsHostAudienceApprovedTemplates(
                       count: setup.approvedTemplates.length,
@@ -117,6 +119,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                       setup.approvedTemplates.isNotEmpty) ...[
                     gapH16,
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostsHostAudienceTestPhone,
                       contract: CatchContractConstraints
                           .sendOrganizerWhatsappTestCallablePayloadToE164,

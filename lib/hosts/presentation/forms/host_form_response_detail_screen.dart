@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -101,6 +102,7 @@ class _HostFormResponseDetailScreenState
                       ),
                       for (final asset in answer.assetDownloads)
                         CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
                           title: context.l10n.hostFormResponseDownloadFile(
                             fileName: asset.fileName,
                           ),
@@ -115,6 +117,7 @@ class _HostFormResponseDetailScreenState
               gapH24,
               CatchFieldLanes.single(
                 child: CatchField.control(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostAudienceSubmissionDetails,
                   contractExemption:
                       'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
@@ -277,6 +280,7 @@ class _HostFormResponseDetailScreenState
                     children: [
                       for (final field in preview.fields)
                         CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
                           title: field.label,
                           valueText:
                               field.value?.toString() ??
@@ -321,6 +325,7 @@ class _HostFormResponseDetailScreenState
                       children: [
                         for (final event in events)
                           CatchField.nav(
+                            copy: catchFieldCopy(context.l10n),
                             title: event.title,
                             body: AppTimeFormatters.dateTime(event.startTime),
                             onTap: () => Navigator.of(dialogContext).pop(event),
@@ -432,20 +437,24 @@ class _ResponseTechnicalDetails extends StatelessWidget {
   Widget build(BuildContext context) => CatchSection.fieldRows(
     children: [
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseIdentitySection,
         valueText: _identityKindLabel(context, detail.response.identityKind),
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseSource,
         valueText:
             detail.response.sourceLabel ??
             context.l10n.hostFormResponseDirectSource,
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseConsent,
         valueText: detail.consentVersion,
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseCompletionTime,
         valueText: _duration(detail.completionMillis),
       ),
@@ -568,6 +577,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
       if (detail.applicationId case final id? when !submitted)
         CatchFieldLanes.single(
           child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostAudienceReviewApplication,
             onTap: () => context.pushNamed(
               Routes.hostApplicationDetailScreen.name,
@@ -580,6 +590,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
         if (detail.contactId case final id?)
           CatchFieldLanes.single(
             child: CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostApplicationOpenPerson,
               onTap: () => context.pushNamed(
                 Routes.hostCustomerDetailScreen.name,
@@ -594,6 +605,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
             ))
           CatchFieldLanes.single(
             child: CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-form-response-convert-crm'),
               title: context.l10n.hostFormConvertCrm,
               onTap: converting != null
@@ -608,6 +620,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
           ))
         CatchFieldLanes.single(
           child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormConvertAttendee,
             onTap: converting != null
                 ? null

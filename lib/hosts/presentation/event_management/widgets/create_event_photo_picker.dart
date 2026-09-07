@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -36,6 +37,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
           child: KeyedSubtree(
             key: const ValueKey('create_event.inherited_organizer_logo'),
             child: CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('create_event.add_event_photos'),
               title: context
                   .l10n

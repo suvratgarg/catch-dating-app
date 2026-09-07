@@ -626,6 +626,7 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
             WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           ),
           child: CatchFormReviewBody(
+            fieldCopy: catchFieldCopy(context.l10n),
             statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
             message: 'Review the event before publishing.',
             onStepSelected: _ignoreInt,

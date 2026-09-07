@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -224,6 +225,7 @@ class _HostWhatsappThreadBody extends StatelessWidget {
       gapH8,
       CatchFieldLanes.single(
         child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostInboxWhatsappReplyHint,
           contract: CatchContractConstraints
               .sendOrganizerWhatsappReplyCallablePayloadBody,

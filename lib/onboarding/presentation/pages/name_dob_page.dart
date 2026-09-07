@@ -157,6 +157,7 @@ class OnboardingNameDobStep extends StatelessWidget {
             first: true,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.onboardingNameDobPageTitleFirstName,
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentFirstName,
@@ -172,6 +173,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: state.validateFirstName,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.onboardingNameDobPageTitleLastName,
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentLastName,
@@ -186,6 +188,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: state.validateLastName,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 key: OnboardingFormKeys.dateOfBirth,
                 title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
                 contract: CatchContractConstraints
@@ -200,6 +203,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: (_) => state.validateDateOfBirth(),
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 key: OnboardingFormKeys.phone,
                 title: context.l10n.onboardingNameDobPageTitlePhone,
                 contract:

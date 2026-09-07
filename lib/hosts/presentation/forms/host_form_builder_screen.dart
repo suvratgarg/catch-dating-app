@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -444,14 +445,17 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         child: CatchSection.containedFieldRows(
           children: [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormQuestionsTitle,
               body: context.l10n.hostFormQuestionCount(count: questionCount),
             ),
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormIdentityLabel,
               body: hostFormIdentityLabel(context, definition.identityPolicy),
             ),
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormConsequencesTitle,
               body: _builderConsequenceSummary(
                 context,
@@ -462,11 +466,13 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               bodyMaxLines: 8,
             ),
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormMessagingPermissionTitle,
               body: context.l10n.hostFormConsequenceNoMessagingPermission,
               bodyMaxLines: 4,
             ),
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormAvailability,
               body: _availabilitySummary(context, definition),
             ),
@@ -768,6 +774,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
           children: [
             if (form.activeVersionId != null)
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostFormsAnalyticsAction,
                 icon: CatchIcons.insightsOutlined,
                 emphasis: CatchFieldEmphasis.title,
@@ -778,12 +785,14 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
                 ),
               ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormSettings,
               icon: CatchIcons.settingsOutlined,
               emphasis: CatchFieldEmphasis.title,
               onTap: onSettings,
             ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormsAutomationsAction,
               icon: CatchIcons.autoAwesomeOutlined,
               emphasis: CatchFieldEmphasis.title,
@@ -909,6 +918,7 @@ class _CompactQuestionsStep extends StatelessWidget {
         CatchSection.fieldRows(
           children: [
             CatchField.add(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormAddSection,
               icon: CatchIcons.addRounded,
               onTap: notifier.addSection,
@@ -931,6 +941,7 @@ class _CompactFormSettingsEntry extends StatelessWidget {
   Widget build(BuildContext context) => CatchSection.fieldRows(
     children: [
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey('host-form-settings-entry'),
         title: context.l10n.hostFormSettings,
         icon: CatchIcons.settingsOutlined,
@@ -942,6 +953,7 @@ class _CompactFormSettingsEntry extends StatelessWidget {
         ),
       ),
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostAudienceQuestionPreview,
         icon: CatchIcons.visibilityOutlined,
         emphasis: CatchFieldEmphasis.title,
@@ -1138,6 +1150,7 @@ class _CompactQuestionRows extends StatelessWidget {
             children: [
               CatchFieldLanes.single(
                 child: CatchField.sortable(
+                  copy: catchFieldCopy(context.l10n),
                   title: question.label,
                   metadata: _questionSummary(context, question),
                   reorderHandle: section.questions.length > 1
@@ -1193,6 +1206,7 @@ class _CompactQuestionRows extends StatelessWidget {
       ),
       CatchFieldLanes.single(
         child: CatchField.add(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('form-section-${section.sectionId}-add-question'),
           title: context.l10n.hostFormAddQuestion,
           icon: CatchIcons.addRounded,
@@ -1240,6 +1254,7 @@ Future<void> _showSectionEditorSheet(
         child: CatchSection.containedFieldRows(
           children: [
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey(
                 'section-title-sheet-${currentSection.sectionId}-${currentSection.title}',
               ),
@@ -1453,6 +1468,7 @@ class _FormSettings extends StatelessWidget {
         first: true,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-title-${definition.title}'),
             title: context.l10n.hostFormTitleLabel,
             initialValue: definition.title,
@@ -1461,6 +1477,7 @@ class _FormSettings extends StatelessWidget {
             onBlur: (value) => notifier.updateMetadata(title: value.trim()),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-description-${definition.description}'),
             title: context.l10n.hostFormDescriptionLabel,
             initialValue: definition.description,
@@ -1474,6 +1491,7 @@ class _FormSettings extends StatelessWidget {
             ),
           ),
           CatchField.select<HostFormPurpose>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormPurposeLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionPurpose,
@@ -1490,6 +1508,7 @@ class _FormSettings extends StatelessWidget {
         title: context.l10n.hostAudienceFormAccess,
         children: [
           CatchField.select<HostFormIdentityPolicy>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormIdentityLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionIdentityPolicy,
@@ -1501,6 +1520,7 @@ class _FormSettings extends StatelessWidget {
                 notifier.updateMetadata(identityPolicy: value),
           ),
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormIdentityConsequenceTitle,
             body:
                 '${_identityConsequence(context, definition.identityPolicy)}. '
@@ -1514,6 +1534,7 @@ class _FormSettings extends StatelessWidget {
         title: context.l10n.hostFormAppearance,
         children: [
           CatchField.select<HostFormAppearancePreset>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormAppearancePreset,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionAppearancePreset,
@@ -1526,6 +1547,7 @@ class _FormSettings extends StatelessWidget {
           ),
           if (definition.appearancePreset == HostFormAppearancePreset.activity)
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey('form-activity-${definition.activityKind}'),
               title: context.l10n.hostFormActivityKind,
               initialValue: definition.activityKind,
@@ -1557,6 +1579,7 @@ class _FormSettings extends StatelessWidget {
                 notifier.updateMetadata(closesAt: value, setClosesAt: true),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-limit-${definition.responseLimit}'),
             title: context.l10n.hostFormResponseLimit,
             initialValue: definition.responseLimit?.toString(),
@@ -1569,6 +1592,7 @@ class _FormSettings extends StatelessWidget {
             ),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-closed-${definition.closedMessage}'),
             title: context.l10n.hostFormClosedMessage,
             initialValue: definition.closedMessage,
@@ -1587,6 +1611,7 @@ class _FormSettings extends StatelessWidget {
         title: context.l10n.hostFormConsent,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-consent-${definition.consentCopy}'),
             title: context.l10n.hostFormConsentCopy,
             initialValue: definition.consentCopy,
@@ -1596,6 +1621,7 @@ class _FormSettings extends StatelessWidget {
                 notifier.updateMetadata(consentCopy: value.trim()),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-consent-version-${definition.consentVersion}'),
             title: context.l10n.hostFormConsentVersion,
             initialValue: definition.consentVersion,
@@ -1604,6 +1630,7 @@ class _FormSettings extends StatelessWidget {
                 notifier.updateMetadata(consentVersion: value.trim()),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-retention-${definition.retentionCopy}'),
             title: context.l10n.hostFormRetentionCopy,
             initialValue: definition.retentionCopy,
@@ -1619,6 +1646,7 @@ class _FormSettings extends StatelessWidget {
         title: context.l10n.hostAudienceAfterSubmission,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('form-completion-${definition.completionTitle}'),
             title: context.l10n.hostFormCompletionTitleLabel,
             initialValue: definition.completionTitle,
@@ -1628,6 +1656,7 @@ class _FormSettings extends StatelessWidget {
                 notifier.updateMetadata(completionTitle: value.trim()),
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey(
               'form-completion-message-${definition.completionMessage}',
             ),
@@ -1643,6 +1672,7 @@ class _FormSettings extends StatelessWidget {
             ),
           ),
           CatchField.select<HostFormCompletionAction>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormCompletionActionLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionCompletionActionKind,
@@ -1660,6 +1690,7 @@ class _FormSettings extends StatelessWidget {
           ),
           if (definition.completionAction != HostFormCompletionAction.none)
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey(
                 'form-completion-label-${definition.completionActionLabel}',
               ),
@@ -1675,6 +1706,7 @@ class _FormSettings extends StatelessWidget {
           if (definition.completionAction ==
               HostFormCompletionAction.externalUrl)
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey(
                 'form-completion-url-${definition.completionActionUrl}',
               ),
@@ -1700,6 +1732,7 @@ class _FormSettings extends StatelessWidget {
         children: [
           for (final ruleEntry in definition.logicRules.indexed)
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: _logicRuleSummary(context, definition, ruleEntry.$2),
               action: IconButton(
                 tooltip: context.l10n.hostFormRemoveRule,
@@ -1709,6 +1742,7 @@ class _FormSettings extends StatelessWidget {
               onTap: null,
             ),
           CatchField.add(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormAddRule,
             onTap: () => _showLogicRuleBuilder(
               context,
@@ -1743,6 +1777,7 @@ class _SectionEditor extends StatelessWidget {
     first: sectionIndex == 0,
     children: [
       CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('section-title-${section.sectionId}-${section.title}'),
         title: context.l10n.hostFormSectionTitleLabel,
         initialValue: section.title,
@@ -1755,12 +1790,14 @@ class _SectionEditor extends StatelessWidget {
       ),
       for (final questionEntry in section.questions.indexed)
         CatchField.nav(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey(questionEntry.$2.questionId),
           title: questionEntry.$2.label,
           body: _questionSummary(context, questionEntry.$2),
           onTap: () => onSelectionChanged(sectionIndex, questionEntry.$1),
         ),
       CatchField.add(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormAddQuestion,
         icon: CatchIcons.addRounded,
         onTap: () => _showQuestionTypePicker(
@@ -1769,6 +1806,7 @@ class _SectionEditor extends StatelessWidget {
         ),
       ),
       CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormMoveSectionUp,
         icon: CatchIcons.arrowUpwardRounded,
         onTap: sectionIndex == 0
@@ -1776,6 +1814,7 @@ class _SectionEditor extends StatelessWidget {
             : () => notifier.moveSection(sectionIndex, -1),
       ),
       CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormMoveSectionDown,
         icon: CatchIcons.arrowDownwardRounded,
         onTap: sectionIndex == sectionCount - 1
@@ -1783,6 +1822,7 @@ class _SectionEditor extends StatelessWidget {
             : () => notifier.moveSection(sectionIndex, 1),
       ),
       CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormRemoveSection,
         icon: CatchIcons.deleteOutlineRounded,
         tone: CatchFieldTone.danger,
@@ -1820,6 +1860,7 @@ class _QuestionEditFields extends StatelessWidget {
     final primaryFields = <Widget>[
       CatchFieldLanes.single(
         child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey(
             'question-label-${question.questionId}-${question.label}',
           ),
@@ -1834,6 +1875,7 @@ class _QuestionEditFields extends StatelessWidget {
         ),
       ),
       CatchField.select<HostFormQuestionKind>(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormQuestionType,
         contract: CatchContractConstraints
             .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
@@ -1846,6 +1888,7 @@ class _QuestionEditFields extends StatelessWidget {
       ),
       if (sections.length > 1)
         CatchField.select<int>(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey(
             'question-section-${question.questionId}-$sectionIndex',
           ),
@@ -1869,6 +1912,7 @@ class _QuestionEditFields extends StatelessWidget {
         ),
       CatchFieldLanes.single(
         child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey(
             'question-help-${question.questionId}-${question.helpText}',
           ),
@@ -1887,6 +1931,7 @@ class _QuestionEditFields extends StatelessWidget {
       ),
       CatchFieldLanes.single(
         child: CatchField.toggle(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostFormQuestionRequired,
           value: question.required,
           contractExemption: 'Requiredness is part of the form definition.',
@@ -1900,6 +1945,7 @@ class _QuestionEditFields extends StatelessWidget {
     ];
     final advancedFields = <Widget>[
       CatchField.select<HostFormPrivacyClass>(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormPrivacyLabel,
         contract: CatchContractConstraints
             .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
@@ -1914,6 +1960,7 @@ class _QuestionEditFields extends StatelessWidget {
         ),
       ),
       CatchField.select<HostFormPrefillPolicy>(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormPrefillLabel,
         contract: CatchContractConstraints
             .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
@@ -1928,6 +1975,7 @@ class _QuestionEditFields extends StatelessWidget {
         ),
       ),
       CatchField.select<HostFormPresentation>(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormPresentationLabel,
         contract: CatchContractConstraints
             .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
@@ -1944,6 +1992,7 @@ class _QuestionEditFields extends StatelessWidget {
       for (final optionEntry in question.options.indexed)
         CatchFieldLanes.single(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey(
               'question-option-${question.questionId}-${optionEntry.$2.optionId}',
             ),
@@ -1963,6 +2012,7 @@ class _QuestionEditFields extends StatelessWidget {
       if (question.options.isNotEmpty)
         CatchFieldLanes.single(
           child: CatchField.add(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormAddOption,
             onTap: () => notifier.addOption(sectionIndex, questionIndex),
           ),
@@ -1980,6 +2030,7 @@ class _QuestionEditFields extends StatelessWidget {
         ...primaryFields,
         if (compact)
           CatchField.control(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormAdvancedQuestionSettings,
             body: context.l10n.hostFormAdvancedQuestionSettingsHelp,
             contractExemption:
@@ -2071,6 +2122,7 @@ class _QuestionValidationFormSchemaFields extends StatelessWidget {
           onChanged: (value) => update(validation.copyWith(maxLength: value)),
         ),
         CatchField.select<HostFormPatternPreset>(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostFormPatternLabel,
           contract: CatchContractConstraints
               .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
@@ -2088,6 +2140,7 @@ class _QuestionValidationFormSchemaFields extends StatelessWidget {
         if (validation.patternPreset != null)
           CatchFieldLanes.single(
             child: CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormPatternNone,
               icon: CatchIcons.closeRounded,
               onTap: () => update(validation.copyWith(patternPreset: null)),
@@ -2235,6 +2288,7 @@ class _NumberFormSchemaField extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: CatchField.input(
+      copy: catchFieldCopy(context.l10n),
       key: ValueKey('$fieldKey-$questionId-$value'),
       title: title,
       initialValue: value?.toString(),
@@ -2273,6 +2327,7 @@ class _TextValidationFormSchemaField extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: CatchField.input(
+      copy: catchFieldCopy(context.l10n),
       key: ValueKey('$fieldKey-$questionId-$value'),
       title: title,
       initialValue: value,
@@ -2311,6 +2366,7 @@ class _FormOutline extends StatelessWidget {
         children: [
           for (final sectionEntry in definition.sections.indexed) ...[
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: sectionEntry.$2.title,
               body: context.l10n.hostFormQuestionCount(
                 count: sectionEntry.$2.questions.length,
@@ -2323,6 +2379,7 @@ class _FormOutline extends StatelessWidget {
             ),
             for (final questionEntry in sectionEntry.$2.questions.indexed)
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: questionEntry.$2.label,
                 body: hostFormQuestionKindLabel(context, questionEntry.$2.kind),
                 emphasis:
@@ -2417,6 +2474,7 @@ Future<void> _showQuestionTypePicker(
                 children: [
                   for (final value in recommended)
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       title: hostFormQuestionKindLabel(context, value),
                       onTap: () => Navigator.of(sheetContext).pop(value),
                     ),
@@ -2428,6 +2486,7 @@ Future<void> _showQuestionTypePicker(
                 children: [
                   for (final value in more)
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       title: hostFormQuestionKindLabel(context, value),
                       onTap: () => Navigator.of(sheetContext).pop(value),
                     ),
@@ -2458,6 +2517,7 @@ class _DateFormSchemaField extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: CatchField.action(
+      copy: catchFieldCopy(context.l10n),
       title: title,
       body: value == null
           ? context.l10n.hostFormDateNotSet
@@ -2728,6 +2788,7 @@ Future<void> _showLogicRuleBuilder(
             child: CatchSection.containedFieldRows(
               children: [
                 CatchField.select<String>(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('logic-source-$sourceId'),
                   title: context.l10n.hostFormRuleQuestion,
                   contract: CatchContractConstraints
@@ -2748,6 +2809,7 @@ Future<void> _showLogicRuleBuilder(
                   }),
                 ),
                 CatchField.select<HostFormLogicOperator>(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('logic-operator-$operator-$sourceId'),
                   title: context.l10n.hostFormRuleOperator,
                   contract: CatchContractConstraints
@@ -2762,6 +2824,7 @@ Future<void> _showLogicRuleBuilder(
                 ),
                 if (needsValue && choiceValues.isNotEmpty)
                   CatchField.select<String>(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey('logic-value-$sourceId-$expectedChoice'),
                     title: context.l10n.hostFormRuleValue,
                     contract: CatchContractConstraints
@@ -2782,6 +2845,7 @@ Future<void> _showLogicRuleBuilder(
                   )
                 else if (needsValue)
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey('logic-value-$sourceId'),
                     title: context.l10n.hostFormRuleValue,
                     initialValue: expectedText,
@@ -2796,6 +2860,7 @@ Future<void> _showLogicRuleBuilder(
                     onChanged: (value) => setState(() => expectedText = value),
                   ),
                 CatchField.select<HostFormLogicAction>(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('logic-action-$action'),
                   title: context.l10n.hostFormRuleAction,
                   contract: CatchContractConstraints
@@ -2810,6 +2875,7 @@ Future<void> _showLogicRuleBuilder(
                 ),
                 if (questionAction && targetQuestions.isNotEmpty)
                   CatchField.select<String>(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostFormRuleTargetQuestion,
                     contract: CatchContractConstraints
                         .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
@@ -2826,6 +2892,7 @@ Future<void> _showLogicRuleBuilder(
                   ),
                 if (sectionAction && targetSections.isNotEmpty)
                   CatchField.select<String>(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostFormRuleTargetSection,
                     contract: CatchContractConstraints
                         .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,

@@ -1215,6 +1215,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
     final selected = await showCatchFormStepOverview(
+      fieldCopy: catchFieldCopy(context.l10n),
       statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
       title: context.l10n.hostsCreateEventOverviewTitle,
@@ -1329,6 +1330,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             expandSoloPrimary: true,
             body: _isReviewing
                 ? CatchFormReviewBody(
+                    fieldCopy: catchFieldCopy(context.l10n),
                     statusLabelBuilder: catchFormStepStatusLabelBuilder(
                       context.l10n,
                     ),

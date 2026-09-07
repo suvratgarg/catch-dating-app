@@ -230,8 +230,8 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final isToggle = _isToggle;
     final toggleStatusValue = switch (widget.status) {
       CatchFieldStatus.idle => null,
-      CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
-      CatchFieldStatus.saved => context.l10n.coreCatchFieldSemanticSaved,
+      CatchFieldStatus.saving => widget.copy.savingSemanticLabel,
+      CatchFieldStatus.saved => widget.copy.savedSemanticLabel,
     };
     final pointerTarget = Listener(
       behavior: HitTestBehavior.opaque,
@@ -282,9 +282,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final actionBar = widget._onSubmit == null
         ? null
         : CatchFieldActionBar(
-            cancelLabel: context.l10n.coreCatchFieldLabelCancel,
-            doneLabel: context.l10n.coreCatchFieldLabelDone,
-            savingLabel: context.l10n.coreCatchFieldLabelSaving,
+            cancelLabel: widget.copy.cancelLabel,
+            doneLabel: widget.copy.doneLabel,
+            savingLabel: widget.copy.savingLabel,
 
             revealTargetKey: _actionBarRevealTargetKey,
             loading: _isSaving,
@@ -443,6 +443,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
   Widget? _buildTrailingSlot(CatchTokens t) {
     if (_isToggle) {
       return CatchFieldTrailing.toggle(
+        copy: widget.copy,
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
         contract: widget.contract,
@@ -455,7 +456,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
     if (_statusLaneActive &&
         !_visibleCommitBarOwnsSavingIndicator &&
         !_hasError) {
-      return CatchFieldTrailing.status(status: _effectiveStatus);
+      return CatchFieldTrailing.status(
+        copy: widget.copy,
+        status: _effectiveStatus,
+      );
     }
     if (!_isSaving && widget.valid && !_hasError) {
       return CatchFieldTrailing.valid(topPadding: 0);
@@ -489,9 +493,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       builder: (_, value, _) {
         if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
         return CatchFieldTrailing.clear(
-          tooltip: context.l10n.coreCatchFieldTooltipClearValue1(
-            value1: _title ?? context.l10n.coreCatchFieldTooltipField,
-          ),
+          tooltip: widget.copy.clearTooltip(_title),
           onPressed: () {
             _controller.clear();
             widget.onChanged?.call('');
@@ -579,13 +581,13 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   String _inlineAddSemanticLabel(String addText) => widget.isOptional
-      ? context.l10n.coreCatchFormFieldLabelLabelLabelOptional(label: addText)
+      ? widget.copy.label.optionalSemantics(addText)
       : addText;
 
   TextSpan _inlineAddTextSpan(CatchTokens t) {
     final addText = _emptyEditableValueText ?? _title ?? '';
     final optionalSuffix = widget.isOptional
-        ? context.l10n.coreCatchFieldTextOptionalSuffix
+        ? widget.copy.label.optionalSuffix
         : null;
     return TextSpan(
       children: [
@@ -709,7 +711,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
     if (widget._contentRow) {
       final hasError = _displayError?.trim().isNotEmpty == true;
       return CatchFieldContentRow(
-        labelCopy: catchFormFieldLabelCopy(context.l10n),
+        labelCopy: widget.copy.label,
 
         title: _title?.trim() ?? '',
         body: _body?.trim() ?? '',
@@ -846,7 +848,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                         children: [
                           Flexible(
                             child: CatchFormFieldLabel.inline(
-                              copy: catchFormFieldLabelCopy(context.l10n),
+                              copy: widget.copy.label,
                               label: labelText,
                               style: effectiveLabelStyle,
                               maxLines: widget.titleMaxLines,
@@ -861,7 +863,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                         ],
                       )
                     : CatchFormFieldLabel.inline(
-                        copy: catchFormFieldLabelCopy(context.l10n),
+                        copy: widget.copy.label,
                         label: labelText,
                         style: effectiveLabelStyle,
                         maxLines: widget.titleMaxLines,

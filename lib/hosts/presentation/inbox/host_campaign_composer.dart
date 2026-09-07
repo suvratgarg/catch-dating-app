@@ -218,6 +218,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceCampaignName,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadName,
@@ -227,6 +228,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               ),
               gapH12,
               CatchField.select<_HostCampaignMessageClass>(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceMessageType,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadMessageClass,
@@ -298,6 +300,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               ),
               gapH8,
               CatchField.select<HostSavedAudience>(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostSavedAudienceFieldLabel,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
@@ -310,6 +313,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               ),
               gapH12,
               CatchField.select<HostWhatsappTemplate>(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceTemplate,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadTemplateId,
@@ -329,6 +333,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               if (_templateUsesInvite(template)) ...[
                 gapH12,
                 CatchField.select<Event>(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
                       .upsertOrganizerCampaignCallablePayloadEventId,
@@ -350,6 +355,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 if (_selectedEvent case final event?) ...[
                   gapH12,
                   CatchField.select<_HostInviteDestination>(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostAudienceInviteDestination,
                     contract: CatchContractConstraints
                         .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
@@ -375,6 +381,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 if (!_isInviteVariable(variable)) ...[
                   gapH12,
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: variable,
                     contractExemption:
                         'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',

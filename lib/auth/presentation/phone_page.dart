@@ -124,6 +124,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                       ),
                       Expanded(
                         child: CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: AuthFormKeys.phoneField,
                           title: l10n.authPhoneFieldLabel,
                           contract: CatchContractConstraints
@@ -237,6 +238,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                 gapW8,
                 Expanded(
                   child: CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: AuthFormKeys.phoneField,
                     title: l10n.authPhoneFieldLabel,
                     contract: CatchContractConstraints

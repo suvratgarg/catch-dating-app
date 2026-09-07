@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +16,14 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const MediaQuery(
-          data: MediaQueryData(disableAnimations: true),
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
           child: Scaffold(
-            body: CatchField.input(title: 'Why Catch?', maxLines: 5),
+            body: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Why Catch?',
+              maxLines: 5,
+            ),
           ),
         ),
       ),
@@ -52,6 +58,7 @@ void main() {
               child: SizedBox(
                 width: 360,
                 child: CatchField.inputActions(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   icon: CatchIcons.formatQuoteRounded,
                   title: 'A perfect event with me looks like...',
                   controller: controller,

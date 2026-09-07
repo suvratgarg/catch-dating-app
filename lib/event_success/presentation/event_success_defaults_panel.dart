@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -67,6 +69,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
           CatchFieldLanes.divided(
             children: [
               CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
                 title: title,
                 contract: CatchContractConstraints
                     .createClubCallablePayloadHostDefaultsEventSuccessEnabled,

@@ -141,6 +141,7 @@ void _registerCatchPrimitivesCompositionTests() {
             mainAxisSize: MainAxisSize.min,
             children: [
               CatchField.select<CityOption>(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 key: const Key('control-select-menu'),
                 title: 'City',
                 values: defaultCityOptions,

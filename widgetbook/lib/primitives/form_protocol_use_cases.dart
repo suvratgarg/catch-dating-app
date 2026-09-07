@@ -22,6 +22,7 @@ Widget formStepSpecificationStates(BuildContext context) {
     catalogId: 'catch.screen_body.form_step_spec',
     children: [
       CatchFormStepOverview(
+        fieldCopy: catchFieldCopy(context.l10n),
         statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
         onStepSelected: (_) {},
         items: [
@@ -78,6 +79,7 @@ Widget formReviewReadinessStates(BuildContext context) =>
                     style: CatchTextStyles.bodyM(context),
                   ),
                   CatchFormStepOverview(
+                    fieldCopy: catchFieldCopy(context.l10n),
                     statusLabelBuilder: catchFormStepStatusLabelBuilder(
                       context.l10n,
                     ),

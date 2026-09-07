@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -133,6 +134,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
       CatchSection.fieldRows(
         children: [
           CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host.create_event.roster_file'),
             title: context.l10n.hostsCreateEventRosterTitle,
             body: widget.rosterFileName == null
@@ -155,6 +157,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             onTap: widget.onPickRoster,
           ),
           CatchField.choices<EventRuntimeWalkInPolicy>(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.runtimeWalkInPolicy,
             title: context.l10n.hostsEventDetailsStepExternalWalkInTitle,
             contract: CatchContractConstraints
@@ -177,6 +180,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
           Semantics(
             expanded: _showBookingDetails,
             child: CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host.create_event.booking_details'),
               title: context.l10n.hostsCreateEventExternalDetailsTitle,
               body: _externalBookingProviderLabel(
@@ -191,6 +195,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
           ),
           if (_showBookingDetails) ...[
             CatchField.choices<ExternalBookingProvider>(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalBookingProvider,
               title: context.l10n.hostsEventDetailsStepExternalProviderTitle,
               contract: CatchContractConstraints
@@ -212,6 +217,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               icon: CatchIcons.linkOutlined,
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalEventUrl,
               title: context.l10n.hostsEventDetailsStepExternalEventUrlTitle,
               contract: CatchContractConstraints
@@ -238,6 +244,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               },
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalEventId,
               title: context.l10n.hostsEventDetailsStepExternalEventIdTitle,
               contract: CatchContractConstraints

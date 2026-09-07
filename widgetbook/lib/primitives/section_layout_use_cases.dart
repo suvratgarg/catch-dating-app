@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,7 @@ Widget fieldInteractionPlaneLayoutStates(
               child: CatchSection.fieldRows(
                 children: [
                   CatchField.choices<String>(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Reminder',
                     values: const ['Before', 'After'],
                     itemLabel: (value) => value,
@@ -88,6 +91,7 @@ Widget responsiveSectionLayoutStates(BuildContext context) =>
                       child: CatchSection.fieldRows(
                         children: [
                           CatchField.read(
+                            copy: catchFieldCopy(context.l10n),
                             title: index == 0 ? 'Primary' : 'Secondary',
                             body: 'Complete section',
                           ),
@@ -168,8 +172,9 @@ class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
                 CatchResponsiveSectionItem(
                   child: CatchSection.fieldRows(
                     title: 'Section ${index + 1}',
-                    children: const [
+                    children: [
                       CatchField.read(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Detail',
                         body: 'Complete body block',
                       ),

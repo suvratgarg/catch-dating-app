@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -372,28 +373,33 @@ class PaymentReceiptSheet extends StatelessWidget {
                 const CatchDivider.section(),
                 gapH20,
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title:
                       context.l10n.paymentsPaymentHistoryScreenTitlePaymentId,
                   body: payment.paymentId,
                 ),
                 gapH12,
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.paymentsPaymentHistoryScreenTitleOrderId,
                   body: payment.orderId,
                 ),
                 gapH12,
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.paymentsPaymentHistoryScreenTitleEventId,
                   body: payment.eventId,
                 ),
                 gapH12,
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.paymentsPaymentHistoryScreenTitleDate,
                   body: AppTimeFormatters.dateTime(payment.createdAt),
                 ),
                 if (statusPresentation.detail case final detail?) ...[
                   gapH12,
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.paymentsPaymentHistoryScreenTitleStatus,
                     body: detail,
                   ),

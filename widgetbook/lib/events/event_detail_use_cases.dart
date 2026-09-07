@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -985,6 +986,7 @@ Widget eventDetailHairlineListStates(BuildContext context) {
         child: HairlineList(
           itemCount: titles.length,
           itemBuilder: (context, index) => CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             icon: icons[index],
             iconColor: activity.deep,
             title: titles[index],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -257,6 +258,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ],
           ),
           CatchFormRowList<UpdateUserProfilePatch>(
+            fieldCopy: catchFieldCopy(context.l10n),
             title: context.l10n.userProfileProfileTabTitleAboutYou,
             // Preserve the existing Consumer interaction until its product
             // migration to explicit confirmation is reviewed separately.

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -37,6 +38,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchField.select<UserAnalyticsRangePreset>(
+            copy: catchFieldCopy(context.l10n),
             title: UserAnalyticsCopy.rangeTitle(context.l10n),
             contract: CatchContractConstraints
                 .userAnalyticsQueryCallablePayloadRangePreset,
@@ -395,6 +397,7 @@ class UserAnalyticsTipRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final copy = UserAnalyticsCopy.tip(context.l10n, tip.copyKey);
     return CatchField.content(
+      copy: catchFieldCopy(context.l10n),
       icon: CatchIcons.sparkle,
       iconColor: CatchTokens.of(context).ink2,
       title: copy.title,
@@ -416,6 +419,7 @@ class UserAnalyticsDataCoveragePanel extends StatelessWidget {
       children: [
         for (final row in rows)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             icon: switch (row.state) {
               UserAnalyticsDataQualityState.ok =>
                 CatchIcons.checkCircleOutlineRounded,

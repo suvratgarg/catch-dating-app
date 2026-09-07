@@ -48,11 +48,13 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
           child: Column(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Host',
                 body: 'Catch Hosts',
                 icon: CatchIcons.hosted,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Public name',
                 initialValue: 'Bandra Social Run',
                 icon: CatchIcons.personOutlined,
@@ -73,17 +75,20 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
             headerPlacement: CatchSectionHeaderPlacement.inside,
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Host',
                 body: 'Catch Hosts',
                 icon: CatchIcons.hosted,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Location',
                 body: 'Carter Road promenade',
                 icon: CatchIcons.pinOutlined,
                 onTap: _noop,
               ),
               CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Allow reminders',
                 body: 'Push and email',
                 icon: CatchIcons.notificationsOutlined,
@@ -123,7 +128,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                       'Recommended default: type and hairlines provide hierarchy without adding another object.',
                   child: CatchSection.fieldRows(
                     title: 'Event settings',
-                    children: _eventSettingRows(),
+                    children: _eventSettingRows(context),
                   ),
                 ),
                 _sectionHeaderComparison(
@@ -134,7 +139,7 @@ Widget fieldAndSectionGeometryMatrix(BuildContext context) {
                       'Use when the fields are perceived and acted on as one discrete object.',
                   child: CatchSection.containedFieldRows(
                     title: 'Event settings',
-                    children: _eventSettingRows(),
+                    children: _eventSettingRows(context),
                   ),
                 ),
               ],
@@ -284,12 +289,14 @@ Widget _keyboardFocusTreatmentSample(
             interaction: CatchDividedFieldInteraction.fullBleed,
             children: [
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Reminder timing',
                 body: 'Two hours before',
                 icon: CatchIcons.clock,
                 onTap: _noop,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Delivery',
                 body: 'Push and email',
                 icon: CatchIcons.notificationsOutlined,
@@ -421,12 +428,14 @@ Widget _mixedSectionPageSample(
         gap: CatchGaps.section,
         children: [
           _mixedContainedSection(
+            context,
             open: containedOpen,
             selected: hostSelection,
             onOpenChanged: onContainedOpenChanged,
             onSelectionChanged: onHostSelectionChanged,
           ),
           _mixedDividedSection(
+            context,
             treatment: treatment,
             open: dividedOpen,
             selected: timingSelection,
@@ -439,7 +448,8 @@ Widget _mixedSectionPageSample(
   );
 }
 
-Widget _mixedContainedSection({
+Widget _mixedContainedSection(
+  BuildContext context, {
   required bool open,
   required Set<String> selected,
   required ValueChanged<bool> onOpenChanged,
@@ -450,6 +460,7 @@ Widget _mixedContainedSection({
     headerPlacement: CatchSectionHeaderPlacement.inside,
     children: [
       CatchField.choices<String>(
+        copy: catchFieldCopy(context.l10n),
         title: 'Host',
         icon: CatchIcons.hosted,
         values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
@@ -460,6 +471,7 @@ Widget _mixedContainedSection({
         onOpenChanged: onOpenChanged,
       ),
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: 'Location',
         body: 'Carter Road promenade',
         icon: CatchIcons.pinOutlined,
@@ -469,7 +481,8 @@ Widget _mixedContainedSection({
   );
 }
 
-Widget _mixedDividedSection({
+Widget _mixedDividedSection(
+  BuildContext context, {
   required _MixedDividedTreatment treatment,
   required bool open,
   required Set<String> selected,
@@ -478,6 +491,7 @@ Widget _mixedDividedSection({
 }) {
   final fullWidthBand = treatment == _MixedDividedTreatment.fullWidthBand;
   final timingField = CatchField.choices<String>(
+    copy: catchFieldCopy(context.l10n),
     title: 'Reminder timing',
     icon: CatchIcons.clock,
     values: const ['Two hours before', 'One day before', 'Off'],
@@ -488,6 +502,7 @@ Widget _mixedDividedSection({
     onOpenChanged: onOpenChanged,
   );
   final deliveryField = CatchField.nav(
+    copy: catchFieldCopy(context.l10n),
     title: 'Delivery',
     body: 'Push and email',
     icon: CatchIcons.notificationsOutlined,
@@ -993,7 +1008,8 @@ Widget modalGeometryMatrix(BuildContext context) {
               fullWidth: true,
               onPressed: _noop,
             ),
-            child: const CatchField.input(
+            child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: 'Note',
               initialValue: 'Meet beside the cafe entrance.',
             ),
@@ -1050,7 +1066,7 @@ Widget _responsivePageContextSpecimen(
                 : EdgeInsets.zero,
             viewInsets: EdgeInsets.zero,
           ),
-          child: _responsiveGeometryShell(composition: composition),
+          child: _responsiveGeometryShell(context, composition: composition),
         ),
       ),
     ),
@@ -1091,7 +1107,8 @@ Widget _scaledReviewViewport(
   );
 }
 
-Widget _responsiveGeometryShell({
+Widget _responsiveGeometryShell(
+  BuildContext context, {
   required CatchResponsiveSectionComposition composition,
 }) {
   return CatchAdaptiveTabScaffold(
@@ -1124,13 +1141,15 @@ Widget _responsiveGeometryShell({
           composition: composition,
           sections: [
             CatchResponsiveSectionItem(
-              child: _responsiveEventSettingsSection(),
+              child: _responsiveEventSettingsSection(context),
             ),
             CatchResponsiveSectionItem(
               lane: CatchResponsiveSectionLane.secondary,
-              child: _responsiveNotificationSection(),
+              child: _responsiveNotificationSection(context),
             ),
-            CatchResponsiveSectionItem(child: _responsivePrivacySection()),
+            CatchResponsiveSectionItem(
+              child: _responsivePrivacySection(context),
+            ),
           ],
         ),
       ),
@@ -1138,7 +1157,7 @@ Widget _responsiveGeometryShell({
   );
 }
 
-Widget _responsiveEventSettingsSection() {
+Widget _responsiveEventSettingsSection(BuildContext context) {
   var selected = const {'Catch Hosts'};
   return CatchSection.containedFieldRows(
     title: 'Event settings',
@@ -1146,6 +1165,7 @@ Widget _responsiveEventSettingsSection() {
     children: [
       StatefulBuilder(
         builder: (context, setState) => CatchField.choices<String>(
+          copy: catchFieldCopy(context.l10n),
           title: 'Host',
           icon: CatchIcons.hosted,
           values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
@@ -1155,6 +1175,7 @@ Widget _responsiveEventSettingsSection() {
         ),
       ),
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: 'Location',
         body: 'Carter Road promenade',
         icon: CatchIcons.pinOutlined,
@@ -1164,12 +1185,13 @@ Widget _responsiveEventSettingsSection() {
   );
 }
 
-Widget _responsiveNotificationSection() {
+Widget _responsiveNotificationSection(BuildContext context) {
   return CatchSection.fieldRows(
     title: 'Notifications',
     first: true,
     children: [
       CatchField.toggle(
+        copy: catchFieldCopy(context.l10n),
         title: 'Allow reminders',
         body: 'Push and email',
         icon: CatchIcons.notificationsOutlined,
@@ -1177,6 +1199,7 @@ Widget _responsiveNotificationSection() {
         onChanged: _ignoreBool,
       ),
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: 'Reminder timing',
         body: 'Two hours before',
         icon: CatchIcons.clock,
@@ -1186,11 +1209,12 @@ Widget _responsiveNotificationSection() {
   );
 }
 
-Widget _responsivePrivacySection() {
+Widget _responsivePrivacySection(BuildContext context) {
   return CatchSection.containedFieldRows(
     title: 'Guest visibility',
     children: [
       CatchField.toggle(
+        copy: catchFieldCopy(context.l10n),
         title: 'Show guest list',
         body: 'Visible after joining',
         icon: CatchIcons.groupsOutlined,
@@ -1198,6 +1222,7 @@ Widget _responsivePrivacySection() {
         onChanged: _ignoreBool,
       ),
       CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: 'Contact policy',
         body: 'Hosts only',
         icon: CatchIcons.lockOutlineRounded,
@@ -1240,6 +1265,7 @@ class _CanonicalFieldInteractionPairState
               description:
                   'The section owns one rounded perimeter; field interaction remains rectangular inside its clip.',
               child: _canonicalInteractionSection(
+                context,
                 contained: true,
                 open: _containedOpen,
                 selected: _containedSelection,
@@ -1256,6 +1282,7 @@ class _CanonicalFieldInteractionPairState
               description:
                   'The field owns a complete rounded tint and outline that consumes adjacent divider edges.',
               child: _canonicalInteractionSection(
+                context,
                 contained: false,
                 open: _dividedOpen,
                 selected: _dividedSelection,
@@ -1272,7 +1299,8 @@ class _CanonicalFieldInteractionPairState
   }
 }
 
-Widget _canonicalInteractionSection({
+Widget _canonicalInteractionSection(
+  BuildContext context, {
   required bool contained,
   required bool open,
   required Set<String> selected,
@@ -1281,6 +1309,7 @@ Widget _canonicalInteractionSection({
 }) {
   final fields = [
     CatchField.choices<String>(
+      copy: catchFieldCopy(context.l10n),
       title: 'Host',
       icon: CatchIcons.hosted,
       values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
@@ -1291,6 +1320,7 @@ Widget _canonicalInteractionSection({
       onOpenChanged: onOpenChanged,
     ),
     CatchField.nav(
+      copy: catchFieldCopy(context.l10n),
       title: 'Location',
       body: 'Carter Road promenade',
       icon: CatchIcons.pinOutlined,
@@ -1338,20 +1368,23 @@ Widget _sectionHeaderComparison(
   );
 }
 
-List<Widget> _eventSettingRows() => [
+List<Widget> _eventSettingRows(BuildContext context) => [
   CatchField.action(
+    copy: catchFieldCopy(context.l10n),
     title: 'Host',
     body: 'Catch Hosts',
     icon: CatchIcons.hosted,
     onTap: _noop,
   ),
   CatchField.nav(
+    copy: catchFieldCopy(context.l10n),
     title: 'Location',
     body: 'Carter Road promenade',
     icon: CatchIcons.pinOutlined,
     onTap: _noop,
   ),
   CatchField.toggle(
+    copy: catchFieldCopy(context.l10n),
     title: 'Allow reminders',
     body: 'Push and email',
     icon: CatchIcons.notificationsOutlined,

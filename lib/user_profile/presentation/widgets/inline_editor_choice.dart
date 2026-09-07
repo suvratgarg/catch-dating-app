@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -117,6 +118,7 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
   @override
   Widget build(BuildContext context) {
     return CatchField.choices<T>(
+      copy: catchFieldCopy(context.l10n),
       icon: widget.icon,
       title: widget.label,
       contract: widget.contract,
@@ -278,6 +280,7 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
   @override
   Widget build(BuildContext context) {
     return CatchField.choices<T>(
+      copy: catchFieldCopy(context.l10n),
       icon: widget.icon,
       title: widget.label,
       contract: widget.contract,

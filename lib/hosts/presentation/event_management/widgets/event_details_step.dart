@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -132,6 +133,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
               CatchSection.fieldRows(
                 children: [
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.name,
                     title: context.l10n.hostsEventDetailsStepTitleEventName,
                     contract:
@@ -153,6 +155,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     },
                   ),
                   CatchField.choices<ActivityKind>(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
                     contract: CatchContractConstraints
@@ -175,6 +178,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   if (widget.selectedActivityKind ==
                       ActivityKind.openActivity) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.customActivityLabel,
                       title: context.l10n.hostsEventDetailsStepTitleFormatName,
                       contract: CatchContractConstraints
@@ -207,6 +211,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       },
                     ),
                     CatchField.choices<EventInteractionModel>(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.customInteractionModel,
                       title: context
                           .l10n
@@ -233,6 +238,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ],
                   if (widget.selectedActivityKind.isDistanceBased) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.distance,
                       title: context.l10n.hostsEventDetailsStepTitleDistanceKm,
                       contract: CatchContractConstraints
@@ -279,6 +285,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                                 .hostsEventDetailsStepVisiblecopySelectAPace
                           : null,
                       builder: (field) => CatchField.choices<PaceLevel>(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
                         contract: CatchContractConstraints
                             .createEventCallablePayloadPace,
@@ -313,6 +320,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   Semantics(
                     expanded: _showPresentation,
                     child: CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host.create_event.presentation'),
                       title: context.l10n.hostsCreateEventPresentationTitle,
                       valueText: _showPresentation
@@ -326,6 +334,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ),
                   if (_showPresentation) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.description,
                       title: context.l10n.hostsEventDetailsStepTitleDescription,
                       contract: CatchContractConstraints
@@ -357,6 +366,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   Semantics(
                     expanded: _showItinerary,
                     child: CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host.create_event.itinerary'),
                       title: context.l10n.hostsCreateEventItineraryTitle,
                       valueText: _showItinerary

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -33,6 +34,7 @@ class CreateClubContactFields extends StatelessWidget {
           : null,
       children: [
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsCreateClubContactFieldsTitleInstagramHandle,
           contract:
               CatchContractConstraints.createClubCallablePayloadInstagramHandle,
@@ -45,6 +47,7 @@ class CreateClubContactFields extends StatelessWidget {
           textInputAction: TextInputAction.next,
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsCreateClubContactFieldsTitlePhoneNumber,
           contract:
               CatchContractConstraints.createClubCallablePayloadPhoneNumber,
@@ -60,6 +63,7 @@ class CreateClubContactFields extends StatelessWidget {
           ],
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsCreateClubContactFieldsTitleEmail,
           contract: CatchContractConstraints.createClubCallablePayloadEmail,
           controller: emailController,

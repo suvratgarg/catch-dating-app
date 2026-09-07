@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
@@ -202,6 +203,7 @@ class CreateEventStepRail extends StatelessWidget {
             children: [
               for (final item in steps)
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('catch-form-step-overview-${item.index}'),
                   title: item.title,
                   body: _statusLabel(context, item.status),
@@ -248,6 +250,7 @@ class CreateEventConsequencePane extends StatelessWidget {
             children: [
               for (final item in items)
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: item.label,
                   body: item.value,
                   bodyMaxLines: 4,

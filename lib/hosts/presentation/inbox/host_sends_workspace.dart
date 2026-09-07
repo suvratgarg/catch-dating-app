@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -468,6 +469,7 @@ class _HostSendsIntentPicker extends ConsumerWidget {
     final campaignField = setup.when<Widget>(
       loading: () => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-saved-audience'),
           title: context.l10n.hostSendsSavedAudienceIntent,
           body: context.l10n.hostSendsChannelChecking,
@@ -475,6 +477,7 @@ class _HostSendsIntentPicker extends ConsumerWidget {
       ),
       error: (_, _) => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-saved-audience'),
           title: context.l10n.hostSendsSavedAudienceIntent,
           body: context.l10n.hostSendsChannelUnavailable,
@@ -484,12 +487,14 @@ class _HostSendsIntentPicker extends ConsumerWidget {
       data: (value) => CatchFieldLanes.single(
         child: value.canComposeCampaign
             ? CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-send-intent-saved-audience'),
                 title: context.l10n.hostSendsSavedAudienceIntent,
                 body: context.l10n.hostSendsSavedAudienceIntentBody,
                 onTap: onStartCampaign,
               )
             : CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-send-intent-saved-audience'),
                 title: context.l10n.hostSendsSavedAudienceIntent,
                 body: context.l10n.hostSendsSavedAudienceSetupBody,
@@ -500,6 +505,7 @@ class _HostSendsIntentPicker extends ConsumerWidget {
     final followerUpdateField = followerQuota.when<Widget>(
       loading: () => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-follower-update'),
           title: context.l10n.hostSendsFollowerUpdateIntent,
           body: context.l10n.hostSendsChannelChecking,
@@ -507,6 +513,7 @@ class _HostSendsIntentPicker extends ConsumerWidget {
       ),
       error: (_, _) => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-follower-update'),
           title: context.l10n.hostSendsFollowerUpdateIntent,
           body: context.l10n.hostSendsChannelUnavailable,
@@ -515,12 +522,14 @@ class _HostSendsIntentPicker extends ConsumerWidget {
       data: (remainingQuota) => CatchFieldLanes.single(
         child: remainingQuota > 0
             ? CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-send-intent-follower-update'),
                 title: context.l10n.hostSendsFollowerUpdateIntent,
                 body: context.l10n.hostSendsFollowerUpdateDescription,
                 onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
               )
             : CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-send-intent-follower-update'),
                 title: context.l10n.hostSendsFollowerUpdateIntent,
                 body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
@@ -539,6 +548,7 @@ class _HostSendsIntentPicker extends ConsumerWidget {
           children: [
             CatchFieldLanes.single(
               child: CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-send-intent-conversation'),
                 title: context.l10n.hostSendsConversationIntent,
                 body: context.l10n.hostSendsConversationIntentBody,
@@ -606,6 +616,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
     return events.when(
       loading: () => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-event-announcement'),
           title: context.l10n.hostSendsEventAnnouncementIntent,
           body: context.l10n.hostSendsEventAnnouncementChecking,
@@ -613,6 +624,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
       ),
       error: (_, _) => CatchFieldLanes.single(
         child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-send-intent-event-announcement'),
           title: context.l10n.hostSendsEventAnnouncementIntent,
           body: context.l10n.hostSendsEventAnnouncementUnavailable,
@@ -627,6 +639,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
         if (event == null) {
           return CatchFieldLanes.single(
             child: CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-send-intent-event-announcement'),
               title: context.l10n.hostSendsEventAnnouncementIntent,
               body: context.l10n.hostSendsEventAnnouncementEmpty,
@@ -639,6 +652,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
         return participations.when(
           loading: () => CatchFieldLanes.single(
             child: CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-send-intent-event-announcement'),
               title: context.l10n.hostSendsEventAnnouncementIntent,
               body: context.l10n.hostSendsEventAnnouncementCheckingAudience,
@@ -646,6 +660,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
           ),
           error: (_, _) => CatchFieldLanes.single(
             child: CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-send-intent-event-announcement'),
               title: context.l10n.hostSendsEventAnnouncementIntent,
               body: context.l10n.hostSendsEventAnnouncementUnavailable,
@@ -681,6 +696,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
             return CatchFieldLanes.single(
               child: canStart
                   ? CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey(
                         'host-send-intent-event-announcement',
                       ),
@@ -692,6 +708,7 @@ class _HostEventAnnouncementIntent extends ConsumerWidget {
                       onTap: () => unawaited(onStart(target)),
                     )
                   : CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey(
                         'host-send-intent-event-announcement',
                       ),
@@ -803,6 +820,7 @@ class _HostSendRow extends StatelessWidget {
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: switch (send) {
       HostCampaignSendSummary campaign => CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('host-send-campaign-${campaign.campaignId}'),
         title: campaign.name,
         body: [
@@ -813,6 +831,7 @@ class _HostSendRow extends StatelessWidget {
         valueText: campaign.status,
       ),
       HostAnnouncementSendSummary announcement => CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
         title: announcement.eventName,
         body: [
@@ -825,6 +844,7 @@ class _HostSendRow extends StatelessWidget {
             : announcement.audience,
       ),
       HostFollowerUpdateSendSummary update => CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('host-send-follower-update-${update.postId}'),
         title: context.l10n.hostSendsFollowerUpdateChannel,
         body: [

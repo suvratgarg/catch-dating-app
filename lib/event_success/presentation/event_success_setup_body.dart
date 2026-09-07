@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -127,6 +128,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
           children: [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('eventSuccessFormatFirst'),
               title: context.l10n.eventSuccessEventSuccessSetupBodyTitleFormat,
               body: draft.playbook.summary,
@@ -137,6 +139,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             ),
             ...widget.planLeadingRows,
             CatchField.inputActions(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent,
@@ -161,6 +164,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               onChanged: (_) => setState(() {}),
             ),
             CatchField.inputActions(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleMessageToAttendees,
@@ -191,6 +195,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               textInputAction: TextInputAction.newline,
             ),
             CatchField.optionCards<EventSuccessConversationGraphConsentMode>(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('eventSuccessConversationGraphConsentMode'),
               title: context
                   .l10n
@@ -348,6 +353,7 @@ class EventSuccessModuleRows extends StatelessWidget {
       children: [
         if (questionnaire)
           CatchField.optionCards<_QuestionnaireMode>(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: context
                 .l10n
@@ -387,6 +393,7 @@ class EventSuccessModuleRows extends StatelessWidget {
         else
           CatchFieldLanes.single(
             child: CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey('eventSuccessModule-${module.id}'),
               title: module.title,
               contract: CatchContractConstraints
@@ -414,6 +421,7 @@ class EventSuccessModuleRows extends StatelessWidget {
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRotationConfig'),
             child: CatchField.choices<int?>(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
@@ -447,6 +455,7 @@ class EventSuccessModuleRows extends StatelessWidget {
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRevealConfig'),
             child: CatchField.choices<int>(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,

@@ -31,6 +31,7 @@ Widget fieldValidationCopyStates(BuildContext context) {
     children: [
       for (final value in ['', 'a', 'abcdef', 'ABC', 'abc'])
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           title: 'Name',
           initialValue: value,
           error: CatchContractFieldPolicy.validateText(
@@ -79,6 +80,7 @@ class _AccordionFieldsState extends State<_AccordionFields> {
       children: [
         for (final title in ['Timing', 'Channel'])
           CatchField.choices<String>(
+            copy: catchFieldCopy(context.l10n),
             title: title,
             values: const ['Default', 'Custom'],
             itemLabel: (value) => value,
@@ -98,7 +100,8 @@ class _AccordionFieldsState extends State<_AccordionFields> {
   );
 }
 
-Widget _openField() => CatchField.choices<String>(
+Widget _openField(BuildContext context) => CatchField.choices<String>(
+  copy: catchFieldCopy(context.l10n),
   title: 'Reminder',
   values: const ['Before', 'After'],
   itemLabel: (value) => value,
@@ -120,7 +123,11 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
       Text('${gutter.name} gutter', style: CatchTextStyles.bodyM(context)),
       CatchFieldGeometryScope(
         gutterOwnership: gutter,
-        child: const CatchField.read(title: 'Name', body: 'Alex'),
+        child: CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: 'Name',
+          body: 'Alex',
+        ),
       ),
     ],
     for (final shape in CatchFieldInteractionShape.values) ...[
@@ -132,7 +139,7 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
           child: CatchFieldGeometryScope(
             gutterOwnership: CatchFieldGutterOwnership.container,
             interactionShape: shape,
-            child: _openField(),
+            child: _openField(context),
           ),
         ),
       ),
@@ -161,7 +168,7 @@ Widget fieldInteractionPlaneStates(BuildContext context) =>
               outsets: EdgeInsets.symmetric(horizontal: outset),
               child: CatchSection.fieldRows(
                 interaction: CatchDividedFieldInteraction.fullBleed,
-                children: [_openField()],
+                children: [_openField(context)],
               ),
             ),
           ),
@@ -186,7 +193,7 @@ Widget dividedFieldInteractionStates(BuildContext context) =>
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchDividedFieldInteractionScope(
               interaction: interaction,
-              child: CatchSection.fieldRows(children: [_openField()]),
+              child: CatchSection.fieldRows(children: [_openField(context)]),
             ),
           ),
         ],
@@ -224,7 +231,9 @@ Widget responsiveFieldInteractionStates(BuildContext context) =>
                   ])
                     CatchResponsiveSectionItem(
                       lane: lane,
-                      child: CatchSection.fieldRows(children: [_openField()]),
+                      child: CatchSection.fieldRows(
+                        children: [_openField(context)],
+                      ),
                     ),
                 ],
               ),
@@ -283,6 +292,7 @@ class _ObstructedDisclosureState extends State<_ObstructedDisclosure> {
               CatchSection.fieldRows(
                 children: [
                   CatchField.choices<String>(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Reminder',
                     values: const ['Before', 'After'],
                     itemLabel: (value) => value,
@@ -329,13 +339,21 @@ Widget fieldLaneStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.field.lanes',
   children: [
     CatchFieldLanes.single(
-      child: CatchField.read(title: 'Single lane', body: 'One independent row'),
+      child: CatchField.read(
+        copy: catchFieldCopy(context.l10n),
+        title: 'Single lane',
+        body: 'One independent row',
+      ),
     ),
     CatchFieldLanes.custom(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchField.read(title: 'Custom lane', body: 'Specialized layout'),
+          CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: 'Custom lane',
+            body: 'Specialized layout',
+          ),
           SizedBox(height: CatchSpacing.s4),
           CatchFieldSupportRow(
             text: 'Caller-owned spacing between controls',
@@ -346,8 +364,16 @@ Widget fieldLaneStates(BuildContext context) => WidgetbookCatalogFrame(
     ),
     CatchFieldLanes.divided(
       children: [
-        CatchField.read(title: 'Divided group', body: 'First row'),
-        CatchField.read(title: 'Shared separators', body: 'Second row'),
+        CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: 'Divided group',
+          body: 'First row',
+        ),
+        CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: 'Shared separators',
+          body: 'Second row',
+        ),
       ],
     ),
   ],

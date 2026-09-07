@@ -682,9 +682,17 @@ Widget catchSkeletonContractStates(BuildContext context) {
         child: CatchSkeletonized(
           child: CatchSection.containedFieldRows(
             title: 'Customer details',
-            children: const [
-              CatchField.read(title: 'Name', body: 'Customer name'),
-              CatchField.read(title: 'Mobile number', body: '+919876543210'),
+            children: [
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Name',
+                body: 'Customer name',
+              ),
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Mobile number',
+                body: '+919876543210',
+              ),
             ],
           ),
         ),
@@ -2154,6 +2162,19 @@ Widget catchRowPressSurfaceContractStates(BuildContext context) {
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldContractStates(BuildContext context) {
+  final resolved = catchFieldCopy(context.l10n);
+  final copy = CatchFieldCopy(
+    label: resolved.label,
+    validation: resolved.validation,
+    cancelLabel: resolved.cancelLabel,
+    doneLabel: resolved.doneLabel,
+    savingLabel: resolved.savingLabel,
+    savingSemanticLabel: resolved.savingSemanticLabel,
+    savedSemanticLabel: resolved.savedSemanticLabel,
+    emptyValueText: resolved.emptyValueText,
+    selectPlaceholder: resolved.selectPlaceholder,
+    clearTooltip: resolved.clearTooltip,
+  );
   Widget fieldState({
     required String label,
     required Widget child,
@@ -2226,6 +2247,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'row-value',
         description: 'Default row: label above, value emphasized.',
         child: CatchField.read(
+          copy: copy,
           title: 'Host',
           body: 'Catch Hosts',
           icon: CatchIcons.hosted,
@@ -2236,6 +2258,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Caller-owned semantic leading content stays inside canonical field geometry.',
         child: CatchField.nav(
+          copy: copy,
           leading: Semantics(
             label: '27 May',
             excludeSemantics: true,
@@ -2258,6 +2281,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'row-title',
         description: 'Title-emphasis row: title primary, value supporting.',
         child: CatchField.read(
+          copy: copy,
           title: 'Visibility',
           body: 'Private to attendees',
           icon: CatchIcons.lockOutlineRounded,
@@ -2269,6 +2293,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'A drag target sits beside a wrapping title with metadata on its own line.',
         child: CatchField.sortable(
+          copy: copy,
           title: 'Why do you want to join?',
           metadata: 'Long text · Required',
           reorderHandle: SizedBox.square(
@@ -2283,6 +2308,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Dedicated content semantics: 14/600 title (two lines), 13/400 supporting body (three lines), and a 3px gap without changing legacy value rows.',
         child: CatchField.content(
+          copy: copy,
           title: 'Event starts tomorrow near Carter Road Jetty',
           body:
               'Sundowner 5K meets by the promenade before the group heads out together.',
@@ -2292,6 +2318,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'value-line',
         child: CatchField.read(
+          copy: copy,
           title: 'Phone',
           valueText: '+91 98765 43210',
           icon: CatchIcons.phoneOutlined,
@@ -2302,6 +2329,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'The trailing affordance uses one caption reserve and stays centered on the value line.',
         child: CatchField.nav(
+          copy: copy,
           title: 'Location',
           body: 'Fort Greene Park',
           icon: CatchIcons.pinOutlined,
@@ -2318,6 +2346,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Recommendation metadata stays in the title row while guidance uses the canonical support lane.',
         child: CatchField.toggle(
+          copy: copy,
           title: 'Live guide',
           body: 'Enable the run-of-show companion.',
           helperText: 'You can change this before the event.',
@@ -2387,6 +2416,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Choice guidance uses the support lane and product-owned option color is forwarded to the canonical selectable chip.',
         child: CatchField.choices<String>(
+          copy: copy,
           title: 'Run format',
           helperText: 'Pick the format guests will see.',
           values: const ['Social', 'Competitive'],
@@ -2403,6 +2433,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Policies with per-option guidance use one full-width title-and-description target per choice instead of chips plus detached selected copy.',
         child: CatchField.optionCards<String>(
+          copy: copy,
           title: 'Admission format',
           values: const ['open', 'request'],
           itemTitle: (value) =>
@@ -2438,6 +2469,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'read-only-row',
         description: 'Static profile data never receives an edit chevron.',
         child: CatchField.read(
+          copy: copy,
           title: 'Date of birth',
           body: '16/07/1994 (31 years)',
           icon: CatchIcons.cakeOutlined,
@@ -2448,6 +2480,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Editable rows expose the native text cursor on tap, not a synthesized trailing chevron.',
         child: CatchField.input(
+          copy: copy,
           title: 'Display name',
           initialValue: 'Suvrat',
           icon: CatchIcons.personOutlined,
@@ -2458,6 +2491,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Auto-save fields without a visible commit bar use one 16px in-flight indicator in the value-line trailing lane.',
         child: CatchField.read(
+          copy: copy,
           title: 'Display name',
           body: 'Suvrat',
           icon: CatchIcons.personOutlined,
@@ -2469,6 +2503,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'The value-line trailing lane owns and centers the transient saved tick.',
         child: CatchField.read(
+          copy: copy,
           title: 'Display name',
           body: 'Suvrat',
           icon: CatchIcons.personOutlined,
@@ -2505,7 +2540,8 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'editable-empty-at-rest',
         description:
             'One localized Add line replaces the inactive caption while the same native TextField stays mounted.',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Public name',
           inputHint: 'e.g. Aanya',
         ),
@@ -2514,7 +2550,8 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'editable-empty-focused',
         description:
             'The initiating tap expands the same input, restores its caption, and gives the Add line to the input-only hint.',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Public name',
           inputHint: 'e.g. Aanya',
           focused: true,
@@ -2528,11 +2565,13 @@ Widget catchFieldContractStates(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             CatchField.input(
+              copy: copy,
               title: 'Job title',
               icon: CatchIcons.workOutline,
               isOptional: true,
             ),
             CatchField.choices<String>(
+              copy: copy,
               title: 'Workout',
               values: const ['Never', 'Often'],
               itemLabel: (value) => value,
@@ -2547,7 +2586,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-empty',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Name',
           emptyValueText: 'Add a public name',
           inputHint: 'e.g. Aanya',
@@ -2555,7 +2595,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-filled',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Club',
           initialValue: 'Fort Greene Run Club',
         ),
@@ -2565,6 +2606,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'Native text focus uses the same root semantic-ink label state as an open disclosure.',
         child: CatchField.input(
+          copy: copy,
           title: 'Search',
           initialValue: 'social run',
           focused: true,
@@ -2573,7 +2615,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-disabled',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Email',
           initialValue: 'team@catch.events',
           enabled: false,
@@ -2581,7 +2624,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-read-only',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Handle',
           initialValue: '@catch-hosts',
           readOnly: true,
@@ -2590,7 +2634,8 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'edit-helper',
         description: 'Expanded helper/info state.',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Invite note',
           placeholder: 'Add an invite note',
           helperText: 'Shown before guests request a spot.',
@@ -2601,7 +2646,8 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'edit-success-helper',
         description: 'Success helper state.',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Invite code',
           initialValue: 'RUNCLUB',
           helperText: 'Invite code is available.',
@@ -2611,7 +2657,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'edit-multiline',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Description',
           initialValue: 'Meet by the fountain, then we will head out together.',
           maxLines: 4,
@@ -2621,6 +2668,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'edit-clearable',
         child: CatchField.input(
+          copy: copy,
           title: 'Search hosts',
           initialValue: 'Run',
           showClearButton: true,
@@ -2630,6 +2678,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'valid',
         child: CatchField.read(
+          copy: copy,
           title: 'Invite code',
           body: 'RUNCLUB',
           icon: CatchIcons.keyOutlined,
@@ -2639,6 +2688,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'error',
         child: CatchField.input(
+          copy: copy,
           title: 'Invite code',
           initialValue: 'ABC',
           icon: CatchIcons.keyOutlined,
@@ -2647,7 +2697,8 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'focused',
-        child: const CatchField.input(
+        child: CatchField.input(
+          copy: copy,
           title: 'Handle',
           initialValue: 'catch-hosts',
           leadingUnit: '@',
@@ -2659,6 +2710,7 @@ Widget catchFieldContractStates(BuildContext context) {
         description:
             'The menu trigger shares the same caption reserve and value-line-centered caret geometry.',
         child: CatchField.select<String>(
+          copy: copy,
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
@@ -2670,6 +2722,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'select-disabled',
         child: CatchField.select<String>(
+          copy: copy,
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
@@ -2683,6 +2736,7 @@ Widget catchFieldContractStates(BuildContext context) {
       fieldState(
         label: 'add',
         child: CatchField.add(
+          copy: copy,
           title: 'Add another time',
           icon: CatchIcons.add,
           onTap: _noop,
@@ -3379,6 +3433,7 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
       _StateCard(
         label: 'toggle',
         child: CatchFieldTrailing.toggle(
+          copy: catchFieldCopy(context.l10n),
           value: true,
           onChanged: (_) {},
           semanticLabel: 'Allow reminders',
@@ -3386,7 +3441,10 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'status',
-        child: CatchFieldTrailing.status(status: CatchFieldStatus.saved),
+        child: CatchFieldTrailing.status(
+          copy: catchFieldCopy(context.l10n),
+          status: CatchFieldStatus.saved,
+        ),
       ),
       _StateCard(
         label: 'clear',
@@ -3444,17 +3502,20 @@ Widget catchSectionContractStates(BuildContext context) {
           child: CatchSection.contained(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Host',
                 body: 'Catch Hosts',
                 icon: CatchIcons.hosted,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Visibility',
                 body: 'Private to attendees',
                 icon: CatchIcons.lockOutlineRounded,
                 onTap: _noop,
               ),
               CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Allow reminders',
                 body: 'Push and email',
                 icon: CatchIcons.notificationsOutlined,
@@ -3472,6 +3533,7 @@ Widget catchSectionContractStates(BuildContext context) {
             focused: true,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Public name',
                 initialValue: 'Bandra Social Run',
                 icon: CatchIcons.groupsOutlined,
@@ -3488,6 +3550,7 @@ Widget catchSectionContractStates(BuildContext context) {
             hasError: true,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Invite code',
                 initialValue: 'ABC',
                 icon: CatchIcons.lockOutlineRounded,
@@ -3503,17 +3566,20 @@ Widget catchSectionContractStates(BuildContext context) {
           child: CatchSection.contained(
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Display name',
                 initialValue: 'Suvrat',
                 icon: CatchIcons.personOutlined,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Invite code',
                 initialValue: 'ABC',
                 icon: CatchIcons.keyOutlined,
                 error: 'Use a six character invite code.',
               ),
               CatchField.add(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Add another time',
                 icon: CatchIcons.add,
                 onTap: _noop,
@@ -3528,6 +3594,7 @@ Widget catchSectionContractStates(BuildContext context) {
           child: CatchSection.contained(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Event type',
                 body: 'Dinner',
                 icon: CatchIcons.dinner,
@@ -3542,11 +3609,13 @@ Widget catchSectionContractStates(BuildContext context) {
           title: 'Account',
           children: [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               icon: CatchIcons.phoneOutlined,
               title: 'Phone',
               body: '+91 98765 43210',
             ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               icon: CatchIcons.lockOutlineRounded,
               title: 'Privacy',
               body: 'Private',
@@ -3563,17 +3632,20 @@ Widget catchSectionContractStates(BuildContext context) {
             count: '3 fields',
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Public name',
                 initialValue: 'Suvrat',
                 icon: CatchIcons.personOutlined,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Home base',
                 body: 'Bandra West',
                 icon: CatchIcons.pinOutlined,
                 onTap: _noop,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Instagram',
                 initialValue: '@catchapp',
                 icon: CatchIcons.alternateEmailOutlined,
@@ -3596,6 +3668,7 @@ Widget catchSectionContractStates(BuildContext context) {
               interaction: CatchDividedFieldInteraction.fullBleed,
               children: [
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   title: 'Reminder timing',
                   body: 'Two hours before',
                   icon: CatchIcons.clock,
@@ -3619,6 +3692,7 @@ Widget catchSectionContractStates(BuildContext context) {
               interaction: CatchDividedFieldInteraction.roundedTile,
               children: [
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   title: 'Reminder timing',
                   body: 'Two hours before',
                   icon: CatchIcons.clock,
@@ -3642,6 +3716,7 @@ Widget catchSectionContractStates(BuildContext context) {
               interaction: CatchDividedFieldInteraction.fullBleed,
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: 'Public name',
                   initialValue: 'Suvrat',
                   icon: CatchIcons.personOutlined,
@@ -3664,8 +3739,12 @@ Widget catchSectionContractStates(BuildContext context) {
                 count: '1 field',
                 trailing: Icon(CatchIcons.infoOutlineRounded),
                 footer: const Text('8 px divided footer top inset'),
-                children: const [
-                  CatchField.read(title: 'Name', body: 'Suvrat'),
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: 'Name',
+                    body: 'Suvrat',
+                  ),
                 ],
               ),
               CatchSection.containedFieldRows(
@@ -3673,8 +3752,12 @@ Widget catchSectionContractStates(BuildContext context) {
                 count: '1 field',
                 trailing: Icon(CatchIcons.infoOutlineRounded),
                 footer: const Text('2 px contained footer top inset'),
-                children: const [
-                  CatchField.read(title: 'Height', body: '168 cm'),
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: 'Height',
+                    body: '168 cm',
+                  ),
                 ],
               ),
             ],
@@ -3691,11 +3774,13 @@ Widget catchSectionContractStates(BuildContext context) {
             headerPlacement: CatchSectionHeaderPlacement.inside,
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Host',
                 body: 'Catch Hosts',
                 icon: CatchIcons.hosted,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Location',
                 body: 'Carter Road promenade',
                 icon: CatchIcons.pinOutlined,
@@ -3714,12 +3799,14 @@ Widget catchSectionContractStates(BuildContext context) {
                 title: 'Continue',
                 children: [
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Continue draft',
                     body: '5km · Carter Road Jetty · 24/6',
                     icon: CatchIcons.editNoteRounded,
                     onTap: _noop,
                   ),
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Repeat last event',
                     body: 'Reuse Monday Evening Run',
                     icon: CatchIcons.refresh,
@@ -3731,12 +3818,14 @@ Widget catchSectionContractStates(BuildContext context) {
                 title: 'Start new',
                 children: [
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Sell tickets with Catch',
                     body: 'Tickets, waitlist, and payments in one place.',
                     icon: CatchIcons.confirmationNumberOutlined,
                     onTap: _noop,
                   ),
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Use guest list',
                     body: 'Import CSV or XLSX.',
                     icon: CatchIcons.cloudUploadOutlined,
@@ -3754,6 +3843,7 @@ Widget catchSectionContractStates(BuildContext context) {
           child: CatchSection.containedFieldRows(
             children: [
               CatchField.choices<String>(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 body: 'English · Hindi · Marathi',
                 icon: CatchIcons.languageOutlined,
@@ -3772,7 +3862,8 @@ Widget catchSectionContractStates(BuildContext context) {
                 onCancel: _noop,
                 onSubmit: _noop,
               ),
-              const CatchField.input(
+              CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Answer',
                 initialValue: 'Social miles and good coffee.',
                 maxLines: null,
@@ -3789,6 +3880,7 @@ Widget catchSectionContractStates(BuildContext context) {
             focused: true,
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Section-owned validation state',
                 body: 'The outer perimeter is explicitly focused.',
                 icon: CatchIcons.infoOutlineRounded,
@@ -3806,11 +3898,23 @@ Widget catchSectionContractStates(BuildContext context) {
             children: [
               CatchSection.fieldRows(
                 title: 'First section',
-                children: [CatchField.read(title: 'Name', body: 'Suvrat')],
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: 'Name',
+                    body: 'Suvrat',
+                  ),
+                ],
               ),
               CatchSection.fieldRows(
                 title: 'Second section',
-                children: [CatchField.read(title: 'City', body: 'Delhi NCR')],
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: 'City',
+                    body: 'Delhi NCR',
+                  ),
+                ],
               ),
             ],
           ),
@@ -3823,12 +3927,14 @@ Widget catchSectionContractStates(BuildContext context) {
           child: CatchSection.contained(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Long public field label that should wrap cleanly',
                 body:
                     'A very long value that needs to wrap without breaking the row group surface.',
                 icon: CatchIcons.infoOutlineRounded,
               ),
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Detailed location',
                 body: 'The east entrance by the fountain near the market',
                 icon: CatchIcons.pinOutlined,
@@ -3921,6 +4027,7 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
             hasError: false,
             fieldRows: true,
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: 'Answer',
               initialValue: 'The child owns this focus ring.',
               focused: true,
@@ -3937,6 +4044,7 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
             hasError: false,
             fieldRows: true,
             child: CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: 'Section validation',
               body: 'Explicit focus belongs to the outer perimeter.',
             ),
@@ -5612,7 +5720,7 @@ Widget catchSectionStackContractStates(BuildContext context) {
           ],
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'zero-padding',
         child: CatchSectionStack(
           padding: EdgeInsets.zero,
@@ -5620,6 +5728,7 @@ Widget catchSectionStackContractStates(BuildContext context) {
             CatchSection.contained(
               children: [
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: 'Nested field',
                   body: 'Section stack can hold contracted primitives.',
                 ),
@@ -7172,12 +7281,13 @@ Widget catchSheetContractStates(BuildContext context) {
           child: const Text('Copy a shareable invite link.'),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'keyboard-safe',
         child: CatchBottomSheetScaffold(
           title: 'Arrival note',
           keyboardSafe: true,
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: 'Note',
             initialValue: 'Meet beside the cafe entrance.',
           ),
@@ -7202,6 +7312,7 @@ Widget catchSheetContractStates(BuildContext context) {
               children: [
                 for (var i = 0; i < 12; i++)
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Question ${i + 1}',
                     body: 'Submitted answer',
                   ),
@@ -7683,7 +7794,8 @@ Widget catchFormDialogContractStates(BuildContext context) {
             ),
             CatchButton(label: 'Create', onPressed: _noop),
           ],
-          child: const CatchField.input(
+          child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: 'Invite name',
             initialValue: 'Early access friends',
           ),
@@ -7694,7 +7806,8 @@ Widget catchFormDialogContractStates(BuildContext context) {
         child: CatchFormDialog(
           title: 'Host note',
           actions: [CatchButton(label: 'Save note', onPressed: _noop)],
-          child: const CatchField.input(
+          child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: 'Arrival note',
             initialValue: 'Meet beside the cafe entrance at 7:20 PM.',
             minLines: 3,
@@ -7702,12 +7815,16 @@ Widget catchFormDialogContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'no-actions',
         child: CatchFormDialog(
           title: 'Read-only form',
-          actions: [],
-          child: CatchField.read(title: 'Club', body: 'Bandra Social Run'),
+          actions: const [],
+          child: CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: 'Club',
+            body: 'Bandra Social Run',
+          ),
         ),
       ),
     ],
@@ -9785,6 +9902,7 @@ class _CatchAdaptivePickerHarnessState
               CatchSection.contained(
                 children: [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Date',
                     body: date == null
                         ? 'No date selected'
@@ -9793,6 +9911,7 @@ class _CatchAdaptivePickerHarnessState
                           ).formatShortDate(date),
                   ),
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: 'Time',
                     body: time == null
                         ? 'No time selected'
@@ -10340,6 +10459,7 @@ class _ToggleFieldDemoState extends State<_ToggleFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchField.toggle(
+      copy: catchFieldCopy(context.l10n),
       title: 'Allow requests',
       body: _enabled ? 'Open' : 'Closed',
       icon: CatchIcons.notificationsOutlined,
@@ -10370,6 +10490,7 @@ class _TextEntryFieldDemoState extends State<_TextEntryFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchField.input(
+      copy: catchFieldCopy(context.l10n),
       title: 'Public name',
       controller: _controller,
       icon: CatchIcons.personOutlined,
@@ -10422,6 +10543,7 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchField.choices<String>(
+      copy: catchFieldCopy(context.l10n),
       title: 'Languages',
       body: widget.body,
       icon: CatchIcons.languageOutlined,
@@ -10454,6 +10576,7 @@ class _StepperFieldDemoState extends State<_StepperFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchField.stepper(
+      copy: catchFieldCopy(context.l10n),
       title: 'Height',
       body: '${_value.toInt()} cm',
       icon: CatchIcons.heightOutlined,
@@ -10506,6 +10629,7 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchField.inputActions(
+      copy: catchFieldCopy(context.l10n),
       title: 'A perfect event with me looks like...',
       controller: _controller,
       icon: CatchIcons.formatQuoteRounded,
@@ -10551,6 +10675,7 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
     return Form(
       key: _formKey,
       child: CatchField.select<String>(
+        copy: catchFieldCopy(context.l10n),
         title: 'Activity',
         values: const ['Run', 'Dinner', 'Pickleball'],
         itemLabel: (value) => value,

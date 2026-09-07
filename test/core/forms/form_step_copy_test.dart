@@ -55,6 +55,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         CatchFormStepOverview(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           items: _items,
           statusLabelBuilder: _statusLabel,
           onStepSelected: (index) => selected = index,
@@ -77,6 +78,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         CatchFormReviewBody(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           message: 'Review your details.',
           items: _items,
           statusLabelBuilder: _statusLabel,
@@ -100,6 +102,7 @@ void main() {
           builder: (context) => TextButton(
             onPressed: () async {
               selected = await showCatchFormStepOverview(
+                fieldCopy: catchFieldCopy(AppLocalizationsEn()),
                 context: context,
                 title: 'Sections',
                 subtitle: 'Choose a section.',

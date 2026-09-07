@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +43,7 @@ enum CatchFieldSupportTone { neutral, brand, success }
 /// ```dart
 /// // Intentionally does not compile: toggle fields cannot own controllers.
 /// CatchField.toggle(
+///   copy: fieldCopy,
 ///   title: 'Notifications',
 ///   value: true,
 ///   onChanged: null,
@@ -60,6 +59,7 @@ abstract class CatchField extends StatefulWidget {
   static const pressOverlayKey = ValueKey<String>('catch-field-press-overlay');
 
   const CatchField._shared({
+    required this.copy,
     super.key,
     required this.title,
     this.contract,
@@ -77,6 +77,7 @@ abstract class CatchField extends StatefulWidget {
   });
 
   const factory CatchField.read({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -103,6 +104,7 @@ abstract class CatchField extends StatefulWidget {
   /// explicit constructor preserves those existing value rows while exposing
   /// the handoff's independent two-line title and three-line body contract.
   const factory CatchField.content({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     required String body,
@@ -125,6 +127,7 @@ abstract class CatchField extends StatefulWidget {
   }) = _RowConfig.content;
 
   const factory CatchField.nav({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -154,6 +157,7 @@ abstract class CatchField extends StatefulWidget {
   /// left-handle lane, naturally wrapping title and metadata, press semantics, and
   /// trailing disclosure affordance.
   const factory CatchField.sortable({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     required String metadata,
@@ -165,6 +169,7 @@ abstract class CatchField extends StatefulWidget {
   /// A tappable field-shaped row whose action does not navigate or edit the
   /// value. Unlike [CatchField.nav], this constructor never renders a chevron.
   const factory CatchField.action({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -188,6 +193,7 @@ abstract class CatchField extends StatefulWidget {
   }) = _RowConfig.action;
 
   const factory CatchField.toggle({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -208,6 +214,7 @@ abstract class CatchField extends StatefulWidget {
   }) = _ToggleConfig.toggle;
 
   const factory CatchField.input({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -266,6 +273,7 @@ abstract class CatchField extends StatefulWidget {
   /// [initiallyOpen] for local disclosure state. Save and error state remain
   /// caller-owned.
   const factory CatchField.control({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     String? body,
@@ -299,6 +307,7 @@ abstract class CatchField extends StatefulWidget {
   /// options. Selection state stays caller-owned; this method owns the exact
   /// chip geometry, wrapping, press motion, and field commit bar.
   static CatchField choices<T>({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     String? body,
@@ -341,6 +350,7 @@ abstract class CatchField extends StatefulWidget {
         .map(itemLabel)
         .join(' · ');
     return CatchField.control(
+      copy: copy,
       key: key,
       title: title,
       contract: contract,
@@ -381,6 +391,7 @@ abstract class CatchField extends StatefulWidget {
   /// and setup choices use the existing [CatchOptionCard] primitive through
   /// this field-owned facade.
   static CatchField optionCards<T>({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     String? body,
@@ -422,6 +433,7 @@ abstract class CatchField extends StatefulWidget {
       'contract.',
     );
     return CatchField.control(
+      copy: copy,
       key: key,
       title: title,
       contract: contract,
@@ -455,6 +467,7 @@ abstract class CatchField extends StatefulWidget {
   /// Canonical numeric disclosure field. The revealed control includes a
   /// centered value and accelerated hold-to-repeat on both 44px targets.
   static CatchField stepper({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     String? body,
@@ -502,6 +515,7 @@ abstract class CatchField extends StatefulWidget {
       step,
     );
     return CatchField.control(
+      copy: copy,
       key: key,
       title: title,
       contract: contract,
@@ -542,6 +556,7 @@ abstract class CatchField extends StatefulWidget {
   /// Trailing edit affordances, focus timing, typography, and content order are
   /// owned by this primitive rather than by feature call sites.
   const factory CatchField.inputActions({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -580,6 +595,7 @@ abstract class CatchField extends StatefulWidget {
   }) = _EditConfig.inputActions;
 
   const factory CatchField.add({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     VoidCallback? onTap,
@@ -588,6 +604,7 @@ abstract class CatchField extends StatefulWidget {
   }) = _RowConfig.add;
 
   static CatchField select<T>({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -617,6 +634,7 @@ abstract class CatchField extends StatefulWidget {
       'CatchField.select values must be unique.',
     );
     return _SelectConfig.select(
+      copy: copy,
       key: key,
       title: title,
       contract: contract,
@@ -645,18 +663,12 @@ abstract class CatchField extends StatefulWidget {
   static const double mdControlHeight = CatchControlMetrics.mdMinHeight;
 
   /// Canonical at-rest copy for an empty editable row.
-  static String defaultEmptyValueText(BuildContext context, String title) {
-    final l10n = context.l10n;
-    final label = title.trim();
-    final fieldLabel = l10n.localeName.startsWith('en')
-        ? label.toLowerCase()
-        : label;
-    return l10n.coreCatchFieldVisiblecopyAddFieldLabel(fieldLabel: fieldLabel);
-  }
+  static String defaultEmptyValueText(CatchFieldCopy copy, String title) =>
+      copy.emptyValueText(title);
 
   /// Resolves an optional domain override without repeating the field label.
   static String resolveEmptyValueText(
-    BuildContext context, {
+    CatchFieldCopy copy, {
     required String title,
     String? emptyValueText,
   }) {
@@ -667,8 +679,11 @@ abstract class CatchField extends StatefulWidget {
         explicit.toLowerCase() != label.toLowerCase()) {
       return explicit;
     }
-    return defaultEmptyValueText(context, label);
+    return defaultEmptyValueText(copy, label);
   }
+
+  /// Resolved copy supplied by the caller for the current locale.
+  final CatchFieldCopy copy;
 
   /// Primary row text or input label.
   final String? title;

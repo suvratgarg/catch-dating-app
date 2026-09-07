@@ -859,6 +859,7 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
               children: [
                 for (final indexed in attendees.indexed)
                   CatchField.choices<_EventSuccessAccountabilitySelection>(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'event_success.accountability.${indexed.$2.id}',
                     ),
@@ -1204,12 +1205,14 @@ class LiveNowConsole extends StatelessWidget {
       child: CatchSection.fieldRows(
         children: [
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.eventSuccessControlRoomGuests,
             body: guestSummary,
             onTap: onOpenGuests,
           ),
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             icon: CatchIcons.helpOutlineRounded,
             title: context.l10n.eventSuccessControlRoomHelpFallback,
             body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
@@ -1814,16 +1817,19 @@ Future<void> _showControlRoomFallback(BuildContext context) {
       child: CatchSection.fieldRows(
         children: [
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackStayTitle,
             body: context.l10n.eventSuccessControlRoomFallbackStayBody,
             icon: CatchIcons.checklistRounded,
           ),
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackGuestsTitle,
             body: context.l10n.eventSuccessControlRoomFallbackGuestsBody,
             icon: CatchIcons.groupsOutlined,
           ),
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackContinueTitle,
             body: context.l10n.eventSuccessControlRoomFallbackContinueBody,
             icon: CatchIcons.arrowForwardRounded,

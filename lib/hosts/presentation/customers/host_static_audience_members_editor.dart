@@ -87,14 +87,17 @@ class _HostStaticAudienceMembersEditorState
               children: [
                 if (selected.isEmpty)
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostAudienceNoSelectedPeople,
                   ),
                 if (selected.length >= 2500)
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostAudienceSelectionLimit,
                   ),
                 for (final member in selected.skip(pageIndex * 25).take(25))
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'host-static-remove-${member.selectedContactId}',
                     ),
@@ -111,6 +114,7 @@ class _HostStaticAudienceMembersEditorState
                   ),
                 if (selected.length > 25) ...[
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     key: const ValueKey('host-static-selected-previous'),
                     title: context.l10n.hostAudiencePreviousPeople,
                     onTap: pageIndex > 0
@@ -118,6 +122,7 @@ class _HostStaticAudienceMembersEditorState
                         : null,
                   ),
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     key: const ValueKey('host-static-selected-next'),
                     title: context.l10n.hostAudienceNextPeople,
                     onTap: (pageIndex + 1) * 25 < selected.length
@@ -131,6 +136,7 @@ class _HostStaticAudienceMembersEditorState
               title: context.l10n.hostAudienceChoosePeople,
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host-static-search'),
                   title: context.l10n.hostAudienceSearchPeople,
                   contract: CatchContractConstraints
@@ -155,10 +161,12 @@ class _HostStaticAudienceMembersEditorState
                 children: [
                   if (page.contacts.isEmpty)
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostAudienceNoPeopleFound,
                     ),
                   for (final person in page.contacts)
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: ValueKey('host-static-person-${person.contactId}'),
                       title: person.displayName,
                       contractExemption:
@@ -199,6 +207,7 @@ class _HostStaticAudienceMembersEditorState
                     ),
                   if (_previousCursors.isNotEmpty)
                     CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host-static-previous'),
                       title: context.l10n.hostAudiencePreviousPeople,
                       onTap: () => setState(
@@ -207,6 +216,7 @@ class _HostStaticAudienceMembersEditorState
                     ),
                   if (page.nextCursor != null)
                     CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host-static-next'),
                       title: context.l10n.hostAudienceNextPeople,
                       onTap: () => setState(() {

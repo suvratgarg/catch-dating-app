@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -119,6 +120,7 @@ class HostCustomerReachSection extends StatelessWidget {
         CatchSection.containedFieldRows(
           children: [
             CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-customer-organizer-messages'),
               title: l10n.hostCustomersPauseWhatsappHandoffs,
               titleMaxLines: 5,

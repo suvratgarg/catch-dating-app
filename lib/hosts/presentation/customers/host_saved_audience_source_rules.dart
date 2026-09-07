@@ -30,10 +30,12 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
       return CatchFieldLanes.divided(
         children: [
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostAudienceSpend,
             body: context.l10n.hostAudienceSpendHelp,
           ),
           CatchField.select<HostSavedAudienceAttendanceOperator>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostSavedAudienceAttendanceComparison,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
@@ -50,6 +52,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.select<String>(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-audience-spend-currency'),
             title: context.l10n.hostAudienceSpendCurrency,
             contract: CatchContractConstraints
@@ -68,6 +71,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-audience-spend-amount-${rule.currency}'),
             title: context.l10n.hostAudienceSpendAmount,
             contractExemption:
@@ -98,6 +102,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-audience-spend-days'),
             title: context.l10n.hostAudienceSpendDays,
             helperText: context.l10n.hostAudienceSpendDaysHelp,
@@ -130,6 +135,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
           ? predicate as HostSavedAudienceAttendedEvent
           : null;
       return CatchField.select<HostAudienceSourceOption>(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostAudienceRuleNamedEvent,
         contract: CatchContractConstraints
             .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
@@ -153,6 +159,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
       return Column(
         children: [
           CatchField.select<HostAudienceSourceOption>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostAudienceChooseForm,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsFormId,
@@ -176,6 +183,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.select<HostSavedAudienceApplicationStatus>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostApplicationsReviewStatusFilter,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
@@ -215,6 +223,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
     return Column(
       children: [
         CatchField.select<HostAudienceQuestionOption>(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-saved-audience-source-question'),
           title: context.l10n.hostAudienceChooseQuestion,
           helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
@@ -243,6 +252,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
         ),
         if (question != null)
           CatchField.select<HostAudienceAnswerOption>(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-saved-audience-source-answer'),
             title: context.l10n.hostAudienceChooseAnswer,
             contractExemption:

@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/gestures.dart';
@@ -91,6 +93,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchField.read(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Help & support',
             valueText: 'Contact us',
             icon: CatchIcons.helpOutline,
@@ -120,6 +123,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchField.read(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Notifications',
             valueText: 'On',
             icon: CatchIcons.helpOutline,
@@ -151,6 +155,7 @@ void main() {
           child: CatchFieldGeometryScope(
             gutterOwnership: CatchFieldGutterOwnership.container,
             child: CatchField.read(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notifications',
               valueText: 'On',
               icon: CatchIcons.helpOutline,
@@ -179,6 +184,7 @@ void main() {
           width: 360,
           child: CatchFieldLanes.single(
             child: CatchField.read(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               key: const ValueKey('notifications-field'),
               title: 'Notifications',
               valueText: 'On',
@@ -206,13 +212,18 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchFieldLanes.divided(
-            children: const [
+            children: [
               CatchField.read(
-                key: ValueKey('country-field'),
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                key: const ValueKey('country-field'),
                 title: 'Country',
                 valueText: 'India',
               ),
-              CatchField.read(title: 'Currency', valueText: 'INR'),
+              CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Currency',
+                valueText: 'INR',
+              ),
             ],
           ),
         ),
@@ -232,12 +243,13 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.control(
+        CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
           open: true,
           isLoading: true,
-          control: Text('Height control'),
+          control: const Text('Height control'),
         ),
       ),
     );
@@ -263,6 +275,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.choices<String>(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           values: const ['English', 'Hindi', 'Marathi'],
           itemLabel: (value) => value,
@@ -286,6 +299,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchField.choices<String>(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             icon: CatchIcons.translateRounded,
             title: 'Languages',
             body: 'English · Hindi',
@@ -371,6 +385,7 @@ void main() {
             title: 'About you',
             children: [
               CatchField.choices<String>(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.translateRounded,
                 title: 'Languages',
                 values: const ['English', 'Hindi'],
@@ -408,6 +423,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.toggle(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           icon: CatchIcons.visibilityOutlined,
           title: 'Show my pace on my profile',
           value: true,
@@ -438,20 +454,32 @@ void main() {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchField.read(title: 'Date of birth', body: '16/07/1994'),
-            CatchField.nav(title: 'City', body: 'Indore', onTap: () {}),
+            CatchField.read(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Date of birth',
+              body: '16/07/1994',
+            ),
+            CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'City',
+              body: 'Indore',
+              onTap: () {},
+            ),
             CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               icon: CatchIcons.personOutlined,
               title: 'Display name',
               initialValue: 'Suvrat',
             ),
             CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               icon: CatchIcons.cakeOutlined,
               title: 'Locked value',
               initialValue: 'Fixed',
               readOnly: true,
             ),
             CatchField.action(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notification',
               body: 'Starts tomorrow',
               action: const Text('2H'),
@@ -484,6 +512,7 @@ void main() {
               child: SizedBox(
                 width: 360,
                 child: CatchField.inputActions(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'A perfect event with me looks like...',
                   controller: controller,
                   open: expanded,
@@ -539,6 +568,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.nav(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           leading: Semantics(label: '27 May', child: const Text('27')),
           leadingExtent: 48,
           title: 'Wednesday Evening Run',
@@ -572,6 +602,7 @@ void main() {
           child: Align(
             alignment: Alignment.topLeft,
             child: CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               icon: CatchIcons.personOutlined,
               title: 'Display name',
               body: 'Shown on your profile and event rosters',
@@ -603,6 +634,7 @@ void main() {
             title: 'Today',
             children: [
               CatchField.action(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.notificationsNoneRounded,
                 title: 'Event starts tomorrow',
                 body: 'Sundowner 5K meets at Carter Road Jetty.',
@@ -677,6 +709,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchField.action(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Interactive row',
             onTap: () => taps++,
           ),
@@ -729,9 +762,10 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 320,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Instagram',
               leadingUnit: '@',
               inputHint: 'handle',
@@ -767,6 +801,7 @@ void main() {
         SizedBox(
           width: 320,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Search hosts',
             controller: controller,
             showClearButton: true,
@@ -795,7 +830,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.read(
+        CatchField.read(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Invite code',
           body: 'RUNCLUB',
           valid: true,
@@ -812,7 +848,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.input(
+        CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Invite code',
           initialValue: 'RUNCLUB',
           helperText: 'Invite code is available.',
@@ -839,6 +876,7 @@ void main() {
         SizedBox(
           width: 320,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Distance',
             controller: controller,
             variant: CatchFieldVariant.underline,
@@ -890,14 +928,19 @@ void main() {
             child: CatchSection.containedFieldRows(
               children: [
                 CatchFieldLanes.divided(
-                  children: const [
+                  children: [
                     CatchField.control(
+                      copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Prompt',
                       body: 'Question',
                       open: true,
-                      control: Text('Prompt choices'),
+                      control: const Text('Prompt choices'),
                     ),
-                    CatchField.read(title: 'Answer', body: 'Response'),
+                    CatchField.read(
+                      copy: catchFieldCopy(AppLocalizationsEn()),
+                      title: 'Answer',
+                      body: 'Response',
+                    ),
                   ],
                 ),
               ],
@@ -933,11 +976,12 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const MediaQuery(
-            data: MediaQueryData(disableAnimations: true),
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
             child: SizedBox(
               width: 320,
               child: CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Distance',
                 initialValue: '42',
                 variant: CatchFieldVariant.underline,

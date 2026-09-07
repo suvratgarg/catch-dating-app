@@ -94,6 +94,7 @@ class CatchFieldTrailing extends StatelessWidget {
   );
 
   factory CatchFieldTrailing.toggle({
+    required CatchFieldCopy copy,
     Key? key,
     required bool value,
     required ValueChanged<bool>? onChanged,
@@ -109,8 +110,8 @@ class CatchFieldTrailing extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchFieldStatusIndicator(
-          savingSemanticLabel: context.l10n.coreCatchFieldSemanticSaving,
-          savedSemanticLabel: context.l10n.coreCatchFieldSemanticSaved,
+          savingSemanticLabel: copy.savingSemanticLabel,
+          savedSemanticLabel: copy.savedSemanticLabel,
           status: status,
           includeTrailingGap: true,
         ),
@@ -126,6 +127,7 @@ class CatchFieldTrailing extends StatelessWidget {
   );
 
   factory CatchFieldTrailing.status({
+    required CatchFieldCopy copy,
     Key? key,
     required CatchFieldStatus status,
     double topPadding = 0,
@@ -133,8 +135,8 @@ class CatchFieldTrailing extends StatelessWidget {
     key: key,
     topPadding: topPadding,
     builder: (context) => CatchFieldStatusIndicator(
-      savingSemanticLabel: context.l10n.coreCatchFieldSemanticSaving,
-      savedSemanticLabel: context.l10n.coreCatchFieldSemanticSaved,
+      savingSemanticLabel: copy.savingSemanticLabel,
+      savedSemanticLabel: copy.savedSemanticLabel,
       status: status,
     ),
   );

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -175,6 +176,7 @@ class _ProfileDirectTextEntryFieldState
               ));
     return CatchFieldLanes.single(
       child: CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         icon: widget.icon,
         title: widget.label,
         contract: widget.contract,
@@ -275,6 +277,7 @@ class ProfileInlineTextValue extends StatelessWidget {
 
     return CatchFieldLanes.single(
       child: CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         title: label,
         contract: contract,
         placeholder: placeholder ?? displayValue,

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
@@ -78,6 +79,7 @@ class _EventRehearsalSetupSectionState
       title: context.l10n.hostEventRehearsalSetupTitle,
       children: [
         CatchField.control(
+          copy: catchFieldCopy(context.l10n),
           title: widget.session.setup.title,
           body: editable
               ? eventRehearsalScenarioTitle(
@@ -149,6 +151,7 @@ class _EventRehearsalSetupSectionState
                 onSelected: (count) => setState(() => _actorCount = count),
               ),
               CatchField.choices<EventRehearsalModule>(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostEventRehearsalModules,
                 contract: CatchContractConstraints
                     .updateEventRehearsalSetupCallablePayloadSetupModuleIds,
@@ -167,6 +170,7 @@ class _EventRehearsalSetupSectionState
         ),
         if (widget.session.setup.movementSimulation case final movement?)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostEventRehearsalMovementTitle,
             body: context.l10n.hostEventRehearsalMovementSummary(
               itineraryCount: movement.itinerary.length,
@@ -256,6 +260,7 @@ class _EventRehearsalSetupInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: CatchField.input(
+      copy: catchFieldCopy(context.l10n),
       title: title,
       contract: contract,
       controller: controller,
@@ -292,6 +297,7 @@ class _EventRehearsalScenarioPicker extends StatelessWidget {
     onSelected: (scenario, _) => onSelected(scenario),
     builder: (context, controller, _) => CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalScenario,
         valueText: eventRehearsalScenarioTitle(context.l10n, selected),
         onTap: controller.isOpen ? controller.close : controller.open,
@@ -323,6 +329,7 @@ class _EventRehearsalActorCountPicker extends StatelessWidget {
     onSelected: (count, _) => onSelected(count),
     builder: (context, controller, _) => CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalActorCount(count: selected),
         onTap: controller.isOpen ? controller.close : controller.open,
       ),

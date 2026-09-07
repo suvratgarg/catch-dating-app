@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -253,6 +254,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
       children: [
         if (widget.activityKind case final activityKind?)
           CatchField.choices<ActivityKind>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsPrimaryActivityKind,
@@ -271,6 +273,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           ),
         if (!widget.advancedOnly)
           CatchField.optionCards<EventAdmissionDefaultPreset>(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
@@ -294,6 +297,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           ),
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepTitleCohortCaps,
             contract:
                 CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
@@ -316,6 +320,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 children: [
                   Expanded(
                     child: CatchField.inputActions(
+                      copy: catchFieldCopy(context.l10n),
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightMen,
@@ -351,6 +356,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   gapW12,
                   Expanded(
                     child: CatchField.inputActions(
+                      copy: catchFieldCopy(context.l10n),
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightWomen,
@@ -390,6 +396,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (selectedAdmissionPreset ==
             EventAdmissionDefaultPreset.balancedSingles) ...[
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepTitleDemandPricing,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
@@ -416,6 +423,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                   children: [
                     Expanded(
                       child: CatchField.inputActions(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostsClubHostDefaultsStepTitleStep,
                         contract: CatchContractConstraints
                             .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
@@ -458,6 +466,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                     gapW12,
                     Expanded(
                       child: CatchField.inputActions(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostsClubHostDefaultsStepTitleMax,
                         contract: CatchContractConstraints
                             .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
@@ -514,6 +523,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             ),
           ),
           CatchField.optionCards<EventCancellationPolicyId>(
+            copy: catchFieldCopy(context.l10n),
             title:
                 context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
             contract: CatchContractConstraints

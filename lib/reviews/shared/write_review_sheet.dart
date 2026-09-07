@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
@@ -191,6 +192,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
             ),
             gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: ReviewKeys.commentField,
               title: context.l10n.reviewsWriteReviewSheetTitleReview,
               contract: CatchContractConstraints

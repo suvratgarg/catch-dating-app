@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -40,6 +41,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
         title: context.l10n.hostManualSendQueueTitle,
         children: [
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostManualSendQueueLoading,
             body: context.l10n.hostManualSendQueueDisclosure,
           ),
@@ -206,6 +208,7 @@ class _HostManualSendQueueContent extends StatelessWidget {
       children: [
         for (final task in tasks)
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-manual-send-${task.taskId}'),
             title: task.displayName,
             body: _manualTaskBody(context, task),
@@ -260,12 +263,14 @@ class _HostManualSendTaskSheetState
         CatchSection.fieldRows(
           children: [
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-manual-send-open-whatsapp'),
               title: context.l10n.hostManualSendTaskOpenWhatsapp,
               body: _task.phoneE164,
               onTap: _busy ? null : () => unawaited(_openWhatsapp()),
             ),
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-manual-send-skip'),
               title: context.l10n.hostManualSendTaskSkip,
               body: context.l10n.hostManualSendTaskSkipBody,
@@ -355,6 +360,7 @@ class _HostManualSendReplanSheet extends StatelessWidget {
       children: [
         for (final task in tasks.take(50))
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: task.displayName,
             body: _manualTaskReplanBody(context, results[task.taskId]),
           ),

@@ -141,8 +141,8 @@ class _CatchFieldState extends State<CatchField>
   void _announceStatusTransition(CatchFieldStatus status) {
     final message = switch (status) {
       CatchFieldStatus.idle => null,
-      CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
-      CatchFieldStatus.saved => context.l10n.coreCatchFieldSemanticSaved,
+      CatchFieldStatus.saving => widget.copy.savingSemanticLabel,
+      CatchFieldStatus.saved => widget.copy.savedSemanticLabel,
     };
     if (message == null) return;
     unawaited(
@@ -629,7 +629,7 @@ class _CatchFieldState extends State<CatchField>
         widget.addable;
     if (!isEditableRow || label == null || label.isEmpty) return null;
     return CatchField.resolveEmptyValueText(
-      context,
+      widget.copy,
       title: label,
       emptyValueText: widget.emptyValueText,
     );

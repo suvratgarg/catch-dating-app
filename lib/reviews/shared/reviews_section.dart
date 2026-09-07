@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -534,6 +535,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ReviewKeys.ownerResponseField,
             title: context.l10n.reviewsReviewsSectionTitleResponse,
             contract: CatchContractConstraints

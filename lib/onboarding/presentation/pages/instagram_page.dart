@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -106,6 +107,7 @@ class OnboardingInstagramStep extends StatelessWidget {
         CatchSection.fieldRows(
           first: true,
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             controller: controllers.handle,
             title: context.l10n.onboardingInstagramPageTitleHandle,
             contract:

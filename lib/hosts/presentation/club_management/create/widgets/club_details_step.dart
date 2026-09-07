@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -36,6 +37,7 @@ class ClubDetailsStep extends StatelessWidget {
             CatchFieldLanes.divided(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsClubDetailsStepTitleDescription,
                   contract: CatchContractConstraints
                       .createClubCallablePayloadDescription,

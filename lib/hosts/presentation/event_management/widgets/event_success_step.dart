@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -80,6 +81,7 @@ class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
           children: [
             if (widget.requiredForRuntime)
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
                 body: context.l10n.hostsCreateEventGuideReady(
                   format:
@@ -93,6 +95,7 @@ class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
               )
             else
               CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsEventSuccessStepTitleLiveEventGuide,
                 contract: CatchContractConstraints
                     .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
@@ -116,6 +119,7 @@ class _EventSuccessStepState extends ConsumerState<EventSuccessStep> {
               Semantics(
                 expanded: _customizing,
                 child: CatchField.action(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host.create_event.customize_guide'),
                   title: _customizing
                       ? context.l10n.hostsCreateEventHideGuide

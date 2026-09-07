@@ -54,6 +54,7 @@ export 'src/components/catch_error_state_mode.dart';
 export 'src/components/catch_field_action_bar.dart';
 export 'src/components/catch_field_commit_button.dart';
 export 'src/components/catch_field_content_row.dart';
+export 'src/components/catch_field_copy.dart';
 export 'src/components/catch_field_disclosure_drawer.dart';
 export 'src/components/catch_field_explicit_save_control.dart';
 export 'src/components/catch_field_focus_outline.dart';

@@ -380,6 +380,7 @@ void main() {
             SizedBox(
               width: 280,
               child: CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 key: _controlKey,
                 title: 'Public name',
                 controller: controller,

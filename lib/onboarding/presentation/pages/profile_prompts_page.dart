@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -210,6 +211,7 @@ class PromptField extends StatelessWidget {
       key: ValueKey('onboarding-prompt-card-$index'),
       children: [
         CatchField.choices<String>(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('onboarding-prompt-question-$index'),
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
@@ -228,6 +230,7 @@ class PromptField extends StatelessWidget {
           enabled: enabled,
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('onboarding-prompt-answer-$index'),
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
           contract: CatchContractConstraints.profilePromptAnswerAnswer,

@@ -263,6 +263,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchField.select<CityOption>(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleCity,
@@ -351,6 +352,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleIMightHost,
@@ -369,6 +371,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
@@ -387,6 +390,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleInstagram,
@@ -405,6 +409,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
@@ -422,6 +427,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleWhyDoYouWant,

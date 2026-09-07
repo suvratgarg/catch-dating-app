@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -193,6 +194,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                 // Composite exception: paired pace labels, range slider, and
                 // boundary captions must remain one coordinated control.
                 CatchField.control(
+                  copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningPace,
                   title: context
                       .l10n
@@ -273,6 +275,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   ),
                 ),
                 CatchField.choices<PreferredDistance>(
+                  copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningDistances,
                   title: context
                       .l10n
@@ -297,6 +300,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   isOptional: true,
                 ),
                 CatchField.choices<RunReason>(
+                  copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningReasons,
                   title: state.reasonLabel,
                   contract: CatchContractConstraints
@@ -319,6 +323,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   isOptional: true,
                 ),
                 CatchField.choices<PreferredRunTime>(
+                  copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningTimes,
                   title: state.runTimesLabel,
                   contract: CatchContractConstraints

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -80,6 +81,7 @@ class _HostEventEntryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey<String>('host-event-entry-${intent.name}'),
         title: _title(context),
         body: _body(context),

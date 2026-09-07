@@ -508,6 +508,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
               Expanded(
                 child: CatchFieldLanes.single(
                   child: CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
@@ -589,6 +590,7 @@ class GroupOverrideMemberEditor extends StatelessWidget {
       children: [
         Expanded(
           child: CatchField.select<String>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
@@ -1165,6 +1167,7 @@ class RotationOverridePairEditor extends StatelessWidget {
       children: [
         Expanded(
           child: CatchField.select<String>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
@@ -1187,6 +1190,7 @@ class RotationOverridePairEditor extends StatelessWidget {
         gapW8,
         Expanded(
           child: CatchField.select<String>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,

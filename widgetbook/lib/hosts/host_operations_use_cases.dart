@@ -5070,6 +5070,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
         child: _DeviceFrame(
           child: StepperFooter(
             body: CatchFormReviewBody(
+              fieldCopy: catchFieldCopy(context.l10n),
               statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
               message:
                   'Review every section. Open a section to add or change information.',

@@ -2247,7 +2247,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified semantic field primitive for read, navigation, toggle, input, disclosure, choice, select, stepper, and action rows. CatchField owns content, state, accessibility, and input behavior; its enclosing CatchSection or CatchFieldLanes owns sibling dividers, gutters, containment, perimeter, and responsive interaction geometry.",
+      "summary": "Unified semantic field primitive for read, navigation, toggle, input, disclosure, choice, select, stepper, and action rows. CatchField owns content, state, accessibility, and input behavior; its enclosing CatchSection or CatchFieldLanes owns sibling dividers, gutters, containment, perimeter, and responsive interaction geometry. All recipes receive localized field copy from callers through CatchFieldCopy.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2340,6 +2340,13 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "copy",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchFieldCopy",
+            "notes": "Caller-resolved optional-label and validation copy, action labels, save announcements, empty-value and selection prompts, and clear tooltips. Required by every recipe; locale grammar stays in the app adapter."
+          },
           {
             "name": "title",
             "type": "string",

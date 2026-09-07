@@ -62,6 +62,7 @@ final class CatchFormReadRow<P> extends CatchFormRowDescriptor<P> {
     CatchFormErrorText errorText,
   ) {
     return CatchField.read(
+      copy: scope.fieldCopy,
       icon: icon,
       title: label,
       body: body,
@@ -348,6 +349,7 @@ final class CatchFormCustomRow<P> extends CatchFormRowDescriptor<P> {
 /// Field-local access to the list's shared accordion and save pipeline.
 class CatchFormRowScope<P> {
   const CatchFormRowScope({
+    required this.fieldCopy,
     required this.isExpanded,
     required this.toggle,
     required this.collapse,
@@ -360,12 +362,14 @@ class CatchFormRowScope<P> {
   final VoidCallback collapse;
   final CatchFormSave<P> save;
   final CatchFormTextCommitMode textCommitMode;
+  final CatchFieldCopy fieldCopy;
 }
 
 /// Maps typed form descriptors to canonical CatchField rows inside one
 /// CatchSection, with one accordion and one per-field patch save delegate.
 class CatchFormRowList<P> extends StatefulWidget {
   const CatchFormRowList({
+    required this.fieldCopy,
     super.key,
     required this.rows,
     required this.savePatch,
@@ -379,6 +383,7 @@ class CatchFormRowList<P> extends StatefulWidget {
   });
 
   final List<CatchFormRowDescriptor<P>> rows;
+  final CatchFieldCopy fieldCopy;
   final CatchFormSave<P> savePatch;
   final CatchFormErrorText errorText;
   final CatchAccordionController? accordion;
@@ -444,6 +449,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
   CatchFormRowScope<P> _scopeFor(CatchFormRowDescriptor<P> row) {
     final key = row.accordionKey;
     return CatchFormRowScope<P>(
+      fieldCopy: widget.fieldCopy,
       isExpanded: _accordion.isExpanded(key),
       toggle: () => _accordion.toggle(key),
       collapse: _accordion.collapse,
@@ -617,6 +623,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
         (saveError == null ? null : widget.errorText(context, saveError));
     if (_usesExplicitCommit) {
       return CatchField.inputActions(
+        copy: widget.scope.fieldCopy,
         icon: descriptor.icon,
         title: descriptor.label,
         placeholder: descriptor.placeholder,
@@ -650,6 +657,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
       );
     }
     return CatchField.input(
+      copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
       placeholder: descriptor.placeholder,
@@ -772,6 +780,7 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
     final error = _saveState.error;
     final addable = _selected == null;
     return CatchField.choices<T>(
+      copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
       emptyValueText: descriptor.emptyValueText,
@@ -899,6 +908,7 @@ class _CatchFormMultiChoiceRowEditorState<P, T>
     final error = _saveState.error;
     final addable = _selected.isEmpty && descriptor.isAddAffordanceWhenEmpty;
     return CatchField.choices<T>(
+      copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
       emptyValueText: descriptor.emptyValueText,
@@ -1005,6 +1015,7 @@ class _CatchFormRangeRowEditorState<P>
     final error = _saveState.error;
     // Composite exception: a bounded two-handle slider commits one range.
     return CatchField.control(
+      copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,
       contract: descriptor.contract,

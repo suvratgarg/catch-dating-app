@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -86,6 +87,7 @@ class ClubBasicsStep extends StatelessWidget {
             CatchSection.fieldRows(
               children: [
                 CatchField.choices<OrganizerType>(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsOrganizerTypeLabel,
                   contract: CatchContractConstraints
                       .createClubCallablePayloadOrganizerType,
@@ -105,6 +107,7 @@ class ClubBasicsStep extends StatelessWidget {
                       : null,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsClubBasicsStepTitleClubName,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadName,
@@ -133,6 +136,7 @@ class ClubBasicsStep extends StatelessWidget {
                             .hostsClubBasicsStepVisiblecopyPleaseSelectACity
                       : null,
                   builder: (field) => CatchField.choices<CityOption>(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsClubBasicsStepTitleCity,
                     contract: CatchContractConstraints
                         .createClubCallablePayloadLocation,
@@ -161,6 +165,7 @@ class ClubBasicsStep extends StatelessWidget {
                   ),
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsClubBasicsStepTitleAreaNeighbourhood,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadArea,

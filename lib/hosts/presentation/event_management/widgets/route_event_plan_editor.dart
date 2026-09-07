@@ -85,6 +85,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
       children: [
         if (widget.activityKind == ActivityKind.openActivity)
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.routePlanEnabled,
             title: context.l10n.hostsRouteEventPlanOptInTitle,
             body: context.l10n.hostsRouteEventPlanOptInBody,
@@ -98,6 +99,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
           ),
         if (plan != null)
           CatchField.control(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.routePlanSummary,
             title: context.l10n.hostsRouteEventPlanSummaryTitle,
             body: [
@@ -112,6 +114,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
             control: CatchSection.containedFieldRows(
               children: [
                 CatchField.choices<RouteMovementMode>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeMovement,
                   title: context.l10n.hostsRouteEventPlanMovementTitle,
                   contract: CatchContractConstraints
@@ -129,6 +132,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteShape>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeShape,
                   title: context.l10n.hostsRouteEventPlanShapeTitle,
                   contract: CatchContractConstraints
@@ -146,6 +150,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteGroupStrategy>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeGroupStrategy,
                   title: context.l10n.hostsRouteEventPlanGroupTitle,
                   contract: CatchContractConstraints
@@ -163,6 +168,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteStopCadence>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeStopCadence,
                   title: context.l10n.hostsRouteEventPlanCadenceTitle,
                   contract: CatchContractConstraints
@@ -180,6 +186,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteStopKind>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeStopKinds,
                   title: context.l10n.hostsRouteEventPlanStopsTitle,
                   contract: CatchContractConstraints
@@ -202,6 +209,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteRoleKind>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeRoleKinds,
                   title: context.l10n.hostsRouteEventPlanRolesTitle,
                   contract: CatchContractConstraints
@@ -248,6 +256,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   ),
                 ),
                 CatchField.choices<_PacePreset>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routePaceGroups,
                   title: context.l10n.hostsRouteEventPlanPaceGroupsTitle,
                   body: context.l10n.hostsRouteEventPlanPaceGroupsBody,
@@ -267,6 +276,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   iconColor: accent,
                 ),
                 CatchField.choices<RouteLiveTrackingMode>(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeLiveTracking,
                   title: context.l10n.hostsRouteEventPlanTrackingTitle,
                   body: context.l10n.hostsRouteEventPlanTrackingBody,

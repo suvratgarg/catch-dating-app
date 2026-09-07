@@ -366,6 +366,7 @@ class _HostApplicationImportSheet extends StatelessWidget {
             children: [
               for (final question in draft.questions)
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: question.label,
                   body: question.canonicalFieldId == null
                       ? context.l10n.hostApplicationsImportOrganizerField

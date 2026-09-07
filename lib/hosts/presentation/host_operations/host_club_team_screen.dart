@@ -421,6 +421,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
           children: [
             for (final club in hostedClubs)
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: club.name,
                 valueText: club.isOwnedBy(profile.uid)
                     ? context.l10n.clubsClubHostRoleOwner
@@ -477,6 +478,7 @@ class HostTeamProfileSection extends StatelessWidget {
         first: true,
         children: [
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
             valueText: creatingProfile
                 ? context.l10n.hostsHostClubTeamScreenVisiblecopyCreatingProfile
@@ -568,11 +570,13 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         first: true,
         children: [
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
             valueText: profile.displayName,
             icon: CatchIcons.personOutlineRounded,
           ),
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
             valueText: profile.roleTitle?.trim().isNotEmpty == true
                 ? profile.roleTitle!.trim()
@@ -580,11 +584,13 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
             icon: CatchIcons.cardMembershipOutlined,
           ),
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleStatus,
             valueText: hostProfileStatusLabel(profile.status, context.l10n),
             icon: CatchIcons.checkCircleOutlineRounded,
           ),
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
             valueText: profile.bio?.trim().isNotEmpty == true
                 ? profile.bio!.trim()
@@ -601,6 +607,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
       first: true,
       children: [
         CatchField.inputActions(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-team-profile-display-name'),
           title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
           contract: CatchContractConstraints.hostProfileDocumentDisplayName,
@@ -627,6 +634,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           },
         ),
         CatchField.inputActions(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-team-profile-role-title'),
           title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
           contract: CatchContractConstraints.hostProfileDocumentRoleTitle,
@@ -647,11 +655,13 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           textCapitalization: TextCapitalization.words,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubTeamScreenTitleStatus,
           valueText: hostProfileStatusLabel(profile.status, context.l10n),
           icon: CatchIcons.checkCircleOutlineRounded,
         ),
         CatchField.inputActions(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('host-team-profile-bio'),
           title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
           contract: CatchContractConstraints.hostProfileDocumentBio,
@@ -768,6 +778,7 @@ class HostTeamHostedClubsSection extends StatelessWidget {
         for (final club in clubs)
           CatchFieldLanes.single(
             child: CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: actions.clubNavigationFor(club).roleLabel,
               valueText: club.name,
               icon: CatchIcons.groupOutlined,

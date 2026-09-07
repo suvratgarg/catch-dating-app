@@ -4,6 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 Future<int?> showCatchFormStepOverview({
+  required CatchFieldCopy fieldCopy,
   required BuildContext context,
   required String title,
   required String subtitle,
@@ -16,6 +17,7 @@ Future<int?> showCatchFormStepOverview({
       title: title,
       subtitle: subtitle,
       child: CatchFormStepOverview(
+        fieldCopy: fieldCopy,
         items: items,
         statusLabelBuilder: statusLabelBuilder,
       ),
@@ -25,6 +27,7 @@ Future<int?> showCatchFormStepOverview({
 
 class CatchFormStepOverview extends StatelessWidget {
   const CatchFormStepOverview({
+    required this.fieldCopy,
     super.key,
     required this.items,
     required this.statusLabelBuilder,
@@ -35,12 +38,15 @@ class CatchFormStepOverview extends StatelessWidget {
   final String Function(CatchFormStepStatus) statusLabelBuilder;
   final ValueChanged<int>? onStepSelected;
 
+  final CatchFieldCopy fieldCopy;
+
   @override
   Widget build(BuildContext context) {
     return CatchFieldLanes.divided(
       children: [
         for (final item in items)
           CatchField.nav(
+            copy: fieldCopy,
             key: ValueKey('catch-form-step-overview-${item.index}'),
             title: item.title,
             action: CatchBadge.functional(
@@ -63,6 +69,7 @@ class CatchFormStepOverview extends StatelessWidget {
 
 class CatchFormReviewBody extends StatelessWidget {
   const CatchFormReviewBody({
+    required this.fieldCopy,
     super.key,
     required this.message,
     required this.items,
@@ -76,6 +83,8 @@ class CatchFormReviewBody extends StatelessWidget {
   final String Function(CatchFormStepStatus) statusLabelBuilder;
   final ValueChanged<int> onStepSelected;
   final List<CatchFormReviewSummaryItem> summaryItems;
+
+  final CatchFieldCopy fieldCopy;
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +104,7 @@ class CatchFormReviewBody extends StatelessWidget {
               children: [
                 for (final item in summaryItems)
                   CatchField.read(
+                    copy: fieldCopy,
                     title: item.label,
                     body: item.value,
                     bodyMaxLines: 5,
@@ -105,6 +115,7 @@ class CatchFormReviewBody extends StatelessWidget {
           ],
           gapH16,
           CatchFormStepOverview(
+            fieldCopy: fieldCopy,
             items: items,
             statusLabelBuilder: statusLabelBuilder,
             onStepSelected: onStepSelected,

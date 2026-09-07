@@ -592,6 +592,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           ),
         ),
         CatchFormRowList<UpdateClubPatch>(
+          fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleIdentity,
           rows: identityRows,
           accordion: _fieldAccordion,
@@ -599,6 +600,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           errorText: _errorText,
         ),
         CatchFormRowList<UpdateClubPatch>(
+          fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleContact,
           rows: contactRows,
           accordion: _fieldAccordion,
@@ -609,6 +611,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
           children: [
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-event-defaults'),
               title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
               valueText: club.hostDefaults.primaryActivityKind.label,
@@ -616,6 +619,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
               onTap: () => _openSpoke(Routes.hostClubEventDefaultsScreen),
             ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-live-guide'),
               title: context.l10n.hostsHostClubEditTabLabelLiveEventGuide,
               valueText: eventSuccess.enabled
@@ -626,12 +630,14 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             ),
             if (widget.isOwner)
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-club-settings-payments'),
                 title: context.l10n.hostsHostClubEditTabLabelPayments,
                 icon: CatchIcons.paymentsOutlined,
                 onTap: () => _openSpoke(Routes.hostClubPaymentsScreen),
               ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-host-team'),
               title: context.l10n.hostsHostClubEditTabLabelHostTeam,
               valueText: context.l10n.hostsHostClubEditTabValueHostCount(

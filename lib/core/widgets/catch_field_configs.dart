@@ -6,6 +6,7 @@ part of 'catch_field.dart';
 
 sealed class _CatchFieldConfig extends CatchField {
   const _CatchFieldConfig({
+    required CatchFieldCopy copy,
     Key? key,
     required String? title,
     CatchContractFieldConstraints? contract,
@@ -21,6 +22,7 @@ sealed class _CatchFieldConfig extends CatchField {
     bool enabled = true,
     CatchFieldStatus status = CatchFieldStatus.idle,
   }) : super._shared(
+         copy: copy,
          key: key,
          title: title,
          contract: contract,
@@ -40,6 +42,7 @@ sealed class _CatchFieldConfig extends CatchField {
 
 final class _RowConfig extends _CatchFieldConfig {
   const _RowConfig.read({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -79,6 +82,7 @@ final class _RowConfig extends _CatchFieldConfig {
          'CatchField.leadingExtent requires non-null leading content.',
        ),
        super(
+         copy: copy,
          key: key,
          title: title,
          body: body,
@@ -93,6 +97,7 @@ final class _RowConfig extends _CatchFieldConfig {
        );
 
   const _RowConfig.content({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     required String body,
@@ -132,6 +137,7 @@ final class _RowConfig extends _CatchFieldConfig {
          'CatchField.leadingExtent requires non-null leading content.',
        ),
        super(
+         copy: copy,
          key: key,
          title: title,
          body: body,
@@ -146,6 +152,7 @@ final class _RowConfig extends _CatchFieldConfig {
        );
 
   const _RowConfig.nav({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -185,6 +192,7 @@ final class _RowConfig extends _CatchFieldConfig {
          'CatchField.leadingExtent requires non-null leading content.',
        ),
        super(
+         copy: copy,
          key: key,
          title: title,
          body: body,
@@ -199,6 +207,7 @@ final class _RowConfig extends _CatchFieldConfig {
        );
 
   const _RowConfig.sortable({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     required String metadata,
@@ -219,6 +228,7 @@ final class _RowConfig extends _CatchFieldConfig {
        add = false,
        navigation = true,
        super(
+         copy: copy,
          key: key,
          title: title,
          emphasis: CatchFieldEmphasis.title,
@@ -227,6 +237,7 @@ final class _RowConfig extends _CatchFieldConfig {
        );
 
   const _RowConfig.action({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -266,6 +277,7 @@ final class _RowConfig extends _CatchFieldConfig {
          'CatchField.leadingExtent requires non-null leading content.',
        ),
        super(
+         copy: copy,
          key: key,
          title: title,
          body: body,
@@ -280,6 +292,7 @@ final class _RowConfig extends _CatchFieldConfig {
        );
 
   const _RowConfig.add({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     this.onTap,
@@ -299,7 +312,7 @@ final class _RowConfig extends _CatchFieldConfig {
        valid = false,
        add = true,
        navigation = true,
-       super(key: key, title: title, tone: tone, icon: icon);
+       super(copy: copy, key: key, title: title, tone: tone, icon: icon);
 
   final int titleMaxLines;
   final int bodyMaxLines;
@@ -320,6 +333,7 @@ final class _RowConfig extends _CatchFieldConfig {
 
 final class _ToggleConfig extends _CatchFieldConfig {
   const _ToggleConfig.toggle({
+    required CatchFieldCopy copy,
     Key? key,
     String? title,
     String? body,
@@ -339,6 +353,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
     CatchFieldStatus status = CatchFieldStatus.idle,
   }) : onToggleChanged = onChanged,
        super(
+         copy: copy,
          key: key,
          title: title,
          contract: contract,
@@ -362,6 +377,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
 
 final class _EditConfig extends _CatchFieldConfig {
   const _EditConfig.input({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -431,6 +447,7 @@ final class _EditConfig extends _CatchFieldConfig {
          'CatchField.input cannot include both controller and initialValue.',
        ),
        super(
+         copy: copy,
          key: key,
          title: title,
          contract: contract,
@@ -443,6 +460,7 @@ final class _EditConfig extends _CatchFieldConfig {
        );
 
   const _EditConfig.inputActions({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -507,6 +525,7 @@ final class _EditConfig extends _CatchFieldConfig {
        onCancel = onCancel,
        onSubmit = onSubmit,
        super(
+         copy: copy,
          key: key,
          title: title,
          contract: contract,
@@ -572,6 +591,7 @@ final class _EditConfig extends _CatchFieldConfig {
 
 final class _SelectConfig extends _CatchFieldConfig {
   const _SelectConfig.select({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     CatchContractFieldConstraints? contract,
@@ -588,7 +608,13 @@ final class _SelectConfig extends _CatchFieldConfig {
     required this.helperText,
     required this.helperTone,
     required bool enabled,
-  }) : super(key: key, title: title, contract: contract, enabled: enabled);
+  }) : super(
+         copy: copy,
+         key: key,
+         title: title,
+         contract: contract,
+         enabled: enabled,
+       );
 
   final List<Object?> values;
   final String? contractExemption;
@@ -606,6 +632,7 @@ final class _SelectConfig extends _CatchFieldConfig {
 
 final class _ControlConfig extends _CatchFieldConfig {
   const _ControlConfig.control({
+    required CatchFieldCopy copy,
     Key? key,
     required String title,
     String? body,
@@ -634,6 +661,7 @@ final class _ControlConfig extends _CatchFieldConfig {
     this.error,
     this.errorText,
   }) : super(
+         copy: copy,
          key: key,
          title: title,
          contract: contract,

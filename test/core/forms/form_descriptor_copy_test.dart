@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +61,7 @@ void main() {
           builder: (context, setState) {
             rebuild = setState;
             return CatchFormRowList<String>(
+              fieldCopy: catchFieldCopy(AppLocalizationsEn()),
               rows: [
                 CatchFormTextRow<String>(
                   id: 'name',
@@ -113,6 +116,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           CatchFormRowList<Object?>(
+            fieldCopy: catchFieldCopy(AppLocalizationsEn()),
             rows: [
               CatchFormSingleChoiceRow<Object?, int>(
                 id: 'single',

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -95,6 +96,7 @@ class EventPolicyStep extends StatelessWidget {
             CatchSection.fieldRows(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.capacity,
                   title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
                   contract: CatchContractConstraints
@@ -133,6 +135,7 @@ class EventPolicyStep extends StatelessWidget {
                 ),
                 if (!externalBookingMode)
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.price,
                     title: context.l10n
                         .hostsEventPolicyStepTitleBasePriceCurrencycode(
@@ -172,6 +175,7 @@ class EventPolicyStep extends StatelessWidget {
                   ),
                 if (!externalBookingMode)
                   CatchField.optionCards<EventAdmissionPreset>(
+                    copy: catchFieldCopy(context.l10n),
                     title:
                         context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
                     contract: CatchContractConstraints
@@ -193,6 +197,7 @@ class EventPolicyStep extends StatelessWidget {
                 if (!externalBookingMode &&
                     admissionPreset == EventAdmissionPreset.inviteOnly)
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.inviteCode,
                     title: context.l10n.hostsEventPolicyStepTitleInviteCode,
                     contract: CatchContractConstraints
@@ -219,6 +224,7 @@ class EventPolicyStep extends StatelessWidget {
                 if (!externalBookingMode &&
                     admissionPreset == EventAdmissionPreset.openCapacity) ...[
                   CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.cohortCapsToggle,
                     title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
                     contract: CatchContractConstraints
@@ -234,6 +240,7 @@ class EventPolicyStep extends StatelessWidget {
                     CatchSection.containedFieldRows(
                       children: [
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.maxMen,
                           title: context
                               .l10n
@@ -259,6 +266,7 @@ class EventPolicyStep extends StatelessWidget {
                               : null,
                         ),
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.maxWomen,
                           title: context
                               .l10n
@@ -289,6 +297,7 @@ class EventPolicyStep extends StatelessWidget {
                 if (!externalBookingMode &&
                     admissionPreset == EventAdmissionPreset.requestToJoin)
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: admissionPreset.title(context.l10n),
                     body: context
                         .l10n
@@ -298,6 +307,7 @@ class EventPolicyStep extends StatelessWidget {
                   ),
                 if (!externalBookingMode)
                   CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.crossPathsPairInventoryToggle,
                     title:
                         context.l10n.hostsEventPolicyStepTitleCrossPathsPairs,
@@ -312,6 +322,7 @@ class EventPolicyStep extends StatelessWidget {
                   CatchSection.containedFieldRows(
                     children: [
                       CatchField.input(
+                        copy: catchFieldCopy(context.l10n),
                         key: CreateEventFormKeys.crossPathsPairCapacity,
                         title: context
                             .l10n
@@ -351,6 +362,7 @@ class EventPolicyStep extends StatelessWidget {
                     admissionPreset ==
                         EventAdmissionPreset.balancedSingles) ...[
                   CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.dynamicPricingToggle,
                     title: context.l10n.hostsEventPolicyStepTitleDemandPricing,
                     contract: CatchContractConstraints
@@ -366,6 +378,7 @@ class EventPolicyStep extends StatelessWidget {
                     CatchSection.containedFieldRows(
                       children: [
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.dynamicPricingStep,
                           title: context.l10n
                               .hostsEventPolicyStepTitleStepCurrencycode(
@@ -389,6 +402,7 @@ class EventPolicyStep extends StatelessWidget {
                               : null,
                         ),
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.dynamicPricingMax,
                           title: context.l10n
                               .hostsEventPolicyStepTitleMaxCurrencycode(
@@ -435,6 +449,7 @@ class EventPolicyStep extends StatelessWidget {
                       return const SizedBox.shrink();
                     }
                     return CatchField.optionCards<EventCancellationPolicyId>(
+                      copy: catchFieldCopy(context.l10n),
                       title: context
                           .l10n
                           .hostsEventPolicyStepLabelCancellationPolicy,

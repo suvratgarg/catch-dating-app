@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -52,7 +53,10 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
             title: context.l10n.hostApplicationsTitle,
             children: [
               if (state.applications.isEmpty)
-                CatchField.read(body: context.l10n.hostCustomersNoApplications),
+                CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
+                  body: context.l10n.hostCustomersNoApplications,
+                ),
               for (final application in state.applications)
                 CatchRecordRow(
                   key: ValueKey(
@@ -90,6 +94,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
             gapH24,
             CatchFieldLanes.single(
               child: CatchField.control(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostCustomersLatestSubmittedDetails,
                 contractExemption:
                     'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
@@ -144,10 +149,12 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
         children: [
           if (detail.answers.isEmpty)
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               body: context.l10n.hostCustomersSubmittedAnswersUnavailable,
             ),
           if (detail.outreach.instagramUrl case final url?)
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostApplicationInstagram,
               body: Uri.parse(url).path.replaceAll('/', ''),
               icon: CatchIcons.openInNewRounded,
@@ -155,6 +162,7 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
             ),
           if (detail.outreach.linkedinUrl case final url?)
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostApplicationLinkedin,
               body: url,
               bodyMaxLines: 4,
@@ -170,12 +178,14 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
                   )
                   .take(8))
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: answer.questionLabel,
               body: hostCustomerApplicationAnswerText(context, answer.value),
               titleMaxLines: 4,
               bodyMaxLines: 8,
             ),
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostCustomersOpenApplication,
             body: hostApplicationStatusLabel(context, detail.reviewStatus),
             onTap: onOpen,

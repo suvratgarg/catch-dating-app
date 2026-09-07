@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
@@ -23,6 +24,7 @@ class CrossPathsEventConsentSection extends StatelessWidget {
       title: context.l10n.crossPathsEventConsentSectionTitleCrossPaths,
       children: [
         CatchField.toggle(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('cross_paths.event_consent.toggle'),
           contract: CatchContractConstraints
               .setCrossPathsEventConsentCallablePayloadEnabled,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -86,6 +87,7 @@ class HostCustomerMemorySection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host-customer-edit-tags'),
                   titleMaxLines: 3,
                   valueMaxLines: 2,
@@ -98,6 +100,7 @@ class HostCustomerMemorySection extends StatelessWidget {
                 ),
                 if (notes.isEmpty)
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     key: const ValueKey('host-customer-add-note'),
                     title: context.l10n.hostCustomersNotes,
                     body: context.l10n.hostCustomersNoNotes,
@@ -222,6 +225,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-customer-note-body'),
             title: context.l10n.hostCustomersNoteBody,
             contract: widget.note == null
@@ -355,6 +359,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
               ),
             if (_vocabulary.isNotEmpty) gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-customer-new-tag'),
               title: context.l10n.hostCustomersNewTag,
               contract: CatchContractConstraints

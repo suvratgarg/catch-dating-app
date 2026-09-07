@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -40,6 +41,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
       title: sectionTitle,
       children: [
         CatchField.optionCards<EventSuccessUnitKind>(
+          copy: catchFieldCopy(context.l10n),
           title: context
               .l10n
               .eventSuccessEventSuccessStructureConfigEditorTextGroupPeopleInto,
@@ -55,6 +57,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup)
           CatchField.stepper(
+            copy: catchFieldCopy(context.l10n),
             title: value.unitKind.peoplePerLabel,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigUnitSize,
@@ -83,6 +86,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
         if (supportsUnitCount)
           CatchField.optionCards<bool>(
+            copy: catchFieldCopy(context.l10n),
             title: value.unitKind.countLabel,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigUnitCount,
@@ -112,6 +116,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
         if (supportsUnitCount && value.unitCount != null)
           CatchField.stepper(
+            copy: catchFieldCopy(context.l10n),
             title: value.unitKind.countLabel,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigUnitCount,
@@ -140,6 +145,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
           CatchField.choices<EventSuccessActivityAssignmentAttribute>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy,
@@ -166,6 +172,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
           CatchField.choices<EventSuccessActivityAssignmentAttribute>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy,
@@ -194,6 +201,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         ],
         if (value.rotates) ...[
           CatchField.choices<EventSuccessRotationRepeatStrategy>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextMeetingTheSamePersonAgain,
@@ -211,6 +219,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
           CatchField.stepper(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorLabelMaxTimesTheSamePairMeets,
@@ -242,6 +251,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         ],
         if (!enabled)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextStructureIsLockedOnce,

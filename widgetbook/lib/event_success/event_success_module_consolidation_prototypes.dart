@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +109,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                     title: 'HOW PEOPLE MIX',
                     children: [
                       CatchField.choices<EventSuccessMixPrototypeMode>(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Group flow',
                         body: _recommendationFor(_mode),
                         icon: CatchIcons.groups3Outlined,
@@ -122,6 +125,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                           children: [
                             if (_mode != EventSuccessMixPrototypeMode.pairs)
                               CatchField.choices<int>(
+                                copy: catchFieldCopy(context.l10n),
                                 title: _unitSizeTitle(_mode),
                                 values: const [4, 6, 8, 10],
                                 itemLabel: (value) => '$value people',
@@ -131,6 +135,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                                 },
                               ),
                             CatchField.choices<String>(
+                              copy: catchFieldCopy(context.l10n),
                               title: 'Group count',
                               body: 'Let Catch estimate it from attendance.',
                               values: const ['Automatic', 'Fixed'],
@@ -142,6 +147,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                             ),
                             if (rotating)
                               CatchField.choices<int?>(
+                                copy: catchFieldCopy(context.l10n),
                                 title: 'Rotate every',
                                 values: const [null, 10, 15, 20, 30],
                                 itemLabel: (value) => value == null
@@ -156,6 +162,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                               ),
                             if (rotating && _rotationMinutes != null)
                               CatchField.toggle(
+                                copy: catchFieldCopy(context.l10n),
                                 title: 'Repeat assignments',
                                 body:
                                     'Allow someone to meet the same group again.',
@@ -170,6 +177,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                   CatchSection.fieldRows(
                     title: 'WHEN PEOPLE ARRIVE',
                     child: CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       title: 'Arrival icebreaker',
                       body: 'Give each attendee one easy first conversation.',
                       value: _arrivalIcebreaker,
@@ -181,6 +189,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                     title: 'DURING THE EVENT',
                     children: [
                       CatchField.toggle(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Welcome script',
                         body:
                             'A short opening that gives people permission to talk.',
@@ -189,6 +198,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                             setState(() => _welcomeScript = value),
                       ),
                       CatchField.toggle(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Conversation prompts',
                         body:
                             'Offer an easy next conversation at planned moments.',
@@ -197,6 +207,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                             setState(() => _conversationPrompts = value),
                       ),
                       CatchField.toggle(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Live reveal',
                         body: 'Reveal the next partner or group together.',
                         value: _liveReveal,
@@ -204,6 +215,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                             setState(() => _liveReveal = value),
                       ),
                       CatchField.choices<_MatchCluePrototypeMode>(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Match clue questions',
                         body: _matchClueDescription(_matchClues),
                         values: _MatchCluePrototypeMode.values,

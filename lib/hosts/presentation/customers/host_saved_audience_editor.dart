@@ -176,6 +176,7 @@ class _HostSavedAudienceEditorFormState
                         title: context.l10n.hostSavedAudienceDetails,
                         children: [
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-saved-audience-name'),
                             title: context.l10n.hostSavedAudienceName,
                             contract: CatchContractConstraints
@@ -189,6 +190,7 @@ class _HostSavedAudienceEditorFormState
                                 : null,
                           ),
                           CatchField.select<HostSavedAudienceMembershipMode>(
+                            copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-saved-audience-mode'),
                             title: context.l10n.hostAudienceMembershipMode,
                             contractExemption:
@@ -215,6 +217,7 @@ class _HostSavedAudienceEditorFormState
                           ),
                           if (!_static)
                             CatchField.select<HostSavedAudienceJoin>(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey('host-saved-audience-join'),
                               title: context.l10n.hostSavedAudienceMatch,
                               contract: CatchContractConstraints
@@ -270,6 +273,7 @@ class _HostSavedAudienceEditorFormState
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.add(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-add-rule',
                               ),
@@ -357,6 +361,7 @@ class _HostSavedAudienceEditorFormState
                           ),
                           children: [
                             CatchField.read(
+                              copy: catchFieldCopy(context.l10n),
                               title: context.l10n.hostSavedAudiencePeople,
                               body: _savedAudienceDirectoryBody(
                                 context,
@@ -364,6 +369,7 @@ class _HostSavedAudienceEditorFormState
                               ),
                             ),
                             CatchField.action(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-refresh-preview',
                               ),
@@ -378,6 +384,7 @@ class _HostSavedAudienceEditorFormState
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.action(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-archive',
                               ),
@@ -578,6 +585,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
       children: [
         CatchField.select<_AudienceRuleKind>(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('host-saved-audience-rule-type-$number'),
           title: context.l10n.hostSavedAudienceRuleType,
           contract: CatchContractConstraints
@@ -614,6 +622,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.computedSegment => [
             CatchField.select<HostAudienceSegment>(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceSegment,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
@@ -632,6 +641,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.manualTag => [
             CatchField.select<HostCustomerManualTag>(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceTag,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
@@ -652,6 +662,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.attendanceCount => [
             CatchField.select<HostSavedAudienceAttendanceOperator>(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceAttendanceComparison,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
@@ -670,6 +681,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               },
             ),
             CatchField.stepper(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceEventsAttended,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventCount,
@@ -686,6 +698,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.lastSeenWithinDays => [
             CatchField.stepper(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceLastSeenWithin,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays,
@@ -700,6 +713,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.campaignReachable => [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceManagedReach,
               body: context.l10n.hostSavedAudienceManagedReachBody,
             ),

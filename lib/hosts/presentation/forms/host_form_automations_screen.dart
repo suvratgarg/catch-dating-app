@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -160,6 +161,7 @@ class _HostFormAutomationsScreenState
                 gapH24,
                 CatchFieldLanes.single(
                   child: CatchField.control(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostAudienceAutomationShortcuts,
                     contractExemption:
                         'Action group that creates server-validated automation presets; no scalar field value is persisted.',
@@ -210,6 +212,7 @@ class _HostFormAutomationsScreenState
                   children: [
                     for (final run in state.runs)
                       CatchField.control(
+                        copy: catchFieldCopy(context.l10n),
                         title:
                             state.rules
                                 .where((rule) => rule.ruleId == run.ruleId)

@@ -1,6 +1,36 @@
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 
+/// Resolves field grammar and actions at the app's localization boundary.
+CatchFieldCopy catchFieldCopy(AppLocalizations l10n) => CatchFieldCopy(
+  label: catchFormFieldLabelCopy(l10n),
+  validation: catchFormValidationCopy(l10n),
+  cancelLabel: l10n.coreCatchFieldLabelCancel,
+  doneLabel: l10n.coreCatchFieldLabelDone,
+  savingLabel: l10n.coreCatchFieldLabelSaving,
+  savingSemanticLabel: l10n.coreCatchFieldSemanticSaving,
+  savedSemanticLabel: l10n.coreCatchFieldSemanticSaved,
+  emptyValueText: (title) {
+    final label = title.trim();
+    final fieldLabel = l10n.localeName.startsWith('en')
+        ? label.toLowerCase()
+        : label;
+    return l10n.coreCatchFieldVisiblecopyAddFieldLabel(fieldLabel: fieldLabel);
+  },
+  selectPlaceholder: (title) {
+    final normalizedTitle = title?.trim();
+    if (normalizedTitle == null || normalizedTitle.isEmpty) {
+      return l10n.coreCatchFieldVisiblecopySelect;
+    }
+    return l10n.coreCatchFieldVisiblecopySelectTolowercase(
+      toLowerCase: normalizedTitle.toLowerCase(),
+    );
+  },
+  clearTooltip: (title) => l10n.coreCatchFieldTooltipClearValue1(
+    value1: title ?? l10n.coreCatchFieldTooltipField,
+  ),
+);
+
 /// Keeps validation messages and their numeric grammar in the app catalog.
 CatchFormValidationCopy catchFormValidationCopy(
   AppLocalizations l10n,

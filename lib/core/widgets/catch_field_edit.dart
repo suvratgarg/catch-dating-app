@@ -21,7 +21,7 @@ extension _CatchFieldEdit on _CatchFieldState {
       key: _fieldKey,
       initialValue: _controller.text,
       validator: (value) => CatchContractFieldPolicy.validateText(
-        copy: catchFormValidationCopy(context.l10n),
+        copy: widget.copy.validation,
         label: widget.title ?? '',
         value: value ?? '',
         contract: widget.contract,
@@ -147,7 +147,7 @@ extension _CatchFieldEdit on _CatchFieldState {
             if (effectiveShowLabel &&
                 !_useFloatingLabel(effectiveVariant, effectiveShowLabel)) ...[
               CatchFormFieldLabel.inline(
-                copy: catchFormFieldLabelCopy(context.l10n),
+                copy: widget.copy.label,
                 label: _title ?? '',
                 style: _fieldCaptionTextStyle(
                   context,
@@ -451,7 +451,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                 value:
                     label ??
                     widget.placeholder ??
-                    _selectPlaceholder(context.l10n, _title),
+                    widget.copy.selectPlaceholder(_title),
                 supportText: supportText,
                 hasError: hasError,
                 valueIsPlaceholder: label == null,
@@ -577,9 +577,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                 const SizedBox.shrink();
           }
           return IconButton(
-            tooltip: context.l10n.coreCatchFieldTooltipClearValue1(
-              value1: _title ?? context.l10n.coreCatchFieldTooltipField,
-            ),
+            tooltip: widget.copy.clearTooltip(_title),
             icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
             onPressed: () {
               _controller.clear();
@@ -766,16 +764,6 @@ extension _CatchFieldEdit on _CatchFieldState {
     }
     return const BoxConstraints();
   }
-}
-
-String _selectPlaceholder(AppLocalizations l10n, String? title) {
-  final normalizedTitle = title?.trim();
-  if (normalizedTitle == null || normalizedTitle.isEmpty) {
-    return l10n.coreCatchFieldVisiblecopySelect;
-  }
-  return l10n.coreCatchFieldVisiblecopySelectTolowercase(
-    toLowerCase: normalizedTitle.toLowerCase(),
-  );
 }
 
 Duration _catchFieldMotionDuration(BuildContext context) {

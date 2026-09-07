@@ -125,6 +125,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           StageSoftBand(
             child: CatchFieldLanes.single(
               child: CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context
                     .l10n
                     .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,

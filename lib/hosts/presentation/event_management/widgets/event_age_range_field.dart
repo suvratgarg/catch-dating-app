@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -156,6 +157,7 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
         : _values.end.round().toString();
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostsHostClubProfileTitleAgeRange,
         contract: widget.minimumContract,
         body: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(

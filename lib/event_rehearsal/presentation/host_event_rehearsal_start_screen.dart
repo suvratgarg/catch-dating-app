@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -71,6 +72,7 @@ class _HostEventRehearsalStartScreenState
                 first: true,
                 children: [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: widget.sourceEventId == null
                         ? context.l10n.hostEventRehearsalSourceSample
                         : context.l10n.hostEventRehearsalSourceEvent,
@@ -102,6 +104,7 @@ class _HostEventRehearsalStartScreenState
                     },
                     builder: (context, controller, _) => CatchFieldLanes.single(
                       child: CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostEventRehearsalScenario,
                         valueText: eventRehearsalScenarioTitle(
                           context.l10n,
@@ -143,6 +146,7 @@ class _HostEventRehearsalStartScreenState
                         setState(() => _actorCount = count),
                     builder: (context, controller, _) => CatchFieldLanes.single(
                       child: CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostEventRehearsalActorCount(
                           count: _actorCount,
                         ),

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -114,6 +115,7 @@ class _HostFollowerUpdateComposerSheetState
           gapH16,
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-follower-update-text'),
               title: context.l10n.hostsHostClubToolsTitleUpdate,
               contract: CatchContractConstraints

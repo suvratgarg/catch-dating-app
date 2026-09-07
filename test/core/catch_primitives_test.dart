@@ -43,6 +43,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 part 'catch_primitives_controls_tests.dart';
+part 'catch_primitives_button_tests.dart';
 part 'catch_primitives_composition_tests.dart';
 part 'catch_primitives_async_feedback_tests.dart';
 part 'catch_primitives_error_async_tests.dart';

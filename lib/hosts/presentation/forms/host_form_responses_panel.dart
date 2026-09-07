@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -263,6 +264,7 @@ class _HostFormResponsesPanelState
             children: [
               CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostAudienceAllForms,
                   onTap: () => Navigator.of(sheetContext).pop(''),
                 ),
@@ -277,6 +279,7 @@ class _HostFormResponsesPanelState
                   children: [
                     for (final form in state.forms)
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: form.title,
                         onTap: () =>
                             Navigator.of(sheetContext).pop(form.formId),

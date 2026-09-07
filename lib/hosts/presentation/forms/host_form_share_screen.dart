@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -145,12 +146,14 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               CatchSection.fieldRows(
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostAudienceShowQr,
                     icon: CatchIcons.qrCode2Outlined,
                     emphasis: CatchFieldEmphasis.title,
                     onTap: () => _showQr(assets),
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: _creatingLink
                         ? context.l10n.hostAudienceCreatingLink
                         : context.l10n.hostFormCreateTrackedLink,
@@ -159,6 +162,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     onTap: _creatingLink ? null : _createTrackedLink,
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostFormEmbed,
                     icon: CatchIcons.languageOutlined,
                     emphasis: CatchFieldEmphasis.title,
@@ -359,6 +363,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
       child: CatchSection.containedFieldRows(
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormTrackedLinkLabel,
             controller: label,
             contract: CatchContractConstraints
@@ -367,6 +372,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
             textInputAction: TextInputAction.next,
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormTrackedLinkSource,
             controller: source,
             contract: CatchContractConstraints

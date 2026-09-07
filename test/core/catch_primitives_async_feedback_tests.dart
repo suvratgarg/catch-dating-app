@@ -429,7 +429,11 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
                 trailing: const CatchMetaEntry(label: '2.3 km'),
               ),
               gapH12,
-              const CatchField.read(title: 'Payment ID', body: 'pay_123'),
+              CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Payment ID',
+                body: 'pay_123',
+              ),
               gapH12,
               const CatchStatColumn(
                 value: '24',

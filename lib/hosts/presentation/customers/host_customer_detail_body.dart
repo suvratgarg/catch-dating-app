@@ -223,6 +223,7 @@ class HostCustomerDetailOverview extends StatelessWidget {
           ],
           gapH16,
           CatchField.control(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostCustomersDetailAttendance,
             contractExemption:
                 'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',

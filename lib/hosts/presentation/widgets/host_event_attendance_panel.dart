@@ -706,6 +706,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               first: true,
               children: [
                 CatchField.control(
+                  copy: catchFieldCopy(context.l10n),
                   title:
                       context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
                   contractExemption:
@@ -882,6 +883,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               gapH12,
               CatchFieldLanes.single(
                 child: CatchField.content(
+                  copy: catchFieldCopy(context.l10n),
                   title: context
                       .l10n
                       .hostsHostEventAttendancePanelTitleEventReport,

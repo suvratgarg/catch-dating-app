@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -428,6 +429,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
             children: [
               for (final strength in resolvedBrief.strengths.take(4))
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: strength,
                   icon: CatchIcons.checkCircleOutlineRounded,
                 ),
@@ -978,6 +980,7 @@ class EventSuccessRecommendationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: recommendation.title,
         body: recommendation.rationale,
         icon: icon,

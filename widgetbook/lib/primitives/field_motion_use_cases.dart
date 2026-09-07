@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -140,6 +141,7 @@ class _MotionReviewScreen extends StatelessWidget {
               title: 'Idle → saving → saved',
               before: _StatusSnapshot(status: status),
               approved: CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Profile details',
                 body: 'Shared production status motion',
                 status: status,

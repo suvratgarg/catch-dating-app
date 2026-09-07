@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
@@ -321,6 +322,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         CatchSection.fieldRows(
           children: [
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostEventRehearsalEntryTitle,
               body: context.l10n.hostEventRehearsalEntryBody,
               icon: CatchIcons.scienceOutlined,
@@ -375,6 +377,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           first: true,
           children: [
             CatchField.control(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostEventManageReviewSetupTitle,
               body: context.l10n.hostsHostEventManageReviewSetupBody,
               contractExemption:
@@ -408,6 +411,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           first: true,
           children: [
             CatchField.control(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
               contractExemption:
                   'Disclosure-only public runtime URL and QR; no editable '
@@ -1338,6 +1342,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostEventManageScreenTitleLabel,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadLabel,
@@ -1350,6 +1355,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                   ),
                   gapH12,
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostEventManageScreenTitleSource,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadSource,
@@ -1401,6 +1407,7 @@ class HostFullCapacityApron extends StatelessWidget {
       first: true,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.groupsRounded,
           title: context.l10n.hostsHostEventManageScreenLabelBooked,
           body: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
@@ -1411,6 +1418,7 @@ class HostFullCapacityApron extends StatelessWidget {
               '${context.l10n.hostsHostEventManageScreenVisiblecopyCapacitylimit(capacityLimit: event.capacityLimit)}',
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.waitlisted,
           title: context.l10n.hostsHostEventManageScreenLabelWaitlist,
           body: waitlisted == 1
@@ -1424,11 +1432,13 @@ class HostFullCapacityApron extends StatelessWidget {
               ),
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.paymentsOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
           valueText: revenueLabel,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.receiptLongOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
           valueText: refundPolicy,
@@ -1587,6 +1597,7 @@ class HostActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         title: label,
         body: detail,
         titleMaxLines: 2,
@@ -1626,6 +1637,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
     final enabled = event.publicRegistrationEnabled;
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_website_registration_field'),
         title: context.l10n.hostsHostPublicRegistrationTitle,
         body: enabled
@@ -1717,21 +1729,25 @@ class HostEventSummaryCard extends StatelessWidget {
       title: title,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.groupsRounded,
           title: context.l10n.hostsHostEventManageScreenLabelClub,
           body: club.name,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.locationOnOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelMeet,
           body: event.locationName,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.routeRounded,
           title: context.l10n.hostsHostEventManageScreenLabelEvent,
           body: event.activitySummaryLabel,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.paymentsOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelPrice,
           body: price,

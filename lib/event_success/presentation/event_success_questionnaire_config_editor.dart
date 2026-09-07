@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -58,6 +59,7 @@ class _EventSuccessQuestionnaireConfigEditorState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.optionCards<String>(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
@@ -102,6 +104,7 @@ class _EventSuccessQuestionnaireConfigEditorState
           if (!previewConfig.usesCustom || _questionSetOpen)
             for (final question in previewPack.questions)
               CatchField.content(
+                copy: catchFieldCopy(context.l10n),
                 key: ValueKey('questionnaire-pack-preview-${question.id}'),
                 title: question.prompt,
                 body: question.options
@@ -268,6 +271,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
             if (questions.length > 1)
               CatchFieldLanes.single(
                 child: CatchField.action(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey(
                     'custom-question-remove-${questions[questionIndex].id}',
                   ),
@@ -292,6 +296,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
               ),
           ],
           CatchField.add(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
@@ -308,6 +313,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
                 : null,
           ),
           CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
@@ -337,6 +343,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
     final controller = _controllers[key]!;
     return CatchFieldLanes.single(
       child: CatchField.inputActions(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('custom-questionnaire-$key'),
         title: title,
         contract: contract,

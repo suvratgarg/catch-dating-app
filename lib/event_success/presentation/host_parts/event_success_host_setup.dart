@@ -327,6 +327,7 @@ class TargetAttendeeControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchField.stepper(
+      copy: catchFieldCopy(context.l10n),
       title: context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
       contract:
           CatchContractConstraints.eventSuccessPlanDocumentTargetAttendeeCount,
@@ -364,6 +365,7 @@ class ReadinessIssues extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
         body: issues.join('\n'),
         bodyMaxLines: math.max(3, issues.length * 2),

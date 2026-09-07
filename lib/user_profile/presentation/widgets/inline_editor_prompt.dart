@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -341,6 +342,7 @@ class _ProfileInlinePromptEntryEditorState
     if (widget.isAddAffordance && !_draftingNewPrompt) {
       return CatchFieldLanes.single(
         child: CatchField.add(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('profile-prompt-add-${widget.promptIndex}'),
           icon: CatchIcons.addCircleOutlineRounded,
           title:
@@ -361,6 +363,7 @@ class _ProfileInlinePromptEntryEditorState
       hasError: _validationError != null || saveError != null,
       children: [
         CatchField.choices<String>(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('profile-prompt-question-${widget.promptIndex}'),
           icon: widget.icon,
           title: context.l10n.userProfileInlineEditorPromptLabelPromptNumber(
@@ -395,6 +398,7 @@ class _ProfileInlinePromptEntryEditorState
           error: _saveError(question: true),
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('profile-prompt-answer-${widget.promptIndex}'),
           title: context.l10n.userProfileInlineEditorPromptLabelAnswer,
           contract: CatchContractConstraints.profilePromptAnswerAnswer,

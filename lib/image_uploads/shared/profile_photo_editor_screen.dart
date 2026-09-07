@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -247,6 +248,7 @@ class _ProfilePhotoEditorScreenState
             ),
             gapH16,
             CatchField.choices<_PhotoPromptChoice>(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('profile-photo-prompt-field'),
               title: context
                   .l10n

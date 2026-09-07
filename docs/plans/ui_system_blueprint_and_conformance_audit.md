@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
 version: 1.8.0
-updated: 2026-09-06
+updated: 2026-09-07
 owner: app_architecture
 status: active
 ---
@@ -940,6 +940,16 @@ Chip activity recipes receive a presentation-only `CatchChipData` value. The
 app palette resolves its label, glyph, and pigments during caller builds; the
 renderer retains the approved soft/solid recipes, label overrides, interactions,
 and semantics. The chip remains app-side until schema constraints move.
+
+All field recipes receive `CatchFieldCopy` from their callers. The protocol
+bundles the existing optional-label and validation copy with action labels,
+status announcements, empty-value and selection prompts, and clear tooltips.
+The app adapter retains the existing locale-specific grammar and casing. Form
+lists pass the current copy through a newly built row scope; form-review widgets
+forward it explicitly. The field library no longer imports app localization or
+its copy adapter. Controllers, focus, selections, pending saves and rendering
+remain owned by the existing field implementation. The field's package move
+still follows the shared schema-constraint and validation-policy transaction.
 
 ### Phase 4 — One registry, binding grammar
 

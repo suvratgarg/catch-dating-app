@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
@@ -29,6 +30,7 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
     title: context.l10n.hostEventRehearsalGuestLinkTitle,
     children: [
       CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalGuestLinkTitle,
         body: context.l10n.hostEventRehearsalGuestLinkBody,
         icon: CatchIcons.qrCode2Rounded,
@@ -112,6 +114,7 @@ class EventRehearsalRunSection extends StatelessWidget {
       title: context.l10n.hostEventRehearsalRunTitle,
       children: [
         CatchField.control(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostEventRehearsalMoment(
             current: session.activeStepIndex + 1,
             total: EventRehearsalGuestMoment.values.length,

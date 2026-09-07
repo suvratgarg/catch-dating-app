@@ -636,6 +636,7 @@ class _HostWhatsappHandoffSheetState
           gapH16,
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-customer-whatsapp-message'),
               title: context.l10n.hostCustomersWhatsappMessage,
               controller: _message,

@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +21,22 @@ Widget catchSkeletonizedCatalogState(BuildContext context) {
         children: [
           CatchSection.containedFieldRows(
             title: 'Customer details',
-            children: const [
-              CatchField.read(title: 'Name', body: 'Customer name'),
-              CatchField.read(title: 'Mobile number', body: '+919876543210'),
-              CatchField.read(title: 'Email', body: 'customer@example.com'),
+            children: [
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Name',
+                body: 'Customer name',
+              ),
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Mobile number',
+                body: '+919876543210',
+              ),
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Email',
+                body: 'customer@example.com',
+              ),
             ],
           ),
           CatchSection.plain(

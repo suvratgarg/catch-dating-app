@@ -36,6 +36,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_staff_access_field'),
         title: context.l10n.hostsEventStaffTitle,
         body: context.l10n.hostsEventStaffSubtitle,
@@ -266,6 +267,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
       child: CatchFieldLanes.divided(
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsEventStaffPhone,
             contract: CatchContractConstraints
                 .grantEventStaffCallablePayloadPhoneNumber,
@@ -288,6 +290,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
             onSelected: (window, _) => setState(() => _window = window),
             builder: (context, controller, _) => CatchFieldLanes.single(
               child: CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsEventStaffAccessDuration,
                 valueText: _windowLabel(context, _window),
                 onTap: controller.isOpen ? controller.close : controller.open,

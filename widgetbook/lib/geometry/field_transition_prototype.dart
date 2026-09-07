@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +67,7 @@ class _ProductionInteractionTransitionPageState
                     headerPlacement: CatchSectionHeaderPlacement.inside,
                     children: [
                       CatchField.choices<String>(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Host',
                         icon: CatchIcons.hosted,
                         values: const [
@@ -83,6 +86,7 @@ class _ProductionInteractionTransitionPageState
                             setState(() => _containedOpen = open),
                       ),
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Location',
                         body: 'Carter Road promenade',
                         icon: CatchIcons.pinOutlined,
@@ -104,6 +108,7 @@ class _ProductionInteractionTransitionPageState
                     first: true,
                     children: [
                       CatchField.choices<String>(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Reminder timing',
                         icon: CatchIcons.clock,
                         values: const [
@@ -121,6 +126,7 @@ class _ProductionInteractionTransitionPageState
                             setState(() => _dividedOpen = open),
                       ),
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: 'Delivery',
                         body: 'Push and email',
                         icon: CatchIcons.notificationsOutlined,
