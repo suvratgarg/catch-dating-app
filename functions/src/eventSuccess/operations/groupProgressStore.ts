@@ -137,7 +137,7 @@ export class EventGroupProgressStore {
         context, groupId: progress.groupId, progressId: progress.progressId,
         progressRevision: progress.revision, sourceHash: progress.sourceHash,
         confirmedBy: actorUid, confirmedAt: state.now,
-        members: roster.members} : null;
+        members: roster.members, destination: progress.destination} : null;
       if (manifest &&
           !validateEventAssistanceDepartureRosterDocument(manifest)) {
         throw invalidSource();

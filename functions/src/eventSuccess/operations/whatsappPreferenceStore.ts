@@ -23,7 +23,7 @@ import {whatsappEndpointHash, whatsappEndpointId} from
   "./whatsappReplyProtocol";
 import {ConsentSender, whatsappConsentSender} from "./whatsappConsentSender";
 import {WHATSAPP_POLICIES} from "./whatsappTemplate";
-import {runPreferenceTransaction} from "./preferenceTransaction";
+import {runAssistanceTransaction} from "./transactionCallback";
 import {EndpointStop, parseWhatsappStop, WHATSAPP_ENDPOINT_STOPS,
   whatsappStopId} from "../../shared/organizerWhatsappStops";
 
@@ -45,7 +45,7 @@ export class WhatsappPreferenceStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(actor: WhatsappPreferenceActor, scope: Scope): Promise<Response> {
-    return runPreferenceTransaction(this.db, async (tx) => ({outcome: "read",
+    return runAssistanceTransaction(this.db, async (tx) => ({outcome: "read",
       view: this.view(actor, scope, await this.read(tx, actor, scope),
         this.now())}));
   }
@@ -58,7 +58,7 @@ export class WhatsappPreferenceStore {
       input.senderId, input.requestId,
     ]);
     const requestHash = operationContentHash([actor.uid, input]);
-    return runPreferenceTransaction(this.db, async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, actor, input);
       const ref = this.db.collection(WHATSAPP_CONSENT_RECEIPTS)
         .doc(receiptId);

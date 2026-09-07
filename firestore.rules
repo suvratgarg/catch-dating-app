@@ -795,6 +795,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceCheckpoints/{reportId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCheckpointReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceDepartureRosters/{rosterId} {
       allow read, write: if false;
     }

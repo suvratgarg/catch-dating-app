@@ -1474,6 +1474,16 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "eventAssistanceCheckpoints",
+      "fieldPath": "accountedFor",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "eventAssistanceCheckpointReceipts",
+      "fieldPath": "report",
+      "indexes": []
+    },
+    {
       "collectionGroup": "eventAssistanceDepartureRosters",
       "fieldPath": "members",
       "indexes": []

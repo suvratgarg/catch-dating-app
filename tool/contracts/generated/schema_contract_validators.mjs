@@ -3,6 +3,11 @@
 
 import {createRequire} from "node:module";
 import {
+  getEventAssistanceCheckpointCallablePayloadSchema,
+  recordEventAssistanceCheckpointCallablePayloadSchema,
+  eventAssistanceCheckpointCallableResponseSchema,
+  eventAssistanceCheckpointDocumentSchema,
+  eventAssistanceCheckpointReceiptDocumentSchema,
   eventAssistanceAccountabilityReceiptDocumentSchema,
   getEventAssistanceAccountabilityCallablePayloadSchema,
   resolveEventAssistanceAccountabilityCallablePayloadSchema,
@@ -637,6 +642,11 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetEventAssistanceCheckpointCallablePayload = ajv.compile(getEventAssistanceCheckpointCallablePayloadSchema);
+export const validateRecordEventAssistanceCheckpointCallablePayload = ajv.compile(recordEventAssistanceCheckpointCallablePayloadSchema);
+export const validateEventAssistanceCheckpointCallableResponse = ajv.compile(eventAssistanceCheckpointCallableResponseSchema);
+export const validateEventAssistanceCheckpointDocument = ajv.compile(eventAssistanceCheckpointDocumentSchema);
+export const validateEventAssistanceCheckpointReceiptDocument = ajv.compile(eventAssistanceCheckpointReceiptDocumentSchema);
 export const validateEventAssistanceAccountabilityReceiptDocument = ajv.compile(eventAssistanceAccountabilityReceiptDocumentSchema);
 export const validateGetEventAssistanceAccountabilityCallablePayload = ajv.compile(getEventAssistanceAccountabilityCallablePayloadSchema);
 export const validateResolveEventAssistanceAccountabilityCallablePayload = ajv.compile(resolveEventAssistanceAccountabilityCallablePayloadSchema);

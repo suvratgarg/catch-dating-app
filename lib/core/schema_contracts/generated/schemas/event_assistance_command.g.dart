@@ -2201,6 +2201,8 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
             'checkpointId',
             'accountedFor',
             'expectedProgressRevision',
+            'expectedCheckpointRevision',
+            'correctionReason',
           ],
           'properties': <String, Object?>{
             'groupId': <String, Object?>{
@@ -2227,9 +2229,27 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
             },
             'expectedProgressRevision': <String, Object?>{
               'type': 'integer',
-              'minimum': 0,
+              'minimum': 1,
               'maximum': 9007199254740991,
               'description': 'Nonnegative safe integer revision.',
+            },
+            'expectedCheckpointRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'correctionReason': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                  'pattern': '\\S',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
             },
           },
         },

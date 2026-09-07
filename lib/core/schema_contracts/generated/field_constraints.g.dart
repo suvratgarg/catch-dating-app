@@ -12243,6 +12243,566 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['open', 'resolved'],
   );
 
+  static const eventAssistanceCheckpointCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembers = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsObservation = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.observation',
+    required: true,
+    enumValues: <String>['accountedFor', 'unconfirmed'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.reason',
+    required: true,
+    enumValues: <String>['registrationMissing', 'visitChanged', 'notCheckedIn', 'invalidSource'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.reason',
+    required: true,
+    enumValues: <String>['rosterNotRecorded', 'destinationNotRecorded', 'differentCheckpoint', 'notCheckpoint', 'setupChanged'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityReportStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.reportStatus',
+    required: true,
+    enumValues: <String>['unreported', 'partial', 'complete'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReportSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.report.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointDocumentAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointDocumentCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointDocumentGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointDocumentReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointDocumentReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointDocumentReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointDocumentRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentReportSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.report.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceCommandContextClockId = CatchContractFieldConstraints(
     path: 'eventAssistanceCommand.context.clockId',
     maxLength: 2000,
@@ -12817,6 +13377,69 @@ abstract final class CatchContractConstraints {
 
   static const eventAssistanceDepartureRosterDocumentContextOrganizerId = CatchContractFieldConstraints(
     path: 'eventAssistanceDepartureRosterDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.destination.stopId',
     maxLength: 2000,
     minLength: 1,
     required: true,
@@ -33857,6 +34480,54 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadCheckpointId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceCheckpointCallablePayloadProgressRevision = CatchContractFieldConstraints(
+    path: 'getEventAssistanceCheckpointCallablePayload.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const getEventAssistanceDepartureRosterCallablePayloadAttendeeIds = CatchContractFieldConstraints(
@@ -63190,6 +63861,144 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadAccountedFor = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadAccountedForItems = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadCheckpointId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadCorrectionReason = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadExpectedCheckpointRevision = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.expectedCheckpointRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadExpectedProgressRevision = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.expectedProgressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.command.payload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventAssistanceCheckpointCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'recordEventAssistanceCheckpointCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const recordEventInviteLinkOpenCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'recordEventInviteLinkOpenCallablePayload.eventId',
     maxLength: 180,
@@ -76429,6 +77238,80 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCaseDocument.responseId': eventAssistanceCaseDocumentResponseId,
     'eventAssistanceCaseDocument.schemaVersion': eventAssistanceCaseDocumentSchemaVersion,
     'eventAssistanceCaseDocument.status': eventAssistanceCaseDocumentStatus,
+    'eventAssistanceCheckpointCallableResponse.operationRevision': eventAssistanceCheckpointCallableResponseOperationRevision,
+    'eventAssistanceCheckpointCallableResponse.outcome': eventAssistanceCheckpointCallableResponseOutcome,
+    'eventAssistanceCheckpointCallableResponse.view.availability.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityKind,
+    'eventAssistanceCheckpointCallableResponse.view.availability.label': eventAssistanceCheckpointCallableResponseViewAvailabilityLabel,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members': eventAssistanceCheckpointCallableResponseViewAvailabilityMembers,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.attendeeId': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsAttendeeId,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.observation': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsObservation,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitKind,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.reason': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitReason,
+    'eventAssistanceCheckpointCallableResponse.view.availability.reason': eventAssistanceCheckpointCallableResponseViewAvailabilityReason,
+    'eventAssistanceCheckpointCallableResponse.view.availability.reportStatus': eventAssistanceCheckpointCallableResponseViewAvailabilityReportStatus,
+    'eventAssistanceCheckpointCallableResponse.view.availability.rosterId': eventAssistanceCheckpointCallableResponseViewAvailabilityRosterId,
+    'eventAssistanceCheckpointCallableResponse.view.checkpointId': eventAssistanceCheckpointCallableResponseViewCheckpointId,
+    'eventAssistanceCheckpointCallableResponse.view.context.eventId': eventAssistanceCheckpointCallableResponseViewContextEventId,
+    'eventAssistanceCheckpointCallableResponse.view.context.mode': eventAssistanceCheckpointCallableResponseViewContextMode,
+    'eventAssistanceCheckpointCallableResponse.view.context.organizerId': eventAssistanceCheckpointCallableResponseViewContextOrganizerId,
+    'eventAssistanceCheckpointCallableResponse.view.groupId': eventAssistanceCheckpointCallableResponseViewGroupId,
+    'eventAssistanceCheckpointCallableResponse.view.progressRevision': eventAssistanceCheckpointCallableResponseViewProgressRevision,
+    'eventAssistanceCheckpointCallableResponse.view.report.accountedFor': eventAssistanceCheckpointCallableResponseViewReportAccountedFor,
+    'eventAssistanceCheckpointCallableResponse.view.report.accountedFor.items': eventAssistanceCheckpointCallableResponseViewReportAccountedForItems,
+    'eventAssistanceCheckpointCallableResponse.view.report.checkpointId': eventAssistanceCheckpointCallableResponseViewReportCheckpointId,
+    'eventAssistanceCheckpointCallableResponse.view.report.context.eventId': eventAssistanceCheckpointCallableResponseViewReportContextEventId,
+    'eventAssistanceCheckpointCallableResponse.view.report.context.mode': eventAssistanceCheckpointCallableResponseViewReportContextMode,
+    'eventAssistanceCheckpointCallableResponse.view.report.context.organizerId': eventAssistanceCheckpointCallableResponseViewReportContextOrganizerId,
+    'eventAssistanceCheckpointCallableResponse.view.report.correctionReason': eventAssistanceCheckpointCallableResponseViewReportCorrectionReason,
+    'eventAssistanceCheckpointCallableResponse.view.report.createdAt': eventAssistanceCheckpointCallableResponseViewReportCreatedAt,
+    'eventAssistanceCheckpointCallableResponse.view.report.groupId': eventAssistanceCheckpointCallableResponseViewReportGroupId,
+    'eventAssistanceCheckpointCallableResponse.view.report.progressRevision': eventAssistanceCheckpointCallableResponseViewReportProgressRevision,
+    'eventAssistanceCheckpointCallableResponse.view.report.reportedAt': eventAssistanceCheckpointCallableResponseViewReportReportedAt,
+    'eventAssistanceCheckpointCallableResponse.view.report.reportedBy': eventAssistanceCheckpointCallableResponseViewReportReportedBy,
+    'eventAssistanceCheckpointCallableResponse.view.report.reportId': eventAssistanceCheckpointCallableResponseViewReportReportId,
+    'eventAssistanceCheckpointCallableResponse.view.report.revision': eventAssistanceCheckpointCallableResponseViewReportRevision,
+    'eventAssistanceCheckpointCallableResponse.view.report.rosterHash': eventAssistanceCheckpointCallableResponseViewReportRosterHash,
+    'eventAssistanceCheckpointCallableResponse.view.report.rosterId': eventAssistanceCheckpointCallableResponseViewReportRosterId,
+    'eventAssistanceCheckpointCallableResponse.view.report.schemaVersion': eventAssistanceCheckpointCallableResponseViewReportSchemaVersion,
+    'eventAssistanceCheckpointCallableResponse.view.revision': eventAssistanceCheckpointCallableResponseViewRevision,
+    'eventAssistanceCheckpointCallableResponse.view.serverTime': eventAssistanceCheckpointCallableResponseViewServerTime,
+    'eventAssistanceCheckpointCallableResponse.view.sourceHash': eventAssistanceCheckpointCallableResponseViewSourceHash,
+    'eventAssistanceCheckpointDocument.accountedFor': eventAssistanceCheckpointDocumentAccountedFor,
+    'eventAssistanceCheckpointDocument.accountedFor.items': eventAssistanceCheckpointDocumentAccountedForItems,
+    'eventAssistanceCheckpointDocument.checkpointId': eventAssistanceCheckpointDocumentCheckpointId,
+    'eventAssistanceCheckpointDocument.context.eventId': eventAssistanceCheckpointDocumentContextEventId,
+    'eventAssistanceCheckpointDocument.context.mode': eventAssistanceCheckpointDocumentContextMode,
+    'eventAssistanceCheckpointDocument.context.organizerId': eventAssistanceCheckpointDocumentContextOrganizerId,
+    'eventAssistanceCheckpointDocument.correctionReason': eventAssistanceCheckpointDocumentCorrectionReason,
+    'eventAssistanceCheckpointDocument.createdAt': eventAssistanceCheckpointDocumentCreatedAt,
+    'eventAssistanceCheckpointDocument.groupId': eventAssistanceCheckpointDocumentGroupId,
+    'eventAssistanceCheckpointDocument.progressRevision': eventAssistanceCheckpointDocumentProgressRevision,
+    'eventAssistanceCheckpointDocument.reportedAt': eventAssistanceCheckpointDocumentReportedAt,
+    'eventAssistanceCheckpointDocument.reportedBy': eventAssistanceCheckpointDocumentReportedBy,
+    'eventAssistanceCheckpointDocument.reportId': eventAssistanceCheckpointDocumentReportId,
+    'eventAssistanceCheckpointDocument.revision': eventAssistanceCheckpointDocumentRevision,
+    'eventAssistanceCheckpointDocument.rosterHash': eventAssistanceCheckpointDocumentRosterHash,
+    'eventAssistanceCheckpointDocument.rosterId': eventAssistanceCheckpointDocumentRosterId,
+    'eventAssistanceCheckpointDocument.schemaVersion': eventAssistanceCheckpointDocumentSchemaVersion,
+    'eventAssistanceCheckpointReceiptDocument.receiptId': eventAssistanceCheckpointReceiptDocumentReceiptId,
+    'eventAssistanceCheckpointReceiptDocument.report.accountedFor': eventAssistanceCheckpointReceiptDocumentReportAccountedFor,
+    'eventAssistanceCheckpointReceiptDocument.report.accountedFor.items': eventAssistanceCheckpointReceiptDocumentReportAccountedForItems,
+    'eventAssistanceCheckpointReceiptDocument.report.checkpointId': eventAssistanceCheckpointReceiptDocumentReportCheckpointId,
+    'eventAssistanceCheckpointReceiptDocument.report.context.eventId': eventAssistanceCheckpointReceiptDocumentReportContextEventId,
+    'eventAssistanceCheckpointReceiptDocument.report.context.mode': eventAssistanceCheckpointReceiptDocumentReportContextMode,
+    'eventAssistanceCheckpointReceiptDocument.report.context.organizerId': eventAssistanceCheckpointReceiptDocumentReportContextOrganizerId,
+    'eventAssistanceCheckpointReceiptDocument.report.correctionReason': eventAssistanceCheckpointReceiptDocumentReportCorrectionReason,
+    'eventAssistanceCheckpointReceiptDocument.report.createdAt': eventAssistanceCheckpointReceiptDocumentReportCreatedAt,
+    'eventAssistanceCheckpointReceiptDocument.report.groupId': eventAssistanceCheckpointReceiptDocumentReportGroupId,
+    'eventAssistanceCheckpointReceiptDocument.report.progressRevision': eventAssistanceCheckpointReceiptDocumentReportProgressRevision,
+    'eventAssistanceCheckpointReceiptDocument.report.reportedAt': eventAssistanceCheckpointReceiptDocumentReportReportedAt,
+    'eventAssistanceCheckpointReceiptDocument.report.reportedBy': eventAssistanceCheckpointReceiptDocumentReportReportedBy,
+    'eventAssistanceCheckpointReceiptDocument.report.reportId': eventAssistanceCheckpointReceiptDocumentReportReportId,
+    'eventAssistanceCheckpointReceiptDocument.report.revision': eventAssistanceCheckpointReceiptDocumentReportRevision,
+    'eventAssistanceCheckpointReceiptDocument.report.rosterHash': eventAssistanceCheckpointReceiptDocumentReportRosterHash,
+    'eventAssistanceCheckpointReceiptDocument.report.rosterId': eventAssistanceCheckpointReceiptDocumentReportRosterId,
+    'eventAssistanceCheckpointReceiptDocument.report.schemaVersion': eventAssistanceCheckpointReceiptDocumentReportSchemaVersion,
+    'eventAssistanceCheckpointReceiptDocument.requestHash': eventAssistanceCheckpointReceiptDocumentRequestHash,
     'eventAssistanceCommand.context.clockId': eventAssistanceCommandContextClockId,
     'eventAssistanceCommand.context.eventId': eventAssistanceCommandContextEventId,
     'eventAssistanceCommand.context.mode': eventAssistanceCommandContextMode,
@@ -76504,6 +77387,14 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDepartureRosterDocument.context.eventId': eventAssistanceDepartureRosterDocumentContextEventId,
     'eventAssistanceDepartureRosterDocument.context.mode': eventAssistanceDepartureRosterDocumentContextMode,
     'eventAssistanceDepartureRosterDocument.context.organizerId': eventAssistanceDepartureRosterDocumentContextOrganizerId,
+    'eventAssistanceDepartureRosterDocument.destination.checkpointId': eventAssistanceDepartureRosterDocumentDestinationCheckpointId,
+    'eventAssistanceDepartureRosterDocument.destination.groupId': eventAssistanceDepartureRosterDocumentDestinationGroupId,
+    'eventAssistanceDepartureRosterDocument.destination.itineraryId': eventAssistanceDepartureRosterDocumentDestinationItineraryId,
+    'eventAssistanceDepartureRosterDocument.destination.kind': eventAssistanceDepartureRosterDocumentDestinationKind,
+    'eventAssistanceDepartureRosterDocument.destination.lateEntry': eventAssistanceDepartureRosterDocumentDestinationLateEntry,
+    'eventAssistanceDepartureRosterDocument.destination.placeId': eventAssistanceDepartureRosterDocumentDestinationPlaceId,
+    'eventAssistanceDepartureRosterDocument.destination.routeId': eventAssistanceDepartureRosterDocumentDestinationRouteId,
+    'eventAssistanceDepartureRosterDocument.destination.stopId': eventAssistanceDepartureRosterDocumentDestinationStopId,
     'eventAssistanceDepartureRosterDocument.groupId': eventAssistanceDepartureRosterDocumentGroupId,
     'eventAssistanceDepartureRosterDocument.members': eventAssistanceDepartureRosterDocumentMembers,
     'eventAssistanceDepartureRosterDocument.members.items.attendeeGeneration': eventAssistanceDepartureRosterDocumentMembersItemsAttendeeGeneration,
@@ -79337,6 +80228,12 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceAccountabilityCallablePayload.context.mode': getEventAssistanceAccountabilityCallablePayloadContextMode,
     'getEventAssistanceAccountabilityCallablePayload.context.organizerId': getEventAssistanceAccountabilityCallablePayloadContextOrganizerId,
     'getEventAssistanceAccountabilityCallablePayload.groupId': getEventAssistanceAccountabilityCallablePayloadGroupId,
+    'getEventAssistanceCheckpointCallablePayload.checkpointId': getEventAssistanceCheckpointCallablePayloadCheckpointId,
+    'getEventAssistanceCheckpointCallablePayload.context.eventId': getEventAssistanceCheckpointCallablePayloadContextEventId,
+    'getEventAssistanceCheckpointCallablePayload.context.mode': getEventAssistanceCheckpointCallablePayloadContextMode,
+    'getEventAssistanceCheckpointCallablePayload.context.organizerId': getEventAssistanceCheckpointCallablePayloadContextOrganizerId,
+    'getEventAssistanceCheckpointCallablePayload.groupId': getEventAssistanceCheckpointCallablePayloadGroupId,
+    'getEventAssistanceCheckpointCallablePayload.progressRevision': getEventAssistanceCheckpointCallablePayloadProgressRevision,
     'getEventAssistanceDepartureRosterCallablePayload.attendeeIds': getEventAssistanceDepartureRosterCallablePayloadAttendeeIds,
     'getEventAssistanceDepartureRosterCallablePayload.attendeeIds.items': getEventAssistanceDepartureRosterCallablePayloadAttendeeIdsItems,
     'getEventAssistanceDepartureRosterCallablePayload.context.eventId': getEventAssistanceDepartureRosterCallablePayloadContextEventId,
@@ -83381,6 +84278,23 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.updatedAt._nanoseconds': razorpayPendingOrderDocumentUpdatedAtNanoseconds,
     'razorpayPendingOrderDocument.updatedAt._seconds': razorpayPendingOrderDocumentUpdatedAtSeconds,
     'razorpayPendingOrderDocument.userId': razorpayPendingOrderDocumentUserId,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.clockId': recordEventAssistanceCheckpointCallablePayloadCommandContextClockId,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.eventId': recordEventAssistanceCheckpointCallablePayloadCommandContextEventId,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.mode': recordEventAssistanceCheckpointCallablePayloadCommandContextMode,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.organizerId': recordEventAssistanceCheckpointCallablePayloadCommandContextOrganizerId,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.rehearsalId': recordEventAssistanceCheckpointCallablePayloadCommandContextRehearsalId,
+    'recordEventAssistanceCheckpointCallablePayload.command.context.virtualEventId': recordEventAssistanceCheckpointCallablePayloadCommandContextVirtualEventId,
+    'recordEventAssistanceCheckpointCallablePayload.command.eventId': recordEventAssistanceCheckpointCallablePayloadCommandEventId,
+    'recordEventAssistanceCheckpointCallablePayload.command.kind': recordEventAssistanceCheckpointCallablePayloadCommandKind,
+    'recordEventAssistanceCheckpointCallablePayload.command.operationId': recordEventAssistanceCheckpointCallablePayloadCommandOperationId,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.accountedFor': recordEventAssistanceCheckpointCallablePayloadCommandPayloadAccountedFor,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.accountedFor.items': recordEventAssistanceCheckpointCallablePayloadCommandPayloadAccountedForItems,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.checkpointId': recordEventAssistanceCheckpointCallablePayloadCommandPayloadCheckpointId,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.correctionReason': recordEventAssistanceCheckpointCallablePayloadCommandPayloadCorrectionReason,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.expectedCheckpointRevision': recordEventAssistanceCheckpointCallablePayloadCommandPayloadExpectedCheckpointRevision,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.expectedProgressRevision': recordEventAssistanceCheckpointCallablePayloadCommandPayloadExpectedProgressRevision,
+    'recordEventAssistanceCheckpointCallablePayload.command.payload.groupId': recordEventAssistanceCheckpointCallablePayloadCommandPayloadGroupId,
+    'recordEventAssistanceCheckpointCallablePayload.expectedSourceHash': recordEventAssistanceCheckpointCallablePayloadExpectedSourceHash,
     'recordEventInviteLinkOpenCallablePayload.eventId': recordEventInviteLinkOpenCallablePayloadEventId,
     'recordEventInviteLinkOpenCallablePayload.inviteLinkId': recordEventInviteLinkOpenCallablePayloadInviteLinkId,
     'recordEventInviteLinkOpenCallablePayload.sessionId': recordEventInviteLinkOpenCallablePayloadSessionId,

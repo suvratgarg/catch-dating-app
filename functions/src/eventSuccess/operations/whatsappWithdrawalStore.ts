@@ -14,7 +14,7 @@ import {Permission, parseWhatsappPermission, WHATSAPP_PERMISSIONS} from
   "./whatsappPermissionRecords";
 import {parseWhatsappConsentReceipt, WHATSAPP_CONSENT_RECEIPTS} from
   "./whatsappConsent";
-import {runPreferenceTransaction} from "./preferenceTransaction";
+import {runAssistanceTransaction} from "./transactionCallback";
 import {
   WithdrawalGrant, parseWhatsappWithdrawalGrant, WHATSAPP_WITHDRAWAL_GRANTS,
   whatsappWithdrawalMatchesPermission,
@@ -28,7 +28,7 @@ export class WhatsappWithdrawalStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(input: Credential): Promise<Response> {
-    return runPreferenceTransaction(this.db, async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       return {outcome: "read", view: this.view(facts, this.now())};
     });
@@ -36,7 +36,7 @@ export class WhatsappWithdrawalStore {
 
   async withdraw(input: Submission): Promise<Response> {
     requireDocumentId(input.requestId);
-    return runPreferenceTransaction(this.db, async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       const {permission, authority} = facts;
       const receiptId = "whatsapp-withdrawal:" + operationContentHash([

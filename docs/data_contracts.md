@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.55.0
+version: 1.56.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -308,7 +308,9 @@ a physical fact and does not authorize provider I/O or guest attendance changes.
 
 `eventAssistanceDepartureRosters/{rosterId}` stores an immutable explicitly
 selected departure roster. Its ID hashes execution context, group and committed
-progress revision. Each member pins the registration creation generations,
+progress revision. New records also pin the confirmed destination; older records
+without it cannot establish which checkpoint was reached. Each member pins the
+registration creation generations,
 exact check-in plus attendance revision, optional current participation episode
 and accepted membership hash for a pace group. It contains no contact fields.
 The optional `departureRosterId` on progress references only that departure;
@@ -322,6 +324,28 @@ to 1,000 unique IDs with batched transactional reads; the `members` field is
 exempted from indexing. No client can read or write the roster collection.
 It has no TTL: checkpoint reconciliation and the retention policy must preserve
 the original departure evidence before any terminal cleanup is introduced.
+
+`eventAssistanceCheckpoints/{reportId}` records the current checkpoint report for
+an execution context, group, departure revision and checkpoint ID. The typed
+command and reviewed source hash bind that immutable departure roster, checkpoint
+revision and current visit eligibility. The report stores the roster content hash,
+accounted-for attendee IDs, submitting actor/time and correction reason. Missing
+members stay in the denominator; guest replies and current memberships are not
+physical checkpoint evidence. Any removal from an earlier report requires a reason.
+
+`eventAssistanceCheckpointReceipts/{receiptId}` atomically preserves the authenticated
+request hash and full original report. Its ID binds context, group and operation ID.
+Reusing an ID with different content fails; an exact retry returns the original
+revision and latest view. Reports for earlier legs remain independent of subsequent
+progress. The two Auth/App-Check/rate-limited callables require a current scoped
+checkpoint duty or organizer management and recheck expiry after transaction reads.
+They do not require automatic assistance or an open runtime to settle outstanding
+reports. New observations still require the same physical visit and source setup.
+
+Both collections deny direct client access and have no TTL. The report's
+`accountedFor` and receipt's `report` fields are excluded from indexes. Limits match
+the departure contract's 1,000 members, with bounded transactional reads. Terminal
+retention and reconciliation must preserve the original observations before cleanup.
 
 Live joining updates must match the canonical guidance derived from current
 confirmed progress. Publication, guest-link issuance, guest views/actions and

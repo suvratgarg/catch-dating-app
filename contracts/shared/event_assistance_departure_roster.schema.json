@@ -211,6 +211,9 @@
           "items": {
             "$ref": "#/definitions/Member"
           }
+        },
+        "destination": {
+          "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
         }
       }
     }

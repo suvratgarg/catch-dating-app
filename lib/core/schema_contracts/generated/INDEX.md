@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceCheckpointCallablePayload.ts` |
+| RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `functions/src/shared/generated/recordEventAssistanceCheckpointCallablePayload.ts` |
+| EventAssistanceCheckpointCallableResponse | `callable_responses/event_assistance_checkpoint_response.schema.json` | `functions/src/shared/generated/eventAssistanceCheckpointCallableResponse.ts` |
+| EventAssistanceCheckpointDocument | `firestore/event_assistance_checkpoints.schema.json` | `functions/src/shared/generated/eventAssistanceCheckpointDocument.ts` |
+| EventAssistanceCheckpointReceiptDocument | `firestore/event_assistance_checkpoint_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceCheckpointReceiptDocument.ts` |
 | EventAssistanceAccountabilityReceiptDocument | `firestore/event_assistance_accountability_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceAccountabilityReceiptDocument.ts` |
 | GetEventAssistanceAccountabilityCallablePayload | `callables/get_event_assistance_accountability_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceAccountabilityCallablePayload.ts` |
 | ResolveEventAssistanceAccountabilityCallablePayload | `callables/resolve_event_assistance_accountability_payload.schema.json` | `functions/src/shared/generated/resolveEventAssistanceAccountabilityCallablePayload.ts` |
@@ -627,6 +632,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetEventAssistanceCheckpointCallablePayloadSchema` | GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_checkpoint_callable_payload.g.dart` |
+| `schemaRecordEventAssistanceCheckpointCallablePayloadSchema` | RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_assistance_checkpoint_callable_payload.g.dart` |
+| `schemaEventAssistanceCheckpointCallableResponseSchema` | EventAssistanceCheckpointCallableResponse | `callable_responses/event_assistance_checkpoint_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_checkpoint_callable_response.g.dart` |
+| `schemaEventAssistanceCheckpointDocumentSchema` | EventAssistanceCheckpointDocument | `firestore/event_assistance_checkpoints.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_checkpoint_document.g.dart` |
+| `schemaEventAssistanceCheckpointReceiptDocumentSchema` | EventAssistanceCheckpointReceiptDocument | `firestore/event_assistance_checkpoint_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_checkpoint_receipt_document.g.dart` |
 | `schemaEventAssistanceAccountabilityReceiptDocumentSchema` | EventAssistanceAccountabilityReceiptDocument | `firestore/event_assistance_accountability_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_accountability_receipt_document.g.dart` |
 | `schemaGetEventAssistanceAccountabilityCallablePayloadSchema` | GetEventAssistanceAccountabilityCallablePayload | `callables/get_event_assistance_accountability_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_accountability_callable_payload.g.dart` |
 | `schemaResolveEventAssistanceAccountabilityCallablePayloadSchema` | ResolveEventAssistanceAccountabilityCallablePayload | `callables/resolve_event_assistance_accountability_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/resolve_event_assistance_accountability_callable_payload.g.dart` |
@@ -1242,6 +1252,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceCheckpointCallableRequest | GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_checkpoint_callable_request.g.dart` |
+| RecordEventAssistanceCheckpointCallableRequest | RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart` |
 | GetEventAssistanceAccountabilityCallableRequest | GetEventAssistanceAccountabilityCallablePayload | `callables/get_event_assistance_accountability_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_accountability_callable_request.g.dart` |
 | ResolveEventAssistanceAccountabilityCallableRequest | ResolveEventAssistanceAccountabilityCallablePayload | `callables/resolve_event_assistance_accountability_payload.schema.json` | `lib/core/schema_contracts/generated/callables/resolve_event_assistance_accountability_callable_request.g.dart` |
 | GetEventAssistanceRuntimeConfigCallableRequest | GetEventAssistanceRuntimeConfigCallablePayload | `callables/get_event_assistance_runtime_config_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_runtime_config_callable_request.g.dart` |

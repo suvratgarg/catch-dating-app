@@ -1,6 +1,880 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const getEventAssistanceCheckpointCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "groupId",
+    "checkpointId",
+    "progressRevision"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "checkpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "progressRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "GetEventAssistanceCheckpointCallablePayload"
+};
+
+export const recordEventAssistanceCheckpointCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "expectedSourceHash"
+  ],
+  "properties": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "recordCheckpoint"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "checkpointId",
+            "accountedFor",
+            "expectedProgressRevision",
+            "expectedCheckpointRevision",
+            "correctionReason"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "accountedFor": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "maxItems": 1000,
+              "uniqueItems": true
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "expectedCheckpointRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "correctionReason": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "expectedSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "RecordEventAssistanceCheckpointCallablePayload"
+};
+
+export const eventAssistanceCheckpointCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "operationRevision",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "enum": [
+        "read",
+        "applied",
+        "replayed"
+      ]
+    },
+    "operationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId",
+        "checkpointId",
+        "progressRevision",
+        "serverTime",
+        "sourceHash",
+        "revision",
+        "report",
+        "availability"
+      ],
+      "properties": {
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "report": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "reportId",
+                "context",
+                "groupId",
+                "checkpointId",
+                "progressRevision",
+                "rosterId",
+                "rosterHash",
+                "revision",
+                "accountedFor",
+                "reportedBy",
+                "reportedAt",
+                "correctionReason",
+                "createdAt"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1
+                },
+                "reportId": {
+                  "type": "string",
+                  "pattern": "^checkpoint:[a-f0-9]{64}$"
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "progressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "rosterId": {
+                  "type": "string",
+                  "pattern": "^departure-roster:[a-f0-9]{64}$"
+                },
+                "rosterHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "accountedFor": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "uniqueItems": true,
+                  "maxItems": 1000
+                },
+                "reportedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "reportedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "correctionReason": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500,
+                      "pattern": "\\S"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "availability": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "rosterId",
+                "label",
+                "reportStatus",
+                "members"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "ready"
+                },
+                "rosterId": {
+                  "type": "string",
+                  "pattern": "^departure-roster:[a-f0-9]{64}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "reportStatus": {
+                  "enum": [
+                    "unreported",
+                    "partial",
+                    "complete"
+                  ]
+                },
+                "members": {
+                  "type": "array",
+                  "maxItems": 1000,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "attendeeId",
+                      "observation",
+                      "visit"
+                    ],
+                    "properties": {
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "observation": {
+                        "enum": [
+                          "accountedFor",
+                          "unconfirmed"
+                        ]
+                      },
+                      "visit": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "current"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "enum": [
+                                  "registrationMissing",
+                                  "visitChanged",
+                                  "notCheckedIn",
+                                  "invalidSource"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                },
+                "reason": {
+                  "enum": [
+                    "rosterNotRecorded",
+                    "destinationNotRecorded",
+                    "differentCheckpoint",
+                    "notCheckpoint",
+                    "setupChanged"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceCheckpointCallableResponse"
+};
+
+export const eventAssistanceCheckpointDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "reportId",
+    "context",
+    "groupId",
+    "checkpointId",
+    "progressRevision",
+    "rosterId",
+    "rosterHash",
+    "revision",
+    "accountedFor",
+    "reportedBy",
+    "reportedAt",
+    "correctionReason",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "reportId": {
+      "type": "string",
+      "pattern": "^checkpoint:[a-f0-9]{64}$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "checkpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "progressRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "rosterId": {
+      "type": "string",
+      "pattern": "^departure-roster:[a-f0-9]{64}$"
+    },
+    "rosterHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "accountedFor": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      },
+      "uniqueItems": true,
+      "maxItems": 1000
+    },
+    "reportedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "reportedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "correctionReason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceCheckpointDocument",
+  "x-firestore-collection": "eventAssistanceCheckpoints",
+  "x-firestore-path": "eventAssistanceCheckpoints/{reportId}",
+  "x-document-id-field": "reportId",
+  "x-owner": "event-assistance checkpoint command"
+};
+
+export const eventAssistanceCheckpointReceiptDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "requestHash",
+    "report"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^checkpoint-action:[a-f0-9]{64}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "reportId",
+        "context",
+        "groupId",
+        "checkpointId",
+        "progressRevision",
+        "rosterId",
+        "rosterHash",
+        "revision",
+        "accountedFor",
+        "reportedBy",
+        "reportedAt",
+        "correctionReason",
+        "createdAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "reportId": {
+          "type": "string",
+          "pattern": "^checkpoint:[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "rosterId": {
+          "type": "string",
+          "pattern": "^departure-roster:[a-f0-9]{64}$"
+        },
+        "rosterHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "accountedFor": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "uniqueItems": true,
+          "maxItems": 1000
+        },
+        "reportedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "reportedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "correctionReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceCheckpointReceiptDocument",
+  "x-firestore-collection": "eventAssistanceCheckpointReceipts",
+  "x-firestore-path": "eventAssistanceCheckpointReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event-assistance checkpoint command"
+};
+
 export const eventAssistanceAccountabilityReceiptDocumentSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -27547,6 +28421,96 @@ export const eventAssistanceDepartureRosterDocumentSchema = {
           }
         }
       }
+    },
+    "destination": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "placeId",
+            "lateEntry"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fixedPlace"
+            },
+            "placeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "lateEntry": {
+              "type": "string",
+              "enum": [
+                "allowed",
+                "hostDecision",
+                "closed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "itineraryId",
+            "stopId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "itineraryStop"
+            },
+            "itineraryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "stopId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "routeId",
+            "groupId",
+            "checkpointId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "groupCheckpoint"
+            },
+            "routeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      ]
     }
   },
   "title": "EventAssistanceDepartureRosterDocument",
@@ -52033,7 +52997,9 @@ export const eventAssistanceCommandSchema = {
             "groupId",
             "checkpointId",
             "accountedFor",
-            "expectedProgressRevision"
+            "expectedProgressRevision",
+            "expectedCheckpointRevision",
+            "correctionReason"
           ],
           "properties": {
             "groupId": {
@@ -52060,9 +53026,27 @@ export const eventAssistanceCommandSchema = {
             },
             "expectedProgressRevision": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": 1,
               "maximum": 9007199254740991,
               "description": "Nonnegative safe integer revision."
+            },
+            "expectedCheckpointRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "correctionReason": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         }

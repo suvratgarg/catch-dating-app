@@ -13017,76 +13017,7 @@ const model = {
               "$ref": "#/definitions/TransferGroupCommand"
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "recordCheckpoint"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "groupId",
-                    "checkpointId",
-                    "accountedFor",
-                    "expectedProgressRevision"
-                  ],
-                  "properties": {
-                    "groupId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "checkpointId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 2000
-                    },
-                    "accountedFor": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 160,
-                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                      },
-                      "maxItems": 1000,
-                      "uniqueItems": true
-                    },
-                    "expectedProgressRevision": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991,
-                      "description": "Nonnegative safe integer revision."
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/RecordCheckpointCommand"
             },
             {
               "type": "object",
@@ -15440,6 +15371,98 @@ const model = {
               }
             }
           }
+        },
+        "RecordCheckpointCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "recordCheckpoint"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "accountedFor",
+                "expectedProgressRevision",
+                "expectedCheckpointRevision",
+                "correctionReason"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "accountedFor": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "maxItems": 1000,
+                  "uniqueItems": true
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "expectedCheckpointRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "correctionReason": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500,
+                      "pattern": "\\S"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -15656,6 +15679,9 @@ const model = {
               "items": {
                 "$ref": "#/definitions/Member"
               }
+            },
+            "destination": {
+              "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
             }
           }
         }

@@ -100,6 +100,14 @@ function departureMember(state: State, attendeeId: string,
   }
   return {attendeeId, sourceGeneration: source.sourceGeneration,
     attendeeGeneration: source.attendeeGeneration,
-    checkInHash: operationContentHash([attendee.attendanceRevision ?? 0,
-      checkIn]), episodeId: activeGuest?.episodeId ?? null, membershipHash};
+    checkInHash: departureVisitHash(attendee),
+    episodeId: activeGuest?.episodeId ?? null, membershipHash};
+}
+
+/** Exact visit identity shared by departure and checkpoint observations. */
+export function departureVisitHash(attendee: {
+  attendanceRevision?: number; checkedInAt?: unknown;
+}) {
+  return operationContentHash([attendee.attendanceRevision ?? 0,
+    timestampEvidence(attendee.checkedInAt)]);
 }

@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetEventAssistanceCheckpointCallablePayload',
+    source: 'callables/get_event_assistance_checkpoint_payload.schema.json',
+    schema: schemaGetEventAssistanceCheckpointCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'RecordEventAssistanceCheckpointCallablePayload',
+    source: 'callables/record_event_assistance_checkpoint_payload.schema.json',
+    schema: schemaRecordEventAssistanceCheckpointCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCheckpointCallableResponse',
+    source: 'callable_responses/event_assistance_checkpoint_response.schema.json',
+    schema: schemaEventAssistanceCheckpointCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCheckpointDocument',
+    source: 'firestore/event_assistance_checkpoints.schema.json',
+    schema: schemaEventAssistanceCheckpointDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCheckpointReceiptDocument',
+    source: 'firestore/event_assistance_checkpoint_receipts.schema.json',
+    schema: schemaEventAssistanceCheckpointReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceAccountabilityReceiptDocument',
     source: 'firestore/event_assistance_accountability_receipts.schema.json',
     schema: schemaEventAssistanceAccountabilityReceiptDocumentSchema,
@@ -3069,6 +3094,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetEventAssistanceCheckpointCallablePayload': schemaGetEventAssistanceCheckpointCallablePayloadSchema,
+  'RecordEventAssistanceCheckpointCallablePayload': schemaRecordEventAssistanceCheckpointCallablePayloadSchema,
+  'EventAssistanceCheckpointCallableResponse': schemaEventAssistanceCheckpointCallableResponseSchema,
+  'EventAssistanceCheckpointDocument': schemaEventAssistanceCheckpointDocumentSchema,
+  'EventAssistanceCheckpointReceiptDocument': schemaEventAssistanceCheckpointReceiptDocumentSchema,
   'EventAssistanceAccountabilityReceiptDocument': schemaEventAssistanceAccountabilityReceiptDocumentSchema,
   'GetEventAssistanceAccountabilityCallablePayload': schemaGetEventAssistanceAccountabilityCallablePayloadSchema,
   'ResolveEventAssistanceAccountabilityCallablePayload': schemaResolveEventAssistanceAccountabilityCallablePayloadSchema,
@@ -3682,6 +3712,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_event_assistance_checkpoint_payload.schema.json': schemaGetEventAssistanceCheckpointCallablePayloadSchema,
+  'callables/record_event_assistance_checkpoint_payload.schema.json': schemaRecordEventAssistanceCheckpointCallablePayloadSchema,
+  'callable_responses/event_assistance_checkpoint_response.schema.json': schemaEventAssistanceCheckpointCallableResponseSchema,
+  'firestore/event_assistance_checkpoints.schema.json': schemaEventAssistanceCheckpointDocumentSchema,
+  'firestore/event_assistance_checkpoint_receipts.schema.json': schemaEventAssistanceCheckpointReceiptDocumentSchema,
   'firestore/event_assistance_accountability_receipts.schema.json': schemaEventAssistanceAccountabilityReceiptDocumentSchema,
   'callables/get_event_assistance_accountability_payload.schema.json': schemaGetEventAssistanceAccountabilityCallablePayloadSchema,
   'callables/resolve_event_assistance_accountability_payload.schema.json': schemaResolveEventAssistanceAccountabilityCallablePayloadSchema,

@@ -139,6 +139,96 @@ export const eventAssistanceDepartureRosterDocumentSchema: Record<string, unknow
           }
         }
       }
+    },
+    "destination": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "placeId",
+            "lateEntry"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fixedPlace"
+            },
+            "placeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "lateEntry": {
+              "type": "string",
+              "enum": [
+                "allowed",
+                "hostDecision",
+                "closed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "itineraryId",
+            "stopId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "itineraryStop"
+            },
+            "itineraryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "stopId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "routeId",
+            "groupId",
+            "checkpointId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "groupCheckpoint"
+            },
+            "routeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      ]
     }
   },
   "title": "EventAssistanceDepartureRosterDocument",

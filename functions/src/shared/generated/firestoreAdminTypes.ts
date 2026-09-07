@@ -537,6 +537,58 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceCheckpointDocument {
+  schemaVersion: 1;
+  reportId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  checkpointId: string;
+  progressRevision: number;
+  rosterId: string;
+  rosterHash: string;
+  revision: number;
+  /**
+   * @maxItems 1000
+   */
+  accountedFor: string[];
+  reportedBy: string;
+  reportedAt: number;
+  correctionReason: string | null;
+  createdAt: number;
+}
+
+export interface EventAssistanceCheckpointReceiptDocument {
+  receiptId: string;
+  requestHash: string;
+  report: {
+    schemaVersion: 1;
+    reportId: string;
+    context: {
+      mode: "live";
+      eventId: string;
+      organizerId: string;
+    };
+    groupId: string;
+    checkpointId: string;
+    progressRevision: number;
+    rosterId: string;
+    rosterHash: string;
+    revision: number;
+    /**
+     * @maxItems 1000
+     */
+    accountedFor: string[];
+    reportedBy: string;
+    reportedAt: number;
+    correctionReason: string | null;
+    createdAt: number;
+  };
+}
+
 export interface EventAssistanceAccountabilityReceiptDocument {
   receiptId: string;
   guestId: string;
@@ -1705,6 +1757,23 @@ export interface EventAssistanceDepartureRosterDocument {
     episodeId: string | null;
     membershipHash: string | null;
   }[];
+  destination?:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
 }
 
 export interface EventAssistanceProgressReceiptDocument {

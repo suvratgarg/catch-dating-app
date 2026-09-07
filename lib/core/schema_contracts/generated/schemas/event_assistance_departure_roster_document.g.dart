@@ -142,6 +142,96 @@ const schemaEventAssistanceDepartureRosterDocumentSchema = <String, Object?>{
         },
       },
     },
+    'destination': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'placeId',
+            'lateEntry',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'fixedPlace',
+            },
+            'placeId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'lateEntry': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'allowed',
+                'hostDecision',
+                'closed',
+              ],
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'itineraryId',
+            'stopId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'itineraryStop',
+            },
+            'itineraryId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 2000,
+            },
+            'stopId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 2000,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'routeId',
+            'groupId',
+            'checkpointId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'groupCheckpoint',
+            },
+            'routeId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 2000,
+            },
+            'groupId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'checkpointId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 2000,
+            },
+          },
+        },
+      ],
+    },
   },
   'title': 'EventAssistanceDepartureRosterDocument',
   'x-firestore-collection': 'eventAssistanceDepartureRosters',

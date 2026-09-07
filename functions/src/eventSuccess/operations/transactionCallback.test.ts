@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {runPreferenceTransaction} from "./preferenceTransaction";
+import {runAssistanceTransaction} from "./transactionCallback";
 
 const closed = () => Object.assign(new Error("Closed transaction"),
   {code: 3, details: "Transaction is invalid or closed."});
@@ -21,7 +21,7 @@ test("closed callback reads enter the SDK retry path with their cause retained",
         return update(tx);
       }
     }} as unknown as Firestore;
-    const result = await runPreferenceTransaction(db, async () => {
+    const result = await runAssistanceTransaction(db, async () => {
       attempts++;
       if (attempts === 1) throw original;
       return 7;
@@ -38,7 +38,7 @@ test("unrelated argument, domain and existing transient errors are unchanged",
       const db = {runTransaction:
         (update: (tx: Transaction) => Promise<void>) => update(tx)} as
         unknown as Firestore;
-      await assert.rejects(runPreferenceTransaction(db, async () => {
+      await assert.rejects(runAssistanceTransaction(db, async () => {
         throw original;
       }), (error) => error === original);
     }
@@ -53,7 +53,7 @@ test("commit uncertainty is never translated or retried by the adapter",
       await update(tx);
       throw original;
     }} as unknown as Firestore;
-    await assert.rejects(runPreferenceTransaction(db, async () => {
+    await assert.rejects(runAssistanceTransaction(db, async () => {
       callbacks++;
     }), (error) => error === original);
     assert.equal(callbacks, 1);

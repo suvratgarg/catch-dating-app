@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_checkpoints.schema.json",
+  "title": "EventAssistanceCheckpointDocument",
+  "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Report",
+  "x-firestore-collection": "eventAssistanceCheckpoints",
+  "x-firestore-path": "eventAssistanceCheckpoints/{reportId}",
+  "x-document-id-field": "reportId",
+  "x-owner": "event-assistance checkpoint command"
+}

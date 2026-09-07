@@ -13,7 +13,7 @@ import {guestCollections, parseGrant, requireDocumentId, unavailable} from
 import {Permission, parseSmsPermission, smsCollections} from
   "./smsPermissionRecords";
 import {parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS} from "./smsConsent";
-import {runPreferenceTransaction} from "./preferenceTransaction";
+import {runAssistanceTransaction} from "./transactionCallback";
 import {
   WithdrawalGrant, parseSmsWithdrawalGrant, SMS_WITHDRAWAL_GRANTS,
   smsWithdrawalMatchesPermission,
@@ -27,7 +27,7 @@ export class SmsWithdrawalStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(input: Credential): Promise<Response> {
-    return runPreferenceTransaction(this.db, async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       return {outcome: "read", view: this.view(facts, this.now())};
     });
@@ -35,7 +35,7 @@ export class SmsWithdrawalStore {
 
   async withdraw(input: Submission): Promise<Response> {
     requireDocumentId(input.requestId);
-    return runPreferenceTransaction(this.db, async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const facts = await this.read(tx, input);
       const {permission, authority} = facts;
       const receiptId = "sms-withdrawal:" + operationContentHash([

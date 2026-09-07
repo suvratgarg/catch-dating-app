@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.38.0
+version: 1.39.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -463,7 +463,8 @@ the current event setup, progress revision, registration generations, exact
 check-in and accepted membership. Confirmation re-reads these facts in its
 transaction, rechecks staff expiry and event end after roster reads, and writes
 an immutable `eventAssistanceDepartureRosters` record with progress and receipt.
-The record preserves only attendee IDs and source/visit/membership evidence.
+The record pins its confirmed destination plus attendee IDs and
+source/visit/membership evidence.
 Each departure has its own roster identity; later moves, cancellations or group
 changes cannot rewrite who was recorded as departing on the earlier leg.
 
@@ -475,10 +476,54 @@ resolves accountability or sends a message.
 
 This slice supplies the stable departure scope required by the typed checkpoint
 workflow. Acceptance covers atomic interruption/retry, exact-visit and source
-changes, scoped authority, bounds and emulator concurrency. Checkpoint reports,
-missing-person reconciliation, corrections/additions during a leg, roster
-selection controls and rehearsal adapters remain separate implementation work.
+changes, scoped authority, bounds and emulator concurrency. Departure-roster
+corrections/additions during a leg, roster selection controls and rehearsal
+adapters remain separate implementation work.
 No live automation or provider boundary is activated by this change.
+
+### Checkpoint observations
+
+`getEventAssistanceCheckpoint` and `recordEventAssistanceCheckpoint` operate on
+one checkpoint and one explicitly recorded departure revision. Each new departure
+roster pins the actual confirmed destination. A legacy roster without that fact
+is distinguished from a confirmed empty roster; neither a schedule nor the latest
+group position is used to invent the earlier destination. Whole-event itinerary
+stops and saved pace-group checkpoints use the same report model.
+
+The typed `recordCheckpoint` command supplies the full accounted-for set, expected
+checkpoint revision and optional correction explanation (explicitly null for an
+ordinary report). Partial reports leave every other departure member unconfirmed.
+Concurrent reviews cannot silently replace each other's observations. Removing a
+previous observation requires a nonblank reason; immutable receipts preserve the
+original report and each correction. Exact retries return their original operation
+revision with the latest report and never reapply older observations.
+Checkpoint and consent callbacks share the bounded SDK retry adapter for the
+exact closed-transaction read error; uncertain commits remain outside that
+adapter and must resolve through their immutable request receipts.
+
+New observations must match the departure member's exact registration generation
+and check-in/attendance revision. Missing, changed or malformed registrations stay
+visible as unresolved original roster members and cannot receive new proof. Earlier
+observations remain historical facts after a guest's visit changes, and can still
+be corrected with a reason. Later membership transfers, participation changes and
+reported intentions do not erase the original departure scope or establish arrival.
+Guests who did not depart on this roster cannot be silently added to its report.
+
+Current managers and the group's current lead/pacer/sweep duties authorize reads
+and writes; authority is checked before roster reads and expiry again after all
+reads, including receipt lookup. Reports can be finished after later departures,
+scheduled event end, completion or cancellation. Changed event setup or replaced
+source documents withhold new reports; saved reports remain visible when their
+source record is intact. No action changes attendance, group progress, membership,
+end-of-event accountability, messaging or consent. An empty roster is complete only
+after an explicit empty report. Read projections expose IDs and checkpoint facts,
+not guest contact data.
+
+The backend command and projection are implemented and covered for atomic retry,
+partial/corrected reports, exact visits, scoped duties, historical legs, bounds and
+Firestore concurrency. Automated `requestCheckpointReport`, reminder/escalation
+policy, responsibility reconciliation, Host controls and rehearsal adapters remain
+integration work. This change activates no automation or provider effects.
 
 ### Scoped group staff
 
@@ -505,7 +550,7 @@ retries and concurrent changes. Group staff projections expose only the selected
 duty and basic staff identity, not full phone numbers or the event guest roster.
 
 The duty permission map now authorizes progress, departure, membership and
-accountability commands. Checkpoint adapters, delegated staff controls and receipt
+accountability and checkpoint commands. Delegated staff controls and receipt
 retention remain implementation work. Group duties alone do not grant the existing event-wide live-location publishing permission.
 
 ### Typed accountability commands

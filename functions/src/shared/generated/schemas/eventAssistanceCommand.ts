@@ -2198,7 +2198,9 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
             "groupId",
             "checkpointId",
             "accountedFor",
-            "expectedProgressRevision"
+            "expectedProgressRevision",
+            "expectedCheckpointRevision",
+            "correctionReason"
           ],
           "properties": {
             "groupId": {
@@ -2225,9 +2227,27 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
             },
             "expectedProgressRevision": {
               "type": "integer",
-              "minimum": 0,
+              "minimum": 1,
               "maximum": 9007199254740991,
               "description": "Nonnegative safe integer revision."
+            },
+            "expectedCheckpointRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "correctionReason": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         }

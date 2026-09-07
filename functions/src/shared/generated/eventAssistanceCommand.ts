@@ -447,6 +447,8 @@ export type EventAssistanceCommand =
          * Nonnegative safe integer revision.
          */
         expectedProgressRevision: number;
+        expectedCheckpointRevision: number;
+        correctionReason: string | null;
       };
     }
   | {

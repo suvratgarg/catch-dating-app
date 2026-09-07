@@ -27,4 +27,21 @@ export interface EventAssistanceDepartureRosterDocument {
     episodeId: string | null;
     membershipHash: string | null;
   }[];
+  destination?:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
 }

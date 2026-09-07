@@ -5,6 +5,11 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {getEventAssistanceCheckpointCallablePayloadSchema} from "./schemas/getEventAssistanceCheckpointInput";
+export {recordEventAssistanceCheckpointCallablePayloadSchema} from "./schemas/recordEventAssistanceCheckpointInput";
+export {eventAssistanceCheckpointCallableResponseSchema} from "./schemas/eventAssistanceCheckpointOutput";
+export {eventAssistanceCheckpointDocumentSchema} from "./schemas/eventAssistanceCheckpointDocument";
+export {eventAssistanceCheckpointReceiptDocumentSchema} from "./schemas/eventAssistanceCheckpointReceiptDocument";
 export {eventAssistanceAccountabilityReceiptDocumentSchema} from "./schemas/eventAssistanceAccountabilityReceiptDocument";
 export {getEventAssistanceAccountabilityCallablePayloadSchema} from "./schemas/getEventAssistanceAccountabilityInput";
 export {resolveEventAssistanceAccountabilityCallablePayloadSchema} from "./schemas/resolveEventAssistanceAccountabilityInput";
