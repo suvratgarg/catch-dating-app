@@ -103,9 +103,11 @@ export class WhatsappDeliveryStore {
       return {kind: "rejected"};
     }
     if (queued.deliveryStatus === "failed" ||
-        queued.providerErrorCode !== null) {
-      // Failure alone does not establish technical retry eligibility. Retain
-      // the signed queue evidence for the reviewed error/finality mapping.
+        queued.providerErrorCode !== null ||
+        queued.providerErrorEvidence?.kind !== "none") {
+      // Failure alone does not establish technical retry eligibility. Mixed,
+      // malformed and legacy incomplete error evidence also cannot establish
+      // success. Retain the signed queue for reviewed reconciliation.
       return {kind: "unconfirmed", messageId: record.messageId};
     }
     const evidenceId = "wa-status:" + operationContentHash([

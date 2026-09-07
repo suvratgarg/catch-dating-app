@@ -79,6 +79,72 @@ function sender() {
     organizerId: "organizer-one", channel: "whatsapp", status: "active"};
 }
 
+test("status errors retain every code without retaining provider text", () => {
+  const status = {id: "wamid.errors", status: "failed",
+    timestamp: "1720000000", recipient_id: "919999999999"};
+  for (const codes of [[131016], [131016, 131026], Array(10).fill(131016)]) {
+    const [event] = parseMetaWhatsappWebhook(webhook([], [{...status,
+      errors: codes.map((code) => ({code, title: "private provider text",
+        error_data: {details: "private diagnostic details"}})),
+    }]));
+    assert.deepEqual(event.providerErrorEvidence, {kind: "codes", codes});
+    assert.equal(event.providerErrorCode, codes[0]);
+    assert.equal(JSON.stringify(event).includes("private"), false);
+  }
+  for (const errors of [undefined, []]) {
+    const [event] = parseMetaWhatsappWebhook(
+      webhook([], [{...status, errors}]));
+    assert.deepEqual(event.providerErrorEvidence, {kind: "none"});
+    assert.equal(event.providerErrorCode, null);
+  }
+});
+
+test("malformed or oversized errors cannot become an error-free status", () => {
+  for (const errors of [null, {}, "131016", [null], [{}],
+    [{code: "131016"}], [{code: -1}], [{code: 1.5}], [{code: 1e9}],
+    [{}, {code: 131026}], [{code: 131016}, {}],
+    Array(11).fill({code: 131016})]) {
+    const [event] = parseMetaWhatsappWebhook(webhook([], [{
+      id: "wamid.invalid-errors", status: "delivered",
+      timestamp: "1720000000", recipient_id: "919999999999", errors,
+    }]));
+    assert.deepEqual(event.providerErrorEvidence, {kind: "unusable"});
+    assert.equal(event.providerErrorCode, null);
+  }
+});
+
+test("signed queue preserves error evidence and rejects impossible shapes",
+  async () => {
+    const fake = new FakeFirestore();
+    fake.write("organizerSenderConnections/connection-one", sender());
+    const rawBody = webhook([], [{
+      id: "wamid.errors", status: "failed", timestamp: "1720000000",
+      recipient_id: "919999999999", errors: [{code: 131016}, {code: 131026}],
+    }]);
+    const params = {db: fake as unknown as FirebaseFirestore.Firestore,
+      rawBody, signatureHeader: signature(rawBody), appSecret,
+      now: Timestamp.fromMillis(1720000001000)};
+    assert.equal(await ingestMetaWhatsappWebhook(params), 1);
+    assert.equal(await ingestMetaWhatsappWebhook(params), 0);
+    const row = fake.entries().find(([path]) =>
+      path.startsWith("organizerMessagingWebhookEvents/"))![1];
+    assert.ok(validateOrganizerMessagingWebhookEventDocument(row));
+    assert.deepEqual(row.providerErrorEvidence,
+      {kind: "codes", codes: [131016, 131026]});
+    for (const invalid of [
+      {kind: "none", codes: []}, {kind: "codes", codes: []},
+      {kind: "codes", codes: Array(11).fill(1)},
+      {kind: "codes", codes: ["131016"]}, {kind: "codes", codes: [-1]},
+      {kind: "codes", codes: [1.5]}, {kind: "codes", codes: [1e9]},
+      {kind: "unusable", raw: "private"}, {kind: "technical"}]) {
+      assert.equal(validateOrganizerMessagingWebhookEventDocument({...row,
+        providerErrorEvidence: invalid}), false);
+    }
+    const legacy = {...row};
+    delete legacy.providerErrorEvidence;
+    assert.ok(validateOrganizerMessagingWebhookEventDocument(legacy));
+  });
+
 test("signed STOP and its queue receipt commit together without a CRM contact",
   async () => {
     const fake = new FakeFirestore();

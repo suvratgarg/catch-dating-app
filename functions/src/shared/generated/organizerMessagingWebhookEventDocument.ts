@@ -46,6 +46,24 @@ export interface OrganizerMessagingWebhookEventDocument {
   hasReply: boolean;
   inboundBody: string | null;
   providerErrorCode: number | null;
+  /**
+   * Complete bounded error-code evidence from signed ingress. Missing legacy evidence is unknown, never proof of an error-free status. Error text and details are not retained.
+   */
+  providerErrorEvidence?:
+    | {
+        kind: "none";
+      }
+    | {
+        kind: "codes";
+        /**
+         * @minItems 1
+         * @maxItems 10
+         */
+        codes: number[];
+      }
+    | {
+        kind: "unusable";
+      };
   providerOccurredAt: {
     _seconds: number;
     _nanoseconds: number;

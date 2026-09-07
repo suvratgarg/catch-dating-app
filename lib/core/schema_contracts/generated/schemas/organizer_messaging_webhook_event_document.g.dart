@@ -240,6 +240,58 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 999999999,
     },
+    'providerErrorEvidence': <String, Object?>{
+      'description': 'Complete bounded error-code evidence from signed ingress. Missing legacy evidence is unknown, never proof of an error-free status. Error text and details are not retained.',
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'none',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'codes',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'codes',
+            },
+            'codes': <String, Object?>{
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 10,
+              'items': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'unusable',
+            },
+          },
+        },
+      ],
+    },
     'providerOccurredAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{

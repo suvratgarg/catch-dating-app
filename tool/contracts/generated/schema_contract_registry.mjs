@@ -86959,6 +86959,58 @@ export const organizerMessagingWebhookEventDocumentSchema = {
       "minimum": 0,
       "maximum": 999999999
     },
+    "providerErrorEvidence": {
+      "description": "Complete bounded error-code evidence from signed ingress. Missing legacy evidence is unknown, never proof of an error-free status. Error text and details are not retained.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "none"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "codes"
+          ],
+          "properties": {
+            "kind": {
+              "const": "codes"
+            },
+            "codes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unusable"
+            }
+          }
+        }
+      ]
+    },
     "providerOccurredAt": {
       "anyOf": [
         {

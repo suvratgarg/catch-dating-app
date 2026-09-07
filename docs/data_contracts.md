@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.52.0
+version: 1.53.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -2485,6 +2485,16 @@ echo still requires controlled account verification. The durable queue consumer
 records unconfirmed delivery outcomes without retrying them or permitting
 fallback; reviewed failure classification and reconciliation remain integration
 work. These boundaries do not activate automated sending.
+
+The signed queue's optional `providerErrorEvidence` is a closed union:
+`none`, `codes` with one to ten integer codes, or `unusable`. Ingress
+preserves code order and duplicates, excludes diagnostic text, and marks the
+whole list unusable when any entry is malformed or the bound is exceeded.
+The nullable legacy `providerErrorCode` is only the first code of a complete
+list. Missing legacy evidence remains readable but cannot establish an
+error-free Event Assistance delivery. Positive status plus any error evidence
+retains the outbox hold and spending debit; later complete signed evidence
+may resolve it. No provider error code is newly authorized for fallback.
 
 ### Event Assistance Channel Selection Contract
 

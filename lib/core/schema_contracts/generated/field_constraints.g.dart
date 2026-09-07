@@ -57185,6 +57185,28 @@ abstract final class CatchContractConstraints {
     maximum: 999999999,
   );
 
+  static const organizerMessagingWebhookEventDocumentProviderErrorEvidenceCodes = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerErrorEvidence.codes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['integer'],
+    minItems: 1,
+    maxItems: 10,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderErrorEvidenceCodesItems = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerErrorEvidence.codes.items',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderErrorEvidenceKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerErrorEvidence.kind',
+    required: true,
+  );
+
   static const organizerMessagingWebhookEventDocumentProviderEventId = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.providerEventId',
     maxLength: 240,
@@ -81905,6 +81927,9 @@ abstract final class CatchContractConstraints {
     'organizerMessagingWebhookEventDocument.provider': organizerMessagingWebhookEventDocumentProvider,
     'organizerMessagingWebhookEventDocument.providerAccountId': organizerMessagingWebhookEventDocumentProviderAccountId,
     'organizerMessagingWebhookEventDocument.providerErrorCode': organizerMessagingWebhookEventDocumentProviderErrorCode,
+    'organizerMessagingWebhookEventDocument.providerErrorEvidence.codes': organizerMessagingWebhookEventDocumentProviderErrorEvidenceCodes,
+    'organizerMessagingWebhookEventDocument.providerErrorEvidence.codes.items': organizerMessagingWebhookEventDocumentProviderErrorEvidenceCodesItems,
+    'organizerMessagingWebhookEventDocument.providerErrorEvidence.kind': organizerMessagingWebhookEventDocumentProviderErrorEvidenceKind,
     'organizerMessagingWebhookEventDocument.providerEventId': organizerMessagingWebhookEventDocumentProviderEventId,
     'organizerMessagingWebhookEventDocument.providerMessageId': organizerMessagingWebhookEventDocumentProviderMessageId,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,

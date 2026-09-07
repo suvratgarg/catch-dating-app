@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.35.0
+version: 1.36.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -724,6 +724,19 @@ expires. Permanent rejections terminate. Checkpoint failure after a successful
 guest effect retries idempotently; concurrent completion cannot be overwritten
 by an older waiting result. Campaign/Inbox processing retains its own fields.
 Signed-ingress tests and real Firestore contention tests cover these boundaries.
+
+Signed status ingestion preserves all error codes in
+`providerErrorEvidence`, with distinct `none`, `codes` and `unusable`
+variants. Lists over ten entries, malformed entries and non-array error values
+become unusable rather than being truncated into apparent success. The bound
+is ours, not a provider guarantee; diagnostic text is excluded. The existing
+first-code field remains available to campaign processing for complete lists.
+Event Assistance requires explicit error-free evidence before accepting a
+positive status. Legacy queued statuses without this field remain unconfirmed;
+their missing error information cannot be reconstructed from a null first code.
+Later complete signed evidence can still resolve the same outbox attempt.
+This prepares failure reconciliation but supplies no new retry classification,
+spending release or provider activation.
 
 The Meta worker connects approved template material, named/positional
 parameters, native choices, sender credentials and dispatch deadlines to the

@@ -51,6 +51,8 @@ interface ParsedWebhookEvent {
   hasReply: boolean;
   inboundBody: string | null;
   providerErrorCode: number | null;
+  providerErrorEvidence: NonNullable<
+    OrganizerMessagingWebhookEventDocument["providerErrorEvidence"]>;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
   payloadHash: string;
 }
@@ -82,8 +84,9 @@ export function parseMetaWhatsappWebhook(
         );
         if (!providerMessageId || !deliveryStatus) continue;
         const timestamp = timestampValue(status.timestamp);
-        const error = recordValue(arrayValue(status.errors)[0]);
-        const providerErrorCode = numberValue(error.code);
+        const providerErrorEvidence = parseErrorEvidence(status.errors);
+        const providerErrorCode = providerErrorEvidence.kind === "codes" ?
+          providerErrorEvidence.codes[0] : null;
         events.push({
           providerEventId: `status:${providerMessageId}:${deliveryStatus}:` +
             `${timestamp?.toMillis() ?? "unknown"}`,
@@ -100,6 +103,7 @@ export function parseMetaWhatsappWebhook(
           hasReply: false,
           inboundBody: null,
           providerErrorCode,
+          providerErrorEvidence,
           providerOccurredAt: timestamp,
           payloadHash,
         });
@@ -127,6 +131,7 @@ export function parseMetaWhatsappWebhook(
           hasReply: true,
           inboundBody: reply?.label ?? (body.trim().slice(0, 4096) || null),
           providerErrorCode: null,
+          providerErrorEvidence: {kind: "none"},
           providerOccurredAt: timestampValue(message.timestamp),
           payloadHash,
         });
@@ -225,6 +230,7 @@ export async function ingestMetaWhatsappWebhook(params: {
         hasReply: event.hasReply,
         inboundBody: event.inboundBody,
         providerErrorCode: event.providerErrorCode,
+        providerErrorEvidence: event.providerErrorEvidence,
         providerOccurredAt: event.providerOccurredAt,
         processingStatus: "pending",
         attemptCount: 0,
@@ -572,8 +578,21 @@ function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.length > 0 ? value : null;
 }
 
-function numberValue(value: unknown): number | null {
-  return typeof value === "number" && Number.isInteger(value) ? value : null;
+function parseErrorEvidence(value: unknown):
+  ParsedWebhookEvent["providerErrorEvidence"] {
+  if (value === undefined) return {kind: "none"};
+  // Ten is our storage/processing bound, not a claimed provider maximum.
+  // Never truncate a list or discard an invalid entry into apparent success.
+  if (!Array.isArray(value) || value.length > 10) return {kind: "unusable"};
+  if (value.length === 0) return {kind: "none"};
+  const codes: number[] = [];
+  for (const entry of value) {
+    const code = recordValue(entry).code;
+    if (typeof code !== "number" || !Number.isSafeInteger(code) ||
+        code < 0 || code > 999999999) return {kind: "unusable"};
+    codes.push(code);
+  }
+  return {kind: "codes", codes};
 }
 
 function sha256(value: crypto.BinaryLike): string {

@@ -441,6 +441,64 @@ test("failed or inconsistent status evidence cannot unlock SMS fallback",
     }
   });
 
+async function rejectsIncompleteDeliveryEvidence(h: Harness) {
+  const claim = await h.claim();
+  if (claim.kind !== "claimed") throw new Error("Expected claim");
+  const correlation = whatsappStatusCorrelation(claim.permit.attempt.attemptId,
+    claim.resource.rendered.payloadHash);
+  const reports = new WhatsappDeliveryStore(h.db, () => h.clock.now);
+  const before = await h.outbox.get(h.messageId);
+  for (const status of ["sent", "delivered", "read"]) {
+    for (const errors of [null, [{}], [{}, {code: 131026}],
+      [{code: 131016}, {code: 131026}], Array(11).fill({code: 131016})]) {
+      h.clock.now += 1000;
+      const id = await queuedStatus(h, correlation, status, {errors});
+      assert.deepEqual(await reports.consumeQueued(id),
+        {kind: "unconfirmed", messageId: h.messageId});
+      assert.deepEqual(await h.outbox.get(h.messageId), before);
+      assert.equal((await h.reserve()).decision.kind, "reconcile");
+    }
+  }
+  // An older queue row cannot prove the discarded errors were absent.
+  h.clock.now += 1000;
+  const oldId = await queuedStatus(h, correlation, "delivered");
+  const path = "organizerMessagingWebhookEvents/" + oldId;
+  const legacy = {...(await h.read(path))!};
+  delete legacy.providerErrorEvidence;
+  await h.write(path, legacy);
+  assert.deepEqual(await reports.consumeQueued(oldId),
+    {kind: "unconfirmed", messageId: h.messageId});
+  assert.deepEqual(await h.outbox.get(h.messageId), before);
+  for (const budget of h.budgetPaths) {
+    assert.equal((await h.read(budget))!.chargedMicros, 500_000);
+  }
+  // Later complete signed evidence still recovers a lost submission.
+  h.clock.now += 1000;
+  const deliveredId = await queuedStatus(h, correlation, "delivered",
+    {errors: []});
+  assert.equal((await reports.consumeQueued(deliveredId)).kind, "recorded");
+  assert.equal((await h.outbox.get(h.messageId))!.attempts[0].state.kind,
+    "delivered");
+}
+
+test("incomplete signed errors cannot confirm delivery or allow fallback",
+  async () => rejectsIncompleteDeliveryEvidence(await harness()));
+
+test("Firestore retains ambiguous delivery until complete signed evidence", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const id = randomUUID();
+  const app = initializeApp({projectId: "demo-catch-rules"}, "wa-errors-" + id);
+  try {
+    const h = await harness(getFirestore(app), id);
+    await rejectsIncompleteDeliveryEvidence(h);
+  } finally {
+    await deleteApp(app);
+  }
+});
+
 test("a native reply resumes after signed status recovers a lost send response",
   async () => {
     const h = await harness();
