@@ -49,6 +49,10 @@ export type EventAssistanceCommand =
           attendeeIds: string[];
           expectedSourceHash: string;
         };
+        checkpointRequest?: {
+          responsibleOperatorId: string;
+          dueAt: number;
+        };
       };
     }
   | {

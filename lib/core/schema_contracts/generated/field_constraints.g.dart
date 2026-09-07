@@ -6756,6 +6756,23 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestDueAt = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.checkpointRequest.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.checkpointRequest.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
   static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIds = CatchContractFieldConstraints(
     path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds',
     required: true,
@@ -13342,6 +13359,23 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentCheckpointRequestDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.checkpointRequest.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentCheckpointRequestResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.checkpointRequest.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
   );
 
   static const eventAssistanceDepartureRosterDocumentConfirmedAt = CatchContractFieldConstraints(
@@ -76480,6 +76514,8 @@ abstract final class CatchContractConstraints {
     'confirmEventAssistanceDepartureCallablePayload.command.eventId': confirmEventAssistanceDepartureCallablePayloadCommandEventId,
     'confirmEventAssistanceDepartureCallablePayload.command.kind': confirmEventAssistanceDepartureCallablePayloadCommandKind,
     'confirmEventAssistanceDepartureCallablePayload.command.operationId': confirmEventAssistanceDepartureCallablePayloadCommandOperationId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.checkpointRequest.dueAt': confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestDueAt,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.checkpointRequest.responsibleOperatorId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestResponsibleOperatorId,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIds,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds.items': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIdsItems,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.expectedSourceHash': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterExpectedSourceHash,
@@ -77382,6 +77418,8 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDepartureRosterCallableResponse.selection.attendeeIds.items': eventAssistanceDepartureRosterCallableResponseSelectionAttendeeIdsItems,
     'eventAssistanceDepartureRosterCallableResponse.selection.expectedSourceHash': eventAssistanceDepartureRosterCallableResponseSelectionExpectedSourceHash,
     'eventAssistanceDepartureRosterCallableResponse.serverTime': eventAssistanceDepartureRosterCallableResponseServerTime,
+    'eventAssistanceDepartureRosterDocument.checkpointRequest.dueAt': eventAssistanceDepartureRosterDocumentCheckpointRequestDueAt,
+    'eventAssistanceDepartureRosterDocument.checkpointRequest.responsibleOperatorId': eventAssistanceDepartureRosterDocumentCheckpointRequestResponsibleOperatorId,
     'eventAssistanceDepartureRosterDocument.confirmedAt': eventAssistanceDepartureRosterDocumentConfirmedAt,
     'eventAssistanceDepartureRosterDocument.confirmedBy': eventAssistanceDepartureRosterDocumentConfirmedBy,
     'eventAssistanceDepartureRosterDocument.context.eventId': eventAssistanceDepartureRosterDocumentContextEventId,

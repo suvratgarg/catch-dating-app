@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.39.0
+version: 1.40.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -519,10 +519,34 @@ end-of-event accountability, messaging or consent. An empty roster is complete o
 after an explicit empty report. Read projections expose IDs and checkpoint facts,
 not guest contact data.
 
-The backend command and projection are implemented and covered for atomic retry,
-partial/corrected reports, exact visits, scoped duties, historical legs, bounds and
-Firestore concurrency. Automated `requestCheckpointReport`, reminder/escalation
-policy, responsibility reconciliation, Host controls and rehearsal adapters remain
+The optional `confirmDeparture.payload.checkpointRequest` names a responsible
+operator and UTC-millisecond reporting deadline. It requires an explicitly selected
+roster and checkpoint destination and is saved in the immutable roster, in the same
+transaction as departure and its receipt. No reporter is inferred from staff role,
+late-join configuration author, or departure confirmer. Managers may name another
+currently authorized reporter; staff who can confirm departure may name only
+themselves. Existing access must last beyond the deadline. The deadline is
+bounded to seven days after departure and four hours after scheduled event end.
+This assignment grants no access and has no messaging effect.
+
+Checkpoint reads project an optional request with `awaitingReport`, `overdue`,
+`discrepancy`, `complete`, or `sourceUnavailable` state. A partial observation retains
+the discrepancy even before its deadline. Current permission loss or access shortened
+below the deadline marks the owner as needing reassignment; it never removes the
+original request. Permission is re-read, and source/database errors propagate instead
+of being treated as revocations. Any currently authorized observer may report; the
+recorded reporter can differ from the responsible operator. Complete observations
+survive later setup changes and require no new owner. Correcting a complete report
+back to a partial set reopens the discrepancy. A wrong checkpoint never inherits
+another stop's request. Legacy rosters invent no request or owner, and empty rosters
+still require an explicit empty report.
+
+This bounded slice supplies request facts and read projections; it does not yet
+enqueue the Operations request/reminder worker or deliver staff notifications.
+Acceptance covers atomic interruption/retry, delegation and current authority,
+deadline/expiry races, partial/corrected reports, historical legs, source failures
+and Firestore concurrency. Automated `requestCheckpointReport`, reminder/escalation
+policy, reassignment commands, Host controls and rehearsal adapters remain
 integration work. This change activates no automation or provider effects.
 
 ### Scoped group staff

@@ -44,4 +44,8 @@ export interface EventAssistanceDepartureRosterDocument {
         groupId: string;
         checkpointId: string;
       };
+  checkpointRequest?: {
+    responsibleOperatorId: string;
+    dueAt: number;
+  };
 }

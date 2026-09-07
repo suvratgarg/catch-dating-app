@@ -229,6 +229,27 @@ export const eventAssistanceDepartureRosterDocumentSchema: Record<string, unknow
           }
         }
       ]
+    },
+    "checkpointRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibleOperatorId",
+        "dueAt"
+      ],
+      "properties": {
+        "responsibleOperatorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "dueAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "title": "EventAssistanceDepartureRosterDocument",

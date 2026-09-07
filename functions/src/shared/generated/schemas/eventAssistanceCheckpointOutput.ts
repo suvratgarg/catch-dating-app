@@ -42,7 +42,8 @@ export const eventAssistanceCheckpointCallableResponseSchema: Record<string, unk
         "sourceHash",
         "revision",
         "report",
-        "availability"
+        "availability",
+        "request"
       ],
       "properties": {
         "context": {
@@ -350,6 +351,83 @@ export const eventAssistanceCheckpointCallableResponseSchema: Record<string, unk
                   ]
                 }
               }
+            }
+          ]
+        },
+        "request": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responsibleOperatorId",
+                    "dueAt",
+                    "state",
+                    "ownerAvailability"
+                  ],
+                  "properties": {
+                    "responsibleOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "dueAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "state": {
+                      "enum": [
+                        "awaitingReport",
+                        "overdue",
+                        "discrepancy",
+                        "sourceUnavailable"
+                      ]
+                    },
+                    "ownerAvailability": {
+                      "enum": [
+                        "current",
+                        "needsReassignment"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responsibleOperatorId",
+                    "dueAt",
+                    "state",
+                    "ownerAvailability"
+                  ],
+                  "properties": {
+                    "responsibleOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "dueAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "state": {
+                      "const": "complete"
+                    },
+                    "ownerAvailability": {
+                      "const": "notRequired"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "null"
             }
           ]
         }

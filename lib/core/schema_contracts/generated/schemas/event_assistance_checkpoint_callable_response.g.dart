@@ -45,6 +45,7 @@ const schemaEventAssistanceCheckpointCallableResponseSchema = <String, Object?>{
         'revision',
         'report',
         'availability',
+        'request',
       ],
       'properties': <String, Object?>{
         'context': <String, Object?>{
@@ -352,6 +353,83 @@ const schemaEventAssistanceCheckpointCallableResponseSchema = <String, Object?>{
                   ],
                 },
               },
+            },
+          ],
+        },
+        'request': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'oneOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'responsibleOperatorId',
+                    'dueAt',
+                    'state',
+                    'ownerAvailability',
+                  ],
+                  'properties': <String, Object?>{
+                    'responsibleOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'dueAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'state': <String, Object?>{
+                      'enum': <Object?>[
+                        'awaitingReport',
+                        'overdue',
+                        'discrepancy',
+                        'sourceUnavailable',
+                      ],
+                    },
+                    'ownerAvailability': <String, Object?>{
+                      'enum': <Object?>[
+                        'current',
+                        'needsReassignment',
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'responsibleOperatorId',
+                    'dueAt',
+                    'state',
+                    'ownerAvailability',
+                  ],
+                  'properties': <String, Object?>{
+                    'responsibleOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'dueAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'state': <String, Object?>{
+                      'const': 'complete',
+                    },
+                    'ownerAvailability': <String, Object?>{
+                      'const': 'notRequired',
+                    },
+                  },
+                },
+              ],
+            },
+            <String, Object?>{
+              'type': 'null',
             },
           ],
         },

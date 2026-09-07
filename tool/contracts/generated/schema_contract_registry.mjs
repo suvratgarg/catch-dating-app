@@ -281,7 +281,8 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
         "sourceHash",
         "revision",
         "report",
-        "availability"
+        "availability",
+        "request"
       ],
       "properties": {
         "context": {
@@ -589,6 +590,83 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
                   ]
                 }
               }
+            }
+          ]
+        },
+        "request": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responsibleOperatorId",
+                    "dueAt",
+                    "state",
+                    "ownerAvailability"
+                  ],
+                  "properties": {
+                    "responsibleOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "dueAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "state": {
+                      "enum": [
+                        "awaitingReport",
+                        "overdue",
+                        "discrepancy",
+                        "sourceUnavailable"
+                      ]
+                    },
+                    "ownerAvailability": {
+                      "enum": [
+                        "current",
+                        "needsReassignment"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responsibleOperatorId",
+                    "dueAt",
+                    "state",
+                    "ownerAvailability"
+                  ],
+                  "properties": {
+                    "responsibleOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "dueAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "state": {
+                      "const": "complete"
+                    },
+                    "ownerAvailability": {
+                      "const": "notRequired"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -28511,6 +28589,27 @@ export const eventAssistanceDepartureRosterDocumentSchema = {
           }
         }
       ]
+    },
+    "checkpointRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibleOperatorId",
+        "dueAt"
+      ],
+      "properties": {
+        "responsibleOperatorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "dueAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "title": "EventAssistanceDepartureRosterDocument",
@@ -29034,6 +29133,27 @@ export const confirmEventAssistanceDepartureCallablePayloadSchema = {
                 "expectedSourceHash": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "checkpointRequest": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responsibleOperatorId",
+                "dueAt"
+              ],
+              "properties": {
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
                 }
               }
             }
@@ -51025,6 +51145,27 @@ export const eventAssistanceCommandSchema = {
                 "expectedSourceHash": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "checkpointRequest": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responsibleOperatorId",
+                "dueAt"
+              ],
+              "properties": {
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
                 }
               }
             }

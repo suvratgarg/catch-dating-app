@@ -17,6 +17,7 @@ import {validateEventAssistanceCheckpointCallableResponse} from
 import type {readGroupProgressState} from "./groupProgressReader";
 import {progressIdentity, invalidSource} from "./groupProgressSource";
 import {departureRosterIdentity} from "./departureRosterSource";
+import {assertSavedCheckpointRequest} from "./checkpointRequest";
 
 export type {Scope, Report, Roster, Response};
 export const CHECKPOINTS = "eventAssistanceCheckpoints";
@@ -30,6 +31,7 @@ export interface CheckpointState {
   roster: Roster | null;
   report: Report | null;
   visits: {attendeeId: string; visit: Visit}[];
+  ownerValidUntil: number;
   now: number;
 }
 export function checkpointIdentity(scope: Scope) {
@@ -50,6 +52,7 @@ export function parseDepartureRoster(value: unknown, scope: Scope,
     m.attendeeId)) || value.members.some((m) =>
     scope.groupId === "event:whole" ? m.membershipHash !== null :
       m.membershipHash === null || m.episodeId === null)) throw invalidSource();
+  assertSavedCheckpointRequest(value);
   return value;
 }
 
@@ -109,11 +112,32 @@ export function checkpointSourceHash(s: CheckpointState) {
   return operationContentHash([s.scope, s.progress.source.sourceHash,
     s.roster, s.report, s.visits]);
 }
+function checkpointRequestView(s: CheckpointState):
+  Response["view"]["request"] {
+  const request = s.roster?.checkpointRequest;
+  const destination = s.roster?.destination;
+  const checkpointId = destination?.kind === "itineraryStop" ?
+    destination.stopId : destination?.kind === "groupCheckpoint" ?
+      destination.checkpointId : null;
+  if (!request || checkpointId !== s.scope.checkpointId) return null;
+  const complete = s.report !== null &&
+    s.report.accountedFor.length === s.roster!.members.length;
+  if (complete) {
+    return {...request, state: "complete", ownerAvailability: "notRequired"};
+  }
+  return {...request, state:
+    checkpointAvailability(s).kind !== "ready" ? "sourceUnavailable" :
+      s.report ? "discrepancy" : s.now >= request.dueAt ?
+        "overdue" : "awaitingReport",
+  ownerAvailability: s.ownerValidUntil > Math.max(s.now, request.dueAt) ?
+    "current" : "needsReassignment"};
+}
 export function checkpointResponse(outcome: Response["outcome"],
   s: CheckpointState, operationRevision: number | null = null): Response {
   const value: Response = {outcome, operationRevision, view: {...s.scope,
     serverTime: s.now, sourceHash: checkpointSourceHash(s),
     revision: s.report?.revision ?? 0, report: s.report,
+    request: checkpointRequestView(s),
     availability: checkpointAvailability(s)}};
   if (!validateEventAssistanceCheckpointCallableResponse(value)) {
     throw invalidSource();

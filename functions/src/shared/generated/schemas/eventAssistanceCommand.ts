@@ -228,6 +228,27 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
                   "pattern": "^[a-f0-9]{64}$"
                 }
               }
+            },
+            "checkpointRequest": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responsibleOperatorId",
+                "dueAt"
+              ],
+              "properties": {
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         }

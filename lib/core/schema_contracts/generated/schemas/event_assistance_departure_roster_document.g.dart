@@ -232,6 +232,27 @@ const schemaEventAssistanceDepartureRosterDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'checkpointRequest': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'responsibleOperatorId',
+        'dueAt',
+      ],
+      'properties': <String, Object?>{
+        'responsibleOperatorId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 128,
+          'pattern': '^[^/]+\$',
+        },
+        'dueAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+      },
+    },
   },
   'title': 'EventAssistanceDepartureRosterDocument',
   'x-firestore-collection': 'eventAssistanceDepartureRosters',

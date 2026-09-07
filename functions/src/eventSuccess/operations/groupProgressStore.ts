@@ -28,6 +28,8 @@ import {DEPARTURE_ROSTERS, departureRosterIdentity,
 import {validateEventAssistanceDepartureRosterDocument} from
   "../../shared/generated/validators/eventAssistanceDepartureRosterDocument";
 import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
+import {authorizeCheckpointRequest, assertCheckpointRequestDeadline} from
+  "./checkpointRequest";
 export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
 
@@ -98,8 +100,19 @@ export class EventGroupProgressStore {
           "Choose a destination from the current event setup.");
       }
       const selection = command.payload.departureRoster;
+      const checkpointRequest = command.payload.checkpointRequest;
+      if (checkpointRequest && (!selection ||
+          (target.target.kind !== "itineraryStop" &&
+            target.target.kind !== "groupCheckpoint"))) {
+        throw new HttpsError("failed-precondition",
+          "A checkpoint request needs a selected departure roster and stop.");
+      }
       const roster = selection ? await readDepartureRoster(this.db, tx,
         state, selection.attendeeIds) : null;
+      const ownerValidUntil = checkpointRequest ?
+        await authorizeCheckpointRequest(this.db, tx, context,
+          command.payload.groupId, actorUid, state.access.role,
+          checkpointRequest, this.clock) : null;
       const afterRoster = this.clock();
       if (!Number.isSafeInteger(afterRoster) || afterRoster < state.now) {
         throw invalidSource();
@@ -108,6 +121,10 @@ export class EventGroupProgressStore {
       if (afterRoster >= state.access.validUntil) throw denied();
       if (afterRoster >= state.source.endAt) {
         throw new HttpsError("failed-precondition", "This event has ended.");
+      }
+      if (checkpointRequest) {
+        assertCheckpointRequestDeadline(checkpointRequest, ownerValidUntil!,
+          afterRoster, state.source.endAt);
       }
       if (roster && roster.sourceHash !== selection!.expectedSourceHash) {
         throw conflict();
@@ -137,7 +154,8 @@ export class EventGroupProgressStore {
         context, groupId: progress.groupId, progressId: progress.progressId,
         progressRevision: progress.revision, sourceHash: progress.sourceHash,
         confirmedBy: actorUid, confirmedAt: state.now,
-        members: roster.members, destination: progress.destination} : null;
+        members: roster.members, destination: progress.destination,
+        ...(checkpointRequest ? {checkpointRequest} : {})} : null;
       if (manifest &&
           !validateEventAssistanceDepartureRosterDocument(manifest)) {
         throw invalidSource();

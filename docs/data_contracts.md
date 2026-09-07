@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.56.0
+version: 1.57.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -315,6 +315,13 @@ exact check-in plus attendance revision, optional current participation episode
 and accepted membership hash for a pace group. It contains no contact fields.
 The optional `departureRosterId` on progress references only that departure;
 absence denotes an unrecorded roster, while a recorded empty roster is explicit.
+An optional `checkpointRequest` pins `responsibleOperatorId` and `dueAt` to this
+departure and its checkpoint destination. The departure command explicitly supplies
+both; legacy records infer neither. Current managers can name an authorized reporter,
+while staff who can confirm departure may name only themselves. It rechecks deadline,
+event end, caller expiry and the reporter's current authority after all reads.
+Reporter access must extend beyond the deadline, which is limited to seven days from
+confirmation and four hours after event end. No staff permission is created.
 
 `getEventAssistanceDepartureRoster` reviews caller-selected attendee IDs under
 current scoped read authority. The optional departure command selection carries
@@ -341,6 +348,14 @@ progress. The two Auth/App-Check/rate-limited callables require a current scoped
 checkpoint duty or organizer management and recheck expiry after transaction reads.
 They do not require automatic assistance or an open runtime to settle outstanding
 reports. New observations still require the same physical visit and source setup.
+The checkpoint read view also projects the optional request's waiting, overdue,
+discrepancy, complete or source-unavailable state and current owner availability.
+Time and owner availability do not alter the report's reviewed evidence hash.
+Complete original observations survive later source changes; partial corrections
+reopen the request. These are projections of immutable request facts and current
+observations, not a second durable workflow or an automatic arrival inference.
+Operations request scheduling, reassignment and staff notification delivery are
+separate integration work; this contract does not authorize provider sends.
 
 Both collections deny direct client access and have no TTL. The report's
 `accountedFor` and receipt's `report` fields are excluded from indexes. Limits match

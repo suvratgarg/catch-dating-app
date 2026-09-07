@@ -6618,6 +6618,9 @@
             },
             "departureRoster": {
               "$ref": "event_assistance_departure_roster.schema.json#/definitions/Selection"
+            },
+            "checkpointRequest": {
+              "$ref": "event_assistance_departure_roster.schema.json#/definitions/CheckpointRequest"
             }
           }
         }

@@ -7,6 +7,7 @@ import {readGroupProgressState} from "./groupProgressReader";
 import {DEPARTURE_ROSTERS, departureRosterIdentity,
   departureVisitHash} from "./departureRosterSource";
 import {invalidSource} from "./groupProgressSource";
+import {readCheckpointOwnerValidity} from "./checkpointRequest";
 import {CHECKPOINTS, checkpointIdentity, CheckpointState,
   parseDepartureRoster, parseCheckpointReport, checkpointAvailability,
   Scope, Roster, Visit, ProgressState} from "./checkpointRecords";
@@ -25,7 +26,7 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
   const roster = parseDepartureRoster(rosterSnap.data(), scope, now);
   const report = parseCheckpointReport(reportSnap.data(), scope, roster, now);
   const state: CheckpointState = {scope, progress, roster, report, now,
-    visits: []};
+    visits: [], ownerValidUntil: 0};
   if (roster && checkpointAvailability(state).kind === "ready") {
     for (let offset = 0; offset < roster.members.length; offset += 100) {
       const members = roster.members.slice(offset, offset + 100);
@@ -37,6 +38,15 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
       }
     }
   }
+  if (roster?.checkpointRequest) {
+    state.ownerValidUntil = await readCheckpointOwnerValidity(db, tx,
+      scope.context, scope.groupId, roster.checkpointRequest, clock);
+  }
+  const afterReads = clock();
+  if (!Number.isSafeInteger(afterReads) || afterReads < now) {
+    throw invalidSource();
+  }
+  state.now = afterReads;
   return state;
 }
 

@@ -75,5 +75,25 @@ export interface EventAssistanceCheckpointCallableResponse {
             | "notCheckpoint"
             | "setupChanged";
         };
+    request:
+      | (
+          | {
+              responsibleOperatorId: string;
+              dueAt: number;
+              state:
+                | "awaitingReport"
+                | "overdue"
+                | "discrepancy"
+                | "sourceUnavailable";
+              ownerAvailability: "current" | "needsReassignment";
+            }
+          | {
+              responsibleOperatorId: string;
+              dueAt: number;
+              state: "complete";
+              ownerAvailability: "notRequired";
+            }
+        )
+      | null;
   };
 }

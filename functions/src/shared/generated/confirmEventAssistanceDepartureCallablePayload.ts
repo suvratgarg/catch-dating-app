@@ -58,6 +58,10 @@ export type ConfirmEventAssistanceDepartureCallablePayload = {
         attendeeIds: string[];
         expectedSourceHash: string;
       };
+      checkpointRequest?: {
+        responsibleOperatorId: string;
+        dueAt: number;
+      };
     };
   };
   expectedSourceHash: string;
