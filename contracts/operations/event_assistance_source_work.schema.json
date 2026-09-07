@@ -102,6 +102,28 @@
         {
           "type": "object",
           "additionalProperties": false,
+          "description": "Refresh only existing checkpoint requests whose immutable departure roster contains this attendee. Never enroll guests or dispatch messages.",
+          "required": [
+            "kind",
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "checkpointMember"
+            },
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
           "required": [
             "kind",
             "routeId",

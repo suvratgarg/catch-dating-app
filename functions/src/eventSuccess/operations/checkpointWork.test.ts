@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {getFirestore, Firestore} from "firebase-admin/firestore";
+import {getFirestore, Firestore, Timestamp} from "firebase-admin/firestore";
+import {accountabilityResolutionFields} from "../accountability";
 import {operationCollections} from "../../operations/collections";
 import {operationResourceLeaseId} from
   "../../operations/firestoreLeaseRepository";
@@ -51,8 +52,19 @@ async function setup(real?: Firestore, reporter = manager) {
           correctionReason}}});
   };
   const current = () => work.get(id);
+  const changeMember = async (change: Record<string, unknown> | null,
+    eventId = randomUUID()) => {
+    const before = (await readMember())!;
+    if (change) await h.put(h.attendeePath, {...before, ...change});
+    else await h.db.doc(h.attendeePath).delete();
+    return {source: {collection: "eventAttendees" as const,
+      documentId: h.attendeeId, eventId, occurredAt: h.clock.now},
+    before: {generation: 1, value: before},
+    after: change ? {generation: 1, value: (await readMember())!} : null};
+  };
+  const readMember = () => h.read(h.attendeePath);
   return {...h, request, departure, checkpointScope: scope,
-    reportId, id, reports, work, source, report, current};
+    reportId, id, reports, work, source, report, current, changeMember};
 }
 
 function observed(value: Awaited<ReturnType<
@@ -232,6 +244,140 @@ test("event source pages resume across all saved checkpoint requests",
     assert.equal(requests.length, 25);
     assert.ok(requests.every(([, value]) => value.revision === 1));
   });
+
+test("disposition corrections wake original requests without claiming arrival",
+  async () => {
+    const h = await setup();
+    await h.work.process(h.id);
+    for (const disposition of ["departed", "unresolved"] as const) {
+      const change = await h.changeMember(accountabilityResolutionFields(
+        (await h.read(h.attendeePath))! as typeof h.attendee,
+        disposition, manager, Timestamp.fromMillis(h.clock.now)));
+      const jobs = await enqueueAssistanceSourceChange(h.source, change, {
+        enqueueCurrent: async () => {
+          throw new Error("A disposition must not enroll guests");
+        }});
+      assert.equal(jobs.length, 1);
+      const job = await h.source.get(jobs[0]);
+      assert.ok("kind" in job.payload.scope &&
+        job.payload.scope.kind === "checkpointMember");
+      const previous = (await h.current()).item.revision;
+      await h.source.process(jobs[0]);
+      const current = await h.current();
+      assert.equal(current.item.revision, previous + 1);
+      assert.equal(observed(current).request.state, "awaitingReport");
+      assert.equal((await h.source.get(jobs[0])).item.outcome, "complete");
+      assert.deepEqual(await enqueueAssistanceSourceChange(h.source, change),
+        jobs);
+      await h.source.process(jobs[0]);
+      assert.deepEqual(await h.current(), current);
+    }
+    assert.equal((await h.reports.get(manager, h.checkpointScope))
+      .view.report, null);
+    assert.equal((await h.read(h.attendeePath))!.attendanceRevision, 7);
+    assert.ok(h.fake.entries().every(([path]) =>
+      !path.startsWith("eventAssistanceMessages/") &&
+      !path.startsWith("eventAssistanceGuests/")));
+  });
+
+test("member discovery advances bounded pages and skips unrelated rosters",
+  async () => {
+    const h = await setup();
+    const selected = new Set([h.id]);
+    for (let i = 1; i < 25; i++) {
+      const included = i % 3 === 0;
+      const input = await h.command(included ? [h.attendeeId] : []);
+      const result = await h.progress.confirmDeparture(manager, {...input,
+        command: {...input.command, payload: {...input.command.payload,
+          checkpointRequest: h.request}}});
+      if (included) {
+        selected.add(checkpointWorkIds(checkpointIdentity({
+          ...h.checkpointScope, progressRevision: result.view.revision}))
+          .workItemId);
+      }
+    }
+    const change = await h.changeMember({attendanceRevision: 8});
+    const jobs = await enqueueAssistanceSourceChange(h.source, change);
+    assert.equal(jobs.length, 1, "No guest work or enrollment is inferred");
+    const original = (await h.current()).payload;
+    await h.source.process(jobs[0]);
+    assert.equal((await h.source.get(jobs[0])).payload.checkpoint.visited, 20);
+    await h.source.process(jobs[0]);
+    const finished = await h.source.get(jobs[0]);
+    assert.equal(finished.payload.checkpoint.visited, 25);
+    assert.equal(finished.item.outcome, "complete");
+    for (const [, value] of h.fake.entries().filter(([, v]) =>
+      v.entityKind === "checkpoint_report")) {
+      assert.equal(value.revision, selected.has(value.workItemId as string) ?
+        1 : 0);
+    }
+    assert.deepEqual((await h.current()).payload.request, original.request);
+    assert.equal((await h.current()).payload.rosterHash, original.rosterHash);
+    assert.equal(await h.work.includesDepartureMember(h.id, "other"), false);
+    assert.equal(await h.source.hasTargets({kind: "checkpointMember",
+      context: {...h.scope.context, organizerId: "foreign"},
+      attendeeId: h.attendeeId}), false);
+    const view = (await h.reports.get(manager, h.checkpointScope)).view;
+    assert.equal(view.availability.kind, "ready");
+    if (view.availability.kind === "ready") {
+      assert.deepEqual(view.availability.members[0].visit,
+        {kind: "unavailable", reason: "visitChanged"});
+    }
+  });
+
+test("unreadable original rosters remain in bounded retry",
+  async () => {
+    const h = await setup();
+    const change = await h.changeMember({accountabilityRevision: 1});
+    const jobs = await enqueueAssistanceSourceChange(h.source, change);
+    const path = "eventAssistanceDepartureRosters/" +
+      (await h.current()).payload.rosterId;
+    const original = (await h.read(path))!;
+    await h.put(path, {...original, members: []});
+    await h.source.process(jobs[0]);
+    let job = (await h.source.get(jobs[0])).payload;
+    assert.equal(job.checkpoint.phase, "retry");
+    assert.deepEqual(job.checkpoint.failures,
+      [{workItemId: h.id, reason: "unavailable"}]);
+    assert.equal((await h.current()).item.revision, 0);
+    await h.put(path, original);
+    h.clock.now = job.checkpoint.dueAt!;
+    await h.source.process(jobs[0]);
+    job = (await h.source.get(jobs[0])).payload;
+    assert.equal(job.checkpoint.phase, "complete");
+    assert.equal((await h.current()).item.revision, 1);
+  });
+
+test("Firestore member deletion refreshes the original departure only once", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  const app = initializeApp({projectId: "demo-catch-rules"},
+    "checkpoint-member-" + randomUUID());
+  try {
+    const h = await setup(getFirestore(app));
+    await h.work.process(h.id);
+    const change = await h.changeMember(null);
+    const [one, two] = await Promise.all([
+      enqueueAssistanceSourceChange(h.source, change),
+      enqueueAssistanceSourceChange(h.source, change)]);
+    assert.deepEqual(one, two);
+    assert.equal(one.length, 1);
+    const previous = (await h.current()).item.revision;
+    await h.source.process(one[0]);
+    assert.equal((await h.current()).item.revision, previous + 1);
+    await h.source.process(one[0]);
+    assert.equal((await h.current()).item.revision, previous + 1);
+    const view = (await h.reports.get(manager, h.checkpointScope)).view;
+    assert.equal(view.availability.kind, "ready");
+    if (view.availability.kind === "ready") {
+      assert.deepEqual(view.availability.members[0].visit,
+        {kind: "unavailable", reason: "registrationMissing"});
+    }
+    assert.equal(view.report, null);
+  } finally {
+    await deleteApp(app);
+  }
+});
 
 test("unreadable facts have five retries and recover from a fresh wake",
   async () => {

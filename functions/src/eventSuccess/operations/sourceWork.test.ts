@@ -11,9 +11,10 @@ import {newLiveWorkRecords} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
 import {AssistanceRosterWorkStore} from "./rosterWorkStore";
-import {SourceWorkInput, readSourceWorkRecords} from "./sourceWorkRecords";
+import {SourceWorkInput, readSourceWorkRecords, newSourceWorkRecords,
+  isCheckpointMemberScope} from "./sourceWorkRecords";
 import {AssistanceSourceChange, enqueueAssistanceSourceChange,
-  sourceWakeScopes} from "./sourceWorkSignals";
+  sourceWakeScopes, rosterEnrollmentRequests} from "./sourceWorkSignals";
 import {evaluateDueAssistanceWork, processChangedAssistanceWork} from
   "./liveWorkTriggers";
 import {setup} from "./liveLateJoinTestHarness";
@@ -312,11 +313,76 @@ test("all source collections derive their event or guest scope on deletion",
           collection: collection as SourceWorkInput["source"]["collection"]},
         before: {generation: 1, value: c.value}, after: null};
       assert.deepEqual(sourceWakeScopes(change),
-        [c.scope ?? {context: h.context, attendeeId: c.attendeeId}],
+        [c.scope ?? {context: h.context, attendeeId: c.attendeeId},
+          ...(collection === "eventAttendees" ? [{kind: "checkpointMember",
+            context: h.context, attendeeId: h.context.eventId}] : [])],
         collection);
       assert.deepEqual(sourceWakeScopes({...change,
         before: null, after: change.before}), sourceWakeScopes(change));
     }
+  });
+
+test("checkpoint member facts have a distinct wake and no new enrollment",
+  async () => {
+    const h = await harness();
+    const value = {eventId: h.context.eventId,
+      organizerId: h.context.organizerId, status: "checkedIn",
+      checkedInAt: new Timestamp(10, 1)};
+    const change: AssistanceSourceChange = {source: {...h.input.source,
+      collection: "eventAttendees", documentId: "attendee"},
+    before: {value, generation: 1}, after: {value, generation: 1}};
+    const checkpoint = {kind: "checkpointMember", context: h.context,
+      attendeeId: "attendee"};
+    for (const field of ["accountabilityRevision", "accountabilityResolution",
+      "accountabilityResolvedAt", "accountabilityResolvedBy",
+      "accountabilityResolvedForCheckInAt"]) {
+      const changed = {...change, after: {generation: 1,
+        value: {...value, [field]: "changed"}}};
+      assert.deepEqual(sourceWakeScopes(changed), [checkpoint], field);
+      assert.deepEqual(rosterEnrollmentRequests(changed), [], field);
+    }
+    for (const field of ["checkedInAt", "attendanceRevision", "status",
+      "createdAt"]) {
+      const changed = {...change, after: {generation: 1,
+        value: {...value, [field]: field === "checkedInAt" ?
+          new Timestamp(10, 2) : "changed"}}};
+      assert.deepEqual(sourceWakeScopes(changed),
+        [{context: h.context, attendeeId: "attendee"}, checkpoint], field);
+      assert.ok(rosterEnrollmentRequests(changed).every((r) =>
+        !isCheckpointMemberScope(r.scope)));
+    }
+    assert.deepEqual(sourceWakeScopes({...change,
+      after: {generation: 1, value: {...value, displayName: "New name"}}}), []);
+    assert.deepEqual(sourceWakeScopes({...change, after: {generation: 1,
+      value: {...value, phoneE164: "+919999991234"}}}),
+    [{context: h.context, attendeeId: "attendee"}]);
+    const moved = {...change, after: {generation: 2,
+      value: {...value, organizerId: "other"}}};
+    assert.equal(sourceWakeScopes(moved).length, 4);
+    assert.equal(rosterEnrollmentRequests(moved).length, 2);
+  });
+
+test("checkpoint member scope rejects other source and work identities",
+  async () => {
+    const h = await harness();
+    const input: SourceWorkInput = {scope: {kind: "checkpointMember",
+      context: h.context, attendeeId: "attendee"}, source: {...h.input.source,
+      collection: "eventAttendees", documentId: "attendee"}};
+    const valid = newSourceWorkRecords(input, now);
+    assert.ok(isCheckpointMemberScope(valid.payload.scope));
+    for (const source of [{...input.source, collection: "events" as const},
+      {...input.source, documentId: "other"}]) {
+      assert.throws(() => newSourceWorkRecords({...input, source}, now));
+    }
+    assert.throws(() => newSourceWorkRecords({...input,
+      scope: {...input.scope, attendeeId: null}} as SourceWorkInput, now));
+    const item = {...valid.item, normalizedPayload: {...valid.payload,
+      checkpoint: {...valid.payload.checkpoint, visited: 1,
+        cursor: h.records[0].item.workItemId}}};
+    assert.throws(() => readSourceWorkRecords(valid.run, item,
+      item.workItemId, now));
+    assert.equal(await h.work.hasTargets(input.scope), false,
+      "guest work cannot satisfy checkpoint discovery");
   });
 
 test("source records reject retry, counter and terminal checkpoint drift",

@@ -1,6 +1,7 @@
 import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity} from "./guestRecords";
-import {SourceWork, SourceWorkInput, EventSourceScope, isEventSourceScope} from
+import {SourceWork, SourceWorkInput, EventSourceScope, isEventSourceScope,
+  isCheckpointMemberScope} from
   "./sourceWorkRecords";
 import {readinessScope, readinessFields, spendingReleased} from
   "./sourceReadinessSignals";
@@ -21,15 +22,27 @@ export interface AssistanceSourceChange {
 export function sourceWakeScopes(change: AssistanceSourceChange): Scope[] {
   const before = projection(change.source.collection, change.before);
   const after = projection(change.source.collection, change.after);
-  if (operationContentHash(before) === operationContentHash(after) &&
-      !spendingReleased(change.source.collection, change.before?.value,
-        change.after?.value)) return [];
+  const ordinaryChanged = operationContentHash(before) !==
+    operationContentHash(after) || spendingReleased(change.source.collection,
+    change.before?.value, change.after?.value);
+  const checkpointChanged = change.source.collection === "eventAttendees" &&
+    operationContentHash(checkpointMemberProjection(change.before)) !==
+      operationContentHash(checkpointMemberProjection(change.after));
+  if (!ordinaryChanged && !checkpointChanged) return [];
   const scopes = new Map<string, Scope>();
   for (const snapshot of [change.before, change.after]) {
     if (!snapshot) continue;
     const scope = scopeFor(change.source.collection, change.source.documentId,
       snapshot.value);
-    if (scope) scopes.set(operationContentHash(scope), scope);
+    if (scope && ordinaryChanged) {
+      scopes.set(operationContentHash(scope), scope);
+    }
+    if (scope && checkpointChanged && isEventSourceScope(scope) &&
+        scope.attendeeId !== null) {
+      const member = {...scope, kind: "checkpointMember" as const,
+        attendeeId: scope.attendeeId};
+      scopes.set(operationContentHash(member), member);
+    }
   }
   return [...scopes.values()];
 }
@@ -76,6 +89,7 @@ export function rosterEnrollmentRequests(change: AssistanceSourceChange):
   if (operationContentHash(selected(change.before)) ===
       operationContentHash(selected(change.after))) return [];
   return sourceWakeScopes(change).filter(isEventSourceScope)
+    .filter((scope) => !isCheckpointMemberScope(scope))
     .map((scope) => ({scope,
       source: {...change.source, collection}}));
 }
@@ -164,7 +178,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
     "constraints", "capacityLimit", "priceInPaise", "currency",
     "publicRegistrationEnabled"]; break;
   case "eventAttendees": fields = ["eventId", "organizerId", "clubId",
-    "status", "attendanceRevision", "createdAt", "phoneE164", "linkedUid"];
+    "status", "attendanceRevision", "checkedInAt", "createdAt", "phoneE164",
+    "linkedUid"];
     break;
   case "eventSuccessPlans": fields = ["eventId", "organizerId", "clubId",
     "status"]; break;
@@ -184,6 +199,16 @@ function projection(collection: Collection, snapshot: Snapshot) {
   // reader still uses precise canonical timestamps at the execution boundary.
   return JSON.parse(JSON.stringify([snapshot.generation,
     Object.fromEntries(fields.map((key) => [key, value[key] ?? null]))]));
+}
+
+function checkpointMemberProjection(snapshot: Snapshot) {
+  if (!snapshot) return null;
+  const fields = ["eventId", "organizerId", "clubId", "status", "createdAt",
+    "attendanceRevision", "checkedInAt", "accountabilityRevision",
+    "accountabilityResolution", "accountabilityResolvedAt",
+    "accountabilityResolvedBy", "accountabilityResolvedForCheckInAt"];
+  return JSON.parse(JSON.stringify([snapshot.generation,
+    fields.map((key) => snapshot.value[key] ?? null)]));
 }
 
 function object(value: unknown): Record<string, unknown> {

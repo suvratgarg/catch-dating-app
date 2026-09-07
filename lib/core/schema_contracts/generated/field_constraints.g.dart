@@ -20990,6 +20990,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.scope.attendeeId',
     maxLength: 180,
     minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );

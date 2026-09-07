@@ -16,6 +16,11 @@ export const SOURCE_WORK_RUNTIME = "event-assistance-source/v1";
 export const SOURCE_WORK_LIFETIME = 86_400_000;
 export type SourceWorkInput = Pick<SourceWork, "scope" | "source">;
 export type EventSourceScope = Extract<SourceWork["scope"], {context: unknown}>;
+export type CheckpointMemberScope = Extract<EventSourceScope,
+  {kind: "checkpointMember"}>;
+export const isCheckpointMemberScope = (scope: SourceWork["scope"]):
+  scope is CheckpointMemberScope =>
+  "kind" in scope && scope.kind === "checkpointMember";
 export type ReadinessSourceScope =
   Exclude<SourceWork["scope"], EventSourceScope>;
 export const isEventSourceScope = (scope: SourceWork["scope"]):
@@ -28,6 +33,9 @@ export function sourceWorkIds(input: SourceWorkInput) {
   const scope = input.scope;
   if (isEventSourceScope(scope)) {
     guestIdentity(scope.context, scope.attendeeId ?? "scope");
+    if (isCheckpointMemberScope(scope) &&
+        (input.source.collection !== "eventAttendees" ||
+          input.source.documentId !== scope.attendeeId)) throw invalidWork();
   } else if (scope.kind === "sender") {
     requireDocumentId(scope.senderId);
   } else {
@@ -87,6 +95,8 @@ export function parseSourceWork(value: unknown, now: number): SourceWork {
       if (!/^work:(assistance|delivery|checkpoint):[a-f0-9]{64}$/.test(key)) {
         throw invalidWork();
       }
+      if (isCheckpointMemberScope(value.scope) &&
+          !/^work:checkpoint:[a-f0-9]{64}$/.test(key)) throw invalidWork();
     } else {
       const [expiry] = parseReadinessTargetKey(key, value.scope);
       if (expiry <= value.source.occurredAt) throw invalidWork();

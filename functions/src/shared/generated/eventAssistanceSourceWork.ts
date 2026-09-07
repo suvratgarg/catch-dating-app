@@ -45,6 +45,15 @@ export interface EventAssistanceSourceWork {
         attendeeId: string | null;
       }
     | {
+        kind: "checkpointMember";
+        context: {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        };
+        attendeeId: string;
+      }
+    | {
         kind: "sender";
         routeId: "catchEventSms" | "organizerEventWhatsapp";
         senderId: string;

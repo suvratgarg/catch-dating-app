@@ -9,7 +9,8 @@ import type {OperationActionReceipt} from
 import {validateOperationActionReceipt} from "../../operations/validation";
 import {requireDocumentId} from "./guestRecords";
 import {readCheckpoint} from "./checkpointReader";
-import {checkpointResponse} from "./checkpointRecords";
+import {checkpointResponse, parseDepartureRoster} from "./checkpointRecords";
+import {DEPARTURE_ROSTERS} from "./departureRosterSource";
 import {runAssistanceTransaction} from "./transactionCallback";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {releaseAssistanceWorkLease} from "./liveWorkRunner";
@@ -33,6 +34,22 @@ export class AssistanceCheckpointWorkStore {
 
   get(workItemId: string) {
     return runAssistanceTransaction(this.db, (tx) => this.read(tx, workItemId));
+  }
+
+  /** Uses the original roster, including after transfer or deletion. */
+  includesDepartureMember(workItemId: string, attendeeId: string) {
+    requireDocumentId(attendeeId);
+    return runAssistanceTransaction(this.db, async (tx) => {
+      const {payload} = await this.read(tx, workItemId);
+      const snapshot = await tx.get(this.db.collection(DEPARTURE_ROSTERS)
+        .doc(payload.rosterId));
+      const roster = parseDepartureRoster(snapshot.data(), payload.scope,
+        this.clock());
+      if (!roster || operationContentHash(roster) !== payload.rosterHash) {
+        throw invalidWork();
+      }
+      return roster.members.some((m) => m.attendeeId === attendeeId);
+    });
   }
 
   async processReport(reportId: string, signalId: string) {

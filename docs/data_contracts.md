@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.60.0
+version: 1.61.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -266,6 +266,16 @@ remain mandatory before each wake. Source payloads retain identifiers rather
 than consent contents or recipient endpoints. Delivery wake action receipts bind
 the signal hash and target, deduplicate source replay, and preserve terminal
 work, recovery caps and unresolved provider submissions.
+
+The closed `checkpointMember` scope binds one attendee to a live organizer/event
+and accepts only the matching `eventAttendees` source document. Check-in,
+registration generation and canonical accountability corrections emit this
+scope separately from ordinary guest work. Pure dispositions never enroll a
+guest or select delivery work. Its cursors and failures accept checkpoint work
+ids only. Discovery reads bounded existing requests in the exact event and
+verifies their immutable roster hashes before checking original membership;
+missing or corrupt evidence remains retryable work, not an unaffected result.
+The signal contains no disposition, attendance assertion or provider authority.
 
 `event_assistance_checkpoint_work.schema.json` binds the `checkpoint_report`
 Operations entity to an immutable departure request, full roster hash and exact

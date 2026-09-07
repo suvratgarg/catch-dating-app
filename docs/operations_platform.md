@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.21.0
+version: 1.22.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -725,6 +725,19 @@ receipts survive a lost fanout checkpoint without duplicating guest effects.
 Limits are 10,000 visited targets, 100 retained failures, five retry rounds and
 a 24-hour source-work lifetime. Exhausted target/failure/retry limits become
 explicit review items with failed ids retained; expiry closes unfinished work.
+
+An explicit `checkpointMember` scope supplies a separate path for attendee
+check-in, registration generation and accountability changes. It selects only
+saved checkpoint requests in the exact organizer/event, then verifies the full
+original departure roster hash and membership before invoking the checkpoint
+worker. Requests without that original member are skipped while the bounded
+cursor advances; deleted or changed current membership cannot erase the
+original obligation. Missing or corrupt rosters retain the target for bounded
+retry and review. Ordinary guest scopes still cannot select checkpoint work.
+Pure accountability changes create no guest enrollment or delivery wake, and
+phone/profile edits create no checkpoint fanout. Exact check-in timestamps,
+including nanoseconds, participate in source-change detection. These signals
+refresh current evidence; they do not infer arrival or close a discrepancy.
 
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
 `evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,

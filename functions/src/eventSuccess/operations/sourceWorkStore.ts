@@ -17,7 +17,7 @@ import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner, errorCode, releaseAssistanceWorkLease} from
   "./liveWorkRunner";
 import {SOURCE_WORK_RUNTIME, SourceWork, SourceWorkInput, EventSourceScope,
-  isEventSourceScope, sourceFailureId,
+  isEventSourceScope, isCheckpointMemberScope, sourceFailureId,
   newSourceWorkRecords, readSourceWorkRecords, sourceWorkProjection} from
   "./sourceWorkRecords";
 import {SourceReadinessTargets} from "./sourceReadinessTargets";
@@ -152,10 +152,18 @@ export class AssistanceSourceWorkStore {
             .store.get(workItemId);
       if (operationContentHash(target.payload.scope.context) !==
           operationContentHash(payload.scope.context) ||
-          (payload.scope.attendeeId !== null &&
+          (!isCheckpointMemberScope(payload.scope) &&
+            payload.scope.attendeeId !== null &&
             (!("attendeeId" in target.payload.scope) ||
             target.payload.scope.attendeeId !== payload.scope.attendeeId))) {
         throw invalidWork();
+      }
+      if (isCheckpointMemberScope(payload.scope)) {
+        if (!isCheckpoint) throw invalidWork();
+        const included = await new AssistanceCheckpointWorkStore(this.db,
+          this.clock).includesDepartureMember(workItemId,
+          payload.scope.attendeeId);
+        if (!included) return null;
       }
       const action = {kind: "wake" as const, signalId: payload.signalId};
       const result = isCheckpoint ?
@@ -188,8 +196,11 @@ export class AssistanceSourceWorkStore {
     }
     // Reuse equality-query indexes; merge their bounded pages using
     // the same ordinal ordering as Firestore document-id cursors.
-    // A guest change is not authority to scan unrelated group rosters.
-    const kinds = scope.attendeeId === null ?
+    // Ordinary guest signals cannot select checkpoint work. Explicit member
+    // signals discover saved requests in this event, then verify membership
+    // against each immutable original roster before invoking its worker.
+    const kinds = isCheckpointMemberScope(scope) ?
+      ["liveCheckpointReport"] as const : scope.attendeeId === null ?
       ["liveLateJoin", "liveMessageDelivery", "liveCheckpointReport"] as const :
       ["liveLateJoin", "liveMessageDelivery"] as const;
     const pages = await Promise.all(kinds.map((kind) =>
@@ -208,7 +219,7 @@ export class AssistanceSourceWorkStore {
         scope.context.organizerId)
       .where("normalizedPayload.scope.context.eventId", "==",
         scope.context.eventId);
-    if (scope.attendeeId !== null) {
+    if (scope.attendeeId !== null && !isCheckpointMemberScope(scope)) {
       query = query.where("normalizedPayload.scope.attendeeId", "==",
         scope.attendeeId);
     }

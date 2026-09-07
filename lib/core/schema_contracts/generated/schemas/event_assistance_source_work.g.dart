@@ -143,6 +143,54 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
         <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
+          'description': 'Refresh only existing checkpoint requests whose immutable departure roster contains this attendee. Never enroll guests or dispatch messages.',
+          'required': <Object?>[
+            'kind',
+            'context',
+            'attendeeId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'checkpointMember',
+            },
+            'context': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'eventId',
+                'organizerId',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'const': 'live',
+                },
+                'eventId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'organizerId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+              },
+            },
+            'attendeeId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
           'required': <Object?>[
             'kind',
             'routeId',

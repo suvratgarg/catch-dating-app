@@ -1191,6 +1191,54 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                   {
                     "type": "object",
                     "additionalProperties": false,
+                    "description": "Refresh only existing checkpoint requests whose immutable departure roster contains this attendee. Never enroll guests or dispatch messages.",
+                    "required": [
+                      "kind",
+                      "context",
+                      "attendeeId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "checkpointMember"
+                      },
+                      "context": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mode",
+                          "eventId",
+                          "organizerId"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "const": "live"
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
                     "required": [
                       "kind",
                       "routeId",
