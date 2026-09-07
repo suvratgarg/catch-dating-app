@@ -1,11 +1,47 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
+
+@widgetbook.UseCase(
+  name: 'Localized constraint messages',
+  type: CatchFormValidationCopy,
+  path: '[Core primitives]/Field protocols',
+)
+Widget fieldValidationCopyStates(BuildContext context) {
+  final copy = catchFormValidationCopy(context.l10n);
+  const contract = CatchContractFieldConstraints(
+    path: 'preview.name',
+    required: true,
+    minLength: 3,
+    maxLength: 5,
+    pattern: r'^[a-z]+$',
+  );
+  return WidgetbookCatalogFrame(
+    title: 'Validation messages',
+    catalogId: 'catch.field',
+    children: [
+      for (final value in ['', 'a', 'abcdef', 'ABC', 'abc'])
+        CatchField.input(
+          title: 'Name',
+          initialValue: value,
+          error: CatchContractFieldPolicy.validateText(
+            copy: copy,
+            label: 'Name',
+            value: value,
+            contract: contract,
+          ),
+        ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Exclusive field disclosure',

@@ -1,6 +1,19 @@
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';
 
+/// Keeps validation messages and their numeric grammar in the app catalog.
+CatchFormValidationCopy catchFormValidationCopy(
+  AppLocalizations l10n,
+) => CatchFormValidationCopy(
+  requiredMessage: (label) =>
+      l10n.coreCatchFormValidationRequired(field: label),
+  minLengthMessage: (label, minLength) =>
+      l10n.coreCatchFormValidationMinLength(field: label, minLength: minLength),
+  maxLengthMessage: (label, maxLength) =>
+      l10n.coreCatchFormValidationMaxLength(field: label, maxLength: maxLength),
+  patternMessage: (label) => l10n.coreCatchFormValidationPattern(field: label),
+);
+
 /// Resolves optional-field copy at the app's localization boundary.
 CatchFormFieldLabelCopy catchFormFieldLabelCopy(AppLocalizations l10n) =>
     CatchFormFieldLabelCopy(

@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -38,8 +38,8 @@ abstract final class CatchContractFieldPolicy {
     ];
   }
 
-  static String? validateText(
-    BuildContext context, {
+  static String? validateText({
+    required CatchFormValidationCopy copy,
     required String label,
     required String value,
     CatchContractFieldConstraints? contract,
@@ -50,27 +50,21 @@ abstract final class CatchContractFieldPolicy {
     if (contract == null) return null;
 
     if (contract.required && value.trim().isEmpty) {
-      return context.l10n.coreCatchFormValidationRequired(field: label);
+      return copy.requiredMessage(label);
     }
     final minLength = contract.minLength;
     if (value.isNotEmpty && minLength != null && value.length < minLength) {
-      return context.l10n.coreCatchFormValidationMinLength(
-        field: label,
-        minLength: minLength,
-      );
+      return copy.minLengthMessage(label, minLength);
     }
     final maxLength = contract.maxLength;
     if (maxLength != null && value.length > maxLength) {
-      return context.l10n.coreCatchFormValidationMaxLength(
-        field: label,
-        maxLength: maxLength,
-      );
+      return copy.maxLengthMessage(label, maxLength);
     }
     final pattern = contract.pattern;
     if (value.isNotEmpty &&
         pattern != null &&
         !RegExp(pattern).hasMatch(value)) {
-      return context.l10n.coreCatchFormValidationPattern(field: label);
+      return copy.patternMessage(label);
     }
     return null;
   }

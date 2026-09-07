@@ -2621,6 +2621,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFormValidationCopy',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Localized constraint messages',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .fieldValidationCopyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchResponsiveFieldInteractionPolicy',
             useCases: [
               _widgetbook.WidgetbookUseCase(

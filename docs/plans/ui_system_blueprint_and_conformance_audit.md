@@ -872,6 +872,10 @@ action labels and saving/saved accessibility labels; the status enum and reduced
 motion duration helper are shared, and field value typography belongs to
 `CatchTextStyles`. Schema-bound field configuration, choices, toggles and
 validation remain with the app field until their constraint boundary moves.
+Text validation now receives caller-resolved message formatters through
+`CatchFormValidationCopy`. The app adapter retains the same localized field and
+length arguments; explicit-validator precedence and constraint order are
+unchanged. The generated constraint type and runtime policy remain app-side.
 
 Individual option rendering, the presentation-only option descriptor and the
 variant vocabulary have shared component owners. Selected/disabled semantics,

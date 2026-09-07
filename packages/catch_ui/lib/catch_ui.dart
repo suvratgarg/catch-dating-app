@@ -73,6 +73,7 @@ export 'src/components/catch_field_visibility_scope.dart';
 export 'src/components/catch_form_dialog.dart';
 export 'src/components/catch_form_field_label.dart';
 export 'src/components/catch_form_field_optional_badge.dart';
+export 'src/components/catch_form_validation_copy.dart';
 export 'src/components/catch_framework_error_debug_details.dart';
 export 'src/components/catch_framework_error_view.dart';
 export 'src/components/catch_horizontal_rail.dart';

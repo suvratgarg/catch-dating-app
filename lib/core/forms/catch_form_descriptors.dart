@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -131,7 +133,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
 
   String? validate(BuildContext context, String value) =>
       CatchContractFieldPolicy.validateText(
-        context,
+        copy: catchFormValidationCopy(context.l10n),
         label: label,
         value: value,
         contract: contract,

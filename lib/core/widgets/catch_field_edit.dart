@@ -21,7 +21,7 @@ extension _CatchFieldEdit on _CatchFieldState {
       key: _fieldKey,
       initialValue: _controller.text,
       validator: (value) => CatchContractFieldPolicy.validateText(
-        context,
+        copy: catchFormValidationCopy(context.l10n),
         label: widget.title ?? '',
         value: value ?? '',
         contract: widget.contract,
