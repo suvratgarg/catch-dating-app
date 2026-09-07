@@ -2953,6 +2953,27 @@
             }
           },
           {
+            "id": "catch.field.value_content",
+            "symbol": "CatchFieldValueContent",
+            "file": "packages/catch_ui/lib/src/components/catch_field_value_content.dart",
+            "summary": "Field-owned label, value, badge, counter, and supporting-copy lanes with preserved caption and value extents, trailing reservations, optional semantics, and active/error text styling.",
+            "states": [
+              "value",
+              "placeholder",
+              "active",
+              "error",
+              "optional-badge",
+              "custom-value"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.content_row",
             "symbol": "CatchFieldContentRow",
             "summary": "Natural-height content lane with exact 14/600 title, 13/400 supporting copy, 3 px gap, and 2/3-line defaults. Optional-label copy is resolved by callers.",

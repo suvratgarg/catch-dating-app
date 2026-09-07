@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.9
+version: 1.9.10
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1077,6 +1077,12 @@ shared owners. Their selection callbacks and notification order are preserved;
 request across the package boundary. The nearest field still owns the delay,
 saving guard, and controlled expansion callback. The old control part retains
 only field-state behavior, with both renderer declarations deleted there.
+
+`CatchFieldValueContent` owns the field caption, value, badge and supporting
+lanes. The four former helper call sites supply the same state, copy and trailing
+reservation; status and placeholder behavior use explicit enum axes. Caption
+styling is shared with the text-entry and select shells. The old render helper
+and redundant text-entry body helper are deleted.
 
 ### Phase 4 — One registry, binding grammar
 

@@ -666,12 +666,23 @@ extension _CatchFieldRowModes on _CatchFieldState {
               : _title,
         ),
       );
-      return _buildFieldContent(
-        t,
+      return CatchFieldValueContent(
+        labelCopy: widget.copy.label,
+        titleMaxLines: widget.titleMaxLines,
+        isOptional: widget.isOptional && widget.showLabel,
+        badgeLabel: widget.badgeLabel,
+        badgeTone: widget.badgeTone,
+        tone: widget.tone,
+        helperTone: widget.helperTone,
+        headerTrailingReserve: _contentTrailingReserve,
         label: inlineAddAtRest ? null : _title,
         valueWidget: input,
-        hasError: error?.isNotEmpty == true,
-        labelStyle: _fieldCaptionTextStyle(
+        status: error?.isNotEmpty == true
+            ? CatchFieldValueContentStatus.error
+            : _active
+            ? CatchFieldValueContentStatus.active
+            : CatchFieldValueContentStatus.idle,
+        labelStyle: CatchFieldValueContent.captionStyle(
           context,
           color: error?.isNotEmpty == true
               ? t.danger
@@ -681,7 +692,15 @@ extension _CatchFieldRowModes on _CatchFieldState {
         ),
       );
     }
-    if (_isEdit) return _buildTextEntryBody(t);
+    if (_isEdit) {
+      return _buildTextEntryField(
+        context,
+        showLabelOverride: false,
+        variantOverride: CatchFieldVariant.bare,
+        valueEmphasis: true,
+        rowBody: true,
+      );
+    }
     final inlineMetadata = widget.inlineMetadata?.trim();
     if (inlineMetadata?.isNotEmpty == true) {
       final title = _title?.trim() ?? '';
@@ -734,8 +753,15 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final error = _displayError?.trim();
     final hasValue = value != null && value.isNotEmpty;
 
-    return _buildFieldContent(
-      t,
+    return CatchFieldValueContent(
+      labelCopy: widget.copy.label,
+      titleMaxLines: widget.titleMaxLines,
+      isOptional: widget.isOptional && widget.showLabel,
+      badgeLabel: widget.badgeLabel,
+      badgeTone: widget.badgeTone,
+      tone: widget.tone,
+      helperTone: widget.helperTone,
+      headerTrailingReserve: _contentTrailingReserve,
       label: title,
       value: value,
       supportText: _hasControl
@@ -745,166 +771,18 @@ extension _CatchFieldRowModes on _CatchFieldState {
           : error?.isNotEmpty == true
           ? error
           : widget.helperText,
-      labelEmphasized: widget.emphasis == CatchFieldEmphasis.title || !hasValue,
-      valueIsPlaceholder: !_hasValue,
+      emphasis: widget.emphasis == CatchFieldEmphasis.title || !hasValue
+          ? CatchFieldEmphasis.title
+          : CatchFieldEmphasis.body,
+      mode: !_hasValue
+          ? CatchFieldValueContentMode.placeholder
+          : CatchFieldValueContentMode.value,
       valueMaxLines: widget.bodyMaxLines,
-      hasError: error?.isNotEmpty == true,
-    );
-  }
-
-  Widget _buildTextEntryBody(CatchTokens t) {
-    return _buildTextEntryField(
-      context,
-      showLabelOverride: false,
-      variantOverride: CatchFieldVariant.bare,
-      valueEmphasis: true,
-      rowBody: true,
-    );
-  }
-
-  Widget _buildFieldContent(
-    CatchTokens t, {
-    String? label,
-    String? value,
-    Widget? valueWidget,
-    String? supportText,
-    String? counterText,
-    bool hasError = false,
-    bool labelEmphasized = false,
-    bool valueIsPlaceholder = false,
-    int valueMaxLines = 1,
-    TextStyle? labelStyle,
-    TextStyle? valueStyle,
-  }) {
-    final labelText = label?.trim();
-    final valueText = value?.trim();
-    final hasLabel = labelText != null && labelText.isNotEmpty;
-    final hasValue =
-        valueWidget != null || (valueText != null && valueText.isNotEmpty);
-    final support = supportText?.trim();
-    final counter = counterText?.trim();
-    final hasCounter = counter != null && counter.isNotEmpty;
-    final hasSupport = (support != null && support.isNotEmpty) || hasCounter;
-    final headerTrailingReserve = _hasControl
-        ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
-        : _usesPositionedClearTrailing
-        ? CatchFieldTokens.trailingGap +
-              CatchFieldTrailing.clearTargetConstraints.maxWidth
-        : 0.0;
-
-    if (!hasLabel && !hasValue && !hasSupport) {
-      return const SizedBox.shrink();
-    }
-
-    final baseLabelStyle =
-        labelStyle ??
-        (labelEmphasized
-            ? CatchTextStyles.fieldRowValue(
-                context,
-                color: hasError
-                    ? t.danger
-                    : _toneColor(t, primaryFallback: t.ink),
-              )
-            : _fieldCaptionTextStyle(
-                context,
-                color: hasError ? t.danger : t.ink2,
-              ));
-    final effectiveLabelStyle = baseLabelStyle.copyWith(
-      color: _fieldLabelColor(
-        t,
-        hasError: hasError,
-        inactiveColor: baseLabelStyle.color,
-      ),
-    );
-    final effectiveValueStyle =
-        valueStyle ??
-        (labelEmphasized
-            ? _fieldCaptionTextStyle(context, color: t.ink2)
-            : CatchTextStyles.fieldRowValue(
-                context,
-                color: valueIsPlaceholder
-                    ? t.ink2
-                    : _toneColor(t, primaryFallback: t.ink),
-              ));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (hasLabel)
-          Padding(
-            key: const ValueKey<String>('catch-field-label-content'),
-            padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: labelEmphasized
-                    ? CatchFieldTokens.valueLineExtent
-                    : CatchFieldTokens.captionExtent,
-              ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: widget.badgeLabel?.trim().isNotEmpty == true
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: CatchFormFieldLabel.inline(
-                              copy: widget.copy.label,
-                              label: labelText,
-                              style: effectiveLabelStyle,
-                              maxLines: widget.titleMaxLines,
-                              isOptional: widget.isOptional && widget.showLabel,
-                            ),
-                          ),
-                          const SizedBox(width: CatchSpacing.s2),
-                          CatchBadge(
-                            label: widget.badgeLabel!.trim(),
-                            tone: widget.badgeTone ?? CatchBadgeTone.neutral,
-                          ),
-                        ],
-                      )
-                    : CatchFormFieldLabel.inline(
-                        copy: widget.copy.label,
-                        label: labelText,
-                        style: effectiveLabelStyle,
-                        maxLines: widget.titleMaxLines,
-                        isOptional: widget.isOptional && widget.showLabel,
-                      ),
-              ),
-            ),
-          ),
-        if (hasValue) ...[
-          Padding(
-            key: const ValueKey<String>('catch-field-value-content'),
-            padding: EdgeInsetsDirectional.only(end: headerTrailingReserve),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: CatchFieldTokens.valueLineExtent,
-              ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child:
-                    valueWidget ??
-                    Text(
-                      valueText!,
-                      maxLines: valueMaxLines,
-                      overflow: TextOverflow.ellipsis,
-                      style: effectiveValueStyle,
-                    ),
-              ),
-            ),
-          ),
-        ],
-        if (hasSupport) ...[
-          if (hasLabel || hasValue)
-            const SizedBox(height: CatchFieldTokens.supportingTopGap),
-          CatchFieldSupportRow(
-            text: support,
-            counter: hasCounter ? counter : null,
-            color: hasError ? t.danger : _supportColor(t),
-            showErrorIcon: hasError,
-          ),
-        ],
-      ],
+      status: error?.isNotEmpty == true
+          ? CatchFieldValueContentStatus.error
+          : _active
+          ? CatchFieldValueContentStatus.active
+          : CatchFieldValueContentStatus.idle,
     );
   }
 }

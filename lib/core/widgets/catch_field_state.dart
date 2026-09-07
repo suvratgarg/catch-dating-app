@@ -666,6 +666,42 @@ class _CatchFieldState extends State<CatchField>
   bool get _compactTextEntry =>
       _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
 
+  Color _supportColor(CatchTokens t) {
+    return switch (widget.helperTone) {
+      CatchFieldSupportTone.neutral => t.ink2,
+      CatchFieldSupportTone.brand => t.primary,
+      CatchFieldSupportTone.success => t.success,
+    };
+  }
+
+  Color _fieldLabelColor(
+    CatchTokens t, {
+    required bool hasError,
+    Color? inactiveColor,
+  }) {
+    if (hasError) return t.danger;
+    return _active ? t.ink : inactiveColor ?? t.ink2;
+  }
+
+  Color _toneColor(
+    CatchTokens t, {
+    bool muted = false,
+    Color? primaryFallback,
+  }) {
+    return switch (widget.tone) {
+      CatchFieldTone.primary => t.primary,
+      CatchFieldTone.danger => t.danger,
+      _ => primaryFallback ?? (muted ? t.ink2 : t.ink),
+    };
+  }
+
+  double get _contentTrailingReserve => _hasControl
+      ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
+      : _usesPositionedClearTrailing
+      ? CatchFieldTokens.trailingGap +
+            CatchFieldTrailing.clearTargetConstraints.maxWidth
+      : 0.0;
+
   @override
   Widget build(BuildContext context) {
     final field = switch (widget._config) {

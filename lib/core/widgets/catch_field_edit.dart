@@ -42,8 +42,15 @@ extension _CatchFieldEdit on _CatchFieldState {
           final expanded = _textEntryExpandedWith(hasError: hasError);
           final inlineAddAtRest = _inlineTextAddAtRestWith(hasError: hasError);
           final addText = _emptyEditableValueText;
-          final body = _buildFieldContent(
-            t,
+          final body = CatchFieldValueContent(
+            labelCopy: widget.copy.label,
+            titleMaxLines: widget.titleMaxLines,
+            isOptional: widget.isOptional && widget.showLabel,
+            badgeLabel: widget.badgeLabel,
+            badgeTone: widget.badgeTone,
+            tone: widget.tone,
+            helperTone: widget.helperTone,
+            headerTrailingReserve: _contentTrailingReserve,
             label: widget.showLabel && !inlineAddAtRest ? _title : null,
             supportText: supportText,
             counterText:
@@ -51,8 +58,12 @@ extension _CatchFieldEdit on _CatchFieldState {
                     (_focused || widget.focused || hasError)
                 ? '${_controller.text.characters.length} / ${widget.maxLength}'
                 : null,
-            hasError: hasError,
-            labelStyle: _fieldCaptionTextStyle(
+            status: hasError
+                ? CatchFieldValueContentStatus.error
+                : _active
+                ? CatchFieldValueContentStatus.active
+                : CatchFieldValueContentStatus.idle,
+            labelStyle: CatchFieldValueContent.captionStyle(
               context,
               color: hasError
                   ? t.danger
@@ -149,7 +160,7 @@ extension _CatchFieldEdit on _CatchFieldState {
               CatchFormFieldLabel.inline(
                 copy: widget.copy.label,
                 label: _title ?? '',
-                style: _fieldCaptionTextStyle(
+                style: CatchFieldValueContent.captionStyle(
                   context,
                   color: _fieldLabelColor(t, hasError: hasError),
                 ),
@@ -283,7 +294,7 @@ extension _CatchFieldEdit on _CatchFieldState {
               )
             : null,
         floatingLabelStyle: _useFloatingLabel(variant, showLabel)
-            ? _fieldCaptionTextStyle(
+            ? CatchFieldValueContent.captionStyle(
                 context,
                 color: _fieldLabelColor(t, hasError: hasError),
               )
@@ -445,17 +456,30 @@ extension _CatchFieldEdit on _CatchFieldState {
               constraints: _rowConstraints,
               padding: _rowPadding,
               leading: _buildSelectLeadingSlot(tokens),
-              content: _buildFieldContent(
-                tokens,
+              content: CatchFieldValueContent(
+                labelCopy: widget.copy.label,
+                titleMaxLines: widget.titleMaxLines,
+                isOptional: widget.isOptional && widget.showLabel,
+                badgeLabel: widget.badgeLabel,
+                badgeTone: widget.badgeTone,
+                tone: widget.tone,
+                helperTone: widget.helperTone,
+                headerTrailingReserve: _contentTrailingReserve,
                 label: widget.showLabel ? _title?.trim() : null,
                 value:
                     label ??
                     widget.placeholder ??
                     widget.copy.selectPlaceholder(_title),
                 supportText: supportText,
-                hasError: hasError,
-                valueIsPlaceholder: label == null,
-                labelStyle: _fieldCaptionTextStyle(
+                status: hasError
+                    ? CatchFieldValueContentStatus.error
+                    : _active
+                    ? CatchFieldValueContentStatus.active
+                    : CatchFieldValueContentStatus.idle,
+                mode: label == null
+                    ? CatchFieldValueContentMode.placeholder
+                    : CatchFieldValueContentMode.value,
+                labelStyle: CatchFieldValueContent.captionStyle(
                   context,
                   color: hasError ? tokens.danger : tokens.ink2,
                 ),
@@ -649,23 +673,6 @@ extension _CatchFieldEdit on _CatchFieldState {
     );
   }
 
-  Color _supportColor(CatchTokens t) {
-    return switch (widget.helperTone) {
-      CatchFieldSupportTone.neutral => t.ink2,
-      CatchFieldSupportTone.brand => t.primary,
-      CatchFieldSupportTone.success => t.success,
-    };
-  }
-
-  Color _fieldLabelColor(
-    CatchTokens t, {
-    required bool hasError,
-    Color? inactiveColor,
-  }) {
-    if (hasError) return t.danger;
-    return _active ? t.ink : inactiveColor ?? t.ink2;
-  }
-
   BoxConstraints? get _iconConstraints {
     if (widget.maxLines != 1 || widget.minLines != null) return null;
 
@@ -704,18 +711,6 @@ extension _CatchFieldEdit on _CatchFieldState {
     }
     if (widget.maxLines != 1 || widget.minLines != null) return null;
     return CatchControlMetrics.minHeight(_controlSize);
-  }
-
-  Color _toneColor(
-    CatchTokens t, {
-    bool muted = false,
-    Color? primaryFallback,
-  }) {
-    return switch (widget.tone) {
-      CatchFieldTone.primary => t.primary,
-      CatchFieldTone.danger => t.danger,
-      _ => primaryFallback ?? (muted ? t.ink2 : t.ink),
-    };
   }
 
   EdgeInsets get _rowPadding {
@@ -773,12 +768,3 @@ Duration _catchFieldMotionDuration(BuildContext context) {
 Duration _expansionMotionDuration(BuildContext context) {
   return catchFieldMotionDuration(context, CatchMotion.base);
 }
-
-TextStyle _fieldCaptionTextStyle(
-  BuildContext context, {
-  required Color color,
-}) => CatchTextStyles.fieldLabel(context, color: color).copyWith(
-  fontSize: CatchFieldTokens.captionFontSize,
-  fontWeight: FontWeight.w500,
-  height: CatchFieldTokens.supportLineHeight,
-);

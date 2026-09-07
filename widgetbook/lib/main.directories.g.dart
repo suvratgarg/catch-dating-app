@@ -67,6 +67,8 @@ import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_field_protocol_use_cases;
+import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_value_content_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_form_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/header_component_use_cases.dart'
@@ -2709,6 +2711,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Saving and saved',
                 builder: _widgetbook_workspace_primitives_field_motion_use_cases
                     .catchFieldStatusIndicatorContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldValueContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Label value and supporting states',
+                builder:
+                    _widgetbook_workspace_primitives_field_value_content_use_cases
+                        .fieldValueContentStates,
               ),
             ],
           ),
