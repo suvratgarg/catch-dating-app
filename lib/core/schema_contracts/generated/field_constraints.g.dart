@@ -12515,6 +12515,307 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeChangedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeChangedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangePreviousRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-closeout:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutChangeRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportMissing', 'reportComplete', 'unresolvedMembers', 'alreadyClosed'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutStateKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.state.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewCloseoutStateReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.closeout.state.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportChanged', 'dispositionChanged'],
+  );
+
   static const eventAssistanceCheckpointCallableResponseViewContextEventId = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointCallableResponse.view.context.eventId',
     maxLength: 160,
@@ -12901,11 +13202,257 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-closeout:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceCheckpointReceiptDocumentReceiptId = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointReceiptDocument.receiptId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^checkpoint-reassignment:[a-f0-9]{64}\$',
+    pattern: '^checkpoint-closeout:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceCheckpointReceiptDocumentReportAccountedFor = CatchContractFieldConstraints(
@@ -13130,6 +13677,252 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 5,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.accountedFor.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.reportedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportReportId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.reportId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutDecisionReportSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.decision.report.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-closeout:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventAssistanceCheckpointWorkKind = CatchContractFieldConstraints(
@@ -13368,8 +14161,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const eventAssistanceCommandPayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
-    path: 'eventAssistanceCommand.payload.expectedAssignmentRevision',
+  static const eventAssistanceCommandPayloadDecision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.decision',
+    required: true,
+    enumValues: <String>['close', 'reopen'],
+  );
+
+  static const eventAssistanceCommandPayloadExpectedCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.expectedCloseoutRevision',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -13400,15 +14199,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '\\S',
-  );
-
-  static const eventAssistanceCommandPayloadResponsibleOperatorId = CatchContractFieldConstraints(
-    path: 'eventAssistanceCommand.payload.responsibleOperatorId',
-    maxLength: 128,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[^/]+\$',
   );
 
   static const eventAssistanceDeliveryAttemptAttemptId = CatchContractFieldConstraints(
@@ -67093,6 +67883,133 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadCheckpointId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadDecision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.decision',
+    required: true,
+    enumValues: <String>['close', 'reopen'],
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadExpectedCloseoutRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.expectedCloseoutRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadExpectedProgressRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.expectedProgressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadReason = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const setEventAssistanceCheckpointCloseoutCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceCheckpointCloseoutCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const setEventAssistanceGroupStaffCallablePayloadContextEventId = CatchContractFieldConstraints(
     path: 'setEventAssistanceGroupStaffCallablePayload.context.eventId',
     maxLength: 160,
@@ -77975,6 +78892,46 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointCallableResponse.view.availability.reportStatus': eventAssistanceCheckpointCallableResponseViewAvailabilityReportStatus,
     'eventAssistanceCheckpointCallableResponse.view.availability.rosterId': eventAssistanceCheckpointCallableResponseViewAvailabilityRosterId,
     'eventAssistanceCheckpointCallableResponse.view.checkpointId': eventAssistanceCheckpointCallableResponseViewCheckpointId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.changedAt': eventAssistanceCheckpointCallableResponseViewCloseoutChangeChangedAt,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.changedBy': eventAssistanceCheckpointCallableResponseViewCloseoutChangeChangedBy,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositions,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.attendeeId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsAttendeeId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.disposition': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsDisposition,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.kind': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsKind,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.resolvedAt': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsResolvedAt,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.resolvedBy': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsResolvedBy,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.revision': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.dispositions.items.sourceHash': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionDispositionsItemsSourceHash,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.kind': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionKind,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.accountedFor': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportAccountedFor,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.accountedFor.items': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportAccountedForItems,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.checkpointId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCheckpointId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.eventId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextEventId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.mode': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextMode,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.context.organizerId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportContextOrganizerId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.correctionReason': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCorrectionReason,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.createdAt': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportCreatedAt,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.groupId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportGroupId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.progressRevision': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportProgressRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportedAt': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportedAt,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportedBy': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportedBy,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.reportId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportReportId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.revision': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.rosterHash': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRosterHash,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.rosterId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportRosterId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.decision.report.schemaVersion': eventAssistanceCheckpointCallableResponseViewCloseoutChangeDecisionReportSchemaVersion,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.previousRevision': eventAssistanceCheckpointCallableResponseViewCloseoutChangePreviousRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.reason': eventAssistanceCheckpointCallableResponseViewCloseoutChangeReason,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.receiptId': eventAssistanceCheckpointCallableResponseViewCloseoutChangeReceiptId,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.change.revision': eventAssistanceCheckpointCallableResponseViewCloseoutChangeRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.attendeeIds': eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityAttendeeIds,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.attendeeIds.items': eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityAttendeeIdsItems,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.kind': eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityKind,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.eligibility.reason': eventAssistanceCheckpointCallableResponseViewCloseoutEligibilityReason,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.revision': eventAssistanceCheckpointCallableResponseViewCloseoutRevision,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.sourceHash': eventAssistanceCheckpointCallableResponseViewCloseoutSourceHash,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.state.kind': eventAssistanceCheckpointCallableResponseViewCloseoutStateKind,
+    'eventAssistanceCheckpointCallableResponse.view.closeout.state.reason': eventAssistanceCheckpointCallableResponseViewCloseoutStateReason,
     'eventAssistanceCheckpointCallableResponse.view.context.eventId': eventAssistanceCheckpointCallableResponseViewContextEventId,
     'eventAssistanceCheckpointCallableResponse.view.context.mode': eventAssistanceCheckpointCallableResponseViewContextMode,
     'eventAssistanceCheckpointCallableResponse.view.context.organizerId': eventAssistanceCheckpointCallableResponseViewContextOrganizerId,
@@ -78024,6 +78981,38 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointReceiptDocument.assignment.receiptId': eventAssistanceCheckpointReceiptDocumentAssignmentReceiptId,
     'eventAssistanceCheckpointReceiptDocument.assignment.responsibleOperatorId': eventAssistanceCheckpointReceiptDocumentAssignmentResponsibleOperatorId,
     'eventAssistanceCheckpointReceiptDocument.assignment.revision': eventAssistanceCheckpointReceiptDocumentAssignmentRevision,
+    'eventAssistanceCheckpointReceiptDocument.closeout.changedAt': eventAssistanceCheckpointReceiptDocumentCloseoutChangedAt,
+    'eventAssistanceCheckpointReceiptDocument.closeout.changedBy': eventAssistanceCheckpointReceiptDocumentCloseoutChangedBy,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositions,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.attendeeId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.disposition': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsDisposition,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.kind': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsKind,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.resolvedAt': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.resolvedBy': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.revision': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsRevision,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.dispositions.items.sourceHash': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionDispositionsItemsSourceHash,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.kind': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionKind,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.accountedFor': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportAccountedFor,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.accountedFor.items': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportAccountedForItems,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.checkpointId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCheckpointId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.eventId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextEventId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.mode': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextMode,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.context.organizerId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportContextOrganizerId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.correctionReason': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCorrectionReason,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.createdAt': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportCreatedAt,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.groupId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportGroupId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.progressRevision': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportProgressRevision,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportedAt': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportedAt,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportedBy': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportedBy,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.reportId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportReportId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.revision': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRevision,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.rosterHash': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRosterHash,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.rosterId': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportRosterId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.decision.report.schemaVersion': eventAssistanceCheckpointReceiptDocumentCloseoutDecisionReportSchemaVersion,
+    'eventAssistanceCheckpointReceiptDocument.closeout.previousRevision': eventAssistanceCheckpointReceiptDocumentCloseoutPreviousRevision,
+    'eventAssistanceCheckpointReceiptDocument.closeout.reason': eventAssistanceCheckpointReceiptDocumentCloseoutReason,
+    'eventAssistanceCheckpointReceiptDocument.closeout.receiptId': eventAssistanceCheckpointReceiptDocumentCloseoutReceiptId,
+    'eventAssistanceCheckpointReceiptDocument.closeout.revision': eventAssistanceCheckpointReceiptDocumentCloseoutRevision,
     'eventAssistanceCheckpointReceiptDocument.receiptId': eventAssistanceCheckpointReceiptDocumentReceiptId,
     'eventAssistanceCheckpointReceiptDocument.report.accountedFor': eventAssistanceCheckpointReceiptDocumentReportAccountedFor,
     'eventAssistanceCheckpointReceiptDocument.report.accountedFor.items': eventAssistanceCheckpointReceiptDocumentReportAccountedForItems,
@@ -78054,6 +79043,38 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointWork.checkpoint.dueAt': eventAssistanceCheckpointWorkCheckpointDueAt,
     'eventAssistanceCheckpointWork.checkpoint.evaluatedAt': eventAssistanceCheckpointWorkCheckpointEvaluatedAt,
     'eventAssistanceCheckpointWork.checkpoint.failures': eventAssistanceCheckpointWorkCheckpointFailures,
+    'eventAssistanceCheckpointWork.closeout.changedAt': eventAssistanceCheckpointWorkCloseoutChangedAt,
+    'eventAssistanceCheckpointWork.closeout.changedBy': eventAssistanceCheckpointWorkCloseoutChangedBy,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions': eventAssistanceCheckpointWorkCloseoutDecisionDispositions,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.attendeeId': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.disposition': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsDisposition,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.kind': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsKind,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.resolvedAt': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.resolvedBy': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.revision': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsRevision,
+    'eventAssistanceCheckpointWork.closeout.decision.dispositions.items.sourceHash': eventAssistanceCheckpointWorkCloseoutDecisionDispositionsItemsSourceHash,
+    'eventAssistanceCheckpointWork.closeout.decision.kind': eventAssistanceCheckpointWorkCloseoutDecisionKind,
+    'eventAssistanceCheckpointWork.closeout.decision.report.accountedFor': eventAssistanceCheckpointWorkCloseoutDecisionReportAccountedFor,
+    'eventAssistanceCheckpointWork.closeout.decision.report.accountedFor.items': eventAssistanceCheckpointWorkCloseoutDecisionReportAccountedForItems,
+    'eventAssistanceCheckpointWork.closeout.decision.report.checkpointId': eventAssistanceCheckpointWorkCloseoutDecisionReportCheckpointId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.context.eventId': eventAssistanceCheckpointWorkCloseoutDecisionReportContextEventId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.context.mode': eventAssistanceCheckpointWorkCloseoutDecisionReportContextMode,
+    'eventAssistanceCheckpointWork.closeout.decision.report.context.organizerId': eventAssistanceCheckpointWorkCloseoutDecisionReportContextOrganizerId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.correctionReason': eventAssistanceCheckpointWorkCloseoutDecisionReportCorrectionReason,
+    'eventAssistanceCheckpointWork.closeout.decision.report.createdAt': eventAssistanceCheckpointWorkCloseoutDecisionReportCreatedAt,
+    'eventAssistanceCheckpointWork.closeout.decision.report.groupId': eventAssistanceCheckpointWorkCloseoutDecisionReportGroupId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.progressRevision': eventAssistanceCheckpointWorkCloseoutDecisionReportProgressRevision,
+    'eventAssistanceCheckpointWork.closeout.decision.report.reportedAt': eventAssistanceCheckpointWorkCloseoutDecisionReportReportedAt,
+    'eventAssistanceCheckpointWork.closeout.decision.report.reportedBy': eventAssistanceCheckpointWorkCloseoutDecisionReportReportedBy,
+    'eventAssistanceCheckpointWork.closeout.decision.report.reportId': eventAssistanceCheckpointWorkCloseoutDecisionReportReportId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.revision': eventAssistanceCheckpointWorkCloseoutDecisionReportRevision,
+    'eventAssistanceCheckpointWork.closeout.decision.report.rosterHash': eventAssistanceCheckpointWorkCloseoutDecisionReportRosterHash,
+    'eventAssistanceCheckpointWork.closeout.decision.report.rosterId': eventAssistanceCheckpointWorkCloseoutDecisionReportRosterId,
+    'eventAssistanceCheckpointWork.closeout.decision.report.schemaVersion': eventAssistanceCheckpointWorkCloseoutDecisionReportSchemaVersion,
+    'eventAssistanceCheckpointWork.closeout.previousRevision': eventAssistanceCheckpointWorkCloseoutPreviousRevision,
+    'eventAssistanceCheckpointWork.closeout.reason': eventAssistanceCheckpointWorkCloseoutReason,
+    'eventAssistanceCheckpointWork.closeout.receiptId': eventAssistanceCheckpointWorkCloseoutReceiptId,
+    'eventAssistanceCheckpointWork.closeout.revision': eventAssistanceCheckpointWorkCloseoutRevision,
     'eventAssistanceCheckpointWork.kind': eventAssistanceCheckpointWorkKind,
     'eventAssistanceCheckpointWork.reassignment.assignedAt': eventAssistanceCheckpointWorkReassignmentAssignedAt,
     'eventAssistanceCheckpointWork.reassignment.assignedBy': eventAssistanceCheckpointWorkReassignmentAssignedBy,
@@ -78084,11 +79105,11 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCommand.kind': eventAssistanceCommandKind,
     'eventAssistanceCommand.operationId': eventAssistanceCommandOperationId,
     'eventAssistanceCommand.payload.checkpointId': eventAssistanceCommandPayloadCheckpointId,
-    'eventAssistanceCommand.payload.expectedAssignmentRevision': eventAssistanceCommandPayloadExpectedAssignmentRevision,
+    'eventAssistanceCommand.payload.decision': eventAssistanceCommandPayloadDecision,
+    'eventAssistanceCommand.payload.expectedCloseoutRevision': eventAssistanceCommandPayloadExpectedCloseoutRevision,
     'eventAssistanceCommand.payload.expectedProgressRevision': eventAssistanceCommandPayloadExpectedProgressRevision,
     'eventAssistanceCommand.payload.groupId': eventAssistanceCommandPayloadGroupId,
     'eventAssistanceCommand.payload.reason': eventAssistanceCommandPayloadReason,
-    'eventAssistanceCommand.payload.responsibleOperatorId': eventAssistanceCommandPayloadResponsibleOperatorId,
     'eventAssistanceDeliveryAttempt.attemptId': eventAssistanceDeliveryAttemptAttemptId,
     'eventAssistanceDeliveryAttempt.authorization.checkedAt': eventAssistanceDeliveryAttemptAuthorizationCheckedAt,
     'eventAssistanceDeliveryAttempt.authorization.instructionRevision': eventAssistanceDeliveryAttemptAuthorizationInstructionRevision,
@@ -85407,6 +86428,22 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.clockId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextClockId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.eventId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextEventId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.mode': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextMode,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.organizerId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextOrganizerId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.rehearsalId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextRehearsalId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.virtualEventId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextVirtualEventId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.eventId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandEventId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.kind': setEventAssistanceCheckpointCloseoutCallablePayloadCommandKind,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.operationId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandOperationId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.checkpointId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadCheckpointId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.decision': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadDecision,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.expectedCloseoutRevision': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadExpectedCloseoutRevision,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.expectedProgressRevision': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadExpectedProgressRevision,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.groupId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadGroupId,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.command.payload.reason': setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadReason,
+    'setEventAssistanceCheckpointCloseoutCallablePayload.expectedSourceHash': setEventAssistanceCheckpointCloseoutCallablePayloadExpectedSourceHash,
     'setEventAssistanceGroupStaffCallablePayload.context.eventId': setEventAssistanceGroupStaffCallablePayloadContextEventId,
     'setEventAssistanceGroupStaffCallablePayload.context.mode': setEventAssistanceGroupStaffCallablePayloadContextMode,
     'setEventAssistanceGroupStaffCallablePayload.context.organizerId': setEventAssistanceGroupStaffCallablePayloadContextOrganizerId,

@@ -29,6 +29,7 @@ export const COMMAND_AUTHORITY = {
   transferGroup: ["groupLead", "eventLead"],
   recordCheckpoint: ["groupLead", "eventLead"],
   reassignCheckpointReporter: ["eventLead"],
+  setCheckpointCloseout: ["groupLead", "eventLead"],
   changeProgramme: ["eventLead"],
   recordOutcome: ["eventLead"],
   changeRoute: ["eventLead"],

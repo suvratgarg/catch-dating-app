@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.22.0
+version: 1.23.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -672,8 +672,21 @@ duplicate or delayed source deliveries replay immutable wake receipts instead
 of reapplying older states. Event completion, cancellation or schedule expiry
 cannot discard unresolved original departure members. There is no generic
 expiry or TTL: terminal retention/reconciliation is separate work. The current
-adapter does not implement disposition-based closeout, staff notifications or the
-Host queue UI.
+adapter does not implement staff notifications or the Host queue UI.
+
+Explicit reviewed closeout uses the same lease and stores an independent
+`closeout` decision outside the immutable departure basis. A partial arrival
+report plus a current post-departure disposition for every unconfirmed member
+can become `report_closed_out`, with no task flags or due timer. This does not
+convert a disposition into an arrival. The current named reporter with scoped
+reporting authority or an organizer manager supplies a reason; server-owned
+full evidence, its domain receipt and the work/run/action update commit
+atomically. The generic receipt hashes the complete domain receipt. Reads bind
+the latest change to both receipts; older retries validate their original full
+evidence but return current state. Corrected reports, dispositions, changed
+visits or explicit reopening restore review while retaining history. Full
+arrival reports supersede closeout. Both completed states remain nonterminal;
+terminal retention is a separate lifecycle boundary.
 
 Manager-driven reporter reassignment now shares this same work-item lease. Its
 optional `reassignment` payload is mutable responsibility, excluded from the
@@ -685,7 +698,7 @@ retained, including when overdue; current scoped authority must extend beyond
 both now and that deadline. Assignment reads bind the latest change to both
 immutable receipts. Older retries return current state and never restore a prior
 owner. Background revisions do not invalidate a reviewed assignment, while a
-changed assignment, report or source does. A complete report cannot be reassigned;
+changed assignment, report or source does. A complete or closed-out report cannot be reassigned;
 a later correction retains the effective reporter when reopening work.
 
 ### Source changes and due-work recovery

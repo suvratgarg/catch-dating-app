@@ -1120,4 +1120,32 @@ export type EventAssistanceCommand =
         responsibleOperatorId: string;
         reason: string;
       };
+    }
+  | {
+      kind: "setCheckpointCloseout";
+      context:
+        | {
+            mode: "live";
+            eventId: string;
+            organizerId: string;
+          }
+        | {
+            mode: "rehearsal";
+            rehearsalId: string;
+            virtualEventId: string;
+            clockId: string;
+          };
+      eventId: string;
+      operationId: string;
+      payload: {
+        groupId: string;
+        checkpointId: string;
+        /**
+         * Nonnegative safe integer revision.
+         */
+        expectedProgressRevision: number;
+        reason: string;
+        expectedCloseoutRevision: number;
+        decision: "close" | "reopen";
+      };
     };

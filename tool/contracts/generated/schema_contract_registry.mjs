@@ -1,6 +1,178 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const setEventAssistanceCheckpointCloseoutCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "expectedSourceHash"
+  ],
+  "properties": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setCheckpointCloseout"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "checkpointId",
+            "expectedProgressRevision",
+            "reason",
+            "expectedCloseoutRevision",
+            "decision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            },
+            "expectedCloseoutRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "enum": [
+                "close",
+                "reopen"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "expectedSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "SetEventAssistanceCheckpointCloseoutCallablePayload"
+};
+
 export const reassignEventAssistanceCheckpointReporterCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -909,7 +1081,10 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
                       "maximum": 9007199254740991
                     },
                     "state": {
-                      "const": "complete"
+                      "enum": [
+                        "complete",
+                        "closedOut"
+                      ]
                     },
                     "ownerAvailability": {
                       "const": "notRequired"
@@ -1001,6 +1176,386 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
                     },
                     {
                       "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closeout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "sourceHash",
+                "change",
+                "state",
+                "eligibility"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "change": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "revision",
+                        "previousRevision",
+                        "receiptId",
+                        "changedBy",
+                        "changedAt",
+                        "reason",
+                        "decision"
+                      ],
+                      "properties": {
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "previousRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "receiptId": {
+                          "type": "string",
+                          "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+                        },
+                        "changedBy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[^/]+$"
+                        },
+                        "changedAt": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "reason": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500,
+                          "pattern": "\\S"
+                        },
+                        "decision": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "report",
+                                "dispositions"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "const": "close"
+                                },
+                                "report": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "required": [
+                                    "schemaVersion",
+                                    "reportId",
+                                    "context",
+                                    "groupId",
+                                    "checkpointId",
+                                    "progressRevision",
+                                    "rosterId",
+                                    "rosterHash",
+                                    "revision",
+                                    "accountedFor",
+                                    "reportedBy",
+                                    "reportedAt",
+                                    "correctionReason",
+                                    "createdAt"
+                                  ],
+                                  "properties": {
+                                    "schemaVersion": {
+                                      "const": 1
+                                    },
+                                    "reportId": {
+                                      "type": "string",
+                                      "pattern": "^checkpoint:[a-f0-9]{64}$"
+                                    },
+                                    "context": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "mode",
+                                        "eventId",
+                                        "organizerId"
+                                      ],
+                                      "properties": {
+                                        "mode": {
+                                          "type": "string",
+                                          "const": "live"
+                                        },
+                                        "eventId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "organizerId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    "groupId": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 160,
+                                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                    },
+                                    "checkpointId": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "progressRevision": {
+                                      "type": "integer",
+                                      "minimum": 1,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "rosterId": {
+                                      "type": "string",
+                                      "pattern": "^departure-roster:[a-f0-9]{64}$"
+                                    },
+                                    "rosterHash": {
+                                      "type": "string",
+                                      "pattern": "^[a-f0-9]{64}$"
+                                    },
+                                    "revision": {
+                                      "type": "integer",
+                                      "minimum": 1,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "accountedFor": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                      },
+                                      "uniqueItems": true,
+                                      "maxItems": 1000
+                                    },
+                                    "reportedBy": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "reportedAt": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "correctionReason": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 500,
+                                          "pattern": "\\S"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "createdAt": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991
+                                    }
+                                  }
+                                },
+                                "dispositions": {
+                                  "type": "array",
+                                  "maxItems": 1000,
+                                  "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "disposition",
+                                      "revision",
+                                      "resolvedAt",
+                                      "resolvedBy",
+                                      "sourceHash",
+                                      "attendeeId"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "const": "resolved"
+                                      },
+                                      "disposition": {
+                                        "enum": [
+                                          "returned",
+                                          "departed"
+                                        ]
+                                      },
+                                      "revision": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "maximum": 9007199254740991
+                                      },
+                                      "resolvedAt": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                      },
+                                      "resolvedBy": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 128,
+                                        "pattern": "^[^/]+$"
+                                      },
+                                      "sourceHash": {
+                                        "type": "string",
+                                        "pattern": "^[a-f0-9]{64}$"
+                                      },
+                                      "attendeeId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "const": "reopen"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "state": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "open",
+                            "reopened",
+                            "closedOut",
+                            "superseded"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "needsReview"
+                        },
+                        "reason": {
+                          "enum": [
+                            "sourceUnavailable",
+                            "reportChanged",
+                            "dispositionChanged"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "eligibility": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "ready"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason",
+                        "attendeeIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "unavailable"
+                        },
+                        "reason": {
+                          "enum": [
+                            "sourceUnavailable",
+                            "reportMissing",
+                            "reportComplete",
+                            "unresolvedMembers",
+                            "alreadyClosed"
+                          ]
+                        },
+                        "attendeeIds": {
+                          "type": "array",
+                          "maxItems": 1000,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          }
+                        }
+                      }
                     }
                   ]
                 }
@@ -1423,6 +1978,344 @@ export const eventAssistanceCheckpointReceiptDocumentSchema = {
               "minLength": 1,
               "maxLength": 500,
               "pattern": "\\S"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receiptId",
+        "requestHash",
+        "scope",
+        "rosterHash",
+        "workItemRevision",
+        "closeout"
+      ],
+      "properties": {
+        "receiptId": {
+          "type": "string",
+          "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision"
+          ],
+          "properties": {
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "rosterHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "workItemRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "closeout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "previousRevision",
+            "receiptId",
+            "changedBy",
+            "changedAt",
+            "reason",
+            "decision"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "previousRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+            },
+            "changedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "changedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "report",
+                    "dispositions"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "close"
+                    },
+                    "report": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "schemaVersion",
+                        "reportId",
+                        "context",
+                        "groupId",
+                        "checkpointId",
+                        "progressRevision",
+                        "rosterId",
+                        "rosterHash",
+                        "revision",
+                        "accountedFor",
+                        "reportedBy",
+                        "reportedAt",
+                        "correctionReason",
+                        "createdAt"
+                      ],
+                      "properties": {
+                        "schemaVersion": {
+                          "const": 1
+                        },
+                        "reportId": {
+                          "type": "string",
+                          "pattern": "^checkpoint:[a-f0-9]{64}$"
+                        },
+                        "context": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventId",
+                            "organizerId"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "const": "live"
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "organizerId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "progressRevision": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "rosterId": {
+                          "type": "string",
+                          "pattern": "^departure-roster:[a-f0-9]{64}$"
+                        },
+                        "rosterHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 9007199254740991
+                        },
+                        "accountedFor": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "uniqueItems": true,
+                          "maxItems": 1000
+                        },
+                        "reportedBy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "reportedAt": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "correctionReason": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500,
+                              "pattern": "\\S"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    "dispositions": {
+                      "type": "array",
+                      "maxItems": 1000,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "disposition",
+                          "revision",
+                          "resolvedAt",
+                          "resolvedBy",
+                          "sourceHash",
+                          "attendeeId"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "resolved"
+                          },
+                          "disposition": {
+                            "enum": [
+                              "returned",
+                              "departed"
+                            ]
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 9007199254740991
+                          },
+                          "resolvedAt": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          "resolvedBy": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128,
+                            "pattern": "^[^/]+$"
+                          },
+                          "sourceHash": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{64}$"
+                          },
+                          "attendeeId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "reopen"
+                    }
+                  }
+                }
+              ]
             }
           }
         }
@@ -57157,6 +58050,145 @@ export const eventAssistanceCommandSchema = {
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setCheckpointCloseout"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "checkpointId",
+            "expectedProgressRevision",
+            "reason",
+            "expectedCloseoutRevision",
+            "decision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            },
+            "expectedCloseoutRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "enum": [
+                "close",
+                "reopen"
+              ]
+            }
+          }
+        }
+      }
     }
   ],
   "title": "EventAssistanceCommand"
@@ -57751,7 +58783,10 @@ export const eventAssistanceCheckpointWorkSchema = {
                               "maximum": 9007199254740991
                             },
                             "state": {
-                              "const": "complete"
+                              "enum": [
+                                "complete",
+                                "closedOut"
+                              ]
                             },
                             "ownerAvailability": {
                               "const": "notRequired"
@@ -57851,6 +58886,259 @@ export const eventAssistanceCheckpointWorkSchema = {
           "minLength": 1,
           "maxLength": 500,
           "pattern": "\\S"
+        }
+      }
+    },
+    "closeout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "previousRevision",
+        "receiptId",
+        "changedBy",
+        "changedAt",
+        "reason",
+        "decision"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "previousRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+        },
+        "changedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "changedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "decision": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "report",
+                "dispositions"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "close"
+                },
+                "report": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "schemaVersion",
+                    "reportId",
+                    "context",
+                    "groupId",
+                    "checkpointId",
+                    "progressRevision",
+                    "rosterId",
+                    "rosterHash",
+                    "revision",
+                    "accountedFor",
+                    "reportedBy",
+                    "reportedAt",
+                    "correctionReason",
+                    "createdAt"
+                  ],
+                  "properties": {
+                    "schemaVersion": {
+                      "const": 1
+                    },
+                    "reportId": {
+                      "type": "string",
+                      "pattern": "^checkpoint:[a-f0-9]{64}$"
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mode",
+                        "eventId",
+                        "organizerId"
+                      ],
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "const": "live"
+                        },
+                        "eventId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "organizerId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "progressRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "rosterId": {
+                      "type": "string",
+                      "pattern": "^departure-roster:[a-f0-9]{64}$"
+                    },
+                    "rosterHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "accountedFor": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "uniqueItems": true,
+                      "maxItems": 1000
+                    },
+                    "reportedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "reportedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "correctionReason": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500,
+                          "pattern": "\\S"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "dispositions": {
+                  "type": "array",
+                  "maxItems": 1000,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "disposition",
+                      "revision",
+                      "resolvedAt",
+                      "resolvedBy",
+                      "sourceHash",
+                      "attendeeId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "resolved"
+                      },
+                      "disposition": {
+                        "enum": [
+                          "returned",
+                          "departed"
+                        ]
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "resolvedAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "resolvedBy": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[^/]+$"
+                      },
+                      "sourceHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "reopen"
+                }
+              }
+            }
+          ]
         }
       }
     }
@@ -61577,7 +62865,10 @@ export const operationWorkItemSchema = {
                                         "maximum": 9007199254740991
                                       },
                                       "state": {
-                                        "const": "complete"
+                                        "enum": [
+                                          "complete",
+                                          "closedOut"
+                                        ]
                                       },
                                       "ownerAvailability": {
                                         "const": "notRequired"
@@ -61677,6 +62968,259 @@ export const operationWorkItemSchema = {
                     "minLength": 1,
                     "maxLength": 500,
                     "pattern": "\\S"
+                  }
+                }
+              },
+              "closeout": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "revision",
+                  "previousRevision",
+                  "receiptId",
+                  "changedBy",
+                  "changedAt",
+                  "reason",
+                  "decision"
+                ],
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "previousRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "receiptId": {
+                    "type": "string",
+                    "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+                  },
+                  "changedBy": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "changedAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500,
+                    "pattern": "\\S"
+                  },
+                  "decision": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "report",
+                          "dispositions"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "close"
+                          },
+                          "report": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "schemaVersion",
+                              "reportId",
+                              "context",
+                              "groupId",
+                              "checkpointId",
+                              "progressRevision",
+                              "rosterId",
+                              "rosterHash",
+                              "revision",
+                              "accountedFor",
+                              "reportedBy",
+                              "reportedAt",
+                              "correctionReason",
+                              "createdAt"
+                            ],
+                            "properties": {
+                              "schemaVersion": {
+                                "const": 1
+                              },
+                              "reportId": {
+                                "type": "string",
+                                "pattern": "^checkpoint:[a-f0-9]{64}$"
+                              },
+                              "context": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "mode",
+                                  "eventId",
+                                  "organizerId"
+                                ],
+                                "properties": {
+                                  "mode": {
+                                    "type": "string",
+                                    "const": "live"
+                                  },
+                                  "eventId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 160,
+                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                  },
+                                  "organizerId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 2000
+                                  }
+                                }
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "checkpointId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "progressRevision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "rosterId": {
+                                "type": "string",
+                                "pattern": "^departure-roster:[a-f0-9]{64}$"
+                              },
+                              "rosterHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              },
+                              "revision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "accountedFor": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "uniqueItems": true,
+                                "maxItems": 1000
+                              },
+                              "reportedBy": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "reportedAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "correctionReason": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500,
+                                    "pattern": "\\S"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            }
+                          },
+                          "dispositions": {
+                            "type": "array",
+                            "maxItems": 1000,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "disposition",
+                                "revision",
+                                "resolvedAt",
+                                "resolvedBy",
+                                "sourceHash",
+                                "attendeeId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "const": "resolved"
+                                },
+                                "disposition": {
+                                  "enum": [
+                                    "returned",
+                                    "departed"
+                                  ]
+                                },
+                                "revision": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 9007199254740991
+                                },
+                                "resolvedAt": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991
+                                },
+                                "resolvedBy": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 128,
+                                  "pattern": "^[^/]+$"
+                                },
+                                "sourceHash": {
+                                  "type": "string",
+                                  "pattern": "^[a-f0-9]{64}$"
+                                },
+                                "attendeeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "reopen"
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }

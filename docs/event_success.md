@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.43.0
+version: 1.44.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -530,7 +530,7 @@ bounded to seven days after departure and four hours after scheduled event end.
 This assignment grants no access and has no messaging effect.
 
 Checkpoint reads project an optional request with `awaitingReport`, `overdue`,
-`discrepancy`, `complete`, or `sourceUnavailable` state. A partial observation retains
+`discrepancy`, `complete`, `closedOut`, or `sourceUnavailable` state. A partial observation retains
 the discrepancy even before its deadline. Current permission loss or access shortened
 below the deadline marks the owner as needing reassignment; it never removes the
 original request. Permission is re-read, and source/database errors propagate instead
@@ -554,8 +554,45 @@ automatic closeout of unresolved departure members.
 Acceptance covers atomic enrollment/interruption/retry, current authority,
 deadline/lease races, corrected reports, bounded source fanout, source failures
 and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
-Staff notifications, disposition-based closeout, Host controls and
+Staff notifications, Host controls and
 rehearsal adapters remain integration work; no provider effect is activated.
+
+### Reviewed checkpoint closeout
+
+`setEventAssistanceCheckpointCloseout` implements the typed
+`setCheckpointCloseout` command. The current responsible reporter, with current
+group reporting permission, or an organizer manager can explicitly close or
+reopen a durable checkpoint request. Closing requires an explicit partial
+arrival report and a current post-departure `returned` or `departed` disposition
+for every original member who is still unconfirmed. It never marks those
+people as arrived or changes attendance, participation, membership or progress.
+Legacy departures without durable requests cannot acquire closeout work through
+this command. A complete arrival report needs no closeout.
+
+The checkpoint view exposes an independent closeout revision, review hash,
+eligibility and state. Missing reports, unresolved members, unavailable sources,
+complete reports and already closed requests remain distinct. A changed report,
+disposition, original visit or reporter assignment invalidates a pending review;
+background worker revisions do not. Both close and reopen require a nonblank
+reason. Server-owned proof preserves the full report and exact dispositions in
+an immutable receipt. The client cannot supply or replace that proof.
+
+Closeout shares the checkpoint Operations lease. The work/run change, domain
+receipt and generic action receipt commit atomically; the latter hashes the
+full saved proof. Current authorization is checked before roster reads and
+again after preparation. Exact retries return their original closeout revision
+and the current view without restoring an older decision. Completed closeout
+projects `closedOut` with no owner requirement or due timer, while retaining
+the original roster, reporter, deadline and factual arrival report.
+
+A corrected report or disposition reopens review, preserving historical proof.
+A later check-in or changed registration also requires review: this adapter
+does not maintain a separate historical accountability ledger for every visit.
+A fully confirmed arrival report supersedes closeout; correcting that report
+can reopen the obligation. Explicit reopening records a new decision rather
+than deleting history. Event completion or cancellation does not itself close
+an unresolved request. Host controls, staff notifications, rehearsal execution
+and terminal retention remain separate integration work.
 
 ### Checkpoint reporter reassignment
 
@@ -570,7 +607,7 @@ changes no attendance, membership, report observation or messaging state.
 The existing checkpoint read returns the effective reporter and an optional
 `assignment` review with its own source hash and revision. Background work
 revisions do not invalidate that review. A changed report, original source or
-assignment does; a complete report cannot be reassigned. Report review hashes
+assignment does; a complete or closed-out report cannot be reassigned. Report review hashes
 exclude ownership changes, so another authorized observer can still submit
 previously reviewed observations. Source-unavailable requests require repair
 before reassignment. Legacy requests without durable work expose no assignment

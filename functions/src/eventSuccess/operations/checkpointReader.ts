@@ -11,6 +11,7 @@ import {checkpointDisposition} from "./checkpointDisposition";
 import {readCheckpointOwnerValidity} from "./checkpointRequest";
 import {readCheckpointWorkSnapshot} from "./checkpointWorkAccess";
 import {effectiveCheckpointRequest} from "./checkpointWorkRecords";
+import {assertCloseoutRoster} from "./checkpointCloseoutPolicy";
 import {operationContentHash} from "../../operations/durableActions";
 import {CHECKPOINTS, checkpointIdentity, CheckpointState,
   parseDepartureRoster, parseCheckpointReport, checkpointAvailability,
@@ -57,6 +58,7 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
           operationContentHash(roster.checkpointRequest))) {
       throw invalidSource();
     }
+    assertCloseoutRoster(state);
     const request = state.requestWork ?
       effectiveCheckpointRequest(state.requestWork.payload) :
       roster.checkpointRequest;

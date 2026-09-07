@@ -551,6 +551,7 @@ export 'send_organizer_whatsapp_test_callable_payload.g.dart';
 export 'set_club_notification_preference_callable_payload.g.dart';
 export 'set_cross_paths_event_consent_callable_payload.g.dart';
 export 'set_cross_paths_event_consent_callable_response.g.dart';
+export 'set_event_assistance_checkpoint_closeout_callable_payload.g.dart';
 export 'set_event_assistance_group_staff_callable_payload.g.dart';
 export 'set_event_assistance_participation_callable_payload.g.dart';
 export 'set_event_assistance_runtime_config_callable_payload.g.dart';

@@ -16,6 +16,7 @@ import {CHECKPOINT_WORK_RUNTIME, CheckpointWorkRecords,
   checkpointWorkIds, readCheckpointWorkRecords} from "./checkpointWorkRecords";
 import {invalidWork} from "./liveWorkRecords";
 import {errorCode} from "./liveWorkRunner";
+import {readCheckpointCloseoutReceipt} from "./checkpointCloseoutAccess";
 
 /** Full domain evidence and the fenced Operations receipt share one commit. */
 export async function readCheckpointAssignmentReceipt(db: Firestore,
@@ -80,6 +81,8 @@ export async function readCheckpointWorkSnapshot(db: Firestore, tx: Transaction,
         records.payload.reassignment.receiptId, records, clock())) {
     throw invalidWork();
   }
+  if (records.payload.closeout && !await readCheckpointCloseoutReceipt(db, tx,
+    records.payload.closeout.receiptId, records, clock())) throw invalidWork();
   return records;
 }
 

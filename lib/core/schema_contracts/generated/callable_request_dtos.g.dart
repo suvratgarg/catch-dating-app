@@ -210,6 +210,7 @@ export 'callables/send_organizer_whatsapp_reply_callable_request.g.dart';
 export 'callables/send_organizer_whatsapp_test_callable_request.g.dart';
 export 'callables/set_club_notification_preference_callable_request.g.dart';
 export 'callables/set_cross_paths_event_consent_callable_request.g.dart';
+export 'callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart';
 export 'callables/set_event_assistance_participation_callable_request.g.dart';
 export 'callables/set_event_attendee_attendance_callable_request.g.dart';
 export 'callables/set_event_success_accountability_resolution_callable_request.g.dart';

@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateSetEventAssistanceCheckpointCloseoutCallablePayload} from "./validators/setEventAssistanceCheckpointCloseoutInput";
 export {validateReassignEventAssistanceCheckpointReporterCallablePayload} from "./validators/reassignEventAssistanceCheckpointReporterInput";
 export {validateGetEventAssistanceCheckpointCallablePayload} from "./validators/getEventAssistanceCheckpointInput";
 export {validateRecordEventAssistanceCheckpointCallablePayload} from "./validators/recordEventAssistanceCheckpointInput";

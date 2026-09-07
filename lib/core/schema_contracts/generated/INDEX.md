@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceCheckpointCloseoutCallablePayload.ts` |
 | ReassignEventAssistanceCheckpointReporterCallablePayload | `callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json` | `functions/src/shared/generated/reassignEventAssistanceCheckpointReporterCallablePayload.ts` |
 | GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceCheckpointCallablePayload.ts` |
 | RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `functions/src/shared/generated/recordEventAssistanceCheckpointCallablePayload.ts` |
@@ -634,6 +635,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema` | SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_checkpoint_closeout_callable_payload.g.dart` |
 | `schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema` | ReassignEventAssistanceCheckpointReporterCallablePayload | `callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/reassign_event_assistance_checkpoint_reporter_callable_payload.g.dart` |
 | `schemaGetEventAssistanceCheckpointCallablePayloadSchema` | GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_checkpoint_callable_payload.g.dart` |
 | `schemaRecordEventAssistanceCheckpointCallablePayloadSchema` | RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_assistance_checkpoint_callable_payload.g.dart` |
@@ -1256,6 +1258,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| SetEventAssistanceCheckpointCloseoutCallableRequest | SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart` |
 | ReassignEventAssistanceCheckpointReporterCallableRequest | ReassignEventAssistanceCheckpointReporterCallablePayload | `callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json` | `lib/core/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart` |
 | GetEventAssistanceCheckpointCallableRequest | GetEventAssistanceCheckpointCallablePayload | `callables/get_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_checkpoint_callable_request.g.dart` |
 | RecordEventAssistanceCheckpointCallableRequest | RecordEventAssistanceCheckpointCallablePayload | `callables/record_event_assistance_checkpoint_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart` |

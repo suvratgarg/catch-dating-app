@@ -85,7 +85,8 @@ export class CheckpointReporterStore {
         throw checkpointConflict();
       }
       if (checkpointAvailability(s).kind !== "ready" ||
-          checkpointRequestView(s)?.state === "complete") {
+          ["complete", "closedOut"].includes(
+            checkpointRequestView(s)?.state ?? "")) {
         throw new HttpsError("failed-precondition",
           "Only an outstanding report with current sources can be reassigned.");
       }

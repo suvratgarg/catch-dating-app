@@ -20,6 +20,8 @@ import {departureRosterIdentity} from "./departureRosterSource";
 import {assertSavedCheckpointRequest} from "./checkpointRequest";
 import type {CheckpointDisposition} from "./checkpointDisposition";
 import type {CheckpointWorkRecords} from "./checkpointWorkRecords";
+import {checkpointCloseoutState, checkpointCloseoutView} from
+  "./checkpointCloseoutPolicy";
 
 export type {Scope, Report, Roster, Response};
 export const CHECKPOINTS = "eventAssistanceCheckpoints";
@@ -134,6 +136,9 @@ export function checkpointRequestView(s: CheckpointState):
   if (complete) {
     return {...request, state: "complete", ownerAvailability: "notRequired"};
   }
+  if (checkpointCloseoutState(s).kind === "closedOut") {
+    return {...request, state: "closedOut", ownerAvailability: "notRequired"};
+  }
   return {...request, state:
     checkpointAvailability(s).kind !== "ready" ? "sourceUnavailable" :
       s.report ? "discrepancy" : s.now >= request.dueAt ?
@@ -157,6 +162,7 @@ export function checkpointResponse(outcome: Response["outcome"],
     revision: s.report?.revision ?? 0, report: s.report,
     request: checkpointRequestView(s),
     assignment: checkpointAssignmentView(s),
+    closeout: checkpointCloseoutView(s),
     availability: checkpointAvailability(s)}};
   if (!validateEventAssistanceCheckpointCallableResponse(value)) {
     throw invalidSource();

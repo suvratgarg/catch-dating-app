@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.61.0
+version: 1.62.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -288,7 +288,21 @@ no due time, but remain nonterminal so corrected reports can reopen the same
 request. The current lease fences run/item/action-receipt commits; source wake
 receipts bind signal and target and deduplicate old deliveries. There are no new
 collections, client grants, contact fields, provider effects or automatic
-attendance mutations. Operational closeout and retention remain unimplemented.
+attendance mutations. Terminal retention remains unimplemented.
+
+The optional checkpoint-work `closeout` is a separately revisioned close/reopen
+decision, excluded from the immutable departure basis. The closed command
+accepts only expected revisions, source hash, decision and reason; server-owned
+proof binds the full partial report and the exact post-departure dispositions
+for its unconfirmed original members. `eventAssistanceCheckpointReceipts`
+contains the complete change, request hash, scope, roster hash and work revision.
+The atomic Operations action receipt hashes that entire domain receipt, so
+historical proof remains verifiable after later work revisions. Reads check
+scope, actor, time, revision, original roster coverage and both receipts.
+`closedOut` is distinct from a complete arrival report and remains nonterminal
+so corrected facts or explicit reopening can restore review. The optional
+callable closeout view keeps legacy responses valid. No new collection, client
+grant, provider effect or attendance writer is introduced.
 
 Source scopes also distinguish sender discovery and organizer/WhatsApp endpoint
 discovery from event fanout. Readiness failures use `targetKey`, a stable

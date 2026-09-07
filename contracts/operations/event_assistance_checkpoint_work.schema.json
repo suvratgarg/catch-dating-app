@@ -141,6 +141,9 @@
     },
     "reassignment": {
       "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Reassignment"
+    },
+    "closeout": {
+      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/CloseoutChange"
     }
   }
 }

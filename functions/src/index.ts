@@ -534,5 +534,7 @@ export {getEventAssistanceDepartureRoster} from
 
 export {reassignEventAssistanceCheckpointReporter} from
   "./eventSuccess/operations/checkpointReporterHandlers";
+export {setEventAssistanceCheckpointCloseout} from
+  "./eventSuccess/operations/checkpointCloseoutHandlers";
 export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
   "./eventSuccess/operations/checkpointHandlers";

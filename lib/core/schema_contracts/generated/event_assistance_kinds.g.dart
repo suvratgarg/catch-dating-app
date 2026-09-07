@@ -88,4 +88,5 @@ enum EventAssistanceCommandKind {
   routeRestrictedCase,
   resolveRestrictedCase,
   reassignCheckpointReporter,
+  setCheckpointCloseout,
 }

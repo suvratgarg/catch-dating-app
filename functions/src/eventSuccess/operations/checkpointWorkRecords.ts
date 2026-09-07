@@ -12,6 +12,7 @@ import {MAX_REPORT_DELAY} from "./checkpointRequest";
 import {departureRosterIdentity} from "./departureRosterSource";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
+import {assertCloseoutChange, CloseoutChange} from "./checkpointCloseoutPolicy";
 
 export type {CheckpointWork};
 export type WorkCheckpoint = CheckpointWork["checkpoint"];
@@ -33,9 +34,10 @@ export function checkpointWorkIds(reportId: string) {
 }
 
 export function checkpointWorkBasis(payload: CheckpointWork) {
-  const {checkpoint, reassignment, ...basis} = payload;
+  const {checkpoint, reassignment, closeout, ...basis} = payload;
   void checkpoint;
   void reassignment;
+  void closeout;
   return basis;
 }
 
@@ -47,7 +49,8 @@ export function nextReportDue(payload: CheckpointWork,
     return c.failures >= 5 ? null : c.evaluatedAt +
       5000 * 2 ** (c.failures - 1);
   }
-  if (!c.observation || c.observation.request.state === "complete") return null;
+  if (!c.observation || ["complete", "closedOut"].includes(
+    c.observation.request.state)) return null;
   const until = c.observation.ownerValidUntil;
   const times = [payload.request.dueAt, ...(until < Number.MAX_SAFE_INTEGER ?
     [until] : [])].filter((t) => t > c.evaluatedAt!);
@@ -60,6 +63,7 @@ export function parseCheckpointWork(value: unknown, now: number):
   checkpointWorkIds(checkpointIdentity(value.scope));
   const c = value.checkpoint;
   const change = value.reassignment;
+  if (value.closeout) assertCloseoutChange(value.closeout, value);
   if (change && (change.assignedAt < value.requestedAt ||
       c.evaluatedAt === null || change.assignedAt > c.evaluatedAt ||
       change.reason !== change.reason.trim() ||
@@ -83,13 +87,16 @@ export function parseCheckpointWork(value: unknown, now: number):
         o.request.dueAt !== value.request.dueAt ||
         (["awaitingReport", "overdue"].includes(o.request.state) &&
           o.reportRevision !== 0) ||
-        (["complete", "discrepancy"].includes(o.request.state) &&
+        (["complete", "closedOut", "discrepancy"].includes(o.request.state) &&
           o.reportRevision === 0) ||
+        (o.request.state === "closedOut" &&
+          (value.closeout?.decision.kind !== "close" ||
+            value.closeout.decision.report.revision !== o.reportRevision)) ||
         (o.request.state === "awaitingReport" &&
           c.evaluatedAt! >= value.request.dueAt) ||
         (o.request.state === "overdue" &&
           c.evaluatedAt! < value.request.dueAt) ||
-        (o.request.state !== "complete" &&
+        (!["complete", "closedOut"].includes(o.request.state) &&
           (o.request.ownerAvailability === "current") !==
           (o.ownerValidUntil >
             Math.max(c.evaluatedAt!, value.request.dueAt)))) {
@@ -101,15 +108,18 @@ export function parseCheckpointWork(value: unknown, now: number):
 
 export function checkpointWorkProjection(payload: CheckpointWork) {
   const o = payload.checkpoint.observation;
-  const complete = o?.kind === "observed" && o.request.state === "complete";
+  const complete = o?.kind === "observed" &&
+    ["complete", "closedOut"].includes(o.request.state);
+  const closed = o?.kind === "observed" && o.request.state === "closedOut";
   const reason = o?.kind === "unavailable" ? "facts_unavailable" :
     o?.kind === "observed" && o.request.ownerAvailability ===
       "needsReassignment" ? "reporter_unavailable" :
       o?.kind === "observed" ? o.request.state.replace(/[A-Z]/g,
         (c) => "_" + c.toLowerCase()) : "awaiting_report";
   const review = !complete && reason !== "awaiting_report";
-  return {primaryStage: complete ? "report_complete" : review ?
-    "host_review" : "report_requested",
+  return {primaryStage: closed ? "report_closed_out" : complete ?
+    "report_complete" : review ?
+      "host_review" : "report_requested",
   lifecycleStatus: "waiting" as const, outcome: null,
   taskFlags: complete ? [] :
     [review ? "human_review_required" : "operator_action_required"],
@@ -155,6 +165,7 @@ export function readCheckpointWorkRecords(runValue: unknown, itemValue: unknown,
     a.value.revision);
   if (expected.item.workItemId !== workItemId ||
       (payload.reassignment?.revision ?? 0) > a.value.revision ||
+      (payload.closeout?.revision ?? 0) > a.value.revision ||
       (a.value.revision === 0) !==
         (payload.checkpoint.evaluatedAt === null) ||
       Date.parse(a.value.updatedAt) !==
@@ -191,7 +202,7 @@ export function newCheckpointWorkRecords(roster: Roster) {
 export function advanceCheckpointWorkRecords(
   current: ReturnType<typeof readCheckpointWorkRecords>,
   observed: WorkCheckpoint["observation"], now: number,
-  reassignment?: Reassignment) {
+  reassignment?: Reassignment, closeout?: CloseoutChange) {
   if (!observed || now < Date.parse(current.item.updatedAt)) {
     throw invalidWork();
   }
@@ -200,12 +211,17 @@ export function advanceCheckpointWorkRecords(
       reassignment.previousResponsibleOperatorId !==
         effectiveCheckpointRequest(current.payload).responsibleOperatorId ||
       reassignment.assignedAt !== now)) throw invalidWork();
+  if (closeout && (closeout.previousRevision !==
+      (current.payload.closeout?.revision ?? 0) ||
+      closeout.revision !== closeout.previousRevision + 1 ||
+      closeout.changedAt !== now)) throw invalidWork();
   const checkpoint: WorkCheckpoint = {evaluatedAt: now, observation: observed,
     failures: observed.kind === "unavailable" ?
       Math.min(5, current.payload.checkpoint.failures + 1) : 0, dueAt: null};
   checkpoint.dueAt = nextReportDue(current.payload, checkpoint);
   const payload = parseCheckpointWork({...current.payload, checkpoint,
-    ...(reassignment ? {reassignment} : {})}, now);
+    ...(reassignment ? {reassignment} : {}),
+    ...(closeout ? {closeout} : {})}, now);
   const next = records(payload, current.run.createdAt,
     new Date(now).toISOString(), current.item.revision + 1);
   return readCheckpointWorkRecords(next.run, next.item,

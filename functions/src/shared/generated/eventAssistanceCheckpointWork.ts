@@ -44,7 +44,7 @@ export interface EventAssistanceCheckpointWork {
                 | {
                     responsibleOperatorId: string;
                     dueAt: number;
-                    state: "complete";
+                    state: "complete" | "closedOut";
                     ownerAvailability: "notRequired";
                   };
               reportRevision: number;
@@ -66,5 +66,55 @@ export interface EventAssistanceCheckpointWork {
     assignedBy: string;
     assignedAt: number;
     reason: string;
+  };
+  closeout?: {
+    revision: number;
+    previousRevision: number;
+    receiptId: string;
+    changedBy: string;
+    changedAt: number;
+    reason: string;
+    decision:
+      | {
+          kind: "close";
+          report: {
+            schemaVersion: 1;
+            reportId: string;
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            groupId: string;
+            checkpointId: string;
+            progressRevision: number;
+            rosterId: string;
+            rosterHash: string;
+            revision: number;
+            /**
+             * @maxItems 1000
+             */
+            accountedFor: string[];
+            reportedBy: string;
+            reportedAt: number;
+            correctionReason: string | null;
+            createdAt: number;
+          };
+          /**
+           * @maxItems 1000
+           */
+          dispositions: {
+            kind: "resolved";
+            disposition: "returned" | "departed";
+            revision: number;
+            resolvedAt: number;
+            resolvedBy: string;
+            sourceHash: string;
+            attendeeId: string;
+          }[];
+        }
+      | {
+          kind: "reopen";
+        };
   };
 }
