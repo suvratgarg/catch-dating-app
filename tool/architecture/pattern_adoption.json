@@ -1369,7 +1369,7 @@
         "flutter test test/core/semantic_layout_contracts_test.dart test/core/app_shell_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "The shell publishes placement; root scroll primitives consume it. Compact Android anchored chrome is already in layout, compact iOS floating chrome is a raw exclusion, Host side navigation consumes horizontal space and publishes no bottom obstruction, and transient no-bar shells fall back to device safe area. ScreenSize owns whole-window classes; feature-local reflows continue to use ComponentBreakpoints."
+      "notes": "The shell publishes placement; root scroll primitives consume it. Compact Android anchored chrome is already in layout, compact iOS floating chrome is a raw exclusion, Host side navigation consumes horizontal space and publishes no bottom obstruction, and transient no-bar shells fall back to device safe area. CatchWindowSize owns whole-window classes; feature-local reflows continue to use ComponentBreakpoints."
     },
     {
       "id": "ARCH-SCREEN-COMPOSITION-001",

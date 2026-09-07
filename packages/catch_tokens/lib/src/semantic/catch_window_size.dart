@@ -10,17 +10,17 @@
 ///
 /// Usage:
 /// ```dart
-/// final screenSize = ScreenSize.fromWidth(
+/// final screenSize = CatchWindowSize.fromWidth(
 ///   MediaQuery.of(context).size.width,
 /// );
 /// ```
-enum ScreenSize {
+enum CatchWindowSize {
   compact,
   medium,
   expanded;
 
-  /// Returns the [ScreenSize] for [width] in logical pixels.
-  static ScreenSize fromWidth(double width) {
+  /// Returns the [CatchWindowSize] for [width] in logical pixels.
+  static CatchWindowSize fromWidth(double width) {
     if (width < _compactMax) return compact;
     if (width < _mediumMax) return medium;
     return expanded;
@@ -38,9 +38,3 @@ enum ScreenSize {
   bool get isExpanded => this == expanded;
   bool get isMediumOrExpanded => this != compact;
 }
-
-/// Maximum logical-pixel width for a phone-portrait layout.
-const kPhoneMaxWidth = 600;
-
-/// Maximum logical-pixel width for a tablet layout.
-const kTabletMaxWidth = 840;

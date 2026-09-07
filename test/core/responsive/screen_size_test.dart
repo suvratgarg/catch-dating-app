@@ -1,25 +1,25 @@
-import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('ScreenSize', () {
+  group('CatchWindowSize', () {
     test('fromWidth returns compact below 600', () {
-      expect(ScreenSize.fromWidth(0), ScreenSize.compact);
-      expect(ScreenSize.fromWidth(375), ScreenSize.compact);
-      expect(ScreenSize.fromWidth(599), ScreenSize.compact);
+      expect(CatchWindowSize.fromWidth(0), CatchWindowSize.compact);
+      expect(CatchWindowSize.fromWidth(375), CatchWindowSize.compact);
+      expect(CatchWindowSize.fromWidth(599), CatchWindowSize.compact);
     });
 
     test('fromWidth returns medium between 600 and 839', () {
-      expect(ScreenSize.fromWidth(600), ScreenSize.medium);
-      expect(ScreenSize.fromWidth(768), ScreenSize.medium);
-      expect(ScreenSize.fromWidth(839), ScreenSize.medium);
+      expect(CatchWindowSize.fromWidth(600), CatchWindowSize.medium);
+      expect(CatchWindowSize.fromWidth(768), CatchWindowSize.medium);
+      expect(CatchWindowSize.fromWidth(839), CatchWindowSize.medium);
     });
 
     test('fromWidth returns expanded at 840 and above', () {
-      expect(ScreenSize.fromWidth(840), ScreenSize.expanded);
-      expect(ScreenSize.fromWidth(1024), ScreenSize.expanded);
-      expect(ScreenSize.fromWidth(1920), ScreenSize.expanded);
+      expect(CatchWindowSize.fromWidth(840), CatchWindowSize.expanded);
+      expect(CatchWindowSize.fromWidth(1024), CatchWindowSize.expanded);
+      expect(CatchWindowSize.fromWidth(1920), CatchWindowSize.expanded);
     });
   });
 

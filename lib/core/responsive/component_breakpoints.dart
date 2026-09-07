@@ -4,15 +4,15 @@
 /// `ComponentResponsiveBuilder` — not the window size — so an individual
 /// widget can reflow based on the space it is actually given.
 ///
-/// Deliberately distinct from [ScreenSize] in `breakpoints.dart`, which
+/// Deliberately distinct from `CatchWindowSize` in `package:catch_tokens/catch_tokens.dart`, which
 /// classifies the whole window into Material 3 size classes (compact / medium /
-/// expanded). Use [ScreenSize] for app-shell decisions (bottom bar vs nav
+/// expanded). Use [CatchWindowSize] for app-shell decisions (bottom bar vs nav
 /// rail); use these for in-widget reflow. Migrated verbatim from `CatchLayout`.
 abstract final class ComponentBreakpoints {
   /// A section page can place two readable field lanes side by side above this
   /// local width. The shell may already have removed rail or sidebar space, so
   /// this is deliberately measured by `ComponentResponsiveBuilder` rather than
-  /// by the whole-window [ScreenSize].
+  /// by the whole-window [CatchWindowSize].
   static const double sectionPageTwoColumnBreakpoint = 660.0;
 
   /// Host invite-link heading stacks its creation action below this width.

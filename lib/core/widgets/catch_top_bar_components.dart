@@ -216,7 +216,9 @@ class CatchTopBarPrimaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
+    final screenSize = CatchWindowSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    );
     if (screenSize.isCompact) {
       return CatchIconAction(
         icon: icon,

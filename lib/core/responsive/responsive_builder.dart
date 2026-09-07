@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/core/responsive/breakpoints.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Builds different layouts based on the current screen size.
 ///
 /// Thin wrapper around [LayoutBuilder] that maps the available width to a
-/// [ScreenSize] and calls the appropriate builder. Uses a default builder
+/// [CatchWindowSize] and calls the appropriate builder. Uses a default builder
 /// for compact screens and optional overrides for medium/expanded.
 ///
 /// Example:
@@ -41,11 +41,11 @@ class ResponsiveBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final size = ScreenSize.fromWidth(constraints.maxWidth);
+        final size = CatchWindowSize.fromWidth(constraints.maxWidth);
         return switch (size) {
-          ScreenSize.compact => compact(context),
-          ScreenSize.medium => (medium ?? compact)(context),
-          ScreenSize.expanded => (expanded ?? medium ?? compact)(context),
+          CatchWindowSize.compact => compact(context),
+          CatchWindowSize.medium => (medium ?? compact)(context),
+          CatchWindowSize.expanded => (expanded ?? medium ?? compact)(context),
         };
       },
     );
@@ -84,10 +84,10 @@ class ComponentResponsiveBuilder extends StatelessWidget {
 ///
 /// Defaults: 2 for compact, 3 for medium, 4 for expanded.
 int responsiveGridCount(double width) {
-  return switch (ScreenSize.fromWidth(width)) {
-    ScreenSize.compact => 2,
-    ScreenSize.medium => 3,
-    ScreenSize.expanded => 4,
+  return switch (CatchWindowSize.fromWidth(width)) {
+    CatchWindowSize.compact => 2,
+    CatchWindowSize.medium => 3,
+    CatchWindowSize.expanded => 4,
   };
 }
 
@@ -96,7 +96,7 @@ class SliverViewportLayout {
   const SliverViewportLayout({required this.width, required this.screenSize});
 
   final double width;
-  final ScreenSize screenSize;
+  final CatchWindowSize screenSize;
 }
 
 typedef SliverViewportWidgetBuilder =
@@ -118,7 +118,7 @@ class ResponsiveSliverBuilder extends StatelessWidget {
           context,
           SliverViewportLayout(
             width: width,
-            screenSize: ScreenSize.fromWidth(width),
+            screenSize: CatchWindowSize.fromWidth(width),
           ),
         );
       },

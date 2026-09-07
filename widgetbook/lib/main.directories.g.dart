@@ -73,6 +73,8 @@ import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dar
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
     as _widgetbook_workspace_primitives_rail_use_cases;
+import 'package:widgetbook_workspace/primitives/selection_menu_use_cases.dart'
+    as _widgetbook_workspace_primitives_selection_menu_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
 import 'package:widgetbook_workspace/primitives/tab_bar_use_cases.dart'
@@ -2928,6 +2930,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Menus',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAdaptiveSelectionControl',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Visible trigger at window boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_selection_menu_use_cases
+                        .adaptiveSelectionControlStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAdaptiveSelectionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Custom trigger at window boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_selection_menu_use_cases
+                        .adaptiveSelectionMenuStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchMenuAnchor',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2939,6 +2963,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Top anchored menu',
                 builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
                     .catchMenuAnchorTop,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSelectionSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selected and disabled choices',
+                builder:
+                    _widgetbook_workspace_primitives_selection_menu_use_cases
+                        .selectionSheetStates,
               ),
             ],
           ),

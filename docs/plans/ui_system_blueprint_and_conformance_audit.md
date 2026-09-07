@@ -795,6 +795,11 @@ app copy adapters resolve the existing translated defaults. The native picker
 sheet becomes a registered member of the sheet family with a direct date/time
 preview. iOS date clamping, cancellation and the Material picker paths retain
 their existing behavior.
+The window-size classification moves to `catch_tokens` as `CatchWindowSize`,
+retaining the 600/840 boundaries and removing the unused width aliases. Typed
+selection menus, sheets and adaptive triggers then move into individual shared
+component files. Callers keep their items, selected values, callbacks and
+trigger builders; direct previews cover the sheet and both adaptive triggers.
 
 ### Phase 4 — One registry, binding grammar
 

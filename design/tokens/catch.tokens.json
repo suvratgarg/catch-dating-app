@@ -232,7 +232,7 @@
           "keyboard": "MediaQuery.viewInsets in viewport owners",
           "textScaling": "MediaQuery.textScaler in text/constraint owners; never a fixed inventory size category",
           "reduceMotion": "MediaQuery.disableAnimations/accessibilityFeatures in motion owners",
-          "window": "LayoutBuilder/MediaQuery and existing ScreenSize/ComponentBreakpoints, not device model constants",
+          "window": "LayoutBuilder/MediaQuery and existing CatchWindowSize/ComponentBreakpoints, not device model constants",
           "fontOptics": "CatchFonts platform system family and renderer",
           "nativeControls": "Cupertino/Material platform adapters"
         },

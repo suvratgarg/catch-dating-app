@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -21,7 +20,6 @@ import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -274,7 +272,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         HostCampaignBlockers.senderInactive,
       _ => null,
     };
-    final screenSize = ScreenSize.fromWidth(MediaQuery.sizeOf(context).width);
+    final screenSize = CatchWindowSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    );
     final activeQuery = peopleView ? _search : _audienceSearch;
     final directoryControls = HostCustomerDirectoryControls(
       sort: _sort,
@@ -739,7 +739,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     String contactId, {
     required String displayName,
   }) {
-    if (ScreenSize.fromWidth(MediaQuery.sizeOf(context).width).isExpanded) {
+    if (CatchWindowSize.fromWidth(
+      MediaQuery.sizeOf(context).width,
+    ).isExpanded) {
       setState(() {
         _selectedContactId = contactId;
         _selectedContactDisplayName = displayName;

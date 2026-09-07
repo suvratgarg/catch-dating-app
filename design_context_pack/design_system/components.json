@@ -5972,7 +5972,7 @@
           {
             "id": "catch.menu.selection_menu",
             "symbol": "CatchSelectionMenu",
-            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_selection_menu.dart",
             "summary": "Anchored picker for typed mutually-exclusive choices on medium and expanded layouts.",
             "states": [
               "closed",
@@ -5991,7 +5991,7 @@
           {
             "id": "catch.menu.selection_sheet",
             "symbol": "CatchSelectionSheet",
-            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_selection_sheet.dart",
             "summary": "Phone-friendly bottom sheet for typed mutually-exclusive choices with title and optional explanatory copy.",
             "states": [
               "selected-choice",
@@ -6008,9 +6008,29 @@
             }
           },
           {
+            "id": "catch.menu.adaptive_trigger",
+            "symbol": "CatchAdaptiveSelectionMenu",
+            "file": "packages/catch_ui/lib/src/components/catch_adaptive_selection_menu.dart",
+            "summary": "Caller-supplied selection trigger choosing the existing sheet or anchored-menu presentation at the shared window-size boundary.",
+            "states": [
+              "compact",
+              "medium",
+              "expanded",
+              "closed",
+              "open"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.menu"
+            }
+          },
+          {
             "id": "catch.menu.adaptive_selection",
             "symbol": "CatchAdaptiveSelectionControl",
-            "file": "lib/core/widgets/catch_selection_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_adaptive_selection_control.dart",
             "summary": "Visible selection control that opens a sheet on compact windows and an anchored picker on wider windows.",
             "states": [
               "compact",

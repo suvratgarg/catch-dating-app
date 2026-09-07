@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/core/responsive/breakpoints.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -31,11 +31,12 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenSize = ScreenSize.fromWidth(constraints.maxWidth);
+        final screenSize = CatchWindowSize.fromWidth(constraints.maxWidth);
         final sideNavigation = switch (screenSize) {
-          ScreenSize.compact => null,
-          ScreenSize.medium => mediumSideNavigation,
-          ScreenSize.expanded => expandedSideNavigation ?? mediumSideNavigation,
+          CatchWindowSize.compact => null,
+          CatchWindowSize.medium => mediumSideNavigation,
+          CatchWindowSize.expanded =>
+            expandedSideNavigation ?? mediumSideNavigation,
         };
         if (sideNavigation != null) {
           return CatchScreenScaffold.workspace(

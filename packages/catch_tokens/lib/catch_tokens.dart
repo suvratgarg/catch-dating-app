@@ -21,3 +21,4 @@ export 'src/semantic/catch_motion.dart';
 export 'src/semantic/catch_opacity.dart';
 export 'src/semantic/catch_platform_tokens.dart';
 export 'src/semantic/catch_tokens.dart';
+export 'src/semantic/catch_window_size.dart';

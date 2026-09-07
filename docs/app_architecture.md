@@ -817,7 +817,7 @@ widths; it does not scale typography, icons, cards, or spacing proportionally.
 | medium | `600–839` | labelled 96 px rail | one primary pane plus an optional persistent contextual pane; portrait remains touch-first and landscape may split |
 | expanded | `>= 840` | labelled 240 px sidebar | bounded workspace canvas; master-detail and multi-pane composition; pointer and keyboard affordances |
 
-The whole-window class comes only from `ScreenSize`. Feature components use
+The whole-window class comes only from `CatchWindowSize`. Feature components use
 `ComponentResponsiveBuilder` and a named local threshold when their own width,
 not the application window, determines a table, grid, preview, or control-row
 reflow. Very wide three-pane workspaces may add named local thresholds around
@@ -1053,7 +1053,7 @@ when the value names a repeated relationship; keep one-off component geometry in
 the component until reuse is real.
 
 `CatchBreakpoints` remains rejected for now. Whole-window responsive classes
-already live in `ScreenSize`, while local component reflow thresholds live in
+already live in `CatchWindowSize`, while local component reflow thresholds live in
 `ComponentBreakpoints`; collapsing those into the design-token namespace would
 blur window and component ownership. `CatchLayout` remains appropriate for
 content clamps such as `maxContentWidth`.

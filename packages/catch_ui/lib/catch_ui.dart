@@ -165,3 +165,8 @@ export 'src/components/catch_dialog_copy.dart';
 export 'src/components/catch_form_dialog.dart';
 export 'src/components/catch_picker_copy.dart';
 export 'src/components/catch_picker_sheet.dart';
+export 'src/components/catch_selection_menu_item.dart';
+export 'src/components/catch_selection_menu.dart';
+export 'src/components/catch_selection_sheet.dart';
+export 'src/components/catch_adaptive_selection_control.dart';
+export 'src/components/catch_adaptive_selection_menu.dart';
