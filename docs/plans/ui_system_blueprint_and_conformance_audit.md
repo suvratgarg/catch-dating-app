@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.5
+version: 1.9.6
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1049,6 +1049,13 @@ publication lint permits only the actual scroll renderer; retired app paths
 and the delegating root scaffold remain negative probes. A direct catalog matrix
 registers the scroll-only member and covers standard, full-bleed and pinned-rail
 panes under both themes and text scales.
+
+The field choice chip, toggle adapter, and trailing-slot renderer also have
+individual shared component owners. Their constructors, rendering, selection
+semantics, motion, and clear-target geometry are unchanged. The obsolete app
+lanes part is deleted; the field control part retains only the disclosure-aware
+controls until the complete field state protocol moves. Existing direct previews
+and goldens continue to cover all three members.
 
 ### Phase 4 — One registry, binding grammar
 

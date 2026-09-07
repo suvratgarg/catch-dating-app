@@ -2965,7 +2965,7 @@
               "valid",
               "custom"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_trailing.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3167,7 +3167,7 @@
               "pressed",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_choice_chip.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3227,7 +3227,7 @@
               "disabled",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_toggle.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
