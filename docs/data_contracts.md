@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.63.0
+version: 1.64.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -2589,12 +2589,28 @@ It merges late/duplicate receipts without regressing delivery, even after event
 closure or sender removal; unexpected delivery after an unsent record preserves
 a conflict. It does not execute guest choices or grant fallback permission.
 
-Failed or inconsistent provider statuses remain unconfirmed until the provider
-error/finality mapping is reviewed. The configured Meta API version's callback
-echo still requires controlled account verification. The durable queue consumer
-records unconfirmed delivery outcomes without retrying them or permitting
-fallback; reviewed failure classification and reconciliation remain integration
-work. These boundaries do not activate automated sending.
+`normalizeWhatsappDeliveryStatus` maps only complete signed `failed` status
+evidence after that correlation. Technical recovery requires every code to be
+`131016` (temporary service failure) or `130429` (throughput limit).
+Explicit restrictions (`368`, `130497`, `131031`, `131047`, `131048`, `131049`)
+become `policy`; `131050` becomes `suppressed`. A restriction takes precedence
+over technical or unknown codes. These classifications stop automatic retries
+without rewriting consent or converting a marketing opt-out to an event-service
+withdrawal. Unknown codes, `131026`, mixed technical/unknown evidence and failed
+statuses without usable codes remain unconfirmed. The first-code field must
+agree with the complete list. See the reviewed
+[Meta error-code reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/support/error-codes/)
+and its [failed status payload](https://www.postman.com/meta/whatsapp-business-platform/request/ocsmpai/status-message-failed).
+
+A normalized failure receipt binds its evidence hash to the attempt, immutable
+provider event ID and ingress payload hash. Shared outbox merging preserves
+conflicting success/restriction evidence and prevents duplicate state changes.
+Technical failure permits the existing delivery evaluator to reconsider an
+independently authorized route after backoff; it does not send or refund a
+provider debit. A later conflict before the SMS claim withholds that claim.
+It cannot recall provider I/O already claimed. The configured Meta API version's
+callback echo and terminal-failure behavior still require controlled account
+verification before activation. No provider is activated by these changes.
 
 The signed queue's optional `providerErrorEvidence` is a closed union:
 `none`, `codes` with one to ten integer codes, or `unusable`. Ingress
@@ -2603,8 +2619,9 @@ whole list unusable when any entry is malformed or the bound is exceeded.
 The nullable legacy `providerErrorCode` is only the first code of a complete
 list. Missing legacy evidence remains readable but cannot establish an
 error-free Event Assistance delivery. Positive status plus any error evidence
-retains the outbox hold and spending debit; later complete signed evidence
-may resolve it. No provider error code is newly authorized for fallback.
+cannot establish delivery or recovery and retains the spending debit; later
+complete signed evidence may resolve an unknown attempt. Unconfirmed outcomes
+checkpoint without hot retries. Receipt processing itself has no send authority.
 
 ### Event Assistance Accountability Contract
 

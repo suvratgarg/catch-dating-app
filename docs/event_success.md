@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.45.0
+version: 1.46.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -973,14 +973,32 @@ Event Assistance requires explicit error-free evidence before accepting a
 positive status. Legacy queued statuses without this field remain unconfirmed;
 their missing error information cannot be reconstructed from a null first code.
 Later complete signed evidence can still resolve the same outbox attempt.
-This prepares failure reconciliation but supplies no new retry classification,
-spending release or provider activation.
+`normalizeWhatsappDeliveryStatus` also classifies complete signed `failed`
+statuses after the same immutable dispatch correlation. Only a list consisting
+entirely of temporary-service (`131016`) and throughput (`130429`) codes becomes
+a technical failure. Known policy, quality or window restrictions require host
+resolution; a reported marketing opt-out (`131050`) blocks retry as suppressed
+without changing event-service consent. A known restriction wins over other
+codes in the list. Unknown codes, ambiguous recipient failure (`131026`),
+mixed technical/unknown evidence, malformed lists and failed statuses without
+codes remain unconfirmed. These are explicit mappings from Meta's
+[error-code reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/support/error-codes/),
+reviewed on 2026-09-07; code ranges and diagnostic titles cannot grant recovery.
+
+The shared outbox owns all subsequent decisions. A verified technical failure
+can select an independently eligible SMS route after backoff; the callback
+cannot send, grant consent or release spending. Reservation and final claim
+recheck current facts, permission, template and budget. Duplicate failures
+cannot debit or send again. Conflicting delivery or restriction evidence
+persists a host-review hold, including when it arrives before an SMS claim.
+Signed-ingress tests exercise lost submission responses and real Firestore
+contention across both channels.
 
 The Meta worker connects approved template material, named/positional
 parameters, native choices, sender credentials and dispatch deadlines to the
-permission/budget transaction. Optional callback echo and failure finality
-still need account/version verification. Unconfirmed failures retain their
-delivery hold; processing them does not authorize fallback. Reply handling
+permission/budget transaction. Callback echo and terminal-failure behavior
+still need controlled account/version verification before activation.
+Unconfirmed failures cannot establish fallback eligibility. Reply handling
 itself never sends an acknowledgement or fallback. Live executor integration
 and activation remain separate work. Retention must preserve binding evidence
 through outbox reconciliation before activation.

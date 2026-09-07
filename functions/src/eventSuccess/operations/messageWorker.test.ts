@@ -3,7 +3,8 @@ import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {getFirestore, Firestore} from "firebase-admin/firestore";
-import {harness, worker, keys, start} from "./whatsappTestHarness";
+import {harness, worker, keys, start, queuedStatus} from
+  "./whatsappTestHarness";
 import {EventMessageWorker} from "./messageWorker";
 import {EventSmsWorker} from "./smsWorker";
 import {SmsDispatchStore, smsBudgetId, smsBudgetScopes, smsCollections} from
@@ -15,6 +16,8 @@ import type {MessageRecord} from "./messageOutbox";
 import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
 import {newMessageRecord} from "./messageOutbox";
 import {WHATSAPP_DISPATCHES} from "./whatsappSpend";
+import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
+import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
 
 type Routes = MessageRecord["intent"]["permittedRoutes"];
 async function mixed(realDb?: Firestore, id = "test", routes: Routes =
@@ -101,9 +104,19 @@ async function mixed(realDb?: Firestore, id = "test", routes: Routes =
       ...attempt.binding, providerEventId: "fixture-" + ordinal + state.kind,
       receivedAt: h.clock.now, state});
   };
+  const whatsappStatus = async (status: string,
+    overrides: Record<string, unknown> = {}) => {
+    const attemptId = (await record()).attempts[0].attemptId;
+    const dispatch = (await h.read(WHATSAPP_DISPATCHES + "/" + attemptId))!;
+    const eventId = await queuedStatus(h, whatsappStatusCorrelation(attemptId,
+      String(dispatch.payloadHash)), status,
+    {id: "wamid.fixture", ...overrides});
+    return new WhatsappDeliveryStore(h.db, () => h.clock.now)
+      .consumeQueued(eventId);
+  };
   return {...h, sms, smsStore, whatsapp, sender, smsSenderPath,
     smsPreferences, smsBudgets, requests, behavior, service, dispatch,
-    record, revokeSms, revokeWa, receipt};
+    record, revokeSms, revokeWa, receipt, whatsappStatus};
 }
 
 test("one channel history selects WhatsApp then bounded confirmed SMS fallback",
@@ -115,9 +128,12 @@ test("one channel history selects WhatsApp then bounded confirmed SMS fallback",
     for (const path of h.smsBudgets) {
       assert.equal((await h.read(path))!.chargedMicros, 0);
     }
-    await h.receipt({kind: "failed", at: h.clock.now,
-      providerMessageId: "wamid.fixture", classification: "technical",
-      evidenceId: "fixture-confirmed-nondelivery"});
+    const reports = await Promise.all(Array.from({length: 8}, () =>
+      h.whatsappStatus("failed", {errors: [{code: 131016}]})));
+    assert.equal(reports.filter((r) => r.kind === "recorded" &&
+      r.disposition === "applied").length, 1);
+    assert.equal(reports.filter((r) => r.kind === "recorded" &&
+      r.disposition === "duplicateOrOlder").length, 7);
     assert.deepEqual(await h.dispatch(), {kind: "waiting", decision: {
       kind: "wait", notBefore: h.clock.now + 1000, reason: "retryBackoff"}});
     h.clock.now += 1000;
@@ -139,6 +155,51 @@ test("one channel history selects WhatsApp then bounded confirmed SMS fallback",
       providerMessageId: "1234-5678"}, 2);
     assert.equal((await h.dispatch()).kind, "waiting");
     assert.equal(h.requests.length, 2);
+  });
+
+test("signed temporary failure recovers a lost submission without guessing",
+  async () => {
+    const h = await mixed();
+    h.behavior.waUnknown = true;
+    await h.dispatch();
+    assert.equal((await h.record()).attempts[0].state.kind, "unknown");
+    await h.whatsappStatus("failed", {errors: [{code: 130429}]});
+    h.clock.now += 1000;
+    await h.dispatch();
+    assert.deepEqual(h.requests.map((r) => r.route), ["whatsapp", "sms"]);
+    const failure = (await h.record()).attempts[0].state;
+    assert.ok(failure.kind === "failed");
+    assert.equal(failure.providerMessageId, "wamid.fixture");
+  });
+
+test("ambiguous, mixed and policy failures cannot select SMS",
+  async () => {
+    for (const codes of [[131026], [131000], [999999], [],
+      [131016, 131026], [131048], [131016, 131050], [130429, 131049]]) {
+      const h = await mixed();
+      await h.dispatch();
+      await h.whatsappStatus("failed", {errors: codes.map((code) => ({code}))});
+      h.clock.now += 2000;
+      const result = await h.dispatch();
+      assert.equal(result.kind, "waiting", String(codes));
+      assert.deepEqual(h.requests.map((r) => r.route), ["whatsapp"]);
+      assert.equal((await h.record()).attempts.length, 1);
+      for (const path of h.smsBudgets) {
+        assert.equal((await h.read(path))!.chargedMicros, 0);
+      }
+    }
+  });
+
+test("signed failure cannot replace independent SMS permission",
+  async () => {
+    const h = await mixed();
+    await h.dispatch();
+    await h.whatsappStatus("failed", {errors: [{code: 131016}]});
+    await h.revokeSms();
+    h.clock.now += 1000;
+    assert.deepEqual(await h.dispatch(), {kind: "waiting", decision: {
+      kind: "hostDecision", reason: "noEligibleRoute"}});
+    assert.deepEqual(h.requests.map((r) => r.route), ["whatsapp"]);
   });
 
 test("unknown or accepted outcomes hold fallback after a channel disappears",
@@ -204,9 +265,7 @@ test("withdrawal or conflicting delivery before claim fences SMS",
     for (const change of ["withdraw", "delivered"]) {
       const h = await mixed();
       await h.dispatch();
-      await h.receipt({kind: "failed", at: h.clock.now,
-        providerMessageId: "wamid.fixture", classification: "technical",
-        evidenceId: "fixture-confirmed"});
+      await h.whatsappStatus("failed", {errors: [{code: 131016}]});
       h.clock.now += 1000;
       const service = new EventMessageWorker(h.db, {whatsapp: h.whatsapp,
         sms: {prepareChannel: async (linkId) => {
@@ -216,8 +275,7 @@ test("withdrawal or conflicting delivery before claim fences SMS",
             if (change === "withdraw") {
               await h.revokeSms();
             } else {
-              await h.receipt({kind: "delivered", at: h.clock.now,
-                providerMessageId: "wamid.fixture"});
+              await h.whatsappStatus("delivered");
             }
             return channel.dispatchReserved(...args);
           }};
@@ -294,9 +352,12 @@ test("Firestore arbitrates mixed-channel workers and their fallback budgets", {
     const contend = () => Promise.all(Array.from({length: 8}, h.dispatch));
     assert.equal((await contend()).filter((r) =>
       r.kind === "submitted").length, 1);
-    await h.receipt({kind: "failed", at: h.clock.now,
-      providerMessageId: "wamid.fixture", classification: "technical",
-      evidenceId: "fixture-confirmed-nondelivery"});
+    const reports = await Promise.all(Array.from({length: 8}, () =>
+      h.whatsappStatus("failed", {errors: [{code: 131016}]})));
+    assert.equal(reports.filter((r) => r.kind === "recorded" &&
+      r.disposition === "applied").length, 1);
+    assert.equal(reports.filter((r) => r.kind === "recorded" &&
+      r.disposition === "duplicateOrOlder").length, 7);
     h.clock.now += 1000;
     assert.equal((await contend()).filter((r) =>
       r.kind === "submitted").length, 1);

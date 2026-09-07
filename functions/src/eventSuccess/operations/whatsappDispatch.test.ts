@@ -424,7 +424,7 @@ test("status correlation rejects wrong scope, recipient, time and receipt",
     }
   });
 
-test("failed or inconsistent status evidence cannot unlock SMS fallback",
+test("ambiguous recipient or inconsistent status cannot unlock SMS fallback",
   async () => {
     for (const status of ["failed", "sent", "delivered"] as const) {
       const h = await harness();
@@ -441,6 +441,92 @@ test("failed or inconsistent status evidence cannot unlock SMS fallback",
     }
   });
 
+test("complete signed failures use a closed service and restriction mapping",
+  async () => {
+    const cases = [
+      {codes: [131016], classification: "technical"},
+      {codes: [130429, 131016, 130429], classification: "technical"},
+      ...[368, 130497, 131031, 131047, 131048, 131049].map((code) =>
+        ({codes: [131016, code, 999999], classification: "policy"})),
+      {codes: [131016, 131050, 999999], classification: "suppressed"},
+    ];
+    for (const {codes, classification} of cases) {
+      const h = await harness();
+      const claim = await h.claim();
+      assert.ok(claim.kind === "claimed");
+      const attemptId = claim.permit.attempt.attemptId;
+      const correlation = whatsappStatusCorrelation(attemptId,
+        claim.resource.rendered.payloadHash);
+      const id = await queuedStatus(h, correlation, "failed",
+        {errors: codes.map((code) => ({code}))});
+      const result = await new WhatsappDeliveryStore(h.db, () => h.clock.now)
+        .consumeQueued(id);
+      assert.deepEqual(result, {kind: "recorded", messageId: h.messageId,
+        disposition: "applied"});
+      const state = (await h.outbox.get(h.messageId))!.attempts[0].state;
+      assert.ok(state.kind === "failed");
+      assert.equal(state.classification, classification);
+      assert.equal(state.providerMessageId, "wamid.delivery");
+      const receipt = (await h.read("organizerCampaignWebhookReceipts/" + id))!;
+      const queued = (await h.read("organizerMessagingWebhookEvents/" + id))!;
+      assert.equal(state.evidenceId, "wa-status:" + operationContentHash([
+        attemptId, queued.providerEventId, receipt.payloadHash,
+      ]));
+      // A report is not a refund, a permission mutation or another send.
+      for (const path of h.budgetPaths) {
+        assert.equal((await h.read(path))!.chargedMicros, 500_000);
+        assert.equal((await h.read(path))!.revision, 2);
+      }
+      assert.equal((await h.outbox.get(h.messageId))!.attempts.length, 1);
+    }
+  });
+
+test("signed success and technical failure preserve a conflict in either order",
+  async () => {
+    for (const first of ["delivered", "failed"] as const) {
+      const h = await harness();
+      const claim = await h.claim();
+      assert.ok(claim.kind === "claimed");
+      const correlation = whatsappStatusCorrelation(
+        claim.permit.attempt.attemptId, claim.resource.rendered.payloadHash);
+      const reports = new WhatsappDeliveryStore(h.db, () => h.clock.now);
+      const consume = async (status: string) => reports.consumeQueued(
+        await queuedStatus(h, correlation, status,
+          status === "failed" ? {errors: [{code: 131016}]} : {}));
+      await consume(first);
+      h.clock.now += 1000;
+      assert.deepEqual(await consume(first === "failed" ?
+        "delivered" : "failed"), {kind: "recorded", messageId: h.messageId,
+        disposition: "conflictingEvidence"});
+      const record = (await h.outbox.get(h.messageId))!;
+      assert.equal(record.deliveryConflict, true);
+      assert.equal(record.attempts[0].state.kind, "delivered");
+      assert.deepEqual((await h.reserve()).decision, {
+        kind: "hostDecision", reason: "conflictingDeliveryEvidence"});
+    }
+  });
+
+test("a later signed restriction fences previously technical recovery",
+  async () => {
+    const h = await harness();
+    const claim = await h.claim();
+    assert.ok(claim.kind === "claimed");
+    const correlation = whatsappStatusCorrelation(claim.permit.attempt
+      .attemptId, claim.resource.rendered.payloadHash);
+    const reports = new WhatsappDeliveryStore(h.db, () => h.clock.now);
+    for (const code of [131016, 131050]) {
+      await reports.consumeQueued(await queuedStatus(h, correlation, "failed",
+        {errors: [{code}]}));
+      h.clock.now += 1000;
+    }
+    const record = (await h.outbox.get(h.messageId))!;
+    assert.equal(record.deliveryConflict, true);
+    assert.ok(record.attempts[0].state.kind === "failed");
+    assert.equal(record.attempts[0].state.classification, "suppressed");
+    assert.deepEqual((await h.reserve()).decision, {
+      kind: "hostDecision", reason: "conflictingDeliveryEvidence"});
+  });
+
 async function rejectsIncompleteDeliveryEvidence(h: Harness) {
   const claim = await h.claim();
   if (claim.kind !== "claimed") throw new Error("Expected claim");
@@ -448,7 +534,7 @@ async function rejectsIncompleteDeliveryEvidence(h: Harness) {
     claim.resource.rendered.payloadHash);
   const reports = new WhatsappDeliveryStore(h.db, () => h.clock.now);
   const before = await h.outbox.get(h.messageId);
-  for (const status of ["sent", "delivered", "read"]) {
+  for (const status of ["sent", "delivered", "read", "failed"]) {
     for (const errors of [null, [{}], [{}, {code: 131026}],
       [{code: 131016}, {code: 131026}], Array(11).fill({code: 131016})]) {
       h.clock.now += 1000;
@@ -467,6 +553,15 @@ async function rejectsIncompleteDeliveryEvidence(h: Harness) {
   delete legacy.providerErrorEvidence;
   await h.write(path, legacy);
   assert.deepEqual(await reports.consumeQueued(oldId),
+    {kind: "unconfirmed", messageId: h.messageId});
+  assert.deepEqual(await h.outbox.get(h.messageId), before);
+  h.clock.now += 1000;
+  const mismatchId = await queuedStatus(h, correlation, "failed",
+    {errors: [{code: 131016}]});
+  const mismatchPath = "organizerMessagingWebhookEvents/" + mismatchId;
+  await h.write(mismatchPath, {...(await h.read(mismatchPath)),
+    providerErrorCode: 130429});
+  assert.deepEqual(await reports.consumeQueued(mismatchId),
     {kind: "unconfirmed", messageId: h.messageId});
   assert.deepEqual(await h.outbox.get(h.messageId), before);
   for (const budget of h.budgetPaths) {

@@ -12,6 +12,7 @@ import {sameMessageContext} from "./messagingPolicy";
 import {WHATSAPP_DISPATCHES} from "./whatsappSpend";
 import {whatsappAttemptFromStatus, whatsappStatusCorrelation} from
   "./whatsappDeliveryProtocol";
+import {normalizeWhatsappDeliveryStatus} from "./whatsappDeliveryStatus";
 
 export type WhatsappDeliveryResult =
   | {kind: "ignored" | "rejected"}
@@ -102,24 +103,16 @@ export class WhatsappDeliveryStore {
     if (knownId && knownId !== queued.providerMessageId) {
       return {kind: "rejected"};
     }
-    if (queued.deliveryStatus === "failed" ||
-        queued.providerErrorCode !== null ||
-        queued.providerErrorEvidence?.kind !== "none") {
-      // Failure alone does not establish technical retry eligibility. Mixed,
-      // malformed and legacy incomplete error evidence also cannot establish
-      // success. Retain the signed queue for reviewed reconciliation.
-      return {kind: "unconfirmed", messageId: record.messageId};
-    }
     const evidenceId = "wa-status:" + operationContentHash([
       attemptId, queued.providerEventId, receipt.payloadHash,
     ]);
+    const state = normalizeWhatsappDeliveryStatus(queued, now, evidenceId);
+    if (!state) {
+      return {kind: "unconfirmed", messageId: record.messageId};
+    }
     const result = await this.outbox.recordReceipt(record.messageId, {
       attemptId, ...attempt.binding, providerEventId: evidenceId,
-      receivedAt: now, state: {
-        kind: queued.deliveryStatus === "sent" ?
-          "accepted" : queued.deliveryStatus,
-        at: now, providerMessageId: queued.providerMessageId,
-      },
+      receivedAt: now, state,
     });
     return {kind: "recorded", messageId: record.messageId,
       disposition: result.disposition};

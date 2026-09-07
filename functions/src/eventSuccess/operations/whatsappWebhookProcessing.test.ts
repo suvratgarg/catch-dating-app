@@ -206,6 +206,29 @@ test("unconfirmed failure cannot unlock fallback or trigger hot retries",
     assert.equal((await checkpoint(h, id)).attemptCount, 1);
   });
 
+test("verified technical failure checkpoints once without dispatching",
+  async () => {
+    const h = await harness();
+    const claim = await h.claim();
+    assert.ok(claim.kind === "claimed");
+    const id = await queuedStatus(h, whatsappStatusCorrelation(
+      claim.permit.attempt.attemptId, claim.resource.rendered.payloadHash),
+    "failed", {errors: [{code: 131016}]});
+    const service = processor(h);
+    await processEventAssistanceWhatsappEvent(service, id);
+    const done = await checkpoint(h, id);
+    assert.deepEqual(done.outcome, {kind: "delivery", disposition: "applied"});
+    const record = (await h.outbox.get(h.messageId))!;
+    assert.ok(record.attempts[0].state.kind === "failed");
+    assert.equal(record.attempts[0].state.classification, "technical");
+    await processEventAssistanceWhatsappEvent(service, id);
+    assert.deepEqual(await checkpoint(h, id), done);
+    assert.equal((await h.outbox.get(h.messageId))!.attempts.length, 1);
+    for (const path of h.budgetPaths) {
+      assert.equal((await h.read(path))!.revision, 2);
+    }
+  });
+
 test("missing or mismatched ingress evidence cannot execute a queued reply",
   async () => {
     for (const change of ["missing", "tenant", "payload", "identity"]) {
