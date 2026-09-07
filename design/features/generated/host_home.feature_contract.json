@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:42e960dcc8734e17864e6e4265a682e0dbe2d39c07d0324b88e0553fc9c33c75",
+  "resolvedDigest": "sha256:c5dff08be66e855db04b415e26b4efa2c45409b90260c1adff45ad5ed63c8595",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1918,10 +1918,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

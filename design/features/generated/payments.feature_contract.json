@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:2aaa5b1dd4e1896d912a9e427c0b043056dbfb5b41cfbc3e4f1c5bffe13306e8",
+  "resolvedDigest": "sha256:5996865ea4158d9626130dbca9985f6a526b183838aa3dd4a3e58e4718ec60bb",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1463,10 +1463,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

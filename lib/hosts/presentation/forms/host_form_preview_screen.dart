@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -42,7 +42,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
               .reload(),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
             onRetry: () => ref

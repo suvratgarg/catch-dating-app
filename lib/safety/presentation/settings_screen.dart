@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -643,7 +643,7 @@ class AccountProfileStatus extends StatelessWidget {
     if (profile.isError) {
       return Padding(
         padding: CatchInsets.content,
-        child: CatchInlineErrorState.fromError(
+        child: CatchLocalizedInlineErrorState(
           profile.error!,
           compact: true,
           onRetry: onRetry,
@@ -695,7 +695,7 @@ class BlockedAccountsSection extends StatelessWidget {
             const BlockedAccountsSkeleton(),
           SettingsBlockedAccountsStatus.error => Padding(
             padding: CatchInsets.content,
-            child: CatchInlineErrorState.fromError(
+            child: CatchLocalizedInlineErrorState(
               state.error!,
               compact: true,
               onRetry: onRetry,

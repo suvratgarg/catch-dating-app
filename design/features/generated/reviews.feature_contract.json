@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:16bb98cc6d19b4ff2fe6f3698ca85680a0332ebc258e97cdc658aa6b9e291c7a",
+  "resolvedDigest": "sha256:17c6f323f7a9bee3594af5f5a056fda9d40d5dbe94ea58279878b0cb700da296",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1133,10 +1133,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

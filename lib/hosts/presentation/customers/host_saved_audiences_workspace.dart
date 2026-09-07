@@ -102,7 +102,7 @@ class _HostSavedAudiencesDirectoryState
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,
             mode: CatchErrorStateMode.compact,

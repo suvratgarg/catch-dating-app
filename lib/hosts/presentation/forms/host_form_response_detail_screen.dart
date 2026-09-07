@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -74,7 +74,7 @@ class _HostFormResponseDetailScreenState
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.formResponses,
             onRetry: () => ref.invalidate(provider),
@@ -493,7 +493,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
       initialLoadTimeout: null,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const SizedBox.shrink(),
-      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,
         mode: CatchErrorStateMode.compact,

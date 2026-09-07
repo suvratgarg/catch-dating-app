@@ -5,7 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -80,7 +80,7 @@ class HostEventsScreen extends ConsumerWidget {
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
             onRetry: () {

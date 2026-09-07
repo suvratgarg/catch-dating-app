@@ -18,8 +18,8 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -189,7 +189,7 @@ class ClubDetailScreen extends ConsumerWidget {
       body: switch (screenState) {
         HostClubDetailLoading() => const ClubDetailLoadingBody(),
         HostClubDetailError(:final error, :final retryIntent) =>
-          CatchErrorState.fromError(
+          CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
             onRetry: () {

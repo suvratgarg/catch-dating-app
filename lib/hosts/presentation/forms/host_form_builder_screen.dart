@@ -2,9 +2,9 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -166,7 +166,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             loadingBuilder: (_) =>
                 const CatchPageBody(child: CatchSkeletonRows(count: 8)),
             errorBuilder: (_, error, _) => CatchPageBody(
-              child: CatchErrorState.fromError(
+              child: CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,
                 onRetry: notifier.reload,
@@ -717,7 +717,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
               onRetry: () =>
                   ref.invalidate(hostFormResponsesControllerProvider(request)),
               loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
-              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.formResponses,
                 mode: CatchErrorStateMode.compact,

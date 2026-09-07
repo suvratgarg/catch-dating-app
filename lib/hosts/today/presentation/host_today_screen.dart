@@ -5,7 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -119,7 +119,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
       HostTodayRouteStatus.error => CatchRootScreenScaffold.standard(
         header: HostTodayHeader(now: _clockNow),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
             onRetry: () {

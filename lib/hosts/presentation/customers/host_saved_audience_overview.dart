@@ -127,7 +127,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               initialLoadTimeout: null,
               onRetry: () => ref.invalidate(provider),
               loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.customers,
                 onRetry: () => ref.invalidate(provider),
@@ -173,7 +173,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                   ),
                   if (state.loadMoreError case final error?) ...[
                     gapH16,
-                    CatchErrorState.fromError(
+                    CatchLocalizedErrorState(
                       error,
                       context: AppErrorContext.customers,
                       onRetry: () => ref.invalidate(provider),

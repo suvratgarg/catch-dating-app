@@ -64,6 +64,9 @@ Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
 The package owns its branded fonts and licenses and depends only on Flutter,
 `catch_tokens`, and Phosphor. `AppTheme` remains an app adapter that adds the
 activity-domain palette to `CatchTheme`; it does not define another theme.
+`CatchLocalizedErrorState`, scaffold, sliver and inline adapters map app errors
+and inherited-locale copy onto the shared error family. Shared retry actions
+receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.
 `CatchTabViewportScope` owns route-neutral active-page and bottom-obstruction
 metrics for shared layouts. App tab identities and route selection stay in the
 app; anchored, floating, and absent bars keep their existing clearance rules.
@@ -1774,7 +1777,7 @@ Candidate patterns:
 | Analytics error events | `lib/core/analytics/app_analytics.dart` |
 | Backend scanner | `tool/audit/backend_error_candidates.dart` |
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
-| Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
+| Branded error surfaces | `packages/catch_ui/lib/src/components/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
 | Error banner | `packages/catch_ui/lib/src/components/catch_error_banner.dart` |
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
@@ -3843,7 +3846,7 @@ Widget build(BuildContext context) {
   }
 
   if (vmAsync.hasError) {
-    return CatchErrorScaffold.fromError(
+    return CatchLocalizedErrorScaffold(
       vmAsync.error!,
       context: AppErrorContext.event,
       onRetry: () =>

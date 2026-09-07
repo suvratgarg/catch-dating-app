@@ -48,7 +48,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             uidState.error!,
             context: AppErrorContext.auth,
             onRetry: () => ref.invalidate(uidProvider),
@@ -93,7 +93,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             clubsState.error!,
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
@@ -114,7 +114,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             StateError('Organizer unavailable'),
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
@@ -334,7 +334,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
         count: 4,
         divided: true,
       ),
-      HostTeamProfileError(:final error) => CatchErrorState.fromError(
+      HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
         onRetry: onRetry,
@@ -467,7 +467,7 @@ class HostTeamProfileSection extends StatelessWidget {
         leading: CatchSkeletonRowLeading.icon,
         divided: true,
       ),
-      HostTeamProfileError(:final error) => CatchErrorState.fromError(
+      HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
         onRetry: onRetry,
@@ -752,7 +752,7 @@ class HostTeamHostedClubsSection extends StatelessWidget {
         ),
       ],
       HostTeamHostedClubsError(:final error) => <Widget>[
-        CatchErrorState.fromError(
+        CatchLocalizedErrorState(
           error,
           context: AppErrorContext.club,
           onRetry: onRetry,

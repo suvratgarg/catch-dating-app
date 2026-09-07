@@ -281,8 +281,7 @@
     },
     "paymentConfirmationScreen": {
       "owners": [
-        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/widgets/catch_error_state.dart", "symbol": "CatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
-        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/widgets/catch_error_state.dart", "symbol": "_LocalizedCatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart", "symbol": "CatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
         {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_loading_screen.dart", "symbol": "PaymentConfirmationLoadingScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"},
         {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_screen.dart", "symbol": "PaymentPendingCheckoutBody", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
         {"routes": ["paymentConfirmationScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
@@ -641,7 +640,7 @@
           "id": "fatal_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError renders CatchErrorScaffold.fromError for AppErrorContext.event.",
+          "source": "AsyncError renders CatchLocalizedErrorScaffold for AppErrorContext.event.",
           "tests": [
             "test/events/event_detail_widgets_test.dart"
           ],
@@ -1536,7 +1535,7 @@
           "id": "fatal_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from club/events/auth dependencies renders CatchErrorState.fromError for AppErrorContext.club with retry invalidation.",
+          "source": "AsyncError from club/events/auth dependencies renders CatchLocalizedErrorState for AppErrorContext.club with retry invalidation.",
           "captureIds": [
             "club_detail_error"
           ],
@@ -2482,7 +2481,7 @@
           "id": "club_source_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreClubsViewModelProvider renders CatchSliverErrorState.fromError for AppErrorContext.club with retry invalidation.",
+          "source": "AsyncError from exploreClubsViewModelProvider renders CatchLocalizedSliverErrorState for AppErrorContext.club with retry invalidation.",
           "previewIds": [
             "ExploreScreen/Screen states"
           ],
@@ -2498,7 +2497,7 @@
           "id": "event_feed_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreFeedViewModelProvider renders CatchInlineErrorState.fromError inside the feed sliver.",
+          "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedInlineErrorState inside the feed sliver.",
           "previewIds": [
             "ExploreEventsSection/Feed states"
           ],
@@ -3543,7 +3542,7 @@
           "id": "recommendations_error",
           "kind": "error",
           "status": "captured",
-          "source": "Recommendation load failures render CatchInlineErrorState.fromError with AppErrorContext.dashboard and retry invalidation.",
+          "source": "Recommendation load failures render CatchLocalizedInlineErrorState with AppErrorContext.dashboard and retry invalidation.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -3559,7 +3558,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Typed AppException failures in Dashboard route load branches now render through CatchErrorScaffold.fromError with AppErrorContext.dashboard, so NetworkException produces shared Connection issue copy and retry behavior.",
+          "source": "Typed AppException failures in Dashboard route load branches now render through CatchLocalizedErrorScaffold with AppErrorContext.dashboard, so NetworkException produces shared Connection issue copy and retry behavior.",
           "nextAction": "Add remaining offline variants for booked events, attended events, activity, and recommendations if product wants branch-specific copy beyond the shared Catch error descriptor.",
           "previewIds": [
             "DashboardScreen/Screen states"
@@ -4220,7 +4219,7 @@
           "id": "data_load_error",
           "kind": "error",
           "status": "captured",
-          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchInlineErrorState.fromError with retry invalidation.",
+          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedInlineErrorState with retry invalidation.",
           "nextAction": "Event, profile, participation, and plan failures are captured; add assignment, rotation, wingman, and candidate error captures if those branches diverge visually.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -4498,7 +4497,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Companion provider failures use shared mapped offline copy through CatchInlineErrorState.fromError; event_success_companion_offline captures an offline-mapped plan load failure.",
+          "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedInlineErrorState; event_success_companion_offline captures an offline-mapped plan load failure.",
           "nextAction": "Define companion-specific offline copy only if product wants copy that diverges from the shared app error catalogue, and add assignment/wingman offline captures when runtime-stage fixtures expand.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -5077,7 +5076,7 @@
           "id": "uid_error",
           "kind": "error",
           "status": "captured",
-          "source": "uidProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.auth and retry invalidation.",
+          "source": "uidProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.auth and retry invalidation.",
           "nextAction": "Keep auth/session retry copy aligned with the app error catalogue.",
           "previewIds": [
             "SwipeHubScreen/Hub route states"
@@ -5116,7 +5115,7 @@
           "id": "attended_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "watchAttendedEventsProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "source": "watchAttendedEventsProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
           "nextAction": "Keep attended-events retry placement in the route-state adapter.",
           "previewIds": [
             "SwipeHubScreen/Hub route states"
@@ -5179,7 +5178,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Attended-event provider offline errors use shared mapped offline copy through CatchErrorState.fromError.",
+          "source": "Attended-event provider offline errors use shared mapped offline copy through CatchLocalizedErrorState.",
           "captureIds": [
             "swipe_hub_offline"
           ],
@@ -5584,7 +5583,7 @@
           "id": "queue_error",
           "kind": "error",
           "status": "captured",
-          "source": "swipeQueueProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.swipes and retry invalidation; timeout path is tested in SwipeQueueNotifier.",
+          "source": "swipeQueueProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.swipes and retry invalidation; timeout path is tested in SwipeQueueNotifier.",
           "tests": [
             "test/swipes/swipe_queue_notifier_test.dart"
           ],
@@ -6264,7 +6263,7 @@
           "id": "matches_error",
           "kind": "error",
           "status": "captured",
-          "source": "ChatsListDisplayState maps match stream failures to ChatsListError before ChatsList renders CatchSliverErrorState.fromError with AppErrorContext.chat and retry invalidation.",
+          "source": "ChatsListDisplayState maps match stream failures to ChatsListError before ChatsList renders CatchLocalizedSliverErrorState with AppErrorContext.chat and retry invalidation.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatsListScreen/Consumer route states"
@@ -7731,7 +7730,7 @@
           "id": "profile_error",
           "kind": "error",
           "status": "captured",
-          "source": "watchUserProfileProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
+          "source": "watchUserProfileProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
           "previewIds": [
             "ProfileScreen/Self route states"
           ],
@@ -8459,7 +8458,7 @@
           "id": "load_error",
           "kind": "error",
           "status": "captured",
-          "source": "watchPublicProfileProvider AsyncError renders CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
+          "source": "watchPublicProfileProvider AsyncError renders CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
           "tests": [
             "test/public_profile/public_profile_screen_test.dart"
           ],
@@ -9088,7 +9087,7 @@
           "id": "host_clubs_error",
           "kind": "error",
           "status": "captured",
-          "source": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
+          "source": "Hosted or owned club stream errors become CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation.",
           "nextAction": "Keep generic and offline load-error captures synced with AppErrorMessage copy.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -9177,7 +9176,7 @@
           "id": "club_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchSliverErrorState.fromError in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
+          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
           "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -9190,7 +9189,7 @@
           "id": "club_events_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "hostEventsTimelineControllerProvider offline errors render CatchSliverErrorState.fromError with retryable connection issue copy inside the canonical page viewport.",
+          "source": "hostEventsTimelineControllerProvider offline errors render CatchLocalizedSliverErrorState with retryable connection issue copy inside the canonical page viewport.",
           "captureIds": [
             "host_home_events_offline"
           ],
@@ -10418,8 +10417,8 @@
           "id": "insights_error",
           "kind": "error",
           "status": "captured",
-          "source": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query.",
-          "nextAction": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
+          "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query.",
+          "nextAction": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
           "previewIds": [
             "HostClubInsightsPane/Insights scorecard states"
           ],
@@ -10527,7 +10526,7 @@
           "id": "profile_error",
           "kind": "error",
           "status": "implemented",
-          "source": "Host profile load errors render CatchErrorState.fromError with retry when no fallback profile exists.",
+          "source": "Host profile load errors render CatchLocalizedErrorState with retry when no fallback profile exists.",
           "nextAction": "Compare error copy and retry placement against the canonical Host team reference once exported.",
           "captureIds": [],
           "previewIds": [
@@ -11588,7 +11587,7 @@
           "id": "load_error",
           "kind": "error",
           "status": "captured",
-          "source": "HostClubDetailScreenState maps load failures to HostClubDetailError with HostClubDetailRetryIntent.reloadDetail before ClubDetailScreen renders CatchErrorState.fromError with AppErrorContext.club and executes the typed retry target.",
+          "source": "HostClubDetailScreenState maps load failures to HostClubDetailError with HostClubDetailRetryIntent.reloadDetail before ClubDetailScreen renders CatchLocalizedErrorState with AppErrorContext.club and executes the typed retry target.",
           "tests": [
             "test/clubs/clubs_controllers_test.dart",
             "test/explore/explore_widgets_test.dart"
@@ -12638,7 +12637,7 @@
           "id": "club_fetch_error",
           "kind": "error",
           "status": "captured",
-          "source": "fetchClubProvider errors render CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation.",
+          "source": "fetchClubProvider errors render CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation.",
           "nextAction": "Generic route error and offline route error are captured separately; compare both against state references once exported.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
@@ -13945,7 +13944,7 @@
           "id": "route_error",
           "kind": "error",
           "status": "captured",
-          "source": "uid, club, or event provider errors render CatchErrorScaffold.fromError with AppErrorContext.event and retry invalidation for club/event providers.",
+          "source": "uid, club, or event provider errors render CatchLocalizedErrorScaffold with AppErrorContext.event and retry invalidation for club/event providers.",
           "nextAction": "Add branded error and offline captures for each provider wave and verify retry invalidates the failing provider.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13953,7 +13952,7 @@
           "captureIds": [
             "host_manage_route_error"
           ],
-          "notes": "Generic route provider failures now have the deterministic host_manage_route_error capture through CatchErrorScaffold.fromError."
+          "notes": "Generic route provider failures now have the deterministic host_manage_route_error capture through CatchLocalizedErrorScaffold."
         },
         {
           "id": "event_or_club_not_found",
@@ -14094,7 +14093,7 @@
           "id": "attendance_error",
           "kind": "error",
           "status": "captured",
-          "source": "Attendance view-model errors render CatchInlineErrorState.fromError with retry invalidating event, participation, and attendance providers.",
+          "source": "Attendance view-model errors render CatchLocalizedInlineErrorState with retry invalidating event, participation, and attendance providers.",
           "nextAction": "Add branded attendance error and offline captures for setup/live/report modes.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14142,7 +14141,7 @@
           "id": "attendee_profiles_error",
           "kind": "error",
           "status": "captured",
-          "source": "Profile lookup errors render CatchInlineErrorState.fromError and retry attendeeProfilesProvider.",
+          "source": "Profile lookup errors render CatchLocalizedInlineErrorState and retry attendeeProfilesProvider.",
           "nextAction": "Add capture/preview for profile fetch failure and offline-looking profile errors.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14607,7 +14606,7 @@
           "id": "private_access_error",
           "kind": "error",
           "status": "captured",
-          "source": "_HostPrivateAccessCard errors render CatchInlineErrorState.fromError with retry invalidating watchEventPrivateAccessProvider.",
+          "source": "_HostPrivateAccessCard errors render CatchLocalizedInlineErrorState with retry invalidating watchEventPrivateAccessProvider.",
           "nextAction": "Add private-access error and offline captures with invite-only event policy fixtures.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14621,7 +14620,7 @@
           "id": "private_access_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchInlineErrorState.fromError with retry.",
+          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedInlineErrorState with retry.",
           "nextAction": "Captured by host_manage_private_access_offline; continue only if private-access offline copy diverges from the shared mapped offline error.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -16018,7 +16017,7 @@
           "id": "matches_error",
           "kind": "error",
           "status": "captured",
-          "source": "ChatsListDisplayState maps match stream failures to CatchSliverErrorState.fromError with AppErrorContext.chat and retry invalidation.",
+          "source": "ChatsListDisplayState maps match stream failures to CatchLocalizedSliverErrorState with AppErrorContext.chat and retry invalidation.",
           "nextAction": "Keep retry intent provider-backed until route callbacks are promoted into typed controller seams.",
           "previewIds": [
             "HostInboxScreen/Event-scoped states"
@@ -19613,7 +19612,7 @@
           "id": "events_error",
           "kind": "error",
           "status": "captured",
-          "source": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "source": "signedUpEvents or savedEvents errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
           "previewIds": [
             "CalendarScreen/Screen states"
           ],
@@ -20051,7 +20050,7 @@
           "id": "saved_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "Saved-event stream errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "source": "Saved-event stream errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
           "previewIds": [
             "SavedEventsScreen/Saved states"
           ],
@@ -20430,7 +20429,7 @@
           "id": "profile_error",
           "kind": "error",
           "status": "captured",
-          "source": "watchUserProfileProvider errors render CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
+          "source": "watchUserProfileProvider errors render CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
           "captureIds": [
             "filters_profile_error"
           ],
@@ -20912,7 +20911,7 @@
           "id": "recap_error",
           "kind": "error",
           "status": "captured",
-          "source": "View model errors render CatchErrorState.fromError with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry.",
+          "source": "View model errors render CatchLocalizedErrorState with AppErrorContext.event and invalidate event, participation, uid, and view-model providers on retry.",
           "captureIds": [
             "event_recap_error"
           ],
@@ -22102,7 +22101,7 @@
           "id": "route_error",
           "kind": "error",
           "status": "captured",
-          "source": "uid, club, or event provider errors render CatchErrorScaffold.fromError with event context and retry invalidation.",
+          "source": "uid, club, or event provider errors render CatchLocalizedErrorScaffold with event context and retry invalidation.",
           "previewIds": [
             "EditHostedEventRouteScreen/Route and section states"
           ],
@@ -22645,7 +22644,7 @@
         {
           "id": "event_location_map_error",
           "status": "captured",
-          "notes": "Route-wrapper data-load error state using CatchErrorState.fromError and retry copy."
+          "notes": "Route-wrapper data-load error state using CatchLocalizedErrorState and retry copy."
         },
         {
           "id": "event_location_map_not_found",
@@ -22699,7 +22698,7 @@
           "id": "route_error",
           "kind": "error",
           "status": "captured",
-          "source": "Event view-model errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "source": "Event view-model errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
           "nextAction": "Keep the branded route error capture current and reuse the retry branch in the future route adapter.",
           "previewIds": [
             "EventLocationMapRouteScreen/Route states"
@@ -24367,7 +24366,7 @@
           "id": "blocked_accounts_loading_error",
           "kind": "loading",
           "status": "captured",
-          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchInlineErrorState.fromError with retry on failure.",
+          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedInlineErrorState with retry on failure.",
           "captureIds": [
             "settings_blocked_loading",
             "settings_blocked_error"
@@ -25198,7 +25197,7 @@
           "id": "uid_error",
           "kind": "error",
           "status": "captured",
-          "source": "payment_history_uid_error captures uidProvider errors through CatchErrorState.fromError with AppErrorContext.payments.",
+          "source": "payment_history_uid_error captures uidProvider errors through CatchLocalizedErrorState with AppErrorContext.payments.",
           "nextAction": "Keep uid provider retry copy on the shared branded error surface.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states"
@@ -25237,7 +25236,7 @@
           "id": "payments_error",
           "kind": "error",
           "status": "captured",
-          "source": "payment_history_error captures payment stream errors through CatchErrorState.fromError with retry invalidation.",
+          "source": "payment_history_error captures payment stream errors through CatchLocalizedErrorState with retry invalidation.",
           "nextAction": "Keep payment stream retry copy on the shared branded error surface.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states"
@@ -25772,7 +25771,7 @@
           "id": "host_event_rehearsal_error",
           "kind": "error",
           "status": "implemented",
-          "source": "CatchErrorState.fromError with retry invalidation",
+          "source": "CatchLocalizedErrorState with retry invalidation",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
           "nextAction": "Keep expired, unauthorized, and backend failure recovery fail closed."
         },

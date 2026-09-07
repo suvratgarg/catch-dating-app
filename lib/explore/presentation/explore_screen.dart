@@ -13,8 +13,8 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
@@ -418,7 +418,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final bodySlivers =
         _initialLoadTimedOut && bodyState.kind == ExploreScreenBodyKind.loading
         ? <Widget>[
-            CatchSliverErrorState.fromError(
+            CatchLocalizedSliverErrorState(
               const NetworkException(
                 'timeout',
                 'Explore is taking longer than expected. Please try again.',
@@ -437,7 +437,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               ),
             ],
             ExploreScreenBodyKind.error => [
-              CatchSliverErrorState.fromError(
+              CatchLocalizedSliverErrorState(
                 bodyState.error!,
                 context:
                     bodyState.retryTarget == ExploreScreenRetryTarget.eventFeed

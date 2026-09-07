@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
-  "resolvedDigest": "sha256:1402ad93decd39c111eb11908f2db6ce05d4703195f34d474656ebef2069b768",
+  "resolvedDigest": "sha256:8abf57c200a57941e02724e066bbb0bbb2eb10665bff0ab51991f3eddf1dc915",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1594,10 +1594,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

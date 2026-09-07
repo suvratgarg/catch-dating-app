@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -71,7 +71,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     if (uidAsync.isLoading) {
       body = const CalendarLoadingScreen();
     } else if (uidAsync.hasError) {
-      body = CatchErrorState.fromError(
+      body = CatchLocalizedErrorState(
         uidAsync.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
@@ -88,7 +88,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
         body = const CalendarLoadingScreen();
       } else if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
-        body = CatchErrorState.fromError(
+        body = CatchLocalizedErrorState(
           signedUpEventsAsync.error ?? savedEventsAsync.error!,
           context: AppErrorContext.event,
           onRetry: uid == null
@@ -313,7 +313,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
       CalendarAgendaClubNamesErrorState(:final error) =>
         CatchSliverStateViewport(
           accountForBottomOverlay: false,
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
             onRetry: onRetryClubNames,

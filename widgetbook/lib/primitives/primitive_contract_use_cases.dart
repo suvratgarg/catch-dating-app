@@ -9,6 +9,7 @@ import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -18,7 +19,6 @@ import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_sliver_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -445,6 +445,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: CatchErrorState(
+            retryLabel: context.l10n.sharedActionTryAgain,
             title: 'Unable to load events',
             message: 'Check your connection and try again.',
             onRetry: _noop,
@@ -454,6 +455,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
       _StateCard(
         label: 'inline',
         child: CatchErrorState(
+          retryLabel: context.l10n.sharedActionTryAgain,
           title: 'Section failed',
           message: 'The recommendations rail could not refresh.',
           mode: CatchErrorStateMode.inline,
@@ -470,7 +472,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'from-error',
-        child: CatchErrorState.fromError(
+        child: CatchLocalizedErrorState(
           StateError('No connection'),
           mode: CatchErrorStateMode.inline,
           onRetry: _noop,
@@ -479,6 +481,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
       _StateCard(
         label: 'with-retry',
         child: CatchErrorState(
+          retryLabel: context.l10n.sharedActionTryAgain,
           title: 'Feed unavailable',
           message: 'Try refreshing the feed.',
           mode: CatchErrorStateMode.inline,
@@ -488,6 +491,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
       _StateCard(
         label: 'secondary-action',
         child: CatchErrorState(
+          retryLabel: context.l10n.sharedActionTryAgain,
           title: 'Could not save',
           message: 'Your changes are still local.',
           mode: CatchErrorStateMode.inline,
@@ -504,6 +508,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: CatchErrorScaffold(
+            retryLabel: context.l10n.sharedActionTryAgain,
             title: 'Profile unavailable',
             message: 'We could not load this profile right now.',
             onRetry: _noop,
@@ -517,6 +522,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
           child: CustomScrollView(
             slivers: [
               CatchSliverErrorState(
+                retryLabel: context.l10n.sharedActionTryAgain,
                 title: 'Feed unavailable',
                 message: 'Try refreshing the feed.',
                 onRetry: _noop,
@@ -547,6 +553,7 @@ Widget catchErrorBodyContractStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: CatchErrorBody(
+            retryLabel: context.l10n.sharedActionTryAgain,
             title: 'Unable to load events',
             message: 'Check your connection and try again.',
             onRetry: _noop,
@@ -556,6 +563,7 @@ Widget catchErrorBodyContractStates(BuildContext context) {
       _StateCard(
         label: 'inline',
         child: CatchErrorBody(
+          retryLabel: context.l10n.sharedActionTryAgain,
           title: 'Section failed',
           message: 'The recommendations rail could not refresh.',
           mode: CatchErrorStateMode.inline,
@@ -573,6 +581,7 @@ Widget catchErrorBodyContractStates(BuildContext context) {
       _StateCard(
         label: 'secondary-action',
         child: CatchErrorBody(
+          retryLabel: context.l10n.sharedActionTryAgain,
           title: 'Could not save',
           message: 'Your changes are still local.',
           mode: CatchErrorStateMode.inline,

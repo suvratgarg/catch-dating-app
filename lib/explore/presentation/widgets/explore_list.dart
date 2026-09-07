@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -36,7 +36,7 @@ class ExploreList extends ConsumerWidget {
           child: ClubDirectorySkeletonList(),
         ),
       ),
-      AsyncError(:final error) => CatchSliverErrorState.fromError(
+      AsyncError(:final error) => CatchLocalizedSliverErrorState(
         error,
         context: AppErrorContext.explore,
         onRetry: () {

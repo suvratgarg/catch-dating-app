@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -76,7 +76,7 @@ class ActivitySection extends ConsumerWidget {
             sectionState is NotificationsAccessLoading) ...[
           const ActivitySectionSkeleton(count: 2),
         ] else if (sectionState is NotificationsAccessError) ...[
-          CatchInlineErrorState.fromError(
+          CatchLocalizedInlineErrorState(
             sectionState.error,
             context: AppErrorContext.auth,
             compact: true,
@@ -84,7 +84,7 @@ class ActivitySection extends ConsumerWidget {
           ),
         ] else if (sectionState is NotificationsActivityError) ...[
           if (sectionState.error case final error?)
-            CatchInlineErrorState.fromError(
+            CatchLocalizedInlineErrorState(
               error,
               context: AppErrorContext.dashboard,
               compact: true,
@@ -100,6 +100,7 @@ class ActivitySection extends ConsumerWidget {
             )
           else
             CatchInlineErrorState(
+              retryLabel: context.l10n.sharedActionTryAgain,
               title:
                   context.l10n.dashboardActivitySectionTitleActivityUnavailable,
               message: context

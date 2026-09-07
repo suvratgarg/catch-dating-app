@@ -3,7 +3,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -68,7 +69,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
         child: switch (screenState) {
           EventRecapLoading() => const EventRecapLoadingBody(),
           EventRecapError(:final error, :final retryIntent) =>
-            CatchErrorState.fromError(
+            CatchLocalizedErrorState(
               error,
               context: AppErrorContext.event,
               onRetry: () => _retry(retryIntent),
@@ -184,7 +185,7 @@ class EventRecapReadyBody extends StatelessWidget {
                   EventRecapProfileLookupStatus.loading =>
                     const VibeGridSkeleton(),
                   EventRecapProfileLookupStatus.error =>
-                    CatchInlineErrorState.fromError(
+                    CatchLocalizedInlineErrorState(
                       state.profileLookupError!,
                       context: AppErrorContext.profile,
                       onRetry: () => onRetryRosterProfiles(state.attendeeIds),

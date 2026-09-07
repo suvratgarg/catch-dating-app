@@ -10,8 +10,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -562,7 +562,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     if (vmAsync.hasError) {
       return CatchScreenScaffold.workspace(
         body: SafeArea(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             vmAsync.error!,
             context: AppErrorContext.event,
             onRetry: () =>

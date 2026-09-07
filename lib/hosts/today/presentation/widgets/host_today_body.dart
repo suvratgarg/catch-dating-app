@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -50,7 +50,7 @@ class HostTodayBody extends StatelessWidget {
               count: 4,
             ),
           ),
-          HostTodayStatus.error => CatchSliverErrorState.fromError(
+          HostTodayStatus.error => CatchLocalizedSliverErrorState(
             state.error!,
             context: AppErrorContext.event,
             onRetry: onRetry,

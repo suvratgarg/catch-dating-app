@@ -3,8 +3,8 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -186,7 +186,7 @@ class _HostApplicationsScreenState
                   padding: EdgeInsets.zero,
                   children: const [CatchSkeletonRows(count: 6)],
                 ),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.applications,
                   onRetry: () => ref.invalidate(
@@ -236,7 +236,7 @@ class _HostApplicationsScreenState
                       ],
                       if (state.loadMoreError != null) ...[
                         gapH12,
-                        CatchErrorState.fromError(
+                        CatchLocalizedErrorState(
                           state.loadMoreError!,
                           context: AppErrorContext.applications,
                           mode: CatchErrorStateMode.compact,

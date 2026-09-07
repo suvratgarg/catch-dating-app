@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/data/initial_load_policy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_builders.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_deadline.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -146,7 +146,7 @@ class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
         if (customBuilder != null) {
           return SliverToBoxAdapter(child: customBuilder);
         }
-        return CatchSliverErrorState.fromError(
+        return CatchLocalizedSliverErrorState(
           error,
           context: widget.errorContext,
           onRetry: retry,

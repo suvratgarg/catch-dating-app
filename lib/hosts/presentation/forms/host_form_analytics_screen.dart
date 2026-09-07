@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -63,7 +63,7 @@ class _HostFormAnalyticsScreenState
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
             onRetry: () => ref.invalidate(provider),
@@ -75,7 +75,7 @@ class _HostFormAnalyticsScreenState
                 value: ref.watch(editorProvider),
                 onRetry: () => ref.read(editorProvider.notifier).reload(),
                 loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.forms,
                   mode: CatchErrorStateMode.compact,

@@ -57,6 +57,8 @@ import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
     as _widgetbook_workspace_primitives_error_feedback_use_cases;
+import 'package:widgetbook_workspace/primitives/error_state_adapter_use_cases.dart'
+    as _widgetbook_workspace_primitives_error_state_adapter_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
@@ -662,6 +664,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_error_feedback_use_cases
                         .localizedErrorBannerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedErrorScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped route failure',
+                builder:
+                    _widgetbook_workspace_primitives_error_state_adapter_use_cases
+                        .localizedErrorScaffoldCases,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedErrorState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped failures and explicit recovery',
+                builder:
+                    _widgetbook_workspace_primitives_error_state_adapter_use_cases
+                        .localizedErrorStateCases,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedInlineErrorState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped inline and compact failures',
+                builder:
+                    _widgetbook_workspace_primitives_error_state_adapter_use_cases
+                        .localizedInlineErrorStateCases,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedSliverErrorState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped sliver placements',
+                builder:
+                    _widgetbook_workspace_primitives_error_state_adapter_use_cases
+                        .localizedSliverErrorStateCases,
               ),
             ],
           ),
@@ -2180,6 +2226,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchEmptyStateIconContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchErrorBackAction',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default and caller-owned recovery',
+                builder:
+                    _widgetbook_workspace_primitives_error_state_adapter_use_cases
+                        .errorBackActionCases,
               ),
             ],
           ),

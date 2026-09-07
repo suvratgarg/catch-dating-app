@@ -4,7 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
@@ -148,7 +148,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       HostCreateEventRouteStatus.loading =>
         const HostCreateEventRouteLoadingScreen(),
       HostCreateEventRouteStatus.error => CatchScreenScaffold.stepFlow(
-        body: CatchErrorState.fromError(
+        body: CatchLocalizedErrorState(
           state.error!,
           context: AppErrorContext.club,
           onRetry: () {

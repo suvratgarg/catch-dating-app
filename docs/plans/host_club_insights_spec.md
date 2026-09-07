@@ -462,7 +462,7 @@ node tool/run.mjs check --manifest-only     # Phase 0 §5.3 guardrail entry
   audit log, rate limiting, Ajv payload/response validation) — solid; keep.
 - The per-event Manage → Report tab and the event-success scorecard
   pipeline — the event-level story lives there by design.
-- `CatchAsyncValueView` + skeleton + `CatchErrorState.fromError` loading
+- `CatchAsyncValueView` + skeleton + `CatchLocalizedErrorState` loading
   discipline on the pane.
 - The metric-status (`ready/partial/missing`) concept and tile badges —
   honest data honesty; only the ops-detail PANEL leaves the host surface.

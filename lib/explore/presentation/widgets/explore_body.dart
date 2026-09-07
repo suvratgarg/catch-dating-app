@@ -3,7 +3,7 @@ import 'package:catch_dating_app/clubs/clubs.dart'
     show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
@@ -119,7 +119,7 @@ List<Widget> buildExploreBodySlivers({
         AsyncError(:final error) => SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: CatchInlineErrorState.fromError(
+            child: CatchLocalizedInlineErrorState(
               error,
               context: AppErrorContext.explore,
               onRetry: onRetryFeed,
@@ -141,7 +141,7 @@ List<Widget> buildExploreBodySlivers({
       SliverToBoxAdapter(
         child: Padding(
           padding: CatchInsets.pageBody,
-          child: CatchInlineErrorState.fromError(
+          child: CatchLocalizedInlineErrorState(
             clubSectionError,
             context: AppErrorContext.explore,
             onRetry: onRetryClubs,

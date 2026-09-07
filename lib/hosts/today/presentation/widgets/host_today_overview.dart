@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -274,7 +274,7 @@ class HostTodayAttentionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final issue in state.attentionIssues) ...[
-          CatchInlineErrorState.fromError(
+          CatchLocalizedInlineErrorState(
             issue.error,
             context: AppErrorContext.event,
             onRetry: onRetry,

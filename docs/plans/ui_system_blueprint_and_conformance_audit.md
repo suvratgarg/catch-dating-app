@@ -770,6 +770,13 @@ The host-row renderer is classified as L3 identity material and moves unchanged
 with caller-resolved avatar colors replacing its activity-domain input. The
 same accent still paints the verified mark; localized message copy and
 callback-owned affordances remain app inputs.
+Error content, terminal back actions and box/scaffold/sliver/inline placement
+move into individual shared files. Four public app adapters replace the private
+localized subclasses and resolve the existing error descriptor during build.
+Callers supply retry labels to shared renderers; locale changes, explicit
+recovery callbacks, secondary actions and placement behavior are preserved.
+The existing action-required lint also covers the app adapters, with seeded
+negative probes verified in CI.
 
 ### Phase 4 — One registry, binding grammar
 

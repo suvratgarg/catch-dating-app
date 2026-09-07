@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:0bae325d3cfc225da9eca8d29c83b62d5bd3ac2af561584face1249168dc5110",
+  "resolvedDigest": "sha256:8a03fd807e61351306218a73773a482eb171e0fb3a1f5cac0184a6be61b2433f",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -3951,10 +3951,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

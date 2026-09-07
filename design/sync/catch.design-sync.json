@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68",
+  "sourceDigest": "68841643f1eaacdd5523f0cd51db14062e0eb5ff8efc507dbb8bdd810e58b553",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68",
-    "contractDigest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68"
+    "digest": "68841643f1eaacdd5523f0cd51db14062e0eb5ff8efc507dbb8bdd810e58b553",
+    "contractDigest": "68841643f1eaacdd5523f0cd51db14062e0eb5ff8efc507dbb8bdd810e58b553"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9d96b31733c80fcff392a84577418425ec66f6663dedea8b9099bc4cdd3da277",
+    "handoffRequestDigest": "8f3efbd1c6de06da1f52608eb3d5741a541246d93bb4399040fe0500c7e5432f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 242,
+    "publicClassCount": 247,
     "conceptCount": 68,
-    "memberCount": 156,
-    "membersPerConcept": 2.29,
+    "memberCount": 161,
+    "membersPerConcept": 2.37,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 156,
+      "member": 161,
       "screen": 15
     },
     "collisionCount": 36,
@@ -187,6 +187,7 @@
       {
         "key": "catch.error_state",
         "symbols": [
+          "CatchErrorBackAction",
           "CatchErrorBody",
           "CatchErrorIcon",
           "CatchErrorScaffold",
@@ -194,6 +195,10 @@
           "CatchFrameworkErrorDebugDetails",
           "CatchFrameworkErrorView",
           "CatchInlineErrorState",
+          "CatchLocalizedErrorScaffold",
+          "CatchLocalizedErrorState",
+          "CatchLocalizedInlineErrorState",
+          "CatchLocalizedSliverErrorState",
           "CatchSliverErrorState"
         ]
       },
@@ -699,7 +704,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.error_state",
       "dartSymbol": "CatchErrorState",
-      "dartFile": "lib/core/widgets/catch_error_state.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_error_state.dart",
       "figmaName": "Catch/Recovery State",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -716,7 +721,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "5a0f44360ed0924488644fadc8693c9eeb92a5a8af9a39d2a27e9c2c1265fd37",
+      "figmaExpectedPropertyDigest": "05975036dbf56af94bf1fc3ccd2d09de6dafab85ecd9b2b2dcad5c7c141bc95a",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -724,7 +729,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ErrorState",
       "claudeAllowed": true,
-      "contractDigest": "b31331284037660638b5b6396ff154e8f74e2848c5cb0dc151b3ee5a38871d32"
+      "contractDigest": "023f62ff3d153aa3948c050632678d029c082dbb50d4cbd5c26179fe3f7aab8b"
     },
     {
       "contractId": "catch.error_banner",

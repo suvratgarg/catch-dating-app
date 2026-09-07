@@ -5,7 +5,7 @@ import 'package:catch_dating_app/core/data/initial_load_policy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_builders.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_deadline.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,7 +121,7 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
             catchAsyncInitialLoadTimeoutException,
             StackTrace.current,
           ) ??
-          CatchErrorState.fromError(
+          CatchLocalizedErrorState(
             catchAsyncInitialLoadTimeoutException,
             context: widget.errorContext,
             onRetry: widget.onRetry == null ? null : _retry,
@@ -151,7 +151,7 @@ class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
               value.error!,
               value.stackTrace ?? StackTrace.current,
             ) ??
-            CatchErrorState.fromError(
+            CatchLocalizedErrorState(
               value.error!,
               context: widget.errorContext,
               onRetry: widget.onRetry == null ? null : _retry,

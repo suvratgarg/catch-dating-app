@@ -145,7 +145,7 @@ class _HostAutomationRuleEditorState
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (_error case final error?) ...[
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,
@@ -475,7 +475,7 @@ class _HostAutomationRuleEditorState
                                           : '${l.hostAutomationConfigured} · v${action.campaignRevision ?? 0}',
                                     ),
                                   if (page.error case final error?)
-                                    CatchErrorState.fromError(
+                                    CatchLocalizedErrorState(
                                       error,
                                       context: AppErrorContext.forms,
                                       mode: CatchErrorStateMode.compact,

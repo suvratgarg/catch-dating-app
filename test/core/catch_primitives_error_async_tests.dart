@@ -8,7 +8,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchErrorState.fromError(
+        CatchLocalizedErrorState(
           StateError('Could not load profile'),
           onRetry: () => retryCount++,
         ),
@@ -36,6 +36,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     Future<void> pumpMode(CatchErrorStateMode mode) => tester.pumpWidget(
       _wrap(
         CatchErrorState(
+          retryLabel: 'Try again',
           title: 'Customers unavailable',
           message: 'Please try again.',
           mode: mode,
@@ -59,7 +60,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchErrorState.fromError(
+        CatchLocalizedErrorState(
           const ValidationException('Please enter a valid phone number.'),
           onRetry: () => retryCount += 1,
         ),
@@ -88,7 +89,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchInlineErrorState.fromError(
+        CatchLocalizedInlineErrorState(
           const PermissionException('Unavailable.'),
           secondaryAction: alternateAction(),
         ),
@@ -100,7 +101,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: CatchErrorScaffold.fromError(
+        home: CatchLocalizedErrorScaffold(
           const PermissionException('Unavailable.'),
           secondaryAction: alternateAction(),
         ),
@@ -115,7 +116,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
-              CatchSliverErrorState.fromError(
+              CatchLocalizedSliverErrorState(
                 const PermissionException('Unavailable.'),
                 secondaryAction: alternateAction(),
               ),

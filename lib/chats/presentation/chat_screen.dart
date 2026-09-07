@@ -22,9 +22,9 @@ import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.da
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -340,7 +340,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               Expanded(
                 child: authError != null
-                    ? CatchErrorState.fromError(
+                    ? CatchLocalizedErrorState(
                         authError,
                         context: AppErrorContext.auth,
                         onRetry: () => ref.invalidate(uidProvider),

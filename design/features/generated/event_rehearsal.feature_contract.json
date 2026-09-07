@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-08-19",
   "sourceDigest": "sha256:88e9f47505f58b7d44075ab377990a0100f96ce1ba505bcdeb9dc4fc6940ce0a",
-  "resolvedDigest": "sha256:eae237f977245ab9a1aee79d1887ab74422ead02305d4dd99eed165516cdda8f",
+  "resolvedDigest": "sha256:83334f913b14f40fdeb7049510bd6c5b7b5e54a22209e5bdf6c5cfc24f345ec7",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -781,10 +781,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

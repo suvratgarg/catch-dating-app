@@ -4,8 +4,8 @@ import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -411,7 +411,7 @@ class _HostSendsHistory extends ConsumerWidget {
         sends.when(
           loading: () =>
               const CatchFieldLanes.single(child: LinearProgressIndicator()),
-          error: (error, _) => CatchErrorState.fromError(
+          error: (error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
             mode: CatchErrorStateMode.compact,

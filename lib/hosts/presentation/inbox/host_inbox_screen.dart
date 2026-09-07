@@ -10,9 +10,9 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
@@ -387,7 +387,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (uidState.hasError || clubsState.hasError) {
       final failed = uidState.hasError ? uidState : clubsState;
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(selectedClub?.id),
@@ -424,7 +424,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     ];
     final failed = asyncStates.where((value) => value.hasError).firstOrNull;
     if (failed != null) {
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(club.id),
@@ -527,7 +527,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     if (uidState.hasError || clubsState.hasError) {
       final failed = uidState.hasError ? uidState : clubsState;
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.club,
         onRetry: () => onRetry(selectedClub?.id),

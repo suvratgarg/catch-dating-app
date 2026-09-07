@@ -7,9 +7,10 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -118,7 +119,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             uidState.error!,
             context: AppErrorContext.auth,
             onRetry: () => ref.invalidate(uidProvider),
@@ -161,7 +162,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             clubsState.error!,
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
@@ -529,7 +530,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   ref.invalidate(hostFormsDirectoryControllerProvider(request)),
               initialLoadTimeout: null,
               loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,
                 mode: CatchErrorStateMode.compact,
@@ -617,7 +618,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     ],
                     if (state.loadMoreError case final error?) ...[
                       gapH12,
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,

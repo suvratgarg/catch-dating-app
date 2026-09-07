@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:b3b8c54010f1a661e085b7224deb7953ce7ad859767e0eab4eccea848b82043e",
+  "resolvedDigest": "sha256:a4ce75ccf352cbf165eb53ff70dba7ac29b5420f3a7583db273077552dc39d16",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -837,10 +837,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

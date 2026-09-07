@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -60,7 +60,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
               label: UserAnalyticsCopy.loadingLabel(context.l10n),
               child: const UserAnalyticsReportSkeleton(),
             ),
-            error: (error, _) => CatchErrorState.fromError(
+            error: (error, _) => CatchLocalizedErrorState(
               error,
               context: AppErrorContext.profile,
               onRetry: () => ref.invalidate(userAnalyticsProvider(query)),

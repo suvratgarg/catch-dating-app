@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -198,7 +198,7 @@ class PublicProfileScreenBody extends StatelessWidget {
       case PublicProfileRouteStatus.loading:
         return const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8);
       case PublicProfileRouteStatus.error:
-        return CatchErrorState.fromError(
+        return CatchLocalizedErrorState(
           state.error!,
           context: AppErrorContext.profile,
           onRetry: onRetry,

@@ -2,9 +2,9 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -93,7 +93,7 @@ class _HostFormAutomationsScreenState
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
             onRetry: () => ref.invalidate(provider),
@@ -111,7 +111,7 @@ class _HostFormAutomationsScreenState
               ),
               if (state.error case final error?) ...[
                 gapH12,
-                CatchErrorState.fromError(
+                CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.forms,
                   mode: CatchErrorStateMode.compact,

@@ -989,7 +989,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (isFeaturePresentationPath &&
         (typeName == 'CatchErrorState' ||
             typeName == 'CatchErrorScaffold' ||
-            typeName == 'CatchSliverErrorState') &&
+            typeName == 'CatchSliverErrorState' ||
+            typeName == 'CatchLocalizedErrorState' ||
+            typeName == 'CatchLocalizedErrorScaffold' ||
+            typeName == 'CatchLocalizedSliverErrorState') &&
         !_hasNamedArgument(node, 'onRetry') &&
         !_hasNamedArgument(node, 'secondaryAction')) {
       _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);

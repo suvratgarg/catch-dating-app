@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -127,7 +127,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       backgroundColor: t.bg,
       body: switch (state) {
         CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
-        CatchesEventQueueError(:final error) => CatchErrorState.fromError(
+        CatchesEventQueueError(:final error) => CatchLocalizedErrorState(
           error,
           context: AppErrorContext.swipes,
           onRetry: () => ref.invalidate(

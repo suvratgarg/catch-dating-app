@@ -86,7 +86,7 @@ class _HostApplicationDetailScreenState
           onRetry: _invalidateDetail,
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.applications,
             onRetry: _invalidateDetail,

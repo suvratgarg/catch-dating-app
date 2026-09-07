@@ -73,7 +73,9 @@ import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -272,6 +274,9 @@ class _ProviderProbe extends ConsumerWidget {
           builder: (_, value) => Text('$value'),
         ),
         const CatchErrorState(title: 'Unavailable', message: 'Try elsewhere.'),
+        CatchLocalizedErrorState(StateError('Unavailable')),
+        CatchLocalizedErrorScaffold(StateError('Unavailable')),
+        CatchLocalizedSliverErrorState(StateError('Unavailable')),
       ],
     );
   }
@@ -384,7 +389,7 @@ expect_code_count \
 expect_code_count \
   "seeded violation corpus" \
   "catch_error_state_requires_action" \
-  1
+  4
 expect_code_count "seeded violation corpus" "catch_no_raw_error_surface" 1
 expect_code_count \
   "seeded violation corpus" \

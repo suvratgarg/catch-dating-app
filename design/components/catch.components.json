@@ -1347,10 +1347,9 @@
       "summary": "Canonical cardless app-facing recovery-content family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
       "dart": {
         "symbol": "CatchErrorState",
-        "file": "lib/core/widgets/catch_error_state.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
         "constructors": [
-          "CatchErrorState",
-          "CatchErrorState.fromError"
+          "CatchErrorState"
         ]
       },
       "design": {
@@ -1400,8 +1399,7 @@
             "name": "retryLabel",
             "type": "string",
             "required": false,
-            "default": "Try again",
-            "dartType": "String"
+            "dartType": "String?"
           },
           {
             "name": "secondaryAction",
@@ -1467,6 +1465,95 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.error_state.error_back_action",
+            "symbol": "CatchErrorBackAction",
+            "file": "packages/catch_ui/lib/src/components/catch_error_back_action.dart",
+            "summary": "Canonical terminal recovery action with caller or Material-localized back copy.",
+            "states": [
+              "default",
+              "custom-action"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
+          },
+          {
+            "id": "catch.error_state.localized_error_state",
+            "symbol": "CatchLocalizedErrorState",
+            "file": "lib/core/riverpod_ui/catch_localized_error_state.dart",
+            "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
+            "states": [
+              "mapped-error",
+              "with-retry",
+              "secondary-action"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
+          },
+          {
+            "id": "catch.error_state.localized_error_scaffold",
+            "symbol": "CatchLocalizedErrorScaffold",
+            "file": "lib/core/riverpod_ui/catch_localized_error_scaffold.dart",
+            "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
+            "states": [
+              "mapped-error",
+              "with-retry",
+              "secondary-action"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
+          },
+          {
+            "id": "catch.error_state.localized_sliver_error_state",
+            "symbol": "CatchLocalizedSliverErrorState",
+            "file": "lib/core/riverpod_ui/catch_localized_sliver_error_state.dart",
+            "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
+            "states": [
+              "mapped-error",
+              "with-retry",
+              "secondary-action"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
+          },
+          {
+            "id": "catch.error_state.localized_inline_error_state",
+            "symbol": "CatchLocalizedInlineErrorState",
+            "file": "lib/core/riverpod_ui/catch_localized_inline_error_state.dart",
+            "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
+            "states": [
+              "mapped-error",
+              "with-retry",
+              "secondary-action"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
+          },
+          {
             "id": "catch.error_state.icon",
             "symbol": "CatchErrorIcon",
             "file": "packages/catch_ui/lib/src/primitives/catch_error_icon.dart",
@@ -1487,6 +1574,7 @@
           {
             "id": "catch.error_state.scaffold",
             "symbol": "CatchErrorScaffold",
+            "file": "packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart",
             "summary": "Route/root-tab placement adapter for full-screen app data-load failures.",
             "states": [
               "scaffold",
@@ -1505,6 +1593,7 @@
           {
             "id": "catch.error_state.sliver",
             "symbol": "CatchSliverErrorState",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_error_state.dart",
             "summary": "Sliver placement adapter for branded load failures inside CustomScrollView routes.",
             "states": [
               "fill-remaining",
@@ -1523,6 +1612,7 @@
           {
             "id": "catch.error_state.inline",
             "symbol": "CatchInlineErrorState",
+            "file": "packages/catch_ui/lib/src/components/catch_inline_error_state.dart",
             "summary": "Cardless inline section placement adapter for retryable failures when the rest of the screen remains usable.",
             "states": [
               "inline",
@@ -1579,7 +1669,7 @@
           {
             "id": "catch.error_state.error_body",
             "symbol": "CatchErrorBody",
-            "file": "lib/core/widgets/catch_error_state.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_error_body.dart",
             "summary": "Direct cardless branded error-body renderer used by error placement adapters; parent sections own containment.",
             "states": [
               "full-screen",
@@ -1616,6 +1706,7 @@
         ],
         "notes": [
           "Use this family for app-facing data-load failures with mapped copy and retry callbacks.",
+          "Shared renderers require caller-resolved retryLabel whenever onRetry is supplied; CatchLocalized error adapters resolve the app descriptor during build.",
           "Recovery content is cardless; inherit any justified fill or outline from the owning route or section.",
           "Use scaffold and sliver members for placement only; do not create separate error visual systems.",
           "Keep framework crash surfaces separate in CatchFrameworkErrorView, but compose the shared error icon medallion."

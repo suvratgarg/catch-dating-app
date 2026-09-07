@@ -5,7 +5,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart'
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -46,7 +46,7 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
       body: CatchRouteBody.standard(
         child: invitationAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => CatchErrorState.fromError(
+          error: (error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.explore,
             onRetry: () =>
@@ -98,7 +98,7 @@ class _InvitationDetail extends ConsumerWidget {
     if (profileAsync.hasError ||
         eventAsync.hasError ||
         pairHoldAsync.hasError) {
-      return CatchErrorState.fromError(
+      return CatchLocalizedErrorState(
         profileAsync.error ?? eventAsync.error ?? pairHoldAsync.error!,
         context: AppErrorContext.explore,
         onRetry: () {

@@ -1987,7 +1987,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackAction. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
+      "instruction": "AsyncValue/stream error branches must render CatchLocalizedErrorState/CatchLocalizedSliverErrorState/CatchLocalizedInlineErrorState with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackAction. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
       "sunset_when": [
         "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
         "No feature error branch renders raw/empty surfaces for three passes"

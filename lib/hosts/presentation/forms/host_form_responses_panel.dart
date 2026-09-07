@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -124,7 +124,7 @@ class _HostFormResponsesPanelState
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.formResponses,
             mode: CatchErrorStateMode.compact,
@@ -204,7 +204,7 @@ class _HostFormResponsesPanelState
                 ],
                 if (state.loadMoreError case final error?) ...[
                   gapH12,
-                  CatchErrorState.fromError(
+                  CatchLocalizedErrorState(
                     error,
                     context: AppErrorContext.formResponses,
                     mode: CatchErrorStateMode.compact,
@@ -297,7 +297,7 @@ class _HostFormResponsesPanelState
                                   .loadMore(),
                       ),
                     if (state.loadMoreError case final error?)
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,

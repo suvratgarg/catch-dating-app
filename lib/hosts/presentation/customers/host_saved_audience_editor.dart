@@ -39,7 +39,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,
             onRetry: () =>
@@ -60,7 +60,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorState.fromError(
+              child: CatchLocalizedErrorState(
                 StateError(context.l10n.hostSavedAudienceNotFound),
                 context: AppErrorContext.customers,
                 onRetry: () =>
@@ -339,7 +339,7 @@ class _HostSavedAudienceEditorFormState
                               style: CatchTextStyles.recordTitle(context),
                             ),
                             gapH8,
-                            CatchErrorState.fromError(
+                            CatchLocalizedErrorState(
                               error,
                               context: AppErrorContext.customers,
                               onRetry: _busy ? null : _refreshPreview,

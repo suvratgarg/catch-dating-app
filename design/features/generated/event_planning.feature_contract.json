@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:06356a0f1b7720d0da21f96d07d4c95cf312e9c4aeca60625b19ef131362f162",
+  "resolvedDigest": "sha256:0927c83898df84f812cbc2ea2508283b685bd6d245432b3f6c17260c60199013",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -907,10 +907,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -1667,10 +1666,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

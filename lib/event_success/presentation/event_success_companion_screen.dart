@@ -8,11 +8,11 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -241,7 +241,7 @@ class CompanionError extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: CatchInsets.contentRelaxed,
-          child: CatchInlineErrorState.fromError(
+          child: CatchLocalizedInlineErrorState(
             error,
             context: errorContext,
             onRetry: onRetry,

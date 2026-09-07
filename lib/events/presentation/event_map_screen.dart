@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -102,7 +102,7 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                 widget.onRetry ??
                 () => ref.invalidate(eventMapViewModelProvider),
             loadingBuilder: (_) => const EventMapLoadingBody(),
-            errorBuilder: (_, error, _) => CatchErrorState.fromError(
+            errorBuilder: (_, error, _) => CatchLocalizedErrorState(
               error,
               context: AppErrorContext.event,
               onRetry:

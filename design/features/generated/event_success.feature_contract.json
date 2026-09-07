@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:9a89311ed95a0964114dde6bdd75435cb59dd5c33a0f668a6c6d9e835743c992",
+  "resolvedDigest": "sha256:aac67342edd8bdd4d782138512813d517da82029d405d1a88213e60c386b4eac",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2270,10 +2270,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },

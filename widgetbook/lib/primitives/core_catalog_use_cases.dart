@@ -26,7 +26,6 @@ import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_sliver_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
@@ -1633,6 +1632,7 @@ Widget catchErrorScaffoldCatalogStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchErrorScaffold(
+            retryLabel: context.l10n.sharedActionTryAgain,
             title: 'Profile unavailable',
             message: 'We could not load this profile right now.',
             onRetry: _noop,
@@ -1660,6 +1660,7 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
           child: CustomScrollView(
             slivers: [
               CatchSliverErrorState(
+                retryLabel: context.l10n.sharedActionTryAgain,
                 title: 'Feed unavailable',
                 message: 'Try refreshing the feed.',
                 onRetry: _noop,
@@ -1793,6 +1794,7 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
         child: Column(
           children: [
             CatchInlineErrorState(
+              retryLabel: context.l10n.sharedActionTryAgain,
               title: 'Could not save',
               message: 'Your changes are still local.',
               onRetry: _noop,

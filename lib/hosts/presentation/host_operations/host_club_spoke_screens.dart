@@ -74,7 +74,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             uidState.error!,
             context: AppErrorContext.auth,
             onRetry: () => ref.invalidate(uidProvider),
@@ -116,7 +116,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
@@ -133,7 +133,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorState.fromError(
+              child: CatchLocalizedErrorState(
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.club,
                 onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),

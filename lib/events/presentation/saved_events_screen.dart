@@ -2,7 +2,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -44,7 +45,7 @@ class SavedEventsScreen extends ConsumerWidget {
                 );
               }
               if (uidAsync.hasError) {
-                return CatchSliverErrorState.fromError(
+                return CatchLocalizedSliverErrorState(
                   uidAsync.error!,
                   context: AppErrorContext.auth,
                   onRetry: () => ref.invalidate(uidProvider),
@@ -198,7 +199,7 @@ class SavedEventsError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchErrorState.fromError(
+    return CatchLocalizedErrorState(
       error,
       context: AppErrorContext.event,
       onRetry: onRetry,
@@ -218,7 +219,7 @@ class SavedEventsClubNamesErrorSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSliverErrorState.fromError(
+    return CatchLocalizedSliverErrorState(
       error,
       context: AppErrorContext.event,
       onRetry: onRetry,

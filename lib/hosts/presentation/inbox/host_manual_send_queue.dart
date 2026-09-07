@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -45,7 +45,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
           ),
         ],
       ),
-      error: (error, _) => CatchErrorState.fromError(
+      error: (error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
         mode: CatchErrorStateMode.compact,
