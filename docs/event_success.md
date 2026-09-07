@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.49.0
+version: 1.50.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -179,6 +179,38 @@ and route dismissal to the exposed state and handle the returned error.
 The live roster controls, module-specific opt-outs, future allocation exclusion,
 and rehearsal adapters remain integration work. Moving-group
 membership now has its own scoped command boundary below. The new command receipts need terminal retention before activation.
+
+### Host assistance guest read
+
+`getEventAssistanceHostGuests` is a manager-only, read-only projection for an
+explicit selection of 1–50 unique roster attendee IDs in one live event. It
+authenticates and rate-limits the caller, checks organizer management before
+source reads, then batches canonical event, plan, runtime configuration, roster,
+guest and current-episode Operations records in one transaction. Missing and
+foreign roster rows share an unavailable result. Invalid source or incomplete
+work records fail the read instead of becoming an empty queue.
+
+The closed row variants distinguish unavailable, ineligible, uninitialized,
+sourceChanged and current participation. Only a current episode exposes reported
+joining intention and its work. Physical check-in remains a separate canonical
+roster fact. Work distinguishes notEnrolled from a recorded run; configuration
+status and current/unbound/changed permission binding remain separate from that
+run's stored status. A new episode cannot inherit an old episode's work.
+
+Recorded work exposes its last evaluation time and the existing typed live-work
+observation, next evaluation due time, expiry and published-intent count. These
+are historical observations and scheduling data, not a worker heartbeat or a
+promise that a due evaluation has executed. Publication counts message intents,
+not sends or delivery; this read does not inspect the delivery outbox. The
+response excludes roster contacts, sender credentials, budget authority, guest
+grants and Operations record identifiers. Reads never enroll a guest, evaluate
+policy, publish, schedule or send.
+
+Coverage is explicitly `selectedAttendees` for `lateJoin`; a selection cannot
+claim an event-wide all-clear or execution coverage for the other 45 workflows.
+The Flutter read adapter, Host attention/roster presentation, rehearsal projection
+and activation remain integration work. The existing runtime and participation
+commands retain their own reviewed mutation boundaries.
 
 ### Saved assistance settings
 

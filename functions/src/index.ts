@@ -519,6 +519,8 @@ export {
   recordOrganizerAnalyticsEvent,
 } from "./analytics/organizerAnalyticsEvents";
 
+export {getEventAssistanceHostGuests} from
+  "./eventSuccess/operations/hostGuestsHandlers";
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
   "./eventSuccess/operations/participationHandlers";
 export {getEventAssistanceAccountability,

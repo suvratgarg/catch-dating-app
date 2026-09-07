@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_host_guests_response.schema.json",
+  "title": "EventAssistanceHostGuestsCallableResponse",
+  "$ref": "../shared/event_assistance_host_guests.schema.json#/definitions/Response"
+}

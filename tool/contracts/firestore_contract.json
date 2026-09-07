@@ -2036,7 +2036,8 @@
         "setEventAssistanceParticipation",
         "submitEventAssistanceGuestChoice",
         "getEventAssistanceAccountability",
-        "resolveEventAssistanceAccountability"
+        "resolveEventAssistanceAccountability",
+        "getEventAssistanceHostGuests"
       ]
     },
     {

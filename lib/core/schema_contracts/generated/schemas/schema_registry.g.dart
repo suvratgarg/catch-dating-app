@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetEventAssistanceHostGuestsCallablePayload',
+    source: 'callables/get_event_assistance_host_guests_payload.schema.json',
+    schema: schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceHostGuestsCallableResponse',
+    source: 'callable_responses/event_assistance_host_guests_response.schema.json',
+    schema: schemaEventAssistanceHostGuestsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SetEventAssistanceCheckpointCloseoutCallablePayload',
     source: 'callables/set_event_assistance_checkpoint_closeout_payload.schema.json',
     schema: schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,
@@ -3109,6 +3119,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetEventAssistanceHostGuestsCallablePayload': schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
+  'EventAssistanceHostGuestsCallableResponse': schemaEventAssistanceHostGuestsCallableResponseSchema,
   'SetEventAssistanceCheckpointCloseoutCallablePayload': schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,
   'ReassignEventAssistanceCheckpointReporterCallablePayload': schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema,
   'GetEventAssistanceCheckpointCallablePayload': schemaGetEventAssistanceCheckpointCallablePayloadSchema,
@@ -3730,6 +3742,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_event_assistance_host_guests_payload.schema.json': schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
+  'callable_responses/event_assistance_host_guests_response.schema.json': schemaEventAssistanceHostGuestsCallableResponseSchema,
   'callables/set_event_assistance_checkpoint_closeout_payload.schema.json': schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,
   'callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json': schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema,
   'callables/get_event_assistance_checkpoint_payload.schema.json': schemaGetEventAssistanceCheckpointCallablePayloadSchema,

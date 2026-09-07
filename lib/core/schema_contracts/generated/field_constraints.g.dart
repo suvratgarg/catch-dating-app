@@ -16324,6 +16324,384 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceHostGuestsCallableResponseContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.coverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuests = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 50,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionClaimedEta = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.claimedEta',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsParticipationState = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.participation.state',
+    required: true,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsRosterStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.rosterStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['invited', 'waitlisted', 'cancelled'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkConfigurationBinding = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.configurationBinding',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['current', 'unbound', 'configurationChanged'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionMessageKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.messageKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionNextEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.nextEvaluationAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unreachable', 'entryDecision', 'missingInformation'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionShouldSend = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.shouldSend',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing', 'paused', 'configurationChanged', 'sourceChanged', 'expired', 'eventClosed'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkNextEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.nextEvaluationAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkPublishedIntentCount = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.publishedIntentCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseGuestsItemsWorkRunStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.guests.items.work.runStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['running', 'paused', 'completed'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseRuntimeStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.runtimeStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unconfigured', 'paused', 'sourceChanged', 'expired', 'eventClosed', 'configured'],
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceHostGuestsCallableResponseWorkflow = CatchContractFieldConstraints(
+    path: 'eventAssistanceHostGuestsCallableResponse.workflow',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
     path: 'eventAssistanceLateJoinDecision.guidance.destination.checkpointId',
     maxLength: 2000,
@@ -36008,6 +36386,48 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const getEventAssistanceHostGuestsCallablePayloadAttendeeIds = CatchContractFieldConstraints(
+    path: 'getEventAssistanceHostGuestsCallablePayload.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const getEventAssistanceHostGuestsCallablePayloadAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'getEventAssistanceHostGuestsCallablePayload.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceHostGuestsCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceHostGuestsCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceHostGuestsCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceHostGuestsCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceHostGuestsCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceHostGuestsCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventAssistanceMembershipCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -79388,6 +79808,57 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGuestViewCallableResponse.status': eventAssistanceGuestViewCallableResponseStatus,
     'eventAssistanceGuestViewCallableResponse.text': eventAssistanceGuestViewCallableResponseText,
     'eventAssistanceGuestViewCallableResponse.title': eventAssistanceGuestViewCallableResponseTitle,
+    'eventAssistanceHostGuestsCallableResponse.context.eventId': eventAssistanceHostGuestsCallableResponseContextEventId,
+    'eventAssistanceHostGuestsCallableResponse.context.mode': eventAssistanceHostGuestsCallableResponseContextMode,
+    'eventAssistanceHostGuestsCallableResponse.context.organizerId': eventAssistanceHostGuestsCallableResponseContextOrganizerId,
+    'eventAssistanceHostGuestsCallableResponse.coverage': eventAssistanceHostGuestsCallableResponseCoverage,
+    'eventAssistanceHostGuestsCallableResponse.guests': eventAssistanceHostGuestsCallableResponseGuests,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.attendeeId': eventAssistanceHostGuestsCallableResponseGuestsItemsAttendeeId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.checkedIn': eventAssistanceHostGuestsCallableResponseGuestsItemsCheckedIn,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.episodeId': eventAssistanceHostGuestsCallableResponseGuestsItemsEpisodeId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.claimedEta': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionClaimedEta,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.checkpointId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetCheckpointId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.groupId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetGroupId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.itineraryId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetItineraryId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.lateEntry': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetLateEntry,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.placeId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetPlaceId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.routeId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetRouteId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.intention.target.stopId': eventAssistanceHostGuestsCallableResponseGuestsItemsIntentionTargetStopId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.participation.state': eventAssistanceHostGuestsCallableResponseGuestsItemsParticipationState,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.rosterStatus': eventAssistanceHostGuestsCallableResponseGuestsItemsRosterStatus,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.configurationBinding': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkConfigurationBinding,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.expiresAt': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkExpiresAt,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.at': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationAt,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.checkpointId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationCheckpointId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.groupId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationGroupId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.itineraryId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationItineraryId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.lateEntry': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationLateEntry,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.placeId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationPlaceId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.routeId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationRouteId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.destination.stopId': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceDestinationStopId,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.materialKey': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceMaterialKey,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.revision': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceRevision,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.text': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceText,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.guidance.validUntil': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionGuidanceValidUntil,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.messageKey': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionMessageKey,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.nextEvaluationAt': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionNextEvaluationAt,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.reason': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionReason,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.decision.shouldSend': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationDecisionShouldSend,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.kind': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationKind,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.lastEvaluation.observation.reason': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkLastEvaluationObservationReason,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.nextEvaluationAt': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkNextEvaluationAt,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.publishedIntentCount': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkPublishedIntentCount,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.revision': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkRevision,
+    'eventAssistanceHostGuestsCallableResponse.guests.items.work.runStatus': eventAssistanceHostGuestsCallableResponseGuestsItemsWorkRunStatus,
+    'eventAssistanceHostGuestsCallableResponse.runtimeStatus': eventAssistanceHostGuestsCallableResponseRuntimeStatus,
+    'eventAssistanceHostGuestsCallableResponse.serverTime': eventAssistanceHostGuestsCallableResponseServerTime,
+    'eventAssistanceHostGuestsCallableResponse.workflow': eventAssistanceHostGuestsCallableResponseWorkflow,
     'eventAssistanceLateJoinDecision.guidance.destination.checkpointId': eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId,
     'eventAssistanceLateJoinDecision.guidance.destination.groupId': eventAssistanceLateJoinDecisionGuidanceDestinationGroupId,
     'eventAssistanceLateJoinDecision.guidance.destination.itineraryId': eventAssistanceLateJoinDecisionGuidanceDestinationItineraryId,
@@ -82042,6 +82513,11 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceGroupStaffCallablePayload.phoneNumber': getEventAssistanceGroupStaffCallablePayloadPhoneNumber,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
+    'getEventAssistanceHostGuestsCallablePayload.attendeeIds': getEventAssistanceHostGuestsCallablePayloadAttendeeIds,
+    'getEventAssistanceHostGuestsCallablePayload.attendeeIds.items': getEventAssistanceHostGuestsCallablePayloadAttendeeIdsItems,
+    'getEventAssistanceHostGuestsCallablePayload.context.eventId': getEventAssistanceHostGuestsCallablePayloadContextEventId,
+    'getEventAssistanceHostGuestsCallablePayload.context.mode': getEventAssistanceHostGuestsCallablePayloadContextMode,
+    'getEventAssistanceHostGuestsCallablePayload.context.organizerId': getEventAssistanceHostGuestsCallablePayloadContextOrganizerId,
     'getEventAssistanceMembershipCallablePayload.attendeeId': getEventAssistanceMembershipCallablePayloadAttendeeId,
     'getEventAssistanceMembershipCallablePayload.context.eventId': getEventAssistanceMembershipCallablePayloadContextEventId,
     'getEventAssistanceMembershipCallablePayload.context.mode': getEventAssistanceMembershipCallablePayloadContextMode,
