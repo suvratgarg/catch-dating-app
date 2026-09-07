@@ -18,8 +18,9 @@ export const packageGraphPolicy = Object.freeze({
   },
   catch_ui: {
     projectRoot: "packages/catch_ui",
-    requiredPackages: ["flutter", "catch_tokens", "phosphor_flutter"],
-    allowedPackages: ["flutter", "catch_tokens", "phosphor_flutter"],
+    requiredPackages: ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"],
+    allowedPackages: ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"],
+    requiredVersions: {skeletonizer: "2.1.3"},
     forbiddenPackages: [],
     requiredPlugins: [],
     forbiddenPlugins: [],
@@ -27,21 +28,25 @@ export const packageGraphPolicy = Object.freeze({
   consumer: {
     projectRoot: "apps/consumer",
     requiredPackages: ["health", "razorpay_flutter"],
-    forbiddenPackages: [],
+    forbiddenPackages: ["shimmer", "skeletonizer"],
     requiredPlugins: ["health", "razorpay_flutter"],
     forbiddenPlugins: [],
   },
   host: {
     projectRoot: "apps/host",
     requiredPackages: [],
-    forbiddenPackages: ["health", "razorpay_flutter"],
+    forbiddenPackages: ["health", "razorpay_flutter", "shimmer", "skeletonizer"],
     requiredPlugins: [],
     forbiddenPlugins: ["health", "razorpay_flutter"],
   },
 });
 
 export function declaredPackageNamesFromPubspec(source) {
-  const names = new Set();
+  return new Set(declaredPackageVersionsFromPubspec(source).keys());
+}
+
+export function declaredPackageVersionsFromPubspec(source) {
+  const versions = new Map();
   let inDependencies = false;
   for (const line of source.split(/\r?\n/u)) {
     if (line === "dependencies:") {
@@ -50,11 +55,15 @@ export function declaredPackageNamesFromPubspec(source) {
     }
     if (inDependencies && /^\S/u.test(line) && line.trim().length > 0) break;
     const match = inDependencies
-      ? line.match(/^  ([a-zA-Z0-9_]+):(?:\s+.*)?$/u)
+      ? line.match(/^  ([a-zA-Z0-9_]+):(?:\s+(.*))?$/u)
       : null;
-    if (match) names.add(match[1]);
+    if (match) {
+      const version = (match[2] ?? "").replace(/\s+#.*$/u, "").trim()
+        .replace(/^(['"])(.*)\1$/u, "$2");
+      versions.set(match[1], version);
+    }
   }
-  return names;
+  return versions;
 }
 
 export function pluginNamesFromMetadata(source) {
@@ -71,6 +80,7 @@ export function pluginNamesFromMetadata(source) {
 export function validateRoleGraph({
   role,
   declaredPackages,
+  declaredVersions = new Map(),
   pluginPackages,
   policy = packageGraphPolicy,
 }) {
@@ -90,6 +100,11 @@ export function validateRoleGraph({
   for (const packageName of declaredPackages) {
     if (contract.allowedPackages && !contract.allowedPackages.includes(packageName)) {
       findings.push(`${role}: dependency '${packageName}' is outside the ${role === "catch_tokens" ? "Flutter-only token" : "presentation-only UI"} boundary.`);
+    }
+  }
+  for (const [packageName, version] of Object.entries(contract.requiredVersions ?? {})) {
+    if (declaredPackages.has(packageName) && declaredVersions.get(packageName) !== version) {
+      findings.push(`${role}: package '${packageName}' must be pinned to '${version}'.`);
     }
   }
   for (const pluginName of contract.requiredPlugins) {
@@ -124,6 +139,7 @@ export function scanAppPackageGraphs({
       findings.push(`${role}: pubspec must use the repository workspace lock.`);
     }
     const declaredPackages = declaredPackageNamesFromPubspec(pubspecSource);
+    const declaredVersions = declaredPackageVersionsFromPubspec(pubspecSource);
     const policyPluginNames = new Set([
       ...contract.requiredPlugins,
       ...contract.forbiddenPlugins,
@@ -140,6 +156,7 @@ export function scanAppPackageGraphs({
       ...validateRoleGraph({
         role,
         declaredPackages,
+        declaredVersions,
         pluginPackages,
         policy,
       }),
@@ -154,6 +171,15 @@ export function scanAppPackageGraphs({
       hasHealth: declaredPackages.has("health"),
       hasRazorpay: declaredPackages.has("razorpay_flutter"),
     };
+  }
+  const appPubspecPath = path.join(root, "pubspec.yaml");
+  if (fs.existsSync(appPubspecPath)) {
+    const appPackages = declaredPackageNamesFromPubspec(fs.readFileSync(appPubspecPath, "utf8"));
+    for (const engine of ["shimmer", "skeletonizer"]) {
+      if (appPackages.has(engine)) {
+        findings.push(`app: loading dependency '${engine}' must stay behind catch_ui.`);
+      }
+    }
   }
   return {findings, reports};
 }

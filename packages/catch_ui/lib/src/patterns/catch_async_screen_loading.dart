@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:catch_ui/src/patterns/catch_screen_body.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton_list.dart';
+import 'package:flutter/widgets.dart';
 
 class CatchAsyncScreenLoading extends StatelessWidget {
   const CatchAsyncScreenLoading({

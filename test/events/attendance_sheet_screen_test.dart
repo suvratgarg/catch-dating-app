@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';

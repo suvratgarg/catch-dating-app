@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:a3aac368cc868621dd8a8b523bdd074c44892135c83552155fb04662f0243c02",
+  "resolvedDigest": "sha256:25c96124854c077bec5ce4922a5d685f10ae65be07a5a974e94d0772ce44c4ae",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4837,7 +4837,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchSkeleton",
-              "file": "lib/core/widgets/catch_skeleton.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
               "constructors": [
                 "CatchSkeleton.card",
                 "CatchSkeleton.box",

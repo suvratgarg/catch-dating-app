@@ -4157,7 +4157,7 @@
       "summary": "Content-shaped placeholder concept for known loading layouts, including structure-derived content and list/screen/sliver placement adapters.",
       "dart": {
         "symbol": "CatchSkeleton",
-        "file": "lib/core/widgets/catch_skeleton.dart",
+        "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
         "constructors": [
           "CatchSkeleton.card",
           "CatchSkeleton.box",
@@ -4274,7 +4274,7 @@
           {
             "id": "catch.skeleton.derived_content",
             "symbol": "CatchSkeletonized",
-            "file": "lib/core/widgets/catch_skeletonized.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_skeletonized.dart",
             "summary": "Skeletonizes the real loaded composition so layout edits cannot drift into a parallel placeholder tree.",
             "states": [
               "derived-content",
@@ -4293,7 +4293,7 @@
           {
             "id": "catch.skeleton.list",
             "symbol": "CatchSkeletonList",
-            "file": "lib/core/widgets/catch_skeleton.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_list.dart",
             "summary": "Vertical list of content-shaped skeleton cards with standard spacing.",
             "states": [
               "list",
@@ -4312,7 +4312,7 @@
           {
             "id": "catch.skeleton.async_screen",
             "symbol": "CatchAsyncScreenLoading",
-            "file": "lib/core/widgets/catch_async_screen_loading.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_async_screen_loading.dart",
             "summary": "Screen-body placement adapter that composes CatchSkeletonList with CatchScreenBody.",
             "states": [
               "async-screen",
@@ -4332,7 +4332,7 @@
           {
             "id": "catch.skeleton.async_sliver",
             "symbol": "CatchAsyncSliverLoading",
-            "file": "lib/core/widgets/catch_async_sliver_loading.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_async_sliver_loading.dart",
             "summary": "Sliver placement adapter that composes CatchSkeletonList with CatchSliverPageBody.",
             "states": [
               "async-sliver",
@@ -4370,6 +4370,7 @@
         ],
         "notes": [
           "Prefer content-shaped skeletons when the eventual layout is known.",
+          "Both explicit shapes and derived layouts use the same Skeletonizer effect, token colors, motion duration, static reduced-motion fallback, and loading semantics.",
           "Prefer CatchSkeletonized for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
           "Async screen and sliver loading are placement adapters over CatchSkeletonList, not separate visual concepts."
         ]

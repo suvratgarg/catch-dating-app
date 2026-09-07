@@ -1,30 +1,32 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton_effect.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 /// Skeleton loading placeholders with a shimmer animation.
 ///
-/// Use these instead of [CatchLoadingIndicator] when the content shape is
+/// Use these instead of `CatchLoadingIndicator` when the content shape is
 /// known — skeletons feel faster than spinners and reduce layout shift when
 /// data arrives.
 ///
 /// **Named constructors:**
-/// - [CatchSkeleton.card] — rounded rectangle matching [CatchSurface] shape
+/// - [CatchSkeleton.card] — rounded rectangle matching `CatchSurface` shape
 /// - [CatchSkeleton.box] — fixed-size rounded rectangle for icons/pills
 /// - [CatchSkeleton.text] — single text line
 /// - [CatchSkeleton.textBlock] — multi-line paragraph
 /// - [CatchSkeleton.circle] — circular avatar placeholder
 /// - [CatchSkeleton.custom] — freeform child with shimmer overlay
 ///
-/// All constructors render inside [Shimmer] from the `shimmer` package,
-/// using Catch-themed colors (warm base, slightly lighter highlight).
+/// All constructors use the shared Skeletonizer effect and Catch-themed colors.
+/// Reduce Motion keeps the placeholders static; temporary labels and controls
+/// are excluded from accessibility and interaction while loading.
 class CatchSkeleton extends StatelessWidget {
   const CatchSkeleton._({required this.child});
 
   /// Rounded-rectangle card placeholder.
   ///
   /// Defaults to full width with a 120 px height — a reasonable proxy for a
-  /// [CatchSurface] or another content shell.
+  /// `CatchSurface` or another content shell.
   factory CatchSkeleton.card({
     double? width,
     double height = CatchLayout.skeletonCardHeight,
@@ -135,8 +137,7 @@ class CatchSkeleton extends StatelessWidget {
   /// Freeform skeleton — wraps [child] in a shimmer overlay.
   ///
   /// Use when none of the named constructors match the content shape.
-  /// The child should use `Colors.white` for its decoration fill so the
-  /// shimmer gradient is visible.
+  /// The child's painted shape receives the shared loading effect.
   factory CatchSkeleton.custom({required Widget child}) {
     return CatchSkeleton._(child: child);
   }
@@ -145,42 +146,11 @@ class CatchSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Shimmer(
-      gradient: LinearGradient(
-        colors: [t.raised, t.surface, t.raised],
-        stops: const [0.0, 0.5, 1.0],
+    return ExcludeSemantics(
+      child: Skeletonizer.zone(
+        effect: catchSkeletonEffect(context),
+        child: Skeleton.shade(child: child),
       ),
-      period: CatchMotion.skeletonShimmer,
-      child: child,
-    );
-  }
-}
-
-/// A list of skeleton cards with a [count] and optional spacing.
-///
-/// Convenience widget for swipe hubs, dashboards, and club lists.
-class CatchSkeletonList extends StatelessWidget {
-  const CatchSkeletonList({
-    super.key,
-    this.count = 3,
-    this.height = CatchLayout.skeletonCardHeight,
-    this.spacing = CatchSpacing.s3,
-  });
-
-  final int count;
-  final double height;
-  final double spacing;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (var i = 0; i < count; i++) ...[
-          CatchSkeleton.card(height: height),
-          if (i < count - 1) SizedBox(height: spacing),
-        ],
-      ],
     );
   }
 }

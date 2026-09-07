@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:c246ece5451042b88acaf76e63509c79076b55ba730c7882e65886181b1e0235",
+  "resolvedDigest": "sha256:4c1471b1f4834c3e2f95468f4778e252b191039cf8c625ab3ec8f0a924cd702e",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6246,7 +6246,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchSkeleton",
-              "file": "lib/core/widgets/catch_skeleton.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
               "constructors": [
                 "CatchSkeleton.card",
                 "CatchSkeleton.box",

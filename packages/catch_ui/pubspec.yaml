@@ -13,6 +13,7 @@ dependencies:
   catch_tokens:
     path: ../catch_tokens
   phosphor_flutter: ^2.1.0
+  skeletonizer: 2.1.3
 
 dev_dependencies:
   flutter_lints: ^6.0.0

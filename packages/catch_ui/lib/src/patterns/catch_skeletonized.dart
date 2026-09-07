@@ -1,5 +1,5 @@
-import 'package:catch_tokens/catch_tokens.dart';
-import 'package:flutter/material.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton_effect.dart';
+import 'package:flutter/widgets.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 /// Turns a real content composition into its loading skeleton.
@@ -19,21 +19,11 @@ class CatchSkeletonized extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations == true;
-    final effect = reduceMotion
-        ? SolidColorEffect(color: t.raised)
-        : ShimmerEffect(
-            baseColor: t.raised,
-            highlightColor: t.surface,
-            duration: CatchMotion.skeletonShimmer,
-          );
-
     return ExcludeSemantics(
       excluding: enabled,
       child: Skeletonizer(
         enabled: enabled,
-        effect: effect,
+        effect: catchSkeletonEffect(context),
         ignoreContainers: true,
         child: child,
       ),

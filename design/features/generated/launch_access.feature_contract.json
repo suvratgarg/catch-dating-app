@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:deb2d8bcbcfec0c423a30e6d2bed00289792bf273e039e113665f716b90f18c0",
+  "resolvedDigest": "sha256:ab5e9ce1f9465af660a10f424f2c102bb4cc207c1bdd20361d181b4a17515344",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -948,7 +948,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchSkeleton",
-              "file": "lib/core/widgets/catch_skeleton.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
               "constructors": [
                 "CatchSkeleton.card",
                 "CatchSkeleton.box",

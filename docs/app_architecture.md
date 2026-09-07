@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.28.0
-updated: 2026-09-06
+version: 1.29.0
+updated: 2026-09-07
 owner: app_architecture
 status: active
 ---
@@ -62,8 +62,13 @@ section under 120 lines.
 
 Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
 The package owns its branded fonts and licenses and depends only on Flutter,
-`catch_tokens`, and Phosphor. `AppTheme` remains an app adapter that adds the
-activity-domain palette to `CatchTheme`; it does not define another theme.
+`catch_tokens`, Phosphor, and `skeletonizer` pinned to 2.1.3. Loading wrappers
+use Skeletonizer as their single engine for explicit shapes and real-layout
+skeletons, with shared token colors, timing, effect, reduced-motion handling,
+and loading semantics. The separate `shimmer` package is removed in the same
+migration. Engine imports remain internal to `catch_ui`. `AppTheme` remains
+an app adapter that adds the activity-domain palette to `CatchTheme`; it does
+not define another theme.
 `CatchLocalizedErrorState`, scaffold, sliver and inline adapters map app errors
 and inherited-locale copy onto the shared error family. Shared retry actions
 receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.

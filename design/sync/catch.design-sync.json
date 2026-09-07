@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177",
+  "sourceDigest": "29c4f822681ea9bb60e2868c0694d14fa35b6ac8b6a45e6a882c4c76e2143b20",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177",
-    "contractDigest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177"
+    "digest": "29c4f822681ea9bb60e2868c0694d14fa35b6ac8b6a45e6a882c4c76e2143b20",
+    "contractDigest": "29c4f822681ea9bb60e2868c0694d14fa35b6ac8b6a45e6a882c4c76e2143b20"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "f5cac8027760e193b6abf97836ed345148a0f34e9a5d6db114be4d3065b0ffa9",
+    "handoffRequestDigest": "5ccb496e4c0048bd8149bfe587725fd08ecda8e66904efa9b3d30f723e39b6f8",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -996,7 +996,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.skeleton",
       "dartSymbol": "CatchSkeleton",
-      "dartFile": "lib/core/widgets/catch_skeleton.dart",
+      "dartFile": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
       "figmaName": "Catch/Skeleton",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1021,7 +1021,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "83c90a2c3fa8a8dc2f1e82a1cec1d4f4e231f6b4cfc2464ea34d37a10b635189"
+      "contractDigest": "6e11c85d7a922110199b7b40f286165523705ac49dd98451090939ea256938c9"
     },
     {
       "contractId": "catch.loading_indicator",

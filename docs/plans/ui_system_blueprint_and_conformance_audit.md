@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.8.0
+version: 1.9.0
 updated: 2026-09-07
 owner: app_architecture
 status: active
@@ -345,9 +345,20 @@ Workspace gains two members (root `pubspec.yaml` `workspace:` list):
 packages/catch_tokens/   # generated primitive tokens + semantic token classes
                          # deps: flutter only
 packages/catch_ui/       # foundations, primitives, components, patterns
-                         # deps: flutter + catch_tokens (+ phosphor_flutter)
+                         # deps: flutter + catch_tokens + phosphor_flutter + skeletonizer 2.1.3
                          # NO riverpod, NO firebase, NO app package, NO feature types
 ```
+
+Loading uses one third-party engine: `skeletonizer` 2.1.3, the version already
+resolved by the app workspace. Remove the separate `shimmer` dependency when
+migrating the loading family. Both explicit placeholder shapes and skeletons
+of real widget compositions remain supported through Catch-owned APIs, using
+the same token colors, motion duration, shimmer effect, reduced-motion static
+fallback, and loading-semantics policy. Package consumers do not import the
+engine directly. This is a narrow presentation-only dependency exception;
+Riverpod, Firebase, app packages, and feature types remain excluded. The
+animation sweep change and reduced-motion correction require reviewed visual
+baselines; relocation-only pixel comparisons do not establish engine equivalence.
 
 Internal layout of `catch_ui` encodes the P3 ladder:
 
@@ -666,8 +677,9 @@ helpers, and bundled font/license assets into `catch_ui/lib/src/foundations`.
 `CatchTheme` owns feature-neutral Material wiring; the app retains `AppTheme`
 as the activity-palette adapter. Branded styles use package-qualified font
 families, and the existing golden loader resolves the same bundled bytes.
-The package boundary permits only Flutter, `catch_tokens`, and Phosphor;
-workspace analysis explicitly visits its library and test sources.
+The package boundary permits only Flutter, `catch_tokens`, Phosphor, and the
+single loading engine pinned to `skeletonizer` 2.1.3 under D1; workspace analysis
+explicitly visits its library and test sources.
 
 Phase 3b moves the provider-free surface, control shell, row-press surface,
 text/icon atoms, gap values, image loading/grade/scrim, dividers, indicators,
@@ -981,6 +993,16 @@ current field copy. A production form-list preview covers the scope under both
 commit modes, including an expanded editor and its collapsed sibling. The
 schema-coupled controls, section renderer, and form editors remain app-side
 until the constraint transaction allows their package move.
+
+The eight loading widgets move into individual shared pattern files. Explicit
+placeholder shapes and real-layout skeletons use one internal Skeletonizer effect
+configuration; the separate Shimmer package and all five old app libraries are
+removed. The existing shape geometry and public Catch APIs are preserved. Both
+paths stop animation under Reduce Motion and exclude placeholder semantics and
+pointer interaction; disabling real-layout skeletonization restores the content.
+The dependency gate pins Skeletonizer to 2.1.3 and rejects engine declarations
+in app packages. Loading motion and accessibility are verified at the rendered
+widget boundary, and affected visual baselines follow the approved D1 change.
 
 ### Phase 4 — One registry, binding grammar
 

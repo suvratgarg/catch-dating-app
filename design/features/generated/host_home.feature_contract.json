@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:c5dff08be66e855db04b415e26b4efa2c45409b90260c1adff45ad5ed63c8595",
+  "resolvedDigest": "sha256:5d38bf21a8adbb421efcdebc874a15e7a95bf8af00e20cc962e38805c16cf197",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -2001,7 +2001,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchSkeleton",
-              "file": "lib/core/widgets/catch_skeleton.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
               "constructors": [
                 "CatchSkeleton.card",
                 "CatchSkeleton.box",

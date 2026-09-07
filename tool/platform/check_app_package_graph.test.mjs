@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   declaredPackageNamesFromPubspec,
+  declaredPackageVersionsFromPubspec,
   pluginNamesFromMetadata,
   scanAppPackageGraphs,
   validateRoleGraph,
@@ -69,7 +70,7 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     const uiRoot = path.join(root, "packages/catch_ui");
     fs.mkdirSync(uiRoot, {recursive: true});
     fs.writeFileSync(path.join(uiRoot, "pubspec.yaml"),
-      "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n");
+      "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n  skeletonizer: 2.1.3\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -78,6 +79,12 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     );
     assert.equal(result.reports.consumer.hasHealth, true);
     assert.equal(result.reports.host.hasHealth, false);
+    for (const engine of ["shimmer", "skeletonizer"]) {
+      fs.writeFileSync(path.join(root, "pubspec.yaml"),
+        `name: catch_dating_app\nresolution: workspace\ndependencies:\n  ${engine}: any\n`);
+      assert.deepEqual(scanAppPackageGraphs({root}).findings,
+        [`app: loading dependency '${engine}' must stay behind catch_ui.`]);
+    }
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
@@ -97,10 +104,38 @@ test("token package rejects every dependency outside Flutter", () => {
 });
 
 test("UI package rejects app, state, backend and unrelated dependencies", () => {
-  const allowed = ["flutter", "catch_tokens", "phosphor_flutter"];
-  assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set(allowed), pluginPackages: new Set()}), []);
-  for (const dependency of ["catch_dating_app", "riverpod", "flutter_riverpod", "firebase_core", "collection"]) {
-    assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set([...allowed, dependency]), pluginPackages: new Set()}),
+  const allowed = ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"];
+  const declaredVersions = new Map([["skeletonizer", "2.1.3"]]);
+  assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set(allowed), declaredVersions, pluginPackages: new Set()}), []);
+  for (const dependency of ["catch_dating_app", "riverpod", "flutter_riverpod", "firebase_core", "collection", "shimmer"]) {
+    assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set([...allowed, dependency]), declaredVersions, pluginPackages: new Set()}),
       [`catch_ui: dependency '${dependency}' is outside the presentation-only UI boundary.`]);
+  }
+});
+
+test("UI loading requires the exact ratified Skeletonizer version", () => {
+  for (const version of ["2.1.3", "'2.1.3'", '"2.1.3" # loading engine', "^2.1.3", "2.1.4", "any", ""]) {
+    const source = `dependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n  skeletonizer: ${version}\n`;
+    const findings = validateRoleGraph({
+      role: "catch_ui",
+      declaredPackages: declaredPackageNamesFromPubspec(source),
+      declaredVersions: declaredPackageVersionsFromPubspec(source),
+      pluginPackages: new Set(),
+    });
+    assert.deepEqual(findings, ["2.1.3", "'2.1.3'", '"2.1.3" # loading engine'].includes(version)
+      ? [] : ["catch_ui: package 'skeletonizer' must be pinned to '2.1.3'."]);
+  }
+});
+
+test("app entrypoint packages cannot add a second loading engine or import it directly", () => {
+  for (const role of ["consumer", "host"]) {
+    const base = role === "consumer" ? ["health", "razorpay_flutter"] : [];
+    for (const engine of ["shimmer", "skeletonizer"]) {
+      assert.deepEqual(validateRoleGraph({
+        role,
+        declaredPackages: new Set([...base, engine]),
+        pluginPackages: new Set(base),
+      }), [`${role}: forbidden package '${engine}' is present.`]);
+    }
   }
 });
