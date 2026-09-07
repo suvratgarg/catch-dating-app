@@ -4236,6 +4236,9 @@
           "custom",
           "derived-content",
           "list",
+          "rows",
+          "box-row",
+          "chips",
           "async-screen",
           "async-sliver"
         ],
@@ -4264,6 +4267,9 @@
           "CatchSkeleton.custom",
           "CatchSkeletonized",
           "CatchSkeletonList",
+          "CatchSkeletonRows",
+          "CatchSkeletonBoxRow",
+          "CatchSkeletonChips",
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
           "CatchScreenBody",
@@ -4300,6 +4306,58 @@
               "custom-count",
               "custom-height",
               "custom-spacing"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "layout",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          },
+          {
+            "id": "catch.skeleton.rows",
+            "symbol": "CatchSkeletonRows",
+            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_rows.dart",
+            "summary": "Repeated placeholder rows with an optional title, avatar/media/icon leading shape, and optional dividers.",
+            "states": [
+              "avatar-titled",
+              "media-tile",
+              "icon",
+              "divided-media-tile"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "layout",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          },
+          {
+            "id": "catch.skeleton.box_row",
+            "symbol": "CatchSkeletonBoxRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_box_row.dart",
+            "summary": "Equal-width placeholder boxes reserve a compact control or action row with caller-owned count, height, radius, and gap.",
+            "states": [
+              "three-controls"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "layout",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          },
+          {
+            "id": "catch.skeleton.chips",
+            "symbol": "CatchSkeletonChips",
+            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_chips.dart",
+            "summary": "Wrapping placeholder pills reserve a chip or tag row using token-owned widths and caller-owned height.",
+            "states": [
+              "default",
+              "compact"
             ],
             "governance": {
               "conceptRole": "member",
