@@ -540,10 +540,13 @@ are deleted rather than kept as aliases. Component contracts, Widgetbook
 states, and the section/top-bar scanners provide the review and regression
 layers.
 
-The reviewed Flutter library surface is `package:catch_dating_app/catch_ui.dart`.
-It exports semantic tokens, fields, sections, page composition, responsive
-policies, and typed form orchestration while excluding renderer scopes and
-focus-surface implementation members. Analyzer diagnostics reject feature-level
+Shared Flutter UI is imported through `package:catch_ui/catch_ui.dart`, with
+semantic tokens in `package:catch_tokens/catch_tokens.dart`. The app compatibility
+barrel is retired. Schema-coupled fields, sections, root-header composition, and
+typed form orchestration retain focused app imports until their Phase 3 move.
+The final reviewed barrel excludes renderer scopes and focus-surface
+implementation members; their temporary package exports support the remaining
+app-side owners during extraction. Analyzer diagnostics reject feature-level
 construction of those internal geometry objects and reject field-owned sibling
 dividers or lane-gutter overrides that still type-check.
 

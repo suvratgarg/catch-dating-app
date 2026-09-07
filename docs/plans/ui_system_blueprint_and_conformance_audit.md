@@ -890,6 +890,13 @@ event-card member identities and the status badge's keep-distinct decision.
 Their direct cases move into the primitive corpus with text scale 2.0 coverage;
 the activity stamp and backdrop retain their app-domain visual specification.
 
+Widgetbook already depends directly on `catch_ui` and retains the app dependency
+for feature previews. The unused app compatibility barrel is deleted after a
+whole-repository Dart directive scan found no import, export, or part references.
+Shared UI and token imports use their package entrypoints. Removing the temporary
+renderer exports from the shared barrel still follows the remaining app-side
+field, section, root-header, and form-owner moves.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

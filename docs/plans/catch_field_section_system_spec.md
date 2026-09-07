@@ -147,10 +147,11 @@ does not preserve a knob merely because an old caller once needed it.
   `CatchSectionFocusSurface` are implementation members. They remain public
   only where Dart library boundaries require it, are excluded from the export
   barrel, and are protected from feature construction by analyzer diagnostics.
-- `lib/catch_ui.dart` is the reviewed public barrel for the stable theme,
-  field, section, page, and form-orchestration vocabulary. Extraction into a
-  standalone package remains mechanical rather than requiring another API
-  design.
+- `packages/catch_ui/lib/catch_ui.dart` is the shared package's public barrel.
+  The unused app compatibility barrel is retired. Remaining schema-coupled
+  fields, sections, root-header composition, and form descriptors use focused
+  app imports during Phase 3; moving their owners also retires the temporary
+  renderer exports needed across the package boundary.
 
 #### API removals and migration rules
 
