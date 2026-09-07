@@ -112,6 +112,7 @@ void main() {
                       : CatchFieldStatus.idle,
                 ),
                 CatchField.read(
+                  key: const ValueKey('status'),
                   copy: _copy('Custom'),
                   title: 'Status',
                   status: saving
@@ -134,7 +135,10 @@ void main() {
     );
     expect(actionBar.savingLabel, 'Custom working');
     final indicator = tester.widget<CatchFieldStatusIndicator>(
-      find.byType(CatchFieldStatusIndicator).first,
+      find.descendant(
+        of: find.byKey(const ValueKey('status')),
+        matching: find.byType(CatchFieldStatusIndicator),
+      ),
     );
     expect(indicator.savingSemanticLabel, 'Custom saving announcement');
     expect(indicator.savedSemanticLabel, 'Custom saved announcement');
