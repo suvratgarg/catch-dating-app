@@ -3749,7 +3749,7 @@
           {
             "id": "catch.section.horizontal_rail",
             "symbol": "CatchHorizontalRail",
-            "file": "lib/core/widgets/catch_horizontal_rail.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_horizontal_rail.dart",
             "summary": "Titled horizontal item rail with optional trailing item and section divider.",
             "states": [
               "rail",
@@ -3757,6 +3757,44 @@
               "with-divider",
               "without-divider",
               "intrinsic-height"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
+            "id": "catch.section.horizontal_rail_body",
+            "symbol": "CatchHorizontalRailBody",
+            "file": "packages/catch_ui/lib/src/components/catch_horizontal_rail_body.dart",
+            "summary": "Bounded or intrinsic-height horizontal viewport for the canonical rail, preserving lazy item construction and trailing-slot spacing.",
+            "states": [
+              "bounded-height",
+              "intrinsic-height",
+              "trailing-slot",
+              "scrolling"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
+            "id": "catch.section.horizontal_rail_item",
+            "symbol": "CatchHorizontalRailItem",
+            "file": "packages/catch_ui/lib/src/components/catch_horizontal_rail_item.dart",
+            "summary": "Direct item/trailing-slot selection and optional resolved width used by the canonical horizontal rail.",
+            "states": [
+              "content-slot",
+              "trailing-slot",
+              "natural-width",
+              "resolved-width"
             ],
             "governance": {
               "conceptRole": "member",
@@ -5745,7 +5783,7 @@
           {
             "id": "catch.menu.action_menu",
             "symbol": "CatchActionMenu",
-            "file": "lib/core/widgets/catch_action_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_action_menu.dart",
             "summary": "Anchored overflow trigger for at most five commands; selected or informational status rows are structurally excluded.",
             "states": [
               "closed",
@@ -10054,7 +10092,7 @@
       "summary": "Phone-frame status row used for handoff previews and screenshot framing, not product navigation chrome.",
       "dart": {
         "symbol": "CatchStatusBar",
-        "file": "lib/core/widgets/catch_status_bar.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_status_bar.dart",
         "constructors": [
           "CatchStatusBar"
         ]

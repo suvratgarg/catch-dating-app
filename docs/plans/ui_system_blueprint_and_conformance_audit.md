@@ -759,6 +759,14 @@ private localized banner is a public registered adapter with a direct preview.
 The raw-feedback lint follows only the exact package publisher; package-neighbor
 and retired-app-path probes reject bypasses.
 
+Action-menu controls, the status-bar preview, progress-cue state and horizontal
+rails also move to the package. Rail viewport and item rendering have named
+component files in the existing section family, replacing their private widget
+helpers. Direct previews cover bounded/intrinsic height and item/trailing-slot
+sizing. Existing item-width clamps, lazy scrolling, gutters and divider
+behavior are preserved. The rail scanner follows the package owner and scans
+package callers, with package-neighbor and retired-path negative probes.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

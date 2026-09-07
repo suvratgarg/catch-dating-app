@@ -1,24 +1,10 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_action_menu_item.dart';
+import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_menu_anchor.dart';
+import 'package:catch_ui/src/components/catch_menu_item.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
-
-class CatchActionMenuItem<T> {
-  const CatchActionMenuItem({
-    required this.value,
-    required this.label,
-    this.icon,
-    this.sublabel,
-    this.enabled = true,
-    this.isDestructive = false,
-  });
-
-  final T value;
-  final String label;
-  final IconData? icon;
-  final String? sublabel;
-  final bool enabled;
-  final bool isDestructive;
-}
 
 class CatchActionMenu<T> extends StatefulWidget {
   const CatchActionMenu({

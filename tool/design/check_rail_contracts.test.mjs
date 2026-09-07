@@ -81,8 +81,13 @@ test("ignores canonical rail implementations", () => {
   assert.equal(result.findings.length, 0);
 });
 
-test("scanRailContracts covers only production lib sources", () => {
+test("scanRailContracts covers app and shared-package production sources", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rail-contracts-"));
+  writeFile(
+    root,
+    "packages/catch_ui/lib/src/components/neighbor.dart",
+    "Widget build(context) => CatchHorizontalRail(headerPadding: EdgeInsets.zero);",
+  );
   writeFile(
     root,
     "lib/dashboard/presentation/widgets/dashboard_full.dart",
@@ -108,8 +113,26 @@ test("scanRailContracts covers only production lib sources", () => {
 
   const result = scanRailContracts({root});
 
-  assert.equal(result.counts.high, 1);
+  assert.equal(result.counts.high, 2);
   assert.equal(result.findings[0].path, "lib/dashboard/presentation/widgets/dashboard_full.dart");
+  assert.equal(result.findings[1].path, "packages/catch_ui/lib/src/components/neighbor.dart");
+});
+
+test("only the exact extracted rail owner retains its exemption", () => {
+  const source = "Widget build(context) => CatchHorizontalRail(headerPadding: EdgeInsets.zero);";
+  const owner = scanSourceForRailContracts({
+    relativePath: "packages/catch_ui/lib/src/components/catch_horizontal_rail.dart",
+    source,
+  });
+  assert.equal(owner.findings.length, 0);
+  for (const relativePath of [
+    "packages/catch_ui/lib/src/components/neighbor.dart",
+    "lib/core/widgets/catch_horizontal_rail.dart",
+  ]) {
+    const result = scanSourceForRailContracts({relativePath, source});
+    assert.equal(result.findings.length, 1, relativePath);
+    assert.equal(result.findings[0].rule, "RAIL-CONTRACT-001");
+  }
 });
 
 function writeFile(root, relativePath, source) {

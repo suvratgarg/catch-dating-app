@@ -65,6 +65,8 @@ import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
     as _widgetbook_workspace_primitives_menu_anchor_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
+import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
+    as _widgetbook_workspace_primitives_rail_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
 import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
@@ -3339,6 +3341,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchDetailSliverSectionListContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHorizontalRailBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bounded and intrinsic rails',
+                builder: _widgetbook_workspace_primitives_rail_use_cases
+                    .horizontalRailBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHorizontalRailItem',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Item widths and trailing slots',
+                builder: _widgetbook_workspace_primitives_rail_use_cases
+                    .horizontalRailItemStates,
               ),
             ],
           ),
