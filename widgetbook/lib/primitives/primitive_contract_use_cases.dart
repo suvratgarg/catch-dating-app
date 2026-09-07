@@ -23,7 +23,6 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -1417,40 +1416,44 @@ Widget catchNoticeContractStates(BuildContext context) {
       'arrival-reduced-motion',
     ],
     children: [
-      const _StateCard(
+      _StateCard(
         label: 'status',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'status',
             title: 'Event updated',
             message: 'The start time moved to 7:30 PM.',
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'success',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'success',
             title: 'Booking confirmed',
             tone: CatchNoticeTone.success,
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'warning',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'warning',
             title: 'Update paused',
             tone: CatchNoticeTone.warning,
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'danger',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'danger',
             title: 'Payment failed',
             message: 'Try a different card.',
@@ -1458,10 +1461,11 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'event',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'event',
             title: 'Event starts soon',
             message: 'Arrive by 7:20 PM.',
@@ -1472,6 +1476,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'with-action',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'action',
             title: 'Event updated',
@@ -1484,6 +1489,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'dismissible',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: const CatchNoticeData(
             id: 'dismissible',
             title: 'Preferences saved',
@@ -1495,6 +1501,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'arrival-tap-to-open',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData.arrival(
             id: 'arrival-open',
             title: 'Ananya Rao',
@@ -1507,6 +1514,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'arrival-swipe-to-dismiss',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData.arrival(
             id: 'arrival-dismiss',
             title: 'New message',
@@ -1521,6 +1529,7 @@ Widget catchNoticeContractStates(BuildContext context) {
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(disableAnimations: true),
           child: CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData.arrival(
               id: 'arrival-reduced-motion',
               title: 'New message',

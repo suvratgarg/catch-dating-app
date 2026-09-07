@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -931,6 +930,7 @@ class _HostSendsAnnouncementReport extends StatelessWidget {
       CatchSection.divided(
         title: context.l10n.hostSendsAnnouncementType,
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.sends.announcement.${announcement.broadcastId}',
             title: announcement.eventName,
@@ -969,6 +969,7 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
       CatchSection.divided(
         title: context.l10n.hostSendsFollowerUpdateChannel,
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.sends.follower-update.${update.postId}',
             title: context.l10n.hostSendsFollowersAudience,

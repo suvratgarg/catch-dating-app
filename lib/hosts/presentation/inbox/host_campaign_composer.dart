@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -200,6 +199,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         final audiences = savedAudiences.value?.audiences ?? const [];
         if (audiences.isEmpty) {
           return CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.sends.saved-audience-required',
               title: context.l10n.hostSavedAudiencesEmptyTitle,
@@ -624,6 +624,7 @@ class HostCampaignReport extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.audience.campaign.${campaign.campaignId}',
             title: context.l10n.hostsHostAudienceCampaignStatus(

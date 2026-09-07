@@ -1872,7 +1872,7 @@
       "summary": "Configurable notice family. CatchNoticeData.arrival uses whole-card open and swipe dismissal in one app-level safe-area host; ordinary inline notices retain optional controls. Features own copy, identity, tone and routing; the primitive owns geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
-        "file": "lib/core/widgets/catch_notice.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
         "constructors": [
           "CatchNotice"
         ]
@@ -1895,6 +1895,12 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "dismissLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
           {
             "name": "notice",
             "type": "object",
@@ -1963,7 +1969,7 @@
           {
             "id": "catch.notice.host",
             "symbol": "CatchNoticeHost",
-            "file": "lib/core/widgets/catch_notice.dart",
+            "file": "lib/core/riverpod_ui/catch_notice_host.dart",
             "summary": "One MyApp-owned safe-area overlay above the router, enforced by catch_notice_host_is_app_owned. Owns entry motion, gesture/keyboard dismissal and interaction-aware timers; persistent context remains with CatchStatusStrip below tabs.",
             "states": [
               "empty",

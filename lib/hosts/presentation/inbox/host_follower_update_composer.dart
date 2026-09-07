@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -105,6 +104,7 @@ class _HostFollowerUpdateComposerSheetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.follower-update.${widget.club.id}',
               title: context.l10n.hostSendsFollowerUpdateChannel,

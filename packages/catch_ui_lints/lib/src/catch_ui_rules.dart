@@ -82,7 +82,8 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     final uri = element?.library?.uri.toString();
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchNoticeHost' &&
-        uri == 'package:catch_dating_app/core/widgets/catch_notice.dart' &&
+        uri ==
+            'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' &&
         !const {
           '/lib/app.dart',
           '/widgetbook/lib/primitives/core_catalog_use_cases.dart',

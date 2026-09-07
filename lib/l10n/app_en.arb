@@ -8037,7 +8037,7 @@
   },
   "coreCatchNoticeTooltipDismiss": "Dismiss",
   "@coreCatchNoticeTooltipDismiss": {
-    "description": "Product copy used by lib/core/widgets/catch_notice.dart (tooltip).",
+    "description": "Product copy supplied by app callers to the shared CatchNotice dismiss control (tooltip).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_notice"

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
@@ -142,6 +141,7 @@ class _HostBroadcastComposerSheetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchNotice(
+                dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
                 notice: CatchNoticeData(
                   id: 'host.inbox.catch-announcement',
                   title: context.l10n.hostSendsCatchAnnouncementChannel,

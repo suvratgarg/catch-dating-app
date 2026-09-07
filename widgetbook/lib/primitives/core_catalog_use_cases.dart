@@ -17,6 +17,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -31,7 +33,6 @@ import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -2074,6 +2075,44 @@ Widget catchNoticeHostCatalogStates(BuildContext context) {
       ),
     ],
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Queued arrival',
+  type: CatchNoticeController,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchNoticeQueueCatalogState(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Queued notice',
+      catalogId: 'catch.notice',
+      children: [
+        ProviderScope(
+          overrides: [
+            catchNoticeControllerProvider.overrideWith(
+              _NoticeQueuePreviewController.new,
+            ),
+          ],
+          child: const SizedBox(
+            height: WidgetbookPreviewLayout.stateViewportHeight,
+            child: CatchNoticeHost(child: SizedBox.expand()),
+          ),
+        ),
+      ],
+    );
+
+class _NoticeQueuePreviewController extends CatchNoticeController {
+  @override
+  CatchNoticeQueue build() => const CatchNoticeQueue([
+    CatchNoticeData(
+      id: 'queued',
+      title: 'Preferences saved',
+      message: 'Your changes are ready.',
+      tone: CatchNoticeTone.success,
+      person: CatchPersonAvatarItem(name: 'Ananya Rao', initials: 'AR'),
+      duration: null,
+    ),
+  ]);
 }
 
 @widgetbook.UseCase(

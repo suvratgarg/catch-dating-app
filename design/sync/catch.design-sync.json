@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-06",
+  "updated": "2026-09-07",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86",
+  "sourceDigest": "ab6067a32799532732c544ac4b6f14afc6e646176d6545ecf7b95b0f4f353aca",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86",
-    "contractDigest": "e75c377f2e2eb0a9e9565fba7a5b09a30aa9942978b38465bcf769e9a65dcd86"
+    "digest": "ab6067a32799532732c544ac4b6f14afc6e646176d6545ecf7b95b0f4f353aca",
+    "contractDigest": "ab6067a32799532732c544ac4b6f14afc6e646176d6545ecf7b95b0f4f353aca"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "830704f8cf9e3f9e924fffdb2f87c7850a97b9445b97ecb38611965a50f97399",
+    "handoffRequestDigest": "f6d4e8b3cc1c6256d9b47a3d3bae3984996fa9f4cd996b73ef21d7d534afd3a6",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -761,7 +761,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.notice",
       "dartSymbol": "CatchNotice",
-      "dartFile": "lib/core/widgets/catch_notice.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_notice.dart",
       "figmaName": "Catch/Notice",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -777,8 +777,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "0f5b6a781ac84877aceb8f4dda0883da749c51219842e586d95a2ac876149e05",
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "f77831a3c3386998a48915866dfdc33a475f5af48de3c46a20fb4372b2a259c5",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -786,7 +786,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Notice",
       "claudeAllowed": true,
-      "contractDigest": "da2438c23d49aace7f6b52a96611be1139661ad7273298a7ee2fe60cee34b601"
+      "contractDigest": "915c065206ef432d557c3a4c57d0edc6e905c0669485367adeb8372294dd9ef9"
     },
     {
       "contractId": "catch.status_strip",

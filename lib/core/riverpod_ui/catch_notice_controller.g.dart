@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'catch_notice.dart';
+part of 'catch_notice_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -379,6 +378,7 @@ class _HostApplicationImportSheet extends StatelessWidget {
           if (draft.truncatedRowCount > 0) ...[
             gapH12,
             CatchNotice(
+              dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
               notice: CatchNoticeData(
                 id: 'application-import-limit',
                 title: context.l10n.hostApplicationsImportLimit(

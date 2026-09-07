@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -250,6 +249,7 @@ class _HostManualSendTaskSheetState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.manual-send.${_task.taskId}',
             title: _manualTaskStatus(context, _task),

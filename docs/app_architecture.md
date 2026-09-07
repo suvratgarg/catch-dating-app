@@ -56,7 +56,7 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` plus remaining `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` plus remaining `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` plus remaining notice owners in `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
@@ -2356,7 +2356,8 @@ Reference implementation:
 - `lib/core/presentation/app_shell.dart` and
   `lib/core/presentation/host_app_shell.dart` — semantic navigation destinations
   localized at render time;
-- `lib/core/widgets/catch_notice.dart` — semantic offline notice factory;
+- `lib/core/riverpod_ui/catch_notice_host.dart` — resolves notice dismiss copy
+  at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,
   `lib/events/presentation/event_detail_screen_state.dart`, and

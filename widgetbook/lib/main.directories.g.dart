@@ -989,6 +989,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchNoticeController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Queued arrival',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchNoticeQueueCatalogState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchNoticeHost',
             useCases: [
               _widgetbook.WidgetbookUseCase(

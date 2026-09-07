@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:df3d09d3ce5555a5ecc3bf68ca518db1a78e9b647a79b0d4b56945bd0391a0b1",
+  "resolvedDigest": "sha256:7ea7d4807501082320b66d66370d218b505e73fbc3c215bf9f526130c21570bb",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6184,7 +6184,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchNotice",
-              "file": "lib/core/widgets/catch_notice.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
               "constructors": [
                 "CatchNotice"
               ]

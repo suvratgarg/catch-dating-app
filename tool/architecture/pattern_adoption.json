@@ -1165,7 +1165,7 @@
         "lib/l10n/l10n.dart",
         "lib/app.dart",
         "lib/core/presentation/app_shell.dart",
-        "lib/core/widgets/catch_notice.dart",
+        "lib/core/riverpod_ui/catch_notice_host.dart",
         "copy/native_en.json",
         "copy/notifications_en.json",
         "copy/event_success_questionnaires_en.json",
@@ -1187,7 +1187,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/widgets/catch_notice.dart",
+          "path": "lib/core/riverpod_ui/catch_notice_host.dart",
           "role": "shared semantic notice localization seam",
           "status": "aligned"
         },

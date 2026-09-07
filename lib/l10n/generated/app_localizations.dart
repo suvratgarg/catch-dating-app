@@ -6971,7 +6971,7 @@ abstract class AppLocalizations {
   /// **'New message'**
   String get notificationArrivalMessageTitle;
 
-  /// Product copy used by lib/core/widgets/catch_notice.dart (tooltip).
+  /// Product copy supplied by app callers to the shared CatchNotice dismiss control (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Dismiss'**

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -1389,6 +1388,7 @@ class _FormStatusNotices extends StatelessWidget {
     final notices = <Widget>[
       if (state.saveState == HostFormSaveState.conflict) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-save-conflict',
             title: context.l10n.hostFormConflictTitle,
@@ -1402,6 +1402,7 @@ class _FormStatusNotices extends StatelessWidget {
         gapH12,
       ] else if (state.saveState == HostFormSaveState.failed) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-save-failed',
             title: context.l10n.hostFormSaveFailed,
@@ -1416,6 +1417,7 @@ class _FormStatusNotices extends StatelessWidget {
       ],
       if (state.editor.validationIssues.isNotEmpty) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-validation',
             title: context.l10n.hostFormValidationTitle(

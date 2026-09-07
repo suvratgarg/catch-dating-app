@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
@@ -626,6 +625,7 @@ class _HostWhatsappHandoffSheetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.customer.whatsapp-handoff',
               title: context.l10n.hostCustomersWhatsappAppChannel,

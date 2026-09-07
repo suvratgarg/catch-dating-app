@@ -681,6 +681,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
         if (revenue.coverage == HostCustomerRevenueCoverage.partial) ...[
           gapH12,
           CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.customers.revenue.partial',
               title: context.l10n.hostsHostAudienceCoveragePartial,

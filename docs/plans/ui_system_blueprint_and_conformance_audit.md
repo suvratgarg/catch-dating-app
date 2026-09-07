@@ -744,8 +744,12 @@ switch, resolving the private helper instead of carrying it across the move.
 The two provider-free skeleton placement helpers remain with their app-side
 layout dependencies in individual files until those patterns move. Golden
 discovery includes the Riverpod adapter root so relocation cannot remove its
-classes or designated cases. Provider-backed notice state remains for the next
-adapter extraction.
+classes or designated cases. Notice queue/controller state and the app-level
+host also move to the Riverpod adapter root. The host keeps its bounded queue,
+priority/FIFO ordering, replacement-safe timers, gestures and accessibility
+behavior. Provider-free notice data, tones and rendering have individual package
+files; every caller supplies the existing localized dismiss label. The exact
+resolved-symbol placement lint and its alias/tear-off probes follow the host.
 
 Inline error-banner visuals and the canonical snackbar publisher move to the
 package. Retry banners require caller-resolved labels through `withRetry`.
