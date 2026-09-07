@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:ed4a4d14b96e2eef78c40904e41055346e9f1cdef251981eaad50d0aefc0717a",
+  "resolvedDigest": "sha256:1984ae10f7a1632f56722f596af835fb0d23dddb4d659d103a776a2e5517789b",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5242,7 +5242,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]

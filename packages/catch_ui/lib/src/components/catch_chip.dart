@@ -1,9 +1,10 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_chip_data.dart';
+import 'package:catch_ui/src/components/catch_chip_emphasis.dart';
+import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
-
-export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints;
 
 enum _CatchChipVariant { tag, selectable, activity, removable }
 
@@ -107,7 +108,7 @@ class CatchChip extends StatefulWidget {
     super.key,
     required this._variant,
     this._label,
-    this._leading,
+    this.leading,
     this._selected = false,
     this._enabled = true,
     this._accent,
@@ -126,7 +127,7 @@ class CatchChip extends StatefulWidget {
 
   final _CatchChipVariant _variant;
   final String? _label;
-  final Widget? _leading;
+  final Widget? leading;
   final bool _selected;
   final bool _enabled;
   final Color? _accent;
@@ -145,8 +146,6 @@ class CatchChip extends StatefulWidget {
   /// Visible label for tag, selectable, and removable chips, or the optional
   /// label override for an activity chip.
   String? get label => _label;
-
-  Widget? get leading => _leading;
 
   /// Parent-owned selection state. This is meaningful only for
   /// [CatchChip.selectable].
@@ -251,7 +250,7 @@ class _CatchChipState extends State<CatchChip> {
         foreground = widget._inkColor ?? t.ink;
         border = hasTint ? Colors.transparent : t.line2;
         shadow = CatchElevation.none;
-        leading = widget._leading;
+        leading = widget.leading;
         textStyle = CatchTextStyles.labelL(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.micro14,
@@ -266,7 +265,7 @@ class _CatchChipState extends State<CatchChip> {
         shadow = widget._selected
             ? CatchElevation.segmentedSelected(t)
             : CatchElevation.none;
-        leading = widget._leading;
+        leading = widget.leading;
         textStyle = CatchTextStyles.labelL(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,

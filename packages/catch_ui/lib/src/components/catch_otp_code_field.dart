@@ -1,10 +1,11 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_code_input_row.dart';
+import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
+import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints;
 
 /// Canonical one-time-code input primitive.
 ///

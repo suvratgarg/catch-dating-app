@@ -833,7 +833,7 @@
       "summary": "Canonical compact-label primitive for passive tags, parent-owned choices, registry-backed activities, and removable values behind explicit named constructors.",
       "dart": {
         "symbol": "CatchChip",
-        "file": "lib/core/widgets/catch_chip.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
         "constructors": [
           "CatchChip.tag",
           "CatchChip.selectable",
@@ -6766,7 +6766,7 @@
       "summary": "Selectable explanatory choice card for mutually exclusive options with a sentence of supporting copy.",
       "dart": {
         "symbol": "CatchOptionCard",
-        "file": "lib/core/widgets/catch_option_card.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
         "constructors": [
           "CatchOptionCard"
         ]
@@ -9784,7 +9784,7 @@
           {
             "id": "catch.code_input.otp_code_field",
             "symbol": "CatchOtpCodeField",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_otp_code_field.dart",
             "summary": "Real one-time-code input with caller-resolved accessibility copy and stable digit keys, composing visual cells over one hidden platform TextField.",
             "states": [
               "empty",
@@ -9906,7 +9906,7 @@
       "summary": "Single-select scopes with underline, operational, and wrapping rounded-rectangle summary recipes.",
       "dart": {
         "symbol": "CatchOptionGroup",
-        "file": "lib/core/widgets/catch_option_group.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
         "constructors": [
           "CatchOptionGroup"
         ]
@@ -10288,7 +10288,7 @@
       "summary": "Canonical search input, including pill field mode and expanding/collapsed search affordance mode.",
       "dart": {
         "symbol": "CatchSearchField",
-        "file": "lib/core/widgets/catch_search_field.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_search_field.dart",
         "constructors": [
           "CatchSearchField",
           "CatchSearchField.expanded",
@@ -10469,7 +10469,7 @@
       "summary": "Canonical dual-thumb range slider with Catch track, thumb, endpoint label, and semantic-value styling.",
       "dart": {
         "symbol": "CatchRangeSlider",
-        "file": "lib/core/widgets/catch_range_slider.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
         "constructors": [
           "CatchRangeSlider"
         ]
@@ -10623,7 +10623,7 @@
       "summary": "Canonical settings toggle control with animated pill track, primary on fill, quiet off track, surface knob, disabled opacity, Enter/Space activation, and a 2 px focus-visible ring.",
       "dart": {
         "symbol": "CatchToggle",
-        "file": "lib/core/widgets/catch_toggle.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_toggle.dart",
         "constructors": [
           "CatchToggle"
         ]

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:0348f8df680867ca4f7a02f38afadc7c076c99a588a2517cb2b088fd35692e9c",
+  "resolvedDigest": "sha256:ff3de7cbc88db8a0e2e53f6842df3dd38c29c0fad586dec6d42b96ae36fdae4e",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -939,7 +939,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]

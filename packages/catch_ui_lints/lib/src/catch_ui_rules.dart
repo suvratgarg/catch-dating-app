@@ -277,7 +277,7 @@ const _lowLevelTypographyOwnerPaths = <String>{
   '/packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart',
   '/packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart',
   '/packages/catch_ui/lib/src/components/catch_empty_state.dart',
-  '/lib/core/widgets/catch_search_field.dart',
+  '/packages/catch_ui/lib/src/components/catch_search_field.dart',
 };
 
 final _legacySpacingNamePattern = RegExp(
@@ -2172,7 +2172,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchRangeSliderImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_range_slider.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_range_slider.dart',
+    );
   }
 
   bool get _isCoreWidgetPrimitivePath {

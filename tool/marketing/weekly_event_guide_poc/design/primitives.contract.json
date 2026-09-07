@@ -95,7 +95,7 @@
       {
         "contractId": "catch.chip",
         "componentRegistry": "design/components/catch.components.json",
-        "runtimeFile": "lib/core/widgets/catch_chip.dart",
+        "runtimeFile": "packages/catch_ui/lib/src/components/catch_chip.dart",
         "runtimeSymbol": "CatchChip"
       },
       {

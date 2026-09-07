@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:4e520617b0fa9100e19d60dac6a5be4b094a7efc0fde77130ce328c625405097",
+  "resolvedDigest": "sha256:3f118f655949040ae2af2d895387109533d02ccfec4dc2e163acc5f37fc4ad8f",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1152,7 +1152,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -2423,7 +2423,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",

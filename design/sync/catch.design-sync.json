@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "2a1ad6e5ee153e2db36fd8047883c7f098d3c423fc86687135556189830d81a2",
+  "sourceDigest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "2a1ad6e5ee153e2db36fd8047883c7f098d3c423fc86687135556189830d81a2",
-    "contractDigest": "2a1ad6e5ee153e2db36fd8047883c7f098d3c423fc86687135556189830d81a2"
+    "digest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1",
+    "contractDigest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "68387d1af7770be2101c9303e7ca82c8ab1ebb4bd00117c4e798c3d34b1c6882",
+    "handoffRequestDigest": "0748155db78d7494579ea017b4c35aa139c0712f91993a5e05308657f284d4f3",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -693,7 +693,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.chip",
       "dartSymbol": "CatchChip",
-      "dartFile": "lib/core/widgets/catch_chip.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_chip.dart",
       "figmaName": "Catch/Chip",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -718,7 +718,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Chip",
       "claudeAllowed": true,
-      "contractDigest": "19a800a988732ab08e7a750199e2fc9af4064b58b89f103886a6cbafe5b1b67b"
+      "contractDigest": "76cdc5683ef3704d153f571652b8189e4ba529fc0c66761679a6cd9b940c869e"
     },
     {
       "contractId": "catch.empty_state",
@@ -1415,7 +1415,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.option_card",
       "dartSymbol": "CatchOptionCard",
-      "dartFile": "lib/core/widgets/catch_option_card.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_option_card.dart",
       "figmaName": "Catch/OptionCard",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1440,7 +1440,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "OptionCard",
       "claudeAllowed": true,
-      "contractDigest": "c462a6c70c79ca18e42db8e8bda2fd62ae42df032c32ea8813ead079649154f6"
+      "contractDigest": "f80e6adff6f9caec9e702a2036e888fcdc32057dec52b33d3e96202b3b7bbe58"
     },
     {
       "contractId": "catch.surface",
@@ -1856,14 +1856,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "CodeInput",
       "claudeAllowed": true,
-      "contractDigest": "5587f8dc1b2495adb5fc193ee0d34acda015a8f8b2f1a00381bf1625b77817e9"
+      "contractDigest": "46269de3a0f0dfc25a12dc71cf9fd059040bb7d76e867bced53d48f652ebac31"
     },
     {
       "contractId": "catch.option_group",
       "conceptRole": "concept",
       "conceptId": "catch.option_group",
       "dartSymbol": "CatchOptionGroup",
-      "dartFile": "lib/core/widgets/catch_option_group.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_option_group.dart",
       "figmaName": "Catch/OptionGroup",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1888,7 +1888,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "OptionGroup",
       "claudeAllowed": true,
-      "contractDigest": "c38a5c923145025e557eebc27b2bf8aa59d4647757b568f87fddce2aedde10fc"
+      "contractDigest": "6e40211cf5617513083dd6001ce4d525c947dd47762ae08c112d525df4ae5b61"
     },
     {
       "contractId": "catch.tab_rail",
@@ -1927,7 +1927,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.search_field",
       "dartSymbol": "CatchSearchField",
-      "dartFile": "lib/core/widgets/catch_search_field.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_search_field.dart",
       "figmaName": "Catch/SearchField",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1952,14 +1952,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "SearchField",
       "claudeAllowed": true,
-      "contractDigest": "5359f4ece234db5deede666083ecc1359e5080fda950b5a0f8569a19830f5430"
+      "contractDigest": "d83bf4b1dbd1759867b9e039408a3747beada3c76a21ee9de5bfca2920fa0e9c"
     },
     {
       "contractId": "catch.range_slider",
       "conceptRole": "concept",
       "conceptId": "catch.range_slider",
       "dartSymbol": "CatchRangeSlider",
-      "dartFile": "lib/core/widgets/catch_range_slider.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
       "figmaName": "Catch/RangeSlider",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1984,14 +1984,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "RangeSlider",
       "claudeAllowed": true,
-      "contractDigest": "a7b3d8475cca4dd39f27d2bf23a4e65bb2f12b965e08d3565a2a8959c136883b"
+      "contractDigest": "3996ce6f5393589c2e8746e89de2b83314aa1f907e025be21ac7efc2243d8d85"
     },
     {
       "contractId": "catch.toggle",
       "conceptRole": "concept",
       "conceptId": "catch.toggle",
       "dartSymbol": "CatchToggle",
-      "dartFile": "lib/core/widgets/catch_toggle.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_toggle.dart",
       "figmaName": "Catch/Toggle",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2016,7 +2016,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Toggle",
       "claudeAllowed": true,
-      "contractDigest": "724746a297234f70b44bd1c3b06dbd6e148214e5f5b5ef85c7ab3f4dd9bf41eb"
+      "contractDigest": "b5d99ffd1b3c815b02d7ca5c400cf1223d0ec47b5870d165ebade2ad53a60cef"
     },
     {
       "contractId": "catch.status_bar",

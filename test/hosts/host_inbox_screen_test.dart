@@ -1,5 +1,3 @@
-// ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
@@ -7,7 +5,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -30,6 +27,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
+
+// ignore_for_file: riverpod_lint/scoped_providers_should_specify_dependencies
 
 void main() {
   final now = DateTime(2026, 7, 10, 18);

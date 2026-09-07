@@ -225,8 +225,8 @@ scan_raw_text_inputs() {
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_field.dart' \
     --glob '!lib/core/widgets/catch_field_*.dart' \
-    --glob '!lib/core/widgets/catch_search_field.dart' \
-    --glob '!lib/core/widgets/catch_otp_code_field.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_search_field.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -248,7 +248,7 @@ scan_raw_range_sliders() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])RangeSlider\(|SliderTheme\(' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_range_slider.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_range_slider.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -333,7 +333,7 @@ scan_raw_text_styles() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])TextStyle\(' \
     lib/core/widgets lib/*/presentation \
-    --glob '!lib/core/widgets/catch_otp_code_field.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' \
     --glob '!lib/core/widgets/catch_top_bar.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"

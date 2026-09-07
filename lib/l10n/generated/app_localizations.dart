@@ -6989,7 +6989,7 @@ abstract class AppLocalizations {
   /// **'{label} unread chats'**
   String coreCatchPersonRowLabelLabelUnreadChats({required Object label});
 
-  /// Product copy used by lib/core/widgets/catch_search_field.dart (tooltip).
+  /// Search-field tooltip supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Clear {placeholder}'**
@@ -13440,7 +13440,7 @@ abstract class AppLocalizations {
   /// **'One-time code'**
   String get coreCatchOtpCodeFieldSemanticLabel;
 
-  /// Product copy used by lib/core/widgets/catch_search_field.dart (visibleCopy).
+  /// Search-field action copy supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Close search'**

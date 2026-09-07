@@ -21,12 +21,22 @@ test("flags direct CatchOptionGroupItem usage in production feature code", () =>
 
 test("allows the canonical CatchOptionGroup implementation", () => {
   const findings = scanSourceForOptionGroupUsage({
-    relativePath: "lib/core/widgets/catch_option_group.dart",
+    relativePath: "packages/catch_ui/lib/src/components/catch_option_group.dart",
     source:
       "Widget build(context) => CatchOptionGroupItem<String>(option: option, selected: true);",
   });
 
   assert.equal(findings.length, 0);
+});
+
+test("the deleted app implementation path no longer bypasses the check", () => {
+  const findings = scanSourceForOptionGroupUsage({
+    relativePath: "lib/core/widgets/catch_option_group.dart",
+    source:
+      "Widget build(context) => CatchOptionGroupItem<String>(option: option, selected: true);",
+  });
+
+  assert.equal(findings.length, 1);
 });
 
 test("ignores direct item usage outside production lib sources", () => {
@@ -48,7 +58,7 @@ test("scanOptionGroupUsage reports production files only", () => {
   );
   writeFile(
     root,
-    "lib/core/widgets/catch_option_group.dart",
+    "packages/catch_ui/lib/src/components/catch_option_group.dart",
     "Widget build(context) => CatchOptionGroupItem<String>(option: option, selected: true);",
   );
   writeFile(

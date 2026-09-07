@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:ab5e9ce1f9465af660a10f424f2c102bb4cc207c1bdd20361d181b4a17515344",
+  "resolvedDigest": "sha256:38d4eb26eab04aa310919653222c82f5bb67742132f7108734ce4533933ce01e",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -937,7 +937,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]

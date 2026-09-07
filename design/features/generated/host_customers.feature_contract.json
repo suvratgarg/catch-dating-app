@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:4c1471b1f4834c3e2f95468f4778e252b191039cf8c625ab3ec8f0a924cd702e",
+  "resolvedDigest": "sha256:70756da7144199760275ad606d16ae3002ade295dcd1f31d976c0da65562d8c7",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6124,7 +6124,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -6194,7 +6194,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]
@@ -6217,7 +6217,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSearchField",
-              "file": "lib/core/widgets/catch_search_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_search_field.dart",
               "constructors": [
                 "CatchSearchField",
                 "CatchSearchField.expanded",

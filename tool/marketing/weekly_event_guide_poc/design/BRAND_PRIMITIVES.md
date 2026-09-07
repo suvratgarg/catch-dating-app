@@ -49,7 +49,7 @@ Components:
 
 - `design/components/catch.components.json`
 - `packages/catch_ui/lib/src/components/catch_badge.dart`
-- `lib/core/widgets/catch_chip.dart`
+- `packages/catch_ui/lib/src/components/catch_chip.dart`
 - `packages/catch_ui/lib/src/components/catch_button.dart`
 
 Logo:

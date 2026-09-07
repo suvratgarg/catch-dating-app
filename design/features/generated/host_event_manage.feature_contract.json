@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:864e0a51a6be5e92cc7c0d443c7d5cf62f84a6a38e7436e861c6cb87ea7bc9f3",
+  "resolvedDigest": "sha256:ccd1daa312cda790270892581316338af534cdc355e146efae1bbf514700ab6f",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3515,7 +3515,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchOptionCard",
-              "file": "lib/core/widgets/catch_option_card.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
               "constructors": [
                 "CatchOptionCard"
               ]
@@ -5368,7 +5368,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchOptionCard",
-              "file": "lib/core/widgets/catch_option_card.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
               "constructors": [
                 "CatchOptionCard"
               ]
@@ -5379,7 +5379,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]

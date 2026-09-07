@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:25c96124854c077bec5ce4922a5d685f10ae65be07a5a974e94d0772ce44c4ae",
+  "resolvedDigest": "sha256:e8b76c39733745c8a6e15f2ec213f4ece4f792203b7e43f18dcdf07d3bba45cb",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4693,7 +4693,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -4774,7 +4774,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchOptionCard",
-              "file": "lib/core/widgets/catch_option_card.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
               "constructors": [
                 "CatchOptionCard"
               ]
@@ -4785,7 +4785,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]
@@ -4808,7 +4808,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSearchField",
-              "file": "lib/core/widgets/catch_search_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_search_field.dart",
               "constructors": [
                 "CatchSearchField",
                 "CatchSearchField.expanded",

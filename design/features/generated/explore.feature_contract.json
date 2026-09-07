@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:eaaf689c5a488454fcbc7f5316013c09b7977a6c37f925ef09e1c178d65e765a",
+  "resolvedDigest": "sha256:2c90efdfc66ef62606dfcdf0bf2d3cb6c6d455394c6e4dfec291377f6e2c269f",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1747,7 +1747,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",

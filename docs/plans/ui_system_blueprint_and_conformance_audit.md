@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.1
+version: 1.9.2
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1011,6 +1011,15 @@ the projected values and their lookup remain unchanged in the app. Runtime
 input bounds and validators retain their existing implementation and consume
 caller-supplied validation copy. This removes the schema import boundary that
 prevented the remaining field and form renderers from moving into `catch_ui`.
+
+The next component slice moves `CatchChip`, `CatchOptionCard`,
+`CatchOptionGroup`, `CatchOtpCodeField`, `CatchRangeSlider`, `CatchSearchField`,
+and `CatchToggle` into the shared package. Callers import app-generated schema
+values directly; the controls only accept the shared constraint type. The search
+trailing action is inlined at its sole call site, preserving its clear/close
+behavior while removing a private widget from the shared layer. Component
+contracts, localization ownership descriptions, and exact implementation-path
+checks follow the move; historical audit snapshots remain unchanged.
 
 ### Phase 4 — One registry, binding grammar
 

@@ -8064,7 +8064,7 @@
   },
   "coreCatchSearchFieldTooltipClearPlaceholder": "Clear {placeholder}",
   "@coreCatchSearchFieldTooltipClearPlaceholder": {
-    "description": "Product copy used by lib/core/widgets/catch_search_field.dart (tooltip).",
+    "description": "Search-field tooltip supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.",
     "placeholders": {
       "placeholder": {}
     },
@@ -15583,7 +15583,7 @@
   },
   "coreCatchSearchFieldVisiblecopyCloseSearch": "Close search",
   "@coreCatchSearchFieldVisiblecopyCloseSearch": {
-    "description": "Product copy used by lib/core/widgets/catch_search_field.dart (visibleCopy).",
+    "description": "Search-field action copy supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_search_field"
