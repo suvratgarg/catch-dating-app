@@ -65,6 +65,8 @@ import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_field_protocol_use_cases;
+import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
+    as _widgetbook_workspace_primitives_form_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
@@ -1899,6 +1901,33 @@ final directories = <_widgetbook.WidgetbookNode>[
   _widgetbook.WidgetbookCategory(
     name: 'Core patterns',
     children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Form review',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormReviewState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Incomplete and submission-ready review',
+                builder:
+                    _widgetbook_workspace_primitives_form_protocol_use_cases
+                        .formReviewReadinessStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormStepSpec',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Required and optional step metadata',
+                builder:
+                    _widgetbook_workspace_primitives_form_protocol_use_cases
+                        .formStepSpecificationStates,
+              ),
+            ],
+          ),
+        ],
+      ),
       _widgetbook.WidgetbookFolder(
         name: 'Section layout',
         children: [

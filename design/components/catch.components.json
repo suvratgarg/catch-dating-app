@@ -8191,6 +8191,78 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
+          },
+          {
+            "id": "catch.screen_body.form_step_spec",
+            "symbol": "CatchFormStepSpec",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart",
+            "summary": "Wizard step title, validation key and optional-step presentation metadata.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.form_step_status",
+            "symbol": "CatchFormStepStatus",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_status.dart",
+            "summary": "Complete, needs-information and optional review statuses.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.form_step_review_item",
+            "symbol": "CatchFormStepReviewItem",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_review_item.dart",
+            "summary": "Indexed display item and its required-completion status.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.form_review_state",
+            "symbol": "CatchFormReviewState",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_review_state.dart",
+            "summary": "Ordered review readiness and the first incomplete step.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           }
         ],
         "accessibility": {

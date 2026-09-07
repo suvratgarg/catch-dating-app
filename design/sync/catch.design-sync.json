@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "ed56e444ffbc463290dddeb8ba2e05483ea4f81e95db2101c6045e5a4595648b",
+  "sourceDigest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "ed56e444ffbc463290dddeb8ba2e05483ea4f81e95db2101c6045e5a4595648b",
-    "contractDigest": "ed56e444ffbc463290dddeb8ba2e05483ea4f81e95db2101c6045e5a4595648b"
+    "digest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1",
+    "contractDigest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "a25f9e5d24d4d2f0cd1d4d8ded69b06c2aa33bab2daaebeb9be6b671a40c6574",
+    "handoffRequestDigest": "3eaff167e9aced02f109a3aa0abe02f51832ba3bc3a51648eae8d099bc924767",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 269,
+    "publicClassCount": 273,
     "conceptCount": 72,
-    "memberCount": 179,
-    "membersPerConcept": 2.49,
+    "memberCount": 183,
+    "membersPerConcept": 2.54,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 179,
+      "member": 183,
       "screen": 15
     },
     "collisionCount": 39,
@@ -372,7 +372,11 @@
         "symbols": [
           "CatchAdaptiveMasterDetailLayout",
           "CatchFillViewportScrollView",
+          "CatchFormReviewState",
           "CatchFormStepBody",
+          "CatchFormStepReviewItem",
+          "CatchFormStepSpec",
+          "CatchFormStepStatus",
           "CatchFractionalMaxWidth",
           "CatchMasterDetailLayout",
           "CatchPageBody",
@@ -1583,7 +1587,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "1a52cd5435990e1496a749d2d825a751e1893a7177811a45b4abab32ed4376b4"
+      "contractDigest": "3569363a2e368f6698b9503ebdd5b2f2d2daea0fd0ade0a635ab41476893655e"
     },
     {
       "contractId": "catch.section_stack",

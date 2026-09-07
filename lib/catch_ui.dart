@@ -27,7 +27,11 @@ export 'package:catch_ui/catch_ui.dart'
         CatchDivider,
         CatchDividerRole,
         CatchFieldVisibilityScope,
+        CatchFormReviewState,
         CatchFormStepBody,
+        CatchFormStepReviewItem,
+        CatchFormStepSpec,
+        CatchFormStepStatus,
         CatchPageBody,
         CatchResponsiveFieldInteractionPolicy,
         CatchResponsiveSectionComposition,
@@ -72,12 +76,6 @@ export 'core/widgets/catch_field.dart'
         CatchFieldSupportTone,
         CatchFieldTone,
         CatchFieldVariant;
-export 'core/widgets/catch_form_step_flow.dart'
-    show
-        CatchFormReviewState,
-        CatchFormStepReviewItem,
-        CatchFormStepSpec,
-        CatchFormStepStatus;
 export 'core/widgets/catch_screen_scaffold.dart'
     show CatchRootScreenScaffold, CatchRootScreenScrollView;
 export 'core/widgets/catch_section_layout.dart'

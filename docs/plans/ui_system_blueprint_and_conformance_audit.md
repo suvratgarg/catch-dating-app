@@ -843,6 +843,11 @@ helper becomes a registered internal widget with direct nested-gutter coverage
 and the same feature-placement restriction. Domain-aware section rendering and
 its field metadata inspection stay paired with the remaining field extraction.
 
+Form-step specifications, review items, status and readiness have individual
+shared pattern owners. Existing form-key/title helpers and readiness behavior
+are preserved; direct production-consumer previews replace the two nonvisual
+form-protocol coverage waivers. Feature wizard validation stays app-owned.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

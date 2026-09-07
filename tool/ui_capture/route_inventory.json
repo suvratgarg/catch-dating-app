@@ -1179,7 +1179,7 @@
     {
       "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:1",
       "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 256,
+      "line": 255,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventCheckInCelebrationScreen",
@@ -1215,7 +1215,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 391,
+      "line": 390,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1224,7 +1224,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 441,
+      "line": 440,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
