@@ -19413,6 +19413,171 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceRcsConfigActivationApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.activation.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRcsConfigActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsConfigActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsConfigAgentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.agentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRcsConfigAllowedPurposes = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.allowedPurposes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+    minItems: 1,
+    maxItems: 9,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceRcsConfigAllowedPurposesItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.allowedPurposes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceRcsConfigCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.credentialVersion',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventAssistanceRcsConfigMaxQueueSeconds = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.maxQueueSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 10,
+    maximum: 3600,
+  );
+
+  static const eventAssistanceRcsConfigProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRcsConfigQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventAssistanceRcsConfigQuoteMaxMicrosPerMessage = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.quote.maxMicrosPerMessage',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventAssistanceRcsConfigQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsConfigQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsConfigRecipientPrefixes = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.recipientPrefixes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceRcsConfigRecipientPrefixesItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.recipientPrefixes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{0,3}\$',
+  );
+
+  static const eventAssistanceRcsConfigRegion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.region',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['asia', 'europe', 'us'],
+  );
+
+  static const eventAssistanceRcsConfigRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsConfigSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceRcsConfigSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRcsConfigSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRcsConfigStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
   static const eventAssistanceRosterWorkCheckpointCursor = CatchContractFieldConstraints(
     path: 'eventAssistanceRosterWork.checkpoint.cursor',
     maxLength: 180,
@@ -79787,6 +79952,27 @@ abstract final class CatchContractConstraints {
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
     'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
+    'eventAssistanceRcsConfig.activation.approvalId': eventAssistanceRcsConfigActivationApprovalId,
+    'eventAssistanceRcsConfig.activation.approvedAt': eventAssistanceRcsConfigActivationApprovedAt,
+    'eventAssistanceRcsConfig.activation.validUntil': eventAssistanceRcsConfigActivationValidUntil,
+    'eventAssistanceRcsConfig.agentId': eventAssistanceRcsConfigAgentId,
+    'eventAssistanceRcsConfig.allowedPurposes': eventAssistanceRcsConfigAllowedPurposes,
+    'eventAssistanceRcsConfig.allowedPurposes.items': eventAssistanceRcsConfigAllowedPurposesItems,
+    'eventAssistanceRcsConfig.credentialVersion': eventAssistanceRcsConfigCredentialVersion,
+    'eventAssistanceRcsConfig.maxQueueSeconds': eventAssistanceRcsConfigMaxQueueSeconds,
+    'eventAssistanceRcsConfig.provider': eventAssistanceRcsConfigProvider,
+    'eventAssistanceRcsConfig.quote.currency': eventAssistanceRcsConfigQuoteCurrency,
+    'eventAssistanceRcsConfig.quote.maxMicrosPerMessage': eventAssistanceRcsConfigQuoteMaxMicrosPerMessage,
+    'eventAssistanceRcsConfig.quote.revision': eventAssistanceRcsConfigQuoteRevision,
+    'eventAssistanceRcsConfig.quote.validUntil': eventAssistanceRcsConfigQuoteValidUntil,
+    'eventAssistanceRcsConfig.recipientPrefixes': eventAssistanceRcsConfigRecipientPrefixes,
+    'eventAssistanceRcsConfig.recipientPrefixes.items': eventAssistanceRcsConfigRecipientPrefixesItems,
+    'eventAssistanceRcsConfig.region': eventAssistanceRcsConfigRegion,
+    'eventAssistanceRcsConfig.revision': eventAssistanceRcsConfigRevision,
+    'eventAssistanceRcsConfig.schemaVersion': eventAssistanceRcsConfigSchemaVersion,
+    'eventAssistanceRcsConfig.senderId': eventAssistanceRcsConfigSenderId,
+    'eventAssistanceRcsConfig.senderIdentity': eventAssistanceRcsConfigSenderIdentity,
+    'eventAssistanceRcsConfig.status': eventAssistanceRcsConfigStatus,
     'eventAssistanceRosterWork.checkpoint.cursor': eventAssistanceRosterWorkCheckpointCursor,
     'eventAssistanceRosterWork.checkpoint.dueAt': eventAssistanceRosterWorkCheckpointDueAt,
     'eventAssistanceRosterWork.checkpoint.failures': eventAssistanceRosterWorkCheckpointFailures,

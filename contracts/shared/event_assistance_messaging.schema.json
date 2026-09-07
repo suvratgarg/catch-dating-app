@@ -733,7 +733,8 @@
               "type": "string",
               "enum": [
                 "sinch",
-                "gupshup"
+                "gupshup",
+                "googleRbm"
               ]
             },
             "senderId": {

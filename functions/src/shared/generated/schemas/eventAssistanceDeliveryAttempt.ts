@@ -439,7 +439,8 @@ export const eventAssistanceDeliveryAttemptSchema: Record<string, unknown> = {
                   "type": "string",
                   "enum": [
                     "sinch",
-                    "gupshup"
+                    "gupshup",
+                    "googleRbm"
                   ]
                 },
                 "senderId": {

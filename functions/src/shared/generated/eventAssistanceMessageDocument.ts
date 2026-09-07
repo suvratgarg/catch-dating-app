@@ -419,7 +419,7 @@ export type EventAssistanceMessageDocument = {
               routeId: "catchEventRcs";
               transport: "rcs";
               senderIdentity: "catchPlatform";
-              provider: "sinch" | "gupshup";
+              provider: "sinch" | "gupshup" | "googleRbm";
               senderId: string;
               bindingRevision: number;
               recipientEndpointId: string;

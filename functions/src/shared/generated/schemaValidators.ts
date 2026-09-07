@@ -73,6 +73,7 @@ export {validateEventAssistanceSmsSenderDocument} from "./validators/eventAssist
 export {validateEventAssistanceSmsPermissionDocument} from "./validators/eventAssistanceSmsPermissionDocument";
 export {validateEventAssistanceSmsBudgetDocument} from "./validators/eventAssistanceSmsBudgetDocument";
 export {validateEventAssistanceSmsDispatchDocument} from "./validators/eventAssistanceSmsDispatchDocument";
+export {validateEventAssistanceRcsConfig} from "./validators/eventAssistanceRcsConfig";
 export {validateEventAssistanceSmsConfig} from "./validators/eventAssistanceSmsConfig";
 export {validateEventAssistanceGuestDocument} from "./validators/eventAssistanceGuestDocument";
 export {validateEventAssistanceThreadDocument} from "./validators/eventAssistanceThreadDocument";
