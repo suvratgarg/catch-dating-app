@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "80117497c9e9445f58b94d9678252e1f29944044d098ec0b822ccbc81c794ce1",
+  "sourceDigest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "80117497c9e9445f58b94d9678252e1f29944044d098ec0b822ccbc81c794ce1",
-    "contractDigest": "80117497c9e9445f58b94d9678252e1f29944044d098ec0b822ccbc81c794ce1"
+    "digest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3",
+    "contractDigest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "aceaae8ddba66d688388a9d539364637a47d079e4f69f3b51ab2bba77f0aaeab",
+    "handoffRequestDigest": "922e11c5f8f3c46b83d03d735b5aaf89f5d27bf7b8b7309869f0a73d551139ea",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 247,
+    "publicClassCount": 248,
     "conceptCount": 68,
-    "memberCount": 161,
-    "membersPerConcept": 2.37,
+    "memberCount": 162,
+    "membersPerConcept": 2.38,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 161,
+      "member": 162,
       "screen": 15
     },
     "collisionCount": 36,
@@ -449,7 +449,8 @@
         "symbols": [
           "CatchTabBar",
           "CatchTabBarButton",
-          "CatchTabBarIcon"
+          "CatchTabBarIcon",
+          "CatchTabBarIndicator"
         ]
       },
       {
@@ -2034,7 +2035,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.tab_bar",
       "dartSymbol": "CatchTabBar",
-      "dartFile": "lib/core/widgets/catch_tab_bar.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
       "figmaName": "Catch/TabDock",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2059,7 +2060,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabDock",
       "claudeAllowed": true,
-      "contractDigest": "ff462a6c8cd7195bd721f7dddae888d0fb9821344f6592238d01f105ffa36324"
+      "contractDigest": "28586ec86521bdd3972321bdfd1314edb8172628b66e01f1f7583ca5dc2d6f3f"
     },
     {
       "contractId": "catch.bottom_dock",
@@ -2642,7 +2643,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.bottom_action",
       "dartSymbol": "CatchBottomAction",
-      "dartFile": "lib/core/widgets/catch_bottom_action.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_bottom_action.dart",
       "figmaName": "Catch/BottomAction",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2667,7 +2668,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "BookingDock",
       "claudeAllowed": true,
-      "contractDigest": "68667015ad54934941243dbbc30193241207fc467ac496168aaa6b2f7459014e"
+      "contractDigest": "9257036727b22bca5d75533a61d150d65f6c0a3a25b68a8b00ef846239f86759"
     },
     {
       "contractId": "catch.host_row",

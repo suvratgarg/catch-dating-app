@@ -1307,7 +1307,7 @@
         "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
         "lib/core/widgets/catch_screen_scaffold.dart",
         "lib/core/widgets/catch_section_layout.dart",
-        "lib/core/widgets/catch_tab_bar.dart",
+        "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
         "lib/core/widgets/catch_root_screen_body.dart",
         "test/core/app_shell_test.dart",
         "test/core/semantic_layout_contracts_test.dart",

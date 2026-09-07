@@ -783,6 +783,12 @@ also have individual shared owners. App callers resolve typing and accessible
 unread/new labels through the existing copy adapter; directory rows retain their
 slot-only API. Count capping, unread emphasis, avatar shape, large-text stacking
 and press surfaces are preserved.
+The shared platform preference retains its iOS-only Cupertino decision. Bottom
+actions, their content/overlay, and tab navigation move with unchanged rendering
+and interaction bodies. The former private tab indicator becomes a registered
+member with a direct preview; geometry and gesture state stay with the tab bar.
+The bottom-action overlay also has a direct scrolling/safe-area preview while
+retaining its existing embedded coverage.
 
 ### Phase 4 — One registry, binding grammar
 

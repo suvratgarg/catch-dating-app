@@ -10518,7 +10518,7 @@
       "summary": "Adaptive bottom navigation with stable keyed destination slots, one shared 48px selection/contact indicator, measured selected labels, press-and-slide selection, badges, and platform-specific chrome.",
       "dart": {
         "symbol": "CatchTabBar",
-        "file": "lib/core/widgets/catch_tab_bar.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
         "constructors": [
           "CatchTabBar"
         ]
@@ -10606,9 +10606,28 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.tab_bar.indicator",
+            "symbol": "CatchTabBarIndicator",
+            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_indicator.dart",
+            "summary": "Shared selection and contact-preview fill with an optional focus border and reduced-motion handling.",
+            "states": [
+              "selected",
+              "contact",
+              "focused",
+              "reduced-motion"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tab_bar",
+              "parentConceptId": "catch.tab_bar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.tab_bar"
+            }
+          },
+          {
             "id": "catch.tab_bar.button",
             "symbol": "CatchTabBarButton",
-            "file": "lib/core/widgets/catch_tab_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_button.dart",
             "summary": "Stable full-slot tab-bar button renderer with selected-label reveal, explicit contact/focus callbacks, and committed-selection semantics.",
             "states": [
               "selected",
@@ -10629,7 +10648,7 @@
           {
             "id": "catch.tab_bar.icon",
             "symbol": "CatchTabBarIcon",
-            "file": "lib/core/widgets/catch_tab_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_icon.dart",
             "summary": "Vertically centered square tab-bar icon and count renderer with badge clearance.",
             "states": [
               "plain",
@@ -14253,7 +14272,7 @@
           {
             "id": "catch.bottom_action.overlay",
             "symbol": "CatchBottomActionOverlay",
-            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_bottom_action_overlay.dart",
             "summary": "Dockless pinned-action layout that lets scrolling content pass beneath a soft background fade while paired form insets keep final content reachable.",
             "states": [
               "scrolling",
@@ -14273,7 +14292,7 @@
           {
             "id": "catch.bottom_action.content",
             "symbol": "CatchBottomActionContent",
-            "file": "lib/core/widgets/catch_bottom_action.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_bottom_action_content.dart",
             "summary": "Provider-free action contents shared by the floating and anchored platform shells.",
             "states": [
               "default",
@@ -14333,7 +14352,7 @@
       },
       "dart": {
         "symbol": "CatchBottomAction",
-        "file": "lib/core/widgets/catch_bottom_action.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_bottom_action.dart",
         "constructors": [
           "CatchBottomAction"
         ]

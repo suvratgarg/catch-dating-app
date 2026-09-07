@@ -51,6 +51,8 @@ import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
     as _widgetbook_workspace_primitives_avatar_use_cases;
+import 'package:widgetbook_workspace/primitives/bottom_action_use_cases.dart'
+    as _widgetbook_workspace_primitives_bottom_action_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
@@ -71,6 +73,8 @@ import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
     as _widgetbook_workspace_primitives_rail_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
+import 'package:widgetbook_workspace/primitives/tab_bar_use_cases.dart'
+    as _widgetbook_workspace_primitives_tab_bar_use_cases;
 import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
     as _widgetbook_workspace_primitives_text_input_use_cases;
 import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart'
@@ -1877,6 +1881,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBottomActionOverlay',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scrolling content and safe areas',
+                builder:
+                    _widgetbook_workspace_primitives_bottom_action_use_cases
+                        .bottomActionOverlayStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFillViewportScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3086,6 +3101,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabDockIconContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabBarIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selection and contact indicators',
+                builder: _widgetbook_workspace_primitives_tab_bar_use_cases
+                    .tabBarIndicatorStates,
               ),
             ],
           ),

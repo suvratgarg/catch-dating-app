@@ -1188,7 +1188,7 @@
     {
       "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:1",
       "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
-      "line": 363,
+      "line": 362,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",
