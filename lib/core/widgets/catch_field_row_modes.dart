@@ -53,7 +53,112 @@ extension _CatchFieldRowModes on _CatchFieldState {
         : widget._contentRow
         ? CatchSpacing.micro2
         : _rowTrailingTopPadding;
-    final rawTrailingSlot = _buildTrailingSlot(t);
+    final Widget? rawTrailingSlot;
+    if (_isToggle) {
+      rawTrailingSlot = CatchFieldTrailing.toggle(
+        copy: widget.copy,
+        value: widget.toggled,
+        onChanged: _isSaving ? null : widget.onToggle,
+        contract: widget.contract,
+        contractExemption: widget.toggleContractExemption,
+        semanticLabel: _title,
+        status: _effectiveStatus,
+        topPadding: 0,
+      );
+    } else if (_statusLaneActive &&
+        !_visibleCommitBarOwnsSavingIndicator &&
+        !_hasError) {
+      rawTrailingSlot = CatchFieldTrailing.status(
+        copy: widget.copy,
+        status: _effectiveStatus,
+      );
+    } else if (!_isSaving && widget.valid && !_hasError) {
+      rawTrailingSlot = CatchFieldTrailing.valid(topPadding: 0);
+    } else if (_usesRowTextEntryTrailing) {
+      final fallbackContent = widget.action ?? widget.suffixIcon;
+      final fallback = fallbackContent == null
+          ? null
+          : CatchFieldTrailing.custom(
+              topPadding: 0,
+              color: t.ink3,
+              child: fallbackContent,
+            );
+      if (!widget.showClearButton) {
+        rawTrailingSlot = fallback;
+      } else {
+        rawTrailingSlot = ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _controller,
+          builder: (_, value, _) {
+            if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
+            return CatchFieldTrailing.clear(
+              tooltip: widget.copy.clearTooltip(_title),
+              onPressed: () {
+                _controller.clear();
+                widget.onChanged?.call('');
+              },
+              topPadding: 0,
+            );
+          },
+        );
+      }
+    } else if (_hasControl) {
+      rawTrailingSlot = CatchFieldTrailing.rotatingChevron(
+        open: _isOpen,
+        color: _active ? t.ink : t.ink3,
+        topPadding: 0,
+      );
+    } else {
+      final includeChevron = _isNavigation && _shouldShowChevron;
+      final children = <Widget>[];
+      final valueText = widget.valueText?.trim();
+      if (!_stacksTrailingValueText &&
+          valueText != null &&
+          valueText.isNotEmpty) {
+        children.add(
+          CatchFieldTrailing.valueText(
+            text: valueText,
+            maxLines: widget.valueMaxLines,
+            topPadding: 0,
+          ),
+        );
+      }
+
+      final custom = widget.action == null
+          ? null
+          : CatchFieldTrailing.custom(
+              topPadding: 0,
+              color: t.ink3,
+              child: widget.action!,
+            );
+      if (custom != null) children.add(custom);
+
+      if (children.isEmpty) {
+        rawTrailingSlot = includeChevron
+            ? CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0)
+            : null;
+      } else {
+        // Value and custom metadata share the lane without starving either of width.
+        final group = children.length == 1
+            ? children.single
+            : Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s1,
+                children: children,
+              );
+        rawTrailingSlot = !includeChevron
+            ? group
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: group),
+                  const SizedBox(width: CatchSpacing.s2),
+                  CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
+                ],
+              );
+      }
+    }
     final positionsTrailing = _hasControl || _usesPositionedClearTrailing;
     final trailingTopPadding = _rowTrailingTopPadding;
     final trailingSlot = rawTrailingSlot == null
@@ -108,6 +213,174 @@ extension _CatchFieldRowModes on _CatchFieldState {
     } else {
       leadingSlot = null;
     }
+    final Widget rowBody;
+    final inlineMetadata = widget.inlineMetadata?.trim();
+    if (_inlineControlAddAtRest) {
+      final addText = _emptyEditableValueText ?? _title ?? '';
+      rowBody = Semantics(
+        label: _inlineAddSemanticLabel(addText),
+        excludeSemantics: true,
+        child: Text.rich(
+          _inlineAddTextSpan(t),
+          style: CatchTextStyles.fieldRowValue(
+            context,
+            color: t.ink3,
+            fontWeight: FontWeight.w500,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    } else if (widget._explicitSaveInput) {
+      final error = _displayError?.trim();
+      final inlineAddAtRest = error?.isNotEmpty != true && _inlineTextAddAtRest;
+      final addText = _emptyEditableValueText;
+      final input = IgnorePointer(
+        ignoring: !_isOpen,
+        child: _buildTextEntryField(
+          context,
+          showLabelOverride: false,
+          variantOverride: CatchFieldVariant.bare,
+          valueEmphasis: true,
+          canInteractOverride: _isOpen && widget.enabled,
+          readOnlyOverride: !_isOpen,
+          includeSupport: false,
+          inputHintOverride: inlineAddAtRest
+              ? null
+              : _isOpen
+              ? _inputHintText
+              : _emptyEditableValueText,
+          inputHintWidgetOverride: inlineAddAtRest
+              ? Text.rich(
+                  _inlineAddTextSpan(t),
+                  style: CatchTextStyles.fieldRowValue(
+                    context,
+                    color: t.ink3,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
+              : null,
+          semanticLabelOverride: inlineAddAtRest && addText != null
+              ? _inlineAddSemanticLabel(addText)
+              : _title,
+        ),
+      );
+      rowBody = CatchFieldValueContent(
+        labelCopy: widget.copy.label,
+        titleMaxLines: widget.titleMaxLines,
+        isOptional: widget.isOptional && widget.showLabel,
+        badgeLabel: widget.badgeLabel,
+        badgeTone: widget.badgeTone,
+        tone: widget.tone,
+        helperTone: widget.helperTone,
+        headerTrailingReserve: _contentTrailingReserve,
+        label: inlineAddAtRest ? null : _title,
+        valueWidget: input,
+        status: error?.isNotEmpty == true
+            ? CatchFieldValueContentStatus.error
+            : _active
+            ? CatchFieldValueContentStatus.active
+            : CatchFieldValueContentStatus.idle,
+        labelStyle: CatchFieldValueContent.captionStyle(
+          context,
+          color: error?.isNotEmpty == true
+              ? t.danger
+              : _active
+              ? t.ink
+              : t.ink2,
+        ),
+      );
+    } else if (_isEdit) {
+      rowBody = _buildTextEntryField(
+        context,
+        showLabelOverride: false,
+        variantOverride: CatchFieldVariant.bare,
+        valueEmphasis: true,
+        rowBody: true,
+      );
+    } else if (inlineMetadata?.isNotEmpty == true) {
+      final title = _title?.trim() ?? '';
+      rowBody = Semantics(
+        label: '$title, $inlineMetadata',
+        excludeSemantics: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: CatchTextStyles.recordTitle(
+                context,
+                color: _toneColor(t, primaryFallback: t.ink),
+              ),
+            ),
+            const SizedBox(height: CatchRecordTokens.titleGap),
+            Text(
+              inlineMetadata!,
+              style: CatchTextStyles.recordContext(context),
+            ),
+          ],
+        ),
+      );
+    } else if (widget._contentRow) {
+      final hasError = _displayError?.trim().isNotEmpty == true;
+      rowBody = CatchFieldContentRow(
+        labelCopy: widget.copy.label,
+
+        title: _title?.trim() ?? '',
+        body: _body?.trim() ?? '',
+        titleMaxLines: widget.titleMaxLines,
+        bodyMaxLines: widget.bodyMaxLines,
+        isOptional: widget.isOptional,
+        titleColor: hasError ? t.danger : _toneColor(t, primaryFallback: t.ink),
+        bodyColor: t.ink2,
+      );
+    } else {
+      final title = _title?.trim();
+      final value = _stacksTrailingValueText
+          ? widget.valueText!.trim()
+          : _body?.trim().isNotEmpty == true
+          ? _body!.trim()
+          : widget._onSubmit != null
+          ? _emptyEditableValueText
+          : _placeholderText?.trim();
+      final error = _displayError?.trim();
+      final hasValue = value != null && value.isNotEmpty;
+
+      rowBody = CatchFieldValueContent(
+        labelCopy: widget.copy.label,
+        titleMaxLines: widget.titleMaxLines,
+        isOptional: widget.isOptional && widget.showLabel,
+        badgeLabel: widget.badgeLabel,
+        badgeTone: widget.badgeTone,
+        tone: widget.tone,
+        helperTone: widget.helperTone,
+        headerTrailingReserve: _contentTrailingReserve,
+        label: title,
+        value: value,
+        supportText: _hasControl
+            ? error?.isNotEmpty == true
+                  ? null
+                  : widget.helperText
+            : error?.isNotEmpty == true
+            ? error
+            : widget.helperText,
+        emphasis: widget.emphasis == CatchFieldEmphasis.title || !hasValue
+            ? CatchFieldEmphasis.title
+            : CatchFieldEmphasis.body,
+        mode: !_hasValue
+            ? CatchFieldValueContentMode.placeholder
+            : CatchFieldValueContentMode.value,
+        valueMaxLines: widget.bodyMaxLines,
+        status: error?.isNotEmpty == true
+            ? CatchFieldValueContentStatus.error
+            : _active
+            ? CatchFieldValueContentStatus.active
+            : CatchFieldValueContentStatus.idle,
+      );
+    }
     final rowContent = CatchFieldRow.standard(
       constraints: _usesPositionedClearTrailing
           ? _rowConstraints.enforce(
@@ -127,7 +400,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
           ? _expansionMotionDuration(context)
           : Duration.zero,
       paddingCurve: CatchMotion.standardCurve,
-      content: _buildBody(t),
+      content: rowBody,
     );
     final row = positionsTrailing && trailingSlot != null
         ? Stack(
@@ -404,129 +677,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
     );
   }
 
-  Widget? _buildTrailingSlot(CatchTokens t) {
-    if (_isToggle) {
-      return CatchFieldTrailing.toggle(
-        copy: widget.copy,
-        value: widget.toggled,
-        onChanged: _isSaving ? null : widget.onToggle,
-        contract: widget.contract,
-        contractExemption: widget.toggleContractExemption,
-        semanticLabel: _title,
-        status: _effectiveStatus,
-        topPadding: 0,
-      );
-    }
-    if (_statusLaneActive &&
-        !_visibleCommitBarOwnsSavingIndicator &&
-        !_hasError) {
-      return CatchFieldTrailing.status(
-        copy: widget.copy,
-        status: _effectiveStatus,
-      );
-    }
-    if (!_isSaving && widget.valid && !_hasError) {
-      return CatchFieldTrailing.valid(topPadding: 0);
-    }
-
-    if (_usesRowTextEntryTrailing) {
-      return _buildTextEntryTrailingSlot(t);
-    }
-
-    if (_hasControl) {
-      return CatchFieldTrailing.rotatingChevron(
-        open: _isOpen,
-        color: _active ? t.ink : t.ink3,
-        topPadding: 0,
-      );
-    }
-
-    if (_isNavigation) {
-      return _buildTrailingGroup(t, includeChevron: _shouldShowChevron);
-    }
-
-    return _buildTrailingGroup(t);
-  }
-
-  Widget? _buildTextEntryTrailingSlot(CatchTokens t) {
-    final fallbackContent = widget.action ?? widget.suffixIcon;
-    final fallback = fallbackContent == null
-        ? null
-        : CatchFieldTrailing.custom(
-            topPadding: 0,
-            color: t.ink3,
-            child: fallbackContent,
-          );
-    if (!widget.showClearButton) return fallback;
-
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: _controller,
-      builder: (_, value, _) {
-        if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
-        return CatchFieldTrailing.clear(
-          tooltip: widget.copy.clearTooltip(_title),
-          onPressed: () {
-            _controller.clear();
-            widget.onChanged?.call('');
-          },
-          topPadding: 0,
-        );
-      },
-    );
-  }
-
-  Widget? _buildTrailingGroup(CatchTokens t, {bool includeChevron = false}) {
-    final children = <Widget>[];
-    final valueText = widget.valueText?.trim();
-    if (!_stacksTrailingValueText &&
-        valueText != null &&
-        valueText.isNotEmpty) {
-      children.add(
-        CatchFieldTrailing.valueText(
-          text: valueText,
-          maxLines: widget.valueMaxLines,
-          topPadding: 0,
-        ),
-      );
-    }
-
-    final custom = widget.action == null
-        ? null
-        : CatchFieldTrailing.custom(
-            topPadding: 0,
-            color: t.ink3,
-            child: widget.action!,
-          );
-    if (custom != null) children.add(custom);
-
-    if (children.isEmpty) {
-      return includeChevron
-          ? CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0)
-          : null;
-    }
-
-    // Value and custom metadata share the lane without starving either of width.
-    final group = children.length == 1
-        ? children.single
-        : Wrap(
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s1,
-            children: children,
-          );
-    if (!includeChevron) return group;
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(child: group),
-        const SizedBox(width: CatchSpacing.s2),
-        CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
-      ],
-    );
-  }
-
   double get _rowTrailingTopPadding {
     if (widget._contentRow) return 0;
     if (!_isEdit && widget.emphasis == CatchFieldEmphasis.title) {
@@ -577,180 +727,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildBody(CatchTokens t) {
-    if (_inlineControlAddAtRest) {
-      final addText = _emptyEditableValueText ?? _title ?? '';
-      return Semantics(
-        label: _inlineAddSemanticLabel(addText),
-        excludeSemantics: true,
-        child: Text.rich(
-          _inlineAddTextSpan(t),
-          style: CatchTextStyles.fieldRowValue(
-            context,
-            color: t.ink3,
-            fontWeight: FontWeight.w500,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    }
-    if (widget._explicitSaveInput) {
-      final error = _displayError?.trim();
-      final inlineAddAtRest = error?.isNotEmpty != true && _inlineTextAddAtRest;
-      final addText = _emptyEditableValueText;
-      final input = IgnorePointer(
-        ignoring: !_isOpen,
-        child: _buildTextEntryField(
-          context,
-          showLabelOverride: false,
-          variantOverride: CatchFieldVariant.bare,
-          valueEmphasis: true,
-          canInteractOverride: _isOpen && widget.enabled,
-          readOnlyOverride: !_isOpen,
-          includeSupport: false,
-          inputHintOverride: inlineAddAtRest
-              ? null
-              : _isOpen
-              ? _inputHintText
-              : _emptyEditableValueText,
-          inputHintWidgetOverride: inlineAddAtRest
-              ? Text.rich(
-                  _inlineAddTextSpan(t),
-                  style: CatchTextStyles.fieldRowValue(
-                    context,
-                    color: t.ink3,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null,
-          semanticLabelOverride: inlineAddAtRest && addText != null
-              ? _inlineAddSemanticLabel(addText)
-              : _title,
-        ),
-      );
-      return CatchFieldValueContent(
-        labelCopy: widget.copy.label,
-        titleMaxLines: widget.titleMaxLines,
-        isOptional: widget.isOptional && widget.showLabel,
-        badgeLabel: widget.badgeLabel,
-        badgeTone: widget.badgeTone,
-        tone: widget.tone,
-        helperTone: widget.helperTone,
-        headerTrailingReserve: _contentTrailingReserve,
-        label: inlineAddAtRest ? null : _title,
-        valueWidget: input,
-        status: error?.isNotEmpty == true
-            ? CatchFieldValueContentStatus.error
-            : _active
-            ? CatchFieldValueContentStatus.active
-            : CatchFieldValueContentStatus.idle,
-        labelStyle: CatchFieldValueContent.captionStyle(
-          context,
-          color: error?.isNotEmpty == true
-              ? t.danger
-              : _active
-              ? t.ink
-              : t.ink2,
-        ),
-      );
-    }
-    if (_isEdit) {
-      return _buildTextEntryField(
-        context,
-        showLabelOverride: false,
-        variantOverride: CatchFieldVariant.bare,
-        valueEmphasis: true,
-        rowBody: true,
-      );
-    }
-    final inlineMetadata = widget.inlineMetadata?.trim();
-    if (inlineMetadata?.isNotEmpty == true) {
-      final title = _title?.trim() ?? '';
-      return Semantics(
-        label: '$title, $inlineMetadata',
-        excludeSemantics: true,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: CatchTextStyles.recordTitle(
-                context,
-                color: _toneColor(t, primaryFallback: t.ink),
-              ),
-            ),
-            const SizedBox(height: CatchRecordTokens.titleGap),
-            Text(
-              inlineMetadata!,
-              style: CatchTextStyles.recordContext(context),
-            ),
-          ],
-        ),
-      );
-    }
-    if (widget._contentRow) {
-      final hasError = _displayError?.trim().isNotEmpty == true;
-      return CatchFieldContentRow(
-        labelCopy: widget.copy.label,
-
-        title: _title?.trim() ?? '',
-        body: _body?.trim() ?? '',
-        titleMaxLines: widget.titleMaxLines,
-        bodyMaxLines: widget.bodyMaxLines,
-        isOptional: widget.isOptional,
-        titleColor: hasError ? t.danger : _toneColor(t, primaryFallback: t.ink),
-        bodyColor: t.ink2,
-      );
-    }
-
-    final title = _title?.trim();
-    final value = _stacksTrailingValueText
-        ? widget.valueText!.trim()
-        : _body?.trim().isNotEmpty == true
-        ? _body!.trim()
-        : widget._onSubmit != null
-        ? _emptyEditableValueText
-        : _placeholderText?.trim();
-    final error = _displayError?.trim();
-    final hasValue = value != null && value.isNotEmpty;
-
-    return CatchFieldValueContent(
-      labelCopy: widget.copy.label,
-      titleMaxLines: widget.titleMaxLines,
-      isOptional: widget.isOptional && widget.showLabel,
-      badgeLabel: widget.badgeLabel,
-      badgeTone: widget.badgeTone,
-      tone: widget.tone,
-      helperTone: widget.helperTone,
-      headerTrailingReserve: _contentTrailingReserve,
-      label: title,
-      value: value,
-      supportText: _hasControl
-          ? error?.isNotEmpty == true
-                ? null
-                : widget.helperText
-          : error?.isNotEmpty == true
-          ? error
-          : widget.helperText,
-      emphasis: widget.emphasis == CatchFieldEmphasis.title || !hasValue
-          ? CatchFieldEmphasis.title
-          : CatchFieldEmphasis.body,
-      mode: !_hasValue
-          ? CatchFieldValueContentMode.placeholder
-          : CatchFieldValueContentMode.value,
-      valueMaxLines: widget.bodyMaxLines,
-      status: error?.isNotEmpty == true
-          ? CatchFieldValueContentStatus.error
-          : _active
-          ? CatchFieldValueContentStatus.active
-          : CatchFieldValueContentStatus.idle,
     );
   }
 }

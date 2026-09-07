@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.11
+version: 1.9.12
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1088,7 +1088,10 @@ Field input suffixes now use `CatchFieldTrailing.inputSuffix`, preserving the
 native clear button and its fallback action/icon styling. A missing suffix
 remains null at the text-entry boundary. Leading slots, add rows, text-entry
 motion and custom trailing placement are inlined into their existing callers;
-seven private render helpers and the redundant action getter are deleted.
+fourteen private render helpers and the redundant action getter are deleted.
+The row body and trailing-state selection, underline chrome, select trigger,
+and configured-row wrapper render at their existing callers. Their precedence,
+null-slot allocation, form-state callbacks and widget tree remain unchanged.
 
 ### Phase 4 — One registry, binding grammar
 

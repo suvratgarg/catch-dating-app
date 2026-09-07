@@ -347,14 +347,64 @@ extension _CatchFieldEdit on _CatchFieldState {
               ),
       ),
     );
-    final inputShell = _buildFieldChrome(
-      context: context,
-      tokens: t,
-      hasError: hasError,
-      focused: effectiveFocused,
-      variant: variant,
-      child: textField,
-    );
+    final Widget inputShell;
+    if (variant == CatchFieldVariant.bare || variant == CatchFieldVariant.row) {
+      inputShell = textField;
+    } else {
+      final active = effectiveFocused || hasError;
+      final baselineColor = hasError
+          ? t.danger
+          : widget.enabled
+          ? t.line2
+          : t.line;
+      final sweepColor = hasError ? t.danger : t.ink;
+      inputShell = ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: CatchControlMetrics.minHeight(_controlSize),
+        ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            DecoratedBox(
+              key: const ValueKey('catch-field-underline-baseline'),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: baselineColor)),
+              ),
+              child: textField,
+            ),
+            PositionedDirectional(
+              start: 0,
+              end: 0,
+              bottom: -CatchFieldTokens.underlineSweepBottomOffset,
+              height: CatchStroke.underline,
+              child: LayoutBuilder(
+                builder: (context, constraints) =>
+                    TweenAnimationBuilder<double>(
+                      key: const ValueKey('catch-field-underline-sweep'),
+                      duration: catchFieldMotionDuration(
+                        context,
+                        CatchFieldTokens.reveal,
+                      ),
+                      curve: CatchFieldTokens.curve,
+                      tween: Tween<double>(end: active ? 1 : 0),
+                      builder: (context, progress, _) => Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: SizedBox(
+                          key: const ValueKey(
+                            'catch-field-underline-sweep-bar',
+                          ),
+                          width: constraints.maxWidth * progress,
+                          height: CatchStroke.underline,
+                          child: ColoredBox(color: sweepColor),
+                        ),
+                      ),
+                    ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     final singleLineControlHeight = _singleLineControlHeight(variant);
     final sizedInputShell = singleLineControlHeight == null
         ? inputShell
@@ -398,207 +448,126 @@ extension _CatchFieldEdit on _CatchFieldState {
             : null;
         final hasError = error != null;
         final supportText = error ?? widget.helperText;
-        return _buildSelectTrigger(
-          context: context,
-          tokens: t,
-          value: value,
-          hasError: hasError,
-          supportText: supportText,
-          onChanged: widget.enabled && widget._onSelectChanged != null
-              ? (next) {
-                  state.didChange(next);
-                  widget._onSelectChanged?.call(next);
-                }
-              : null,
-        );
-      },
-    );
-  }
+        final ValueChanged<Object?>? onChanged =
+            widget.enabled && widget._onSelectChanged != null
+            ? (next) {
+                state.didChange(next);
+                widget._onSelectChanged?.call(next);
+              }
+            : null;
+        final values = widget._selectValues ?? const <Object?>[];
+        final labelOf = widget._selectItemLabel!;
+        final label = value == null ? null : labelOf(value);
+        final canOpen =
+            widget.enabled && onChanged != null && values.isNotEmpty;
 
-  Widget _buildSelectTrigger({
-    required BuildContext context,
-    required CatchTokens tokens,
-    required Object? value,
-    required bool hasError,
-    required String? supportText,
-    required ValueChanged<Object?>? onChanged,
-  }) {
-    final values = widget._selectValues ?? const <Object?>[];
-    final labelOf = widget._selectItemLabel!;
-    final label = value == null ? null : labelOf(value);
-    final canOpen = widget.enabled && onChanged != null && values.isNotEmpty;
-
-    return CatchMenuAnchor<Object?>(
-      controller: _menuController,
-      items: [
-        for (final item in values)
-          CatchMenuItem<Object?>(
-            value: item,
-            label: labelOf(item),
-            selected: item == value,
-            role: CatchMenuItemRole.choice,
-          ),
-      ],
-      onSelected: (item, _) {
-        onChanged?.call(item);
-        _menuController.close();
-      },
-      builder: (context, controller, child) {
-        final selectHasLabel =
-            widget.showLabel && (_title?.trim().isNotEmpty ?? false);
-        return Semantics(
-          button: true,
-          enabled: canOpen,
-          label: _title,
-          value: label,
-          child: Focus(
-            focusNode: _focusNode,
-            child: CatchFieldRow.standard(
-              onTap: canOpen
-                  ? () {
-                      _focusNode.requestFocus();
-                      controller.isOpen
-                          ? controller.close()
-                          : controller.open();
-                    }
-                  : null,
-              constraints: _rowConstraints,
-              padding: _rowPadding,
-              leading: widget.prefixIcon == null
-                  ? null
-                  : IconTheme(
-                      data: IconThemeData(
-                        color: widget.enabled ? tokens.ink2 : tokens.ink3,
-                        size: CatchFieldRow.leadingSlotIconSize,
-                      ),
-                      child: widget.prefixIcon!,
-                    ),
-              content: CatchFieldValueContent(
-                labelCopy: widget.copy.label,
-                titleMaxLines: widget.titleMaxLines,
-                isOptional: widget.isOptional && widget.showLabel,
-                badgeLabel: widget.badgeLabel,
-                badgeTone: widget.badgeTone,
-                tone: widget.tone,
-                helperTone: widget.helperTone,
-                headerTrailingReserve: _contentTrailingReserve,
-                label: widget.showLabel ? _title?.trim() : null,
-                value:
-                    label ??
-                    widget.placeholder ??
-                    widget.copy.selectPlaceholder(_title),
-                supportText: supportText,
-                status: hasError
-                    ? CatchFieldValueContentStatus.error
-                    : _active
-                    ? CatchFieldValueContentStatus.active
-                    : CatchFieldValueContentStatus.idle,
-                mode: label == null
-                    ? CatchFieldValueContentMode.placeholder
-                    : CatchFieldValueContentMode.value,
-                labelStyle: CatchFieldValueContent.captionStyle(
-                  context,
-                  color: hasError ? tokens.danger : tokens.ink2,
-                ),
-                valueStyle: CatchTextStyles.fieldRowValue(
-                  context,
-                  color: label == null || !widget.enabled
-                      ? tokens.ink3
-                      : tokens.ink,
-                ),
+        return CatchMenuAnchor<Object?>(
+          controller: _menuController,
+          items: [
+            for (final item in values)
+              CatchMenuItem<Object?>(
+                value: item,
+                label: labelOf(item),
+                selected: item == value,
+                role: CatchMenuItemRole.choice,
               ),
-              trailing: selectHasLabel
-                  ? Padding(
-                      padding: EdgeInsets.only(
-                        top: CatchFieldTokens.captionExtent,
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: CatchFieldTokens.valueLineExtent,
-                        ),
-                        child: Align(
-                          widthFactor: 1,
-                          heightFactor: 1,
-                          child: CatchFieldTrailing.rotatingChevron(
-                            open: controller.isOpen,
-                            color: tokens.ink3,
-                            topPadding: 0,
+          ],
+          onSelected: (item, _) {
+            onChanged?.call(item);
+            _menuController.close();
+          },
+          builder: (context, controller, child) {
+            final selectHasLabel =
+                widget.showLabel && (_title?.trim().isNotEmpty ?? false);
+            return Semantics(
+              button: true,
+              enabled: canOpen,
+              label: _title,
+              value: label,
+              child: Focus(
+                focusNode: _focusNode,
+                child: CatchFieldRow.standard(
+                  onTap: canOpen
+                      ? () {
+                          _focusNode.requestFocus();
+                          controller.isOpen
+                              ? controller.close()
+                              : controller.open();
+                        }
+                      : null,
+                  constraints: _rowConstraints,
+                  padding: _rowPadding,
+                  leading: widget.prefixIcon == null
+                      ? null
+                      : IconTheme(
+                          data: IconThemeData(
+                            color: widget.enabled ? t.ink2 : t.ink3,
+                            size: CatchFieldRow.leadingSlotIconSize,
                           ),
+                          child: widget.prefixIcon!,
                         ),
-                      ),
-                    )
-                  : CatchFieldTrailing.rotatingChevron(
-                      open: controller.isOpen,
-                      color: tokens.ink3,
+                  content: CatchFieldValueContent(
+                    labelCopy: widget.copy.label,
+                    titleMaxLines: widget.titleMaxLines,
+                    isOptional: widget.isOptional && widget.showLabel,
+                    badgeLabel: widget.badgeLabel,
+                    badgeTone: widget.badgeTone,
+                    tone: widget.tone,
+                    helperTone: widget.helperTone,
+                    headerTrailingReserve: _contentTrailingReserve,
+                    label: widget.showLabel ? _title?.trim() : null,
+                    value:
+                        label ??
+                        widget.placeholder ??
+                        widget.copy.selectPlaceholder(_title),
+                    supportText: supportText,
+                    status: hasError
+                        ? CatchFieldValueContentStatus.error
+                        : _active
+                        ? CatchFieldValueContentStatus.active
+                        : CatchFieldValueContentStatus.idle,
+                    mode: label == null
+                        ? CatchFieldValueContentMode.placeholder
+                        : CatchFieldValueContentMode.value,
+                    labelStyle: CatchFieldValueContent.captionStyle(
+                      context,
+                      color: hasError ? t.danger : t.ink2,
                     ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFieldChrome({
-    required BuildContext context,
-    required CatchTokens tokens,
-    required bool hasError,
-    required bool focused,
-    required CatchFieldVariant variant,
-    required Widget child,
-  }) {
-    if (variant == CatchFieldVariant.bare || variant == CatchFieldVariant.row) {
-      return child;
-    }
-
-    final active = focused || hasError;
-    final baselineColor = hasError
-        ? tokens.danger
-        : widget.enabled
-        ? tokens.line2
-        : tokens.line;
-    final sweepColor = hasError ? tokens.danger : tokens.ink;
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: CatchControlMetrics.minHeight(_controlSize),
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          DecoratedBox(
-            key: const ValueKey('catch-field-underline-baseline'),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: baselineColor)),
-            ),
-            child: child,
-          ),
-          PositionedDirectional(
-            start: 0,
-            end: 0,
-            bottom: -CatchFieldTokens.underlineSweepBottomOffset,
-            height: CatchStroke.underline,
-            child: LayoutBuilder(
-              builder: (context, constraints) => TweenAnimationBuilder<double>(
-                key: const ValueKey('catch-field-underline-sweep'),
-                duration: catchFieldMotionDuration(
-                  context,
-                  CatchFieldTokens.reveal,
-                ),
-                curve: CatchFieldTokens.curve,
-                tween: Tween<double>(end: active ? 1 : 0),
-                builder: (context, progress, _) => Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: SizedBox(
-                    key: const ValueKey('catch-field-underline-sweep-bar'),
-                    width: constraints.maxWidth * progress,
-                    height: CatchStroke.underline,
-                    child: ColoredBox(color: sweepColor),
+                    valueStyle: CatchTextStyles.fieldRowValue(
+                      context,
+                      color: label == null || !widget.enabled ? t.ink3 : t.ink,
+                    ),
                   ),
+                  trailing: selectHasLabel
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                            top: CatchFieldTokens.captionExtent,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: CatchFieldTokens.valueLineExtent,
+                            ),
+                            child: Align(
+                              widthFactor: 1,
+                              heightFactor: 1,
+                              child: CatchFieldTrailing.rotatingChevron(
+                                open: controller.isOpen,
+                                color: t.ink3,
+                                topPadding: 0,
+                              ),
+                            ),
+                          ),
+                        )
+                      : CatchFieldTrailing.rotatingChevron(
+                          open: controller.isOpen,
+                          color: t.ink3,
+                        ),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

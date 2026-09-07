@@ -705,14 +705,73 @@ class _CatchFieldState extends State<CatchField>
 
   @override
   Widget build(BuildContext context) {
-    final field = switch (widget._config) {
-      _SelectConfig() => _buildSelectField(context),
-      _EditConfig() when _usesUnderlineChrome => _buildTextEntryField(context),
-      _EditConfig() ||
-      _RowConfig() ||
-      _ToggleConfig() ||
-      _ControlConfig() => _buildConfiguredRow(context),
-    };
+    final Widget field;
+    switch (widget._config) {
+      case _SelectConfig():
+        field = _buildSelectField(context);
+      case _EditConfig() when _usesUnderlineChrome:
+        field = _buildTextEntryField(context);
+      case _EditConfig() || _RowConfig() || _ToggleConfig() || _ControlConfig():
+        final t = CatchTokens.of(context);
+        final rowStack = Stack(
+          children: [
+            widget.add
+                ? CatchFieldRow.add(
+                    onTap: widget.onTap,
+                    leading: Icon(
+                      widget.icon ?? CatchIcons.add,
+                      size: CatchIcon.md,
+                      color: t.primary,
+                    ),
+                    content: Text(
+                      _title ?? '',
+                      style: CatchTextStyles.fieldRowValue(
+                        context,
+                        color: _toneColor(t, primaryFallback: t.primary),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : _buildRow(t),
+          ],
+        );
+        field = !_isEdit && !_hasControl
+            ? rowStack
+            : Shortcuts(
+                shortcuts: const <ShortcutActivator, Intent>{
+                  SingleActivator(LogicalKeyboardKey.escape):
+                      _CatchFieldDismissIntent(),
+                },
+                child: Actions(
+                  actions: <Type, Action<Intent>>{
+                    _CatchFieldDismissIntent:
+                        CallbackAction<_CatchFieldDismissIntent>(
+                          onInvoke: (_) {
+                            _dismiss();
+                            return null;
+                          },
+                        ),
+                  },
+                  child: _isEdit
+                      ? TextFieldTapRegion(
+                          groupId: _textFieldTapRegionGroup,
+                          onTapOutside: _handleOutsidePointerDown,
+                          onTapUpOutside: _handleOutsidePointerUp,
+                          onTapInside: _clearOutsidePointer,
+                          onTapUpInside: _clearOutsidePointer,
+                          child: rowStack,
+                        )
+                      : TapRegion(
+                          groupId: _tapRegionGroup,
+                          onTapOutside: _handleOutsidePointerDown,
+                          onTapUpOutside: _handleOutsidePointerUp,
+                          onTapInside: _clearOutsidePointer,
+                          onTapUpInside: _clearOutsidePointer,
+                          child: rowStack,
+                        ),
+                ),
+              );
+    }
     final listeningField =
         NotificationListener<CatchFieldChoicePickedNotification>(
           onNotification: _handleChoicePicked,
@@ -723,65 +782,6 @@ class _CatchFieldState extends State<CatchField>
       child: Opacity(
         opacity: CatchFieldTokens.disabledOpacity,
         child: listeningField,
-      ),
-    );
-  }
-
-  Widget _buildConfiguredRow(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final rowStack = Stack(
-      children: [
-        widget.add
-            ? CatchFieldRow.add(
-                onTap: widget.onTap,
-                leading: Icon(
-                  widget.icon ?? CatchIcons.add,
-                  size: CatchIcon.md,
-                  color: t.primary,
-                ),
-                content: Text(
-                  _title ?? '',
-                  style: CatchTextStyles.fieldRowValue(
-                    context,
-                    color: _toneColor(t, primaryFallback: t.primary),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              )
-            : _buildRow(t),
-      ],
-    );
-    if (!_isEdit && !_hasControl) return rowStack;
-    return Shortcuts(
-      shortcuts: const <ShortcutActivator, Intent>{
-        SingleActivator(LogicalKeyboardKey.escape): _CatchFieldDismissIntent(),
-      },
-      child: Actions(
-        actions: <Type, Action<Intent>>{
-          _CatchFieldDismissIntent: CallbackAction<_CatchFieldDismissIntent>(
-            onInvoke: (_) {
-              _dismiss();
-              return null;
-            },
-          ),
-        },
-        child: _isEdit
-            ? TextFieldTapRegion(
-                groupId: _textFieldTapRegionGroup,
-                onTapOutside: _handleOutsidePointerDown,
-                onTapUpOutside: _handleOutsidePointerUp,
-                onTapInside: _clearOutsidePointer,
-                onTapUpInside: _clearOutsidePointer,
-                child: rowStack,
-              )
-            : TapRegion(
-                groupId: _tapRegionGroup,
-                onTapOutside: _handleOutsidePointerDown,
-                onTapUpOutside: _handleOutsidePointerUp,
-                onTapInside: _clearOutsidePointer,
-                onTapUpInside: _clearOutsidePointer,
-                child: rowStack,
-              ),
       ),
     );
   }
