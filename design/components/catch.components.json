@@ -3308,6 +3308,23 @@
               "decisionRef": "contract-family:catch.field"
             },
             "file": "packages/catch_ui/lib/src/components/catch_responsive_field_interaction_policy.dart"
+          },
+          {
+            "id": "catch.field.interaction_plane",
+            "symbol": "CatchFieldInteractionPlane",
+            "file": "packages/catch_ui/lib/src/patterns/catch_field_interaction_plane.dart",
+            "summary": "Internal page-body publisher for accumulated paint outsets and the existing divided-field interaction default. Features compose semantic page owners.",
+            "states": [
+              "page-plane",
+              "nested-plane"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           }
         ],
         "accessibility": {
@@ -3866,7 +3883,7 @@
           {
             "id": "catch.section.focus_surface",
             "symbol": "CatchSectionFocusSurface",
-            "file": "lib/core/widgets/catch_section_layout.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_section_focus_surface.dart",
             "summary": "Public contained-section focus and error chrome member. Generic contained sections may reflect descendant focus; field-row surfaces publish the one-hairline active-overlay overlap themselves, keep descendant focus child-owned, align active child chrome to the same perimeter geometry, paint the section edge last, and change perimeter color only for explicit focused or error state.",
             "states": [
               "default",
@@ -7738,7 +7755,7 @@
       "summary": "Screen-composition family that owns root body roles, optional pinned primary navigation, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
       "dart": {
         "symbol": "CatchScreenBody",
-        "file": "lib/core/widgets/catch_section_layout.dart",
+        "file": "packages/catch_ui/lib/src/patterns/catch_screen_body.dart",
         "constructors": [
           "CatchScreenBody"
         ]
@@ -7911,7 +7928,7 @@
               "direct-narrow",
               "centered-wide"
             ],
-            "file": "lib/core/widgets/catch_section_layout.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_content_width.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
@@ -7923,6 +7940,7 @@
           {
             "id": "catch.screen_body.sliver_screen_body",
             "symbol": "CatchSliverScreenBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_screen_body.dart",
             "summary": "Semantic sliver body used by ordinary and primary-rail root scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
             "states": [
               "standard",
@@ -7940,6 +7958,7 @@
           {
             "id": "catch.screen_body.form_step_body",
             "symbol": "CatchFormStepBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_body.dart",
             "summary": "Form-step body wrapper with the same page rhythm and gutter ownership as CatchScreenBody.",
             "states": [
               "default",
@@ -7957,6 +7976,7 @@
           {
             "id": "catch.screen_body.page_body",
             "symbol": "CatchPageBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
             "summary": "Padding-only page body member for screens that already own scrolling.",
             "states": [
               "default",
@@ -7974,6 +7994,7 @@
           {
             "id": "catch.screen_body.sliver_page_body",
             "symbol": "CatchSliverPageBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_page_body.dart",
             "summary": "Sliver placement member for page-body padding inside CustomScrollView screens.",
             "states": [
               "default",
@@ -7991,6 +8012,7 @@
           {
             "id": "catch.screen_body.responsive_section_page",
             "symbol": "CatchResponsiveSectionPage",
+            "file": "packages/catch_ui/lib/src/patterns/catch_responsive_section_page.dart",
             "summary": "Scrolling section-page adapter that combines standard gutters, responsive section composition, shell-aware terminal clearance, and expanding-field visibility.",
             "states": [
               "centered",
@@ -8133,6 +8155,42 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
+          },
+          {
+            "id": "catch.screen_body.scroll_terminal_padding",
+            "symbol": "CatchScrollTerminalPadding",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scroll_terminal_padding.dart",
+            "summary": "Box-native terminal clearance for anchored, floating and absent navigation, with explicit safe-area policy.",
+            "states": [
+              "safe-area",
+              "floating-navigation",
+              "explicit-extra"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.sliver_terminal_padding",
+            "symbol": "CatchSliverTerminalPadding",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_terminal_padding.dart",
+            "summary": "Sliver-native terminal clearance delegating to the same box geometry contract.",
+            "states": [
+              "safe-area",
+              "floating-navigation",
+              "explicit-extra"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           }
         ],
         "accessibility": {
@@ -8198,7 +8256,7 @@
       "summary": "Standard stack wrapper for handoff sections, owning page padding and optional inserted gaps between section blocks.",
       "dart": {
         "symbol": "CatchSectionStack",
-        "file": "lib/core/widgets/catch_section_layout.dart",
+        "file": "packages/catch_ui/lib/src/patterns/catch_section_stack.dart",
         "constructors": [
           "CatchSectionStack"
         ]
@@ -8284,6 +8342,7 @@
           {
             "id": "catch.section_stack.detail_sliver_section_list",
             "symbol": "CatchDetailSliverSectionList",
+            "file": "packages/catch_ui/lib/src/patterns/catch_detail_sliver_section_list.dart",
             "summary": "Sliver-native detail-page section list with standard detail gutter and section-owned rhythm.",
             "states": [
               "detail-gutter",
@@ -8301,6 +8360,7 @@
           {
             "id": "catch.section_stack.section_list",
             "symbol": "CatchSectionList",
+            "file": "packages/catch_ui/lib/src/patterns/catch_section_list.dart",
             "summary": "Column helper for ordered section blocks with configurable inserted rhythm.",
             "states": [
               "default-gap",
@@ -8319,6 +8379,7 @@
           {
             "id": "catch.section_stack.responsive_section_layout",
             "symbol": "CatchResponsiveSectionLayout",
+            "file": "packages/catch_ui/lib/src/patterns/catch_responsive_section_layout.dart",
             "summary": "Local-width section layout that preserves compact reading order and moves only complete sections into declared primary or secondary lanes.",
             "states": [
               "centered",

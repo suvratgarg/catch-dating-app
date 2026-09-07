@@ -835,6 +835,14 @@ Direct production-consumer previews replace the six controller/scope coverage
 waivers; the event-entry scanner follows the controller rename with its seeded
 negative probe. Feature-level geometry construction remains prohibited.
 
+Page bodies, sliver bodies, terminal padding, section stacks/lists, responsive
+section pages and contained focus surfaces have individual package owners.
+The shared `CatchSectionTokens.twoColumnBreakpoint` preserves the 660-pixel local
+threshold. Responsive branch renderers are inlined; the reused page paint-plane
+helper becomes a registered internal widget with direct nested-gutter coverage
+and the same feature-placement restriction. Domain-aware section rendering and
+its field metadata inspection stay paired with the remaining field extraction.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

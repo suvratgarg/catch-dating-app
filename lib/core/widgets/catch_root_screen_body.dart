@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart' show CatchLayout;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

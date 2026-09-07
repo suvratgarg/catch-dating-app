@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:2971ef66b6be827751fc5a4770eae7930e244e065a8bae4b678e3096ac771a0b",
+  "resolvedDigest": "sha256:a341dff23835ed334fa09810612a22fa6b3dedb5f88e6e5892f4c48fe5077e99",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5321,7 +5321,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchScreenBody",
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_screen_body.dart",
               "constructors": [
                 "CatchScreenBody"
               ]

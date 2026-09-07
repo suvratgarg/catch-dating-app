@@ -179,6 +179,10 @@ class CatchUiLintProbe extends StatelessWidget {
           gutterOwnership: CatchFieldGutterOwnership.container,
           child: SizedBox.shrink(),
         ),
+        const CatchFieldInteractionPlane(
+          padding: EdgeInsets.all(16),
+          child: SizedBox.shrink(),
+        ),
         const CatchSectionFocusSurface(
           padding: EdgeInsets.zero,
           focused: false,
@@ -369,7 +373,7 @@ expect_code_count \
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_geometry_is_section_owned" \
-  2
+  3
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_divider_is_section_owned" \

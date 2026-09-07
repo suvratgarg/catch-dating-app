@@ -75,6 +75,8 @@ import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dar
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
     as _widgetbook_workspace_primitives_rail_use_cases;
+import 'package:widgetbook_workspace/primitives/section_layout_use_cases.dart'
+    as _widgetbook_workspace_primitives_section_layout_use_cases;
 import 'package:widgetbook_workspace/primitives/selection_menu_use_cases.dart'
     as _widgetbook_workspace_primitives_selection_menu_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
@@ -1897,6 +1899,66 @@ final directories = <_widgetbook.WidgetbookNode>[
   _widgetbook.WidgetbookCategory(
     name: 'Core patterns',
     children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Section layout',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldInteractionPlane',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Nested body paint extents',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .fieldInteractionPlaneLayoutStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchResponsiveSectionLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Local breakpoint and single-lane fallback',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .responsiveSectionLayoutStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchResponsiveSectionPage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scrolled terminal clearance',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .responsiveSectionPageStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverScreenBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Standard and full-bleed sliver roles',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .sliverScreenBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverTerminalPadding',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Extra and shell-aware terminal space',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .sliverTerminalPaddingStates,
+              ),
+            ],
+          ),
+        ],
+      ),
       _widgetbook.WidgetbookFolder(
         name: 'Viewport',
         children: [
