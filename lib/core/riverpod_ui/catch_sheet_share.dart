@@ -11,13 +11,11 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-abstract final class RichShareCardSheetKeys {
-  static const cardPreview = ValueKey('rich_share_card_sheet.card_preview');
-  static const shareButton = ValueKey('rich_share_card_sheet.share_button');
-}
-
-class CatchShareCardSheet extends StatefulWidget {
-  const CatchShareCardSheet({
+/// UI adapter for the app's Riverpod-backed external share controller.
+///
+/// Owns PNG capture, platform sharing, attribution and localized errors.
+class CatchSheetShare extends StatefulWidget {
+  const CatchSheetShare({
     super.key,
     required this.card,
     required this.share,
@@ -43,10 +41,10 @@ class CatchShareCardSheet extends StatefulWidget {
   final double pixelRatio;
 
   @override
-  State<CatchShareCardSheet> createState() => _RichShareCardSheetState();
+  State<CatchSheetShare> createState() => _CatchSheetShareState();
 }
 
-class _RichShareCardSheetState extends State<CatchShareCardSheet> {
+class _CatchSheetShareState extends State<CatchSheetShare> {
   final _captureKey = GlobalKey();
   bool _sharing = false;
 
@@ -97,56 +95,15 @@ class _RichShareCardSheetState extends State<CatchShareCardSheet> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: CatchSpacing.s4,
-          right: CatchSpacing.s4,
-          top: CatchSpacing.s4,
-          bottom: MediaQuery.viewInsetsOf(context).bottom + CatchSpacing.s4,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CatchBottomSheetGrabber(),
-            gapH16,
-            RepaintBoundary(
-              key: _captureKey,
-              child: ConstrainedBox(
-                key: RichShareCardSheetKeys.cardPreview,
-                constraints: BoxConstraints(maxWidth: widget.maxWidth),
-                child: widget.card,
-              ),
-            ),
-            gapH12,
-            Text(
-              widget.footnote,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-            gapH16,
-            Builder(
-              builder: (buttonContext) => CatchButton(
-                key: RichShareCardSheetKeys.shareButton,
-                label: widget.buttonLabel,
-                fullWidth: true,
-                isLoading: _sharing,
-                icon: Icon(
-                  CatchIcons.platformShare(
-                    platform: Theme.of(context).platform,
-                  ),
-                ),
-                onPressed: () => unawaited(_share(buttonContext)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => CatchShareCardSheet(
+    card: widget.card,
+    captureKey: _captureKey,
+    buttonLabel: widget.buttonLabel,
+    footnote: widget.footnote,
+    onShare: (buttonContext) => unawaited(_share(buttonContext)),
+    isSharing: _sharing,
+    maxWidth: widget.maxWidth,
+  );
 }
 
 Future<Uint8List> _captureCardPng({

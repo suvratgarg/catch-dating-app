@@ -819,6 +819,12 @@ are explicit, fallback order and boundary comparisons are preserved, and the
 unused grid-count helper is deleted. Feature-specific breakpoint values remain
 app policy; direct contract previews exercise boundaries, fallback and geometry.
 
+Share-card sheet rendering moves to the package with caller-owned capture keys,
+busy state, copy and button-context callbacks. `CatchSheetShare` remains
+app-side as the single PNG/platform-share adapter; its attribution, duplicate-
+press guard, disposal checks and localized failure handling are unchanged.
+The shared sheet has no external-share controller or app localization dependency.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

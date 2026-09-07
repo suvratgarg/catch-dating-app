@@ -85,6 +85,7 @@ const _copyConstructors = <String>{
   'CatchSectionHeader',
   'CatchShareCardFooter',
   'CatchShareCardSheet',
+  'CatchSheetShare',
   'CatchText',
   'CelebrationDetail',
   'CupertinoActionSheetAction',
@@ -654,6 +655,22 @@ const route = '/events';
       texts.contains('/events') ||
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
+  }
+  const shareAdapterSource = '''
+Widget share() => CatchSheetShare(
+  buttonLabel: 'Share this card',
+  footnote: 'Visible sharing information',
+);
+''';
+  final shareAdapterTexts = scanDartSource(
+    'lib/example_share.dart',
+    shareAdapterSource,
+  ).map((finding) => finding.text).toSet();
+  if (!shareAdapterTexts.containsAll({
+    'Share this card',
+    'Visible sharing information',
+  })) {
+    throw StateError('App share adapter bypassed display-copy ownership.');
   }
   const missedShapesSource = r'''
 enum DisplayMode {

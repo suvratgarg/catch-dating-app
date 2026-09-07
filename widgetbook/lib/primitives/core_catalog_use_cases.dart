@@ -4,7 +4,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
@@ -34,7 +33,6 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -3436,8 +3434,8 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
       _StateCard(
         label: 'card preview / share action',
         child: CatchShareCardSheet(
-          share: ExternalShareController((_) async {}),
-          fileName: 'catch-card.png',
+          captureKey: GlobalKey(),
+          onShare: (_) {},
           buttonLabel: 'Share card',
           footnote: 'Preview rendered through RepaintBoundary.',
           card: CatchSurface.card(
@@ -3461,6 +3459,29 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Sharing state',
+  type: CatchShareCardSheet,
+  path: '[Core catalog]/Sheets and footers',
+)
+Widget catchShareCardSheetSharingState(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Sharing a card',
+      catalogId: 'catch.sheet.share_card',
+      children: [
+        CatchShareCardSheet(
+          captureKey: GlobalKey(),
+          buttonLabel: 'Share card',
+          footnote: 'Preparing the card for the system share sheet.',
+          isSharing: true,
+          onShare: (_) {},
+          card: CatchSurface.card(
+            child: Text('Card preview', style: CatchTextStyles.bodyM(context)),
+          ),
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
   name: 'Catalog states',

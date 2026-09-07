@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -1840,11 +1839,11 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(sharedParams, isNull);
-      expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
+      expect(find.byKey(CatchShareCardSheet.cardPreviewKey), findsOneWidget);
       expect(find.byType(EventShareCard), findsOneWidget);
       expect(find.text('CATCH INVITE'), findsOneWidget);
 
-      await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
+      await tester.tap(find.byKey(CatchShareCardSheet.shareButtonKey));
       await tester.pump();
       await pumpFeatureUi(tester);
       await tester.runAsync(() async {

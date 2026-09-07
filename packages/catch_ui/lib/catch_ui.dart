@@ -111,6 +111,7 @@ export 'src/components/catch_selection_menu.dart';
 export 'src/components/catch_selection_menu_item.dart';
 export 'src/components/catch_selection_sheet.dart';
 export 'src/components/catch_share_card_footer.dart';
+export 'src/components/catch_share_card_sheet.dart';
 export 'src/components/catch_snack_bar.dart';
 export 'src/components/catch_stat_column.dart';
 export 'src/components/catch_status_bar.dart';

@@ -1856,6 +1856,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchShareCardSheetCatalogStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sharing state',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchShareCardSheetSharingState,
+              ),
             ],
           ),
         ],
@@ -9598,7 +9603,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Components',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchShareCardSheet',
+                name: 'CatchSheetShare',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sheet states',

@@ -525,7 +525,7 @@ Each packet must be reviewable **without opening any other file**:
 **Similarity**: cohesion 0.87 · exact-shape subset: {ClubShareCard, EventShareCard}
 **Param compatibility**: min 0.55 mean 0.71 — union of params: `title, subtitle, imageUrl, onShare, tone*, footer*` (`*` = not in all members)
 **Token deltas**: ChatShareCard uses `T:CatchSpacing.s3` where others use `T:CatchSpacing.s4`
-**Absorb candidate**: CatchShareCardSheet (lib/core/widgets/catch_share_card_sheet.dart, contract catch.share_card_sheet)
+**Absorb candidate**: CatchShareCardSheet (packages/catch_ui/lib/src/components/catch_share_card_sheet.dart, contract catch.sheet.share_card)
 **Visual**: renders at artifacts/widget_dedupe/renders/… (local-only, regenerate with `flutter test widgetbook/test/render_use_cases_test.dart`)
 
 ## ChatShareCard — constructor

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "a94532d64c832f19f3b6050944dc4e6af26462d4de2d15990c3678be4765f76d",
+  "sourceDigest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "a94532d64c832f19f3b6050944dc4e6af26462d4de2d15990c3678be4765f76d",
-    "contractDigest": "a94532d64c832f19f3b6050944dc4e6af26462d4de2d15990c3678be4765f76d"
+    "digest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb",
+    "contractDigest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "55616c534b234111c9c3170802ed0abf6a6c6415671d6e3675c0e6b2a6551c53",
+    "handoffRequestDigest": "14d708b23c32716b49d21d4776678ba4c865277d074a4bf67261a752c81077ee",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 260,
+    "publicClassCount": 261,
     "conceptCount": 72,
-    "memberCount": 170,
-    "membersPerConcept": 2.36,
+    "memberCount": 171,
+    "membersPerConcept": 2.38,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 170,
+      "member": 171,
       "screen": 15
     },
     "collisionCount": 39,
@@ -418,7 +418,8 @@
           "CatchPickerSheet",
           "CatchPlainSheetHeader",
           "CatchShareCardFooter",
-          "CatchShareCardSheet"
+          "CatchShareCardSheet",
+          "CatchSheetShare"
         ]
       },
       {
@@ -1222,7 +1223,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "0ee0330a126af6e9080dddf91849dbab8984e1db5f5829ea38c2e565241a524e"
+      "contractDigest": "ea629daa0b2835555e8674322aec9369bf6763a71141f3edf631784e80392a3e"
     },
     {
       "contractId": "catch.icon_button",

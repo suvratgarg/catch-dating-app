@@ -5488,12 +5488,11 @@
           {
             "id": "catch.sheet.share_card",
             "symbol": "CatchShareCardSheet",
-            "file": "lib/core/widgets/catch_share_card_sheet.dart",
-            "summary": "Share-card sheet that captures a slotted card preview and delegates image sharing to an injected ExternalShareController.",
+            "file": "packages/catch_ui/lib/src/components/catch_share_card_sheet.dart",
+            "summary": "Presentation-only card preview, footnote and share action with caller-owned capture key, busy state and button-context callback.",
             "states": [
               "preview",
               "sharing",
-              "share-error",
               "custom-width",
               "custom-copy"
             ],
@@ -5501,7 +5500,7 @@
               "conceptRole": "member",
               "conceptId": "catch.sheet",
               "parentConceptId": "catch.sheet",
-              "qualifier": "adapter",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.sheet"
             }
           },
@@ -5555,6 +5554,26 @@
               "conceptId": "catch.sheet",
               "parentConceptId": "catch.sheet",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.sheet"
+            }
+          },
+          {
+            "id": "catch.sheet.external_share",
+            "symbol": "CatchSheetShare",
+            "file": "lib/core/riverpod_ui/catch_sheet_share.dart",
+            "summary": "App adapter that captures the preview as PNG, uses ExternalShareController, records best-effort attribution and resolves localized failure copy.",
+            "states": [
+              "preview",
+              "sharing",
+              "share-error",
+              "best-effort-attribution",
+              "disposed-during-share"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.sheet"
             }
           }
