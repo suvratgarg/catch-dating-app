@@ -13288,8 +13288,8 @@
           {
             "id": "catch.event_card.event_thumbnail.scrim",
             "symbol": "CatchEventThumbnailScrimOverlay",
-            "file": "lib/core/widgets/catch_event_thumbnail.dart",
-            "summary": "Direct event-thumbnail scrim overlay renderer.",
+            "file": "packages/catch_ui/lib/src/components/catch_event_thumbnail_scrim_overlay.dart",
+            "summary": "Presentation-only thumbnail scrim renderer; event data and fallback selection stay with the app.",
             "states": [
               "bottom",
               "full"

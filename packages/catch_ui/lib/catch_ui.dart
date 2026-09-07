@@ -51,6 +51,7 @@ export 'src/components/catch_error_banner.dart';
 export 'src/components/catch_error_body.dart';
 export 'src/components/catch_error_state.dart';
 export 'src/components/catch_error_state_mode.dart';
+export 'src/components/catch_event_thumbnail_scrim_overlay.dart';
 export 'src/components/catch_field_action_bar.dart';
 export 'src/components/catch_field_commit_button.dart';
 export 'src/components/catch_field_content_row.dart';

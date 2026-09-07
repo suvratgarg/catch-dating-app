@@ -951,6 +951,13 @@ its copy adapter. Controllers, focus, selections, pending saves and rendering
 remain owned by the existing field implementation. The field's package move
 still follows the shared schema-constraint and validation-policy transaction.
 
+The thumbnail scrim renderer and its recipe enum have a shared component owner.
+Their existing event-card member identity, gradient colors and stops, pointer
+transparency, and public API are preserved. Photo selection, activity fallback,
+and event-domain values remain in the app thumbnail; the renderer imports only
+Flutter and shared tokens. Existing thumbnail and direct-scrim previews continue
+to cover the production implementation without new baselines.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
