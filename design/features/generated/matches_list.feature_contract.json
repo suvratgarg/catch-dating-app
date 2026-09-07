@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:ff3de7cbc88db8a0e2e53f6842df3dd38c29c0fad586dec6d42b96ae36fdae4e",
+  "resolvedDigest": "sha256:fd13e2964d9d924d6f40368610dad188f44a4cde1cea57a9a1026d329ea8b56d",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -964,7 +964,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

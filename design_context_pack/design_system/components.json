@@ -7192,7 +7192,7 @@
       "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, expanding search, and an explicit divider input independent from surface selection.",
       "dart": {
         "symbol": "CatchTopBar",
-        "file": "lib/core/widgets/catch_top_bar.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "constructors": [
           "CatchTopBar"
         ]
@@ -7415,7 +7415,7 @@
           {
             "id": "catch.top_bar.screen_top_bar",
             "symbol": "CatchScreenTopBar",
-            "file": "lib/core/widgets/catch_top_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_screen_top_bar.dart",
             "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
             "states": [
               "root-title",
@@ -10858,7 +10858,7 @@
       "summary": "Wizard/step-flow header with back or close navigation, an optional interactive section counter, and a progress hairline.",
       "dart": {
         "symbol": "CatchStepHeader",
-        "file": "lib/core/widgets/catch_step_header.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_step_header.dart",
         "constructors": [
           "CatchStepHeader"
         ]

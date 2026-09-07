@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.30.0
+version: 1.31.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1157,7 +1157,7 @@ line height, gaps, padding, icons, or control height. Do not fix those by
 negative padding or feature-local nudges.
 
 Pinned bottom rows must not visually cover a collapsing title. Shared feature
-headers should use `CatchSliverHeader` from `lib/core/widgets/catch_top_bar.dart`
+headers should use `CatchSliverHeader` from `packages/catch_ui/lib/src/patterns/catch_sliver_header.dart`
 and its title-height contracts before adding local header math.
 
 ### Root Screens With A Primary Rail
@@ -3875,7 +3875,9 @@ Widget build(BuildContext context) {
 
 Reference files:
 
-- `lib/core/widgets/catch_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_screen_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_screen_header_title.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`

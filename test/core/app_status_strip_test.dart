@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:catch_ui/catch_ui.dart';

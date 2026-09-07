@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.3
+version: 1.9.4
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1026,6 +1026,17 @@ shared component owners. Their selection, validation, platform minimum size,
 scaled geometry, and route-owned pager binding retain their existing bodies.
 Callers import the shared package; registry, screen-contract, catalog, and
 architecture references follow the move, and both old app libraries are deleted.
+
+Top-bar search configuration, screen top bars, route/identity top bars, and the
+step header also have individual shared component owners. Caller-owned copy,
+constraints and callbacks retain their APIs. Top-bar rendering inlines its
+private search lane and local render helpers into the owning build method,
+preserving the title, leading, trailing, search, safe-area and divider geometry.
+The two original app libraries are deleted; catalog, screen and copy-ownership
+references follow the move. The last schema-constant re-export is removed from
+the app field library, with its remaining consumers importing app-owned schema
+values directly. This prevents transitional widget exports from duplicating the
+explicit schema boundary.
 
 ### Phase 4 — One registry, binding grammar
 

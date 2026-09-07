@@ -8088,7 +8088,7 @@
   },
   "coreCatchStepFlowHeaderTextStepClampedstepOfTotal": "STEP {clampedStep} OF {total}",
   "@coreCatchStepFlowHeaderTextStepClampedstepOfTotal": {
-    "description": "Product copy used by lib/core/widgets/catch_step_header.dart (Text).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart for the shared wizard step counter.",
     "placeholders": {
       "clampedStep": {},
       "total": {}
@@ -8114,7 +8114,7 @@
   },
   "coreCatchTopBarLabelViewNameProfile": "View {name} profile",
   "@coreCatchTopBarLabelViewNameProfile": {
-    "description": "Product copy used by lib/core/widgets/catch_top_bar.dart (label).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart for shared identity-header semantics.",
     "placeholders": {
       "name": {}
     },

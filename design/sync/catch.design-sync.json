@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7",
+  "sourceDigest": "31e4fe331716ee7afa1542b5444f7daf51731ec287c9c1b32124a03a4a2529d6",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7",
-    "contractDigest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7"
+    "digest": "31e4fe331716ee7afa1542b5444f7daf51731ec287c9c1b32124a03a4a2529d6",
+    "contractDigest": "31e4fe331716ee7afa1542b5444f7daf51731ec287c9c1b32124a03a4a2529d6"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "81a8cf4609b429f1156db65230cd2cbf7883e197863d90b3e762a64d882e97b0",
+    "handoffRequestDigest": "817a278c8728912fb4193c5c8d32e896f30196d76e6488e59a4c3dc49c732dea",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1479,7 +1479,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.top_bar",
       "dartSymbol": "CatchTopBar",
-      "dartFile": "lib/core/widgets/catch_top_bar.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
       "figmaName": "Catch/TopBar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1504,7 +1504,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "d77b7ccf92debb4b8fab0993f20dc4913cc64e9ba2249879f628849ee5563633"
+      "contractDigest": "9eab99f2ba10d6000ee5fc6def6ba93bb0d40764d398ccab01ec32d95813eccc"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -2055,7 +2055,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.step_header",
       "dartSymbol": "CatchStepHeader",
-      "dartFile": "lib/core/widgets/catch_step_header.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_step_header.dart",
       "figmaName": "Catch/StepHeader",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2080,7 +2080,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "b0a6fe0f5f13ec3eccc6eb3df3b4351cb42a33935a470314fa94816cfff48f74"
+      "contractDigest": "22d2d6318fb9cca6818dc5fd47663e20079d2f67707b34d4284a736bca4b60db"
     },
     {
       "contractId": "catch.tab_bar",

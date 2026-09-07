@@ -1,6 +1,9 @@
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/components/catch_top_bar.dart';
+import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Handoff `StepHeader`: wizard header built from the shared large AppBar plus

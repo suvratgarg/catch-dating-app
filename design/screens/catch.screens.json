@@ -7254,7 +7254,7 @@
               "ChatActionsMenu"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "symbol": "CatchTopBar.identity"
             },
             "currentOwner": "HostChatScreenState + ChatThreadActionController + ChatScreen UI primitives",
@@ -16996,7 +16996,7 @@
             "symbol": "ChatController"
           },
           {
-            "file": "lib/core/widgets/catch_top_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "symbol": "CatchTopBar.identity"
           },
           {
@@ -17586,7 +17586,7 @@
               "HostConversationTopBar"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "symbol": "CatchTopBar.identity"
             },
             "currentOwner": "CatchTopBar.identity",

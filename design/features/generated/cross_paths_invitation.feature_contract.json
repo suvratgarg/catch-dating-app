@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
-  "resolvedDigest": "sha256:a69de3c3a48e47de70b20285cc0ef40292b1a5cc7803fcbea6b52effd1a70db4",
+  "resolvedDigest": "sha256:f95ba093d0a793a819a8a39d1f08f88802beeb0abb23a3251682ec8e8779e0b8",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -617,7 +617,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

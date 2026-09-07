@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:2c90efdfc66ef62606dfcdf0bf2d3cb6c6d455394c6e4dfec291377f6e2c269f",
+  "resolvedDigest": "sha256:954c08f0e7a20d442feb3ab4fc2f5699303bfd01a09461bc989f7eb6977c983a",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1855,7 +1855,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

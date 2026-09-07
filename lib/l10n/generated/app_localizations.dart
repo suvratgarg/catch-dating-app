@@ -7009,7 +7009,7 @@ abstract class AppLocalizations {
   /// **'startup-loading-delay'**
   String get coreCatchStartupLoadingScreenBodyStartupLoadingDelay;
 
-  /// Product copy used by lib/core/widgets/catch_step_header.dart (Text).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for the shared wizard step counter.
   ///
   /// In en, this message translates to:
   /// **'STEP {clampedStep} OF {total}'**
@@ -7027,7 +7027,7 @@ abstract class AppLocalizations {
     required int total,
   });
 
-  /// Product copy used by lib/core/widgets/catch_top_bar.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for shared identity-header semantics.
   ///
   /// In en, this message translates to:
   /// **'View {name} profile'**

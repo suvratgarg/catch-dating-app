@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:1e54e8f6983ea14b729af0461c757cdd5a4ed1d615f3d7a3e421bc28980a5cbd",
+  "resolvedDigest": "sha256:2373a8bdc62a1515a9b76a4c921221894b98d3018d3e902ed99063d0bd19d980",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5332,7 +5332,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

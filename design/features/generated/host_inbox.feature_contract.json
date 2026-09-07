@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:e8b76c39733745c8a6e15f2ec213f4ece4f792203b7e43f18dcdf07d3bba45cb",
+  "resolvedDigest": "sha256:234b3fef277ac12b73ce7f9c6644d1856c36610fba770d08bd58b49528e7a035",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4867,7 +4867,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

@@ -1922,7 +1922,7 @@
       },
       "applies_to": [
         "lib/**/presentation/**",
-        "lib/core/widgets/catch_top_bar.dart",
+        "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "test/**/*.dart"
       ],
       "instruction": "If a parent owns a CustomScrollView, children should usually return slivers; NestedScrollView tabs must inject absorbed overlap or own the inner scroll view. Collapsible title headers followed by pinned bottom rows must move the title upward as it collapses; do not let sticky search/filter/tab rows visually scroll over and cover the title.",

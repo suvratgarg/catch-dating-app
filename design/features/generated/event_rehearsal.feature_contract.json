@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-08-19",
   "sourceDigest": "sha256:88e9f47505f58b7d44075ab377990a0100f96ce1ba505bcdeb9dc4fc6940ce0a",
-  "resolvedDigest": "sha256:83334f913b14f40fdeb7049510bd6c5b7b5e54a22209e5bdf6c5cfc24f345ec7",
+  "resolvedDigest": "sha256:d72631081220c0e684eae0439583356536947707f4153a8ea7de5cbba43a8841",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -840,7 +840,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

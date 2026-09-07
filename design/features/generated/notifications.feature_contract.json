@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
-  "resolvedDigest": "sha256:146c1e9d5929b481a5c58fcbc14cbf75674f9f3d52894aefa43dd4bf192ae297",
+  "resolvedDigest": "sha256:0ea3ee04afb38b7d56381a91966176047899c3cef684c73c88098310bcf28c46",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1127,7 +1127,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

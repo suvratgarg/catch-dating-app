@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:ccbb1bc7bb2446ac787ceb6064e5c04eb39612977e7596f388ef2776ab56acb4",
+  "resolvedDigest": "sha256:b5625c1ca907c64350fee750bb575e25bc7fecdbaf35b3e792ff97caa3b36bcf",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6287,7 +6287,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]
