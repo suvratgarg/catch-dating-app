@@ -61,6 +61,8 @@ import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
     as _widgetbook_workspace_primitives_error_feedback_use_cases;
 import 'package:widgetbook_workspace/primitives/error_state_adapter_use_cases.dart'
     as _widgetbook_workspace_primitives_error_state_adapter_use_cases;
+import 'package:widgetbook_workspace/primitives/field_choice_protocol_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_choice_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
@@ -2678,6 +2680,17 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Fields',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldChoicePickedNotification',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Single-choice disclosure protocol',
+                builder:
+                    _widgetbook_workspace_primitives_field_choice_protocol_use_cases
+                        .fieldChoiceDisclosureProtocol,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchFieldDividerGeometry',
             useCases: [

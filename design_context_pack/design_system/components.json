@@ -3138,6 +3138,24 @@
             }
           },
           {
+            "id": "catch.field.choice_picked_notification",
+            "symbol": "CatchFieldChoicePickedNotification",
+            "file": "packages/catch_ui/lib/src/components/catch_field_choice_picked_notification.dart",
+            "summary": "Presentation event dispatched after a single choice is committed. The nearest field retains the close delay, saving guard, and caller-owned expansion protocol.",
+            "states": [
+              "single-choice-auto-close",
+              "option-card-auto-close",
+              "caller-controlled-disclosure"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.choice_control",
             "symbol": "CatchFieldChoiceControl",
             "summary": "Field-owned wrapping single- or multi-choice control with staged selection and canonical commit actions.",
@@ -3148,7 +3166,7 @@
               "retain-final-selection",
               "wrapped"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_choice_control.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3166,7 +3184,7 @@
               "unselected",
               "disabled"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_option_card_control.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",

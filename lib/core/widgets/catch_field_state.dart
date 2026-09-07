@@ -4,12 +4,6 @@ class _CatchFieldDismissIntent extends Intent {
   const _CatchFieldDismissIntent();
 }
 
-class _CatchFieldChoicePickedNotification extends Notification {
-  const _CatchFieldChoicePickedNotification({required this.autoClose});
-
-  final bool autoClose;
-}
-
 class _CatchFieldState extends State<CatchField>
     with SingleTickerProviderStateMixin {
   final _fieldKey = GlobalKey<FormFieldState<String>>();
@@ -523,7 +517,7 @@ class _CatchFieldState extends State<CatchField>
     _focusNode.requestFocus();
   }
 
-  bool _handleChoicePicked(_CatchFieldChoicePickedNotification notification) {
+  bool _handleChoicePicked(CatchFieldChoicePickedNotification notification) {
     if (!notification.autoClose || _isSaving) return true;
     _singleChoiceCloseTimer?.cancel();
     _singleChoiceCloseTimer = Timer(
@@ -683,7 +677,7 @@ class _CatchFieldState extends State<CatchField>
       _ControlConfig() => _buildConfiguredRow(context),
     };
     final listeningField =
-        NotificationListener<_CatchFieldChoicePickedNotification>(
+        NotificationListener<CatchFieldChoicePickedNotification>(
           onNotification: _handleChoicePicked,
           child: field,
         );

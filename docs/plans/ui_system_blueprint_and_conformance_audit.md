@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.8
+version: 1.9.9
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1053,9 +1053,8 @@ panes under both themes and text scales.
 The field choice chip, toggle adapter, and trailing-slot renderer also have
 individual shared component owners. Their constructors, rendering, selection
 semantics, motion, and clear-target geometry are unchanged. The obsolete app
-lanes part is deleted; the field control part retains only the disclosure-aware
-controls until the complete field state protocol moves. Existing direct previews
-and goldens continue to cover all three members.
+lanes part is deleted. Existing direct previews and goldens continue to cover
+all three members.
 
 The section kicker becomes a cataloged shared member. All six section heading
 placements use the same extracted renderer, preserving title/count semantics,
@@ -1071,6 +1070,13 @@ to `build`. `CatchSectionBody` owns child stacks and separator placement.
 text inset, replacing the section's app-class dependency while preserving the
 fallback for unknown adapter rows. The old section libraries are deleted and
 callers, constructor ownership, schema metadata, and previews follow the move.
+
+The wrapping choice and explanatory option-card controls now have individual
+shared owners. Their selection callbacks and notification order are preserved;
+`CatchFieldChoicePickedNotification` carries the same presentation-only close
+request across the package boundary. The nearest field still owns the delay,
+saving guard, and controlled expansion callback. The old control part retains
+only field-state behavior, with both renderer declarations deleted there.
 
 ### Phase 4 — One registry, binding grammar
 

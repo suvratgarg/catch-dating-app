@@ -1,0 +1,46 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
+
+@widgetbook.UseCase(
+  name: 'Single-choice disclosure protocol',
+  type: CatchFieldChoicePickedNotification,
+  path: '[Core primitives]/Fields',
+)
+Widget fieldChoiceDisclosureProtocol(BuildContext context) {
+  var selected = 'Morning';
+  return StatefulBuilder(
+    builder: (context, setState) => WidgetbookCatalogFrame(
+      title: 'Single-choice disclosure',
+      catalogId: 'catch.field.choice_picked_notification',
+      children: [
+        CatchField.choices<String>(
+          copy: catchFieldCopy(context.l10n),
+          title: 'Preferred time',
+          values: const ['Morning', 'Evening'],
+          itemLabel: (value) => value,
+          selected: {selected},
+          initiallyOpen: true,
+          onSelectionChanged: (values) =>
+              setState(() => selected = values.single),
+        ),
+        CatchField.optionCards<String>(
+          copy: catchFieldCopy(context.l10n),
+          title: 'Time details',
+          values: const ['Morning', 'Evening'],
+          itemTitle: (value) => value,
+          itemDescription: (value) => value == 'Morning'
+              ? 'Start your day together.'
+              : 'Meet after the working day.',
+          selected: selected,
+          initiallyOpen: true,
+          onChanged: (value) => setState(() => selected = value),
+        ),
+      ],
+    ),
+  );
+}
