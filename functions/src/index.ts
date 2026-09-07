@@ -518,6 +518,9 @@ export {
 
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
   "./eventSuccess/operations/participationHandlers";
+export {getEventAssistanceAccountability,
+  resolveEventAssistanceAccountability} from
+  "./eventSuccess/operations/accountabilityHandlers";
 
 export {getEventAssistanceGroupStaff, setEventAssistanceGroupStaff} from
   "./eventSuccess/operations/groupStaffHandlers";

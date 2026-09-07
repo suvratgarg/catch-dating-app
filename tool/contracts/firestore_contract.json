@@ -572,7 +572,9 @@
         "setEventSuccessAccountabilityResolution",
         "registerPublicEvent",
         "onEventParticipationRosterProjected",
-        "onOrganizerContactEventEdgeInviteAttributed"
+        "onOrganizerContactEventEdgeInviteAttributed",
+        "getEventAssistanceAccountability",
+        "resolveEventAssistanceAccountability"
       ],
       "migrationNotes": [
         "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic.",
@@ -1897,7 +1899,9 @@
       "write": "server only",
       "exportedFunctions": [
         "getEventAssistanceMembership",
-        "transferEventAssistanceGroup"
+        "transferEventAssistanceGroup",
+        "getEventAssistanceAccountability",
+        "resolveEventAssistanceAccountability"
       ]
     },
     {
@@ -2030,7 +2034,9 @@
         "getEventAssistanceGuestView",
         "getEventAssistanceParticipation",
         "setEventAssistanceParticipation",
-        "submitEventAssistanceGuestChoice"
+        "submitEventAssistanceGuestChoice",
+        "getEventAssistanceAccountability",
+        "resolveEventAssistanceAccountability"
       ]
     },
     {
@@ -2362,6 +2368,18 @@
       "write": "server only",
       "migrationNotes": [
         "Latest signed text STOP, keyed by organizer and endpoint, commits with the private queue receipt and does not depend on CRM contacts. No TTL pending suppression/consent retention reconciliation."
+      ]
+    },
+    {
+      "id": "eventAssistanceAccountabilityReceipts",
+      "path": "eventAssistanceAccountabilityReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceAccountabilityReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance accountability command",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "resolveEventAssistanceAccountability"
       ]
     }
   ]

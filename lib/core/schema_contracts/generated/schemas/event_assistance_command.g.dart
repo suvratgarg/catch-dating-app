@@ -2735,10 +2735,18 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
             'episodeId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+              'description': 'Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in.',
             },
             'disposition': <String, Object?>{
               'type': 'string',

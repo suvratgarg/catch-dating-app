@@ -1,6 +1,463 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventAssistanceAccountabilityReceiptDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "guestId",
+    "requestHash",
+    "sourceGeneration",
+    "attendeeGeneration",
+    "checkInHash",
+    "episodeId",
+    "revision",
+    "disposition",
+    "createdAt"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^accountability-action:[a-f0-9]{64}$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "checkInHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "episodeId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "disposition": {
+      "enum": [
+        "returned",
+        "departed",
+        "unresolved"
+      ]
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceAccountabilityReceiptDocument",
+  "x-firestore-collection": "eventAssistanceAccountabilityReceipts",
+  "x-firestore-path": "eventAssistanceAccountabilityReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event-assistance accountability command"
+};
+
+export const getEventAssistanceAccountabilityCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "groupId",
+    "attendeeId"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "title": "GetEventAssistanceAccountabilityCallablePayload"
+};
+
+export const resolveEventAssistanceAccountabilityCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "groupId",
+    "command",
+    "expectedSourceHash"
+  ],
+  "properties": {
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveAccountability"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "episodeId",
+            "disposition"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "returned",
+                "departed",
+                "unresolved"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "expectedSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "ResolveEventAssistanceAccountabilityCallablePayload"
+};
+
+export const eventAssistanceAccountabilityCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "operationRevision",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "enum": [
+        "read",
+        "applied",
+        "replayed"
+      ]
+    },
+    "operationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId",
+        "attendeeId",
+        "serverTime",
+        "sourceHash",
+        "revision",
+        "episodeId",
+        "disposition",
+        "availability"
+      ],
+      "properties": {
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "episodeId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "returned",
+            "departed",
+            "unresolved"
+          ]
+        },
+        "availability": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "ready"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                },
+                "reason": {
+                  "enum": [
+                    "notApplicable",
+                    "notCheckedIn"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceAccountabilityCallableResponse"
+};
+
 export const eventAssistanceRuntimeConfigDocumentSchema = {
   "oneOf": [
     {
@@ -51794,10 +52251,18 @@ export const eventAssistanceCommandSchema = {
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
             "episodeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
             },
             "disposition": {
               "type": "string",
@@ -93114,6 +93579,12 @@ export const eventAttendeeDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "accountabilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Monotonic revision shared by all accountability writers. Missing legacy values read as zero."
     },
     "attendanceRevision": {
       "type": "integer",

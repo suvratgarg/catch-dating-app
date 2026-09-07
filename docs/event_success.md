@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.36.0
+version: 1.37.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -470,9 +470,42 @@ visible to managers for removal. Immutable `eventAssistanceStaffReceipts` fence
 retries and concurrent changes. Group staff projections expose only the selected
 duty and basic staff identity, not full phone numbers or the event guest roster.
 
-The duty permission map now authorizes progress, departure and membership
-commands. Checkpoint/accountability adapters, delegated staff controls and receipt
+The duty permission map now authorizes progress, departure, membership and
+accountability commands. Checkpoint adapters, delegated staff controls and receipt
 retention remain implementation work. Group duties alone do not grant the existing event-wide live-location publishing permission.
+
+### Typed accountability commands
+
+`getEventAssistanceAccountability` and
+`resolveEventAssistanceAccountability` bind the typed
+`resolveAccountability` command to the existing attendee sweep result.
+Both this command and `setEventSuccessAccountabilityResolution` use the same
+writer fields and monotonic `accountabilityRevision`; clearing advances that
+revision too. Current resolution requires the exact check-in timestamp,
+including nanoseconds. A new visit cannot inherit a prior result.
+
+Managers can resolve the whole event. A current whole-event lead/sweep can do
+the same within its duty lifetime. A pacer, lead or sweep assigned to a pace
+group can read and resolve only guests with a current accepted membership in
+that group. A pending handover grants no receiving-group authority. Current
+permission is rechecked inside the transaction and again after receipt reads
+for expiry; legacy check-in access alone grants no accountability duty.
+
+The reviewed source hash binds the event/roster generations, format, current
+check-in, accepted group where scoped, assistance episode or explicit absence,
+and accountability revision/result. Exact retries reuse an immutable
+`eventAssistanceAccountabilityReceipts` entry; changed requests, replaced
+registrations, new visits and stale reviews cannot write. Replies and reported
+intentions do not invalidate a physical sweep review or become physical proof.
+The record never changes attendance, participation, placement, consent or
+messaging. Assistance need not be enabled or initialized to resolve a checked-in
+guest. Scheduled end, completion and cancellation do not erase an outstanding
+sweep; current staff authority is still required.
+
+The read distinguishes an available sweep from a non-sweep format or a guest
+who is not currently checked in. Both callables require Auth/App Check and rate
+limits. Host controls, checkpoint workflows and rehearsal adapters remain
+separate integration work.
 
 ### Guest group membership and handovers
 

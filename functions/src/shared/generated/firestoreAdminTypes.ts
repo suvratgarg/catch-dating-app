@@ -537,6 +537,19 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceAccountabilityReceiptDocument {
+  receiptId: string;
+  guestId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  attendeeGeneration: string;
+  checkInHash: string;
+  episodeId: string | null;
+  revision: number;
+  disposition: "returned" | "departed" | "unresolved";
+  createdAt: number;
+}
+
 export interface EventAssistanceRuntimeConfigDocument {
   [k: string]: unknown;
 }
@@ -7230,6 +7243,10 @@ export interface EventAttendeeDocument {
    */
   inviteLinkId?: string | null;
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Monotonic revision shared by all accountability writers. Missing legacy values read as zero.
+   */
+  accountabilityRevision?: number;
   /**
    * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
    */

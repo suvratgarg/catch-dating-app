@@ -3,6 +3,10 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceAccountabilityReceiptDocumentSchema,
+  getEventAssistanceAccountabilityCallablePayloadSchema,
+  resolveEventAssistanceAccountabilityCallablePayloadSchema,
+  eventAssistanceAccountabilityCallableResponseSchema,
   eventAssistanceRuntimeConfigDocumentSchema,
   eventAssistanceRuntimeConfigReceiptDocumentSchema,
   getEventAssistanceRuntimeConfigCallablePayloadSchema,
@@ -630,6 +634,10 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceAccountabilityReceiptDocument = ajv.compile(eventAssistanceAccountabilityReceiptDocumentSchema);
+export const validateGetEventAssistanceAccountabilityCallablePayload = ajv.compile(getEventAssistanceAccountabilityCallablePayloadSchema);
+export const validateResolveEventAssistanceAccountabilityCallablePayload = ajv.compile(resolveEventAssistanceAccountabilityCallablePayloadSchema);
+export const validateEventAssistanceAccountabilityCallableResponse = ajv.compile(eventAssistanceAccountabilityCallableResponseSchema);
 export const validateEventAssistanceRuntimeConfigDocument = ajv.compile(eventAssistanceRuntimeConfigDocumentSchema);
 export const validateEventAssistanceRuntimeConfigReceiptDocument = ajv.compile(eventAssistanceRuntimeConfigReceiptDocumentSchema);
 export const validateGetEventAssistanceRuntimeConfigCallablePayload = ajv.compile(getEventAssistanceRuntimeConfigCallablePayloadSchema);

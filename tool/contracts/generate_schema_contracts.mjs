@@ -15,6 +15,11 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "EventAssistanceAccountabilityReceiptDocument", "source": "firestore/event_assistance_accountability_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceAccountabilityReceiptDocument.ts"},
+  {"name": "GetEventAssistanceAccountabilityCallablePayload", "source": "callables/get_event_assistance_accountability_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceAccountabilityCallablePayload.ts"},
+  {"name": "ResolveEventAssistanceAccountabilityCallablePayload", "source": "callables/resolve_event_assistance_accountability_payload.schema.json", "typeOutput": "functions/src/shared/generated/resolveEventAssistanceAccountabilityCallablePayload.ts"},
+  {"name": "EventAssistanceAccountabilityCallableResponse", "source": "callable_responses/event_assistance_accountability_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceAccountabilityCallableResponse.ts"},
+
   {"name": "EventAssistanceRuntimeConfigDocument", "source": "firestore/event_assistance_runtime_configs.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigDocument.ts"},
   {"name": "EventAssistanceRuntimeConfigReceiptDocument", "source": "firestore/event_assistance_runtime_config_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigReceiptDocument.ts"},
   {"name": "GetEventAssistanceRuntimeConfigCallablePayload", "source": "callables/get_event_assistance_runtime_config_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceRuntimeConfigCallablePayload.ts"},

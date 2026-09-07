@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.53.0
+version: 1.54.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -2495,6 +2495,25 @@ list. Missing legacy evidence remains readable but cannot establish an
 error-free Event Assistance delivery. Positive status plus any error evidence
 retains the outbox hold and spending debit; later complete signed evidence
 may resolve it. No provider error code is newly authorized for fallback.
+
+### Event Assistance Accountability Contract
+
+`event_assistance_accountability.schema.json` owns the scoped read, typed
+command envelope, response and immutable command receipt. The command names
+the assistance episode or explicitly binds its absence; the canonical check-in
+and attendance revision independently bind the physical visit. The adapter
+uses existing `eventAttendees.accountability*` fields rather than a second
+accountability state. All sweep writers advance `accountabilityRevision`,
+including clearing. Legacy missing revisions read as zero; overflow fails.
+
+`eventAssistanceAccountabilityReceipts` is server-only. A receipt binds the
+actor/request hash, source/attendee generations, visit hash, episode or absence,
+applied revision and disposition. It commits with the attendee write. Exact
+replay returns the applied operation revision and current view; it never
+reapplies an old disposition. Current group authority and accepted membership
+remain necessary on replay. Completion/cancellation do not imply a person
+returned. No messaging or participation state is created by this command.
+Receipt retention and Host/rehearsal adapters remain subsequent work.
 
 ### Event Assistance Channel Selection Contract
 

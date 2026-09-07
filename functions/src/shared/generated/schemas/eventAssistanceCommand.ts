@@ -2733,10 +2733,18 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
             "episodeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
             },
             "disposition": {
               "type": "string",

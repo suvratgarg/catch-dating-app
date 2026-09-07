@@ -11937,6 +11937,182 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceAccountabilityCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewAvailabilityKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.availability.kind',
+    required: true,
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewAvailabilityReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.availability.reason',
+    required: true,
+    enumValues: <String>['notApplicable', 'notCheckedIn'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCheckInHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.checkInHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^accountability-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceCaseDocumentAttendeeId = CatchContractFieldConstraints(
     path: 'eventAssistanceCaseDocument.attendeeId',
     maxLength: 160,
@@ -19807,6 +19983,13 @@ abstract final class CatchContractConstraints {
     path: 'eventAttendeeDocument.accountabilityResolvedForCheckInAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventAttendeeDocumentAccountabilityRevision = CatchContractFieldConstraints(
+    path: 'eventAttendeeDocument.accountabilityRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventAttendeeDocumentArrivalGroup = CatchContractFieldConstraints(
@@ -33389,6 +33572,47 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getEventAssistanceGroupProgressCallablePayloadContextEventId = CatchContractFieldConstraints(
@@ -63485,6 +63709,118 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.payload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadDisposition = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.payload.disposition',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadEpisodeId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.command.payload.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const resolveEventInviteLandingCallablePayloadInviteToken = CatchContractFieldConstraints(
     path: 'resolveEventInviteLandingCallablePayload.inviteToken',
     maxLength: 230,
@@ -75758,6 +76094,30 @@ abstract final class CatchContractConstraints {
     'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
     'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
     'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
+    'eventAssistanceAccountabilityCallableResponse.operationRevision': eventAssistanceAccountabilityCallableResponseOperationRevision,
+    'eventAssistanceAccountabilityCallableResponse.outcome': eventAssistanceAccountabilityCallableResponseOutcome,
+    'eventAssistanceAccountabilityCallableResponse.view.attendeeId': eventAssistanceAccountabilityCallableResponseViewAttendeeId,
+    'eventAssistanceAccountabilityCallableResponse.view.availability.kind': eventAssistanceAccountabilityCallableResponseViewAvailabilityKind,
+    'eventAssistanceAccountabilityCallableResponse.view.availability.reason': eventAssistanceAccountabilityCallableResponseViewAvailabilityReason,
+    'eventAssistanceAccountabilityCallableResponse.view.context.eventId': eventAssistanceAccountabilityCallableResponseViewContextEventId,
+    'eventAssistanceAccountabilityCallableResponse.view.context.mode': eventAssistanceAccountabilityCallableResponseViewContextMode,
+    'eventAssistanceAccountabilityCallableResponse.view.context.organizerId': eventAssistanceAccountabilityCallableResponseViewContextOrganizerId,
+    'eventAssistanceAccountabilityCallableResponse.view.disposition': eventAssistanceAccountabilityCallableResponseViewDisposition,
+    'eventAssistanceAccountabilityCallableResponse.view.episodeId': eventAssistanceAccountabilityCallableResponseViewEpisodeId,
+    'eventAssistanceAccountabilityCallableResponse.view.groupId': eventAssistanceAccountabilityCallableResponseViewGroupId,
+    'eventAssistanceAccountabilityCallableResponse.view.revision': eventAssistanceAccountabilityCallableResponseViewRevision,
+    'eventAssistanceAccountabilityCallableResponse.view.serverTime': eventAssistanceAccountabilityCallableResponseViewServerTime,
+    'eventAssistanceAccountabilityCallableResponse.view.sourceHash': eventAssistanceAccountabilityCallableResponseViewSourceHash,
+    'eventAssistanceAccountabilityReceiptDocument.attendeeGeneration': eventAssistanceAccountabilityReceiptDocumentAttendeeGeneration,
+    'eventAssistanceAccountabilityReceiptDocument.checkInHash': eventAssistanceAccountabilityReceiptDocumentCheckInHash,
+    'eventAssistanceAccountabilityReceiptDocument.createdAt': eventAssistanceAccountabilityReceiptDocumentCreatedAt,
+    'eventAssistanceAccountabilityReceiptDocument.disposition': eventAssistanceAccountabilityReceiptDocumentDisposition,
+    'eventAssistanceAccountabilityReceiptDocument.episodeId': eventAssistanceAccountabilityReceiptDocumentEpisodeId,
+    'eventAssistanceAccountabilityReceiptDocument.guestId': eventAssistanceAccountabilityReceiptDocumentGuestId,
+    'eventAssistanceAccountabilityReceiptDocument.receiptId': eventAssistanceAccountabilityReceiptDocumentReceiptId,
+    'eventAssistanceAccountabilityReceiptDocument.requestHash': eventAssistanceAccountabilityReceiptDocumentRequestHash,
+    'eventAssistanceAccountabilityReceiptDocument.revision': eventAssistanceAccountabilityReceiptDocumentRevision,
+    'eventAssistanceAccountabilityReceiptDocument.sourceGeneration': eventAssistanceAccountabilityReceiptDocumentSourceGeneration,
     'eventAssistanceCaseDocument.attendeeId': eventAssistanceCaseDocumentAttendeeId,
     'eventAssistanceCaseDocument.caseId': eventAssistanceCaseDocumentCaseId,
     'eventAssistanceCaseDocument.category': eventAssistanceCaseDocumentCategory,
@@ -76787,6 +77147,7 @@ abstract final class CatchContractConstraints {
     'eventAttendeeDocument.accountabilityResolvedBy': eventAttendeeDocumentAccountabilityResolvedBy,
     'eventAttendeeDocument.accountabilityResolvedForCheckInAt._nanoseconds': eventAttendeeDocumentAccountabilityResolvedForCheckInAtNanoseconds,
     'eventAttendeeDocument.accountabilityResolvedForCheckInAt._seconds': eventAttendeeDocumentAccountabilityResolvedForCheckInAtSeconds,
+    'eventAttendeeDocument.accountabilityRevision': eventAttendeeDocumentAccountabilityRevision,
     'eventAttendeeDocument.arrivalGroup': eventAttendeeDocumentArrivalGroup,
     'eventAttendeeDocument.attendanceRevision': eventAttendeeDocumentAttendanceRevision,
     'eventAttendeeDocument.cancelledAt._nanoseconds': eventAttendeeDocumentCancelledAtNanoseconds,
@@ -78645,6 +79006,11 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getEventAssistanceAccountabilityCallablePayload.attendeeId': getEventAssistanceAccountabilityCallablePayloadAttendeeId,
+    'getEventAssistanceAccountabilityCallablePayload.context.eventId': getEventAssistanceAccountabilityCallablePayloadContextEventId,
+    'getEventAssistanceAccountabilityCallablePayload.context.mode': getEventAssistanceAccountabilityCallablePayloadContextMode,
+    'getEventAssistanceAccountabilityCallablePayload.context.organizerId': getEventAssistanceAccountabilityCallablePayloadContextOrganizerId,
+    'getEventAssistanceAccountabilityCallablePayload.groupId': getEventAssistanceAccountabilityCallablePayloadGroupId,
     'getEventAssistanceGroupProgressCallablePayload.context.eventId': getEventAssistanceGroupProgressCallablePayloadContextEventId,
     'getEventAssistanceGroupProgressCallablePayload.context.mode': getEventAssistanceGroupProgressCallablePayloadContextMode,
     'getEventAssistanceGroupProgressCallablePayload.context.organizerId': getEventAssistanceGroupProgressCallablePayloadContextOrganizerId,
@@ -82794,6 +83160,20 @@ abstract final class CatchContractConstraints {
     'resetEventRehearsalCallablePayload.sessionId': resetEventRehearsalCallablePayloadSessionId,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
     'resetMatchUnreadCountClientWrite.path.matchId': resetMatchUnreadCountClientWritePathMatchId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.clockId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextClockId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.eventId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextEventId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.mode': resolveEventAssistanceAccountabilityCallablePayloadCommandContextMode,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.organizerId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextOrganizerId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.rehearsalId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextRehearsalId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.context.virtualEventId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextVirtualEventId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.eventId': resolveEventAssistanceAccountabilityCallablePayloadCommandEventId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.kind': resolveEventAssistanceAccountabilityCallablePayloadCommandKind,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.operationId': resolveEventAssistanceAccountabilityCallablePayloadCommandOperationId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.payload.attendeeId': resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadAttendeeId,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.payload.disposition': resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadDisposition,
+    'resolveEventAssistanceAccountabilityCallablePayload.command.payload.episodeId': resolveEventAssistanceAccountabilityCallablePayloadCommandPayloadEpisodeId,
+    'resolveEventAssistanceAccountabilityCallablePayload.expectedSourceHash': resolveEventAssistanceAccountabilityCallablePayloadExpectedSourceHash,
+    'resolveEventAssistanceAccountabilityCallablePayload.groupId': resolveEventAssistanceAccountabilityCallablePayloadGroupId,
     'resolveEventInviteLandingCallablePayload.inviteToken': resolveEventInviteLandingCallablePayloadInviteToken,
     'resolveEventInviteLandingCallablePayload.sessionId': resolveEventInviteLandingCallablePayloadSessionId,
     'resolveEventInviteLandingCallableResponse.destinationKind': resolveEventInviteLandingCallableResponseDestinationKind,

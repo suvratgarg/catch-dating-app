@@ -4341,6 +4341,7 @@ describe("firestore.rules", () => {
         "eventAssistanceSettings", "eventAssistanceSettingReceipts",
         "eventAssistanceRuntimeConfigs", "eventAssistanceRuntimeConfigReceipts",
         "eventAssistanceParticipationReceipts", "eventAssistanceStaffReceipts",
+        "eventAssistanceAccountabilityReceipts",
         "eventAssistanceMemberships", "eventAssistanceMembershipReceipts",
         "eventAssistanceGroupProgress", "eventAssistanceProgressReceipts",
         "eventAssistanceGuests", "eventAssistanceThreads",

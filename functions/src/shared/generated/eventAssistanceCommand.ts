@@ -545,7 +545,10 @@ export type EventAssistanceCommand =
       operationId: string;
       payload: {
         attendeeId: string;
-        episodeId: string;
+        /**
+         * Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in.
+         */
+        episodeId: string | null;
         disposition: "returned" | "departed" | "unresolved";
       };
     }

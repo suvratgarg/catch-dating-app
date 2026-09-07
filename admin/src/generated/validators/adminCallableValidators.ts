@@ -13332,67 +13332,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "resolveAccountability"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "attendeeId",
-                    "episodeId",
-                    "disposition"
-                  ],
-                  "properties": {
-                    "attendeeId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "episodeId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "disposition": {
-                      "type": "string",
-                      "enum": [
-                        "returned",
-                        "departed",
-                        "unresolved"
-                      ]
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/ResolveAccountabilityCommand"
             },
             {
               "type": "object",
@@ -15421,6 +15361,77 @@ const model = {
                         }
                       }
                     }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "ResolveAccountabilityCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resolveAccountability"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "episodeId",
+                "disposition"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
+                },
+                "disposition": {
+                  "type": "string",
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
                   ]
                 }
               }

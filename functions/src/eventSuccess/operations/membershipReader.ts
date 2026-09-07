@@ -92,7 +92,7 @@ export async function readMembership(db: Firestore, tx: Transaction,
     membership, guest, groups, complete: plan?.status === "complete",
     staff: manager ? null :
       parseStaff(staffSnap.data(), context, actorUid, now),
-    event, eventGeneration: eventSnap.createTime,
+    event, attendee, eventGeneration: eventSnap.createTime,
     organizer: organizer as unknown as OrganizerDocument};
 }
 export type MembershipState = Awaited<ReturnType<typeof readMembership>>;
