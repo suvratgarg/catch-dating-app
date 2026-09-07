@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_tokens/catch_tokens.dart';

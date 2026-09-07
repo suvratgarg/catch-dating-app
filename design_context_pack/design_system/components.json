@@ -9999,7 +9999,7 @@
           {
             "id": "catch.option_group.item",
             "symbol": "CatchOptionGroupItem",
-            "file": "lib/core/widgets/catch_option_group.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_option_group_item.dart",
             "summary": "Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchOptionGroup measures full content and enables scrolling before that fallback is needed. Summary labels wrap.",
             "states": [
               "selected",
@@ -10013,6 +10013,24 @@
               "conceptId": "catch.option_group",
               "parentConceptId": "catch.option_group",
               "qualifier": "variant",
+              "decisionRef": "contract-family:catch.option_group"
+            }
+          },
+          {
+            "id": "catch.option_group.option",
+            "symbol": "CatchOption",
+            "file": "packages/catch_ui/lib/src/components/catch_option.dart",
+            "summary": "Presentation-neutral option value, label, icon, spoken label and availability; disabled options require their caller-owned reason.",
+            "states": [
+              "enabled",
+              "disabled",
+              "custom-semantics"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.option_group",
+              "parentConceptId": "catch.option_group",
+              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.option_group"
             }
           }

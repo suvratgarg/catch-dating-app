@@ -873,6 +873,12 @@ motion duration helper are shared, and field value typography belongs to
 `CatchTextStyles`. Schema-bound field configuration, choices, toggles and
 validation remain with the app field until their constraint boundary moves.
 
+Individual option rendering, the presentation-only option descriptor and the
+variant vocabulary have shared component owners. Selected/disabled semantics,
+spoken labels, hit targets, summary wrapping and label/mono/operational rendering
+retain their bodies. The group controller and schema validation remain app-side;
+its existing catalog cases cover the extracted option model and item directly.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
