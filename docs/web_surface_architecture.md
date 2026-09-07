@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.20.0
-updated: 2026-09-05
+version: 0.21.0
+updated: 2026-09-07
 owner: web_platform
 status: active
 ---
@@ -555,6 +555,11 @@ exports, and workflow membership.
 boundary for the admin React surface. Its local `httpsCallable` wrapper always
 validates request payloads before network invocation and validates response
 payloads in development or when `VITE_ADMIN_VALIDATE_RESPONSES=true`.
+The wrapper loads the generated validator module on the first live callable
+invocation. Sample views and Storybook feature imports do not eagerly initialize
+the schema registry. Module loading is awaited before request validation and
+Firebase invocation; a loading failure rejects the call without sending it.
+The module cache shares subsequent loads without bypassing per-request checks.
 
 `admin/scripts/generateCallableValidators.mjs` discovers every callable name in
 that API module, compiles the applicable `contracts/callables/**` and

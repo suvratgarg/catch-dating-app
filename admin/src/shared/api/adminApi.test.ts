@@ -70,4 +70,19 @@ describe("adminApi live callable boundary", () => {
 
     await expect(loadOverview()).rejects.toBe(error);
   });
+
+  it("loads the API independently and refuses calls when validators cannot load", async () => {
+    vi.doMock("../../generated/validators/adminCallableValidators", () => {
+      throw new Error("validator module unavailable");
+    });
+    vi.resetModules();
+    try {
+      const api = await import("./adminApi");
+      await expect(api.loadOverview()).rejects.toThrow();
+      expect(callable).not.toHaveBeenCalled();
+    } finally {
+      vi.doUnmock("../../generated/validators/adminCallableValidators");
+      vi.resetModules();
+    }
+  });
 });

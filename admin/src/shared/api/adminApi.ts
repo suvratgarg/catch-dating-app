@@ -2,10 +2,6 @@ import {httpsCallable as firebaseHttpsCallable} from "firebase/functions";
 import {functions} from "./firebaseFunctions";
 import {dataMode} from "./dataMode";
 export {dataMode} from "./dataMode";
-import {
-  validateAdminCallableRequest,
-  validateAdminCallableResponse,
-} from "../../generated/validators/adminCallableValidators";
 import type {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
   "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload";
 import type {AdminListCrossPathsShowcaseCandidatesCallableResponse} from
@@ -194,6 +190,8 @@ function httpsCallable<RequestData, ResponseData>(
     name
   );
   return async (payload: RequestData) => {
+    const {validateAdminCallableRequest, validateAdminCallableResponse} =
+      await import("../../generated/validators/adminCallableValidators");
     validateAdminCallableRequest(name, payload);
     const result = await callable(payload);
     if (shouldValidateAdminCallableResponses()) {
