@@ -79,6 +79,8 @@ export function evaluateMessageDelivery(input: DeliveryEvaluationInput):
   }
   for (const attempt of input.attempts) {
     if (attempt.state.kind === "notDispatched") {
+      if (attempt.state.reason === "reservationExpired" ||
+          attempt.state.reason === "permitExpired") continue;
       return {kind: "stop", reason: attempt.state.reason};
     }
     if (attempt.state.kind === "failed") {
@@ -114,6 +116,9 @@ export function evaluateMessageDelivery(input: DeliveryEvaluationInput):
   }
   const counts = new Map<EventServiceRouteId, number>();
   for (const attempt of input.attempts) {
+    // Proven unsent reservations still consume the total recovery ceiling,
+    // but cannot exhaust a channel's submission allowance.
+    if (attempt.state.kind === "notDispatched") continue;
     const route = attemptRouteId(attempt);
     counts.set(route, (counts.get(route) ?? 0) + 1);
   }

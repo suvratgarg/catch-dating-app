@@ -305,3 +305,230 @@ test("Firestore transactions arbitrate competing dispatch workers", {
     await deleteApp(app);
   }
 });
+
+function shortReservation(h: ReturnType<typeof harness>) {
+  for (const route of h.source.facts.routes) {
+    assert.ok(route.state.kind === "eligible");
+    route.state.checkedAt = h.clock.now;
+    route.state.validUntil = h.clock.now + 30_000;
+    route.state.permissionRevision = "permission-" + h.clock.now;
+  }
+}
+
+test("expired unclaimed reservations recover with a new immutable attempt",
+  async () => {
+    const h = harness();
+    shortReservation(h);
+    const intent = {...message(), deliveryPolicy: {...message().deliveryPolicy,
+      maxAttemptsPerRoute: 1}};
+    const initial = await h.outbox.enqueue(intent);
+    const first = (await h.outbox.reserve(initial.messageId))
+      .record.attempts[0];
+    assert.equal(first.state.kind, "reserved");
+    assert.throws(() => parseMessageRecord({...initial, attempts: [{...first,
+      state: {kind: "notDispatched", at: h.clock.now,
+        reason: "reservationExpired"}}]}), /timeline/);
+    assert.equal("reconcileAfter" in first.state && first.state.reconcileAfter,
+      first.authorization.validUntil);
+    h.clock.now = first.authorization.validUntil - 1;
+    assert.equal((await h.outbox.reserve(initial.messageId)).decision.kind,
+      "reconcile");
+    h.clock.now++;
+    shortReservation(h);
+    const recovered = await h.outbox.reserve(initial.messageId);
+    assert.deepEqual(recovered.record.attempts[0], {...first,
+      state: {kind: "notDispatched", at: h.clock.now,
+        reason: "reservationExpired"}});
+    assert.equal(recovered.decision.kind, "wait");
+    assert.equal((await h.outbox.claimLiveDispatch(initial.messageId,
+      first.attemptId)).kind, "withheld");
+    h.clock.now += 1000;
+    const next = (await h.outbox.reserve(initial.messageId)).record;
+    assert.equal(next.attempts.length, 2);
+    assert.notEqual(next.attempts[1].attemptId, first.attemptId);
+    assert.equal(next.attempts[1].ordinal, 2);
+    assert.ok(next.attempts[1].mode === "live");
+    assert.equal(next.attempts[1].binding.routeId, "organizerEventWhatsapp");
+    assert.notEqual(next.attempts[1].authorization.permissionRevision,
+      first.authorization.permissionRevision);
+    assert.equal((await h.outbox.claimLiveDispatch(next.messageId,
+      next.attempts[1].attemptId)).kind, "claimed");
+    assert.equal((await h.outbox.reserve(next.messageId)).decision.kind,
+      "reconcile");
+  });
+
+test("expiry cannot release an unknown or accepted attempt", async () => {
+  for (const accepted of [false, true]) {
+    const h = harness();
+    shortReservation(h);
+    const initial = await h.outbox.enqueue(message());
+    const {record} = await h.outbox.reserve(initial.messageId);
+    await h.outbox.claimLiveDispatch(record.messageId,
+      record.attempts[0].attemptId);
+    if (accepted) {
+      await h.outbox.recordReceipt(record.messageId, receipt(record, {
+        kind: "accepted", at: h.clock.now, providerMessageId: "wa-1"}));
+    }
+    h.clock.now += 121_000;
+    shortReservation(h);
+    const result = await h.outbox.reserve(record.messageId);
+    assert.equal(result.decision.kind, "reconcile");
+    assert.equal(result.record.attempts.length, 1);
+    assert.equal(result.record.attempts[0].state.kind,
+      accepted ? "accepted" : "unknown");
+  }
+});
+
+test("release rollback and retries preserve the recovery ceiling", async () => {
+  const h = harness();
+  shortReservation(h);
+  const intent = {...message(), deliveryPolicy: {...message().deliveryPolicy,
+    maxAttempts: 2, maxAttemptsPerRoute: 1}};
+  const initial = await h.outbox.enqueue(intent);
+  const first = await h.outbox.reserve(initial.messageId);
+  h.clock.now += 30_000;
+  shortReservation(h);
+  h.db.failNextCommit = true;
+  await assert.rejects(h.outbox.reserve(initial.messageId), /interruption/);
+  assert.deepEqual(await h.outbox.get(initial.messageId), first.record);
+  const recovered = await h.outbox.reserve(initial.messageId);
+  assert.equal((await h.outbox.reserve(initial.messageId)).record.revision,
+    recovered.record.revision);
+  h.clock.now += 1000;
+  const second = await h.outbox.reserve(initial.messageId);
+  assert.equal(second.record.attempts.length, 2);
+  h.clock.now = second.record.attempts[1].authorization.validUntil;
+  shortReservation(h);
+  const exhausted = await h.outbox.reserve(initial.messageId);
+  assert.deepEqual(exhausted.decision,
+    {kind: "hostDecision", reason: "attemptLimit"});
+  assert.ok(exhausted.record.attempts.every((a) =>
+    a.state.kind === "notDispatched"));
+});
+
+test("reservation recovery cannot reopen closed, expired or unneeded messages",
+  async () => {
+    for (const condition of ["closed", "present", "expired", "permission"]) {
+      const h = harness();
+      shortReservation(h);
+      const initial = await h.outbox.enqueue(message());
+      const first = await h.outbox.reserve(initial.messageId);
+      h.clock.now += 30_000;
+      shortReservation(h);
+      if (condition === "closed") {
+        await h.outbox.close(initial.messageId, first.record.revision,
+          "cancelled");
+      }
+      if (condition === "present") {
+        h.source.facts.gate = {kind: "stop", reason: "guestPresent"};
+      }
+      if (condition === "expired") h.clock.now = initial.intent.expiresAt;
+      if (condition === "permission") {
+        h.source.facts.routes = h.source.facts.routes.map((r) => ({
+          routeId: r.routeId,
+          state: {kind: "blocked", reason: "missingPermission"},
+        }));
+      }
+      const result = await h.outbox.reserve(initial.messageId);
+      assert.equal(result.record.attempts.length, 1);
+      assert.equal(result.record.attempts[0].state.kind, "notDispatched");
+      h.clock.now += 1000;
+      assert.deepEqual((await h.outbox.reserve(initial.messageId)).decision,
+        condition === "permission" ?
+          {kind: "hostDecision", reason: "noEligibleRoute"} :
+          {kind: "stop", reason: condition === "closed" ? "cancelled" :
+            condition === "present" ? "guestPresent" : "expired"});
+    }
+  });
+
+test("proven permit expiry permits recovery but rejects false deadlines",
+  async () => {
+    const h = harness();
+    shortReservation(h);
+    const initial = await h.outbox.enqueue(message());
+    const first = await h.outbox.reserve(initial.messageId);
+    const claim = await h.outbox.claimLiveDispatch(initial.messageId,
+      first.record.attempts[0].attemptId);
+    assert.ok(claim.kind === "claimed");
+    await assert.rejects(h.outbox.recordExpiredBeforeSend(claim.permit),
+      /expired permit/);
+    h.clock.now = claim.permit.validUntil;
+    for (const deadline of [NaN, 0, claim.permit.validUntil + 1]) {
+      await assert.rejects(h.outbox.recordExpiredBeforeSend({...claim.permit,
+        validUntil: deadline}), /expired permit/);
+    }
+    const unsent = await h.outbox.recordExpiredBeforeSend(claim.permit);
+    assert.deepEqual(unsent.attempts[0].state, {kind: "notDispatched",
+      at: h.clock.now, reason: "permitExpired"});
+    const replay = await h.outbox.recordExpiredBeforeSend(claim.permit);
+    assert.equal(replay.revision, unsent.revision);
+    h.clock.now += 1000;
+    shortReservation(h);
+    const next = await h.outbox.reserve(initial.messageId);
+    assert.equal(next.record.attempts.length, 2);
+    assert.ok(next.record.attempts[1].mode === "live");
+    assert.equal(next.record.attempts[1].binding.routeId,
+      "organizerEventWhatsapp");
+    // Any authenticated evidence of a provider send contradicts the unsent
+    // proof, even if it is only acceptance rather than delivery.
+    const conflict = await h.outbox.recordReceipt(initial.messageId,
+      receipt(first.record, {kind: "accepted", at: h.clock.now,
+        providerMessageId: "unexpected-send"}));
+    assert.equal(conflict.record.deliveryConflict, true);
+    const blocked = await h.outbox.claimLiveDispatch(initial.messageId,
+      next.record.attempts[1].attemptId);
+    assert.ok(blocked.kind === "withheld");
+    assert.equal(blocked.reason, "deliveryConflict");
+  });
+
+test("Firestore recovery and old claims arbitrate on one expired reservation", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const id = randomUUID();
+  const app = initializeApp({projectId: "demo-catch-rules"}, "recovery-" + id);
+  const db = getFirestore(app);
+  const intent = {...message(), intentId: "notice:" + id};
+  let now = intent.createdAt;
+  const outbox = new FirestoreMessageOutbox(db, async () => {
+    const source = facts();
+    for (const route of source.routes) {
+      assert.ok(route.state.kind === "eligible");
+      route.state.checkedAt = now;
+      route.state.validUntil = now + 30_000;
+    }
+    return source;
+  }, () => now);
+  const messageId = assistanceMessageId(intent);
+  try {
+    await outbox.enqueue(intent);
+    const first = (await outbox.reserve(messageId)).record.attempts[0];
+    now = first.authorization.validUntil;
+    const racing = await Promise.all(Array.from({length: 8}, async () => {
+      const old = await outbox.claimLiveDispatch(messageId, first.attemptId);
+      assert.equal(old.kind, "withheld");
+      return outbox.reserve(messageId);
+    }));
+    assert.ok(racing.every((r) => r.record.revision === 2));
+    assert.ok(racing.every((r) =>
+      r.record.attempts[0].state.kind === "notDispatched"));
+    now += 1000;
+    const replacements = await Promise.all(Array.from({length: 8}, () =>
+      outbox.reserve(messageId)));
+    assert.equal(replacements.filter((r) =>
+      r.decision.kind === "dispatch").length, 1);
+    const second = (await outbox.get(messageId))!.attempts[1];
+    assert.notEqual(second.attemptId, first.attemptId);
+    const claims = await Promise.all(Array.from({length: 8}, () =>
+      outbox.claimLiveDispatch(messageId, second.attemptId)));
+    assert.equal(claims.filter((r) => r.kind === "claimed").length, 1);
+    now += 121_000;
+    const held = await outbox.reserve(messageId);
+    assert.equal(held.decision.kind, "reconcile");
+    assert.equal(held.record.attempts[1].state.kind, "unknown");
+  } finally {
+    await db.collection(EVENT_ASSISTANCE_MESSAGES).doc(messageId).delete();
+    await deleteApp(app);
+  }
+});

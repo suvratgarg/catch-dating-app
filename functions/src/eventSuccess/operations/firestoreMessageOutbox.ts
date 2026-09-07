@@ -82,13 +82,27 @@ export class FirestoreMessageOutbox {
       // Re-sample after fact reads: a slow/retried transaction cannot extend
       // the validity of an earlier permission snapshot.
       const now = this.now(record.updatedAt);
-      const decision = evaluateOutbox(record, facts, now);
-      if (decision.kind !== "dispatch") return {record, decision};
-      const attempt = prepareDeliveryAttempt({...facts, intent: record.intent,
-        lifecycle: record.lifecycle, attempts: record.attempts, now});
+      let released = false;
+      const attempts = record.attempts.map((attempt) => {
+        if (attempt.state.kind !== "reserved" ||
+            attempt.authorization.validUntil > now) return attempt;
+        // Claim and release contend on this same document. A claim that won
+        // already changed reserved to unknown and can never enter this path.
+        released = true;
+        return {...attempt, state: {kind: "notDispatched" as const, at: now,
+          reason: "reservationExpired" as const}};
+      });
+      const current = released ? {...record, attempts} : record;
+      const decision = evaluateOutbox(current, facts, now);
+      if (decision.kind !== "dispatch") {
+        return {record: released ?
+          this.write(transaction, record, current, now) : record, decision};
+      }
+      const attempt = prepareDeliveryAttempt({...facts, intent: current.intent,
+        lifecycle: current.lifecycle, attempts: current.attempts, now});
       if (!attempt) throw new Error("Message reservation decision drift");
       return {record: this.write(transaction, record,
-        {...record, attempts: [...record.attempts, attempt]}, now), decision};
+        {...current, attempts: [...current.attempts, attempt]}, now), decision};
     });
   }
 
@@ -140,7 +154,10 @@ export class FirestoreMessageOutbox {
       const attempt = record.attempts.find((a) =>
         a.attemptId === permit.attempt.attemptId);
       const now = this.now(record.updatedAt);
-      if (now < permit.validUntil ||
+      if (!Number.isSafeInteger(permit.validUntil) ||
+          permit.validUntil <= permit.attempt.state.at ||
+          permit.validUntil > permit.attempt.authorization.validUntil ||
+          now < permit.validUntil ||
           operationContentHash(record.intent) !==
             operationContentHash(permit.intent) ||
           !attempt || attempt.mode !== "live") {
@@ -153,7 +170,7 @@ export class FirestoreMessageOutbox {
       return this.write(tx, record, {...record,
         attempts: record.attempts.map((a) => a.attemptId !== attempt.attemptId ?
           a : {...a, state: {kind: "notDispatched", at: now,
-            reason: "expired"}}),
+            reason: "permitExpired"}}),
       }, now);
     });
   }

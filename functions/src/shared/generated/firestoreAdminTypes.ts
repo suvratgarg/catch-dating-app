@@ -1414,7 +1414,9 @@ export interface EventAssistanceMessageDocument {
                 | "responded"
                 | "expired"
                 | "permissionRevoked"
-                | "hostStopped";
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
             };
         mode: "live";
         context: {
@@ -1521,7 +1523,9 @@ export interface EventAssistanceMessageDocument {
                 | "responded"
                 | "expired"
                 | "permissionRevoked"
-                | "hostStopped";
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
             };
         mode: "rehearsal";
         context: {

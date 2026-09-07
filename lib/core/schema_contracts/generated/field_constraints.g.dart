@@ -12195,7 +12195,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceDeliveryAttempt.state.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped'],
+    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped', 'reservationExpired', 'permitExpired'],
   );
 
   static const eventAssistanceDeliveryAttemptStateReconcileAfter = CatchContractFieldConstraints(
@@ -13845,7 +13845,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceMessageDocument.attempts.items.state.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped'],
+    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped', 'reservationExpired', 'permitExpired'],
   );
 
   static const eventAssistanceMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(

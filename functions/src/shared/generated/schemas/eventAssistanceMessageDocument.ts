@@ -1291,10 +1291,13 @@ export const eventAssistanceMessageDocumentSchema: Record<string, unknown> = {
                           "responded",
                           "expired",
                           "permissionRevoked",
-                          "hostStopped"
+                          "hostStopped",
+                          "reservationExpired",
+                          "permitExpired"
                         ]
                       }
-                    }
+                    },
+                    "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
                   }
                 ]
               },
@@ -1846,10 +1849,13 @@ export const eventAssistanceMessageDocumentSchema: Record<string, unknown> = {
                           "responded",
                           "expired",
                           "permissionRevoked",
-                          "hostStopped"
+                          "hostStopped",
+                          "reservationExpired",
+                          "permitExpired"
                         ]
                       }
-                    }
+                    },
+                    "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
                   }
                 ]
               },

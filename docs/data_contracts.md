@@ -123,12 +123,30 @@ for provider I/O. Duplicate claims do not return that permission, and delayed
 receipts remain reconcilable after closure. Contradictory delivery evidence is
 sticky and blocks further dispatch pending an owned resolution.
 
+A reservation still in `reserved` at its authorization deadline can be recorded
+as `notDispatched/reservationExpired` by the next reservation transaction.
+Release and claim contend on the same outbox document: a committed `unknown`
+or accepted attempt can never be released by the clock. A worker with adapter
+proof that permit expiry prevented all provider I/O records the separate
+`notDispatched/permitExpired` reason. The older `expired` reason continues to
+stop the logical message; it is not retroactively treated as retry evidence.
+
+Both new reasons permit fresh evaluation after exponential backoff, provided
+the event, guest, instruction and consent still require and allow outreach.
+A replacement has a new attempt id and ordinal, and the old sender/permission
+snapshot remains unchanged. Unsent attempts count against the total history
+ceiling but not a channel's submission allowance. A reservation's reconciliation
+hint is capped at its authorization deadline. No budget is charged for an
+unclaimed reservation; spending already reserved by a claim remains charged
+until separate financial reconciliation. Any later provider receipt that
+contradicts an unsent record preserves a conflict and blocks pending dispatch.
+
 No browser or mobile client can read or write this collection directly, even
 with an admin claim. Guest responses use the separate scoped grant and atomic
 mutation boundary described below; this outbox does not grant full runtime
 access or turn self-reported intention into attendance. Scheduling, provider
-activation, route permission readers and terminal cleanup remain delivery work. The
-collection currently has no TTL; executable or reconcilable deduplication state
+activation, RCS permission readers and terminal cleanup remain delivery work.
+The collection currently has no TTL; executable or reconcilable deduplication state
 must not be deleted merely because the message's instruction has expired.
 
 ### Event Service Native Reply Contract
@@ -2251,9 +2269,10 @@ lack a reviewed finality mapping and therefore do not unlock this path. This
 composition does not imply provider activation or guaranteed delivery.
 
 An existing unsent reservation keeps its original channel, sender and permission
-snapshot. Changed or expired authority cannot silently repurpose it. Recovery of
-stale unclaimed reservations, durable reconciliation wakeups, RCS implementation
-and live Operations executor integration remain separate work.
+snapshot. On authorization expiry the outbox records it as unsent; recovery uses
+a new bounded attempt and fresh authority, never repurposes the old id. Durable
+reconciliation wakeups, RCS implementation and live Operations executor
+integration remain separate work.
 
 ### Event Assistance SMS Delivery Contract
 

@@ -314,3 +314,45 @@ test("Firestore arbitrates mixed-channel workers and their fallback budgets", {
     await deleteApp(app);
   }
 });
+
+test("a worker interrupted before claim recovers without a duplicate or debit",
+  async () => {
+    const h = await mixed();
+    const interrupted = new EventMessageWorker(h.db, {sms: h.sms,
+      whatsapp: {prepareChannel: async (linkId) => {
+        const channel = await h.whatsapp.prepareChannel(linkId);
+        assert.ok(channel.kind === "ready");
+        return {...channel, dispatchReserved: async () => {
+          throw new Error("fixture-worker-interrupted");
+        }};
+      }}}, () => h.clock.now);
+    await assert.rejects(interrupted.dispatch(h.messageId, h.link.linkId),
+      /fixture-worker-interrupted/);
+    const first = (await h.record()).attempts[0];
+    assert.equal(first.state.kind, "reserved");
+    assert.equal(h.requests.length, 0);
+    for (const path of [...h.budgetPaths, ...h.smsBudgets]) {
+      assert.equal((await h.read(path))!.revision, 1);
+    }
+    h.clock.now = first.authorization.validUntil;
+    assert.deepEqual(await h.dispatch(), {kind: "waiting", decision: {
+      kind: "wait", notBefore: h.clock.now + 1000, reason: "retryBackoff"}});
+    h.clock.now += 1000;
+    const result = await h.dispatch();
+    assert.ok(result.kind === "submitted");
+    assert.equal(result.routeId, "organizerEventWhatsapp");
+    assert.deepEqual(h.requests.map((r) => r.route), ["whatsapp"]);
+    const attempts = (await h.record()).attempts;
+    assert.equal(attempts.length, 2);
+    assert.notEqual(attempts[1].attemptId, first.attemptId);
+    assert.deepEqual(attempts[0], {...first, state: {kind: "notDispatched",
+      at: first.authorization.validUntil, reason: "reservationExpired"}});
+    for (const path of h.budgetPaths) {
+      assert.equal((await h.read(path))!.revision, 2);
+    }
+    for (const path of h.smsBudgets) {
+      assert.equal((await h.read(path))!.revision, 1);
+    }
+    await h.dispatch();
+    assert.equal(h.requests.length, 1);
+  });

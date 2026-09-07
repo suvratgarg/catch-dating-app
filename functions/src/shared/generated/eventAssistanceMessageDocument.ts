@@ -362,7 +362,9 @@ export type EventAssistanceMessageDocument = {
                 | "responded"
                 | "expired"
                 | "permissionRevoked"
-                | "hostStopped";
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
             };
         mode: "live";
         context: {
@@ -469,7 +471,9 @@ export type EventAssistanceMessageDocument = {
                 | "responded"
                 | "expired"
                 | "permissionRevoked"
-                | "hostStopped";
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
             };
         mode: "rehearsal";
         context: {

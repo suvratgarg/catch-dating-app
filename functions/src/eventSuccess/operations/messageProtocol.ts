@@ -54,7 +54,10 @@ export function parseDeliveryAttempt(value: unknown): DeliveryAttempt {
       value.createdAt < value.authorization.checkedAt ||
       value.createdAt >= value.authorization.validUntil ||
       ("reconcileAfter" in value.state &&
-       value.state.reconcileAfter < value.state.at)) {
+       value.state.reconcileAfter < value.state.at) ||
+      (value.state.kind === "notDispatched" &&
+       value.state.reason === "reservationExpired" &&
+       value.state.at < value.authorization.validUntil)) {
     throw new Error("Invalid delivery attempt timeline");
   }
   return value;
@@ -160,7 +163,8 @@ export function prepareDeliveryAttempt(input: DeliveryEvaluationInput):
     intentRevision: intent.revision,
     ordinal: decision.ordinal,
     createdAt: now,
-    state: {kind: "reserved", at: now, reconcileAfter: now + 120_000},
+    state: {kind: "reserved", at: now, reconcileAfter:
+      Math.min(now + 120_000, decision.authorization.validUntil)},
     authorization: decision.authorization,
   };
   return parseDeliveryAttempt(candidate.mode === "live" ? {

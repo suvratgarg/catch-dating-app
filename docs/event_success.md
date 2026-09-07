@@ -173,6 +173,15 @@ does not grant another send. Provider adapters must check permit expiry and use
 the attempt id for provider idempotency when supported. This boundary does not
 claim exactly-once delivery by an external provider.
 
+A worker interrupted before claiming can recover after the reservation's
+original authorization expires. The next reservation transaction preserves
+that attempt as `notDispatched/reservationExpired`; a fresh attempt uses a new
+id, current authority and bounded backoff. Adapter-proven expiry before all
+provider I/O uses `permitExpired`. These unsent attempts consume the total
+recovery ceiling but not the route's submission allowance. Neither elapsed
+time nor sender unavailability can release an unknown or accepted submission.
+Claimed spending remains conservatively charged until reconciliation.
+
 Normalized receipts can update an expired or cancelled message independently
 of its workflow run. They cannot reopen sending. Contradictory evidence creates
 a persistent conflict that withholds new dispatch, including an already

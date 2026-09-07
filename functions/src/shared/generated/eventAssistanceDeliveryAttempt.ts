@@ -64,7 +64,9 @@ export type EventAssistanceDeliveryAttempt =
               | "responded"
               | "expired"
               | "permissionRevoked"
-              | "hostStopped";
+              | "hostStopped"
+              | "reservationExpired"
+              | "permitExpired";
           };
       mode: "live";
       context: {
@@ -171,7 +173,9 @@ export type EventAssistanceDeliveryAttempt =
               | "responded"
               | "expired"
               | "permissionRevoked"
-              | "hostStopped";
+              | "hostStopped"
+              | "reservationExpired"
+              | "permitExpired";
           };
       mode: "rehearsal";
       context: {
