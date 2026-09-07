@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.25.0
+version: 1.26.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -188,11 +188,44 @@ workflow run or provider authority.
 version. The late-join selector resolves only from supplied current confirmed
 group progress and its saved destination choices; absent guidance remains
 unresolved. It does not infer pace-group membership from seating or social pods.
-The participant/group fact reader, policy-aware workflow publisher/scheduler,
+The source reader below now joins live participant, group, settings and progress
+facts. The policy-aware workflow publisher/scheduler, communication fact reader,
 complete runtime readiness checks, Host settings controls and rehearsal adapter
 remain integration work. Configured preferences do not claim that an executor
 is implemented or activated. Terminal setting/receipt retention remains to be
 defined before activation.
+
+### Live late-join source assembly
+
+`readLateJoinSource` is a bounded, transaction-based internal worker reader.
+It joins canonical event/roster records, the current participation episode,
+accepted moving-group membership, saved policy and confirmed group progress.
+The reader and settings callables share `readSettingState` / `resolveSetting`,
+including group inheritance, explicit suppression and changed-source review.
+It performs no writes, creates no episode and grants no provider authority.
+It is not a public callable; consumers must authorize event/guest scope.
+
+The result distinguishes ready domain facts from missing episode/membership,
+replaced guest/group source, unconfigured/disabled/changed settings, a closed
+or non-live event, and absent/stale progress or destinations. Pending transfers
+keep the accepted group's policy and guidance. Acceptance uses the receiving
+group's settings; re-entry requires current membership. Scheduled itinerary
+items and an elapsed clock never imply confirmed movement. Attendance uses the
+canonical roster status/revision, independently of reported ETA or participation.
+
+`LateJoinDomainFacts` intentionally cannot satisfy the evaluator input on its
+own. `completeLateJoinInput` requires separately sourced delivery eligibility,
+complete episode message history and a response deadline when policy requires
+one, with matching event/organizer/guest/episode and observation time. It then
+uses the existing canonical validator and shared late-join evaluator. There are
+no default zero message counts or assumed eligible channels. Source errors
+propagate rather than producing a safe-looking empty state.
+
+The source hash is evidence for a single snapshot, not a lasting execution
+permit. Durable worker integration, authoritative communication/history readers,
+policy-aware publication, scheduling and final transactional rechecks remain
+required before automatic assistance can execute. This slice adds no network
+submission, provider activation, Host UI or rehearsal runtime integration.
 
 ### Confirmed group progress
 
@@ -329,8 +362,8 @@ removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
 Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment, the complete policy-aware fact reader/publisher and rehearsal
-adapters remain integration work.
+reassignment, communication/history facts, policy-aware publication and
+rehearsal adapters remain integration work.
 
 ### Shared message delivery
 

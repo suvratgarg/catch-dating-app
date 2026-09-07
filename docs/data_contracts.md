@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.45.0
+version: 1.46.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -184,6 +184,16 @@ structural source change, while explicit disablement remains suppressive.
 Current participation, capability/readiness, consent and execution authority
 must still be resolved by their owning runtime boundaries. Saving an automatic
 preference does not itself send a message or enable a production worker.
+
+The internal late-join source reader uses the same settings inheritance and
+source checks as the callables. It joins one canonical guest episode and its
+accepted group with current progress without writing records or creating a
+parallel projection collection. Its partial typed result excludes delivery
+eligibility and message history. Those facts must be supplied explicitly from
+the same scoped snapshot before canonical evaluation; the reader alone cannot
+produce send authority. It is not exposed to clients and adds no new Firestore
+access rules. The durable publisher and communication/history readers remain
+integration work.
 
 ### Event Assistance Group Progress Contract
 

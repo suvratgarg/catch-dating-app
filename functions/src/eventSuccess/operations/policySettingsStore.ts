@@ -8,8 +8,6 @@ import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
-import {validateEventAssistanceSettingDocument} from
-  "../../shared/generated/validators/eventAssistanceSettingDocument";
 import {validateEventAssistanceSettingReceiptDocument} from
   "../../shared/generated/validators/eventAssistanceSettingReceiptDocument";
 import {validateGetEventAssistanceSettingCallablePayload} from
@@ -25,6 +23,8 @@ import {
   Setting, SettingScope, SETTINGS, SETTING_RECEIPTS,
   settingId, settingSource, suggestedTemplate, templateTargetsAreCurrent,
 } from "./policySettings";
+import {parseSetting, resolveSetting, readSettingState} from
+  "./policySettingsReader";
 
 /** Saves preferences; execution and provider authority remain separate. */
 export class EventAssistanceSettingsStore {
@@ -96,13 +96,9 @@ export class EventAssistanceSettingsStore {
   }
 
   private async read(tx: Transaction, actorUid: string, scope: SettingScope) {
-    const parentScope = {...scope, groupId: "event:whole"};
-    const [eventSnap, organizerSnap, ownSnap] = await tx.getAll(
+    const [eventSnap, organizerSnap] = await tx.getAll(
       this.db.collection("events").doc(scope.context.eventId),
-      this.db.collection("organizers").doc(scope.context.organizerId),
-      this.db.collection(SETTINGS).doc(settingId(scope)));
-    const parentSnap = scope.groupId === "event:whole" ? ownSnap :
-      await tx.get(this.db.collection(SETTINGS).doc(settingId(parentScope)));
+      this.db.collection("organizers").doc(scope.context.organizerId));
     const event = eventSnap.data();
     const organizer = organizerSnap.data();
     if (!validateEventDocument(event) ||
@@ -113,30 +109,8 @@ export class EventAssistanceSettingsStore {
       throw new HttpsError("permission-denied",
         "Only organizer managers can configure assistance.");
     }
-    const now = this.clock();
-    if (!Number.isSafeInteger(now) || now < 0) throw invalidSource();
-    const source = settingSource(event, eventSnap.createTime, scope, now);
-    const parentSource = scope.groupId === "event:whole" ? source :
-      settingSource(event, eventSnap.createTime, parentScope, now);
-    return {scope: {context: scope.context, groupId: scope.groupId,
-      workflowKind: scope.workflowKind}, source, parentSource, now,
-    own: parseSetting(ownSnap.data(), scope, now),
-    parent: parseSetting(parentSnap.data(), parentScope, now)};
+    return readSettingState(this.db, tx, scope, eventSnap, this.clock);
   }
-}
-
-function parseSetting(value: unknown, scope: SettingScope,
-  now: number): Setting | null {
-  if (value === undefined) return null;
-  if (!validateEventAssistanceSettingDocument(value) ||
-      value.settingId !== settingId(scope) ||
-      settingId(value) !== settingId(scope) ||
-      value.createdAt > value.updatedAt || value.updatedAt > now ||
-      (value.preference.kind === "configured" &&
-        value.preference.template.kind !== value.workflowKind)) {
-    throw invalidSource();
-  }
-  return value;
 }
 
 type State = {
@@ -147,26 +121,15 @@ type State = {
 };
 function response(outcome: Response["outcome"], state: State,
   operationRevision: number | null = null): Response {
-  const {scope, own, parent, now, source, parentSource} = state;
-  const direct = own && own.preference.kind !== "inherit" ? own : null;
-  const inherited = scope.groupId !== "event:whole" && parent &&
-    parent.preference.kind !== "inherit" ? parent : null;
-  const selected = direct ?? inherited;
-  const basis = direct ? source : parentSource;
-  const preference = selected?.preference;
-  const template = preference?.kind === "configured" ? preference.template :
-    null;
-  const disabled = preference?.kind === "disabled" ||
-    template?.setting.kind === "disabled";
-  const status: Response["view"]["status"] = !selected ? "unconfigured" :
-    disabled ? "disabled" : selected.sourceHash !== basis.hash ?
-      "sourceChanged" : "configured";
+  const {scope, own, now, source} = state;
+  const {selected, template, status} = resolveSetting(state);
   const value: Response = {outcome, operationRevision,
     view: {...scope, serverTime: now, sourceHash: source.hash,
       ownRevision: own?.revision ?? 0, own,
       origin: !selected ? "none" : selected.groupId === "event:whole" ?
         "event" : "group", status,
-      effective: status === "configured" || disabled ? template : null,
+      effective: status === "configured" || status === "disabled" ?
+        template : null,
       suggested: suggestedTemplate(scope.workflowKind)}};
   if (!validateEventAssistanceSettingCallableResponse(value)) {
     throw invalidSource();
