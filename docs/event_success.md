@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.47.0
+version: 1.48.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -154,8 +154,21 @@ stop never reactivate a guest. Other programme/round return points require their
 canonical unit reader before they become selectable. The shared late-join policy
 requires known active participation; unknown participation waits, and inactive
 participation cancels its proposed work. Missing guest records remain uninitialized
-on reads. App controls, module-specific opt-outs, future allocation exclusion,
-re-entry controls and rehearsal adapters remain integration work. Moving-group
+on reads. The Flutter `EventAssistanceParticipationRepository` now exposes
+typed reads and changes through these callables. Its sealed participation
+values permit a return point only for a break; commands retain the reviewed
+source hash, episode, revision and operation ID across retries. Strict response
+parsing rejects another event/organizer/attendee, rehearsal mode, malformed
+revisions and inconsistent state. Replayed receipt revisions stay separate
+from the current view. Missing deployment is a visible unavailable error,
+never an empty or active guest.
+
+The account-scoped participation provider and action controller refresh reads
+after successful commands and reject pending actions after a sign-in change.
+Mutation state is keyed per account/event/attendee. They do not call attendance,
+infer presence, retry against a newer revision, or write Firestore directly.
+The live roster controls, module-specific opt-outs, future allocation exclusion,
+and rehearsal adapters remain integration work. Moving-group
 membership now has its own scoped command boundary below. The new command receipts need terminal retention before activation.
 
 ### Saved assistance settings
