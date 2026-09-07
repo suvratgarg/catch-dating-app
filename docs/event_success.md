@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.41.0
+version: 1.42.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -554,8 +554,37 @@ automatic closeout of unresolved departure members.
 Acceptance covers atomic enrollment/interruption/retry, current authority,
 deadline/lease races, corrected reports, bounded source fanout, source failures
 and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
-Staff notifications, reassignment, disposition-based closeout, Host controls and
+Staff notifications, disposition-based closeout, Host controls and
 rehearsal adapters remain integration work; no provider effect is activated.
+
+### Checkpoint reporter reassignment
+
+`reassignEventAssistanceCheckpointReporter` implements the closed typed
+`reassignCheckpointReporter` action. An organizer manager can transfer an
+outstanding report to a currently authorized observer for that exact group.
+The original departure roster, reporter and deadline remain immutable; a
+separate assignment revision records the new reporter, previous reporter,
+authenticated manager, server time and nonblank reason. It grants no duty and
+changes no attendance, membership, report observation or messaging state.
+
+The existing checkpoint read returns the effective reporter and an optional
+`assignment` review with its own source hash and revision. Background work
+revisions do not invalidate that review. A changed report, original source or
+assignment does; a complete report cannot be reassigned. Report review hashes
+exclude ownership changes, so another authorized observer can still submit
+previously reviewed observations. Source-unavailable requests require repair
+before reassignment. Legacy requests without durable work expose no assignment
+review and cannot silently acquire a new worker or owner.
+
+Manual changes use the same Operations lease as background report evaluation.
+The work/run update, generic action receipt and full domain assignment receipt
+commit atomically. Reads validate the current assignment against both receipts;
+replays return the original assignment revision and latest view, without restoring
+an older reporter. Current manager authority is required even for a replay.
+Reporter access is checked again after all preparation reads and must extend
+beyond both server time and the original deadline. Reassignment after that
+deadline remains overdue; event completion or cancellation does not prevent an
+authorized manager from taking responsibility for an outstanding report.
 
 ### Scoped group staff
 

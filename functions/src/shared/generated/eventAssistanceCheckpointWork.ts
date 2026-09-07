@@ -58,4 +58,13 @@ export interface EventAssistanceCheckpointWork {
         )
       | null;
   };
+  reassignment?: {
+    revision: number;
+    receiptId: string;
+    responsibleOperatorId: string;
+    previousResponsibleOperatorId: string;
+    assignedBy: string;
+    assignedAt: number;
+    reason: string;
+  };
 }

@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ReassignEventAssistanceCheckpointReporterCallablePayload',
+    source: 'callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json',
+    schema: schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetEventAssistanceCheckpointCallablePayload',
     source: 'callables/get_event_assistance_checkpoint_payload.schema.json',
     schema: schemaGetEventAssistanceCheckpointCallablePayloadSchema,
@@ -3099,6 +3104,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ReassignEventAssistanceCheckpointReporterCallablePayload': schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema,
   'GetEventAssistanceCheckpointCallablePayload': schemaGetEventAssistanceCheckpointCallablePayloadSchema,
   'RecordEventAssistanceCheckpointCallablePayload': schemaRecordEventAssistanceCheckpointCallablePayloadSchema,
   'EventAssistanceCheckpointCallableResponse': schemaEventAssistanceCheckpointCallableResponseSchema,
@@ -3718,6 +3724,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json': schemaReassignEventAssistanceCheckpointReporterCallablePayloadSchema,
   'callables/get_event_assistance_checkpoint_payload.schema.json': schemaGetEventAssistanceCheckpointCallablePayloadSchema,
   'callables/record_event_assistance_checkpoint_payload.schema.json': schemaRecordEventAssistanceCheckpointCallablePayloadSchema,
   'callable_responses/event_assistance_checkpoint_response.schema.json': schemaEventAssistanceCheckpointCallableResponseSchema,

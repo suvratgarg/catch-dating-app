@@ -15,6 +15,7 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "ReassignEventAssistanceCheckpointReporterCallablePayload", "source": "callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json", "typeOutput": "functions/src/shared/generated/reassignEventAssistanceCheckpointReporterCallablePayload.ts"},
   {"name": "GetEventAssistanceCheckpointCallablePayload", "source": "callables/get_event_assistance_checkpoint_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceCheckpointCallablePayload.ts"},
   {"name": "RecordEventAssistanceCheckpointCallablePayload", "source": "callables/record_event_assistance_checkpoint_payload.schema.json", "typeOutput": "functions/src/shared/generated/recordEventAssistanceCheckpointCallablePayload.ts"},
   {"name": "EventAssistanceCheckpointCallableResponse", "source": "callable_responses/event_assistance_checkpoint_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceCheckpointCallableResponse.ts"},

@@ -186,6 +186,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getEventAssistanceParticipation: {maxRequests: 60, windowMs: 60_000},
   getEventAssistanceCheckpoint: {maxRequests: 60, windowMs: 60_000},
   recordEventAssistanceCheckpoint: {maxRequests: 30, windowMs: 60_000},
+  reassignEventAssistanceCheckpointReporter: {
+    maxRequests: 30, windowMs: 60_000},
   getEventAssistanceDepartureRoster: {maxRequests: 60, windowMs: 60_000},
   getEventAssistanceAccountability: {maxRequests: 60, windowMs: 60_000},
   resolveEventAssistanceAccountability: {maxRequests: 30, windowMs: 60_000},

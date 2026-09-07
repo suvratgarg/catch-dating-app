@@ -489,6 +489,7 @@ export 'publish_organizer_form_callable_response.g.dart';
 export 'rate_limit_document.g.dart';
 export 'razorpay_order_callable_response.g.dart';
 export 'razorpay_pending_order_document.g.dart';
+export 'reassign_event_assistance_checkpoint_reporter_callable_payload.g.dart';
 export 'record_event_assistance_checkpoint_callable_payload.g.dart';
 export 'record_event_invite_link_open_callable_payload.g.dart';
 export 'record_event_share_intent_callable_payload.g.dart';

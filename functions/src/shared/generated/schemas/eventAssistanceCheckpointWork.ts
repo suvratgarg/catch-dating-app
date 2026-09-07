@@ -280,6 +280,59 @@ export const eventAssistanceCheckpointWorkSchema: Record<string, unknown> = {
           ]
         }
       }
+    },
+    "reassignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "receiptId",
+        "responsibleOperatorId",
+        "previousResponsibleOperatorId",
+        "assignedBy",
+        "assignedAt",
+        "reason"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "receiptId": {
+          "type": "string",
+          "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+        },
+        "responsibleOperatorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "previousResponsibleOperatorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "assignedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/]+$"
+        },
+        "assignedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        }
+      }
     }
   }
 } as const;

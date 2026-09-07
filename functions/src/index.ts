@@ -532,5 +532,7 @@ export {getEventAssistanceMembership, transferEventAssistanceGroup} from
 export {getEventAssistanceDepartureRoster} from
   "./eventSuccess/operations/departureRosterHandlers";
 
+export {reassignEventAssistanceCheckpointReporter} from
+  "./eventSuccess/operations/checkpointReporterHandlers";
 export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
   "./eventSuccess/operations/checkpointHandlers";

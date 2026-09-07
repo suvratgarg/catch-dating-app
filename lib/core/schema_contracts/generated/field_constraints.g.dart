@@ -12273,6 +12273,80 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['read', 'applied', 'replayed'],
   );
 
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeAssignedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeAssignedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangePreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-reassignment:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentChangeRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAssignmentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.assignment.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceCheckpointCallableResponseViewAvailabilityKind = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointCallableResponse.view.availability.kind',
     required: true,
@@ -12674,11 +12748,70 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-reassignment:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceCheckpointReceiptDocumentReceiptId = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointReceiptDocument.receiptId',
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^checkpoint-action:[a-f0-9]{64}\$',
+    pattern: '^checkpoint-reassignment:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceCheckpointReceiptDocumentReportAccountedFor = CatchContractFieldConstraints(
@@ -12820,6 +12953,69 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventAssistanceCheckpointReceiptDocumentRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentScopeProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.scope.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointReceiptDocumentWorkItemRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointReceiptDocument.workItemRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceCheckpointWorkCheckpointDueAt = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointWork.checkpoint.dueAt',
     valueTypes: <String>['integer'],
@@ -12845,6 +13041,65 @@ abstract final class CatchContractConstraints {
   static const eventAssistanceCheckpointWorkKind = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointWork.kind',
     required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^checkpoint-reassignment:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkReassignmentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.reassignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventAssistanceCheckpointWorkRequestDueAt = CatchContractFieldConstraints(
@@ -13011,20 +13266,55 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
-  static const eventAssistanceCommandPayloadResolutionId = CatchContractFieldConstraints(
-    path: 'eventAssistanceCommand.payload.resolutionId',
+  static const eventAssistanceCommandPayloadCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.checkpointId',
     maxLength: 2000,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
 
-  static const eventAssistanceCommandPayloadRestrictedCaseId = CatchContractFieldConstraints(
-    path: 'eventAssistanceCommand.payload.restrictedCaseId',
-    maxLength: 2000,
+  static const eventAssistanceCommandPayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCommandPayloadExpectedProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.expectedProgressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.groupId',
+    maxLength: 160,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandPayloadReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventAssistanceCommandPayloadResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
   );
 
   static const eventAssistanceDeliveryAttemptAttemptId = CatchContractFieldConstraints(
@@ -64014,6 +64304,136 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadCheckpointId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadExpectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.expectedAssignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadExpectedProgressRevision = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.expectedProgressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadReason = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const reassignEventAssistanceCheckpointReporterCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'reassignEventAssistanceCheckpointReporterCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const recordEventAssistanceCheckpointCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'recordEventAssistanceCheckpointCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -77395,6 +77815,15 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCaseDocument.status': eventAssistanceCaseDocumentStatus,
     'eventAssistanceCheckpointCallableResponse.operationRevision': eventAssistanceCheckpointCallableResponseOperationRevision,
     'eventAssistanceCheckpointCallableResponse.outcome': eventAssistanceCheckpointCallableResponseOutcome,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.assignedAt': eventAssistanceCheckpointCallableResponseViewAssignmentChangeAssignedAt,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.assignedBy': eventAssistanceCheckpointCallableResponseViewAssignmentChangeAssignedBy,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.previousResponsibleOperatorId': eventAssistanceCheckpointCallableResponseViewAssignmentChangePreviousResponsibleOperatorId,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.reason': eventAssistanceCheckpointCallableResponseViewAssignmentChangeReason,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.receiptId': eventAssistanceCheckpointCallableResponseViewAssignmentChangeReceiptId,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.responsibleOperatorId': eventAssistanceCheckpointCallableResponseViewAssignmentChangeResponsibleOperatorId,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.change.revision': eventAssistanceCheckpointCallableResponseViewAssignmentChangeRevision,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.revision': eventAssistanceCheckpointCallableResponseViewAssignmentRevision,
+    'eventAssistanceCheckpointCallableResponse.view.assignment.sourceHash': eventAssistanceCheckpointCallableResponseViewAssignmentSourceHash,
     'eventAssistanceCheckpointCallableResponse.view.availability.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityKind,
     'eventAssistanceCheckpointCallableResponse.view.availability.label': eventAssistanceCheckpointCallableResponseViewAvailabilityLabel,
     'eventAssistanceCheckpointCallableResponse.view.availability.members': eventAssistanceCheckpointCallableResponseViewAvailabilityMembers,
@@ -77448,6 +77877,13 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointDocument.rosterHash': eventAssistanceCheckpointDocumentRosterHash,
     'eventAssistanceCheckpointDocument.rosterId': eventAssistanceCheckpointDocumentRosterId,
     'eventAssistanceCheckpointDocument.schemaVersion': eventAssistanceCheckpointDocumentSchemaVersion,
+    'eventAssistanceCheckpointReceiptDocument.assignment.assignedAt': eventAssistanceCheckpointReceiptDocumentAssignmentAssignedAt,
+    'eventAssistanceCheckpointReceiptDocument.assignment.assignedBy': eventAssistanceCheckpointReceiptDocumentAssignmentAssignedBy,
+    'eventAssistanceCheckpointReceiptDocument.assignment.previousResponsibleOperatorId': eventAssistanceCheckpointReceiptDocumentAssignmentPreviousResponsibleOperatorId,
+    'eventAssistanceCheckpointReceiptDocument.assignment.reason': eventAssistanceCheckpointReceiptDocumentAssignmentReason,
+    'eventAssistanceCheckpointReceiptDocument.assignment.receiptId': eventAssistanceCheckpointReceiptDocumentAssignmentReceiptId,
+    'eventAssistanceCheckpointReceiptDocument.assignment.responsibleOperatorId': eventAssistanceCheckpointReceiptDocumentAssignmentResponsibleOperatorId,
+    'eventAssistanceCheckpointReceiptDocument.assignment.revision': eventAssistanceCheckpointReceiptDocumentAssignmentRevision,
     'eventAssistanceCheckpointReceiptDocument.receiptId': eventAssistanceCheckpointReceiptDocumentReceiptId,
     'eventAssistanceCheckpointReceiptDocument.report.accountedFor': eventAssistanceCheckpointReceiptDocumentReportAccountedFor,
     'eventAssistanceCheckpointReceiptDocument.report.accountedFor.items': eventAssistanceCheckpointReceiptDocumentReportAccountedForItems,
@@ -77467,10 +77903,25 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointReceiptDocument.report.rosterId': eventAssistanceCheckpointReceiptDocumentReportRosterId,
     'eventAssistanceCheckpointReceiptDocument.report.schemaVersion': eventAssistanceCheckpointReceiptDocumentReportSchemaVersion,
     'eventAssistanceCheckpointReceiptDocument.requestHash': eventAssistanceCheckpointReceiptDocumentRequestHash,
+    'eventAssistanceCheckpointReceiptDocument.rosterHash': eventAssistanceCheckpointReceiptDocumentRosterHash,
+    'eventAssistanceCheckpointReceiptDocument.scope.checkpointId': eventAssistanceCheckpointReceiptDocumentScopeCheckpointId,
+    'eventAssistanceCheckpointReceiptDocument.scope.context.eventId': eventAssistanceCheckpointReceiptDocumentScopeContextEventId,
+    'eventAssistanceCheckpointReceiptDocument.scope.context.mode': eventAssistanceCheckpointReceiptDocumentScopeContextMode,
+    'eventAssistanceCheckpointReceiptDocument.scope.context.organizerId': eventAssistanceCheckpointReceiptDocumentScopeContextOrganizerId,
+    'eventAssistanceCheckpointReceiptDocument.scope.groupId': eventAssistanceCheckpointReceiptDocumentScopeGroupId,
+    'eventAssistanceCheckpointReceiptDocument.scope.progressRevision': eventAssistanceCheckpointReceiptDocumentScopeProgressRevision,
+    'eventAssistanceCheckpointReceiptDocument.workItemRevision': eventAssistanceCheckpointReceiptDocumentWorkItemRevision,
     'eventAssistanceCheckpointWork.checkpoint.dueAt': eventAssistanceCheckpointWorkCheckpointDueAt,
     'eventAssistanceCheckpointWork.checkpoint.evaluatedAt': eventAssistanceCheckpointWorkCheckpointEvaluatedAt,
     'eventAssistanceCheckpointWork.checkpoint.failures': eventAssistanceCheckpointWorkCheckpointFailures,
     'eventAssistanceCheckpointWork.kind': eventAssistanceCheckpointWorkKind,
+    'eventAssistanceCheckpointWork.reassignment.assignedAt': eventAssistanceCheckpointWorkReassignmentAssignedAt,
+    'eventAssistanceCheckpointWork.reassignment.assignedBy': eventAssistanceCheckpointWorkReassignmentAssignedBy,
+    'eventAssistanceCheckpointWork.reassignment.previousResponsibleOperatorId': eventAssistanceCheckpointWorkReassignmentPreviousResponsibleOperatorId,
+    'eventAssistanceCheckpointWork.reassignment.reason': eventAssistanceCheckpointWorkReassignmentReason,
+    'eventAssistanceCheckpointWork.reassignment.receiptId': eventAssistanceCheckpointWorkReassignmentReceiptId,
+    'eventAssistanceCheckpointWork.reassignment.responsibleOperatorId': eventAssistanceCheckpointWorkReassignmentResponsibleOperatorId,
+    'eventAssistanceCheckpointWork.reassignment.revision': eventAssistanceCheckpointWorkReassignmentRevision,
     'eventAssistanceCheckpointWork.request.dueAt': eventAssistanceCheckpointWorkRequestDueAt,
     'eventAssistanceCheckpointWork.request.responsibleOperatorId': eventAssistanceCheckpointWorkRequestResponsibleOperatorId,
     'eventAssistanceCheckpointWork.requestedAt': eventAssistanceCheckpointWorkRequestedAt,
@@ -77492,8 +77943,12 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCommand.eventId': eventAssistanceCommandEventId,
     'eventAssistanceCommand.kind': eventAssistanceCommandKind,
     'eventAssistanceCommand.operationId': eventAssistanceCommandOperationId,
-    'eventAssistanceCommand.payload.resolutionId': eventAssistanceCommandPayloadResolutionId,
-    'eventAssistanceCommand.payload.restrictedCaseId': eventAssistanceCommandPayloadRestrictedCaseId,
+    'eventAssistanceCommand.payload.checkpointId': eventAssistanceCommandPayloadCheckpointId,
+    'eventAssistanceCommand.payload.expectedAssignmentRevision': eventAssistanceCommandPayloadExpectedAssignmentRevision,
+    'eventAssistanceCommand.payload.expectedProgressRevision': eventAssistanceCommandPayloadExpectedProgressRevision,
+    'eventAssistanceCommand.payload.groupId': eventAssistanceCommandPayloadGroupId,
+    'eventAssistanceCommand.payload.reason': eventAssistanceCommandPayloadReason,
+    'eventAssistanceCommand.payload.responsibleOperatorId': eventAssistanceCommandPayloadResponsibleOperatorId,
     'eventAssistanceDeliveryAttempt.attemptId': eventAssistanceDeliveryAttemptAttemptId,
     'eventAssistanceDeliveryAttempt.authorization.checkedAt': eventAssistanceDeliveryAttemptAuthorizationCheckedAt,
     'eventAssistanceDeliveryAttempt.authorization.instructionRevision': eventAssistanceDeliveryAttemptAuthorizationInstructionRevision,
@@ -84451,6 +84906,22 @@ abstract final class CatchContractConstraints {
     'razorpayPendingOrderDocument.updatedAt._nanoseconds': razorpayPendingOrderDocumentUpdatedAtNanoseconds,
     'razorpayPendingOrderDocument.updatedAt._seconds': razorpayPendingOrderDocumentUpdatedAtSeconds,
     'razorpayPendingOrderDocument.userId': razorpayPendingOrderDocumentUserId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.clockId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextClockId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.eventId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextEventId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.mode': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextMode,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.organizerId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextOrganizerId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.rehearsalId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextRehearsalId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.context.virtualEventId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandContextVirtualEventId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.eventId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandEventId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.kind': reassignEventAssistanceCheckpointReporterCallablePayloadCommandKind,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.operationId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandOperationId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.checkpointId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadCheckpointId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.expectedAssignmentRevision': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadExpectedAssignmentRevision,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.expectedProgressRevision': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadExpectedProgressRevision,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.groupId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadGroupId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.reason': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadReason,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.command.payload.responsibleOperatorId': reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId,
+    'reassignEventAssistanceCheckpointReporterCallablePayload.expectedSourceHash': reassignEventAssistanceCheckpointReporterCallablePayloadExpectedSourceHash,
     'recordEventAssistanceCheckpointCallablePayload.command.context.clockId': recordEventAssistanceCheckpointCallablePayloadCommandContextClockId,
     'recordEventAssistanceCheckpointCallablePayload.command.context.eventId': recordEventAssistanceCheckpointCallablePayloadCommandContextEventId,
     'recordEventAssistanceCheckpointCallablePayload.command.context.mode': recordEventAssistanceCheckpointCallablePayloadCommandContextMode,

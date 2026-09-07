@@ -283,5 +283,58 @@ const schemaEventAssistanceCheckpointWorkSchema = <String, Object?>{
         },
       },
     },
+    'reassignment': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'receiptId',
+        'responsibleOperatorId',
+        'previousResponsibleOperatorId',
+        'assignedBy',
+        'assignedAt',
+        'reason',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'receiptId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^checkpoint-reassignment:[a-f0-9]{64}\$',
+        },
+        'responsibleOperatorId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 128,
+          'pattern': '^[^/]+\$',
+        },
+        'previousResponsibleOperatorId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 128,
+          'pattern': '^[^/]+\$',
+        },
+        'assignedBy': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 128,
+          'pattern': '^[^/]+\$',
+        },
+        'assignedAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'reason': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 500,
+          'pattern': '\\S',
+        },
+      },
+    },
   },
 };

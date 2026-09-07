@@ -433,6 +433,94 @@ const schemaEventAssistanceCheckpointCallableResponseSchema = <String, Object?>{
             },
           ],
         },
+        'assignment': <String, Object?>{
+          'description': 'Present in current responses; null when no durable checkpoint request exists. Independent of the report revision.',
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'revision',
+                'sourceHash',
+                'change',
+              ],
+              'properties': <String, Object?>{
+                'revision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'sourceHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                'change': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'revision',
+                        'receiptId',
+                        'responsibleOperatorId',
+                        'previousResponsibleOperatorId',
+                        'assignedBy',
+                        'assignedAt',
+                        'reason',
+                      ],
+                      'properties': <String, Object?>{
+                        'revision': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 9007199254740991,
+                        },
+                        'receiptId': <String, Object?>{
+                          'type': 'string',
+                          'pattern': '^checkpoint-reassignment:[a-f0-9]{64}\$',
+                        },
+                        'responsibleOperatorId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 128,
+                          'pattern': '^[^/]+\$',
+                        },
+                        'previousResponsibleOperatorId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 128,
+                          'pattern': '^[^/]+\$',
+                        },
+                        'assignedBy': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 128,
+                          'pattern': '^[^/]+\$',
+                        },
+                        'assignedAt': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 9007199254740991,
+                        },
+                        'reason': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                          'pattern': '\\S',
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
       },
     },
   },

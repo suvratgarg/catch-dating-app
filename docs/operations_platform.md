@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.20.0
+version: 1.21.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -672,8 +672,21 @@ duplicate or delayed source deliveries replay immutable wake receipts instead
 of reapplying older states. Event completion, cancellation or schedule expiry
 cannot discard unresolved original departure members. There is no generic
 expiry or TTL: terminal retention/reconciliation is separate work. The current
-adapter does not implement reassignment, disposition-based closeout, staff
-notifications or the Host queue UI.
+adapter does not implement disposition-based closeout, staff notifications or the
+Host queue UI.
+
+Manager-driven reporter reassignment now shares this same work-item lease. Its
+optional `reassignment` payload is mutable responsibility, excluded from the
+immutable original request basis. It advances an independent assignment revision
+and immediately reconciles fresh report/owner facts. The work/run update,
+Operations action receipt and full domain receipt in
+`eventAssistanceCheckpointReceipts` commit together. The original deadline is
+retained, including when overdue; current scoped authority must extend beyond
+both now and that deadline. Assignment reads bind the latest change to both
+immutable receipts. Older retries return current state and never restore a prior
+owner. Background revisions do not invalidate a reviewed assignment, while a
+changed assignment, report or source does. A complete report cannot be reassigned;
+a later correction retains the effective reporter when reopening work.
 
 ### Source changes and due-work recovery
 

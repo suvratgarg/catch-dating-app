@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.58.0
+version: 1.59.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -368,8 +368,24 @@ Complete original observations survive later source changes; partial corrections
 reopen the request. These are projections of immutable request facts and current
 observations, not a second durable workflow or an automatic arrival inference.
 Operations request scheduling now consumes those facts under its own lease.
-Reassignment, disposition-based closeout and staff notification delivery remain
-integration work; this contract does not authorize provider sends.
+The optional Operations payload `reassignment` carries the effective reporter and
+an independent monotonic assignment revision. The original request basis stays
+unchanged. `eventAssistanceCheckpointReceipts` is a closed union of original report
+receipts and assignment receipts, whose `checkpoint-reassignment:` identity binds
+context, group and operation ID. Assignment evidence pins scope, roster hash,
+previous/new reporter, manager, reason, server time and resulting work revision.
+Its companion Operations receipt binds that same authenticated request and exact
+work item. A missing or mismatched receipt cannot establish a current assignment.
+The `reassignCheckpointReporter` command uses an independently reviewed assignment
+hash/revision and a new operation ID; background evaluations cannot make that
+review stale, while changed physical evidence or ownership can. The original
+report evidence hash excludes ownership. The current response adds an optional
+`assignment` projection for wire compatibility; current servers emit null when
+there is no durable request. Exact retries return the original assignment revision
+and current report/owner view, even after later changes. Reassignment changes no
+permissions or deadline and checks the new reporter's scoped authority again after
+lease/work preparation. Disposition-based closeout and staff notification delivery
+remain integration work; this contract does not authorize provider sends.
 
 Both collections deny direct client access and have no TTL. The report's
 `accountedFor` and receipt's `report` fields are excluded from indexes. Limits match

@@ -95,5 +95,21 @@ export interface EventAssistanceCheckpointCallableResponse {
             }
         )
       | null;
+    /**
+     * Present in current responses; null when no durable checkpoint request exists. Independent of the report revision.
+     */
+    assignment?: {
+      revision: number;
+      sourceHash: string;
+      change: {
+        revision: number;
+        receiptId: string;
+        responsibleOperatorId: string;
+        previousResponsibleOperatorId: string;
+        assignedBy: string;
+        assignedAt: number;
+        reason: string;
+      } | null;
+    } | null;
   };
 }

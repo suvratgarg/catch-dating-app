@@ -138,6 +138,9 @@
           ]
         }
       }
+    },
+    "reassignment": {
+      "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Reassignment"
     }
   }
 }

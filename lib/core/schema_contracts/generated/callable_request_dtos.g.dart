@@ -176,6 +176,7 @@ export 'callables/publish_event_live_position_callable_request.g.dart';
 export 'callables/publish_event_success_rotation_round_callable_request.g.dart';
 export 'callables/publish_organizer_application_form_callable_request.g.dart';
 export 'callables/publish_organizer_form_callable_request.g.dart';
+export 'callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart';
 export 'callables/record_event_assistance_checkpoint_callable_request.g.dart';
 export 'callables/record_event_invite_link_open_callable_request.g.dart';
 export 'callables/record_event_share_intent_callable_request.g.dart';

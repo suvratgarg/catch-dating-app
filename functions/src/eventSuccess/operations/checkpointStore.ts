@@ -63,6 +63,7 @@ export class EventCheckpointStore {
       s.now = now;
       if (receipt !== undefined) {
         if (!validateEventAssistanceCheckpointReceiptDocument(receipt) ||
+            !("report" in receipt) ||
             receipt.receiptId !== receiptId ||
             receipt.requestHash !== requestHash || !s.report ||
             receipt.report.revision > s.report.revision ||

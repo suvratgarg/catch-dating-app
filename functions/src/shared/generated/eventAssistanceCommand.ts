@@ -1092,4 +1092,32 @@ export type EventAssistanceCommand =
         restrictedCaseId: string;
         resolutionId: string;
       };
+    }
+  | {
+      kind: "reassignCheckpointReporter";
+      context:
+        | {
+            mode: "live";
+            eventId: string;
+            organizerId: string;
+          }
+        | {
+            mode: "rehearsal";
+            rehearsalId: string;
+            virtualEventId: string;
+            clockId: string;
+          };
+      eventId: string;
+      operationId: string;
+      payload: {
+        groupId: string;
+        checkpointId: string;
+        /**
+         * Nonnegative safe integer revision.
+         */
+        expectedProgressRevision: number;
+        expectedAssignmentRevision: number;
+        responsibleOperatorId: string;
+        reason: string;
+      };
     };

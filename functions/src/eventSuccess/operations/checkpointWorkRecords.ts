@@ -15,6 +15,15 @@ import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
 
 export type {CheckpointWork};
 export type WorkCheckpoint = CheckpointWork["checkpoint"];
+export type Reassignment = NonNullable<CheckpointWork["reassignment"]>;
+export type CheckpointWorkRecords = ReturnType<
+  typeof readCheckpointWorkRecords>;
+
+export function effectiveCheckpointRequest(payload: CheckpointWork) {
+  return {...payload.request, responsibleOperatorId:
+    payload.reassignment?.responsibleOperatorId ??
+      payload.request.responsibleOperatorId};
+}
 export const CHECKPOINT_WORK_RUNTIME = "event-assistance-checkpoint/v1";
 
 export function checkpointWorkIds(reportId: string) {
@@ -24,8 +33,9 @@ export function checkpointWorkIds(reportId: string) {
 }
 
 export function checkpointWorkBasis(payload: CheckpointWork) {
-  const {checkpoint, ...basis} = payload;
+  const {checkpoint, reassignment, ...basis} = payload;
   void checkpoint;
+  void reassignment;
   return basis;
 }
 
@@ -49,6 +59,13 @@ export function parseCheckpointWork(value: unknown, now: number):
   if (!validateEventAssistanceCheckpointWork(value)) throw invalidWork();
   checkpointWorkIds(checkpointIdentity(value.scope));
   const c = value.checkpoint;
+  const change = value.reassignment;
+  if (change && (change.assignedAt < value.requestedAt ||
+      c.evaluatedAt === null || change.assignedAt > c.evaluatedAt ||
+      change.reason !== change.reason.trim() ||
+      change.responsibleOperatorId === change.previousResponsibleOperatorId ||
+      change.revision === 1 && change.previousResponsibleOperatorId !==
+        value.request.responsibleOperatorId)) throw invalidWork();
   if (!Number.isSafeInteger(now) || now < value.requestedAt ||
       value.rosterId !== departureRosterIdentity(value.scope.context,
         value.scope.groupId, value.scope.progressRevision) ||
@@ -62,7 +79,7 @@ export function parseCheckpointWork(value: unknown, now: number):
   if (c.observation?.kind === "observed") {
     const o = c.observation;
     if (o.request.responsibleOperatorId !==
-        value.request.responsibleOperatorId ||
+        effectiveCheckpointRequest(value).responsibleOperatorId ||
         o.request.dueAt !== value.request.dueAt ||
         (["awaitingReport", "overdue"].includes(o.request.state) &&
           o.reportRevision !== 0) ||
@@ -137,6 +154,7 @@ export function readCheckpointWorkRecords(runValue: unknown, itemValue: unknown,
   const expected = records(payload, a.value.createdAt, a.value.updatedAt,
     a.value.revision);
   if (expected.item.workItemId !== workItemId ||
+      (payload.reassignment?.revision ?? 0) > a.value.revision ||
       (a.value.revision === 0) !==
         (payload.checkpoint.evaluatedAt === null) ||
       Date.parse(a.value.updatedAt) !==
@@ -172,15 +190,22 @@ export function newCheckpointWorkRecords(roster: Roster) {
 
 export function advanceCheckpointWorkRecords(
   current: ReturnType<typeof readCheckpointWorkRecords>,
-  observed: WorkCheckpoint["observation"], now: number) {
+  observed: WorkCheckpoint["observation"], now: number,
+  reassignment?: Reassignment) {
   if (!observed || now < Date.parse(current.item.updatedAt)) {
     throw invalidWork();
   }
+  if (reassignment && (reassignment.revision !==
+      (current.payload.reassignment?.revision ?? 0) + 1 ||
+      reassignment.previousResponsibleOperatorId !==
+        effectiveCheckpointRequest(current.payload).responsibleOperatorId ||
+      reassignment.assignedAt !== now)) throw invalidWork();
   const checkpoint: WorkCheckpoint = {evaluatedAt: now, observation: observed,
     failures: observed.kind === "unavailable" ?
       Math.min(5, current.payload.checkpoint.failures + 1) : 0, dueAt: null};
   checkpoint.dueAt = nextReportDue(current.payload, checkpoint);
-  const payload = parseCheckpointWork({...current.payload, checkpoint}, now);
+  const payload = parseCheckpointWork({...current.payload, checkpoint,
+    ...(reassignment ? {reassignment} : {})}, now);
   const next = records(payload, current.run.createdAt,
     new Date(now).toISOString(), current.item.revision + 1);
   return readCheckpointWorkRecords(next.run, next.item,

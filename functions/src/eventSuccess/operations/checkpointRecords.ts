@@ -18,6 +18,7 @@ import type {readGroupProgressState} from "./groupProgressReader";
 import {progressIdentity, invalidSource} from "./groupProgressSource";
 import {departureRosterIdentity} from "./departureRosterSource";
 import {assertSavedCheckpointRequest} from "./checkpointRequest";
+import type {CheckpointWorkRecords} from "./checkpointWorkRecords";
 
 export type {Scope, Report, Roster, Response};
 export const CHECKPOINTS = "eventAssistanceCheckpoints";
@@ -32,6 +33,7 @@ export interface CheckpointState {
   report: Report | null;
   visits: {attendeeId: string; visit: Visit}[];
   ownerValidUntil: number;
+  requestWork?: CheckpointWorkRecords | null;
   now: number;
 }
 export function checkpointIdentity(scope: Scope) {
@@ -112,9 +114,12 @@ export function checkpointSourceHash(s: CheckpointState) {
   return operationContentHash([s.scope, s.progress.source.sourceHash,
     s.roster, s.report, s.visits]);
 }
-function checkpointRequestView(s: CheckpointState):
+export function checkpointRequestView(s: CheckpointState):
   Response["view"]["request"] {
-  const request = s.roster?.checkpointRequest;
+  const original = s.roster?.checkpointRequest;
+  const request = original ? {...original, responsibleOperatorId:
+    s.requestWork?.payload.reassignment?.responsibleOperatorId ??
+      original.responsibleOperatorId} : null;
   const destination = s.roster?.destination;
   const checkpointId = destination?.kind === "itineraryStop" ?
     destination.stopId : destination?.kind === "groupCheckpoint" ?
@@ -132,12 +137,22 @@ function checkpointRequestView(s: CheckpointState):
   ownerAvailability: s.ownerValidUntil > Math.max(s.now, request.dueAt) ?
     "current" : "needsReassignment"};
 }
+/** Ownership review has its own fence; it never changes a report review. */
+export function checkpointAssignmentView(s: CheckpointState) {
+  if (!s.requestWork) return null;
+  const change = s.requestWork.payload.reassignment ?? null;
+  return {revision: change?.revision ?? 0, change,
+    sourceHash: operationContentHash([checkpointSourceHash(s),
+      s.requestWork.payload.rosterHash,
+      s.requestWork.payload.request, change])};
+}
 export function checkpointResponse(outcome: Response["outcome"],
   s: CheckpointState, operationRevision: number | null = null): Response {
   const value: Response = {outcome, operationRevision, view: {...s.scope,
     serverTime: s.now, sourceHash: checkpointSourceHash(s),
     revision: s.report?.revision ?? 0, report: s.report,
     request: checkpointRequestView(s),
+    assignment: checkpointAssignmentView(s),
     availability: checkpointAvailability(s)}};
   if (!validateEventAssistanceCheckpointCallableResponse(value)) {
     throw invalidSource();

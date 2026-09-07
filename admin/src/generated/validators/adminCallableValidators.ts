@@ -7459,6 +7459,9 @@ const model = {
               ]
             }
           }
+        },
+        "reassignment": {
+          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Reassignment"
         }
       }
     },
@@ -7825,30 +7828,29 @@ const model = {
                   "type": "null"
                 }
               ]
+            },
+            "assignment": {
+              "description": "Present in current responses; null when no durable checkpoint request exists. Independent of the report revision.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AssignmentView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
         "Receipt": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "receiptId",
-            "requestHash",
-            "report"
-          ],
-          "properties": {
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-action:[a-f0-9]{64}$"
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ReportReceipt"
             },
-            "requestHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "report": {
-              "$ref": "#/definitions/Report"
+            {
+              "$ref": "#/definitions/AssignmentReceipt"
             }
-          }
+          ]
         },
         "Response": {
           "type": "object",
@@ -7952,6 +7954,182 @@ const model = {
               }
             }
           ]
+        },
+        "Reassignment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "receiptId",
+            "responsibleOperatorId",
+            "previousResponsibleOperatorId",
+            "assignedBy",
+            "assignedAt",
+            "reason"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+            },
+            "responsibleOperatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "previousResponsibleOperatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "assignedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "assignedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            }
+          }
+        },
+        "ReassignInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ReassignCheckpointReporterCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "AssignmentView": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "sourceHash",
+            "change"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "change": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Reassignment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "AssignmentReceipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "scope",
+            "rosterHash",
+            "workItemRevision",
+            "assignment"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "scope": {
+              "$ref": "#/definitions/ReadInput"
+            },
+            "rosterHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "workItemRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "assignment": {
+              "$ref": "#/definitions/Reassignment"
+            }
+          }
+        },
+        "ReportReceipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "report"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-action:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "report": {
+              "$ref": "#/definitions/Report"
+            }
+          }
         }
       }
     },
@@ -14746,6 +14924,9 @@ const model = {
                   }
                 }
               }
+            },
+            {
+              "$ref": "#/definitions/ReassignCheckpointReporterCommand"
             }
           ]
         },
@@ -15795,6 +15976,86 @@ const model = {
                       "type": "null"
                     }
                   ]
+                }
+              }
+            }
+          }
+        },
+        "ReassignCheckpointReporterCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reassignCheckpointReporter"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "expectedProgressRevision",
+                "expectedAssignmentRevision",
+                "responsibleOperatorId",
+                "reason"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "expectedAssignmentRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
                 }
               }
             }

@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  reassignEventAssistanceCheckpointReporterCallablePayloadSchema,
   getEventAssistanceCheckpointCallablePayloadSchema,
   recordEventAssistanceCheckpointCallablePayloadSchema,
   eventAssistanceCheckpointCallableResponseSchema,
@@ -643,6 +644,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateReassignEventAssistanceCheckpointReporterCallablePayload = ajv.compile(reassignEventAssistanceCheckpointReporterCallablePayloadSchema);
 export const validateGetEventAssistanceCheckpointCallablePayload = ajv.compile(getEventAssistanceCheckpointCallablePayloadSchema);
 export const validateRecordEventAssistanceCheckpointCallablePayload = ajv.compile(recordEventAssistanceCheckpointCallablePayloadSchema);
 export const validateEventAssistanceCheckpointCallableResponse = ajv.compile(eventAssistanceCheckpointCallableResponseSchema);

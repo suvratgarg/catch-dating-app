@@ -1,13 +1,10 @@
-import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationActionId, operationContentHash} from
   "../../operations/durableActions";
-import {operationResourceLeaseId} from
-  "../../operations/firestoreLeaseRepository";
 import {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
-import type {OperationActionReceipt, OperationLease} from
+import type {OperationActionReceipt} from
   "../../operations/models";
 import {validateOperationActionReceipt} from "../../operations/validation";
 import {requireDocumentId} from "./guestRecords";
@@ -15,10 +12,13 @@ import {readCheckpoint} from "./checkpointReader";
 import {checkpointResponse} from "./checkpointRecords";
 import {runAssistanceTransaction} from "./transactionCallback";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
-import {errorCode, releaseAssistanceWorkLease} from "./liveWorkRunner";
+import {releaseAssistanceWorkLease} from "./liveWorkRunner";
 import {advanceCheckpointWorkRecords, CHECKPOINT_WORK_RUNTIME,
-  checkpointWorkIds, readCheckpointWorkRecords, WorkCheckpoint} from
+  checkpointWorkIds, effectiveCheckpointRequest, readCheckpointWorkRecords,
+  WorkCheckpoint} from
   "./checkpointWorkRecords";
+
+import {acquireCheckpointWorkLease} from "./checkpointWorkAccess";
 
 type Records = ReturnType<typeof readCheckpointWorkRecords>;
 type Wake = {kind: "wake"; signalId: string};
@@ -65,7 +65,8 @@ export class AssistanceCheckpointWorkStore {
     if (!this.needsWork(initial, wake)) {
       return {kind: "idle" as const, records: initial.records};
     }
-    const lease = await this.acquire(workItemId);
+    const lease = await acquireCheckpointWorkLease(this.operations, workItemId,
+      this.clock);
     if (!lease) return {kind: "busy" as const};
     try {
       return await runAssistanceTransaction(this.db, async (tx) => {
@@ -141,7 +142,9 @@ export class AssistanceCheckpointWorkStore {
       if (!view.request || operationContentHash({
         responsibleOperatorId: view.request.responsibleOperatorId,
         dueAt: view.request.dueAt}) !==
-          operationContentHash(records.payload.request)) throw invalidWork();
+          operationContentHash(effectiveCheckpointRequest(records.payload))) {
+        throw invalidWork();
+      }
       return {now, observation: {kind: "observed", request: view.request,
         sourceHash: view.sourceHash, reportRevision: view.revision,
         ownerValidUntil: state.ownerValidUntil}};
@@ -187,21 +190,6 @@ export class AssistanceCheckpointWorkStore {
     const run = (await tx.get(this.db.collection(operationCollections.runs)
       .doc(item.runId))).data();
     return readCheckpointWorkRecords(run, item, workItemId, this.clock());
-  }
-
-  private async acquire(workItemId: string): Promise<OperationLease | null> {
-    const now = this.clock();
-    try {
-      return await this.operations.acquireLease({
-        leaseId: operationResourceLeaseId("work_item", workItemId),
-        resourceId: workItemId, resourceType: "work_item",
-        ownerId: "checkpoint-worker:" + randomUUID(),
-        idempotencyKey: randomUUID(), acquiredAt: new Date(now).toISOString(),
-        expiresAt: new Date(now + 60_000).toISOString()});
-    } catch (error) {
-      if (errorCode(error) === "lease_conflict") return null;
-      throw error;
-    }
   }
 }
 function wakeKey(wake: Wake) {
