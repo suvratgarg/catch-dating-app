@@ -1,9 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_notice_tone.dart';
+import 'package:catch_ui/src/components/catch_person_avatar_item.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
-
-import '../foundations/catch_icons.dart';
-import 'catch_notice_tone.dart';
-import 'catch_person_avatar_item.dart';
 
 class CatchNoticeData {
   const CatchNoticeData({

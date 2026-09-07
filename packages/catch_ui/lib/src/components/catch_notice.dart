@@ -1,13 +1,12 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_notice_data.dart';
+import 'package:catch_ui/src/components/catch_notice_tone.dart';
+import 'package:catch_ui/src/components/catch_person_avatar.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
-
-import '../foundations/catch_icons.dart';
-import '../foundations/catch_text_styles.dart';
-import '../primitives/catch_surface.dart';
-import 'catch_button.dart';
-import 'catch_notice_data.dart';
-import 'catch_notice_tone.dart';
-import 'catch_person_avatar.dart';
 
 class CatchNotice extends StatelessWidget {
   const CatchNotice({
