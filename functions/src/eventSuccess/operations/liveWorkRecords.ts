@@ -31,8 +31,9 @@ export function parseLiveWork(value: unknown, now: number): LiveWork {
   if (!validateEventAssistanceLiveWork(value)) throw invalidWork();
   liveWorkIds(value.scope);
   const c = value.checkpoint;
+  // Rebinding can lower the configured cap below already consumed work.
   if (!Number.isSafeInteger(now) || now < 0 ||
-      c.evaluations > value.maxEvaluations ||
+      c.evaluations > 10_000 ||
       (c.evaluatedAt !== null && c.evaluatedAt > now) ||
       (c.observation === null) !== (c.evaluatedAt === null) ||
       (c.observation === null && (c.evaluations !== 0 ||

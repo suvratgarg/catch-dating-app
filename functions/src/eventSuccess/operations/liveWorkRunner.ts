@@ -5,11 +5,10 @@ import {operationResourceLeaseId} from
 import type {OperationLease} from "../../operations/models";
 import type {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
-import {LiveAssistanceWorkStore} from "./liveWorkStore";
+import {LiveAssistanceWorkStore, LiveWorkAction} from "./liveWorkStore";
 import {invalidWork} from "./liveWorkRecords";
 
-export type LiveWorkAction = {kind: "evaluate"} |
-  {kind: "wake"; signalId: string};
+export type {LiveWorkAction};
 export type LiveWorkRunResult = {kind: "busy"} |
   {kind: "finished"; result: Awaited<ReturnType<
     LiveAssistanceWorkStore["evaluate"]>>};
@@ -43,8 +42,11 @@ export class LiveAssistanceWorkRunner {
       const current = await this.store.get(workItemId);
       const result = action.kind === "evaluate" ?
         await this.store.evaluate(workItemId, current.item.revision, lease) :
-        await this.store.wake(workItemId, current.item.revision,
-          action.signalId, lease);
+        action.kind === "wake" ?
+          await this.store.wake(workItemId, current.item.revision,
+            action.signalId, lease) :
+          await this.store.rebind(workItemId, current.item.revision,
+            action.binding, lease);
       return {kind: "finished", result};
     } finally {
       await releaseAssistanceWorkLease(this.store.operations, lease,

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.30.0
+version: 1.31.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -320,8 +320,8 @@ transaction. Its worker uses current leases and durable wake receipts. Source
 changes enqueue bounded resumable fanout; work-item and scheduled handlers
 advance saved due work. These handlers remain dormant in deployment policy.
 See [Operations runtime](operations_platform.md#durable-live-assistance-work)
-for execution limits and the source-change lifecycle. Manager-authorized
-enrollment/rebinding, remaining readiness signals, provider dispatch coordination and
+for execution limits and the source-change lifecycle. Durable roster scan
+integration, remaining readiness signals, provider dispatch coordination and
 the broader Host/rehearsal workflow remain separate integration work. A
 publication result does not assert provider submission or delivery.
 
@@ -348,7 +348,29 @@ The private `eventAssistanceRuntimeConfigs` and
 `eventAssistanceRuntimeConfigReceipts` collections allow no client reads/writes;
 callables expose the manager projection. A configured response means permission
 was saved, not that guests were enrolled or messages sent. The per-event roster
-enrollment/rebinding job and Host controls remain the next integration step.
+scan and Host controls remain integration work.
+
+The trusted `LiveAssistanceEnrollmentStore.ensure` boundary verifies the current
+saved configuration and canonical registration in one transaction. For an eligible
+registration, missing current participation and its first Operations run/item are
+created together. Identity is stable across retries and runtime revisions. Existing
+breaks, departures, not-coming responses and closed participation are preserved;
+enrollment does not check anyone in. Replaced registration identities receive a new
+episode; explicit re-entry uses its already assigned episode. Erased participation
+cannot be reconstructed over existing work. Current, completed, expired, held and
+rebind-required results stay distinct. No automatic roster scan calls this boundary
+yet.
+
+`LiveAssistanceWorkStore.rebind` adopts a current manager configuration under the
+existing work-item lease and an immutable action receipt. It keeps the guest
+episode, messages, thread, participation, consumed evaluations and delivery budgets.
+Run/item basis hashes change atomically with the configuration binding. Lowering a
+limit below consumed evaluations holds further evaluation; raising it only allows
+the remaining difference. Fresh evaluation is due immediately unless an existing
+evaluation-limit hold still applies. Completed and expired work cannot restart.
+Historical rebind/evaluation receipts remain replayable after later changes or
+pause without reapplying effects. The caller supplies only a saved binding, never
+replacement options or a reset request.
 
 Scheduled guest evaluation requires a runtime id/revision binding. Bound work
 initialization verifies the complete configuration. Publication copies that

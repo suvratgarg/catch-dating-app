@@ -14,6 +14,7 @@ import {guestCollections, guestIdentity} from "./guestRecords";
 import {setup} from "./liveLateJoinTestHarness";
 import {start} from "./whatsappTestHarness";
 import {configureRuntime} from "./runtimeConfigTestHarness";
+import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 
 async function workHarness(db?: Firestore) {
   const h = await setup(db);
@@ -291,6 +292,136 @@ test("bounded due discovery excludes waiting and completed work", async () => {
     await assert.rejects(h.work.listDue(limit));
   }
 });
+
+test("runtime rebind preserves episode history and atomically adopts options",
+  async () => {
+    const h = await workHarness();
+    const original = await configureRuntime(h);
+    await h.work.start({...h.input, runtimeBinding: original.binding});
+    const lease = await h.acquire();
+    const evaluated = await h.work.evaluate(h.ids.workItemId, 0, lease);
+    const latest = await configureRuntime(h, {...original.configuration,
+      options: {...h.options, responseDeadline: start + 900_000},
+      expiresAt: start + 1_800_000});
+    const before = h.fake.entries();
+    h.fake.failNextCommit = true;
+    await assert.rejects(h.work.rebind(h.ids.workItemId, 1,
+      latest.binding, lease), /interruption/);
+    assert.deepEqual(h.fake.entries(), before);
+    const next = await h.work.rebind(h.ids.workItemId, 1,
+      latest.binding, lease);
+    assert.equal(next.kind, "committed");
+    assert.equal(next.item.revision, 2);
+    assert.equal(next.payload.checkpoint.dueAt, start);
+    assert.deepEqual(next.payload.scope, evaluated.payload.scope);
+    assert.deepEqual(next.run.counters, evaluated.run.counters);
+    assert.equal(next.payload.checkpoint.evaluations, 1);
+    assert.deepEqual(next.payload.checkpoint.publication,
+      evaluated.payload.checkpoint.publication);
+    assert.deepEqual(next.payload.runtimeBinding, latest.binding);
+    assert.deepEqual(next.payload.options, latest.configuration.options);
+    const untouched = (entries: ReturnType<typeof h.fake.entries>) =>
+      entries.filter(([path]) => !path.startsWith("operation"));
+    assert.deepEqual(untouched(h.fake.entries()), untouched(before),
+      "rebind cannot rewrite a guest, thread, message, consent or budget");
+    assert.equal((await h.work.evaluate(h.ids.workItemId, 0, lease)).kind,
+      "replayed", "old evaluation receipts still replay after rebinding");
+    assert.equal((await h.work.rebind(h.ids.workItemId, 2,
+      latest.binding, lease)).kind, "replayed");
+    await latest.store.set("host-1", {...latest.input, requestId: randomUUID(),
+      expectedRevision: latest.binding.revision, command: {kind: "pause"}});
+    h.clock.now += 60_001;
+    const paused = h.fake.entries();
+    assert.equal((await h.work.rebind(h.ids.workItemId, 2,
+      latest.binding, lease)).kind, "replayed");
+    assert.deepEqual(h.fake.entries(), paused,
+      "a lost rebind response replays without undoing a later pause");
+  });
+
+test("lowering and raising runtime limits never resets consumed evaluations",
+  async () => {
+    const h = await workHarness();
+    const runtime = await configureRuntime(h);
+    await h.work.start({...h.input, runtimeBinding: runtime.binding});
+    const lease = await h.acquire();
+    await h.work.evaluate(h.ids.workItemId, 0, lease);
+    await h.work.wake(h.ids.workItemId, 1, "again", lease);
+    await h.work.evaluate(h.ids.workItemId, 2, lease);
+    const lower = await configureRuntime(h, {...runtime.configuration,
+      maxEvaluations: 1});
+    const rebound = await h.work.rebind(h.ids.workItemId, 3,
+      lower.binding, lease);
+    assert.equal(rebound.payload.checkpoint.evaluations, 2);
+    const held = await h.work.evaluate(h.ids.workItemId, 4, lease);
+    assert.equal(held.payload.checkpoint.evaluations, 2);
+    assert.deepEqual(held.payload.checkpoint.observation,
+      {kind: "evaluationLimit"});
+    const raised = await configureRuntime(h, {...runtime.configuration,
+      maxEvaluations: 3});
+    await h.work.rebind(h.ids.workItemId, 5, raised.binding, lease);
+    const wake = await h.work.wake(h.ids.workItemId, 6, "after-raise", lease);
+    assert.equal(wake.payload.checkpoint.dueAt, start);
+    const resumed = await h.work.evaluate(h.ids.workItemId, 7, lease);
+    assert.equal(resumed.payload.checkpoint.evaluations, 3);
+    assert.equal(resumed.run.counters.published, 2);
+  });
+
+test("rebind rejects revoked authority, replaced episodes and stale leases",
+  async () => {
+    for (const boundary of ["paused", "obsolete", "guest", "lease",
+      "revision", "clock"] as const) {
+      const h = await workHarness();
+      const first = await configureRuntime(h);
+      await h.work.start({...h.input, runtimeBinding: first.binding});
+      const lease = await h.acquire();
+      const latest = await configureRuntime(h);
+      if (boundary === "paused") {
+        await latest.store.set("host-1", {...latest.input,
+          requestId: randomUUID(), expectedRevision: latest.binding.revision,
+          command: {kind: "pause"}});
+      }
+      if (boundary === "obsolete") await configureRuntime(h);
+      if (boundary === "guest") {
+        await h.guests.startEpisode(h.context, h.scope.attendeeId,
+          "re-entry", 0);
+      }
+      if (boundary === "lease") {
+        h.clock.now += 60_000;
+        await h.acquire("replacement");
+      }
+      if (boundary === "clock") {
+        h.fake.beforeRead = (path) => {
+          if (path === operationCollections.leases + "/" + lease.leaseId) {
+            h.clock.now = latest.configuration.expiresAt;
+          }
+        };
+      }
+      const before = h.fake.entries();
+      await assert.rejects(h.work.rebind(h.ids.workItemId,
+        boundary === "revision" ? 1 : 0, latest.binding, lease), boundary);
+      assert.deepEqual(h.fake.entries(), before);
+    }
+  });
+
+test("rebind runner preserves completed work and cannot revive expired work",
+  async () => {
+    for (const terminal of [false, true]) {
+      const h = await workHarness();
+      const first = await configureRuntime(h, {options: h.options,
+        maxEvaluations: 100, expiresAt: start + 1000});
+      await h.work.start({scope: h.scope, ...first.configuration,
+        runtimeBinding: first.binding});
+      h.clock.now += 1000;
+      if (terminal) await h.advance();
+      const latest = await configureRuntime(h);
+      const before = await h.work.get(h.ids.workItemId);
+      const runner = new LiveAssistanceWorkRunner(h.db, () => h.clock.now);
+      const result = await runner.process(h.ids.workItemId,
+        {kind: "rebind", binding: latest.binding});
+      assert.equal(result.kind, "finished");
+      assert.deepEqual(await h.work.get(h.ids.workItemId), before);
+    }
+  });
 
 test("Firestore serializes live checkpoints and queries persisted due work", {
   skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,

@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.14.0
+version: 1.15.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -600,6 +600,17 @@ Bound initialization verifies the complete configuration; pausing or replacing
 it withholds publication and queued provider claims. The binding does not
 reset the participation episode, messaging history or delivery budgets.
 
+The trusted roster enrollment boundary creates missing participation and its
+first guest work atomically, or reports that existing work needs rebinding.
+`rebind` is a third leased guest action alongside evaluation and wake. It reads
+the saved runtime configuration and current participation inside the checkpoint
+transaction, updates both basis hashes and preserves consumed evaluations and
+publication counters. The configured evaluation ceiling can be lowered below
+prior consumption; this exhausts further work instead of discarding evidence.
+Raising that ceiling does not zero the counter. Rebind receipts are idempotent
+per runtime revision, and completed/expired episodes cannot re-enter execution.
+Enrollment discovery and bounded roster fanout are not wired yet.
+
 ### Source changes and due-work recovery
 
 `AssistanceSourceWorkStore` persists each source delivery and target scope as
@@ -637,8 +648,9 @@ the work-item trigger and the scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.
 
-Manager-owned configuration and pause are implemented separately from guest
-enrollment. Durable roster enrollment/rebinding, readiness-change signals for
+Manager-owned configuration and pause are implemented separately from the
+trusted guest enrollment/rebind adapters. Durable roster discovery and fanout,
+readiness-change signals for
 consent/sender/template/budget changes, provider dispatch coordination and Host
 queue projections remain integration work. Activating the dormant functions
 also requires the corresponding operating-budget and delivery configuration.

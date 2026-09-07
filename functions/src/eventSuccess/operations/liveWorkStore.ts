@@ -10,7 +10,9 @@ import {validateOperationActionReceipt} from "../../operations/validation";
 import {currentGuest, guestCollections, guestIdentity, parseGuest,
   readGuestSourceFacts, requireDocumentId} from "./guestRecords";
 import {prepareLiveLateJoinPublication} from "./liveLateJoinPublication";
-import {readRuntimeConfigAuthority} from "./runtimeConfigRecords";
+import {readRuntimeConfigAuthority, RuntimeBinding} from
+  "./runtimeConfigRecords";
+import {prepareLiveWorkRebind} from "./liveWorkRebinding";
 import {ASSISTANCE_WORKFLOW, LIVE_WORK_RUNTIME, LiveWork, Observation,
   invalidWork, liveWorkBasis, liveWorkIds, liveWorkProjection,
   newLiveWorkRecords, parseLiveWork, readLiveWorkRecords} from
@@ -18,7 +20,10 @@ import {ASSISTANCE_WORKFLOW, LIVE_WORK_RUNTIME, LiveWork, Observation,
 
 type Records = ReturnType<typeof readLiveWorkRecords>;
 type Prepared = Awaited<ReturnType<typeof prepareLiveLateJoinPublication>>;
-type Action = {kind: "evaluate"} | {kind: "wake"; signalId: string};
+export type LiveWorkAction = {kind: "evaluate"} |
+  {kind: "wake"; signalId: string} |
+  {kind: "rebind"; binding: RuntimeBinding};
+type Action = LiveWorkAction;
 type Result = Records & ({kind: "idle"} | {kind: "committed" | "replayed";
   receipt: OperationActionReceipt});
 
@@ -124,6 +129,17 @@ export class LiveAssistanceWorkStore {
       {kind: "wake", signalId});
   }
 
+  /** Adopts current manager configuration without restarting the episode. */
+  rebind(workItemId: string, expectedRevision: number, binding: RuntimeBinding,
+    lease: OperationLeaseProof): Promise<Result> {
+    requireDocumentId(binding.runtimeId);
+    if (!Number.isSafeInteger(binding.revision) || binding.revision < 1) {
+      throw invalidWork();
+    }
+    return this.advance(workItemId, expectedRevision, lease,
+      {kind: "rebind", binding: structuredClone(binding)});
+  }
+
   private async read(tx: Transaction, workItemId: string): Promise<Records> {
     requireDocumentId(workItemId);
     const item = (await tx.get(this.db.collection(
@@ -142,7 +158,8 @@ export class LiveAssistanceWorkStore {
     }
     const proof = structuredClone(lease);
     const key = action.kind === "evaluate" ? "evaluate:" + expectedRevision :
-      "wake:" + operationContentHash(action.signalId);
+      action.kind === "wake" ? "wake:" + operationContentHash(action.signalId) :
+        "rebind:" + operationContentHash(action.binding);
     const inputHash = operationContentHash([workItemId, key]);
     return this.db.runTransaction(async (tx) => {
       const records = await this.read(tx, workItemId);
@@ -163,10 +180,16 @@ export class LiveAssistanceWorkStore {
       const now = this.clock();
       let next = structuredClone(payload);
       let publication: Extract<Prepared, {kind: "prepared"}> | null = null;
-      if (action.kind === "wake") {
+      if (action.kind === "rebind") {
+        const rebound = await prepareLiveWorkRebind(this.db, tx, payload,
+          action.binding, now);
+        if (!rebound) return {...records, kind: "idle"};
+        next = rebound;
+      } else if (action.kind === "wake") {
         // A budget hold stays held until expiry; signals cannot reset the cap.
         next.checkpoint.dueAt = next.checkpoint.observation?.kind ===
-          "evaluationLimit" ? payload.expiresAt :
+          "evaluationLimit" && next.checkpoint.evaluations >=
+            next.maxEvaluations ? payload.expiresAt :
           Math.min(now, next.checkpoint.dueAt ?? payload.expiresAt);
       } else {
         if (payload.checkpoint.dueAt === null ||
@@ -204,13 +227,16 @@ export class LiveAssistanceWorkStore {
       const at = new Date(now).toISOString();
       const terminal = projection.lifecycleStatus === "terminal";
       const nextItem = {...item, revision: item.revision + 1,
+        candidateHash: operationContentHash(liveWorkBasis(next)),
         primaryStage: projection.primaryStage,
         lifecycleStatus: projection.lifecycleStatus,
         outcome: projection.outcome,
         taskFlags: projection.taskFlags, blockerCodes: projection.blockerCodes,
         attemptCount: next.checkpoint.evaluations,
-        normalizedPayload: {...next}, updatedAt: at};
+        normalizedPayload: {...next}, updatedAt: at,
+        expiresAt: new Date(next.expiresAt).toISOString()};
       const nextRun = {...run, revision: nextItem.revision,
+        inputHash: nextItem.candidateHash,
         status: terminal ? "completed" as const : "running" as const,
         updatedAt: at, finishedAt: terminal ? at : null,
         checkpoint: {lastSequence: nextItem.revision, cursor: workItemId},
@@ -230,14 +256,15 @@ export class LiveAssistanceWorkStore {
         outputHash: operationContentHash(nextItem),
         rulesetVersion: LIVE_WORK_RUNTIME, modelVersion: null,
         reasonCodes: action.kind === "wake" ? ["source_signal"] :
-          projection.reasonCodes,
+          action.kind === "rebind" ? ["runtime_configuration_changed"] :
+            projection.reasonCodes,
         occurredAt: at, completedAt: at, failure: null};
       const updated = readLiveWorkRecords(nextRun, nextItem, workItemId, now);
       const checkpoint = await this.operations.prepareWorkItemAction(tx,
         {workItem: nextItem, receipt, lease: proof});
       const committedAt = this.clock();
-      if (committedAt < now || (publication &&
-          committedAt >= payload.expiresAt)) {
+      if (committedAt < now || ((publication || action.kind === "rebind") &&
+          committedAt >= Math.min(payload.expiresAt, next.expiresAt))) {
         throw conflict("work_snapshot_expired");
       }
       // All reads above; these writes either commit together or do not exist.
