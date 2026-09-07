@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.48.0
+version: 1.49.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -167,6 +167,15 @@ The account-scoped participation provider and action controller refresh reads
 after successful commands and reject pending actions after a sign-in change.
 Mutation state is keyed per account/event/attendee. They do not call attendance,
 infer presence, retry against a newer revision, or write Firestore directly.
+`EventAssistanceParticipationEditor` owns the pending form decision for one
+reviewed session. It starts without an implicit selection, offers a return
+point only for a break, and clears that point when another choice is selected.
+Submission freezes editing, reload and dismissal; duplicate triggers share one
+future. An uncertain result permits only an exact retry or explicit reload.
+Source/permission/session conflicts require fresh review. A new loaded session
+has a separate editor, so an older completion cannot overwrite its draft.
+These are controller guarantees; the live sheet must still bind its controls
+and route dismissal to the exposed state and handle the returned error.
 The live roster controls, module-specific opt-outs, future allocation exclusion,
 and rehearsal adapters remain integration work. Moving-group
 membership now has its own scoped command boundary below. The new command receipts need terminal retention before activation.
