@@ -225,6 +225,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ),
             gapH8,
             CatchOtpCodeField(
+              semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
               inputKey: AuthFormKeys.otpField,
               contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
               controller: _otpController,
@@ -310,6 +311,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         gapH28,
         CatchOtpCodeField(
+          semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
           inputKey: AuthFormKeys.otpField,
           contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
           controller: _otpController,

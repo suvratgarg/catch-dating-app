@@ -4491,6 +4491,7 @@ class _OtpCodeFieldDemoState extends State<_OtpCodeFieldDemo> {
   @override
   Widget build(BuildContext context) {
     return CatchOtpCodeField(
+      semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
       controller: _controller,
       onChanged: (_) => setState(() {}),
       onSubmitted: (_) {},

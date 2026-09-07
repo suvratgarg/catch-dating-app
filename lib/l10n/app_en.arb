@@ -15585,9 +15585,9 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
-  "coreCatchOtpCodeFieldVisiblecopyOtpDigit": "otp_digit",
-  "@coreCatchOtpCodeFieldVisiblecopyOtpDigit": {
-    "description": "Product copy used by lib/core/widgets/catch_otp_code_field.dart (visibleCopy).",
+  "coreCatchOtpCodeFieldSemanticLabel": "One-time code",
+  "@coreCatchOtpCodeFieldSemanticLabel": {
+    "description": "Accessibility label for the one-time verification-code input, supplied by app callers.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_otp_code_field"

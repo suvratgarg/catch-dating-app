@@ -1171,6 +1171,8 @@ void _registerCatchPrimitivesControlsTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchOtpCodeField(
+              semanticsLabel:
+                  AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
               inputKey: const ValueKey('otp-input'),
               controller: controller,
               autofocus: true,

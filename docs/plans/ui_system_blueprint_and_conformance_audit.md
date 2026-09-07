@@ -920,6 +920,11 @@ formatter. The selector no longer imports the app catalog or requires the app
 `Labelled` interface; schema values, selected sets, callbacks, and rendering are
 preserved. Its package move still follows the schema policy and chip renderer.
 
+OTP callers supply the existing one-time-code accessibility label from the app
+catalog. Digit-key prefixes remain stable implementation identifiers; their
+former catalog key and allowlist entry are removed. Input formatting, autofill,
+submission, and visible cells retain their bodies without an app-copy import.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

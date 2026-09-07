@@ -13443,11 +13443,11 @@ abstract class AppLocalizations {
   /// **'Select'**
   String get coreCatchFieldVisiblecopySelect;
 
-  /// Product copy used by lib/core/widgets/catch_otp_code_field.dart (visibleCopy).
+  /// Accessibility label for the one-time verification-code input, supplied by app callers.
   ///
   /// In en, this message translates to:
-  /// **'otp_digit'**
-  String get coreCatchOtpCodeFieldVisiblecopyOtpDigit;
+  /// **'One-time code'**
+  String get coreCatchOtpCodeFieldSemanticLabel;
 
   /// Product copy used by lib/core/widgets/catch_search_field.dart (visibleCopy).
   ///

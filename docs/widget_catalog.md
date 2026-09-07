@@ -233,7 +233,7 @@ Widgetbook callers.
 | `CatchCodeInputRow` | `packages/catch_ui/lib/src/components/catch_code_input_row.dart:7` | Direct verification-code row renderer used by `CatchCodeInput` and `CatchOtpCodeField`. Owns value truncation, active-cell selection, fixed gaps, and stable digit keys without private widget-returning helpers. |
 | `CatchCodeInputCell` | `packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart:7` | Direct verification-code cell renderer. Keeps tokenized surface, interactive-tile radius, active ink border, digit text style, and optional caret reviewable as a standalone primitive. |
 | `CatchCodeInputCaret` | `packages/catch_ui/lib/src/primitives/catch_code_input_caret.dart:5` | Direct verification-code insertion-caret renderer used by active empty `CatchCodeInputCell` states. |
-| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:17` | Canonical OTP input primitive. Composes `CatchCodeInputRow` visuals over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
+| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:17` | Canonical OTP input primitive with a required caller-localized `semanticsLabel` and stable digit keys. Composes `CatchCodeInputRow` visuals over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
 | `CatchNumberStepper` | `packages/catch_ui/lib/src/components/catch_number_stepper.dart:7` | Canonical numeric +/- stepper. Renders the shared raised `CatchControlShell`, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by event duration and profile height controls. |
 | `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds and an `onChangeEnd` commit seam for persistence that must not fire on every drag frame. |
 | `CatchTopBarActionGroup` | `packages/catch_ui/lib/src/components/catch_top_bar_action_group.dart` | Canonical header action spacing, minimum interactive width and direct-pill rejection. |
@@ -915,7 +915,7 @@ Widgetbook callers.
 | `CatchCodeInputRow` | `packages/catch_ui/lib/src/components/catch_code_input_row.dart:7` | Shared verification-code row renderer used by `CatchCodeInput` and `CatchOtpCodeField`. |
 | `CatchCodeInputCell` | `packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart:7` | Shared verification-code cell renderer with tokenized active, inactive, digit, and caret states. |
 | `CatchCodeInputCaret` | `packages/catch_ui/lib/src/primitives/catch_code_input_caret.dart:5` | Shared insertion caret renderer for active empty verification-code cells. |
-| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:17` | Shared OTP primitive used by `OtpPage`; owns hidden platform input and delegates six visual cells to `CatchCodeInputRow` styling. |
+| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:17` | Shared OTP primitive used by `OtpPage` with caller-localized accessibility copy; owns hidden platform input and delegates six visual cells to `CatchCodeInputRow` styling. |
 
 ---
 

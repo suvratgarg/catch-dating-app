@@ -8475,7 +8475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchFieldVisiblecopySelect => 'Select';
 
   @override
-  String get coreCatchOtpCodeFieldVisiblecopyOtpDigit => 'otp_digit';
+  String get coreCatchOtpCodeFieldSemanticLabel => 'One-time code';
 
   @override
   String get coreCatchSearchFieldVisiblecopyCloseSearch => 'Close search';

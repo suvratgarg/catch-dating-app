@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,7 @@ class CatchOtpCodeField extends StatelessWidget {
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
     this.autofocus = false,
-    this.semanticsLabel = 'One-time code',
+    required this.semanticsLabel,
   }) : assert(length == null || length > 0);
 
   final TextEditingController controller;
@@ -76,8 +75,7 @@ class CatchOtpCodeField extends StatelessWidget {
             hasError: hasError,
             height: height,
             gap: gap,
-            cellKeyPrefix:
-                context.l10n.coreCatchOtpCodeFieldVisiblecopyOtpDigit,
+            cellKeyPrefix: 'otp_digit',
           ),
           Positioned.fill(
             child: Opacity(

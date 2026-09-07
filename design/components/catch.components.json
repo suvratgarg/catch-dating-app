@@ -9694,7 +9694,7 @@
             "id": "catch.code_input.otp_code_field",
             "symbol": "CatchOtpCodeField",
             "file": "lib/core/widgets/catch_otp_code_field.dart",
-            "summary": "Real one-time-code text input that composes CatchCodeInput visual cells over one hidden platform TextField.",
+            "summary": "Real one-time-code input with caller-resolved accessibility copy and stable digit keys, composing visual cells over one hidden platform TextField.",
             "states": [
               "empty",
               "partial",
