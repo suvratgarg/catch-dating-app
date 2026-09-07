@@ -4,7 +4,7 @@ import 'package:catch_tokens/catch_tokens.dart' show CatchLayout;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/core/widgets/catch_section_layout.dart'
+export 'package:catch_ui/catch_ui.dart'
     show CatchScreenBodyLayout, CatchSliverContentWidth;
 
 enum _CatchRootScreenPageKind { scroll, surface, masterDetail }

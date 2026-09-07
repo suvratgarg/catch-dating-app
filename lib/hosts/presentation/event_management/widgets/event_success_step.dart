@@ -13,7 +13,6 @@ import 'package:catch_dating_app/event_success/event_success.dart'
         EventSuccessRoomSetupSection,
         eventSuccessControllerProvider;
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
