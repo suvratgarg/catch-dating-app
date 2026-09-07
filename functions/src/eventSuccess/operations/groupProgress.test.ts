@@ -85,6 +85,11 @@ test("saved schedule cannot confirm departure; one command records the fact",
     const h = await harness();
     const before = h.fake.entries();
     const initial = await h.store.get(manager, h.scope);
+    assert.equal(initial.actorUid, manager);
+    assert.deepEqual(initial.departureAuthority, {
+      kind: "canConfirm", validUntil: Number.MAX_SAFE_INTEGER,
+      checkpointReporter: "anyAuthorizedOperator",
+    });
     assert.equal(initial.view.revision, 0);
     assert.equal(initial.view.freshness, "unconfirmed");
     assert.equal(initial.view.guidance, null);
@@ -208,6 +213,10 @@ test("manager, context, current destination and live phase are required",
     for (const status of ["setup", "complete"]) {
       await h.write("eventSuccessPlans/" + h.context.eventId,
         {...h.plan, status});
+      const read = await h.store.get(manager, h.scope);
+      assert.equal(read.departureAuthority.kind, "canConfirm",
+        "role permission does not manufacture runtime readiness");
+      assert.equal(read.view.runtimeLive, false);
       await assert.rejects(h.store.confirmDeparture(manager, input),
         {code: "failed-precondition"});
     }

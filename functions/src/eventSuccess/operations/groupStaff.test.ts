@@ -111,6 +111,11 @@ test("group-only pacers can control their group without event-wide access",
         {code: "permission-denied"});
     }
     const initial = await h.progress.get(h.target.uid, h.scope);
+    assert.equal(initial.actorUid, h.target.uid);
+    assert.deepEqual(initial.departureAuthority, {
+      kind: "canConfirm", validUntil: start + 20_000,
+      checkpointReporter: "selfOnly",
+    });
     assert.equal(initial.view.revision, 0);
     const moved = await h.progress.confirmDeparture(h.target.uid,
       await departure(h));
@@ -127,7 +132,9 @@ test("sweeps can read progress but cannot confirm a departure or handover",
   async () => {
     const h = await harness();
     await h.store.set(manager, h.target, assign(h.view, "sweep"));
-    await h.progress.get(h.target.uid, h.scope);
+    const read = await h.progress.get(h.target.uid, h.scope);
+    assert.deepEqual(read.departureAuthority,
+      {kind: "readOnly", validUntil: start + 20_000});
     await assert.rejects(h.progress.confirmDeparture(h.target.uid,
       await departure(h)), {code: "permission-denied"});
     await assert.rejects(h.db.runTransaction((tx) => requireGroupPermission(
@@ -137,6 +144,35 @@ test("sweeps can read progress but cannot confirm a departure or handover",
     assert.deepEqual(whole.availableDuties, ["lead", "sweep"]);
     await assert.rejects(h.store.set(manager, h.target, assign(whole, "pacer")),
       {code: "failed-precondition"});
+  });
+
+test("departure authority follows duty changes without preserving access",
+  async () => {
+    const h = await harness();
+    const before = h.fake.entries();
+    const managerRead = await h.progress.get(manager, h.scope);
+    assert.equal(managerRead.actorUid, manager);
+    assert.equal(managerRead.departureAuthority.kind, "canConfirm");
+    assert.deepEqual(h.fake.entries(), before);
+    await h.store.set(manager, h.target, assign(h.view, "lead"));
+    const request = await departure(h);
+    const lead = await h.progress.get(h.target.uid, h.scope);
+    assert.deepEqual(lead.departureAuthority, {
+      kind: "canConfirm", validUntil: start + 20_000,
+      checkpointReporter: "selfOnly",
+    });
+    await h.store.set(manager, h.target,
+      assign(await current(h), "sweep", "change-duty"));
+    const sweep = await h.progress.get(h.target.uid, h.scope);
+    assert.deepEqual(sweep.departureAuthority,
+      {kind: "readOnly", validUntil: start + 20_000});
+    await assert.rejects(h.progress.confirmDeparture(h.target.uid, request),
+      {code: "permission-denied"});
+    const staff = (await h.read(h.staffPath))!;
+    await h.put(h.staffPath, {...staff, groupDuties: [],
+      permissions: ["viewRoster", "setAttendance"]});
+    await assert.rejects(h.progress.get(h.target.uid, h.scope),
+      {code: "permission-denied"});
   });
 
 test("duties preserve separate expiry and removal cannot undo another group",

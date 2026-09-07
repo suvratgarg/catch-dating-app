@@ -11,6 +11,8 @@ const schemaEventAssistanceGroupProgressCallableResponseSchema = <String, Object
     'outcome',
     'view',
     'operationRevision',
+    'actorUid',
+    'departureAuthority',
   ],
   'properties': <String, Object?>{
     'outcome': <String, Object?>{
@@ -596,6 +598,61 @@ const schemaEventAssistanceGroupProgressCallableResponseSchema = <String, Object
       ],
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'actorUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 128,
+    },
+    'departureAuthority': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'validUntil',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'readOnly',
+            },
+            'validUntil': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'validUntil',
+            'checkpointReporter',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'canConfirm',
+            },
+            'validUntil': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'checkpointReporter': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'selfOnly',
+                'anyAuthorizedOperator',
+              ],
+            },
+          },
+        },
+      ],
     },
   },
   'title': 'EventAssistanceGroupProgressCallableResponse',

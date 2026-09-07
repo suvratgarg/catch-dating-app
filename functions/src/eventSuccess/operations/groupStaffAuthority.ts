@@ -18,8 +18,9 @@ import {ProgressContext, invalidSource, timestampEvidence} from
 import {requireDocumentId} from "./guestRecords";
 
 export type GroupDuty = NonNullable<Staff["groupDuties"]>[number];
-export type GroupPermission = "readProgress" | "confirmDeparture" |
-  "transferGroup" | "recordCheckpoint" | "resolveAccountability";
+export const GROUP_PERMISSIONS = ["readProgress", "confirmDeparture",
+  "transferGroup", "recordCheckpoint", "resolveAccountability"] as const;
+export type GroupPermission = typeof GROUP_PERMISSIONS[number];
 export const GROUP_DUTY_PERMISSIONS = {
   lead: ["readProgress", "confirmDeparture", "transferGroup",
     "recordCheckpoint", "resolveAccountability"],
@@ -92,7 +93,8 @@ export async function requireGroupPermission(db: Firestore, tx: Transaction,
   const state = await readGroupDutySource(db, tx, context, groupId, clock);
   if (!state.source.configured) throw denied();
   if (isOrganizerManager(state.organizer, actorUid)) {
-    return {role: "eventLead" as const, validUntil: Number.MAX_SAFE_INTEGER};
+    return {role: "eventLead" as const, validUntil: Number.MAX_SAFE_INTEGER,
+      permissions: GROUP_PERMISSIONS};
   }
   const snap = await tx.get(db.collection("eventStaffGrants")
     .doc(eventStaffGrantId(context.eventId, actorUid)));
@@ -107,7 +109,7 @@ export async function requireGroupPermission(db: Firestore, tx: Transaction,
   if (!staff || !duty || staff.status !== "active" || now >= validUntil ||
       duty.sourceHash !== state.source.hash ||
       !permissions.includes(permission)) throw denied();
-  return {role: "groupLead" as const, validUntil};
+  return {role: "groupLead" as const, validUntil, permissions};
 }
 
 export function denied(): HttpsError {

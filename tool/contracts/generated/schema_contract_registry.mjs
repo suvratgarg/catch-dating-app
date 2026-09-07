@@ -31811,7 +31811,9 @@ export const eventAssistanceGroupProgressCallableResponseSchema = {
   "required": [
     "outcome",
     "view",
-    "operationRevision"
+    "operationRevision",
+    "actorUid",
+    "departureAuthority"
   ],
   "properties": {
     "outcome": {
@@ -32397,6 +32399,61 @@ export const eventAssistanceGroupProgressCallableResponseSchema = {
       ],
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "departureAuthority": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "readOnly"
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "validUntil",
+            "checkpointReporter"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "canConfirm"
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "checkpointReporter": {
+              "type": "string",
+              "enum": [
+                "selfOnly",
+                "anyAuthorizedOperator"
+              ]
+            }
+          }
+        }
+      ]
     }
   },
   "title": "EventAssistanceGroupProgressCallableResponse"

@@ -200,16 +200,24 @@ export class EventGroupProgressStore {
     if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
     if (now >= access.validUntil) throw denied();
     state.source.eventOpen = state.source.eventOpen && now < state.source.endAt;
-    return {...state, now, access};
+    return {...state, now, access, actorUid};
   }
 }
 
 type State = Parameters<typeof projectGroupProgress>;
 function response(outcome: Response["outcome"], state: {
   source: State[0]; progress: State[1]; now: number;
+  access: Awaited<ReturnType<typeof requireGroupPermission>>; actorUid: string;
 }, operationRevision: number | null = null): Response {
+  const departureAuthority: Response["departureAuthority"] =
+    state.access.permissions.includes("confirmDeparture") ? {
+      kind: "canConfirm", validUntil: state.access.validUntil,
+      checkpointReporter: state.access.role === "eventLead" ?
+        "anyAuthorizedOperator" : "selfOnly",
+    } : {kind: "readOnly", validUntil: state.access.validUntil};
   const value = {outcome, view: projectGroupProgress(state.source,
-    state.progress, state.now), operationRevision};
+    state.progress, state.now), operationRevision, actorUid: state.actorUid,
+  departureAuthority};
   if (!validateEventAssistanceGroupProgressCallableResponse(value)) {
     throw invalidSource();
   }

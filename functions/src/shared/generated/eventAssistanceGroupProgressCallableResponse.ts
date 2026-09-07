@@ -118,4 +118,15 @@ export interface EventAssistanceGroupProgressCallableResponse {
     }[];
   };
   operationRevision: number | null;
+  actorUid: string;
+  departureAuthority:
+    | {
+        kind: "readOnly";
+        validUntil: number;
+      }
+    | {
+        kind: "canConfirm";
+        validUntil: number;
+        checkpointReporter: "selfOnly" | "anyAuthorizedOperator";
+      };
 }

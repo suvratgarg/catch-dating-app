@@ -14868,6 +14868,35 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventAssistanceGroupProgressCallableResponseActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.actorUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseDepartureAuthorityCheckpointReporter = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.departureAuthority.checkpointReporter',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['selfOnly', 'anyAuthorizedOperator'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseDepartureAuthorityKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.departureAuthority.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseDepartureAuthorityValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.departureAuthority.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceGroupProgressCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -79617,6 +79646,10 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDepartureRosterDocument.rosterId': eventAssistanceDepartureRosterDocumentRosterId,
     'eventAssistanceDepartureRosterDocument.schemaVersion': eventAssistanceDepartureRosterDocumentSchemaVersion,
     'eventAssistanceDepartureRosterDocument.sourceHash': eventAssistanceDepartureRosterDocumentSourceHash,
+    'eventAssistanceGroupProgressCallableResponse.actorUid': eventAssistanceGroupProgressCallableResponseActorUid,
+    'eventAssistanceGroupProgressCallableResponse.departureAuthority.checkpointReporter': eventAssistanceGroupProgressCallableResponseDepartureAuthorityCheckpointReporter,
+    'eventAssistanceGroupProgressCallableResponse.departureAuthority.kind': eventAssistanceGroupProgressCallableResponseDepartureAuthorityKind,
+    'eventAssistanceGroupProgressCallableResponse.departureAuthority.validUntil': eventAssistanceGroupProgressCallableResponseDepartureAuthorityValidUntil,
     'eventAssistanceGroupProgressCallableResponse.operationRevision': eventAssistanceGroupProgressCallableResponseOperationRevision,
     'eventAssistanceGroupProgressCallableResponse.outcome': eventAssistanceGroupProgressCallableResponseOutcome,
     'eventAssistanceGroupProgressCallableResponse.view.context.eventId': eventAssistanceGroupProgressCallableResponseViewContextEventId,

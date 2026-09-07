@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.51.0
+version: 1.52.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -513,6 +513,16 @@ altered content is rejected. Changes of destination/setup, replaced event/plan
 source, missing progress or a closed runtime withhold current instructions.
 Temporary database read errors propagate for retry instead of terminating a
 message as superseded.
+
+The callable response also identifies its current caller and exposes a typed
+`departureAuthority`: readOnly for a sweep, or canConfirm for a manager/current
+lead/pacer. Both carry the current permission expiry. A manager's checkpoint
+reporter choice is any currently authorized operator; a scoped lead/pacer may
+name only themself. These are role permissions, separate from the view's event
+and live-runtime readiness and destination choices. They do not grant access
+or guarantee a later command: confirmation rechecks current scope, permission,
+expiry, source, revision and any named checkpoint reporter. Duty changes cannot
+preserve the earlier UI permission or make an old command executable.
 
 An existing link follows the workflow thread once a fresh instruction is
 published. Until then it returns `noInstructions`, and neither web nor native
