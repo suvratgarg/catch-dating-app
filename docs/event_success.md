@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.57.0
+version: 1.58.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1309,7 +1309,7 @@ RCS must not block these items. Its unfinished contracts and rendering source
 are preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
 at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`; they are unvalidated and
 excluded from this implementation branch. The RCS backlog includes provider
-send/expiry/revocation transport, authenticated delivery and native-reply
+send/expiry/revocation integration, authenticated delivery and native-reply
 ingress, independent consent and withdrawal, audited sender/budget onboarding,
 capability/readiness checks, shared outbox/worker wiring, and end-to-end
 verification. On 2026-09-08 the user resumed independent RCS work while the
@@ -1336,7 +1336,7 @@ The current independent slice supplies a bounded Google RBM callback parser
 and an injected HTTP ingress. Acceptance is verified signature/agent isolation,
 separate delivery/revocation/reply/subscription observations, retry identity,
 private-data minimization and acknowledgement only after durable acceptance.
-Queue persistence, provider send/revoke, permission updates, native-reply domain
+Queue persistence, dispatch wiring, permission updates, native-reply domain
 effects, deployment and activation remain subsequent integration work.
 
 `rcsWebhookProtocol.ts` authenticates the base64-decoded `message.data` bytes
@@ -1378,6 +1378,42 @@ needs canonical records, conflict handling, retention and asynchronous consumers
 before deployment. Local tests do not prove a registered agent or actual callback
 delivery. Restoring the draft Google RBM sender binding also needs the shared
 generator and a current review of the parked configuration/rendering contracts.
+
+### RCS provider transport boundary
+
+`GoogleRbmProvider` supplies an independent, injected HTTP adapter for capability
+lookup, text/choice submission with an absolute expiry, and revocation requests.
+Its transient wire types in `googleRbmProtocol.ts` do not introduce persistence,
+sender approval or dispatch authority. Acceptance covers bounded requests and
+responses, recipient/message correlation, deadline checks and ambiguous outcomes.
+
+The adapter uses an explicit supported regional Google endpoint, validates and
+encodes identities, and keeps OAuth credentials in headers. It copies only the
+supported text/reply/open-URL union. Text, suggestion count, labels, URLs, Unicode
+and total bytes are bounded before I/O; unknown content fields cannot silently
+change the payload. Every submission sets an absolute expiry so a delayed request
+cannot restart its lifetime. The caller supplies a stable UUID for the immutable
+attempt; this adapter never generates a replacement ID or retries a request.
+These shapes follow Google's [message resource](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages).
+
+Capability success reports current reachability and open-URL support only.
+A documented 404 remains agent-or-recipient unavailability: it does not diagnose
+the handset or grant consent. A successful send must echo the exact message
+resource and expiry and means accepted, including potentially queued delivery.
+Duplicate IDs, rate limits, transport errors and uncertain responses stay unknown.
+Only explicit matching invalid-argument/not-found provider errors are submission
+rejections. These distinctions follow the [capability API](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones/getCapabilities)
+and [sending guide](https://developers.google.com/business-communications/rcs-business-messaging/guides/build/messages/send).
+
+DELETE success reports `revocationRequested`, never confirmed non-delivery.
+Neither it nor a DELETE 404 may authorize fallback; delivery can race with the
+[revocation request](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages/delete).
+The future outbox consumer must reconcile authenticated receipts and revalidate
+current route authority before deciding on SMS. Errors contain no provider body,
+phone, token or guest link. Tests inject transport; this adds no default network
+client, credential loader, Firebase export or activated sender. Canonical RCS
+sender/permission/queue contracts and dispatch integration still require the
+generator handoff, and the parked renderer remains unvalidated.
 
 ## Format Mapping And Wiring
 
