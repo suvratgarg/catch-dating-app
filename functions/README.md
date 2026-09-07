@@ -179,6 +179,7 @@ options when specific functions need higher or lower limits.
 | `onAssistanceProgressChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Explicitly confirmed group movement enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
 | `onAssistanceMembershipChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Accepted group and handover changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
 | `onAssistanceMessageChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Late-join delivery and response evidence enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceSmsPermissionChanged` / `onAssistanceWhatsappPermissionChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Event-specific consent changes wake scoped guest and delivery work with replay-safe receipts; dormant pending activation |
 | `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due source fanout or guest work under Operations leases; dormant pending activation |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |

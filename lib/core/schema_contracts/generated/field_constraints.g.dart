@@ -19441,7 +19441,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.source.collection',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions'],
   );
 
   static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(

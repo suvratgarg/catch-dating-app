@@ -63,6 +63,8 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
             'eventAssistanceMemberships',
             'eventAssistanceMessages',
             'eventAssistanceRuntimeConfigs',
+            'eventAssistanceSmsPermissions',
+            'eventAssistanceWhatsappPermissions',
           ],
         },
         'documentId': <String, Object?>{

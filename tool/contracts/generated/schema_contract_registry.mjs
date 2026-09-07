@@ -54566,7 +54566,9 @@ export const eventAssistanceSourceWorkSchema = {
             "eventAssistanceGroupProgress",
             "eventAssistanceMemberships",
             "eventAssistanceMessages",
-            "eventAssistanceRuntimeConfigs"
+            "eventAssistanceRuntimeConfigs",
+            "eventAssistanceSmsPermissions",
+            "eventAssistanceWhatsappPermissions"
           ]
         },
         "documentId": {
@@ -58935,7 +58937,9 @@ export const operationWorkItemSchema = {
                       "eventAssistanceGroupProgress",
                       "eventAssistanceMemberships",
                       "eventAssistanceMessages",
-                      "eventAssistanceRuntimeConfigs"
+                      "eventAssistanceRuntimeConfigs",
+                      "eventAssistanceSmsPermissions",
+                      "eventAssistanceWhatsappPermissions"
                     ]
                   },
                   "documentId": {

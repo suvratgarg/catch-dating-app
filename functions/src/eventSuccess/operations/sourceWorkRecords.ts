@@ -60,9 +60,10 @@ export function parseSourceWork(value: unknown, now: number): SourceWork {
       c.failures.length > c.visited ||
       (c.visited === 0 && c.cursor !== null) ||
       new Set(c.failures.map((f) => f.workItemId)).size !== c.failures.length ||
-      c.failures.some((f) => !/^work:assistance:[a-f0-9]{64}$/.test(
+      c.failures.some((f) => !/^work:(assistance|delivery):[a-f0-9]{64}$/.test(
         f.workItemId)) ||
-      (c.cursor !== null && !/^work:assistance:[a-f0-9]{64}$/.test(c.cursor))) {
+      (c.cursor !== null &&
+        !/^work:(assistance|delivery):[a-f0-9]{64}$/.test(c.cursor))) {
     throw invalidWork();
   }
   return value;

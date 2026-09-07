@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.17.0
+version: 1.18.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -654,17 +654,22 @@ CloudEvent delivery identity; the domain event id lives in `scope.context`.
 Repeated delivery reuses the same work. Source payloads only request a fresh
 evaluation and cannot supply authoritative domain facts or sender permission.
 
-The nine source triggers cover relevant event configuration/lifecycle,
+The eleven source triggers cover relevant event configuration/lifecycle,
 roster/check-in, live plan status, participation/replies, late-join settings,
-confirmed group progress, membership, runtime permission and message evidence.
+confirmed group progress, membership, runtime permission, message evidence and
+event-specific SMS/WhatsApp consent.
 Owner or scope
 changes wake both previous and current enrolled scopes. Unrelated event
 counters and rehearsal state create no work. No-target checks avoid creating
-source runs when no live guest episodes have been enrolled; a newly enrolled
-episode evaluates current facts on its first execution.
+source runs when no guest or delivery work exists; newly created work evaluates
+current facts on its first execution.
 
 Fanout scans only work for the exact organizer/event and optional attendee,
-then revalidates each target before waking it. Both scan and retry pages
+then revalidates each target before waking it. It merges bounded guest and
+delivery queries in document-id order using the existing scope indexes. Each
+scan reads at most 20 candidates per kind and visits at most 20 total. Guest
+wakes make policy evaluation due; delivery wakes re-evaluate the saved message
+under its own lease and the remaining source execution deadline. Both scan and retry pages
 process at most 20 targets under a 60-second lease. The checkpoint cursor is
 the last scanned work id during discovery and the last attempted failed work
 id within a retry round. Successful retries are removed; unfinished rounds
@@ -677,15 +682,17 @@ explicit review items with failed ids retained; expiry closes unfinished work.
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
 `evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,
 10 source items and 30 guest items per invocation; one failure does not skip
-the other selected items. Future due times remain saved until reached. All nine source triggers,
+the other selected items. Future due times remain saved until reached. All eleven source triggers,
 the work-item trigger and the scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.
 
 Manager-owned configuration, guest enrollment/rebinding and durable roster
 discovery are wired in source. Readiness-change signals for
-consent/sender/template/budget changes, provider dispatch coordination and Host
-queue projections remain integration work. Activating the dormant functions
+sender/template/budget and sender-wide suppression changes, and Host queue
+projections remain integration work. Event-specific consent changes wake the
+exact old and new guest scope. Trigger snapshots grant no consent; the current
+permission and its receipt are re-read at the execution boundary. Activating the dormant functions
 also requires the corresponding operating-budget and delivery configuration.
 
 ### Durable message delivery work
@@ -718,9 +725,17 @@ trigger selects `liveMessageDelivery` due payloads. Each scheduled batch reads
 at most ten due delivery items in addition to its roster/source/guest limits.
 Independent items continue after another item fails. Message changes are only
 wake requests: the store re-reads the canonical outbox and current authority.
-Readiness-change fanout, provider lookup/finality, Host projection and terminal
+Sender-wide readiness fanout, provider lookup/finality, Host projection and terminal
 retention remain required before full activation. Signing-key requirements and
 channel controls are owned by [Event Success](event_success.md#durable-message-delivery-coordination).
+
+Source-driven delivery evaluations record one immutable wake receipt per
+signal and target. A lost source checkpoint replays that receipt without another
+evaluation or submission. Wake receipts share the work-item revision fence;
+they cannot reopen terminal work or reset recovery/attempt caps. An unchanged
+accepted/unknown submission keeps its original receipt deadline, or its existing
+review if that wait already elapsed. Consent restoration can resume an unsent
+held message, but does not prove a pending submission failed.
 
 ## Adding Another Workflow
 

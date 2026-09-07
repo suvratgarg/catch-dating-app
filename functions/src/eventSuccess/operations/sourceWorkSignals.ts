@@ -97,6 +97,8 @@ function scopeFor(collection: Collection, documentId: string,
     break;
   case "eventAssistanceGroupProgress": attendeeId = null; break;
   case "eventAssistanceGuests":
+  case "eventAssistanceSmsPermissions":
+  case "eventAssistanceWhatsappPermissions":
   case "eventAssistanceMemberships": break;
   case "eventAssistanceMessages": {
     const intent = object(value.intent);
@@ -133,6 +135,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventSuccessPlans": fields = ["eventId", "organizerId", "clubId",
     "status"]; break;
   case "eventAssistanceGuests":
+  case "eventAssistanceSmsPermissions":
+  case "eventAssistanceWhatsappPermissions":
   case "eventAssistanceSettings":
   case "eventAssistanceGroupProgress":
   case "eventAssistanceMemberships":

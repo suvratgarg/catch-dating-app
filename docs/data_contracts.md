@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.50.0
+version: 1.51.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -258,6 +258,14 @@ limits, recovery and receipts; [Event Success](event_success.md#durable-message-
 owns signing-key configuration and the channel bridge. Private grant/dispatch
 records retain their existing hashes and bindings; credentials are never copied
 into delivery-work payloads.
+
+`event_assistance_source_work.schema.json` also accepts event-specific SMS and
+WhatsApp permission sources. Its bounded cursor/failure set can reference either
+canonical guest or delivery work ids; scope and immutable record validation
+remain mandatory before each wake. Source payloads retain identifiers rather
+than consent contents or recipient endpoints. Delivery wake action receipts bind
+the signal hash and target, deduplicate source replay, and preserve terminal
+work, recovery caps and unresolved provider submissions.
 
 ### Event Assistance Group Progress Contract
 

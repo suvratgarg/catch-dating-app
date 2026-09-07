@@ -17497,7 +17497,9 @@ const model = {
                 "eventAssistanceGroupProgress",
                 "eventAssistanceMemberships",
                 "eventAssistanceMessages",
-                "eventAssistanceRuntimeConfigs"
+                "eventAssistanceRuntimeConfigs",
+                "eventAssistanceSmsPermissions",
+                "eventAssistanceWhatsappPermissions"
               ]
             },
             "documentId": {

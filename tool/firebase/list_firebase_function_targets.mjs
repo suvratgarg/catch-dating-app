@@ -19,6 +19,8 @@ export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:onAssistanceProgressChanged",
   "functions:onAssistanceMembershipChanged",
   "functions:onAssistanceMessageChanged",
+  "functions:onAssistanceSmsPermissionChanged",
+  "functions:onAssistanceWhatsappPermissionChanged",
   "functions:onAssistanceWorkChanged",
   "functions:evaluateDueEventAssistanceWork",
   "functions:dispatchPendingOrganizerFollowerUpdates",

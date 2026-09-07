@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.33.0
+version: 1.34.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -320,8 +320,8 @@ transaction. Its worker uses current leases and durable wake receipts. Source
 changes enqueue bounded resumable fanout; work-item and scheduled handlers
 advance saved due work. These handlers remain dormant in deployment policy.
 See [Operations runtime](operations_platform.md#durable-live-assistance-work)
-for execution limits and the source-change lifecycle. Remaining readiness
-signals, provider dispatch coordination and
+for execution limits and the source-change lifecycle. Sender-wide readiness
+signals and
 the broader Host/rehearsal workflow remain separate integration work. A
 publication result does not assert provider submission or delivery.
 
@@ -663,7 +663,15 @@ Recorded delivery evidence remains readable after sender or event authority
 changes. Completed Operations work never reopens; later contradictory or delayed
 receipts remain in the outbox, whose current state must inform the Host read
 model. A delivery review flag is not yet a surfaced Host case or notification.
-Provider lookup/finality, readiness-change wakes, retention and financial
+Relevant event/guest changes and event-specific SMS/WhatsApp consent now also
+wake saved delivery work, including unsent items held for missing permission.
+The bounded source job revalidates each target's scope and forwards only a
+signal identity. Immutable delivery wake receipts prevent a replayed source
+page from repeating an evaluation. A source wake preserves an unchanged
+provider receipt deadline and pending-review state; it does not manufacture
+nondelivery evidence or reset a recovery cap.
+Provider lookup/finality, sender/template/budget and sender-wide suppression
+wakes, retention and financial
 reconciliation remain separate work.
 
 The worker reads a pinned numbered Secret Manager version named by

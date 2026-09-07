@@ -9,6 +9,7 @@ import {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
 import type {OperationActionReceipt, OperationLease} from
   "../../operations/models";
+import {validateOperationActionReceipt} from "../../operations/validation";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import {requireDocumentId} from "./guestRecords";
@@ -26,6 +27,7 @@ import {advanceDeliveryWorkRecords, assertDeliveryMessage,
 
 type Records = ReturnType<typeof readDeliveryWorkRecords>;
 type Dispatcher = Pick<LiveMessageDispatcher, "dispatch">;
+type Wake = {kind: "wake"; signalId: string};
 
 /** Scheduling is durable; the independently fenced outbox owns provider I/O. */
 export class AssistanceDeliveryWorkStore {
@@ -63,21 +65,25 @@ export class AssistanceDeliveryWorkStore {
     return result.docs.map((doc) => doc.id);
   }
 
-  async process(workItemId: string) {
-    const initial = await this.snapshot(workItemId);
-    if (!this.needsWork(initial)) {
+  async process(workItemId: string, wake?: Wake,
+    deadline = Number.MAX_SAFE_INTEGER) {
+    if (wake) requireDocumentId(wake.signalId);
+    if (!Number.isSafeInteger(deadline) || deadline < 0) throw invalidWork();
+    if (this.clock() >= deadline) return {kind: "busy" as const};
+    const initial = await this.snapshot(workItemId, wake);
+    if (!this.needsWork(initial, wake)) {
       return {kind: "idle" as const,
         records: initial.records};
     }
     const lease = await this.acquire(workItemId);
     if (!lease) return {kind: "busy" as const};
     try {
-      const current = await this.snapshot(workItemId);
-      if (!this.needsWork(current)) {
+      const current = await this.snapshot(workItemId, wake);
+      if (!this.needsWork(current, wake)) {
         return {kind: "idle" as const,
           records: current.records};
       }
-      if (current.kind === "closed") {
+      if (current.kind !== "open") {
         return {kind: "idle" as const,
           records: current.records};
       }
@@ -91,10 +97,11 @@ export class AssistanceDeliveryWorkStore {
           (hasReservation || (decision.kind === "hostDecision" &&
           decision.reason === "noEligibleRoute")) &&
           current.records.payload.checkpoint.evaluations < 100 &&
-          this.clock() < current.records.payload.expiresAt) {
+          this.clock() < Math.min(deadline,
+            current.records.payload.expiresAt)) {
         try {
           execution = await this.dispatcher.dispatch(current.message,
-            Math.min(Date.parse(lease.expiresAt),
+            Math.min(deadline, Date.parse(lease.expiresAt),
               current.records.payload.expiresAt));
         } catch {
           // A crash after provider I/O may have persisted unknown/accepted.
@@ -103,23 +110,27 @@ export class AssistanceDeliveryWorkStore {
         }
       }
       return {kind: "committed" as const,
-        records: await this.checkpoint(current.records, execution, lease)};
+        records: await this.checkpoint(current.records, execution, lease,
+          wake)};
     } finally {
       await releaseAssistanceWorkLease(this.operations, lease, this.clock());
     }
   }
 
   private needsWork(value: Awaited<ReturnType<
-    AssistanceDeliveryWorkStore["snapshot"]>>) {
-    if (value.kind === "closed") return false;
+    AssistanceDeliveryWorkStore["snapshot"]>>, wake?: Wake) {
+    if (value.kind !== "open") return false;
     const c = value.records.payload.checkpoint;
-    return operationContentHash(value.message) !== c.messageHash ||
+    return !!wake || operationContentHash(value.message) !== c.messageHash ||
       (c.dueAt !== null && c.dueAt <= this.clock());
   }
 
-  private snapshot(workItemId: string) {
+  private snapshot(workItemId: string, wake?: Wake) {
     return this.db.runTransaction(async (tx) => {
       const records = await this.read(tx, workItemId);
+      if (wake && await this.replayedWake(tx, records, wake)) {
+        return {kind: "replayed" as const, records};
+      }
       if (records.run.status === "completed") {
         return {kind: "closed" as const, records};
       }
@@ -161,7 +172,7 @@ export class AssistanceDeliveryWorkStore {
   }
 
   private async checkpoint(previous: Records,
-    execution: DeliveryExecution | null, lease: OperationLease) {
+    execution: DeliveryExecution | null, lease: OperationLease, wake?: Wake) {
     return this.db.runTransaction(async (tx) => {
       const current = await this.read(tx, previous.item.workItemId);
       if (operationContentHash(current) !== operationContentHash(previous)) {
@@ -174,15 +185,18 @@ export class AssistanceDeliveryWorkStore {
           observed.decision, execution, now, observed.policyDeferred), now);
       const {run, item} = next;
       const at = new Date(now).toISOString();
-      const key = "delivery:" + current.item.revision;
+      const key = wake ? wakeKey(wake) : "delivery:" + current.item.revision;
       const receipt: OperationActionReceipt = {schemaVersion: 1,
         actionId: operationActionId(run.runId, item.workItemId, key),
         runId: run.runId, workItemId: item.workItemId, sequence: item.revision,
-        operation: "message_delivery_checkpoint", status: "succeeded",
+        operation: wake ? "message_delivery_wake" :
+          "message_delivery_checkpoint", status: "succeeded",
         fromRevision: current.item.revision, toRevision: item.revision,
         actor: {actorType: "system",
           actorId: "event-assistance-delivery-worker"},
-        idempotencyKey: key, inputHash: operationContentHash(current.item),
+        idempotencyKey: key, inputHash: wake ?
+          operationContentHash([item.workItemId, key]) :
+          operationContentHash(current.item),
         outputHash: operationContentHash(item),
         rulesetVersion: DELIVERY_WORK_RUNTIME, modelVersion: null,
         reasonCodes: [deliveryReasonCode(next.payload.checkpoint.reason!)],
@@ -193,6 +207,28 @@ export class AssistanceDeliveryWorkStore {
       tx.set(this.db.collection(operationCollections.runs).doc(run.runId), run);
       return next;
     });
+  }
+
+  private async replayedWake(tx: Transaction, {run, item}: Records,
+    wake: Wake) {
+    const key = wakeKey(wake);
+    const id = operationActionId(run.runId, item.workItemId, key);
+    const snap = await tx.get(this.db.collection(
+      operationCollections.actionReceipts).doc(id));
+    if (!snap.exists) return false;
+    const parsed = validateOperationActionReceipt(snap.data());
+    if (!parsed.ok) throw invalidWork();
+    const r = parsed.value;
+    if (r.actionId !== id || r.runId !== run.runId ||
+        r.workItemId !== item.workItemId || r.idempotencyKey !== key ||
+        r.inputHash !== operationContentHash([item.workItemId, key]) ||
+        r.operation !== "message_delivery_wake" ||
+        r.rulesetVersion !== DELIVERY_WORK_RUNTIME ||
+        r.status !== "succeeded" || r.toRevision !== r.fromRevision + 1 ||
+        r.sequence !== r.toRevision || r.toRevision > item.revision ||
+        r.outputHash === null || (r.toRevision === item.revision &&
+          r.outputHash !== operationContentHash(item))) throw invalidWork();
+    return true;
   }
 
   private async read(tx: Transaction, workItemId: string) {
@@ -222,4 +258,8 @@ export class AssistanceDeliveryWorkStore {
       throw error;
     }
   }
+}
+
+function wakeKey(wake: Wake) {
+  return "wake:" + operationContentHash(wake.signalId);
 }

@@ -12,14 +12,19 @@ import {EventMessageWorker} from "./messageWorker";
 import {LiveMessageDispatcher, deliveryGrantOperation} from
   "./liveMessageDispatcher";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
-import {deliveryWorkIds, readDeliveryWorkRecords} from "./deliveryWorkRecords";
+import {deliveryWorkIds, newDeliveryWorkRecords, readDeliveryWorkRecords} from
+  "./deliveryWorkRecords";
 import {nextDeliveryCheckpoint} from "./deliveryWorkPolicy";
 import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
-import type {MessageRecord} from "./messageOutbox";
+import {assistanceMessageId, MessageRecord} from "./messageOutbox";
+import {newLiveWorkRecords} from "./liveWorkRecords";
 import {processChangedAssistanceWork} from "./liveWorkTriggers";
 import {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
+import {enqueueAssistanceSourceChange} from "./sourceWorkSignals";
+import {whatsappPermissionId, WHATSAPP_PERMISSIONS} from
+  "./whatsappPermissionRecords";
 
 async function setup(db?: Firestore) {
   const h = await setupRuntimePublication(db);
@@ -79,6 +84,186 @@ test("publication and delivery work commit atomically", async () => {
   assert.deepEqual(await store.listDue(100), [id]);
   assert.equal((await store.processMessage(h.messageId)).kind, "idle",
     "a trusted explicit message cannot enroll automatic delivery");
+});
+
+async function recoverConsent(h: Awaited<ReturnType<typeof setup>>) {
+  const permissionId = whatsappPermissionId(h.context, h.scope.attendeeId,
+    h.grant.senderId);
+  const path = WHATSAPP_PERMISSIONS + "/" + permissionId;
+  await h.preferences.set(h.actor, {...h.grant, requestId: "withdraw",
+    expectedRevision: 1, decision: {kind: "revoke"}});
+  await h.store.process(h.id);
+  const review = await h.store.get(h.id);
+  assert.equal(review.payload.checkpoint.phase, "review");
+  assert.equal(review.payload.checkpoint.reason, "noEligibleRoute");
+  assert.equal(h.behavior.keyReads, 0);
+  assert.equal(h.requests.length, 0);
+  const before = (await h.read(path))!;
+  h.clock.now += 1000;
+  await h.preferences.set(h.actor, {...h.grant, requestId: "grant-again",
+    expectedRevision: 2});
+  assert.equal((await h.store.process(h.id)).kind, "idle",
+    "the outbox revision and expiry did not change");
+  const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+    undefined, h.store);
+  const ids = await enqueueAssistanceSourceChange(source, {
+    source: {eventId: randomUUID(), collection: WHATSAPP_PERMISSIONS,
+      documentId: permissionId, occurredAt: h.clock.now},
+    before: {generation: 1, value: before},
+    after: {generation: 1, value: (await h.read(path))!},
+  });
+  assert.equal(ids.length, 1, "delivery-only scopes still have wake targets");
+  await Promise.all([source.process(ids[0]), source.process(ids[0])]);
+  assert.equal((await source.get(ids[0])).payload.checkpoint.phase,
+    "complete");
+  assert.equal(h.requests.length, 1);
+  assert.equal((await h.store.get(h.id)).payload.checkpoint.phase, "receipt");
+  const signalId = (await source.get(ids[0])).payload.signalId;
+  const prior = await h.store.get(h.id);
+  assert.equal((await h.store.process(h.id,
+    {kind: "wake", signalId})).kind, "idle");
+  assert.deepEqual(await h.store.get(h.id), prior);
+  return {source, sourceId: ids[0]};
+}
+
+test("fresh consent wakes a held delivery without creating a new message",
+  async () => {
+    await recoverConsent(await setup());
+  });
+
+test("source wakes preserve provider receipt waits and pending review",
+  async () => {
+    const h = await setup();
+    h.behavior.unknown = true;
+    await h.store.process(h.id);
+    const wait = (await h.store.get(h.id)).payload.checkpoint;
+    h.clock.now += 1000;
+    await h.store.process(h.id, {kind: "wake", signalId: "sender-changed"});
+    const early = (await h.store.get(h.id)).payload.checkpoint;
+    assert.equal(early.phase, "receipt");
+    assert.equal(early.dueAt, wait.dueAt);
+    h.clock.now = wait.dueAt!;
+    await h.store.process(h.id);
+    await h.store.process(h.id, {kind: "wake", signalId: "budget-changed"});
+    const review = (await h.store.get(h.id)).payload.checkpoint;
+    assert.equal(review.phase, "review");
+    assert.equal(review.reason, "providerPending");
+    assert.equal(review.dueAt, h.published.intent.expiresAt);
+    assert.equal(h.requests.length, 1);
+    assert.equal(h.behavior.keyReads, 1);
+    await h.receipt({kind: "delivered", at: h.clock.now,
+      providerMessageId: "wamid.delivery"});
+    await h.store.process(h.id);
+    const completed = await h.store.get(h.id);
+    await h.store.process(h.id, {kind: "wake", signalId: "another-change"});
+    assert.deepEqual(await h.store.get(h.id), completed);
+  });
+
+test("lost source checkpoint replays delivery wake receipts after restart",
+  async () => {
+    const h = await setup();
+    let interrupt = true;
+    const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+      undefined, {process: async (...args) => {
+        const result = await h.store.process(...args);
+        if (interrupt) {
+          interrupt = false;
+          h.fake.failNextCommit = true;
+        }
+        return result;
+      }});
+    const input = {scope: {context: h.context, attendeeId: h.scope.attendeeId},
+      source: {eventId: randomUUID(), collection: "events" as const,
+        documentId: h.context.eventId, occurredAt: h.clock.now}};
+    const id = (await source.enqueue(input)).item.workItemId;
+    await assert.rejects(source.process(id), /interruption/);
+    const sent = await h.store.get(h.id);
+    const restarted = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+      undefined, h.store);
+    await restarted.process(id);
+    assert.equal((await restarted.get(id)).run.status, "completed");
+    assert.deepEqual(await h.store.get(h.id), sent);
+    assert.equal(h.requests.length, 1);
+    assert.equal(await restarted.hasTargets({...input.scope,
+      attendeeId: "other-guest"}), false);
+    assert.equal(await restarted.hasTargets({...input.scope,
+      context: {...h.context, organizerId: "other-organizer"}}), false);
+  });
+
+test("delivery wakes reject corrupt receipts and respect their parent deadline",
+  async () => {
+    const h = await setup();
+    const wake = {kind: "wake" as const, signalId: "consent-changed"};
+    assert.equal((await h.store.process(h.id, wake, h.clock.now)).kind,
+      "busy");
+    assert.equal(h.behavior.keyReads, 0);
+    await h.store.process(h.id, wake);
+    const receipt = h.fake.entries().find(([path, value]) =>
+      path.startsWith(operationCollections.actionReceipts + "/") &&
+        value.operation === "message_delivery_wake")!;
+    h.fake.write(receipt[0], {...receipt[1], inputHash: "a".repeat(64)});
+    await assert.rejects(h.store.process(h.id, wake));
+    assert.equal(h.requests.length, 1);
+  });
+
+test("source pages merge guest and delivery work without dropping targets",
+  async () => {
+    const h = await setup();
+    const message = await h.record();
+    const guest = newLiveWorkRecords({schemaVersion: 1, kind: "liveLateJoin",
+      scope: h.scope, ...h.runtime.configuration,
+      runtimeBinding: h.runtime.binding,
+      checkpoint: {dueAt: h.clock.now + 60_000, evaluatedAt: null,
+        evaluations: 0, observation: null, sourceHash: null,
+        publication: null}}, h.clock.now);
+    await h.write(operationCollections.runs + "/" + guest.run.runId,
+      guest.run);
+    await h.write(operationCollections.workItems + "/" + guest.item.workItemId,
+      guest.item);
+    for (let n = 0; n < 22; n++) {
+      const intent = {...message.intent, intentId: "page-" + n};
+      const record = newDeliveryWorkRecords({...message, intent,
+        messageId: assistanceMessageId(intent)}, h.clock.now);
+      await h.write(operationCollections.runs + "/" + record.run.runId,
+        record.run);
+      await h.write(operationCollections.workItems + "/" +
+        record.item.workItemId, record.item);
+    }
+    const visited: string[] = [];
+    const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+      undefined, {process: async (id) => {
+        visited.push(id);
+        return {kind: "idle", records: await h.store.get(id)};
+      }});
+    const id = (await source.enqueue({scope: {context: h.context,
+      attendeeId: null}, source: {eventId: randomUUID(), collection: "events",
+      documentId: h.context.eventId, occurredAt: h.clock.now}}))
+      .item.workItemId;
+    await source.process(id);
+    assert.equal((await source.get(id)).payload.checkpoint.visited, 20);
+    assert.equal(visited.length, 19);
+    await source.process(id);
+    const done = await source.get(id);
+    assert.equal(done.payload.checkpoint.visited, 24);
+    assert.equal(done.payload.checkpoint.phase, "complete");
+    assert.equal(visited.length, 23);
+    assert.equal(new Set(visited).size, 23);
+    const guestWork = await new LiveAssistanceWorkRunner(h.db,
+      () => h.clock.now).store.get(guest.item.workItemId);
+    assert.equal(guestWork.item.revision, 1);
+  });
+
+test("Firestore consent fanout resumes held delivery and deduplicates wakes", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
+  try {
+    await recoverConsent(await setup(getFirestore(app)));
+  } finally {
+    await deleteApp(app);
+  }
 });
 
 test("concurrent restarts share one grant and submission", async () => {

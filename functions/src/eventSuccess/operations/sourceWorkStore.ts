@@ -11,6 +11,7 @@ import type {OperationActionReceipt, OperationLease} from
   "../../operations/models";
 import {requireDocumentId} from "./guestRecords";
 import {advanceFanoutPage} from "./boundedFanout";
+import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner, errorCode, releaseAssistanceWorkLease} from
   "./liveWorkRunner";
@@ -26,11 +27,14 @@ type Failure = SourceWork["checkpoint"]["failures"][number];
 export class AssistanceSourceWorkStore {
   readonly operations: FirestoreOperationsRepository;
   private readonly target: Pick<LiveAssistanceWorkRunner, "process">;
+  private readonly delivery: Pick<AssistanceDeliveryWorkStore, "process">;
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now,
-    target?: Pick<LiveAssistanceWorkRunner, "process">) {
+    target?: Pick<LiveAssistanceWorkRunner, "process">,
+    delivery?: Pick<AssistanceDeliveryWorkStore, "process">) {
     this.operations = new FirestoreOperationsRepository(db, clock);
     this.target = target ?? new LiveAssistanceWorkRunner(db, clock);
+    this.delivery = delivery ?? new AssistanceDeliveryWorkStore(db, clock);
   }
 
   async enqueue(input: SourceWorkInput) {
@@ -58,7 +62,7 @@ export class AssistanceSourceWorkStore {
   }
 
   async hasTargets(scope: SourceWork["scope"]) {
-    return !(await this.targetQuery(scope, null).limit(1).get()).empty;
+    return (await this.targetIds(scope, null, 1)).length > 0;
   }
 
   async listDue(limit: number) {
@@ -118,16 +122,23 @@ export class AssistanceSourceWorkStore {
     }
     try {
       // Re-read the work's scope before invoking the generic target port.
-      const target = await new LiveAssistanceWorkRunner(this.db, this.clock)
-        .store.get(workItemId);
+      const isDelivery = workItemId.startsWith("work:delivery:");
+      const target = isDelivery ?
+        await new AssistanceDeliveryWorkStore(this.db, this.clock)
+          .get(workItemId) :
+        await new LiveAssistanceWorkRunner(this.db, this.clock)
+          .store.get(workItemId);
       if (operationContentHash(target.payload.scope.context) !==
           operationContentHash(payload.scope.context) ||
           (payload.scope.attendeeId !== null &&
             target.payload.scope.attendeeId !== payload.scope.attendeeId)) {
         throw invalidWork();
       }
-      const result = await this.target.process(workItemId,
-        {kind: "wake", signalId: payload.signalId});
+      const action = {kind: "wake" as const, signalId: payload.signalId};
+      const result = isDelivery ?
+        await this.delivery.process(workItemId, action,
+          Math.min(Date.parse(lease.expiresAt), payload.expiresAt)) :
+        await this.target.process(workItemId, action);
       return result.kind === "busy" ? {workItemId, reason: "busy"} : null;
     } catch {
       // Keep the exact target for bounded retry and eventual human review;
@@ -137,14 +148,26 @@ export class AssistanceSourceWorkStore {
   }
 
   private async targets(payload: SourceWork, limit: number) {
-    return (await this.targetQuery(payload.scope, payload.checkpoint.cursor)
-      .limit(limit).get()).docs.map((doc) => doc.id);
+    return this.targetIds(payload.scope, payload.checkpoint.cursor, limit);
   }
 
-  private targetQuery(scope: SourceWork["scope"], cursor: string | null) {
+  private async targetIds(scope: SourceWork["scope"], cursor: string | null,
+    limit: number) {
+    // Reuse the two equality-query indexes; merge their bounded pages using
+    // the same ordinal ordering as Firestore document-id cursors.
+    const kinds = ["liveLateJoin", "liveMessageDelivery"] as const;
+    const pages = await Promise.all(kinds.map((kind) =>
+      this.targetQuery(scope, cursor, kind)
+        .limit(limit).get()));
+    return pages.flatMap((page) => page.docs.map((doc) => doc.id))
+      .sort().slice(0, limit);
+  }
+
+  private targetQuery(scope: SourceWork["scope"], cursor: string | null,
+    kind: "liveLateJoin" | "liveMessageDelivery") {
     let query = this.db.collection(operationCollections.workItems)
       .where("workflowId", "==", ASSISTANCE_WORKFLOW)
-      .where("normalizedPayload.kind", "==", "liveLateJoin")
+      .where("normalizedPayload.kind", "==", kind)
       .where("normalizedPayload.scope.context.organizerId", "==",
         scope.context.organizerId)
       .where("normalizedPayload.scope.context.eventId", "==",

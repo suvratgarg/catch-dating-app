@@ -20,7 +20,9 @@ export interface EventAssistanceSourceWork {
       | "eventAssistanceGroupProgress"
       | "eventAssistanceMemberships"
       | "eventAssistanceMessages"
-      | "eventAssistanceRuntimeConfigs";
+      | "eventAssistanceRuntimeConfigs"
+      | "eventAssistanceSmsPermissions"
+      | "eventAssistanceWhatsappPermissions";
     documentId: string;
     occurredAt: number;
   };

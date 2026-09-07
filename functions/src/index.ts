@@ -92,6 +92,7 @@ export {
   onAssistanceSettingChanged, onAssistanceProgressChanged,
   onAssistanceRuntimeConfigChanged,
   onAssistanceMembershipChanged, onAssistanceMessageChanged,
+  onAssistanceSmsPermissionChanged, onAssistanceWhatsappPermissionChanged,
   onAssistanceWorkChanged, evaluateDueEventAssistanceWork,
 } from "./eventSuccess/operations/liveWorkTriggers";
 export {getEventAssistanceRuntimeConfig, setEventAssistanceRuntimeConfig} from

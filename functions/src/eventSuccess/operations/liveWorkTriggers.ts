@@ -118,6 +118,10 @@ export const onAssistanceMembershipChanged = sourceTrigger(
   "eventAssistanceMemberships");
 export const onAssistanceMessageChanged = sourceTrigger(
   "eventAssistanceMessages");
+export const onAssistanceSmsPermissionChanged = sourceTrigger(
+  "eventAssistanceSmsPermissions");
+export const onAssistanceWhatsappPermissionChanged = sourceTrigger(
+  "eventAssistanceWhatsappPermissions");
 
 export const onAssistanceWorkChanged = onDocumentWritten({
   document: "operationWorkItems/{workItemId}", retry: true,

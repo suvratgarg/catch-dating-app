@@ -74,9 +74,17 @@ export function nextDeliveryCheckpoint(payload: DeliveryWork,
     }
     // One bounded wait for receipts. Missing evidence then becomes an owned
     // reconciliation issue; elapsed time never proves nondelivery.
-    if (prior.phase === "receipt" &&
-        prior.messageHash === operationContentHash(message)) {
-      return review("providerPending");
+    if (prior.messageHash === operationContentHash(message)) {
+      // Source wakes neither shorten the receipt window nor restart a wait
+      // already escalated for missing evidence.
+      if (prior.phase === "receipt") {
+        return now < prior.dueAt ? {...base, phase: "receipt",
+          reason: "providerPending", dueAt: prior.dueAt, failures: 0} :
+          review("providerPending");
+      }
+      if (prior.phase === "review" && prior.reason === "providerPending") {
+        return review("providerPending");
+      }
     }
     return {...base, phase: "receipt", reason: "providerPending", failures: 0,
       dueAt: Math.min(payload.expiresAt,
