@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "a2c995fd53dcb0062c48f8a55c41d14eafd765b88c139c55815ab429f7f1462e",
+  "sourceDigest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "a2c995fd53dcb0062c48f8a55c41d14eafd765b88c139c55815ab429f7f1462e",
-    "contractDigest": "a2c995fd53dcb0062c48f8a55c41d14eafd765b88c139c55815ab429f7f1462e"
+    "digest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177",
+    "contractDigest": "7c1530e1eb9a36b4e80de5932a36436db09ef5fb01b688f68e7bea27e904d177"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "a079043c3aacd9da34e4f6994844855bfcb9e698fc66f49e33fc88e840b53693",
+    "handoffRequestDigest": "f5cac8027760e193b6abf97836ed345148a0f34e9a5d6db114be4d3065b0ffa9",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -2052,7 +2052,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.step_header",
       "dartSymbol": "CatchStepHeader",
-      "dartFile": "lib/core/widgets/catch_step_flow_header.dart",
+      "dartFile": "lib/core/widgets/catch_step_header.dart",
       "figmaName": "Catch/StepHeader",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2077,7 +2077,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "308551e240013e572ff1846a64defebd8519be3efbcd3d6b70662ea88224f5d9"
+      "contractDigest": "b0a6fe0f5f13ec3eccc6eb3df3b4351cb42a33935a470314fa94816cfff48f74"
     },
     {
       "contractId": "catch.tab_bar",

@@ -28,7 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';

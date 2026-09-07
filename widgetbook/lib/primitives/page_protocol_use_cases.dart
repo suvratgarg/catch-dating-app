@@ -106,6 +106,13 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
             ),
           ],
         );
+    final CatchPrimaryRail rail = CatchTabControllerRail<String>(
+      controller: _tabs,
+      options: const [
+        CatchOption(value: 'records', label: 'Records'),
+        CatchOption(value: 'detail', label: 'Detail'),
+      ],
+    );
     return CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(
         title: 'Root page',
@@ -123,13 +130,7 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
           ),
         ],
       ),
-      primaryRail: CatchTabControllerRail<String>(
-        controller: _tabs,
-        options: const [
-          CatchOption(value: 'records', label: 'Records'),
-          CatchOption(value: 'detail', label: 'Detail'),
-        ],
-      ),
+      primaryRail: rail,
       body: CatchRootScreenBody.paged(
         controller: _tabs,
         pages: [

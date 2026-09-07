@@ -9,14 +9,6 @@ export 'package:catch_ui/catch_ui.dart'
     show CatchActionMenu, CatchActionMenuItem;
 export 'package:catch_ui/catch_ui.dart' show CatchIconAction;
 
-enum CatchTopBarLeading { auto, back, close, none }
-
-/// Semantic typography for a compact [CatchTopBar] string title.
-///
-/// Route labels use Catch's Archivo voice. Identity is the narrow exception
-/// for user-authored names that must remain in the platform function family.
-enum CatchTopBarTitleRole { route, identity }
-
 /// Immutable expanding-search contract shared by both Catch top bars.
 ///
 /// Copy and interaction text are required so a top bar cannot silently fall

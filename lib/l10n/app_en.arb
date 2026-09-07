@@ -8088,14 +8088,14 @@
   },
   "coreCatchStepFlowHeaderTextStepClampedstepOfTotal": "STEP {clampedStep} OF {total}",
   "@coreCatchStepFlowHeaderTextStepClampedstepOfTotal": {
-    "description": "Product copy used by lib/core/widgets/catch_step_flow_header.dart (Text).",
+    "description": "Product copy used by lib/core/widgets/catch_step_header.dart (Text).",
     "placeholders": {
       "clampedStep": {},
       "total": {}
     },
     "x-audience": "shared",
     "x-owner": "product",
-    "x-surface": "core.widgets.catch_step_flow_header"
+    "x-surface": "core.widgets.catch_step_header"
   },
   "coreCatchStepFlowHeaderTextCompactStepClampedstepTotal": "{clampedStep}/{total}",
   "@coreCatchStepFlowHeaderTextCompactStepClampedstepTotal": {
@@ -8110,7 +8110,7 @@
     },
     "x-audience": "shared",
     "x-owner": "product",
-    "x-surface": "core.widgets.catch_step_flow_header"
+    "x-surface": "core.widgets.catch_step_header"
   },
   "coreCatchTopBarLabelViewNameProfile": "View {name} profile",
   "@coreCatchTopBarLabelViewNameProfile": {
@@ -23102,7 +23102,7 @@
   "hostsDraftExitSaveAndExit": "Save draft & exit",
   "@hostsDraftExitSaveAndExit": {"description": "Saves a Host creation draft and exits only after the save succeeds.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_draft_exit_dialog"},
   "hostsWizardStepOverviewSemantics": "Step {step} of {total}. Open section overview.",
-  "@hostsWizardStepOverviewSemantics": {"description": "Accessible label for the interactive wizard step counter.", "placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_step_flow_header"},
+  "@hostsWizardStepOverviewSemantics": {"description": "Accessible label for the interactive wizard step counter.", "placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_step_header"},
   "hostEventRehearsalEntryTitle": "Run a dress rehearsal",
   "@hostEventRehearsalEntryTitle": {"description": "Starts a safe rehearsal from the Host event entry sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalEntryBody": "Practice the Host and guest experience with synthetic people. Nothing touches a real event.",

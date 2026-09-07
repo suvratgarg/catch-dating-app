@@ -958,6 +958,20 @@ and event-domain values remain in the app thumbnail; the renderer imports only
 Flutter and shared tokens. Existing thumbnail and direct-scrim previews continue
 to cover the production implementation without new baselines.
 
+The root-header vocabulary also has shared owners: the primary-rail marker,
+root top-edge ownership, leading-control choices, and title typography roles.
+Their names, values, and type contracts are unchanged; the two feature adapters
+that previously obtained leading choices from the app top-bar library now import
+the shared package. Header rendering and schema-coupled search remain app-side
+until the constraint transaction permits their package move. The existing
+root-page preview passes its production controller rail through the shared
+marker type, so the interface retains direct golden coverage after leaving the
+rail file.
+
+The step-header source now uses `catch_step_header.dart`, matching its existing
+primary class under D5. The widget body is unchanged; caller imports, component
+metadata, and authored copy references use the new filename.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

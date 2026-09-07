@@ -7009,7 +7009,7 @@ abstract class AppLocalizations {
   /// **'startup-loading-delay'**
   String get coreCatchStartupLoadingScreenBodyStartupLoadingDelay;
 
-  /// Product copy used by lib/core/widgets/catch_step_flow_header.dart (Text).
+  /// Product copy used by lib/core/widgets/catch_step_header.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'STEP {clampedStep} OF {total}'**

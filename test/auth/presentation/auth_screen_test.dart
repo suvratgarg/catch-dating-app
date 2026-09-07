@@ -8,7 +8,7 @@ import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_header.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:country_code_picker/country_code_picker.dart';
