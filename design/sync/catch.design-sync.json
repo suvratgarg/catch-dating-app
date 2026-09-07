@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1",
+  "sourceDigest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1",
-    "contractDigest": "9bd31165d2872b768837d4ac5a3596639ba8a83018d6b41e2e3e18d5eaecd4b1"
+    "digest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648",
+    "contractDigest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "3eaff167e9aced02f109a3aa0abe02f51832ba3bc3a51648eae8d099bc924767",
+    "handoffRequestDigest": "1ab9347040f6b94363fb38333be798b6865850e656ef361ad8e1a7c17d0fc1c1",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 273,
+    "publicClassCount": 275,
     "conceptCount": 72,
-    "memberCount": 183,
-    "membersPerConcept": 2.54,
+    "memberCount": 185,
+    "membersPerConcept": 2.57,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 183,
+      "member": 185,
       "screen": 15
     },
     "collisionCount": 39,
@@ -489,11 +489,13 @@
           "CatchCollapsedSliverTitle",
           "CatchScreenHeaderTitle",
           "CatchScreenTopBar",
+          "CatchSliverHeader",
           "CatchTopBar",
-          "CatchTopBarIconAction",
+          "CatchTopBarActionGroup",
           "CatchTopBarMenuAction",
           "CatchTopBarPrimaryAction",
           "CatchTopBarTabBar",
+          "CatchTopBarTabLabel",
           "CatchTopBarTextAction"
         ]
       },
@@ -1491,7 +1493,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "9a90bc5acd109014cc4b53d4f1bc33de1013a825286293f5ee67f60b6e65f499"
+      "contractDigest": "d77b7ccf92debb4b8fab0993f20dc4913cc64e9ba2249879f628849ee5563633"
     },
     {
       "contractId": "catch.privacy_badge",

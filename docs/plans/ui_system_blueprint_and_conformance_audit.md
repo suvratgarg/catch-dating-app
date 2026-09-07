@@ -848,6 +848,14 @@ shared pattern owners. Existing form-key/title helpers and readiness behavior
 are preserved; direct production-consumer previews replace the two nonvisual
 form-protocol coverage waivers. Feature wizard validation stays app-owned.
 
+Header action groups, title stacks, adaptive tab bars, action wrappers,
+collapsed titles and pinned sliver descriptors have individual package owners.
+The tab-label helpers become a registered component with the same text/child/icon
+precedence; direct previews cover selected/resting labels at both text scales.
+The unused icon-action alias is removed in favor of its existing canonical owner.
+Search configuration and the app top bars stay with their coupled field and
+localized-copy extraction.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

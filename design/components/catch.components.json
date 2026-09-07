@@ -7049,34 +7049,34 @@
     },
     {
       "id": "catch.top_bar",
-        "enforcement": {
-          "code": "catch_top_bar_requires_action_group",
-          "codes": [
-            "catch_no_raw_material_control",
-            "catch_screen_top_bar_conformance"
-          ],
-          "vehicle": "plugin",
-          "replaces": [
-            "AppBar",
-            "CupertinoNavigationBar",
-            "SliverAppBar"
-          ],
-          "replacementMap": {
-            "AppBar": "CatchTopBar or CatchScreenTopBar",
-            "CupertinoNavigationBar": "CatchTopBar or CatchScreenTopBar",
-            "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
-          },
-          "steeringGroup": "control",
-          "steeringCode": "catch_no_raw_material_control",
-          "placement": {
-            "allowedParents": [
-              "CatchScreenBody",
-              "CatchRootScreenScaffold"
-            ],
-            "slot": "topBar"
-          },
-          "probeSeed": "AppBar()"
+      "enforcement": {
+        "code": "catch_top_bar_requires_action_group",
+        "codes": [
+          "catch_no_raw_material_control",
+          "catch_screen_top_bar_conformance"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "AppBar",
+          "CupertinoNavigationBar",
+          "SliverAppBar"
+        ],
+        "replacementMap": {
+          "AppBar": "CatchTopBar or CatchScreenTopBar",
+          "CupertinoNavigationBar": "CatchTopBar or CatchScreenTopBar",
+          "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
         },
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "placement": {
+          "allowedParents": [
+            "CatchScreenBody",
+            "CatchRootScreenScaffold"
+          ],
+          "slot": "topBar"
+        },
+        "probeSeed": "AppBar()"
+      },
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
@@ -7275,7 +7275,7 @@
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedSliverTitle",
-          "CatchTopBarIconAction",
+          "CatchIconAction",
           "CatchTopBarPrimaryAction",
           "CatchTopBarMenuAction",
           "CatchTopBarTextAction",
@@ -7286,7 +7286,7 @@
           {
             "id": "catch.top_bar.screen_header_title",
             "symbol": "CatchScreenHeaderTitle",
-            "file": "lib/core/widgets/catch_top_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_screen_header_title.dart",
             "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
             "states": [
               "title",
@@ -7340,30 +7340,13 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.top_bar"
-            }
-          },
-          {
-            "id": "catch.top_bar.icon_action",
-            "symbol": "CatchTopBarIconAction",
-            "summary": "Top-bar-scoped icon action wrapper that composes CatchIconButton with navigation sizing and tooltip semantics.",
-            "states": [
-              "default",
-              "disabled",
-              "custom-color",
-              "plain"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.top_bar"
-            }
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_collapsed_sliver_title.dart"
           },
           {
             "id": "catch.top_bar.menu_action",
             "symbol": "CatchTopBarMenuAction",
-            "file": "lib/core/widgets/catch_top_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_menu_action.dart",
             "summary": "Top-bar-scoped overflow menu action that delegates to CatchActionMenu.",
             "states": [
               "default",
@@ -7382,8 +7365,8 @@
           {
             "id": "catch.top_bar.primary_action",
             "symbol": "CatchTopBarPrimaryAction",
-            "file": "lib/core/widgets/catch_top_bar.dart",
-            "summary": "Adaptive primary top-bar action that renders a canonical bordered icon target on compact phones and a labelled small button on wider viewports.",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_primary_action.dart",
+            "summary": "Adaptive primary top-bar action that renders a quiet plain icon target on compact phones and a labelled small button on wider viewports.",
             "states": [
               "compact",
               "medium",
@@ -7414,7 +7397,8 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.top_bar"
-            }
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_tab_bar.dart"
           },
           {
             "id": "catch.top_bar.text_action",
@@ -7430,6 +7414,63 @@
               "conceptId": "catch.top_bar",
               "parentConceptId": "catch.top_bar",
               "qualifier": "variant",
+              "decisionRef": "contract-family:catch.top_bar"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_text_action.dart"
+          },
+          {
+            "id": "catch.top_bar.action_group",
+            "symbol": "CatchTopBarActionGroup",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_action_group.dart",
+            "summary": "Canonical action spacing and platform target width; rejects direct pill buttons in header slots.",
+            "states": [
+              "empty",
+              "single",
+              "multiple"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
+            "id": "catch.top_bar.sliver_header",
+            "symbol": "CatchSliverHeader",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_header.dart",
+            "summary": "Scroll-away title and optional pinned bottom using the existing two-sliver composition.",
+            "states": [
+              "title-only",
+              "pinned-bottom"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
+            "id": "catch.top_bar.tab_label",
+            "symbol": "CatchTopBarTabLabel",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_tab_label.dart",
+            "summary": "Selected and resting adaptive-tab label with Material Tab text, child or icon precedence and caller-widget fallback.",
+            "states": [
+              "selected",
+              "resting",
+              "text",
+              "child",
+              "icon",
+              "long-label"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.top_bar"
             }
           }

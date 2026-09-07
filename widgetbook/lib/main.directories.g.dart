@@ -67,6 +67,8 @@ import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_field_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_form_protocol_use_cases;
+import 'package:widgetbook_workspace/primitives/header_component_use_cases.dart'
+    as _widgetbook_workspace_primitives_header_component_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
@@ -3445,6 +3447,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTopBarContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTopBarTabLabel',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Text, child and icon labels',
+                builder:
+                    _widgetbook_workspace_primitives_header_component_use_cases
+                        .topBarTabLabelStates,
               ),
             ],
           ),
