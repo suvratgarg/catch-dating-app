@@ -2973,7 +2973,7 @@
           {
             "id": "catch.field.trailing",
             "symbol": "CatchFieldTrailing",
-            "summary": "Public trailing-slot member used by CatchField for value text, chevrons, toggles, clear actions, validation, and custom trailing content. CatchField composes non-centered trailing content into one lane after a single 18 px caption reserve and centers it within the 18.9 px value line. Saving progress appears here only when no explicit commit bar is visible.",
+            "summary": "Public trailing-slot member used by CatchField for value text, chevrons, toggles, clear actions, validation, and custom trailing content. CatchField composes non-centered trailing content into one lane after a single 18 px caption reserve and centers it within the 18.9 px value line. Saving progress appears here only when no explicit commit bar is visible. Its inputSuffix recipe preserves native text-entry clear and custom fallback behavior, including the close glyph and action/icon spacing; the field retains null allocation for an absent suffix.",
             "states": [
               "value-text",
               "fixed-chevron",

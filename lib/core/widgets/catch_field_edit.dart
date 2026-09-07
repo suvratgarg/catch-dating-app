@@ -122,7 +122,15 @@ extension _CatchFieldEdit on _CatchFieldState {
             ),
           );
 
-          return _buildTextEntryMotion(context, child: body);
+          if (MediaQuery.maybeOf(context)?.disableAnimations == true) {
+            return body;
+          }
+          return AnimatedSize(
+            duration: _motionDuration(context),
+            curve: CatchMotion.standardCurve,
+            alignment: Alignment.topCenter,
+            child: body,
+          );
         }
 
         final field = _buildTextEntryInput(
@@ -323,7 +331,20 @@ extension _CatchFieldEdit on _CatchFieldState {
                 child: widget.prefixIcon!,
               ),
         suffixIconConstraints: _suffixIconConstraints,
-        suffixIcon: _usesRowTextEntryTrailing ? null : _buildSuffixIcon(t),
+        suffixIcon:
+            _usesRowTextEntryTrailing ||
+                (!widget.showClearButton &&
+                    widget.action == null &&
+                    widget.suffixIcon == null)
+            ? null
+            : CatchFieldTrailing.inputSuffix(
+                controller: _controller,
+                clearTooltip: widget.copy.clearTooltip(_title),
+                action: widget.action,
+                suffixIcon: widget.suffixIcon,
+                showClearButton: widget.showClearButton,
+                onChanged: widget.onChanged,
+              ),
       ),
     );
     final inputShell = _buildFieldChrome(
@@ -345,18 +366,6 @@ extension _CatchFieldEdit on _CatchFieldState {
         label: semanticLabelOverride ?? _title,
         child: sizedInputShell,
       ),
-    );
-  }
-
-  Widget _buildTextEntryMotion(BuildContext context, {required Widget child}) {
-    if (MediaQuery.maybeOf(context)?.disableAnimations == true) {
-      return child;
-    }
-    return AnimatedSize(
-      duration: _motionDuration(context),
-      curve: CatchMotion.standardCurve,
-      alignment: Alignment.topCenter,
-      child: child,
     );
   }
 
@@ -455,7 +464,15 @@ extension _CatchFieldEdit on _CatchFieldState {
                   : null,
               constraints: _rowConstraints,
               padding: _rowPadding,
-              leading: _buildSelectLeadingSlot(tokens),
+              leading: widget.prefixIcon == null
+                  ? null
+                  : IconTheme(
+                      data: IconThemeData(
+                        color: widget.enabled ? tokens.ink2 : tokens.ink3,
+                        size: CatchFieldRow.leadingSlotIconSize,
+                      ),
+                      child: widget.prefixIcon!,
+                    ),
               content: CatchFieldValueContent(
                 labelCopy: widget.copy.label,
                 titleMaxLines: widget.titleMaxLines,
@@ -585,52 +602,6 @@ extension _CatchFieldEdit on _CatchFieldState {
     );
   }
 
-  Widget? _buildSuffixIcon(CatchTokens t) {
-    final action = _action;
-
-    if (widget.showClearButton) {
-      return ValueListenableBuilder(
-        valueListenable: _controller,
-        builder: (_, TextEditingValue value, _) {
-          if (value.text.isEmpty) {
-            return _quietSuffix(
-                  t,
-                  action ?? widget.suffixIcon,
-                  padded: action != null,
-                ) ??
-                const SizedBox.shrink();
-          }
-          return IconButton(
-            tooltip: widget.copy.clearTooltip(_title),
-            icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
-            onPressed: () {
-              _controller.clear();
-              widget.onChanged?.call('');
-            },
-          );
-        },
-      );
-    }
-
-    return _quietSuffix(t, action ?? widget.suffixIcon, padded: action != null);
-  }
-
-  Widget? _quietSuffix(CatchTokens t, Widget? child, {required bool padded}) {
-    if (child == null) return null;
-    final styledChild = IconTheme(
-      data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-      child: DefaultTextStyle.merge(
-        style: CatchTextStyles.bodyLead(context, color: t.ink3),
-        child: child,
-      ),
-    );
-    if (!padded) return styledChild;
-    return Padding(
-      padding: const EdgeInsets.only(left: CatchSpacing.s2),
-      child: styledChild,
-    );
-  }
-
   void _handleSubmitted(String value) {
     widget.onSubmitted?.call(value);
     if (!widget.retainFocusOnSubmitted) _focusNode.unfocus();
@@ -681,7 +652,7 @@ extension _CatchFieldEdit on _CatchFieldState {
   }
 
   BoxConstraints? get _suffixIconConstraints {
-    if (_action == null) return _iconConstraints;
+    if (widget.action == null) return _iconConstraints;
     return const BoxConstraints();
   }
 

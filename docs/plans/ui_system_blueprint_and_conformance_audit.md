@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.10
+version: 1.9.11
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1083,6 +1083,12 @@ lanes. The four former helper call sites supply the same state, copy and trailin
 reservation; status and placeholder behavior use explicit enum axes. Caption
 styling is shared with the text-entry and select shells. The old render helper
 and redundant text-entry body helper are deleted.
+
+Field input suffixes now use `CatchFieldTrailing.inputSuffix`, preserving the
+native clear button and its fallback action/icon styling. A missing suffix
+remains null at the text-entry boundary. Leading slots, add rows, text-entry
+motion and custom trailing placement are inlined into their existing callers;
+seven private render helpers and the redundant action getter are deleted.
 
 ### Phase 4 — One registry, binding grammar
 

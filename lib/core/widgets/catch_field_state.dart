@@ -581,7 +581,9 @@ class _CatchFieldState extends State<CatchField>
       _isEdit &&
       !_usesUnderlineChrome &&
       !_compactTextEntry &&
-      (widget.showClearButton || widget.suffixIcon != null || _action != null);
+      (widget.showClearButton ||
+          widget.suffixIcon != null ||
+          widget.action != null);
   bool get _usesPositionedClearTrailing =>
       _usesRowTextEntryTrailing &&
       widget.showClearButton &&
@@ -599,7 +601,6 @@ class _CatchFieldState extends State<CatchField>
       : CatchFieldRow.textLaneInset;
   String? get _title => widget.title;
   String? get _body => widget.body;
-  Widget? get _action => widget.action;
   String? get _displayError => widget.errorText ?? widget.error;
   String? get _placeholderText => widget.placeholder;
   String? get _inputHintText {
@@ -729,7 +730,26 @@ class _CatchFieldState extends State<CatchField>
   Widget _buildConfiguredRow(BuildContext context) {
     final t = CatchTokens.of(context);
     final rowStack = Stack(
-      children: [widget.add ? _buildAdd(t) : _buildRow(t)],
+      children: [
+        widget.add
+            ? CatchFieldRow.add(
+                onTap: widget.onTap,
+                leading: Icon(
+                  widget.icon ?? CatchIcons.add,
+                  size: CatchIcon.md,
+                  color: t.primary,
+                ),
+                content: Text(
+                  _title ?? '',
+                  style: CatchTextStyles.fieldRowValue(
+                    context,
+                    color: _toneColor(t, primaryFallback: t.primary),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            : _buildRow(t),
+      ],
     );
     if (!_isEdit && !_hasControl) return rowStack;
     return Shortcuts(

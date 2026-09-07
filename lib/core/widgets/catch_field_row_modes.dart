@@ -1,25 +1,6 @@
 part of 'catch_field.dart';
 
 extension _CatchFieldRowModes on _CatchFieldState {
-  Widget _buildAdd(CatchTokens t) {
-    return CatchFieldRow.add(
-      onTap: widget.onTap,
-      leading: Icon(
-        widget.icon ?? CatchIcons.add,
-        size: CatchIcon.md,
-        color: t.primary,
-      ),
-      content: Text(
-        _title ?? '',
-        style: CatchTextStyles.fieldRowValue(
-          context,
-          color: _toneColor(t, primaryFallback: t.primary),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
   Widget _buildRow(CatchTokens t) {
     final canFocusTextEntry =
         _isEdit &&
@@ -92,6 +73,41 @@ extension _CatchFieldRowModes on _CatchFieldState {
               ),
             ),
           );
+    final Widget? leadingSlot;
+    if (widget.leading != null) {
+      final extent = widget.leadingExtent;
+      leadingSlot = extent == null
+          ? widget.leading
+          : SizedBox(width: extent, child: widget.leading);
+    } else if (widget.icon != null) {
+      leadingSlot = Icon(
+        widget.icon,
+        size: CatchFieldRow.leadingSlotIconSize,
+        color:
+            widget.iconColor ??
+            (_active
+                ? t.ink
+                : _showsInlineAddAtRest
+                ? t.primary
+                : _toneColor(t, muted: true)),
+      );
+    } else if (_usesRowPrefixIcon) {
+      leadingSlot = IconTheme(
+        data: IconThemeData(
+          color: _hasError
+              ? t.danger
+              : _active
+              ? t.ink
+              : _showsInlineAddAtRest
+              ? t.primary
+              : t.ink2,
+          size: CatchFieldRow.leadingSlotIconSize,
+        ),
+        child: widget.prefixIcon!,
+      );
+    } else {
+      leadingSlot = null;
+    }
     final rowContent = CatchFieldRow.standard(
       constraints: _usesPositionedClearTrailing
           ? _rowConstraints.enforce(
@@ -101,7 +117,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
             )
           : _rowConstraints,
       padding: _rowHeaderPadding,
-      leading: _buildLeadingSlot(t),
+      leading: leadingSlot,
       trailing: positionsTrailing ? null : trailingSlot,
       crossAxisAlignment: centerVertically
           ? CrossAxisAlignment.center
@@ -388,58 +404,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
     );
   }
 
-  Widget? _buildLeadingSlot(CatchTokens t) {
-    if (widget.leading != null) {
-      final extent = widget.leadingExtent;
-      return extent == null
-          ? widget.leading
-          : SizedBox(width: extent, child: widget.leading);
-    }
-
-    if (widget.icon != null) {
-      return Icon(
-        widget.icon,
-        size: CatchFieldRow.leadingSlotIconSize,
-        color:
-            widget.iconColor ??
-            (_active
-                ? t.ink
-                : _showsInlineAddAtRest
-                ? t.primary
-                : _toneColor(t, muted: true)),
-      );
-    }
-
-    if (_usesRowPrefixIcon) {
-      return IconTheme(
-        data: IconThemeData(
-          color: _hasError
-              ? t.danger
-              : _active
-              ? t.ink
-              : _showsInlineAddAtRest
-              ? t.primary
-              : t.ink2,
-          size: CatchFieldRow.leadingSlotIconSize,
-        ),
-        child: widget.prefixIcon!,
-      );
-    }
-
-    return null;
-  }
-
-  Widget? _buildSelectLeadingSlot(CatchTokens t) {
-    if (widget.prefixIcon == null) return null;
-    return IconTheme(
-      data: IconThemeData(
-        color: widget.enabled ? t.ink2 : t.ink3,
-        size: CatchFieldRow.leadingSlotIconSize,
-      ),
-      child: widget.prefixIcon!,
-    );
-  }
-
   Widget? _buildTrailingSlot(CatchTokens t) {
     if (_isToggle) {
       return CatchFieldTrailing.toggle(
@@ -485,7 +449,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   Widget? _buildTextEntryTrailingSlot(CatchTokens t) {
-    final fallback = _buildCustomTrailingSlot(t, _action ?? widget.suffixIcon);
+    final fallbackContent = widget.action ?? widget.suffixIcon;
+    final fallback = fallbackContent == null
+        ? null
+        : CatchFieldTrailing.custom(
+            topPadding: 0,
+            color: t.ink3,
+            child: fallbackContent,
+          );
     if (!widget.showClearButton) return fallback;
 
     return ValueListenableBuilder<TextEditingValue>(
@@ -519,7 +490,13 @@ extension _CatchFieldRowModes on _CatchFieldState {
       );
     }
 
-    final custom = _buildCustomTrailingSlot(t, _action);
+    final custom = widget.action == null
+        ? null
+        : CatchFieldTrailing.custom(
+            topPadding: 0,
+            color: t.ink3,
+            child: widget.action!,
+          );
     if (custom != null) children.add(custom);
 
     if (children.isEmpty) {
@@ -547,15 +524,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
         const SizedBox(width: CatchSpacing.s2),
         CatchFieldTrailing.fixedChevron(color: t.ink3, topPadding: 0),
       ],
-    );
-  }
-
-  Widget? _buildCustomTrailingSlot(CatchTokens t, Widget? child) {
-    if (child == null) return null;
-    return CatchFieldTrailing.custom(
-      topPadding: 0,
-      color: t.ink3,
-      child: child,
     );
   }
 

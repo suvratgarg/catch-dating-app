@@ -38,6 +38,58 @@ class CatchFieldTrailing extends StatelessWidget {
     );
   }
 
+  /// Native text-entry suffix with the field's existing clear/fallback behavior.
+  ///
+  /// The field keeps InputDecoration.suffixIcon null when neither clear nor
+  /// custom content is requested, so an absent suffix reserves no native slot.
+  factory CatchFieldTrailing.inputSuffix({
+    Key? key,
+    required TextEditingController controller,
+    required String clearTooltip,
+    Widget? action,
+    Widget? suffixIcon,
+    bool showClearButton = false,
+    ValueChanged<String>? onChanged,
+  }) => CatchFieldTrailing._(
+    key: key,
+    topPadding: 0,
+    builder: (context) {
+      final t = CatchTokens.of(context);
+      final child = action ?? suffixIcon;
+      Widget? fallback;
+      if (child != null) {
+        fallback = IconTheme(
+          data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+          child: DefaultTextStyle.merge(
+            style: CatchTextStyles.bodyLead(context, color: t.ink3),
+            child: child,
+          ),
+        );
+        if (action != null) {
+          fallback = Padding(
+            padding: const EdgeInsets.only(left: CatchSpacing.s2),
+            child: fallback,
+          );
+        }
+      }
+      if (!showClearButton) return fallback ?? const SizedBox.shrink();
+      return ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller,
+        builder: (_, value, _) {
+          if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
+          return IconButton(
+            tooltip: clearTooltip,
+            icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
+            onPressed: () {
+              controller.clear();
+              onChanged?.call('');
+            },
+          );
+        },
+      );
+    },
+  );
+
   factory CatchFieldTrailing.valueText({
     Key? key,
     required String text,
