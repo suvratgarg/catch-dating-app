@@ -346,10 +346,9 @@ class _CatchFieldState extends State<CatchField>
       final target = targetContext?.findRenderObject();
       if (target is! RenderBox || !target.attached || !target.hasSize) return;
 
-      final visibility = CatchFieldVisibilityScope.maybeOf(context);
-      final bottomClearance =
-          (visibility?.bottomObstruction ?? 0) +
-          (visibility?.revealPadding ?? CatchSpacing.s2);
+      final bottomClearance = CatchFieldVisibilityScope.bottomClearanceOf(
+        context,
+      );
       final prioritizesActionBar =
           _actionBarRevealTargetKey.currentContext != null;
       final targetTop = prioritizesActionBar

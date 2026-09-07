@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 /// Owns "at most one expanded inline editor" state for a field list.
-class CatchFieldAccordion extends ChangeNotifier {
-  CatchFieldAccordion({String? initialExpanded}) : _expanded = initialExpanded;
+class CatchAccordionController extends ChangeNotifier {
+  CatchAccordionController({String? initialExpanded})
+    : _expanded = initialExpanded;
 
   String? _expanded;
 

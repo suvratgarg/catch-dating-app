@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb",
+  "sourceDigest": "3d94ea58d57a905b3952db2bd4ac18b8d7643458b345b46e04c3e722cc47da01",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb",
-    "contractDigest": "f862bdc2bb0f4267ad836144af4a97e0bd803b987f733f8079c5c8ead9c9eebb"
+    "digest": "3d94ea58d57a905b3952db2bd4ac18b8d7643458b345b46e04c3e722cc47da01",
+    "contractDigest": "3d94ea58d57a905b3952db2bd4ac18b8d7643458b345b46e04c3e722cc47da01"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "14d708b23c32716b49d21d4776678ba4c865277d074a4bf67261a752c81077ee",
+    "handoffRequestDigest": "0cd8adc91a8e0096e38e14493deaf1e9730c7a1023b9c1821a51746624a3c1ba",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 261,
+    "publicClassCount": 266,
     "conceptCount": 72,
-    "memberCount": 171,
-    "membersPerConcept": 2.38,
+    "memberCount": 176,
+    "membersPerConcept": 2.44,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 171,
+      "member": 176,
       "screen": 15
     },
     "collisionCount": 39,
@@ -227,6 +227,8 @@
       {
         "key": "catch.field",
         "symbols": [
+          "CatchAccordionController",
+          "CatchDividedFieldInteractionScope",
           "CatchField",
           "CatchFieldActionBar",
           "CatchFieldChoiceChip",
@@ -237,6 +239,7 @@
           "CatchFieldExplicitSaveControl",
           "CatchFieldFocusOutline",
           "CatchFieldGeometryScope",
+          "CatchFieldInteractionPlaneScope",
           "CatchFieldOptionCardControl",
           "CatchFieldRepeatButton",
           "CatchFieldRow",
@@ -246,8 +249,10 @@
           "CatchFieldSupportRow",
           "CatchFieldToggle",
           "CatchFieldTrailing",
+          "CatchFieldVisibilityScope",
           "CatchFormFieldLabel",
           "CatchFormFieldOptionalBadge",
+          "CatchResponsiveFieldInteractionPolicy",
           "CatchTextInput"
         ]
       },
@@ -935,7 +940,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "023766c59343d03668222308c5b3605e25cd8c1bdf4552ed920dfb33ee4145c8"
+      "contractDigest": "567ba34152222020ca88795451424b2684b4737edafc3e0fdcc7437782a95746"
     },
     {
       "contractId": "catch.section",

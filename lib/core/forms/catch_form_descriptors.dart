@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -379,7 +379,7 @@ class CatchFormRowList<P> extends StatefulWidget {
   final List<CatchFormRowDescriptor<P>> rows;
   final CatchFormSave<P> savePatch;
   final CatchFormErrorText errorText;
-  final CatchFieldAccordion? accordion;
+  final CatchAccordionController? accordion;
   final String? title;
   final Object? count;
   final Widget? trailing;
@@ -391,10 +391,10 @@ class CatchFormRowList<P> extends StatefulWidget {
 }
 
 class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
-  CatchFieldAccordion? _ownedAccordion;
+  CatchAccordionController? _ownedAccordion;
 
-  CatchFieldAccordion get _accordion =>
-      widget.accordion ?? (_ownedAccordion ??= CatchFieldAccordion());
+  CatchAccordionController get _accordion =>
+      widget.accordion ?? (_ownedAccordion ??= CatchAccordionController());
 
   @override
   void initState() {

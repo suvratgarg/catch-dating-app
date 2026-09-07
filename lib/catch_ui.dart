@@ -19,6 +19,12 @@ export 'package:catch_tokens/catch_tokens.dart'
         CatchSpacing,
         CatchStroke,
         CatchTokens;
+export 'package:catch_ui/catch_ui.dart'
+    show
+        CatchAccordionController,
+        CatchDividedFieldInteraction,
+        CatchFieldVisibilityScope,
+        CatchResponsiveFieldInteractionPolicy;
 export 'core/forms/catch_form_descriptors.dart'
     show
         CatchFormCustomRow,
@@ -37,7 +43,6 @@ export 'core/widgets/catch_field.dart'
     show
         CatchContractConstraints,
         CatchContractFieldConstraints,
-        CatchDividedFieldInteraction,
         CatchField,
         CatchFieldChoiceControl,
         CatchFieldContentRow,
@@ -47,10 +52,7 @@ export 'core/widgets/catch_field.dart'
         CatchFieldStatus,
         CatchFieldSupportTone,
         CatchFieldTone,
-        CatchFieldVariant,
-        CatchFieldVisibilityScope,
-        CatchResponsiveFieldInteractionPolicy;
-export 'core/widgets/catch_field_accordion.dart' show CatchFieldAccordion;
+        CatchFieldVariant;
 export 'core/widgets/catch_form_step_flow.dart'
     show
         CatchFormReviewState,

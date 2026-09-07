@@ -2,48 +2,6 @@
   "version": 1,
   "waivers": [
     {
-      "class": "CatchFieldAccordion",
-      "file": "lib/core/widgets/catch_field_accordion.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual ChangeNotifier has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchFieldVisibilityScope",
-      "file": "lib/core/widgets/catch_field_scopes.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Inherited field scope has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchResponsiveFieldInteractionPolicy",
-      "file": "lib/core/widgets/catch_field_scopes.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual responsive policy has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchFieldInteractionPlaneScope",
-      "file": "lib/core/widgets/catch_field_scopes.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Inherited interaction scope has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchDividedFieldInteractionScope",
-      "file": "lib/core/widgets/catch_field_scopes.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Inherited divided-field scope has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchFieldGeometryScope",
-      "file": "lib/core/widgets/catch_field_scopes.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Inherited geometry scope has no independent renderable golden surface."
-    },
-    {
       "class": "CatchFormStepSpec",
       "file": "lib/core/widgets/catch_form_step_flow.dart",
       "owner": "ui_system_program",

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
@@ -123,12 +122,12 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
   static const _promptCardPadding = EdgeInsets.only(top: CatchSpacing.micro10);
   static const _promptAddPadding = EdgeInsets.only(top: CatchSpacing.s1);
 
-  late final CatchFieldAccordion _fieldAccordion;
+  late final CatchAccordionController _fieldAccordion;
 
   @override
   void initState() {
     super.initState();
-    _fieldAccordion = CatchFieldAccordion()
+    _fieldAccordion = CatchAccordionController()
       ..addListener(_handleAccordionChanged);
   }
 

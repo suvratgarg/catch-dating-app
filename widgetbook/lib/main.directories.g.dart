@@ -63,6 +63,8 @@ import 'package:widgetbook_workspace/primitives/error_state_adapter_use_cases.da
     as _widgetbook_workspace_primitives_error_state_adapter_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
+import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
@@ -2386,6 +2388,77 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchStatusStripContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Field protocols',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAccordionController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Exclusive field disclosure',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .accordionControllerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchDividedFieldInteractionScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Section interaction policies',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .dividedFieldInteractionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldGeometryScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Gutters and active silhouettes',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .fieldGeometryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldInteractionPlaneScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Page and lane paint extents',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .fieldInteractionPlaneStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldVisibilityScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Disclosure clears bottom obstruction',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .fieldVisibilityStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchResponsiveFieldInteractionPolicy',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Compact and split section defaults',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .responsiveFieldInteractionStates,
               ),
             ],
           ),

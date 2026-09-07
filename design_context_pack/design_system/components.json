@@ -2913,7 +2913,7 @@
               "section-clipped-interaction",
               "contained-edge-overlap"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_geometry_scope.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3283,6 +3283,91 @@
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.field"
             }
+          },
+          {
+            "id": "catch.field.accordion_controller",
+            "symbol": "CatchAccordionController",
+            "summary": "Exclusive inline editor state; screens own rendering and persistence.",
+            "states": [
+              "first-open",
+              "second-open",
+              "collapsed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_accordion_controller.dart"
+          },
+          {
+            "id": "catch.field.visibility_scope",
+            "symbol": "CatchFieldVisibilityScope",
+            "summary": "Publishes bottom obstruction and reveal padding to disclosure fields.",
+            "states": [
+              "obstructed-disclosure"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_field_visibility_scope.dart"
+          },
+          {
+            "id": "catch.field.interaction_plane_scope",
+            "symbol": "CatchFieldInteractionPlaneScope",
+            "summary": "Publishes page or lane paint outsets for full-bleed field interaction.",
+            "states": [
+              "page-edge",
+              "lane-edge"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_field_interaction_plane_scope.dart"
+          },
+          {
+            "id": "catch.field.divided_interaction_scope",
+            "symbol": "CatchDividedFieldInteractionScope",
+            "summary": "Publishes the section-wide divided field interaction policy.",
+            "states": [
+              "full-bleed",
+              "rounded-tile"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_divided_field_interaction_scope.dart"
+          },
+          {
+            "id": "catch.field.responsive_interaction_policy",
+            "symbol": "CatchResponsiveFieldInteractionPolicy",
+            "summary": "Typed single-column and split-pane interaction defaults.",
+            "states": [
+              "single-column",
+              "split-pane"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "file": "packages/catch_ui/lib/src/components/catch_responsive_field_interaction_policy.dart"
           }
         ],
         "accessibility": {

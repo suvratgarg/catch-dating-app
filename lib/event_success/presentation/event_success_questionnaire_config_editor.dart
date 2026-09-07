@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -170,7 +169,7 @@ class CustomQuestionnaireFields extends StatefulWidget {
 class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
   static const _titleKey = 'title';
 
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, String> _sourceValues = {};
 

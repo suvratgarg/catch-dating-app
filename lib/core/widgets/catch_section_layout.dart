@@ -3,17 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show
-        CatchField,
-        CatchDividedFieldInteraction,
-        CatchDividedFieldInteractionScope,
-        CatchFieldGeometryScope,
-        CatchFieldGutterOwnership,
-        CatchFieldInteractionPlaneScope,
-        CatchFieldInteractionShape,
-        CatchFieldVisibilityScope,
-        CatchResponsiveFieldInteractionPolicy;
+import 'package:catch_dating_app/core/widgets/catch_field.dart' show CatchField;
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,7 +31,7 @@ Widget _withCatchFieldInteractionPlane(
   // responsive section layout nested below may replace it for a split pane.
   // Bare component tests and standalone fields intentionally receive no
   // implicit viewport policy and therefore stay bounded rounded tiles.
-  if (CatchDividedFieldInteractionScope.maybeOf(context) == null) {
+  if (CatchDividedFieldInteractionScope.maybeInteractionOf(context) == null) {
     result = CatchDividedFieldInteractionScope(
       interaction: CatchDividedFieldInteraction.fullBleed,
       child: result,

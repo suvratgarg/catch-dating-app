@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show CatchFieldVisibilityScope;
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_root_screen_body.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';

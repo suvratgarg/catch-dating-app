@@ -538,7 +538,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
   static const _roleTitleField = 'roleTitle';
   static const _bioField = 'bio';
 
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
   String? _displayNameError;
 
   @override

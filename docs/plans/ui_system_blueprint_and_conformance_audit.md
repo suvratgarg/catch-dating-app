@@ -825,6 +825,16 @@ app-side as the single PNG/platform-share adapter; its attribution, duplicate-
 press guard, disposal checks and localized failure handling are unchanged.
 The shared sheet has no external-share controller or app localization dependency.
 
+Exclusive disclosure state moves as `CatchAccordionController`; field visibility,
+gutter and interaction protocols have individual shared owners with unchanged
+behavior. App fields and section layouts consume the package scopes directly.
+Scope readers expose only obstruction, shape and outset values; the old
+widget-returning `maybeOf` helpers are deleted, retaining absence-sensitive
+section defaults and explicit-versus-resolved bleed.
+Direct production-consumer previews replace the six controller/scope coverage
+waivers; the event-entry scanner follows the controller rename with its seeded
+negative probe. Feature-level geometry construction remains prohibited.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

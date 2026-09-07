@@ -1,6 +1,7 @@
 /// Catch shared presentation foundations, primitives, and components.
 library;
 
+export 'src/components/catch_accordion_controller.dart';
 export 'src/components/catch_action_menu.dart';
 export 'src/components/catch_action_menu_item.dart';
 export 'src/components/catch_activity_initials_placeholder.dart';
@@ -36,6 +37,8 @@ export 'src/components/catch_dialog_copy.dart';
 export 'src/components/catch_distance_ring.dart';
 export 'src/components/catch_distance_ring_label.dart';
 export 'src/components/catch_distance_ring_viewport.dart';
+export 'src/components/catch_divided_field_interaction.dart';
+export 'src/components/catch_divided_field_interaction_scope.dart';
 export 'src/components/catch_draggable_sheet_shell.dart';
 export 'src/components/catch_empty_state.dart';
 export 'src/components/catch_empty_state_content.dart';
@@ -46,6 +49,11 @@ export 'src/components/catch_error_banner.dart';
 export 'src/components/catch_error_body.dart';
 export 'src/components/catch_error_state.dart';
 export 'src/components/catch_error_state_mode.dart';
+export 'src/components/catch_field_geometry_scope.dart';
+export 'src/components/catch_field_gutter_ownership.dart';
+export 'src/components/catch_field_interaction_plane_scope.dart';
+export 'src/components/catch_field_interaction_shape.dart';
+export 'src/components/catch_field_visibility_scope.dart';
 export 'src/components/catch_form_dialog.dart';
 export 'src/components/catch_form_field_label.dart';
 export 'src/components/catch_form_field_optional_badge.dart';
@@ -106,6 +114,7 @@ export 'src/components/catch_plain_sheet_header.dart';
 export 'src/components/catch_privacy_badge.dart';
 export 'src/components/catch_progress_cue.dart';
 export 'src/components/catch_record_row.dart';
+export 'src/components/catch_responsive_field_interaction_policy.dart';
 export 'src/components/catch_section_header.dart';
 export 'src/components/catch_selection_menu.dart';
 export 'src/components/catch_selection_menu_item.dart';

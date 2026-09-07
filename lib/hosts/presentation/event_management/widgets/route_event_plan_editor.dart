@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -47,7 +46,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
   static const _paceGroupsField = 'route-pace-groups';
   static const _trackingField = 'route-live-tracking';
 
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
 
   @override
   void initState() {

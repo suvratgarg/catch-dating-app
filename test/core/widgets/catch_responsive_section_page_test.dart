@@ -249,9 +249,10 @@ void main() {
                     CatchResponsiveSectionItem(
                       child: Builder(
                         builder: (context) {
-                          final obstruction = CatchFieldVisibilityScope.maybeOf(
-                            context,
-                          )?.bottomObstruction;
+                          final obstruction =
+                              CatchFieldVisibilityScope.bottomObstructionOf(
+                                context,
+                              );
                           return Text('obstruction:$obstruction');
                         },
                       ),

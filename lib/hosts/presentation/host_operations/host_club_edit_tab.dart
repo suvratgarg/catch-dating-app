@@ -43,7 +43,7 @@ class HostClubEditTab extends ConsumerStatefulWidget {
 }
 
 class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
-  late final CatchFieldAccordion _fieldAccordion;
+  late final CatchAccordionController _fieldAccordion;
   late List<_HostClubMediaDraft> _mediaDrafts;
   HostPickedClubLogo? _pickedLogo;
   bool _removeLogoOnSave = false;
@@ -74,7 +74,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   @override
   void initState() {
     super.initState();
-    _fieldAccordion = CatchFieldAccordion(
+    _fieldAccordion = CatchAccordionController(
       initialExpanded: widget.initialExpandedField,
     )..addListener(_handleAccordionChanged);
     _resetMediaFromClub();

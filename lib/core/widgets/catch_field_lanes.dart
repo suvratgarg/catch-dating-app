@@ -41,12 +41,13 @@ class CatchFieldLanes extends StatelessWidget {
             ],
           );
     if (rowChildren.isEmpty) return content;
-    final inheritedGeometry = CatchFieldGeometryScope.maybeOf(context);
     return CatchFieldGeometryScope(
       gutterOwnership: CatchFieldGutterOwnership.container,
-      interactionOutsets: inheritedGeometry?.interactionOutsets,
+      interactionOutsets: CatchFieldGeometryScope.explicitInteractionOutsetsOf(
+        context,
+      ),
       interactionShape:
-          inheritedGeometry?.interactionShape ??
+          CatchFieldGeometryScope.maybeInteractionShapeOf(context) ??
           (CatchDividedFieldInteractionScope.interactionOf(context) ==
                   CatchDividedFieldInteraction.fullBleed
               ? CatchFieldInteractionShape.fullBleedBand

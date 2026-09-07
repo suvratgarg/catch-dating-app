@@ -53,7 +53,7 @@ test("flags initially open event create fields", () => {
 test("flags event accordions seeded with an expanded field", () => {
   const findings = scanHostEventFieldSource({
     relativePath: "lib/hosts/presentation/edit_hosted_event_screen.dart",
-    source: "final accordion = CatchFieldAccordion(initialExpanded: 'pace');",
+    source: "final accordion = CatchAccordionController(initialExpanded: 'pace');",
   });
 
   assert.equal(findings.length, 1);

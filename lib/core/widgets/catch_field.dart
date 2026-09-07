@@ -22,7 +22,6 @@ part 'catch_field_configs.dart';
 part 'catch_field_edit.dart';
 part 'catch_field_lanes.dart';
 part 'catch_field_row_modes.dart';
-part 'catch_field_scopes.dart';
 part 'catch_field_state.dart';
 
 enum CatchFieldEmphasis { body, title }

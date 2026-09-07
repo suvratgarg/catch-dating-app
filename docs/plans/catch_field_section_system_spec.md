@@ -14,6 +14,13 @@ by this doc.
 
 ## 0. What the system is
 
+Phase 3 of the [UI-system program](ui_system_blueprint_and_conformance_audit.md)
+supersedes the scope/controller homes in this dated review. The shared
+`CatchAccordionController` replaces `CatchFieldAccordion`; visibility, geometry,
+interaction-plane and divided-interaction scopes now have individual files in
+`packages/catch_ui/lib/src/components/`. Consumers read their geometry values
+through the package API. The historical phase plan below remains review context.
+
 `CatchField` is the canonical row primitive: one widget, five internal modes
 (`edit, read, nav, toggle, select`), exposed through 12 named
 constructors/factories (`read, content, nav, action, toggle, input, control,
