@@ -1827,6 +1827,7 @@ Widget catchButtonLoadingDotsContractStates(BuildContext context) {
 )
 Widget catchChipContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
+  final socialRun = ActivityPalette.resolve(context, ActivityKind.socialRun);
 
   return _ContractScreen(
     title: 'CatchChip',
@@ -1938,28 +1939,48 @@ Widget catchChipContractStates(BuildContext context) {
         description: 'Soft, solid, and tappable activity identity.',
         child: _InlineWrap(
           children: [
-            const CatchChip.activity(activityKind: ActivityKind.socialRun),
-            const CatchChip.activity(
-              activityKind: ActivityKind.pickleball,
+            CatchChip.activity(
+              data: CatchChipData(
+                label: socialRun.label,
+                icon: socialRun.glyph,
+                accent: socialRun.accent,
+                deep: socialRun.deep,
+                soft: socialRun.soft,
+              ),
+            ),
+            CatchChip.activity(
+              data: ActivityPalette.resolve(
+                context,
+                ActivityKind.pickleball,
+              ).chipData,
               emphasis: CatchChipEmphasis.solid,
             ),
-            CatchChip.activity(activityKind: ActivityKind.dinner, onTap: _noop),
+            CatchChip.activity(
+              data: ActivityPalette.resolve(
+                context,
+                ActivityKind.dinner,
+              ).chipData,
+              onTap: _noop,
+            ),
           ],
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'truncated',
         description: 'Long labels ellipsize inside constrained hosts.',
         child: _InlineWrap(
           children: [
-            SizedBox(
+            const SizedBox(
               width: WidgetbookPreviewLayout.passiveChipTruncationWidth,
               child: CatchChip.tag(label: 'A very long passive metadata label'),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.activityChipTruncationWidth,
               child: CatchChip.activity(
-                activityKind: ActivityKind.strengthTraining,
+                data: ActivityPalette.resolve(
+                  context,
+                  ActivityKind.strengthTraining,
+                ).chipData,
                 label: 'Strength training after work',
               ),
             ),

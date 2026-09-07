@@ -853,29 +853,11 @@
             "notes": "Required by tag, selectable, and removable; optional override for activity."
           },
           {
-            "name": "activityKind",
-            "type": "enum",
+            "name": "data",
+            "type": "object",
             "required": false,
-            "dartType": "ActivityKind?",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ],
-            "notes": "Required only by CatchChip.activity."
+            "dartType": "CatchChipData?",
+            "notes": "Required only by CatchChip.activity. Callers resolve the label, icon, and theme-aware accent/deep/soft pigments; the renderer has no feature-type dependency."
           },
           {
             "name": "selected",

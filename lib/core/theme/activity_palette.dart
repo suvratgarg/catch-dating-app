@@ -80,6 +80,15 @@ class CatchActivity {
   Color get deep => swatch.deep;
   Color get soft => swatch.soft;
 
+  /// Presentation-only content supplied to the shared chip renderer.
+  CatchChipData get chipData => CatchChipData(
+    label: label,
+    icon: glyph,
+    accent: accent,
+    deep: deep,
+    soft: soft,
+  );
+
   /// Presentation-only colors supplied to shared avatar renderers.
   CatchAvatarColors get avatarColors =>
       CatchAvatarColors(accent: accent, deep: deep, soft: soft);

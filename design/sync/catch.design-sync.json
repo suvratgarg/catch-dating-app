@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "326214c0514b6f3c7cd2af546a4cf06ee35636cc1c7e4544179d6268a40185ce",
+  "sourceDigest": "faae5ca68951588bdad49fb9a5fb2c2ad8af146af865d98d82b3422eeb13152d",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "326214c0514b6f3c7cd2af546a4cf06ee35636cc1c7e4544179d6268a40185ce",
-    "contractDigest": "326214c0514b6f3c7cd2af546a4cf06ee35636cc1c7e4544179d6268a40185ce"
+    "digest": "faae5ca68951588bdad49fb9a5fb2c2ad8af146af865d98d82b3422eeb13152d",
+    "contractDigest": "faae5ca68951588bdad49fb9a5fb2c2ad8af146af865d98d82b3422eeb13152d"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "c9c3ef7f87029b71aae8f6f522f7ef8a034078e8ab3fe3fde414947e6378e69f",
+    "handoffRequestDigest": "db0f0d104eeab9dff72af4a022e8f11217b07ecd7f5de749a6c829456769101c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -706,8 +706,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "397bba94b69271403af76b31aa623002785df9c200edd612c2d7a3bfb7a0a935",
+      "figmaExpectedPropertyCount": 6,
+      "figmaExpectedPropertyDigest": "f22a4735c5e658069bff5142d38c3d58d242c848cbe839241411082d44063a34",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -715,7 +715,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Chip",
       "claudeAllowed": true,
-      "contractDigest": "4139835ad3de123c4325ab0c2c29a513301473e70aeeb36309621c228d139866"
+      "contractDigest": "19a800a988732ab08e7a750199e2fc9af4064b58b89f103886a6cbafe5b1b67b"
     },
     {
       "contractId": "catch.empty_state",

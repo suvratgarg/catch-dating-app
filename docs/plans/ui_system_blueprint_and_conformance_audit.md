@@ -936,6 +936,11 @@ The section owns the same lead/title-color precedence and joins caller-owned
 title/count values without importing app copy or activity types. Field geometry
 inspection remains app-side until `CatchField` moves.
 
+Chip activity recipes receive a presentation-only `CatchChipData` value. The
+app palette resolves its label, glyph, and pigments during caller builds; the
+renderer retains the approved soft/solid recipes, label overrides, interactions,
+and semantics. The chip remains app-side until schema constraints move.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

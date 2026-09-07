@@ -118,9 +118,15 @@ void main() {
         _wrap(
           Wrap(
             children: [
-              const CatchChip.activity(activityKind: ActivityKind.socialRun),
               CatchChip.activity(
-                activityKind: ActivityKind.pickleball,
+                data: ActivityPalette.light
+                    .getActivity(ActivityKind.socialRun)
+                    .chipData,
+              ),
+              CatchChip.activity(
+                data: ActivityPalette.light
+                    .getActivity(ActivityKind.pickleball)
+                    .chipData,
                 emphasis: CatchChipEmphasis.solid,
                 label: 'Primary court',
                 onTap: () => taps += 1,
@@ -277,7 +283,11 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchChip.activity(activityKind: ActivityKind.socialRun),
+        CatchChip.activity(
+          data: ActivityPalette.dark
+              .getActivity(ActivityKind.socialRun)
+              .chipData,
+        ),
         themeMode: ThemeMode.dark,
       ),
     );

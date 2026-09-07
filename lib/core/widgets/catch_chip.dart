@@ -1,6 +1,4 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +20,7 @@ enum _CatchChipVariant { tag, selectable, activity, removable }
 /// - [CatchChip.selectable] is a parent-owned independent binary choice or one
 ///   member of a multi-select set. Scalar scope, lifecycle, and mode rows use
 ///   `CatchOptionGroup` or `CatchAdaptiveSelectionControl` instead.
-/// - [CatchChip.activity] carries registry-backed activity identity.
+/// - [CatchChip.activity] renders caller-resolved text, glyph, and pigments.
 /// - [CatchChip.removable] exposes one removal action across the whole chip.
 class CatchChip extends StatefulWidget {
   const CatchChip.tag({
@@ -71,7 +69,7 @@ class CatchChip extends StatefulWidget {
 
   const CatchChip.activity({
     Key? key,
-    required ActivityKind activityKind,
+    required CatchChipData data,
     CatchChipEmphasis emphasis = CatchChipEmphasis.soft,
     String? label,
     VoidCallback? onTap,
@@ -80,7 +78,7 @@ class CatchChip extends StatefulWidget {
   }) : this._(
          key: key,
          variant: _CatchChipVariant.activity,
-         activityKind: activityKind,
+         data: data,
          emphasis: emphasis,
          label: label,
          onTap: onTap,
@@ -119,7 +117,7 @@ class CatchChip extends StatefulWidget {
     this._accent,
     this._tintColor,
     this._inkColor,
-    this._activityKind,
+    this._data,
     this._emphasis = CatchChipEmphasis.soft,
     this._onChanged,
     this._onTap,
@@ -138,7 +136,7 @@ class CatchChip extends StatefulWidget {
   final Color? _accent;
   final Color? _tintColor;
   final Color? _inkColor;
-  final ActivityKind? _activityKind;
+  final CatchChipData? _data;
   final CatchChipEmphasis _emphasis;
   final ValueChanged<bool>? _onChanged;
   final VoidCallback? _onTap;
@@ -162,7 +160,7 @@ class CatchChip extends StatefulWidget {
   Color? get accent => _accent;
   Color? get tintColor => _tintColor;
   Color? get inkColor => _inkColor;
-  ActivityKind? get activityKind => _activityKind;
+  CatchChipData? get data => _data;
   CatchChipEmphasis get emphasis => _emphasis;
   ValueChanged<bool>? get onChanged => _onChanged;
   VoidCallback? get onTap => _onTap;
@@ -234,11 +232,8 @@ class _CatchChipState extends State<CatchChip> {
       'CatchChip.selectable value must be allowed by its contract.',
     );
     final t = CatchTokens.of(context);
-    final activityKind = widget._activityKind;
-    final activity = activityKind == null
-        ? null
-        : ActivityPalette.resolve(context, activityKind);
-    final label = widget._label ?? activity!.label;
+    final data = widget._data;
+    final label = widget._label ?? data!.label;
     final radius = BorderRadius.circular(CatchRadius.pill);
     final duration = MediaQuery.maybeOf(context)?.disableAnimations == true
         ? Duration.zero
@@ -284,15 +279,15 @@ class _CatchChipState extends State<CatchChip> {
         break;
       case _CatchChipVariant.activity:
         final solid = widget._emphasis == CatchChipEmphasis.solid;
-        background = solid ? activity!.accent : activity!.soft;
+        background = solid ? data!.accent : data!.soft;
         foreground = solid
-            ? _inkForFill(t, activity.accent)
+            ? _inkForFill(t, data.accent)
             : Theme.of(context).brightness == Brightness.dark
-            ? activity.accent
-            : activity.deep;
+            ? data.accent
+            : data.deep;
         border = Colors.transparent;
         shadow = CatchElevation.none;
-        leading = Icon(activity.glyph);
+        leading = Icon(data.icon);
         textStyle = CatchTextStyles.fieldRowTitle(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,

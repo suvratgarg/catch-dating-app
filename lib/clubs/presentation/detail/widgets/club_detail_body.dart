@@ -346,14 +346,17 @@ class ClubActivitySection extends StatelessWidget {
       children: [
         for (final activity in activities)
           CatchChip.activity(
-            activityKind: activity,
+            data: ActivityPalette.resolve(context, activity).chipData,
             emphasis: activity == club.hostDefaults.primaryActivityKind
                 ? CatchChipEmphasis.solid
                 : CatchChipEmphasis.soft,
           ),
         if (activities.isEmpty)
           CatchChip.activity(
-            activityKind: ActivityKind.openActivity,
+            data: ActivityPalette.resolve(
+              context,
+              ActivityKind.openActivity,
+            ).chipData,
             label: tags.first,
             emphasis: CatchChipEmphasis.solid,
           ),

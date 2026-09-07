@@ -22,6 +22,7 @@ export 'src/components/catch_branded_sheet_header.dart';
 export 'src/components/catch_button.dart';
 export 'src/components/catch_button_label.dart';
 export 'src/components/catch_button_loading_dots.dart';
+export 'src/components/catch_chip_data.dart';
 export 'src/components/catch_code_input.dart';
 export 'src/components/catch_code_input_row.dart';
 export 'src/components/catch_collapsed_sliver_title.dart';
