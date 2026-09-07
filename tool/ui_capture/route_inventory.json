@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "a4e749723c83f42527c43cc551f741ff5b05bbdef928eac5628728dcaa306e03",
+    "normalizedFileSha256": "e581bd62f8a884bd0426b718b4fac65d4f850e8f568b012d841eb8a63962b694",
     "routeContractSha256": "a4a0b4b309a2cd5840a71d355897e1f832b0c98b53915ee132e4558ff8272113",
     "goRouteCount": 86,
     "shellBranchCount": 9,
@@ -1251,7 +1251,7 @@
     {
       "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:1",
       "sourcePath": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 61,
+      "line": 60,
       "ordinal": 1,
       "presentationExpression": "(_)=>ProfilePhotoEditorScreen(index:index,photo:photo,initialImageBytes:initialImageBytes,canDelete:canDelete)",
       "presentationTarget": "ProfilePhotoEditorScreen",
