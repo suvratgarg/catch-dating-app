@@ -502,3 +502,6 @@ export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
 
 export {getEventAssistanceGroupStaff, setEventAssistanceGroupStaff} from
   "./eventSuccess/operations/groupStaffHandlers";
+
+export {getEventAssistanceMembership, transferEventAssistanceGroup} from
+  "./eventSuccess/operations/membershipHandlers";

@@ -1847,6 +1847,32 @@
       ]
     },
     {
+      "id": "eventAssistanceMemberships",
+      "path": "eventAssistanceMemberships/{membershipId}",
+      "rulesMatch": "/eventAssistanceMemberships/{membershipId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event group membership",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceMembership",
+        "transferEventAssistanceGroup"
+      ]
+    },
+    {
+      "id": "eventAssistanceMembershipReceipts",
+      "path": "eventAssistanceMembershipReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceMembershipReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event group membership",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceMembership",
+        "transferEventAssistanceGroup"
+      ]
+    },
+    {
       "id": "eventAssistanceStaffReceipts",
       "path": "eventAssistanceStaffReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceStaffReceipts/{receiptId}",

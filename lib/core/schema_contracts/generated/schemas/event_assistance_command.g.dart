@@ -1910,9 +1910,10 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
           'additionalProperties': false,
           'required': <Object?>[
             'attendeeId',
-            'from',
-            'to',
-            'receivingOperatorId',
+            'episodeId',
+            'expectedParticipationRevision',
+            'expectedMembershipRevision',
+            'decision',
           ],
           'properties': <String, Object?>{
             'attendeeId': <String, Object?>{
@@ -1921,23 +1922,158 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
               'maxLength': 160,
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
-            'from': <String, Object?>{
+            'episodeId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
               'maxLength': 160,
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
-            'to': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            'expectedParticipationRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
             },
-            'receivingOperatorId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            'expectedMembershipRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'decision': <String, Object?>{
+              'oneOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'groupId',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'place',
+                    },
+                    'groupId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'from',
+                    'to',
+                    'receivingOperatorId',
+                    'expiresAtMillis',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'propose',
+                    },
+                    'from': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 160,
+                          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                    'to': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    'receivingOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    'expiresAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'transferId',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'accept',
+                    },
+                    'transferId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'transferId',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'reject',
+                    },
+                    'transferId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'transferId',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'cancel',
+                    },
+                    'transferId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'leave',
+                    },
+                  },
+                },
+              ],
             },
           },
         },

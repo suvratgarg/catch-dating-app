@@ -537,6 +537,120 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceMembershipDocument {
+  schemaVersion: 1;
+  membershipId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  sourceGeneration: string;
+  attendeeGeneration: string;
+  episodeId: string;
+  revision: number;
+  accepted: {
+    groupId: string;
+    groupSourceHash: string;
+    responsibleOperatorId: string;
+    acceptedAt: number;
+  } | null;
+  transfer:
+    | (
+        | {
+            transferId: string;
+            from: string | null;
+            to: string;
+            targetSourceHash: string;
+            receivingOperatorId: string;
+            requestedBy: string;
+            requestedAt: number;
+            expiresAt: number;
+            status: "pending";
+            resolvedAt: null;
+            resolvedBy: null;
+          }
+        | {
+            transferId: string;
+            from: string | null;
+            to: string;
+            targetSourceHash: string;
+            receivingOperatorId: string;
+            requestedBy: string;
+            requestedAt: number;
+            expiresAt: number;
+            status: "accepted" | "rejected" | "cancelled";
+            resolvedAt: number;
+            resolvedBy: string;
+          }
+      )
+    | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceMembershipReceiptDocument {
+  receiptId: string;
+  membershipId: string;
+  sourceGeneration: string;
+  episodeId: string;
+  actorUid: string;
+  requestHash: string;
+  command: {
+    kind: "transferGroup";
+    context:
+      | {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        }
+      | {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        };
+    eventId: string;
+    operationId: string;
+    payload: {
+      attendeeId: string;
+      episodeId: string;
+      expectedParticipationRevision: number;
+      expectedMembershipRevision: number;
+      decision:
+        | {
+            kind: "place";
+            groupId: string;
+          }
+        | {
+            kind: "propose";
+            from: string | null;
+            to: string;
+            receivingOperatorId: string;
+            expiresAtMillis: number;
+          }
+        | {
+            kind: "accept";
+            transferId: string;
+          }
+        | {
+            kind: "reject";
+            transferId: string;
+          }
+        | {
+            kind: "cancel";
+            transferId: string;
+          }
+        | {
+            kind: "leave";
+          };
+    };
+  };
+  revision: number;
+  createdAt: number;
+}
+
 export interface EventAssistanceStaffReceiptDocument {
   receiptId: string;
   staffGrantId: string;

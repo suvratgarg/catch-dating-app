@@ -381,9 +381,36 @@ export type EventAssistanceCommand =
       operationId: string;
       payload: {
         attendeeId: string;
-        from: string;
-        to: string;
-        receivingOperatorId: string;
+        episodeId: string;
+        expectedParticipationRevision: number;
+        expectedMembershipRevision: number;
+        decision:
+          | {
+              kind: "place";
+              groupId: string;
+            }
+          | {
+              kind: "propose";
+              from: string | null;
+              to: string;
+              receivingOperatorId: string;
+              expiresAtMillis: number;
+            }
+          | {
+              kind: "accept";
+              transferId: string;
+            }
+          | {
+              kind: "reject";
+              transferId: string;
+            }
+          | {
+              kind: "cancel";
+              transferId: string;
+            }
+          | {
+              kind: "leave";
+            };
       };
     }
   | {

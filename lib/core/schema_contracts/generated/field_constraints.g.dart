@@ -14604,6 +14604,532 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hostChoice', 'organizerDefault'],
   );
 
+  static const eventAssistanceMembershipCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewAcceptedAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.accepted.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewAcceptedGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.accepted.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewAcceptedGroupSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.accepted.groupSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewAcceptedResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.accepted.responsibleOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewActions = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['place', 'propose', 'accept', 'reject', 'cancel', 'leave'],
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewActionsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.actions.items',
+    required: true,
+    enumValues: <String>['place', 'propose', 'accept', 'reject', 'cancel', 'leave'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewFreshness = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.freshness',
+    required: true,
+    enumValues: <String>['uninitialized', 'current', 'sourceChanged'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewGroups = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.groups.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.groups.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewParticipationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.participationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewReady = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.ready',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewTransferState = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.transferState',
+    required: true,
+    enumValues: <String>['none', 'pending', 'expired', 'sourceChanged', 'accepted', 'rejected', 'cancelled'],
+  );
+
+  static const eventAssistanceMembershipDocumentAcceptedAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.accepted.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipDocumentAcceptedGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.accepted.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipDocumentAcceptedGroupSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.accepted.groupSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipDocumentAcceptedResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.accepted.responsibleOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipDocumentMembershipId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.membershipId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceMembershipDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionFrom = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.from',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.kind',
+    required: true,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionReceivingOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.receivingOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionTo = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.to',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionTransferId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.decision.transferId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadExpectedMembershipRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.expectedMembershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCommandPayloadExpectedParticipationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.command.payload.expectedParticipationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentMembershipId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.membershipId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipReceiptDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipReceiptDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceMessageDocumentAttempts = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.attempts',
     required: true,
@@ -31619,6 +32145,38 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const getEventAssistanceMembershipCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceMembershipCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceMembershipCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceMembershipCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceMembershipCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceMembershipCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceMembershipCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceMembershipCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventAssistanceParticipationCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -64694,6 +65252,175 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const transferEventAssistanceGroupCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionFrom = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.from',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionGroupId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.kind',
+    required: true,
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionReceivingOperatorId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.receivingOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionTo = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.to',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionTransferId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.decision.transferId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadEpisodeId = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadExpectedMembershipRevision = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.expectedMembershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadCommandPayloadExpectedParticipationRevision = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.command.payload.expectedParticipationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const transferEventAssistanceGroupCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'transferEventAssistanceGroupCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const transferOrganizerOwnershipCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'transferOrganizerOwnershipCallablePayload.organizerId',
     maxLength: 180,
@@ -73802,6 +74529,73 @@ abstract final class CatchContractConstraints {
     'eventAssistanceLateJoinInput.setting.kind': eventAssistanceLateJoinInputSettingKind,
     'eventAssistanceLateJoinInput.setting.policyVersion': eventAssistanceLateJoinInputSettingPolicyVersion,
     'eventAssistanceLateJoinInput.setting.reason': eventAssistanceLateJoinInputSettingReason,
+    'eventAssistanceMembershipCallableResponse.operationRevision': eventAssistanceMembershipCallableResponseOperationRevision,
+    'eventAssistanceMembershipCallableResponse.outcome': eventAssistanceMembershipCallableResponseOutcome,
+    'eventAssistanceMembershipCallableResponse.view.accepted.acceptedAt': eventAssistanceMembershipCallableResponseViewAcceptedAcceptedAt,
+    'eventAssistanceMembershipCallableResponse.view.accepted.groupId': eventAssistanceMembershipCallableResponseViewAcceptedGroupId,
+    'eventAssistanceMembershipCallableResponse.view.accepted.groupSourceHash': eventAssistanceMembershipCallableResponseViewAcceptedGroupSourceHash,
+    'eventAssistanceMembershipCallableResponse.view.accepted.responsibleOperatorId': eventAssistanceMembershipCallableResponseViewAcceptedResponsibleOperatorId,
+    'eventAssistanceMembershipCallableResponse.view.actions': eventAssistanceMembershipCallableResponseViewActions,
+    'eventAssistanceMembershipCallableResponse.view.actions.items': eventAssistanceMembershipCallableResponseViewActionsItems,
+    'eventAssistanceMembershipCallableResponse.view.attendeeId': eventAssistanceMembershipCallableResponseViewAttendeeId,
+    'eventAssistanceMembershipCallableResponse.view.context.eventId': eventAssistanceMembershipCallableResponseViewContextEventId,
+    'eventAssistanceMembershipCallableResponse.view.context.mode': eventAssistanceMembershipCallableResponseViewContextMode,
+    'eventAssistanceMembershipCallableResponse.view.context.organizerId': eventAssistanceMembershipCallableResponseViewContextOrganizerId,
+    'eventAssistanceMembershipCallableResponse.view.episodeId': eventAssistanceMembershipCallableResponseViewEpisodeId,
+    'eventAssistanceMembershipCallableResponse.view.freshness': eventAssistanceMembershipCallableResponseViewFreshness,
+    'eventAssistanceMembershipCallableResponse.view.groups': eventAssistanceMembershipCallableResponseViewGroups,
+    'eventAssistanceMembershipCallableResponse.view.groups.items.groupId': eventAssistanceMembershipCallableResponseViewGroupsItemsGroupId,
+    'eventAssistanceMembershipCallableResponse.view.groups.items.label': eventAssistanceMembershipCallableResponseViewGroupsItemsLabel,
+    'eventAssistanceMembershipCallableResponse.view.participationRevision': eventAssistanceMembershipCallableResponseViewParticipationRevision,
+    'eventAssistanceMembershipCallableResponse.view.ready': eventAssistanceMembershipCallableResponseViewReady,
+    'eventAssistanceMembershipCallableResponse.view.revision': eventAssistanceMembershipCallableResponseViewRevision,
+    'eventAssistanceMembershipCallableResponse.view.serverTime': eventAssistanceMembershipCallableResponseViewServerTime,
+    'eventAssistanceMembershipCallableResponse.view.sourceHash': eventAssistanceMembershipCallableResponseViewSourceHash,
+    'eventAssistanceMembershipCallableResponse.view.transferState': eventAssistanceMembershipCallableResponseViewTransferState,
+    'eventAssistanceMembershipDocument.accepted.acceptedAt': eventAssistanceMembershipDocumentAcceptedAcceptedAt,
+    'eventAssistanceMembershipDocument.accepted.groupId': eventAssistanceMembershipDocumentAcceptedGroupId,
+    'eventAssistanceMembershipDocument.accepted.groupSourceHash': eventAssistanceMembershipDocumentAcceptedGroupSourceHash,
+    'eventAssistanceMembershipDocument.accepted.responsibleOperatorId': eventAssistanceMembershipDocumentAcceptedResponsibleOperatorId,
+    'eventAssistanceMembershipDocument.attendeeGeneration': eventAssistanceMembershipDocumentAttendeeGeneration,
+    'eventAssistanceMembershipDocument.attendeeId': eventAssistanceMembershipDocumentAttendeeId,
+    'eventAssistanceMembershipDocument.context.eventId': eventAssistanceMembershipDocumentContextEventId,
+    'eventAssistanceMembershipDocument.context.mode': eventAssistanceMembershipDocumentContextMode,
+    'eventAssistanceMembershipDocument.context.organizerId': eventAssistanceMembershipDocumentContextOrganizerId,
+    'eventAssistanceMembershipDocument.createdAt': eventAssistanceMembershipDocumentCreatedAt,
+    'eventAssistanceMembershipDocument.episodeId': eventAssistanceMembershipDocumentEpisodeId,
+    'eventAssistanceMembershipDocument.membershipId': eventAssistanceMembershipDocumentMembershipId,
+    'eventAssistanceMembershipDocument.revision': eventAssistanceMembershipDocumentRevision,
+    'eventAssistanceMembershipDocument.schemaVersion': eventAssistanceMembershipDocumentSchemaVersion,
+    'eventAssistanceMembershipDocument.sourceGeneration': eventAssistanceMembershipDocumentSourceGeneration,
+    'eventAssistanceMembershipDocument.updatedAt': eventAssistanceMembershipDocumentUpdatedAt,
+    'eventAssistanceMembershipReceiptDocument.actorUid': eventAssistanceMembershipReceiptDocumentActorUid,
+    'eventAssistanceMembershipReceiptDocument.command.context.clockId': eventAssistanceMembershipReceiptDocumentCommandContextClockId,
+    'eventAssistanceMembershipReceiptDocument.command.context.eventId': eventAssistanceMembershipReceiptDocumentCommandContextEventId,
+    'eventAssistanceMembershipReceiptDocument.command.context.mode': eventAssistanceMembershipReceiptDocumentCommandContextMode,
+    'eventAssistanceMembershipReceiptDocument.command.context.organizerId': eventAssistanceMembershipReceiptDocumentCommandContextOrganizerId,
+    'eventAssistanceMembershipReceiptDocument.command.context.rehearsalId': eventAssistanceMembershipReceiptDocumentCommandContextRehearsalId,
+    'eventAssistanceMembershipReceiptDocument.command.context.virtualEventId': eventAssistanceMembershipReceiptDocumentCommandContextVirtualEventId,
+    'eventAssistanceMembershipReceiptDocument.command.eventId': eventAssistanceMembershipReceiptDocumentCommandEventId,
+    'eventAssistanceMembershipReceiptDocument.command.kind': eventAssistanceMembershipReceiptDocumentCommandKind,
+    'eventAssistanceMembershipReceiptDocument.command.operationId': eventAssistanceMembershipReceiptDocumentCommandOperationId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.attendeeId': eventAssistanceMembershipReceiptDocumentCommandPayloadAttendeeId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.expiresAtMillis': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionExpiresAtMillis,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.from': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionFrom,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.groupId': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionGroupId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.kind': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionKind,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.receivingOperatorId': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionReceivingOperatorId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.to': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionTo,
+    'eventAssistanceMembershipReceiptDocument.command.payload.decision.transferId': eventAssistanceMembershipReceiptDocumentCommandPayloadDecisionTransferId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.episodeId': eventAssistanceMembershipReceiptDocumentCommandPayloadEpisodeId,
+    'eventAssistanceMembershipReceiptDocument.command.payload.expectedMembershipRevision': eventAssistanceMembershipReceiptDocumentCommandPayloadExpectedMembershipRevision,
+    'eventAssistanceMembershipReceiptDocument.command.payload.expectedParticipationRevision': eventAssistanceMembershipReceiptDocumentCommandPayloadExpectedParticipationRevision,
+    'eventAssistanceMembershipReceiptDocument.createdAt': eventAssistanceMembershipReceiptDocumentCreatedAt,
+    'eventAssistanceMembershipReceiptDocument.episodeId': eventAssistanceMembershipReceiptDocumentEpisodeId,
+    'eventAssistanceMembershipReceiptDocument.membershipId': eventAssistanceMembershipReceiptDocumentMembershipId,
+    'eventAssistanceMembershipReceiptDocument.receiptId': eventAssistanceMembershipReceiptDocumentReceiptId,
+    'eventAssistanceMembershipReceiptDocument.requestHash': eventAssistanceMembershipReceiptDocumentRequestHash,
+    'eventAssistanceMembershipReceiptDocument.revision': eventAssistanceMembershipReceiptDocumentRevision,
+    'eventAssistanceMembershipReceiptDocument.sourceGeneration': eventAssistanceMembershipReceiptDocumentSourceGeneration,
     'eventAssistanceMessageDocument.attempts': eventAssistanceMessageDocumentAttempts,
     'eventAssistanceMessageDocument.attempts.items.attemptId': eventAssistanceMessageDocumentAttemptsItemsAttemptId,
     'eventAssistanceMessageDocument.attempts.items.authorization.checkedAt': eventAssistanceMessageDocumentAttemptsItemsAuthorizationCheckedAt,
@@ -76111,6 +76905,10 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceGroupStaffCallablePayload.phoneNumber': getEventAssistanceGroupStaffCallablePayloadPhoneNumber,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
+    'getEventAssistanceMembershipCallablePayload.attendeeId': getEventAssistanceMembershipCallablePayloadAttendeeId,
+    'getEventAssistanceMembershipCallablePayload.context.eventId': getEventAssistanceMembershipCallablePayloadContextEventId,
+    'getEventAssistanceMembershipCallablePayload.context.mode': getEventAssistanceMembershipCallablePayloadContextMode,
+    'getEventAssistanceMembershipCallablePayload.context.organizerId': getEventAssistanceMembershipCallablePayloadContextOrganizerId,
     'getEventAssistanceParticipationCallablePayload.attendeeId': getEventAssistanceParticipationCallablePayloadAttendeeId,
     'getEventAssistanceParticipationCallablePayload.context.eventId': getEventAssistanceParticipationCallablePayloadContextEventId,
     'getEventAssistanceParticipationCallablePayload.context.mode': getEventAssistanceParticipationCallablePayloadContextMode,
@@ -80664,6 +81462,27 @@ abstract final class CatchContractConstraints {
     'syncOrganizerProviderEventCallableResponse.updatedCount': syncOrganizerProviderEventCallableResponseUpdatedCount,
     'transferClubOwnershipCallablePayload.clubId': transferClubOwnershipCallablePayloadClubId,
     'transferClubOwnershipCallablePayload.uid': transferClubOwnershipCallablePayloadUid,
+    'transferEventAssistanceGroupCallablePayload.command.context.clockId': transferEventAssistanceGroupCallablePayloadCommandContextClockId,
+    'transferEventAssistanceGroupCallablePayload.command.context.eventId': transferEventAssistanceGroupCallablePayloadCommandContextEventId,
+    'transferEventAssistanceGroupCallablePayload.command.context.mode': transferEventAssistanceGroupCallablePayloadCommandContextMode,
+    'transferEventAssistanceGroupCallablePayload.command.context.organizerId': transferEventAssistanceGroupCallablePayloadCommandContextOrganizerId,
+    'transferEventAssistanceGroupCallablePayload.command.context.rehearsalId': transferEventAssistanceGroupCallablePayloadCommandContextRehearsalId,
+    'transferEventAssistanceGroupCallablePayload.command.context.virtualEventId': transferEventAssistanceGroupCallablePayloadCommandContextVirtualEventId,
+    'transferEventAssistanceGroupCallablePayload.command.eventId': transferEventAssistanceGroupCallablePayloadCommandEventId,
+    'transferEventAssistanceGroupCallablePayload.command.kind': transferEventAssistanceGroupCallablePayloadCommandKind,
+    'transferEventAssistanceGroupCallablePayload.command.operationId': transferEventAssistanceGroupCallablePayloadCommandOperationId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.attendeeId': transferEventAssistanceGroupCallablePayloadCommandPayloadAttendeeId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.expiresAtMillis': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionExpiresAtMillis,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.from': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionFrom,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.groupId': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionGroupId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.kind': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionKind,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.receivingOperatorId': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionReceivingOperatorId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.to': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionTo,
+    'transferEventAssistanceGroupCallablePayload.command.payload.decision.transferId': transferEventAssistanceGroupCallablePayloadCommandPayloadDecisionTransferId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.episodeId': transferEventAssistanceGroupCallablePayloadCommandPayloadEpisodeId,
+    'transferEventAssistanceGroupCallablePayload.command.payload.expectedMembershipRevision': transferEventAssistanceGroupCallablePayloadCommandPayloadExpectedMembershipRevision,
+    'transferEventAssistanceGroupCallablePayload.command.payload.expectedParticipationRevision': transferEventAssistanceGroupCallablePayloadCommandPayloadExpectedParticipationRevision,
+    'transferEventAssistanceGroupCallablePayload.expectedSourceHash': transferEventAssistanceGroupCallablePayloadExpectedSourceHash,
     'transferOrganizerOwnershipCallablePayload.organizerId': transferOrganizerOwnershipCallablePayloadOrganizerId,
     'transferOrganizerOwnershipCallablePayload.uid': transferOrganizerOwnershipCallablePayloadUid,
     'unblockUserCallablePayload.targetUserId': unblockUserCallablePayloadTargetUserId,

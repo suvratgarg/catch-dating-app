@@ -183,6 +183,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   withdrawEventWhatsapp: {maxRequests: 20, windowMs: 60 * 1000},
   getEventAssistanceSetting: {maxRequests: 60, windowMs: 60_000},
   getEventAssistanceParticipation: {maxRequests: 60, windowMs: 60_000},
+  getEventAssistanceMembership: {maxRequests: 60, windowMs: 60_000},
+  transferEventAssistanceGroup: {maxRequests: 30, windowMs: 60_000},
   getEventAssistanceGroupStaff: {maxRequests: 60, windowMs: 60_000},
   setEventAssistanceSetting: {maxRequests: 30, windowMs: 60_000},
   setEventAssistanceParticipation: {maxRequests: 30, windowMs: 60_000},

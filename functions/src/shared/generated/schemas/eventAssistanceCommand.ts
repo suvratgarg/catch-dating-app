@@ -1908,9 +1908,10 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "additionalProperties": false,
           "required": [
             "attendeeId",
-            "from",
-            "to",
-            "receivingOperatorId"
+            "episodeId",
+            "expectedParticipationRevision",
+            "expectedMembershipRevision",
+            "decision"
           ],
           "properties": {
             "attendeeId": {
@@ -1919,23 +1920,158 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
-            "from": {
+            "episodeId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
-            "to": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            "expectedParticipationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             },
-            "receivingOperatorId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            "expectedMembershipRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "groupId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "place"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "from",
+                    "to",
+                    "receivingOperatorId",
+                    "expiresAtMillis"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "propose"
+                    },
+                    "from": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "to": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "receivingOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "transferId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "accept"
+                    },
+                    "transferId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "transferId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "reject"
+                    },
+                    "transferId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "transferId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "cancel"
+                    },
+                    "transferId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "leave"
+                    }
+                  }
+                }
+              ]
             }
           }
         }

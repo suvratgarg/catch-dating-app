@@ -16,6 +16,31 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "GetEventAssistanceMembershipCallablePayload",
+    "source": "callables/get_event_assistance_membership_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceMembershipCallablePayload.ts"
+  },
+  {
+    "name": "TransferEventAssistanceGroupCallablePayload",
+    "source": "callables/transfer_event_assistance_group_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/transferEventAssistanceGroupCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipCallableResponse",
+    "source": "callable_responses/event_assistance_membership_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipDocument",
+    "source": "firestore/event_assistance_memberships.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipDocument.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipReceiptDocument",
+    "source": "firestore/event_assistance_membership_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipReceiptDocument.ts"
+  },
+  {
     "name": "GetEventAssistanceGroupStaffCallablePayload",
     "source": "callables/get_event_assistance_group_staff_payload.schema.json",
     "typeOutput": "functions/src/shared/generated/getEventAssistanceGroupStaffCallablePayload.ts"

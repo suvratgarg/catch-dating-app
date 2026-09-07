@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.24.0
-updated: 2026-09-06
+version: 1.25.0
+updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -153,8 +153,8 @@ canonical unit reader before they become selectable. The shared late-join policy
 requires known active participation; unknown participation waits, and inactive
 participation cancels its proposed work. Missing guest records remain uninitialized
 on reads. App controls, module-specific opt-outs, future allocation exclusion,
-re-entry placement, group membership and rehearsal adapters remain integration
-work. The new command receipts need terminal retention before activation.
+re-entry controls and rehearsal adapters remain integration work. Moving-group
+membership now has its own scoped command boundary below. The new command receipts need terminal retention before activation.
 
 ### Saved assistance settings
 
@@ -245,7 +245,7 @@ published. Until then it returns `noInstructions`, and neither web nor native
 buttons can act on the stale destination. The dispatch check applies to SMS
 and WhatsApp, including reservation-to-claim changes, without charging a send.
 Operational notices retain their separate event-window rules. This binding
-proves the destination's currency, not a guest's pace-group membership; the
+also verifies the guest's accepted membership for group checkpoints. The
 complete policy/participation fact reader and workflow publisher remain
 integration work.
 
@@ -273,11 +273,64 @@ visible to managers for removal. Immutable `eventAssistanceStaffReceipts` fence
 retries and concurrent changes. Group staff projections expose only the selected
 duty and basic staff identity, not full phone numbers or the event guest roster.
 
-The duty permission map accounts for transfer, checkpoint and accountability
-commands, but only progress reads and departure confirmation currently consume
-it. Moving-group membership, acknowledged transfers, command adapters, delegated
-staff controls and receipt retention remain implementation work. Group duties
-alone do not grant the existing event-wide live-location publishing permission.
+The duty permission map now authorizes progress, departure and membership
+commands. Checkpoint/accountability adapters, delegated staff controls and receipt
+retention remain implementation work. Group duties alone do not grant the existing event-wide live-location publishing permission.
+
+### Guest group membership and handovers
+
+`getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
+accepted moving-group membership per guest, independently of physical attendance,
+social allocation, seating, joining intent and message consent. Memberships apply
+to saved pace groups; whole-event guidance does not require hosts to assign every
+guest to an artificial subgroup. Reads never initialize participation or membership.
+A current, admitted participation episode is required for placement and transfers.
+
+The existing typed `transferGroup` command now has six closed decisions: place,
+propose, accept, reject, cancel and leave. Initial placement is manager-only and
+records that manager's acceptance of responsibility. Alternatively, a manager can
+propose an initial assignment to a named receiving operator with no source group.
+Leads/pacers can propose a transfer from their current group; sweeps can inspect
+its membership but cannot transfer it. Only the named receiving operator with a
+current target-group duty (or organizer management authority) can accept. A manager
+cannot accept on another operator's behalf. Pending transfers retain the original
+accepted group and responsible operator. Reject, cancel and timeout never move a
+guest. A pending initial assignment cannot be bypassed by direct placement.
+
+The pending/closed transfer records are correlated schema unions. Closed records
+require a resolving actor and time; pending records require both to be null.
+Acceptance replaces the single accepted membership atomically. There is no interval
+in which a guest belongs to both groups. Deadlines are bounded to 30 minutes and
+the current event end. Source-group operators/managers can cancel a pending request
+or remove membership; removal also cancels any pending handover. Earlier transfers
+remain auditable in immutable command receipts.
+
+The writer re-reads canonical event, roster, organizer, plan, participation,
+membership, actor grant and any receiving grant inside one transaction. It checks
+the reviewed source hash, membership revision, participation revision and episode;
+then rechecks time and authority after all reads. Creation generations fence
+replacement event/roster rows. Each accepted membership and proposed target binds
+its saved group configuration. A changed target requires a fresh handover without
+invalidating the still-current source membership. Breaks/departures withhold new
+placement and acceptance; returning in a new episode requires placement review.
+
+`eventAssistanceMemberships` holds current state, and server-only
+`eventAssistanceMembershipReceipts` stores the authenticated command and original
+operation revision atomically. Exact authorized retries return that revision and
+latest state. A former operator loses access once the guest transfers away; a
+rejected/cancelled/expired receiving request grants no continuing guest access.
+Reads expose one guest's operating state and group choices, without contact fields
+or a full roster. Record/receipt retention remains required before activation.
+
+Group-specific joining guidance now checks accepted membership at publication,
+link issuance, guest view/reply resolution and the shared SMS/WhatsApp dispatch
+boundary. Pending transfers keep old-group instructions usable; acceptance,
+removal, a replaced source or a new participation episode withholds stale group
+instructions. The next valid publication can update the existing workflow link.
+This does not infer a guest's location, check-in or actual arrival at a checkpoint.
+Host roster controls, bulk setup, operator handover queues, explicit responsibility
+reassignment, the complete policy-aware fact reader/publisher and rehearsal
+adapters remain integration work.
 
 ### Shared message delivery
 

@@ -4340,6 +4340,7 @@ describe("firestore.rules", () => {
       for (const collectionName of ["eventAssistanceMessages",
         "eventAssistanceSettings", "eventAssistanceSettingReceipts",
         "eventAssistanceParticipationReceipts", "eventAssistanceStaffReceipts",
+        "eventAssistanceMemberships", "eventAssistanceMembershipReceipts",
         "eventAssistanceGroupProgress", "eventAssistanceProgressReceipts",
         "eventAssistanceGuests", "eventAssistanceThreads",
         "eventAssistanceGuestGrants", "eventAssistanceCases",

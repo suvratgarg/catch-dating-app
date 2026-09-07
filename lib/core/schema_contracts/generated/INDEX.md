@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceMembershipCallablePayload.ts` |
+| TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `functions/src/shared/generated/transferEventAssistanceGroupCallablePayload.ts` |
+| EventAssistanceMembershipCallableResponse | `callable_responses/event_assistance_membership_response.schema.json` | `functions/src/shared/generated/eventAssistanceMembershipCallableResponse.ts` |
+| EventAssistanceMembershipDocument | `firestore/event_assistance_memberships.schema.json` | `functions/src/shared/generated/eventAssistanceMembershipDocument.ts` |
+| EventAssistanceMembershipReceiptDocument | `firestore/event_assistance_membership_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceMembershipReceiptDocument.ts` |
 | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGroupStaffCallablePayload.ts` |
 | SetEventAssistanceGroupStaffCallablePayload | `callables/set_event_assistance_group_staff_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceGroupStaffCallablePayload.ts` |
 | EventAssistanceGroupStaffCallableResponse | `callable_responses/event_assistance_group_staff_response.schema.json` | `functions/src/shared/generated/eventAssistanceGroupStaffCallableResponse.ts` |
@@ -606,6 +611,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetEventAssistanceMembershipCallablePayloadSchema` | GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_membership_callable_payload.g.dart` |
+| `schemaTransferEventAssistanceGroupCallablePayloadSchema` | TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/transfer_event_assistance_group_callable_payload.g.dart` |
+| `schemaEventAssistanceMembershipCallableResponseSchema` | EventAssistanceMembershipCallableResponse | `callable_responses/event_assistance_membership_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_membership_callable_response.g.dart` |
+| `schemaEventAssistanceMembershipDocumentSchema` | EventAssistanceMembershipDocument | `firestore/event_assistance_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_membership_document.g.dart` |
+| `schemaEventAssistanceMembershipReceiptDocumentSchema` | EventAssistanceMembershipReceiptDocument | `firestore/event_assistance_membership_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_membership_receipt_document.g.dart` |
 | `schemaGetEventAssistanceGroupStaffCallablePayloadSchema` | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_group_staff_callable_payload.g.dart` |
 | `schemaSetEventAssistanceGroupStaffCallablePayloadSchema` | SetEventAssistanceGroupStaffCallablePayload | `callables/set_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_group_staff_callable_payload.g.dart` |
 | `schemaEventAssistanceGroupStaffCallableResponseSchema` | EventAssistanceGroupStaffCallableResponse | `callable_responses/event_assistance_group_staff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_group_staff_callable_response.g.dart` |
@@ -1200,6 +1210,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceMembershipCallableRequest | GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_membership_callable_request.g.dart` |
+| TransferEventAssistanceGroupCallableRequest | TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `lib/core/schema_contracts/generated/callables/transfer_event_assistance_group_callable_request.g.dart` |
 | GetEventAssistanceGroupStaffCallableRequest | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_staff_callable_request.g.dart` |
 | GetEventAssistanceParticipationCallableRequest | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_participation_callable_request.g.dart` |
 | SetEventAssistanceParticipationCallableRequest | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_assistance_participation_callable_request.g.dart` |

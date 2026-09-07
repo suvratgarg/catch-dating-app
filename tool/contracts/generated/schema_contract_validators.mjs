@@ -3,6 +3,11 @@
 
 import {createRequire} from "node:module";
 import {
+  getEventAssistanceMembershipCallablePayloadSchema,
+  transferEventAssistanceGroupCallablePayloadSchema,
+  eventAssistanceMembershipCallableResponseSchema,
+  eventAssistanceMembershipDocumentSchema,
+  eventAssistanceMembershipReceiptDocumentSchema,
   getEventAssistanceGroupStaffCallablePayloadSchema,
   setEventAssistanceGroupStaffCallablePayloadSchema,
   eventAssistanceGroupStaffCallableResponseSchema,
@@ -616,6 +621,11 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetEventAssistanceMembershipCallablePayload = ajv.compile(getEventAssistanceMembershipCallablePayloadSchema);
+export const validateTransferEventAssistanceGroupCallablePayload = ajv.compile(transferEventAssistanceGroupCallablePayloadSchema);
+export const validateEventAssistanceMembershipCallableResponse = ajv.compile(eventAssistanceMembershipCallableResponseSchema);
+export const validateEventAssistanceMembershipDocument = ajv.compile(eventAssistanceMembershipDocumentSchema);
+export const validateEventAssistanceMembershipReceiptDocument = ajv.compile(eventAssistanceMembershipReceiptDocumentSchema);
 export const validateGetEventAssistanceGroupStaffCallablePayload = ajv.compile(getEventAssistanceGroupStaffCallablePayloadSchema);
 export const validateSetEventAssistanceGroupStaffCallablePayload = ajv.compile(setEventAssistanceGroupStaffCallablePayloadSchema);
 export const validateEventAssistanceGroupStaffCallableResponse = ajv.compile(eventAssistanceGroupStaffCallableResponseSchema);

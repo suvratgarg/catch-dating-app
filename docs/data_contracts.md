@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.44.0
-updated: 2026-09-06
+version: 1.45.0
+updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -103,6 +103,34 @@ obligation, and post-event reconciliation stay blocked until their owning
 domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
+
+### Event Assistance Group Membership Contract
+
+`eventAssistanceMemberships/{membershipId}` holds at most one accepted group
+and one current handover per event/attendee. It binds event/roster creation
+generations, authored attendee generation, participation episode and revision.
+Accepted membership and proposed destination separately bind saved group source.
+Attendance, social allocation, physical placement and participation remain owned
+by their existing records. Membership never modifies those facts.
+
+The canonical `transferGroup` command has correlated place/propose/accept/reject/
+cancel/leave decisions. Place is an initial manager acknowledgement of
+responsibility; propose can name a current receiving operator for either initial
+assignment or transfer. Acceptance belongs to that exact operator with current
+scope authority. It changes membership and resolves the proposal together.
+Cancellation, rejection and expiry preserve the prior group. Direct placement
+cannot bypass a pending assignment. Transfer deadlines cannot exceed 30 minutes
+or the event end. Sweeps have scoped reads but no transfer authority.
+
+`eventAssistanceMembershipReceipts` atomically preserves the actor, canonical
+command, request hash, source generation, episode and resulting revision. Current
+manager/scoped operator authority and reviewed source/revision/episode fences are
+checked in each transaction. Reads and retries never recreate an earlier effect.
+Changed event/roster generations, guest re-entry and changed group setup require
+fresh review. Membership checks also gate group-specific joining instructions at
+publication, guest interactions and SMS/WhatsApp dispatch. Both collections deny
+all direct client access. Host controls, bulk/queue projections, responsibility
+reassignment, rehearsal adapters and terminal retention remain integration work.
 
 ### Event Assistance Participation Contract
 
@@ -1565,8 +1593,9 @@ limited to 20 groups per person, at most 14 days and the event's staff window.
 Event creation generation and saved group configuration bind authority; ordinary
 attendance/progress updates do not revoke it. Managers can remove obsolete
 group duties. Direct staff/receipt reads and writes remain denied. These grants
-currently authorize scoped progress reads and lead/pacer departure confirmation;
-transfers, checkpoint/accountability commands and staff UI remain integration work.
+authorize scoped progress and membership reads, lead/pacer departures and
+acknowledged transfers. Checkpoint/accountability commands and staff UI remain
+integration work.
 
 The Host attendance outbox is local client state, not Firestore authority. It
 contains no names, phones or emails: only account/event/attendee ids, absolute

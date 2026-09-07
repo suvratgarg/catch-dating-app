@@ -9,6 +9,7 @@ import {validateEventAssistanceGroupProgressDocument} from
   "../../shared/generated/validators/eventAssistanceGroupProgressDocument";
 import type {MessageRecord} from "./messageOutbox";
 import {requireDocumentId} from "./guestRecords";
+import {membershipGuidanceIsCurrent} from "./membershipGuidance";
 import {
   groupProgressSource, invalidSource, ProgressContext, progressIdentity,
   projectGroupProgress,
@@ -48,7 +49,7 @@ export async function readGroupProgressState(db: Firestore, tx: Transaction,
   const source = groupProgressSource({context, groupId, event, plan,
     eventGeneration: eventSnap.createTime,
     planGeneration: planSnap.createTime, now});
-  return {source, progress, now};
+  return {source, progress, now, eventSnapshot: eventSnap};
 }
 
 /** A newer confirmation of identical directions does not stale a guest link. */
@@ -72,7 +73,8 @@ export async function joiningGuidanceIsCurrent(db: Firestore, tx: Transaction,
   }
   const current = projectGroupProgress(state.source, state.progress, now)
     .guidance;
-  if (!current) return false;
+  if (!current || !await membershipGuidanceIsCurrent(db, tx, intent, now,
+    state.eventSnapshot)) return false;
   const {revision, validUntil, ...material} = intent.guidance;
   const {revision: currentRevision, validUntil: currentUntil,
     ...currentMaterial} = current;
