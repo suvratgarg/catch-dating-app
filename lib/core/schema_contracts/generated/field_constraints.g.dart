@@ -13008,6 +13008,177 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceGroupStaffCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewAvailableDuties = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.availableDuties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['lead', 'pacer', 'sweep'],
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewAvailableDutiesItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.availableDuties.items',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewCanAssign = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.canAssign',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutyDuty = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutyExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutyGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutyGrantedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutyGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewDutySourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.duty.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewOperatorExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.operatorExpiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.phoneLastFour',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.status',
+    required: true,
+    enumValues: <String>['none', 'assigned', 'expired', 'revoked', 'sourceChanged'],
+  );
+
+  static const eventAssistanceGroupStaffCallableResponseViewUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupStaffCallableResponse.view.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceGuestDocumentAttendeeGeneration = CatchContractFieldConstraints(
     path: 'eventAssistanceGuestDocument.attendeeGeneration',
     required: true,
@@ -17488,6 +17659,51 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceStaffReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceStaffReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^staff-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceStaffReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceStaffReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceStaffReceiptDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceStaffReceiptDocumentStaffGrantId = CatchContractFieldConstraints(
+    path: 'eventAssistanceStaffReceiptDocument.staffGrantId',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventAssistanceThreadDocumentAttendeeId = CatchContractFieldConstraints(
@@ -24319,6 +24535,73 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventStaffGrantDocumentGroupDuties = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventStaffGrantDocumentGroupDutiesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.groupDuties.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventStaffGrantDocumentOperatorExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.operatorExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventStaffGrantDocumentOperatorExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventStaffGrantDocument.operatorExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventStaffGrantDocumentOrganizerId = CatchContractFieldConstraints(
     path: 'eventStaffGrantDocument.organizerId',
     maxLength: 180,
@@ -24333,7 +24616,7 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
     itemEnumValues: <String>['viewRoster', 'setAttendance', 'reviewRuntimeClaims', 'publishLiveLocation'],
-    minItems: 4,
+    minItems: 0,
     maxItems: 4,
     uniqueItems: true,
   );
@@ -24384,6 +24667,7 @@ abstract final class CatchContractConstraints {
   static const eventStaffGrantDocumentRole = CatchContractFieldConstraints(
     path: 'eventStaffGrantDocument.role',
     required: true,
+    enumValues: <String>['checkInOperator', 'eventOperator'],
   );
 
   static const eventStaffGrantDocumentStatus = CatchContractFieldConstraints(
@@ -31281,6 +31565,46 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceGroupStaffCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupStaffCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceGroupStaffCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupStaffCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceGroupStaffCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupStaffCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceGroupStaffCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupStaffCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceGroupStaffCallablePayloadPhoneNumber = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupStaffCallablePayload.phoneNumber',
+    maxLength: 32,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventAssistanceGuestViewCallablePayloadLinkId = CatchContractFieldConstraints(
@@ -62697,6 +63021,97 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssistanceGroupStaffCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadDecisionDuty = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.decision.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadDecisionExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.decision.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.decision.kind',
+    required: true,
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadPhoneNumber = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.phoneNumber',
+    maxLength: 32,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceGroupStaffCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceGroupStaffCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAssistanceParticipationCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'setEventAssistanceParticipationCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -73178,6 +73593,29 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressDocument.schemaVersion': eventAssistanceGroupProgressDocumentSchemaVersion,
     'eventAssistanceGroupProgressDocument.sourceHash': eventAssistanceGroupProgressDocumentSourceHash,
     'eventAssistanceGroupProgressDocument.updatedAt': eventAssistanceGroupProgressDocumentUpdatedAt,
+    'eventAssistanceGroupStaffCallableResponse.operationRevision': eventAssistanceGroupStaffCallableResponseOperationRevision,
+    'eventAssistanceGroupStaffCallableResponse.outcome': eventAssistanceGroupStaffCallableResponseOutcome,
+    'eventAssistanceGroupStaffCallableResponse.view.availableDuties': eventAssistanceGroupStaffCallableResponseViewAvailableDuties,
+    'eventAssistanceGroupStaffCallableResponse.view.availableDuties.items': eventAssistanceGroupStaffCallableResponseViewAvailableDutiesItems,
+    'eventAssistanceGroupStaffCallableResponse.view.canAssign': eventAssistanceGroupStaffCallableResponseViewCanAssign,
+    'eventAssistanceGroupStaffCallableResponse.view.context.eventId': eventAssistanceGroupStaffCallableResponseViewContextEventId,
+    'eventAssistanceGroupStaffCallableResponse.view.context.mode': eventAssistanceGroupStaffCallableResponseViewContextMode,
+    'eventAssistanceGroupStaffCallableResponse.view.context.organizerId': eventAssistanceGroupStaffCallableResponseViewContextOrganizerId,
+    'eventAssistanceGroupStaffCallableResponse.view.displayName': eventAssistanceGroupStaffCallableResponseViewDisplayName,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.duty': eventAssistanceGroupStaffCallableResponseViewDutyDuty,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.expiresAtMillis': eventAssistanceGroupStaffCallableResponseViewDutyExpiresAtMillis,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.grantedAtMillis': eventAssistanceGroupStaffCallableResponseViewDutyGrantedAtMillis,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.grantedBy': eventAssistanceGroupStaffCallableResponseViewDutyGrantedBy,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.groupId': eventAssistanceGroupStaffCallableResponseViewDutyGroupId,
+    'eventAssistanceGroupStaffCallableResponse.view.duty.sourceHash': eventAssistanceGroupStaffCallableResponseViewDutySourceHash,
+    'eventAssistanceGroupStaffCallableResponse.view.groupId': eventAssistanceGroupStaffCallableResponseViewGroupId,
+    'eventAssistanceGroupStaffCallableResponse.view.operatorExpiresAtMillis': eventAssistanceGroupStaffCallableResponseViewOperatorExpiresAtMillis,
+    'eventAssistanceGroupStaffCallableResponse.view.phoneLastFour': eventAssistanceGroupStaffCallableResponseViewPhoneLastFour,
+    'eventAssistanceGroupStaffCallableResponse.view.revision': eventAssistanceGroupStaffCallableResponseViewRevision,
+    'eventAssistanceGroupStaffCallableResponse.view.serverTime': eventAssistanceGroupStaffCallableResponseViewServerTime,
+    'eventAssistanceGroupStaffCallableResponse.view.sourceHash': eventAssistanceGroupStaffCallableResponseViewSourceHash,
+    'eventAssistanceGroupStaffCallableResponse.view.status': eventAssistanceGroupStaffCallableResponseViewStatus,
+    'eventAssistanceGroupStaffCallableResponse.view.uid': eventAssistanceGroupStaffCallableResponseViewUid,
     'eventAssistanceGuestDocument.attendeeGeneration': eventAssistanceGuestDocumentAttendeeGeneration,
     'eventAssistanceGuestDocument.attendeeId': eventAssistanceGuestDocumentAttendeeId,
     'eventAssistanceGuestDocument.context.eventId': eventAssistanceGuestDocumentContextEventId,
@@ -73765,6 +74203,12 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion': eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion,
     'eventAssistanceSmsWithdrawalGrantDocument.senderId': eventAssistanceSmsWithdrawalGrantDocumentSenderId,
     'eventAssistanceSmsWithdrawalGrantDocument.subjectUid': eventAssistanceSmsWithdrawalGrantDocumentSubjectUid,
+    'eventAssistanceStaffReceiptDocument.createdAt': eventAssistanceStaffReceiptDocumentCreatedAt,
+    'eventAssistanceStaffReceiptDocument.receiptId': eventAssistanceStaffReceiptDocumentReceiptId,
+    'eventAssistanceStaffReceiptDocument.requestHash': eventAssistanceStaffReceiptDocumentRequestHash,
+    'eventAssistanceStaffReceiptDocument.revision': eventAssistanceStaffReceiptDocumentRevision,
+    'eventAssistanceStaffReceiptDocument.sourceHash': eventAssistanceStaffReceiptDocumentSourceHash,
+    'eventAssistanceStaffReceiptDocument.staffGrantId': eventAssistanceStaffReceiptDocumentStaffGrantId,
     'eventAssistanceThreadDocument.attendeeId': eventAssistanceThreadDocumentAttendeeId,
     'eventAssistanceThreadDocument.context.eventId': eventAssistanceThreadDocumentContextEventId,
     'eventAssistanceThreadDocument.context.mode': eventAssistanceThreadDocumentContextMode,
@@ -74707,6 +75151,15 @@ abstract final class CatchContractConstraints {
     'eventStaffGrantDocument.eventId': eventStaffGrantDocumentEventId,
     'eventStaffGrantDocument.expiresAt._nanoseconds': eventStaffGrantDocumentExpiresAtNanoseconds,
     'eventStaffGrantDocument.expiresAt._seconds': eventStaffGrantDocumentExpiresAtSeconds,
+    'eventStaffGrantDocument.groupDuties': eventStaffGrantDocumentGroupDuties,
+    'eventStaffGrantDocument.groupDuties.items.duty': eventStaffGrantDocumentGroupDutiesItemsDuty,
+    'eventStaffGrantDocument.groupDuties.items.expiresAtMillis': eventStaffGrantDocumentGroupDutiesItemsExpiresAtMillis,
+    'eventStaffGrantDocument.groupDuties.items.grantedAtMillis': eventStaffGrantDocumentGroupDutiesItemsGrantedAtMillis,
+    'eventStaffGrantDocument.groupDuties.items.grantedBy': eventStaffGrantDocumentGroupDutiesItemsGrantedBy,
+    'eventStaffGrantDocument.groupDuties.items.groupId': eventStaffGrantDocumentGroupDutiesItemsGroupId,
+    'eventStaffGrantDocument.groupDuties.items.sourceHash': eventStaffGrantDocumentGroupDutiesItemsSourceHash,
+    'eventStaffGrantDocument.operatorExpiresAt._nanoseconds': eventStaffGrantDocumentOperatorExpiresAtNanoseconds,
+    'eventStaffGrantDocument.operatorExpiresAt._seconds': eventStaffGrantDocumentOperatorExpiresAtSeconds,
     'eventStaffGrantDocument.organizerId': eventStaffGrantDocumentOrganizerId,
     'eventStaffGrantDocument.permissions': eventStaffGrantDocumentPermissions,
     'eventStaffGrantDocument.permissions.items': eventStaffGrantDocumentPermissionsItems,
@@ -75651,6 +76104,11 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceGroupProgressCallablePayload.context.mode': getEventAssistanceGroupProgressCallablePayloadContextMode,
     'getEventAssistanceGroupProgressCallablePayload.context.organizerId': getEventAssistanceGroupProgressCallablePayloadContextOrganizerId,
     'getEventAssistanceGroupProgressCallablePayload.groupId': getEventAssistanceGroupProgressCallablePayloadGroupId,
+    'getEventAssistanceGroupStaffCallablePayload.context.eventId': getEventAssistanceGroupStaffCallablePayloadContextEventId,
+    'getEventAssistanceGroupStaffCallablePayload.context.mode': getEventAssistanceGroupStaffCallablePayloadContextMode,
+    'getEventAssistanceGroupStaffCallablePayload.context.organizerId': getEventAssistanceGroupStaffCallablePayloadContextOrganizerId,
+    'getEventAssistanceGroupStaffCallablePayload.groupId': getEventAssistanceGroupStaffCallablePayloadGroupId,
+    'getEventAssistanceGroupStaffCallablePayload.phoneNumber': getEventAssistanceGroupStaffCallablePayloadPhoneNumber,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
     'getEventAssistanceParticipationCallablePayload.attendeeId': getEventAssistanceParticipationCallablePayloadAttendeeId,
@@ -79980,6 +80438,18 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssistanceGroupStaffCallablePayload.context.eventId': setEventAssistanceGroupStaffCallablePayloadContextEventId,
+    'setEventAssistanceGroupStaffCallablePayload.context.mode': setEventAssistanceGroupStaffCallablePayloadContextMode,
+    'setEventAssistanceGroupStaffCallablePayload.context.organizerId': setEventAssistanceGroupStaffCallablePayloadContextOrganizerId,
+    'setEventAssistanceGroupStaffCallablePayload.decision.duty': setEventAssistanceGroupStaffCallablePayloadDecisionDuty,
+    'setEventAssistanceGroupStaffCallablePayload.decision.expiresAtMillis': setEventAssistanceGroupStaffCallablePayloadDecisionExpiresAtMillis,
+    'setEventAssistanceGroupStaffCallablePayload.decision.kind': setEventAssistanceGroupStaffCallablePayloadDecisionKind,
+    'setEventAssistanceGroupStaffCallablePayload.expectedRevision': setEventAssistanceGroupStaffCallablePayloadExpectedRevision,
+    'setEventAssistanceGroupStaffCallablePayload.expectedSourceHash': setEventAssistanceGroupStaffCallablePayloadExpectedSourceHash,
+    'setEventAssistanceGroupStaffCallablePayload.expectedUid': setEventAssistanceGroupStaffCallablePayloadExpectedUid,
+    'setEventAssistanceGroupStaffCallablePayload.groupId': setEventAssistanceGroupStaffCallablePayloadGroupId,
+    'setEventAssistanceGroupStaffCallablePayload.phoneNumber': setEventAssistanceGroupStaffCallablePayloadPhoneNumber,
+    'setEventAssistanceGroupStaffCallablePayload.requestId': setEventAssistanceGroupStaffCallablePayloadRequestId,
     'setEventAssistanceParticipationCallablePayload.command.context.clockId': setEventAssistanceParticipationCallablePayloadCommandContextClockId,
     'setEventAssistanceParticipationCallablePayload.command.context.eventId': setEventAssistanceParticipationCallablePayloadCommandContextEventId,
     'setEventAssistanceParticipationCallablePayload.command.context.mode': setEventAssistanceParticipationCallablePayloadCommandContextMode,

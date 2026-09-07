@@ -1847,6 +1847,26 @@
       ]
     },
     {
+      "id": "eventAssistanceStaffReceipts",
+      "path": "eventAssistanceStaffReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceStaffReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event staff group duties",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": ["setEventAssistanceGroupStaff"]
+    },
+    {
+      "id": "eventStaffGrants",
+      "path": "eventStaffGrants/{grantId}",
+      "rulesMatch": "/eventStaffGrants/{grantId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event staff access callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": ["getEventOperatorAccess", "listEventStaff", "grantEventStaff", "revokeEventStaff", "getEventAssistanceGroupStaff", "setEventAssistanceGroupStaff"]
+    },
+    {
       "id": "eventAssistanceParticipationReceipts",
       "path": "eventAssistanceParticipationReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceParticipationReceipts/{receiptId}",

@@ -16,6 +16,27 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "GetEventAssistanceGroupStaffCallablePayload",
+    "source": "callables/get_event_assistance_group_staff_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGroupStaffCallablePayload.ts"
+  },
+  {
+    "name": "SetEventAssistanceGroupStaffCallablePayload",
+    "source": "callables/set_event_assistance_group_staff_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/setEventAssistanceGroupStaffCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceGroupStaffCallableResponse",
+    "source": "callable_responses/event_assistance_group_staff_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupStaffCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceStaffReceiptDocument",
+    "source": "firestore/event_assistance_staff_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceStaffReceiptDocument.ts"
+  },
+
+  {
     "name": "EventAssistanceParticipationReceiptDocument",
     "source": "firestore/event_assistance_participation_receipts.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts"

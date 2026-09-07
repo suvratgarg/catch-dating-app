@@ -1,9 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {isOrganizerManager} from "../../shared/organizerHosts";
-import {validateOrganizerDocument} from
-  "../../shared/generated/validators/organizerDocument";
 import {validateEventAssistanceGroupProgressDocument} from
   "../../shared/generated/validators/eventAssistanceGroupProgressDocument";
 import {validateEventAssistanceProgressReceiptDocument} from
@@ -18,10 +15,9 @@ import type {EventAssistanceGroupProgressDocument as Progress} from
   "../../shared/generated/eventAssistanceGroupProgressDocument";
 import type {EventAssistanceGroupProgressCallableResponse as Response} from
   "../../shared/generated/eventAssistanceGroupProgressCallableResponse";
-import type {OrganizerDocument} from
-  "../../shared/generated/firestoreAdminTypes";
 import {assertCommandContext, assertCommandRole} from "./commands";
-import {requireDocumentId} from "./guestRecords";
+import {GroupPermission, requireGroupPermission, denied} from
+  "./groupStaffAuthority";
 import {
   invalidSource, ProgressContext, progressIdentity,
   projectGroupProgress,
@@ -61,7 +57,7 @@ export class EventGroupProgressStore {
       context, command.payload.groupId, command.operationId]);
     return this.db.runTransaction(async (tx) => {
       const state = await this.read(tx, actorUid, context,
-        command.payload.groupId);
+        command.payload.groupId, "confirmDeparture");
       const receiptRef = this.db.collection(PROGRESS_RECEIPTS).doc(receiptId);
       const receipt = (await tx.get(receiptRef)).data();
       // Receipt reads can outlast the event. Re-sample after every source read.
@@ -70,8 +66,8 @@ export class EventGroupProgressStore {
       state.now = now;
       state.source.eventOpen = state.source.eventOpen &&
         now < state.source.endAt;
-      // Resolve the role from canonical organizer state in this transaction.
-      assertCommandRole(command, ["eventLead"]);
+      if (now >= state.access.validUntil) throw denied();
+      assertCommandRole(command, [state.access.role]);
       if (receipt !== undefined) {
         if (!validateEventAssistanceProgressReceiptDocument(receipt) ||
             receipt.receiptId !== receiptId ||
@@ -124,19 +120,17 @@ export class EventGroupProgressStore {
   }
 
   private async read(tx: Transaction, actorUid: string,
-    context: ProgressContext, groupId: string) {
-    requireDocumentId(context.organizerId);
-    requireDocumentId(context.eventId);
-    requireDocumentId(groupId);
-    const organizer = (await tx.get(this.db.collection("organizers")
-      .doc(context.organizerId))).data();
-    if (!validateOrganizerDocument(organizer)) throw invalidSource();
-    if (!isOrganizerManager(organizer as unknown as OrganizerDocument,
-      actorUid)) {
-      throw new HttpsError("permission-denied",
-        "Only organizer managers can control group progress.");
-    }
-    return readGroupProgressState(this.db, tx, context, groupId, this.clock);
+    context: ProgressContext, groupId: string,
+    permission: GroupPermission = "readProgress") {
+    const state = await readGroupProgressState(this.db, tx, context, groupId,
+      this.clock);
+    const access = await requireGroupPermission(this.db, tx, context, groupId,
+      actorUid, permission, this.clock);
+    const now = this.clock();
+    if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
+    if (now >= access.validUntil) throw denied();
+    state.source.eventOpen = state.source.eventOpen && now < state.source.endAt;
+    return {...state, now, access};
   }
 }
 

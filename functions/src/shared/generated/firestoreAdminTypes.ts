@@ -537,6 +537,15 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceStaffReceiptDocument {
+  receiptId: string;
+  staffGrantId: string;
+  sourceHash: string;
+  requestHash: string;
+  revision: number;
+  createdAt: number;
+}
+
 export interface EventAssistanceParticipationReceiptDocument {
   receiptId: string;
   guestId: string;
@@ -7079,7 +7088,7 @@ export interface EventAttendeeDocument {
 }
 
 /**
- * Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.
+ * Server-owned, expiring event staff access. Event-wide operator permissions and group duties have independent expiry and authority; neither grants organizer or CRM access.
  */
 export interface EventStaffGrantDocument {
   organizerId: string;
@@ -7087,9 +7096,9 @@ export interface EventStaffGrantDocument {
   uid: string;
   displayName: string;
   phoneLastFour: string;
-  role: "checkInOperator";
+  role: "checkInOperator" | "eventOperator";
   /**
-   * @minItems 4
+   * @minItems 0
    * @maxItems 4
    */
   permissions: (
@@ -7106,6 +7115,23 @@ export interface EventStaffGrantDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Independent event-wide permission expiry. Missing legacy values use expiresAt; null grants no event-wide permissions.
+   */
+  operatorExpiresAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * At most one independently expiring duty per configured event/group. No implied event-wide roster or check-in permission.
+   *
+   * @maxItems 20
+   */
+  groupDuties?: {
+    groupId: string;
+    duty: "lead" | "pacer" | "sweep";
+    expiresAtMillis: number;
+    sourceHash: string;
+    grantedBy: string;
+    grantedAtMillis: number;
+  }[];
 }
 
 /**

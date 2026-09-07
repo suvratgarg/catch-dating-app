@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_staff_receipts.schema.json",
+  "title": "EventAssistanceStaffReceiptDocument",
+  "$ref": "../shared/event_assistance_group_staff.schema.json#/definitions/Receipt",
+  "x-firestore-collection": "eventAssistanceStaffReceipts",
+  "x-firestore-path": "eventAssistanceStaffReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event staff group duties"
+}

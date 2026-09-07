@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGroupStaffCallablePayload.ts` |
+| SetEventAssistanceGroupStaffCallablePayload | `callables/set_event_assistance_group_staff_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceGroupStaffCallablePayload.ts` |
+| EventAssistanceGroupStaffCallableResponse | `callable_responses/event_assistance_group_staff_response.schema.json` | `functions/src/shared/generated/eventAssistanceGroupStaffCallableResponse.ts` |
+| EventAssistanceStaffReceiptDocument | `firestore/event_assistance_staff_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceStaffReceiptDocument.ts` |
 | EventAssistanceParticipationReceiptDocument | `firestore/event_assistance_participation_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts` |
 | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceParticipationCallablePayload.ts` |
 | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceParticipationCallablePayload.ts` |
@@ -602,6 +606,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaGetEventAssistanceGroupStaffCallablePayloadSchema` | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_group_staff_callable_payload.g.dart` |
+| `schemaSetEventAssistanceGroupStaffCallablePayloadSchema` | SetEventAssistanceGroupStaffCallablePayload | `callables/set_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_group_staff_callable_payload.g.dart` |
+| `schemaEventAssistanceGroupStaffCallableResponseSchema` | EventAssistanceGroupStaffCallableResponse | `callable_responses/event_assistance_group_staff_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_group_staff_callable_response.g.dart` |
+| `schemaEventAssistanceStaffReceiptDocumentSchema` | EventAssistanceStaffReceiptDocument | `firestore/event_assistance_staff_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_staff_receipt_document.g.dart` |
 | `schemaEventAssistanceParticipationReceiptDocumentSchema` | EventAssistanceParticipationReceiptDocument | `firestore/event_assistance_participation_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_participation_receipt_document.g.dart` |
 | `schemaGetEventAssistanceParticipationCallablePayloadSchema` | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_participation_callable_payload.g.dart` |
 | `schemaSetEventAssistanceParticipationCallablePayloadSchema` | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_participation_callable_payload.g.dart` |
@@ -1192,6 +1200,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceGroupStaffCallableRequest | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_staff_callable_request.g.dart` |
 | GetEventAssistanceParticipationCallableRequest | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_participation_callable_request.g.dart` |
 | SetEventAssistanceParticipationCallableRequest | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_assistance_participation_callable_request.g.dart` |
 | GetEventAssistanceSettingCallableRequest | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_setting_callable_request.g.dart` |
@@ -1424,6 +1433,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSettingCallablePayload | cannot map field "preference" (no type) |
 | SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |

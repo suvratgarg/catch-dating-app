@@ -103,6 +103,7 @@ export 'callables/export_organizer_contacts_callable_request.g.dart';
 export 'callables/finalize_organizer_form_asset_callable_request.g.dart';
 export 'callables/get_cross_paths_suggestions_callable_request.g.dart';
 export 'callables/get_event_assistance_group_progress_callable_request.g.dart';
+export 'callables/get_event_assistance_group_staff_callable_request.g.dart';
 export 'callables/get_event_assistance_guest_view_callable_request.g.dart';
 export 'callables/get_event_assistance_participation_callable_request.g.dart';
 export 'callables/get_event_assistance_setting_callable_request.g.dart';

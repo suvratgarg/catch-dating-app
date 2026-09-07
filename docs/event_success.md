@@ -206,7 +206,8 @@ identities. Scheduled offsets never prove that a group has moved.
 
 Confirmation consumes the existing typed `confirmDeparture` command and the
 source hash the Host reviewed. In one transaction it re-reads the event,
-organizer management authority, live plan, group progress and command receipt.
+current organizer/group-duty authority, live plan, group progress and command
+receipt.
 The destination must still be one of the current saved choices, the event must
 be open and its runtime live, and both source and progress revisions must match.
 The source hash includes Firestore event/plan creation generations, so a
@@ -222,11 +223,13 @@ Source changes preserve the old fact but withhold current joining guidance
 until the Host confirms the current setup. Each pace group has independent
 progress. No new command sends messages, checks guests in or changes assignments.
 
-Both callables require Auth and App Check, apply rate limits and currently
-resolve organizer-manager authority. The existing check-in staff grant does
-not imply group-lead authority. Policy configuration, scoped group-lead grants,
-workflow scheduling, Host controls and the rehearsal adapter remain separate
-integration work. The shared late-join evaluator accepts guidance derived from
+Both callables require Auth and App Check and apply rate limits. Organizer
+managers retain full authority. A current scoped lead/pacer duty authorizes
+progress reads and departure confirmation for its own group; a sweep can read
+progress. The legacy check-in permissions do not imply group authority. Staff
+expiry is checked again after transaction reads, including command receipt
+lookup. Workflow scheduling, Host controls and the rehearsal adapter remain
+separate integration work. The shared late-join evaluator accepts guidance derived from
 this record. The transaction reader is also shared by message publication,
 link issuance, guest view/reply resolution and the live channel dispatch gate.
 It binds joining guidance to the confirmed group's current source, destination,
@@ -245,6 +248,36 @@ Operational notices retain their separate event-window rules. This binding
 proves the destination's currency, not a guest's pace-group membership; the
 complete policy/participation fact reader and workflow publisher remain
 integration work.
+
+### Scoped group staff
+
+Group duties extend the existing `eventStaffGrants` authority. Managers can look
+up an existing Catch staff account, review its group duty and assign or remove
+one duty using `getEventAssistanceGroupStaff` and `setEventAssistanceGroupStaff`.
+Phone lookup follows manager authorization; the write rechecks that authority,
+the verified target UID, reviewed group source and staff revision in a single
+transaction. No new account or invitation is created.
+
+Whole-event groups support lead/sweep; saved pace groups also support pacer.
+Each person has at most one duty per group. Event-wide check-in/operator access
+has its own `operatorExpiresAt`, independently of each duty expiry. The staff
+row's overall expiry remains the latest expiry for discovery and the existing
+active-staff limit. Adding a duty cannot renew expired check-in access. Removing
+one duty preserves the person's other duties; revoking staff revokes all access.
+A new assignment to previously revoked staff does not restore old duties.
+
+Each duty binds the event creation generation and saved group configuration.
+A changed or removed group withholds authority until reviewed, while routine
+attendance, schedule and progress updates preserve it. Stale duties remain
+visible to managers for removal. Immutable `eventAssistanceStaffReceipts` fence
+retries and concurrent changes. Group staff projections expose only the selected
+duty and basic staff identity, not full phone numbers or the event guest roster.
+
+The duty permission map accounts for transfer, checkpoint and accountability
+commands, but only progress reads and departure confirmation currently consume
+it. Moving-group membership, acknowledged transfers, command adapters, delegated
+staff controls and receipt retention remain implementation work. Group duties
+alone do not grant the existing event-wide live-location publishing permission.
 
 ### Shared message delivery
 

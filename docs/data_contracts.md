@@ -1539,12 +1539,34 @@ reconciler. It does not invent orders, refunds, revenue, referral coverage or
 webhook freshness that Luma has not supplied.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
-`setAttendance`, and `reviewRuntimeClaims` for one event. It records organizer,
+`setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.
+It records organizer,
 grantor, role, issue/expiry/revocation and revision; grants expire within 14
 days and are capped at 50 active rows per event. Firestore direct access is
 denied. Staff operate through callables and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
+
+The same staff document optionally carries `groupDuties`: a lead, pacer or
+sweep duty for each saved group, with its own expiry and reviewed source hash.
+`operatorExpiresAt` independently limits the event-wide permissions. Legacy
+check-in grants without this field use their original expiry; explicit null
+means no event-wide access. The top-level expiry is the latest duty/base expiry
+for staff discovery and the existing 50-active-staff cap. Extending a group duty
+cannot extend or restore expired check-in access, and revoking the staff row
+revokes every duty. Group-only staff have no event-wide permissions.
+
+`getEventAssistanceGroupStaff` and `setEventAssistanceGroupStaff` are manager-only
+callables. They authorize before resolving a phone to an existing Auth account,
+then re-read manager authority in the transaction. Changes require the reviewed
+UID, source hash and staff revision. `eventAssistanceStaffReceipts` makes exact
+retries return the original operation revision and latest state. Duties are
+limited to 20 groups per person, at most 14 days and the event's staff window.
+Event creation generation and saved group configuration bind authority; ordinary
+attendance/progress updates do not revoke it. Managers can remove obsolete
+group duties. Direct staff/receipt reads and writes remain denied. These grants
+currently authorize scoped progress reads and lead/pacer departure confirmation;
+transfers, checkpoint/accountability commands and staff UI remain integration work.
 
 The Host attendance outbox is local client state, not Firestore authority. It
 contains no names, phones or emails: only account/event/attendee ids, absolute

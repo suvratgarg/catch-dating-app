@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetEventAssistanceGroupStaffCallablePayload',
+    source: 'callables/get_event_assistance_group_staff_payload.schema.json',
+    schema: schemaGetEventAssistanceGroupStaffCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetEventAssistanceGroupStaffCallablePayload',
+    source: 'callables/set_event_assistance_group_staff_payload.schema.json',
+    schema: schemaSetEventAssistanceGroupStaffCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGroupStaffCallableResponse',
+    source: 'callable_responses/event_assistance_group_staff_response.schema.json',
+    schema: schemaEventAssistanceGroupStaffCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceStaffReceiptDocument',
+    source: 'firestore/event_assistance_staff_receipts.schema.json',
+    schema: schemaEventAssistanceStaffReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceParticipationReceiptDocument',
     source: 'firestore/event_assistance_participation_receipts.schema.json',
     schema: schemaEventAssistanceParticipationReceiptDocumentSchema,
@@ -2944,6 +2964,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetEventAssistanceGroupStaffCallablePayload': schemaGetEventAssistanceGroupStaffCallablePayloadSchema,
+  'SetEventAssistanceGroupStaffCallablePayload': schemaSetEventAssistanceGroupStaffCallablePayloadSchema,
+  'EventAssistanceGroupStaffCallableResponse': schemaEventAssistanceGroupStaffCallableResponseSchema,
+  'EventAssistanceStaffReceiptDocument': schemaEventAssistanceStaffReceiptDocumentSchema,
   'EventAssistanceParticipationReceiptDocument': schemaEventAssistanceParticipationReceiptDocumentSchema,
   'GetEventAssistanceParticipationCallablePayload': schemaGetEventAssistanceParticipationCallablePayloadSchema,
   'SetEventAssistanceParticipationCallablePayload': schemaSetEventAssistanceParticipationCallablePayloadSchema,
@@ -3532,6 +3556,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_event_assistance_group_staff_payload.schema.json': schemaGetEventAssistanceGroupStaffCallablePayloadSchema,
+  'callables/set_event_assistance_group_staff_payload.schema.json': schemaSetEventAssistanceGroupStaffCallablePayloadSchema,
+  'callable_responses/event_assistance_group_staff_response.schema.json': schemaEventAssistanceGroupStaffCallableResponseSchema,
+  'firestore/event_assistance_staff_receipts.schema.json': schemaEventAssistanceStaffReceiptDocumentSchema,
   'firestore/event_assistance_participation_receipts.schema.json': schemaEventAssistanceParticipationReceiptDocumentSchema,
   'callables/get_event_assistance_participation_payload.schema.json': schemaGetEventAssistanceParticipationCallablePayloadSchema,
   'callables/set_event_assistance_participation_payload.schema.json': schemaSetEventAssistanceParticipationCallablePayloadSchema,

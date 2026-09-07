@@ -1,6 +1,422 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const getEventAssistanceGroupStaffCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "groupId",
+    "phoneNumber"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 32
+    }
+  },
+  "title": "GetEventAssistanceGroupStaffCallablePayload"
+};
+
+export const setEventAssistanceGroupStaffCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "groupId",
+    "phoneNumber",
+    "expectedUid",
+    "expectedRevision",
+    "expectedSourceHash",
+    "requestId",
+    "decision"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 32
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "duty",
+            "expiresAtMillis"
+          ],
+          "properties": {
+            "kind": {
+              "const": "assign"
+            },
+            "duty": {
+              "enum": [
+                "lead",
+                "pacer",
+                "sweep"
+              ]
+            },
+            "expiresAtMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "remove"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "title": "SetEventAssistanceGroupStaffCallablePayload"
+};
+
+export const eventAssistanceGroupStaffCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "operationRevision",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "enum": [
+        "read",
+        "applied",
+        "replayed"
+      ]
+    },
+    "operationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId",
+        "sourceHash",
+        "serverTime",
+        "uid",
+        "displayName",
+        "phoneLastFour",
+        "revision",
+        "status",
+        "duty",
+        "operatorExpiresAtMillis",
+        "canAssign",
+        "availableDuties"
+      ],
+      "properties": {
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phoneLastFour": {
+          "type": "string",
+          "pattern": "^[0-9]{4}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "status": {
+          "enum": [
+            "none",
+            "assigned",
+            "expired",
+            "revoked",
+            "sourceChanged"
+          ]
+        },
+        "duty": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "duty",
+                "expiresAtMillis",
+                "sourceHash",
+                "grantedBy",
+                "grantedAtMillis"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "duty": {
+                  "enum": [
+                    "lead",
+                    "pacer",
+                    "sweep"
+                  ]
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "grantedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "grantedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operatorExpiresAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "canAssign": {
+          "type": "boolean"
+        },
+        "availableDuties": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "lead",
+              "pacer",
+              "sweep"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceGroupStaffCallableResponse"
+};
+
+export const eventAssistanceStaffReceiptDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "staffGrantId",
+    "sourceHash",
+    "requestHash",
+    "revision",
+    "createdAt"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^staff-action:[a-f0-9]{64}$"
+    },
+    "staffGrantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceStaffReceiptDocument",
+  "x-firestore-collection": "eventAssistanceStaffReceipts",
+  "x-firestore-path": "eventAssistanceStaffReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event staff group duties"
+};
+
 export const eventAssistanceParticipationReceiptDocumentSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -85237,7 +85653,7 @@ export const eventStaffGrantDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_staff_grants.schema.json",
   "title": "EventStaffGrantDocument",
-  "description": "Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.",
+  "description": "Server-owned, expiring event staff access. Event-wide operator permissions and group duties have independent expiry and authority; neither grants organizer or CRM access.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventStaffGrants",
@@ -85287,11 +85703,14 @@ export const eventStaffGrantDocumentSchema = {
       "pattern": "^[0-9]{4}$"
     },
     "role": {
-      "const": "checkInOperator"
+      "enum": [
+        "checkInOperator",
+        "eventOperator"
+      ]
     },
     "permissions": {
       "type": "array",
-      "minItems": 4,
+      "minItems": 0,
       "maxItems": 4,
       "uniqueItems": true,
       "items": {
@@ -85338,7 +85757,7 @@ export const eventStaffGrantDocumentSchema = {
     },
     "expiresAt": {
       "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
+      "description": "Latest expiry across event-wide permissions and group duties, for staff discovery and capacity. Each authority boundary checks its own expiry.",
       "x-firestore-type": "timestamp",
       "additionalProperties": false,
       "required": [
@@ -85415,6 +85834,85 @@ export const eventStaffGrantDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "operatorExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Independent event-wide permission expiry. Missing legacy values use expiresAt; null grants no event-wide permissions."
+    },
+    "groupDuties": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "groupId",
+          "duty",
+          "expiresAtMillis",
+          "sourceHash",
+          "grantedBy",
+          "grantedAtMillis"
+        ],
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "duty": {
+            "enum": [
+              "lead",
+              "pacer",
+              "sweep"
+            ]
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "grantedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "grantedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "description": "At most one independently expiring duty per configured event/group. No implied event-wide roster or check-in permission."
     }
   }
 };

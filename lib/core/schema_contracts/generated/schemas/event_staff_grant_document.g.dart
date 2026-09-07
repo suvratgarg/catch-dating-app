@@ -8,7 +8,7 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/event_staff_grants.schema.json',
   'title': 'EventStaffGrantDocument',
-  'description': 'Server-owned, expiring least-privilege access to one event\'s operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.',
+  'description': 'Server-owned, expiring event staff access. Event-wide operator permissions and group duties have independent expiry and authority; neither grants organizer or CRM access.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'eventStaffGrants',
@@ -58,11 +58,14 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
       'pattern': '^[0-9]{4}\$',
     },
     'role': <String, Object?>{
-      'const': 'checkInOperator',
+      'enum': <Object?>[
+        'checkInOperator',
+        'eventOperator',
+      ],
     },
     'permissions': <String, Object?>{
       'type': 'array',
-      'minItems': 4,
+      'minItems': 0,
       'maxItems': 4,
       'uniqueItems': true,
       'items': <String, Object?>{
@@ -109,7 +112,7 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
     },
     'expiresAt': <String, Object?>{
       'type': 'object',
-      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'description': 'Latest expiry across event-wide permissions and group duties, for staff discovery and capacity. Each authority boundary checks its own expiry.',
       'x-firestore-type': 'timestamp',
       'additionalProperties': false,
       'required': <Object?>[
@@ -186,6 +189,85 @@ const schemaEventStaffGrantDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'operatorExpiresAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Independent event-wide permission expiry. Missing legacy values use expiresAt; null grants no event-wide permissions.',
+    },
+    'groupDuties': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'groupId',
+          'duty',
+          'expiresAtMillis',
+          'sourceHash',
+          'grantedBy',
+          'grantedAtMillis',
+        ],
+        'properties': <String, Object?>{
+          'groupId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 160,
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+          },
+          'duty': <String, Object?>{
+            'enum': <Object?>[
+              'lead',
+              'pacer',
+              'sweep',
+            ],
+          },
+          'expiresAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 9007199254740991,
+          },
+          'sourceHash': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{64}\$',
+          },
+          'grantedBy': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'grantedAtMillis': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 9007199254740991,
+          },
+        },
+      },
+      'description': 'At most one independently expiring duty per configured event/group. No implied event-wide roster or check-in permission.',
     },
   },
 };

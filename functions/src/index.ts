@@ -499,3 +499,6 @@ export {
 
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
   "./eventSuccess/operations/participationHandlers";
+
+export {getEventAssistanceGroupStaff, setEventAssistanceGroupStaff} from
+  "./eventSuccess/operations/groupStaffHandlers";
