@@ -319,8 +319,8 @@ class EventRehearsalActor {
     required this.promptCompleted,
     this.layoutUnitId,
     this.confirmedLayoutUnitId,
-    EventRehearsalConnectionState? connectionState,
-  }) : _connectionState = connectionState;
+    this._connectionState,
+  });
 
   factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) =>
       EventRehearsalActor(

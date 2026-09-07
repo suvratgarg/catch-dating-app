@@ -61,12 +61,14 @@ class EventAssistanceDeparture extends _$EventAssistanceDeparture {
   @override
   AsyncValue<EventDepartureSession> build(EventAssistanceGroupScope scope) {
     final auth = ref.watch(eventAssistanceDepartureAccountProvider);
-    if (auth.isLoading) return const AsyncLoading();
-    if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
-    return ref.watch(
-      eventAssistanceDepartureForAccountProvider(
-        scope,
-        account: auth.requireValue,
+    return auth.when(
+      skipLoadingOnRefresh: false,
+      skipLoadingOnReload: false,
+      skipError: false,
+      loading: () => const AsyncLoading(),
+      error: (error, stackTrace) => AsyncError(error, stackTrace),
+      data: (account) => ref.watch(
+        eventAssistanceDepartureForAccountProvider(scope, account: account),
       ),
     );
   }

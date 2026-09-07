@@ -103,14 +103,15 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
         state = const EventDepartureFormUnavailable._(departureSessionChanged);
       }
     });
-    try {
-      requireDepartureAccount(ref, session.account);
-      if (_revoked) throw departureSessionChanged;
-      return EventDepartureForm._(session: session);
-    } catch (error) {
+    final account = ref.read(eventAssistanceDepartureAccountProvider);
+    if (_revoked ||
+        account.isLoading ||
+        account.hasError ||
+        !identical(account.asData?.value, session.account)) {
       _revoked = true;
-      return EventDepartureFormUnavailable._(error);
+      return const EventDepartureFormUnavailable._(departureSessionChanged);
     }
+    return EventDepartureForm._(session: session);
   }
 
   EventDepartureForm? get _form => switch (state) {

@@ -476,6 +476,17 @@ Future<void> surfaceThroughMessageState() async {
   }
 }
 ''');
+    final futureFixtureFile = File('${temp.path}/lib/returned_future.dart');
+    futureFixtureFile.writeAsStringSync('''
+Future<void> forwardFailure() {
+  try {
+    doWork();
+    return Future.value();
+  } catch (error, stack) {
+    return Future<void>.error(error, stack);
+  }
+}
+''');
     final candidates = _scan(['${temp.path}/lib']);
     final reviewCandidate = candidates.where((candidate) {
       return candidate.rule.id == 'bare_catch' &&
@@ -488,6 +499,42 @@ Future<void> surfaceThroughMessageState() async {
       );
       exitCode = 1;
       return;
+    }
+
+    final forwarded = candidates.where(
+      (candidate) =>
+          candidate.path.endsWith('/returned_future.dart') &&
+          candidate.rule.id == 'named_catch',
+    );
+    if (forwarded.length != 1 ||
+        forwarded.single.status != CandidateStatus.verified) {
+      stderr.writeln('Returned failed Future must propagate its caught error.');
+      exitCode = 1;
+      return;
+    }
+    final futureBodies = <String, bool>{
+      '    return Future.error(error, stack);': true,
+      '    return Future<Result>.error(error);': true,
+      '    Future.error(error, stack);': false,
+      '    return Future.error(other, stack);': false,
+      '    return Future.value(error);': false,
+      '    // return Future.error(error);': false,
+      '    /*\n    return Future.error(error);\n    */': false,
+      '    final callback = () {\n      return Future.error(error);\n    };':
+          false,
+      '  }\n  return Future.error(error);': false,
+    };
+    for (final probe in futureBodies.entries) {
+      final lines = [
+        '  } catch (error, stack) {',
+        ...probe.key.split('\n'),
+        '  }',
+      ];
+      if (_catchReturnsFailedFuture(lines, 0) != probe.value) {
+        stderr.writeln('Failed Future propagation probe failed: ${probe.key}');
+        exitCode = 1;
+        return;
+      }
     }
     final verifiedSurfaceCandidates = candidates.where((candidate) {
       return candidate.rule.id == 'named_catch' &&
@@ -937,6 +984,7 @@ bool _catchRethrows(List<String> lines, int lineIndex) {
   if (_near(lines, lineIndex, before: 0, after: 14, needle: 'rethrow')) {
     return true;
   }
+  if (_catchReturnsFailedFuture(lines, lineIndex)) return true;
   return _near(
     lines,
     lineIndex,
@@ -953,6 +1001,34 @@ bool _catchRethrows(List<String> lines, int lineIndex) {
       'completeError',
     ],
   );
+}
+
+bool _catchReturnsFailedFuture(List<String> lines, int lineIndex) {
+  final header = lines[lineIndex];
+  final caught = RegExp(r'catch\s*\(\s*([\w$]+)\b').firstMatch(header);
+  if (caught == null || !header.trimRight().endsWith('{')) return false;
+  final indent = header.length - header.trimLeft().length;
+  final returnedFailure = RegExp(
+    r'^return\s+Future(?:<[^;{}]+>)?\.error\(\s*' +
+        RegExp.escape(caught.group(1)!) +
+        r'\s*[,)]',
+  );
+  // Recognize only a direct return of this catch's error. A discarded future,
+  // a nested callback's return, or a return after the catch is not propagation.
+  for (var index = lineIndex + 1; index < lines.length; index++) {
+    final line = lines[index];
+    final text = line.trimLeft();
+    if (text.isEmpty) continue;
+    // Ambiguous multiline lexical content stays a review candidate. Do not
+    // treat an example inside a comment/string as executable propagation.
+    if (text.contains('/*') || text.contains("'''") || text.contains('"""')) {
+      return false;
+    }
+    final depth = line.length - text.length;
+    if (depth <= indent && text.startsWith('}')) return false;
+    if (depth == indent + 2 && returnedFailure.hasMatch(text)) return true;
+  }
+  return false;
 }
 
 bool _catchAfterMutationRun(List<String> lines, int lineIndex) {
