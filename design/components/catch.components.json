@@ -988,7 +988,7 @@
           {
             "id": "catch.chip.field",
             "symbol": "CatchChipField",
-            "file": "lib/core/widgets/catch_chip_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_chip_field.dart",
             "summary": "Form-field wrapper for single- and multi-select chip groups with caller-resolved item labels and optional-field copy.",
             "states": [
               "single-select",
@@ -10060,7 +10060,7 @@
       "summary": "Platform-minimum, text-scaled preferred-size adapter over CatchOptionGroup with matching rendered and reserved geometry for underline or operational chrome.",
       "dart": {
         "symbol": "CatchTabRail",
-        "file": "lib/core/widgets/catch_tab_rail.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
         "constructors": [
           "CatchTabRail"
         ]
@@ -10157,7 +10157,7 @@
           {
             "id": "catch.tab_rail.controller_rail",
             "symbol": "CatchTabControllerRail",
-            "file": "lib/core/widgets/catch_tab_rail.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_tab_controller_rail.dart",
             "summary": "Binds a route-owned TabController to the canonical CatchTabRail, including pager interpolation.",
             "states": [
               "first-selected",

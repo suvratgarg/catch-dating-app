@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:1984ae10f7a1632f56722f596af835fb0d23dddb4d659d103a776a2e5517789b",
+  "resolvedDigest": "sha256:1e54e8f6983ea14b729af0461c757cdd5a4ed1d615f3d7a3e421bc28980a5cbd",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5310,7 +5310,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTabRail",
-              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
               "constructors": [
                 "CatchTabRail"
               ]

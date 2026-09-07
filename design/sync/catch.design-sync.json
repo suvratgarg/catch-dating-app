@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1",
+  "sourceDigest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1",
-    "contractDigest": "f8140d182c182d54d7ac1a901f756461072a64cbe906b718c4cccd53f508a4a1"
+    "digest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7",
+    "contractDigest": "6d303b6b51fd29c670e919d036eb6f0b5587899932acd89c68b361b6c88ebae7"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "0748155db78d7494579ea017b4c35aa139c0712f91993a5e05308657f284d4f3",
+    "handoffRequestDigest": "81a8cf4609b429f1156db65230cd2cbf7883e197863d90b3e762a64d882e97b0",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -718,7 +718,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Chip",
       "claudeAllowed": true,
-      "contractDigest": "76cdc5683ef3704d153f571652b8189e4ba529fc0c66761679a6cd9b940c869e"
+      "contractDigest": "4db8c20dc1c58894fc669f181799f56dbf2620044596d10b00ba5919620b5ee9"
     },
     {
       "contractId": "catch.empty_state",
@@ -1895,7 +1895,7 @@
       "conceptRole": "member",
       "conceptId": "catch.option_group",
       "dartSymbol": "CatchTabRail",
-      "dartFile": "lib/core/widgets/catch_tab_rail.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
       "figmaName": "Catch/TabRail",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1920,7 +1920,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabRail",
       "claudeAllowed": true,
-      "contractDigest": "02d4fa0c4fdd522a9097939eaf5b0cb4b108fbed831cd56aad3037d4ec5a88ed"
+      "contractDigest": "adff2123a965961229a3ae4891262a0987a3228ea4bf784b6a5a02e9460a40d0"
     },
     {
       "contractId": "catch.search_field",

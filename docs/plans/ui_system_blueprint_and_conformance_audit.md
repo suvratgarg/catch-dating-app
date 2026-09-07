@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.2
+version: 1.9.3
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1020,6 +1020,12 @@ trailing action is inlined at its sole call site, preserving its clear/close
 behavior while removing a private widget from the shared layer. Component
 contracts, localization ownership descriptions, and exact implementation-path
 checks follow the move; historical audit snapshots remain unchanged.
+
+`CatchChipField`, `CatchTabRail`, and `CatchTabControllerRail` now have individual
+shared component owners. Their selection, validation, platform minimum size,
+scaled geometry, and route-owned pager binding retain their existing bodies.
+Callers import the shared package; registry, screen-contract, catalog, and
+architecture references follow the move, and both old app libraries are deleted.
 
 ### Phase 4 — One registry, binding grammar
 

@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';

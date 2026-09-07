@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:70756da7144199760275ad606d16ae3002ade295dcd1f31d976c0da65562d8c7",
+  "resolvedDigest": "sha256:ccbb1bc7bb2446ac787ceb6064e5c04eb39612977e7596f388ef2776ab56acb4",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6276,7 +6276,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTabRail",
-              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
               "constructors": [
                 "CatchTabRail"
               ]

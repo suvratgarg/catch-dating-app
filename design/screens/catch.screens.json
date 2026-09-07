@@ -10857,7 +10857,7 @@
               "CatchTabRail"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
               "symbol": "CatchTabRail"
             },
             "currentOwner": "HostClubsScaffold",
@@ -11215,7 +11215,7 @@
               "HostTeamTopBar"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
               "symbol": "CatchTabRail"
             },
             "currentOwner": "HostClubTeamScreen + CatchTabRail",
