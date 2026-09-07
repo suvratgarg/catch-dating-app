@@ -26245,6 +26245,12 @@ abstract final class CatchContractConstraints {
     pattern: '^table-[1-9][0-9]*\$',
   );
 
+  static const eventRehearsalActorDocumentConnectionState = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.connectionState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['connected', 'disconnected'],
+  );
+
   static const eventRehearsalActorDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.createdAt._nanoseconds',
     required: true,
@@ -26426,6 +26432,12 @@ abstract final class CatchContractConstraints {
   static const eventRehearsalBootstrapCallableResponseActorsItemsConfirmedLayoutUnitId = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.confirmedLayoutUnitId',
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsConnectionState = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.connectionState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['connected', 'disconnected'],
   );
 
   static const eventRehearsalBootstrapCallableResponseActorsItemsDisplayName = CatchContractFieldConstraints(
@@ -27529,6 +27541,12 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalGuestBootstrapCallableResponse.actor.actorId',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorConnectionState = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.connectionState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['connected', 'disconnected'],
   );
 
   static const eventRehearsalGuestBootstrapCallableResponseActorDisplayName = CatchContractFieldConstraints(
@@ -81166,6 +81184,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActionDocument.virtualNow._seconds': eventRehearsalActionDocumentVirtualNowSeconds,
     'eventRehearsalActorDocument.actorId': eventRehearsalActorDocumentActorId,
     'eventRehearsalActorDocument.confirmedLayoutUnitId': eventRehearsalActorDocumentConfirmedLayoutUnitId,
+    'eventRehearsalActorDocument.connectionState': eventRehearsalActorDocumentConnectionState,
     'eventRehearsalActorDocument.createdAt._nanoseconds': eventRehearsalActorDocumentCreatedAtNanoseconds,
     'eventRehearsalActorDocument.createdAt._seconds': eventRehearsalActorDocumentCreatedAtSeconds,
     'eventRehearsalActorDocument.displayName': eventRehearsalActorDocumentDisplayName,
@@ -81193,6 +81212,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors': eventRehearsalBootstrapCallableResponseActors,
     'eventRehearsalBootstrapCallableResponse.actors.items.actorId': eventRehearsalBootstrapCallableResponseActorsItemsActorId,
     'eventRehearsalBootstrapCallableResponse.actors.items.confirmedLayoutUnitId': eventRehearsalBootstrapCallableResponseActorsItemsConfirmedLayoutUnitId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.connectionState': eventRehearsalBootstrapCallableResponseActorsItemsConnectionState,
     'eventRehearsalBootstrapCallableResponse.actors.items.displayName': eventRehearsalBootstrapCallableResponseActorsItemsDisplayName,
     'eventRehearsalBootstrapCallableResponse.actors.items.guestMoment': eventRehearsalBootstrapCallableResponseActorsItemsGuestMoment,
     'eventRehearsalBootstrapCallableResponse.actors.items.helpRequested': eventRehearsalBootstrapCallableResponseActorsItemsHelpRequested,
@@ -81343,6 +81363,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.virtualStartedAt._nanoseconds': eventRehearsalDocumentVirtualStartedAtNanoseconds,
     'eventRehearsalDocument.virtualStartedAt._seconds': eventRehearsalDocumentVirtualStartedAtSeconds,
     'eventRehearsalGuestBootstrapCallableResponse.actor.actorId': eventRehearsalGuestBootstrapCallableResponseActorActorId,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.connectionState': eventRehearsalGuestBootstrapCallableResponseActorConnectionState,
     'eventRehearsalGuestBootstrapCallableResponse.actor.displayName': eventRehearsalGuestBootstrapCallableResponseActorDisplayName,
     'eventRehearsalGuestBootstrapCallableResponse.actor.guestMoment': eventRehearsalGuestBootstrapCallableResponseActorGuestMoment,
     'eventRehearsalGuestBootstrapCallableResponse.actor.helpRequested': eventRehearsalGuestBootstrapCallableResponseActorHelpRequested,

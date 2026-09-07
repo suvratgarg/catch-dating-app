@@ -65,4 +65,19 @@ describe("eventRehearsalModel", () => {
     expect(eventRehearsalGuestActionClientId("device-1234567890123456", 42))
       .toMatch(/^guest_[A-Za-z0-9_-]+_[a-z0-9]+$/u);
   });
+
+  it("connection state neither creates nor removes arrival actions", () => {
+    for (const status of ["expected", "present", "noShow", "departed"] as const) {
+      const actor = {...bootstrap.actor, status};
+      expect(availableEventRehearsalGuestActions({
+        ...bootstrap, actor: {...actor, connectionState: "disconnected"},
+      })).toEqual(availableEventRehearsalGuestActions({
+        ...bootstrap, actor: {...actor, connectionState: "connected"},
+      }));
+    }
+    expect(availableEventRehearsalGuestActions({
+      ...bootstrap, actor: {...bootstrap.actor, status: "present",
+        connectionState: "disconnected"},
+    })).not.toContain("confirmArrival");
+  });
 });

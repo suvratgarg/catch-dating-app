@@ -76,6 +76,20 @@ const bootstrap: EventRehearsalGuestBootstrap = {
 afterEach(cleanup);
 
 describe("EventRehearsalPreview", () => {
+  it("shows connection loss separately without undoing an arrival", () => {
+    render(<EventRehearsalPreview
+      bootstrap={{...bootstrap, actor: {...bootstrap.actor,
+        status: "present", connectionState: "disconnected"}}}
+      onAction={vi.fn()} pending={false} status={{message: "", tone: ""}}
+    />);
+    expect(screen.getByText(eventRehearsalCopy.disconnectedNotice)).toBeTruthy();
+    expect(screen.getByText("Rhea · Present")).toBeTruthy();
+    expect(screen.queryByRole("button", {name: eventRehearsalCopy.checkedIn}))
+      .toBeNull();
+    expect(screen.queryByRole("button", {name: eventRehearsalCopy.confirmArrival}))
+      .toBeNull();
+  });
+
   it("keeps practice identity visible and sends guest actions", () => {
     const onAction = vi.fn();
     render(

@@ -7836,6 +7836,7 @@ export interface EventRehearsalActorDocument {
     | "disconnected"
     | "walkIn"
     | "ambiguousClaim";
+  connectionState?: "connected" | "disconnected";
   guestMoment:
     | "welcome"
     | "checkIn"

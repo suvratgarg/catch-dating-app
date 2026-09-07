@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.54.0
+version: 1.55.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -106,6 +106,17 @@ resolves an older decline. Throttled material updates retain a next evaluation
 time. Effect identities include the execution context and participation episode.
 Live and rehearsal adapters must use this policy with mode-scoped effects;
 the pure evaluator alone does not establish application integration.
+
+Rehearsal connection state is now independent of its actor status. Disconnect
+and reconnect affect only that connection fact, preserving attendance,
+placement, guest moment and safety choices. A disconnected actor retains their
+known check-in and Room assignment, but contributes no synthetic heartbeat.
+The existing legacy `disconnected` actor status is still readable; its prior
+attendance cannot be recovered, and reconnect alone cannot manufacture arrival.
+An explicit arrival action restores that physical fact. Host and guest callable
+projections carry connection state separately, with native attention counts and
+the guest connection notice retaining that distinction. The new assistance
+policy/command rehearsal adapter remains separate integration work.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,

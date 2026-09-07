@@ -45,6 +45,8 @@ export const eventRehearsalCopy = {
   optedOutNotice: "This synthetic guest is opted out of social activities.",
   helpRequestedNotice: "The Host practice screen shows a help request.",
   promptCompletedNotice: "The practice prompt is complete.",
+  disconnectedNotice:
+    "Connection loss is being simulated. Connection status does not confirm whether this guest is at the event.",
   statusLabels: {
     expected: "Expected",
     present: "Present",

@@ -594,6 +594,13 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
               'ambiguousClaim',
             ],
           },
+          'connectionState': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'connected',
+              'disconnected',
+            ],
+          },
           'guestMoment': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -1257,6 +1264,13 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
             'disconnected',
             'walkIn',
             'ambiguousClaim',
+          ],
+        },
+        'connectionState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'connected',
+            'disconnected',
           ],
         },
         'guestMoment': <String, Object?>{

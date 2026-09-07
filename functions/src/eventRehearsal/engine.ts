@@ -138,6 +138,7 @@ export function buildRehearsalActors(
       displayName: count === 1 ? baseName : `${baseName} ${count}`,
       persona: personas[(index + seed) % personas.length] ?? "regular",
       status: "expected",
+      connectionState: "connected",
       guestMoment: "welcome",
       optedOut: false,
       keepApartActorIds: [],
@@ -269,10 +270,10 @@ export function applyRehearsalBehavior(
     break;
   }
   case "disconnect":
-    patch.status = "disconnected";
+    patch.connectionState = "disconnected";
     break;
   case "reconnect":
-    patch.status = actor.status === "disconnected" ? "present" : actor.status;
+    patch.connectionState = "connected";
     break;
   }
   return {...actor, ...patch, lastActionAt: now, updatedAt: now};
@@ -391,7 +392,14 @@ export function statusAfterBehavior(behavior: Behavior): ActorStatus | null {
     walkIn: "walkIn",
     ambiguousClaim: "ambiguousClaim",
     resolveClaim: "present",
-    disconnect: "disconnected",
   };
   return statuses[behavior] ?? null;
+}
+
+/** Reconnect cannot restore attendance lost by legacy disconnection records. */
+export function rehearsalActorConnectionState(
+  actor: Pick<EventRehearsalActorDocument, "status" | "connectionState">
+): "connected" | "disconnected" {
+  return actor.connectionState ??
+    (actor.status === "disconnected" ? "disconnected" : "connected");
 }

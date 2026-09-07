@@ -173,6 +173,10 @@ export function EventRehearsalPreview({
         )}
 
         <EventRuntimeNoticeStack>
+          {(bootstrap.actor.connectionState ??
+            (bootstrap.actor.status === "disconnected" ? "disconnected" : "connected")) === "disconnected"
+            ? <p>{eventRehearsalCopy.disconnectedNotice}</p>
+            : null}
           {faultNotice ? <p>{faultNotice}</p> : null}
           {bootstrap.actor.optedOut
             ? <p>{eventRehearsalCopy.optedOutNotice}</p>

@@ -592,6 +592,13 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
               "ambiguousClaim"
             ]
           },
+          "connectionState": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "disconnected"
+            ]
+          },
           "guestMoment": {
             "type": "string",
             "enum": [
@@ -1255,6 +1262,13 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
             "disconnected",
             "walkIn",
             "ambiguousClaim"
+          ]
+        },
+        "connectionState": {
+          "type": "string",
+          "enum": [
+            "connected",
+            "disconnected"
           ]
         },
         "guestMoment": {

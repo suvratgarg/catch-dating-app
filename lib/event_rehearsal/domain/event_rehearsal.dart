@@ -35,6 +35,8 @@ enum EventRehearsalActorStatus {
   ambiguousClaim,
 }
 
+enum EventRehearsalConnectionState { connected, disconnected }
+
 enum EventRehearsalGuestMoment {
   welcome,
   checkIn,
@@ -317,7 +319,8 @@ class EventRehearsalActor {
     required this.promptCompleted,
     this.layoutUnitId,
     this.confirmedLayoutUnitId,
-  });
+    EventRehearsalConnectionState? connectionState,
+  }) : _connectionState = connectionState;
 
   factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) =>
       EventRehearsalActor(
@@ -327,6 +330,11 @@ class EventRehearsalActor {
         status: EventRehearsalActorStatus.values.byName(
           _requiredString(map, 'status'),
         ),
+        connectionState: map.containsKey('connectionState')
+            ? EventRehearsalConnectionState.values.byName(
+                _requiredString(map, 'connectionState'),
+              )
+            : null,
         guestMoment: EventRehearsalGuestMoment.values.byName(
           _requiredString(map, 'guestMoment'),
         ),
@@ -342,6 +350,14 @@ class EventRehearsalActor {
   final String displayName;
   final String persona;
   final EventRehearsalActorStatus status;
+  final EventRehearsalConnectionState? _connectionState;
+
+  /// Older disconnected records have no recoverable attendance history.
+  EventRehearsalConnectionState get connectionState =>
+      _connectionState ??
+      (status == EventRehearsalActorStatus.disconnected
+          ? EventRehearsalConnectionState.disconnected
+          : EventRehearsalConnectionState.connected);
   final EventRehearsalGuestMoment guestMoment;
   final bool optedOut;
   final List<String> keepApartActorIds;
@@ -427,6 +443,8 @@ class EventRehearsalBootstrap {
   int get unresolvedCount => actors
       .where(
         (actor) =>
+            actor.connectionState ==
+                EventRehearsalConnectionState.disconnected ||
             actor.status == EventRehearsalActorStatus.disconnected ||
             actor.status == EventRehearsalActorStatus.ambiguousClaim,
       )

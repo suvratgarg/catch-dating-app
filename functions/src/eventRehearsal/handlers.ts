@@ -96,6 +96,7 @@ import {
   REHEARSAL_MAX_ACTIONS,
   REHEARSAL_MAX_ACTIVE_SESSIONS,
   REHEARSAL_RETENTION_MILLIS,
+  rehearsalActorConnectionState,
   resolveRehearsalControl,
 } from "./engine";
 
@@ -1165,6 +1166,7 @@ async function hostProjection(
         displayName: actor.displayName,
         persona: actor.persona,
         status: actor.status,
+        connectionState: rehearsalActorConnectionState(actor),
         guestMoment: actor.guestMoment,
         optedOut: actor.optedOut,
         keepApartActorIds: actor.keepApartActorIds,
@@ -1220,6 +1222,7 @@ export function rehearsalGuestProjection(
       actorId: actor.actorId,
       displayName: actor.displayName,
       status: actor.status,
+      connectionState: rehearsalActorConnectionState(actor),
       guestMoment: actor.guestMoment,
       optedOut: actor.optedOut,
       helpRequested: actor.helpRequested,

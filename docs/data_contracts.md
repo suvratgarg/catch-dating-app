@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.64.0
+version: 1.65.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -553,7 +553,7 @@ server-only collections:
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 

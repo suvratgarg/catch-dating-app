@@ -80,6 +80,14 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
       ],
       'x-catch-ownership': 'callable-owned',
     },
+    'connectionState': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'connected',
+        'disconnected',
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
     'guestMoment': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

@@ -9,6 +9,7 @@
     "displayName": {"type": "string", "minLength": 1, "maxLength": 80, "x-catch-ownership": "callable-owned"},
     "persona": {"type": "string", "enum": ["firstTimer", "regular", "quiet", "connector", "external", "sparseProfile", "accessibilityNeeds", "walkIn"], "x-catch-ownership": "callable-owned"},
     "status": {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/actorStatus", "x-catch-ownership": "callable-owned"},
+    "connectionState": {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/connectionState", "x-catch-ownership": "callable-owned"},
     "guestMoment": {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/guestMoment", "x-catch-ownership": "callable-owned"},
     "optedOut": {"type": "boolean", "x-catch-ownership": "callable-owned"},
     "keepApartActorIds": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "x-catch-ownership": "callable-owned"},

@@ -102015,6 +102015,14 @@ export const eventRehearsalActorDocumentSchema = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "connectionState": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "disconnected"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "guestMoment": {
       "type": "string",
       "enum": [
@@ -134599,6 +134607,13 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
               "ambiguousClaim"
             ]
           },
+          "connectionState": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "disconnected"
+            ]
+          },
           "guestMoment": {
             "type": "string",
             "enum": [
@@ -135262,6 +135277,13 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
             "disconnected",
             "walkIn",
             "ambiguousClaim"
+          ]
+        },
+        "connectionState": {
+          "type": "string",
+          "enum": [
+            "connected",
+            "disconnected"
           ]
         },
         "guestMoment": {
@@ -136613,6 +136635,13 @@ export const eventRehearsalGuestBootstrapCallableResponseSchema = {
             "disconnected",
             "walkIn",
             "ambiguousClaim"
+          ]
+        },
+        "connectionState": {
+          "type": "string",
+          "enum": [
+            "connected",
+            "disconnected"
           ]
         },
         "guestMoment": {

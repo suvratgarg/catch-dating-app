@@ -503,6 +503,13 @@ export const eventRehearsalGuestBootstrapCallableResponseSchema: Record<string, 
             "ambiguousClaim"
           ]
         },
+        "connectionState": {
+          "type": "string",
+          "enum": [
+            "connected",
+            "disconnected"
+          ]
+        },
         "guestMoment": {
           "type": "string",
           "enum": [

@@ -6,6 +6,7 @@
     "scenarioId": {"type": "string", "enum": ["smoothRun", "lateAndNoShow", "earlyExitAndReturn", "rosterAndCapacity", "walkInAndAmbiguousClaim", "privacyAndKeepApart", "lowConnectivity", "concurrentHosts", "revealInterrupted", "externalProfiles", "accountabilitySweep"]},
     "status": {"type": "string", "enum": ["draft", "ready", "running", "paused", "complete", "expired"]},
     "actorStatus": {"type": "string", "enum": ["expected", "present", "late", "noShow", "departed", "returned", "disconnected", "walkIn", "ambiguousClaim"]},
+    "connectionState": {"type": "string", "enum": ["connected", "disconnected"]},
     "guestMoment": {"type": "string", "enum": ["welcome", "checkIn", "firstHello", "assignment", "rotation", "pause", "reveal", "afterglow", "complete"]},
     "controlAction": {"type": "string", "enum": ["markReady", "start", "pause", "resume", "advance", "previous", "advanceClock", "complete"]},
     "behavior": {"type": "string", "enum": ["arrive", "arriveLate", "markNoShow", "leaveEarly", "return", "walkIn", "ambiguousClaim", "resolveClaim", "optOut", "optIn", "keepApart", "disconnect", "reconnect"]},

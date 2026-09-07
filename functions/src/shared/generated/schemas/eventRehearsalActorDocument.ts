@@ -78,6 +78,14 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "connectionState": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "disconnected"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "guestMoment": {
       "type": "string",
       "enum": [

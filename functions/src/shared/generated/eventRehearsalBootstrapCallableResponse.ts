@@ -175,6 +175,7 @@ export interface EventRehearsalBootstrapCallableResponse {
       | "disconnected"
       | "walkIn"
       | "ambiguousClaim";
+    connectionState?: "connected" | "disconnected";
     guestMoment:
       | "welcome"
       | "checkIn"

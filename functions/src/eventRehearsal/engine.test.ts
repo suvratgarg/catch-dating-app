@@ -12,6 +12,8 @@ import {
   eventRehearsalActionDocumentId,
   momentForStep,
   resolveRehearsalControl,
+  rehearsalActorConnectionState,
+  statusAfterBehavior,
 } from "./engine";
 
 const now = admin.firestore.Timestamp.fromMillis(
@@ -116,6 +118,45 @@ test("behavior simulation retains privacy and safety state", () => {
   );
   assert.equal(keptApart.optedOut, true);
   assert.deepEqual(keptApart.keepApartActorIds, ["actor-02"]);
+});
+
+test("connection faults never change attendance, placement or safety state",
+  () => {
+    const base = buildRehearsalActors("session-1", 2, 7, now)[0];
+    const later = admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000);
+    for (const status of ["expected", "present", "late", "noShow", "departed",
+      "returned", "walkIn", "ambiguousClaim"] as const) {
+      const actor = {...base, status, optedOut: true, helpRequested: true,
+        confirmedLayoutUnitId: "table-1", keepApartActorIds: ["actor-02"]};
+      const disconnected = applyRehearsalBehavior(
+        actor, "disconnect", [], later);
+      assert.equal(disconnected.connectionState, "disconnected");
+      assert.deepEqual({...disconnected, connectionState: actor.connectionState,
+        lastActionAt: actor.lastActionAt, updatedAt: actor.updatedAt}, actor);
+      const reconnected = applyRehearsalBehavior(disconnected,
+        "reconnect", [], later);
+      assert.equal(reconnected.connectionState, "connected");
+      assert.equal(reconnected.status, status);
+      assert.equal(reconnected.confirmedLayoutUnitId, "table-1");
+      assert.deepEqual(actor, {...base, status, optedOut: true,
+        helpRequested: true, confirmedLayoutUnitId: "table-1",
+        keepApartActorIds: ["actor-02"]});
+    }
+    assert.equal(statusAfterBehavior("disconnect"), null);
+    assert.equal(statusAfterBehavior("reconnect"), null);
+  });
+
+test("legacy reconnection cannot invent an arrival", () => {
+  const actor = {...buildRehearsalActors("session-1", 2, 7, now)[0],
+    status: "disconnected" as const};
+  delete actor.connectionState;
+  assert.equal(rehearsalActorConnectionState(actor), "disconnected");
+  const connected = applyRehearsalBehavior(actor, "reconnect", [], now);
+  assert.equal(connected.status, "disconnected");
+  assert.equal(rehearsalActorConnectionState(connected), "connected");
+  const arrived = applyRehearsalGuestAction(connected, "confirmArrival", now);
+  assert.equal(arrived.status, "present");
+  assert.equal(rehearsalActorConnectionState(arrived), "connected");
 });
 
 test("guest actions mutate only the synthetic actor", () => {
