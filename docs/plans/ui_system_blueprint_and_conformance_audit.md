@@ -897,6 +897,12 @@ Shared UI and token imports use their package entrypoints. Removing the temporar
 renderer exports from the shared barrel still follows the remaining app-side
 field, section, root-header, and form-owner moves.
 
+The form-review overview, review body, and sheet entrypoint receive their status
+label formatter from app callers. The app copy adapter resolves the existing
+Complete, Needs information, and Optional catalog strings; shared rendering no
+longer reads the app localization catalog for these labels. The widgets remain
+app-side until their schema-coupled field dependency moves.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

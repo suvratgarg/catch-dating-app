@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
@@ -590,6 +591,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
     final selected = await showCatchFormStepOverview(
+      statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
       title: context.l10n.hostsCreateClubOverviewTitle,
       subtitle: context.l10n.hostsWizardOverviewSubtitle,
@@ -703,6 +705,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   ignoring: !screenState.requestControlsEnabled,
                   child: _isReviewing
                       ? CatchFormReviewBody(
+                          statusLabelBuilder: catchFormStepStatusLabelBuilder(
+                            context.l10n,
+                          ),
                           message: context.l10n.hostsWizardReviewBody,
                           items: reviewState.items,
                           onStepSelected: _showStep,

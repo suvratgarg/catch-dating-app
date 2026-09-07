@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
@@ -5069,6 +5070,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
         child: _DeviceFrame(
           child: StepperFooter(
             body: CatchFormReviewBody(
+              statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
               message:
                   'Review every section. Open a section to add or change information.',
               items: const [

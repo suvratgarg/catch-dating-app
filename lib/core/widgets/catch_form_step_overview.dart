@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +8,17 @@ Future<int?> showCatchFormStepOverview({
   required String title,
   required String subtitle,
   required List<CatchFormStepReviewItem> items,
+  required String Function(CatchFormStepStatus) statusLabelBuilder,
 }) {
   return showCatchBottomSheet<int>(
     context: context,
     builder: (context) => CatchBottomSheetScaffold(
       title: title,
       subtitle: subtitle,
-      child: CatchFormStepOverview(items: items),
+      child: CatchFormStepOverview(
+        items: items,
+        statusLabelBuilder: statusLabelBuilder,
+      ),
     ),
   );
 }
@@ -24,10 +27,12 @@ class CatchFormStepOverview extends StatelessWidget {
   const CatchFormStepOverview({
     super.key,
     required this.items,
+    required this.statusLabelBuilder,
     this.onStepSelected,
   });
 
   final List<CatchFormStepReviewItem> items;
+  final String Function(CatchFormStepStatus) statusLabelBuilder;
   final ValueChanged<int>? onStepSelected;
 
   @override
@@ -39,7 +44,7 @@ class CatchFormStepOverview extends StatelessWidget {
             key: ValueKey('catch-form-step-overview-${item.index}'),
             title: item.title,
             action: CatchBadge.functional(
-              label: _statusLabel(context, item.status),
+              label: statusLabelBuilder(item.status),
               tone: _statusTone(item.status),
             ),
             onTap: () {
@@ -61,12 +66,14 @@ class CatchFormReviewBody extends StatelessWidget {
     super.key,
     required this.message,
     required this.items,
+    required this.statusLabelBuilder,
     required this.onStepSelected,
     this.summaryItems = const [],
   });
 
   final String message;
   final List<CatchFormStepReviewItem> items;
+  final String Function(CatchFormStepStatus) statusLabelBuilder;
   final ValueChanged<int> onStepSelected;
   final List<CatchFormReviewSummaryItem> summaryItems;
 
@@ -97,7 +104,11 @@ class CatchFormReviewBody extends StatelessWidget {
             ),
           ],
           gapH16,
-          CatchFormStepOverview(items: items, onStepSelected: onStepSelected),
+          CatchFormStepOverview(
+            items: items,
+            statusLabelBuilder: statusLabelBuilder,
+            onStepSelected: onStepSelected,
+          ),
         ],
       ),
     );
@@ -115,14 +126,6 @@ class CatchFormReviewSummaryItem {
   final String value;
   final IconData? icon;
 }
-
-String _statusLabel(BuildContext context, CatchFormStepStatus status) =>
-    switch (status) {
-      CatchFormStepStatus.complete => context.l10n.hostsWizardStatusComplete,
-      CatchFormStepStatus.needsInformation =>
-        context.l10n.hostsWizardStatusNeedsInformation,
-      CatchFormStepStatus.optional => context.l10n.hostsWizardStatusOptional,
-    };
 
 CatchBadgeTone _statusTone(CatchFormStepStatus status) => switch (status) {
   CatchFormStepStatus.complete => CatchBadgeTone.success,

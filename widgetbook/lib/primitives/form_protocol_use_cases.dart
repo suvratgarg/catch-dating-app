@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -20,6 +22,7 @@ Widget formStepSpecificationStates(BuildContext context) {
     catalogId: 'catch.screen_body.form_step_spec',
     children: [
       CatchFormStepOverview(
+        statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
         onStepSelected: (_) {},
         items: [
           for (var index = 0; index < steps.length; index++)
@@ -75,6 +78,9 @@ Widget formReviewReadinessStates(BuildContext context) =>
                     style: CatchTextStyles.bodyM(context),
                   ),
                   CatchFormStepOverview(
+                    statusLabelBuilder: catchFormStepStatusLabelBuilder(
+                      context.l10n,
+                    ),
                     items: review.items,
                     onStepSelected: (_) {},
                   ),

@@ -980,6 +980,9 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFormStepOverview(
+          statusLabelBuilder: catchFormStepStatusLabelBuilder(
+            AppLocalizationsEn(),
+          ),
           items: const [
             CatchFormStepReviewItem(
               index: 0,

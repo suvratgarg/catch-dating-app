@@ -74,3 +74,14 @@ CatchDialogCopy catchDialogCopy(AppLocalizations l10n) => CatchDialogCopy(
   cancelLabel: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
   confirmLabel: l10n.coreCatchAdaptiveDialogVisiblecopyConfirm,
 );
+
+/// Resolves form-review statuses at the app's localization boundary.
+String Function(CatchFormStepStatus) catchFormStepStatusLabelBuilder(
+  AppLocalizations l10n,
+) =>
+    (status) => switch (status) {
+      CatchFormStepStatus.complete => l10n.hostsWizardStatusComplete,
+      CatchFormStepStatus.needsInformation =>
+        l10n.hostsWizardStatusNeedsInformation,
+      CatchFormStepStatus.optional => l10n.hostsWizardStatusOptional,
+    };
