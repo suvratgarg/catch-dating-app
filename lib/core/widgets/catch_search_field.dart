@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
     show CatchContractConstraints, CatchContractFieldConstraints;
 
-enum CatchSearchFieldMode { field, expanding, expanded }
-
 /// Handoff `SearchField`: raised pill input with search glyph and quiet clear
 /// target.
 class CatchSearchField extends StatefulWidget {

@@ -972,6 +972,16 @@ The step-header source now uses `catch_step_header.dart`, matching its existing
 primary class under D5. The widget body is unchanged; caller imports, component
 metadata, and authored copy references use the new filename.
 
+Field, chip, search, section-header, and form-commit enums now have shared
+owners with unchanged values. Section-group descriptors, form-review summary
+items, row scopes, and save/error callback types also move as presentation-only
+contracts. The form list still owns accordion state and the caller still owns
+patch persistence; the shared row scope only carries those callbacks and the
+current field copy. A production form-list preview covers the scope under both
+commit modes, including an expanded editor and its collapsed sibling. The
+schema-coupled controls, section renderer, and form editors remain app-side
+until the constraint transaction allows their package move.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

@@ -10,18 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-typedef CatchFormSave<P> = Future<bool> Function(P patch);
-typedef CatchFormErrorText =
-    String Function(BuildContext context, Object error);
-
-/// Commit contract for text rows in one [CatchFormRowList].
-///
-/// A form section owns this policy so sibling text rows cannot accidentally
-/// mix interaction models. Explicit confirmation is the default for new form
-/// sections; [onBlur] remains available for an existing surface that has not
-/// yet migrated its product behavior.
-enum CatchFormTextCommitMode { explicit, onBlur }
-
 /// P is the patch type committed by the owning surface.
 sealed class CatchFormRowDescriptor<P> {
   const CatchFormRowDescriptor({
@@ -344,25 +332,6 @@ final class CatchFormCustomRow<P> extends CatchFormRowDescriptor<P> {
   ) {
     return build(context, scope);
   }
-}
-
-/// Field-local access to the list's shared accordion and save pipeline.
-class CatchFormRowScope<P> {
-  const CatchFormRowScope({
-    required this.fieldCopy,
-    required this.isExpanded,
-    required this.toggle,
-    required this.collapse,
-    required this.save,
-    required this.textCommitMode,
-  });
-
-  final bool isExpanded;
-  final VoidCallback toggle;
-  final VoidCallback collapse;
-  final CatchFormSave<P> save;
-  final CatchFormTextCommitMode textCommitMode;
-  final CatchFieldCopy fieldCopy;
 }
 
 /// Maps typed form descriptors to canonical CatchField rows inside one

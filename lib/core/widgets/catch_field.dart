@@ -22,16 +22,6 @@ part 'catch_field_lanes.dart';
 part 'catch_field_row_modes.dart';
 part 'catch_field_state.dart';
 
-enum CatchFieldEmphasis { body, title }
-
-enum CatchFieldTone { normal, primary, danger }
-
-enum CatchFieldVariant { row, underline, bare }
-
-enum CatchFieldSize { floating, compact, md }
-
-enum CatchFieldSupportTone { neutral, brand, success }
-
 /// Design-system `Field`: the unified field primitive for row, text-entry,
 /// navigation, toggle, disclosure-control, add, validation, and helper states.
 /// Stack fields in a CatchSection when the surrounding section owns box or

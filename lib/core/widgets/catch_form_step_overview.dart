@@ -126,18 +126,6 @@ class CatchFormReviewBody extends StatelessWidget {
   }
 }
 
-class CatchFormReviewSummaryItem {
-  const CatchFormReviewSummaryItem({
-    required this.label,
-    required this.value,
-    this.icon,
-  });
-
-  final String label;
-  final String value;
-  final IconData? icon;
-}
-
 CatchBadgeTone _statusTone(CatchFormStepStatus status) => switch (status) {
   CatchFormStepStatus.complete => CatchBadgeTone.success,
   CatchFormStepStatus.needsInformation => CatchBadgeTone.warning,

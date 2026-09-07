@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -96,3 +97,77 @@ Widget formReviewReadinessStates(BuildContext context) =>
           ),
       ],
     );
+
+@widgetbook.UseCase(
+  name: 'Shared accordion and save contract',
+  type: CatchFormRowScope,
+  path: '[Core patterns]/Form rows',
+)
+Widget formRowScopeStates(BuildContext context) => WidgetbookCatalogFrame(
+  title: 'Form row scope',
+  catalogId: 'catch.field',
+  children: [
+    for (final mode in CatchFormTextCommitMode.values)
+      _FormRowScopeFields(mode: mode),
+  ],
+);
+
+class _FormRowScopeFields extends StatefulWidget {
+  const _FormRowScopeFields({required this.mode});
+
+  final CatchFormTextCommitMode mode;
+
+  @override
+  State<_FormRowScopeFields> createState() => _FormRowScopeFieldsState();
+}
+
+class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
+  final _accordion = CatchAccordionController(initialExpanded: 'name');
+  String _name = 'Alex';
+  String _city = 'Mumbai';
+
+  @override
+  void dispose() {
+    _accordion.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CatchFormRowList<(String, String)>(
+    fieldCopy: catchFieldCopy(context.l10n),
+    title: widget.mode == CatchFormTextCommitMode.explicit
+        ? 'Explicit confirmation'
+        : 'Save on blur',
+    accordion: _accordion,
+    textCommitMode: widget.mode,
+    rows: [
+      CatchFormTextRow<(String, String)>(
+        id: 'name',
+        icon: CatchIcons.personOutlined,
+        label: 'Name',
+        currentValue: _name,
+        validationCopy: catchFormValidationCopy(context.l10n),
+        patchForValue: (value) => ('name', value as String),
+      ),
+      CatchFormTextRow<(String, String)>(
+        id: 'city',
+        icon: CatchIcons.locationOnOutlined,
+        label: 'City',
+        currentValue: _city,
+        validationCopy: catchFormValidationCopy(context.l10n),
+        patchForValue: (value) => ('city', value as String),
+      ),
+    ],
+    savePatch: (patch) async {
+      setState(() {
+        if (patch.$1 == 'name') {
+          _name = patch.$2;
+        } else {
+          _city = patch.$2;
+        }
+      });
+      return true;
+    },
+    errorText: (_, error) => error.toString(),
+  );
+}

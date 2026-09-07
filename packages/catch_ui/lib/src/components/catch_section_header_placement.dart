@@ -1,0 +1,1 @@
+enum CatchSectionHeaderPlacement { outside, inside }

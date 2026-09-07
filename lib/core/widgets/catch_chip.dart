@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
     show CatchContractConstraints, CatchContractFieldConstraints;
 
-/// Visual emphasis for an activity chip.
-enum CatchChipEmphasis { soft, solid }
-
 enum _CatchChipVariant { tag, selectable, activity, removable }
 
 /// Canonical compact-label primitive for facts, choices, activities, and

@@ -1939,6 +1939,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Form rows',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormRowScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared accordion and save contract',
+                builder:
+                    _widgetbook_workspace_primitives_form_protocol_use_cases
+                        .formRowScopeStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Header sizing',
         children: [
           _widgetbook.WidgetbookComponent(
