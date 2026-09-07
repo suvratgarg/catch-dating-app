@@ -5046,6 +5046,10 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'conversation-title',
         child: _TopBarFrame(
           child: CatchTopBar.identity(
+            identitySemanticLabel: context.l10n
+                .coreCatchTopBarLabelViewNameProfile(
+                  name: 'Taylor from Sunday Social',
+                ),
             identityName: 'Taylor from Sunday Social',
             allowContentHeightExpansion: true,
             identityPhotoUrl: null,
@@ -6953,6 +6957,10 @@ Widget catchStepHeaderContractStates(BuildContext context) {
         label: 'with-progress',
         child: _TopBarFrame(
           child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
             title: 'Create event',
             subtitle: 'Set up the room',
             step: 2,
@@ -6961,20 +6969,39 @@ Widget catchStepHeaderContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'without-progress',
-        child: _TopBarFrame(child: CatchStepHeader(title: 'Preferences')),
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
+            title: 'Preferences',
+          ),
+        ),
       ),
       _StateCard(
         label: 'with-back',
         child: _TopBarFrame(
-          child: CatchStepHeader(title: 'Guest list', onBack: _noop),
+          child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
+            title: 'Guest list',
+            onBack: _noop,
+          ),
         ),
       ),
       _StateCard(
         label: 'with-close',
         child: _TopBarFrame(
           child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
             title: 'Create event',
             leadingType: CatchTopBarLeading.close,
             onBack: _noop,
@@ -6985,6 +7012,10 @@ Widget catchStepHeaderContractStates(BuildContext context) {
         label: 'interactive-step-overview',
         child: _TopBarFrame(
           child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
             title: 'Create event',
             step: 3,
             total: 5,
@@ -6993,25 +7024,43 @@ Widget catchStepHeaderContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'no-back',
         child: _TopBarFrame(
-          child: CatchStepHeader(title: 'Finished', showBack: false),
-        ),
-      ),
-      const _StateCard(
-        label: 'custom-trailing',
-        child: _TopBarFrame(
           child: CatchStepHeader(
-            title: 'Review',
-            trailing: CatchBadge(label: 'DRAFT'),
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
+            title: 'Finished',
+            showBack: false,
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
+        label: 'custom-trailing',
+        child: _TopBarFrame(
+          child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
+            title: 'Review',
+            trailing: const CatchBadge(label: 'DRAFT'),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'no-gutter',
         child: _TopBarFrame(
-          child: CatchStepHeader(title: 'Embedded', gutter: false),
+          child: CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
+            title: 'Embedded',
+            gutter: false,
+          ),
         ),
       ),
     ],

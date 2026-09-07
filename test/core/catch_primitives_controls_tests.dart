@@ -1,6 +1,11 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesControlsTests() {
+  final stepLabel = catchStepHeaderLabelBuilder(AppLocalizationsEn());
+  final compactStepLabel = catchStepHeaderCompactLabelBuilder(
+    AppLocalizationsEn(),
+  );
+
   testWidgets('CatchField sortable owns inline hierarchy and handle lane', (
     tester,
   ) async {
@@ -801,6 +806,8 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
           title: 'Basics',
           subtitle: 'South Bombay Runners',
           kicker: 'Create event',
@@ -878,7 +885,15 @@ void _registerCatchPrimitivesControlsTests() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(const CatchStepHeader(title: 'Schedule', step: 1, total: 3)),
+      _wrap(
+        CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
+          title: 'Schedule',
+          step: 1,
+          total: 3,
+        ),
+      ),
     );
 
     expect(find.text('Schedule'), findsOneWidget);
@@ -903,9 +918,11 @@ void _registerCatchPrimitivesControlsTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 350,
           child: CatchStepHeader(
+            stepLabelBuilder: stepLabel,
+            compactStepLabelBuilder: compactStepLabel,
             title: "What's your number?",
             subtitle: "We'll send you a one-time code to verify.",
             showBack: false,
@@ -932,6 +949,8 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
           title: 'Schedule',
           step: 1,
           total: 3,
@@ -954,6 +973,8 @@ void _registerCatchPrimitivesControlsTests() {
       await tester.pumpWidget(
         _wrap(
           CatchStepHeader(
+            stepLabelBuilder: stepLabel,
+            compactStepLabelBuilder: compactStepLabel,
             title: 'Meeting location',
             step: 2,
             total: 5,

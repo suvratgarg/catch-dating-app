@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -356,12 +355,14 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.search,
   }) : assert(eyebrow == null || kicker == null),
        identityName = null,
+       identitySemanticLabel = null,
        identityPhotoUrl = null,
        onIdentityTap = null;
 
   const CatchTopBar.identity({
     super.key,
     required this.identityName,
+    required String identitySemanticLabel,
     this.identityPhotoUrl,
     this.onIdentityTap,
     this.leading,
@@ -382,7 +383,8 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
-  }) : title = null,
+  }) : identitySemanticLabel = identitySemanticLabel,
+       title = null,
        subtitle = null,
        eyebrow = null,
        kicker = null,
@@ -403,6 +405,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   final Widget? titleWidget;
   final bool titleWidgetIncludesSupplementalText;
   final String? identityName;
+  final String? identitySemanticLabel;
   final String? identityPhotoUrl;
   final VoidCallback? onIdentityTap;
   final Widget? leading;
@@ -625,6 +628,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
             ? _buildCatchTopBarIdentityTitle(
                 context,
                 name: identityName,
+                semanticLabel: widget.identitySemanticLabel,
                 photoUrl: widget.identityPhotoUrl,
                 onTap: widget.onIdentityTap,
               )
@@ -935,6 +939,7 @@ Widget _buildTopBarTrailingEdge({
 Widget _buildCatchTopBarIdentityTitle(
   BuildContext context, {
   required String name,
+  required String? semanticLabel,
   required String? photoUrl,
   required VoidCallback? onTap,
 }) {
@@ -942,9 +947,7 @@ Widget _buildCatchTopBarIdentityTitle(
 
   return Semantics(
     button: onTap != null,
-    label: onTap == null
-        ? null
-        : context.l10n.coreCatchTopBarLabelViewNameProfile(name: name),
+    label: onTap == null ? null : semanticLabel,
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(CatchRadius.lg),

@@ -299,6 +299,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ],
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+          identitySemanticLabel: context.l10n
+              .coreCatchTopBarLabelViewNameProfile(name: chatState.name),
           identityName: chatState.name,
           identityPhotoUrl: chatState.photoUrl,
           onIdentityTap: chatState.profileNavigationEnabled

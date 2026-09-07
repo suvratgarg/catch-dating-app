@@ -1306,7 +1306,11 @@ Widget catchStepHeaderCatalogStates(BuildContext context) {
         label: 'header with progress',
         child: Column(
           children: [
-            const CatchStepHeader(
+            CatchStepHeader(
+              stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+              compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+                context.l10n,
+              ),
               title: 'Event basics',
               subtitle: 'Set the foundation for guests.',
               kicker: 'Create event',

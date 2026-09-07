@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,8 @@ class CatchStepHeader extends StatelessWidget {
   const CatchStepHeader({
     super.key,
     required this.title,
+    required this.stepLabelBuilder,
+    required this.compactStepLabelBuilder,
     this.subtitle,
     this.kicker,
     this.step,
@@ -24,6 +25,8 @@ class CatchStepHeader extends StatelessWidget {
   });
 
   final String title;
+  final String Function(int step, int total) stepLabelBuilder;
+  final String Function(int step, int total) compactStepLabelBuilder;
   final String? subtitle;
   final String? kicker;
   final int? step;
@@ -45,17 +48,11 @@ class CatchStepHeader extends StatelessWidget {
         ? (clampedStep! / total!).clamp(0.0, 1.0)
         : 0.0;
     final stepLabel = hasProgress
-        ? context.l10n.coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
-            clampedStep: clampedStep!,
-            total: total!,
-          )
+        ? stepLabelBuilder(clampedStep!, total!)
         : null;
     final visibleStepLabel =
         hasProgress && MediaQuery.textScalerOf(context).scale(1) >= 1.6
-        ? context.l10n.coreCatchStepFlowHeaderTextCompactStepClampedstepTotal(
-            clampedStep: clampedStep!,
-            total: total!,
-          )
+        ? compactStepLabelBuilder(clampedStep!, total!)
         : stepLabel;
     final topRight =
         trailing ??

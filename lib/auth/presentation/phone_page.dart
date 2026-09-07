@@ -206,6 +206,10 @@ class _PhonePageState extends ConsumerState<PhonePage> {
         ),
         children: [
           CatchStepHeader(
+            stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+            compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+              context.l10n,
+            ),
             title: l10n.authPhoneTitle,
             subtitle: l10n.authPhoneSubtitle,
             showBack: false,

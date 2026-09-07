@@ -903,6 +903,12 @@ Complete, Needs information, and Optional catalog strings; shared rendering no
 longer reads the app localization catalog for these labels. The widgets remain
 app-side until their schema-coupled field dependency moves.
 
+Step-header callers also supply the full and compact counter formatters, and
+identity-header callers supply the profile-action semantic label. Both headers
+retain their progress clamping, large-text switch, and interaction semantics
+without importing the app localization catalog. Their package move still follows
+the shared search-field dependency.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart' show setEquals;
@@ -687,6 +688,10 @@ Widget topBarGeometryMatrix(BuildContext context) {
         context,
         label: 'Identity and overflow',
         child: CatchTopBar.identity(
+          identitySemanticLabel: context.l10n
+              .coreCatchTopBarLabelViewNameProfile(
+                name: 'Taylor from Sunday Social',
+              ),
           identityName: 'Taylor from Sunday Social',
           allowContentHeightExpansion: true,
           identityPhotoUrl: null,

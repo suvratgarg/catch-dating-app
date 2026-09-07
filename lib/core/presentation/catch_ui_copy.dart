@@ -85,3 +85,22 @@ String Function(CatchFormStepStatus) catchFormStepStatusLabelBuilder(
         l10n.hostsWizardStatusNeedsInformation,
       CatchFormStepStatus.optional => l10n.hostsWizardStatusOptional,
     };
+
+/// Formats a wizard counter without coupling shared headers to app copy.
+String Function(int step, int total) catchStepHeaderLabelBuilder(
+  AppLocalizations l10n,
+) =>
+    (step, total) => l10n.coreCatchStepFlowHeaderTextStepClampedstepOfTotal(
+      clampedStep: step,
+      total: total,
+    );
+
+/// Supplies the compact counter used when the caller enables large text.
+String Function(int step, int total) catchStepHeaderCompactLabelBuilder(
+  AppLocalizations l10n,
+) =>
+    (step, total) =>
+        l10n.coreCatchStepFlowHeaderTextCompactStepClampedstepTotal(
+          clampedStep: step,
+          total: total,
+        );
