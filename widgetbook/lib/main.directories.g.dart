@@ -67,6 +67,8 @@ import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
     as _widgetbook_workspace_primitives_menu_anchor_use_cases;
+import 'package:widgetbook_workspace/primitives/picker_use_cases.dart'
+    as _widgetbook_workspace_primitives_picker_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
@@ -3591,6 +3593,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabRailContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Sheets',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPickerSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Date and time wheels',
+                builder: _widgetbook_workspace_primitives_picker_use_cases
+                    .pickerSheetStates,
               ),
             ],
           ),

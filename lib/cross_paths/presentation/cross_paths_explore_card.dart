@@ -2,8 +2,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart'
     show uidProvider;
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
@@ -439,6 +439,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
   ) async {
     final firstName = crossPathsFirstName(suggestion.profile.name);
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.crossPathsInvitationConfirmTitle(
         firstName: firstName,

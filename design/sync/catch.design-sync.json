@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3",
+  "sourceDigest": "4636a6e93b0e4a6123db935d0a219228aa03e89be04f97dbc6778c19418ae31c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3",
-    "contractDigest": "b02da9e88c1794795df5c3f64c78bcb1e9dcaa5d9a11d1ec50c21cda51255cd3"
+    "digest": "4636a6e93b0e4a6123db935d0a219228aa03e89be04f97dbc6778c19418ae31c",
+    "contractDigest": "4636a6e93b0e4a6123db935d0a219228aa03e89be04f97dbc6778c19418ae31c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "922e11c5f8f3c46b83d03d735b5aaf89f5d27bf7b8b7309869f0a73d551139ea",
+    "handoffRequestDigest": "72be9ab519dde2d5ff670b8a55f5b7d9fb83a8886af12783b296763baa56fc0f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 74,
-    "publicClassCount": 248,
+    "publicClassCount": 249,
     "conceptCount": 68,
-    "memberCount": 162,
-    "membersPerConcept": 2.38,
+    "memberCount": 163,
+    "membersPerConcept": 2.4,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 162,
+      "member": 163,
       "screen": 15
     },
     "collisionCount": 36,
@@ -408,6 +408,7 @@
           "CatchBottomSheetScaffold",
           "CatchBrandedSheetHeader",
           "CatchDraggableSheetShell",
+          "CatchPickerSheet",
           "CatchPlainSheetHeader",
           "CatchShareCardFooter",
           "CatchShareCardSheet"
@@ -1196,7 +1197,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "95b48d64338d615b5d14191d453a40ef295c4c35d5a12d29708d4994863ebac5"
+      "contractDigest": "0ee0330a126af6e9080dddf91849dbab8984e1db5f5829ea38c2e565241a524e"
     },
     {
       "contractId": "catch.icon_button",
@@ -2099,7 +2100,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.confirm_dialog",
       "dartSymbol": "CatchConfirmDialog",
-      "dartFile": "lib/core/widgets/catch_adaptive_dialog.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
       "figmaName": "Catch/ConfirmDialog",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2124,14 +2125,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ConfirmDialog",
       "claudeAllowed": true,
-      "contractDigest": "c188ad0cdcc428616ff84aae23a9767477f95572a155f42208aff1abaea93aad"
+      "contractDigest": "81be86a0b94296532acddd6da6fbd1a98001441457b9a96529ca3efa65d2279f"
     },
     {
       "contractId": "catch.form_dialog",
       "conceptRole": "concept",
       "conceptId": "catch.form_dialog",
       "dartSymbol": "CatchFormDialog",
-      "dartFile": "lib/core/widgets/catch_adaptive_dialog.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
       "figmaName": "Catch/FormDialog",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2156,7 +2157,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "FormDialog",
       "claudeAllowed": true,
-      "contractDigest": "79c156eb455dcd17dd918312283200d5e0845e488a9f23c90e123f61e24292f8"
+      "contractDigest": "5e4c3e8e90615142450364e04e57b69e2f1bd5ce0738f28cb5e57891e5623ae5"
     },
     {
       "contractId": "catch.count_pill",

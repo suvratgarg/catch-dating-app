@@ -1,22 +1,13 @@
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_dialog_action.dart';
+import 'package:catch_ui/src/components/catch_dialog_copy.dart';
+import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-class CatchDialogAction<T> {
-  const CatchDialogAction({
-    required this.label,
-    required this.value,
-    this.isDefault = false,
-    this.isDestructive = false,
-  });
-
-  final String label;
-  final T value;
-  final bool isDefault;
-  final bool isDestructive;
-}
 
 Future<T?> showCatchAdaptiveDialog<T>({
   required BuildContext context,
@@ -59,6 +50,7 @@ Future<T?> showCatchAdaptiveDialog<T>({
 Future<bool?> showCatchConfirmDialog({
   required BuildContext context,
   required String title,
+  required CatchDialogCopy copy,
   String message = '',
   String? confirmLabel,
   String? cancelLabel,
@@ -71,16 +63,9 @@ Future<bool?> showCatchConfirmDialog({
     message: message,
     barrierDismissible: barrierDismissible,
     actions: [
+      CatchDialogAction(label: cancelLabel ?? copy.cancelLabel, value: false),
       CatchDialogAction(
-        label:
-            cancelLabel ??
-            context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-        value: false,
-      ),
-      CatchDialogAction(
-        label:
-            confirmLabel ??
-            context.l10n.coreCatchAdaptiveDialogVisiblecopyConfirm,
+        label: confirmLabel ?? copy.confirmLabel,
         value: true,
         isDefault: !danger,
         isDestructive: danger,
@@ -104,6 +89,19 @@ class CatchConfirmDialog<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final actionButtons = [
+      for (final action in actions)
+        CatchButton(
+          label: action.label,
+          variant: action.isDestructive
+              ? CatchButtonVariant.danger
+              : action.isDefault
+              ? CatchButtonVariant.primary
+              : CatchButtonVariant.secondary,
+          fullWidth: true,
+          onPressed: () => Navigator.of(context).pop(action.value),
+        ),
+    ];
     return Dialog(
       elevation: 0,
       insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
@@ -131,102 +129,28 @@ class CatchConfirmDialog<T> extends StatelessWidget {
               ),
             ],
             gapH20,
-            _buildDialogActions<T>(context, actions),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CatchFormDialog extends StatelessWidget {
-  const CatchFormDialog({
-    super.key,
-    required this.title,
-    required this.child,
-    required this.actions,
-  });
-
-  final String title;
-  final Widget child;
-  final List<Widget> actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Dialog(
-      elevation: 0,
-      insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
-      backgroundColor: Colors.transparent,
-      child: CatchSurface(
-        elevation: CatchSurfaceElevation.overlay,
-        borderWidth: 0,
-        padding: CatchInsets.confirmDialogCard,
-        width: CatchLayout.confirmDialogMaxWidth,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(title, style: CatchTextStyles.titleL(context, color: t.ink)),
-            gapH16,
-            child,
-            if (actions.isNotEmpty) ...[
-              gapH20,
+            if (actions.length <= 2)
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  for (final indexed in actions.indexed) ...[
-                    if (indexed.$1 > 0) gapW8,
+                  for (final indexed in actionButtons.indexed) ...[
+                    if (indexed.$1 > 0) gapW10,
+                    Expanded(child: indexed.$2),
+                  ],
+                ],
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final indexed in actionButtons.indexed) ...[
+                    if (indexed.$1 > 0) gapH10,
                     indexed.$2,
                   ],
                 ],
               ),
-            ],
           ],
         ),
       ),
     );
   }
-}
-
-Widget _buildDialogActions<T>(
-  BuildContext context,
-  List<CatchDialogAction<T>> actions,
-) {
-  if (actions.length <= 2) {
-    return Row(
-      children: [
-        for (final indexed in actions.indexed) ...[
-          if (indexed.$1 > 0) gapW10,
-          Expanded(child: _buildDialogActionButton(context, indexed.$2)),
-        ],
-      ],
-    );
-  }
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      for (final indexed in actions.indexed) ...[
-        if (indexed.$1 > 0) gapH10,
-        _buildDialogActionButton(context, indexed.$2),
-      ],
-    ],
-  );
-}
-
-Widget _buildDialogActionButton<T>(
-  BuildContext context,
-  CatchDialogAction<T> action,
-) {
-  return CatchButton(
-    label: action.label,
-    variant: action.isDestructive
-        ? CatchButtonVariant.danger
-        : action.isDefault
-        ? CatchButtonVariant.primary
-        : CatchButtonVariant.secondary,
-    fullWidth: true,
-    onPressed: () => Navigator.of(context).pop(action.value),
-  );
 }

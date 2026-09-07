@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -512,6 +512,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     final now = DateTime.now();
     final initial = _scheduledAt ?? now.add(const Duration(hours: 1));
     final date = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: initial,
       firstDate: DateUtils.dateOnly(now),
@@ -520,6 +521,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     );
     if (date == null || !mounted) return;
     final time = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: TimeOfDay.fromDateTime(initial),
       title: context.l10n.hostSendsSchedule,

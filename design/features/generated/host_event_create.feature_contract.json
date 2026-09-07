@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:893c6b5c73e8c784fa0a1b71a91b441439c48f833366900e740fdf90b3825276",
+  "resolvedDigest": "sha256:4b9b0e0bac11a17e420e72b2158d9bf03d0e4991fed1662941800eed1e8dcb48",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4521,7 +4521,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchFormDialog",
-              "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
               "constructors": [
                 "CatchFormDialog"
               ]

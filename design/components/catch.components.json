@@ -5370,6 +5370,24 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.sheet.picker",
+            "symbol": "CatchPickerSheet",
+            "file": "packages/catch_ui/lib/src/components/catch_picker_sheet.dart",
+            "summary": "Native wheel-picker sheet with caller-resolved toolbar copy, safe area and cancel/commit callbacks.",
+            "states": [
+              "date-wheel",
+              "time-wheel",
+              "bottom-safe-area"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.sheet"
+            }
+          },
+          {
             "id": "catch.sheet.grabber",
             "symbol": "CatchBottomSheetGrabber",
             "file": "packages/catch_ui/lib/src/primitives/catch_bottom_sheet_grabber.dart",
@@ -10840,7 +10858,7 @@
       "summary": "Material Catch confirmation dialog body used by the adaptive confirm-dialog launcher on non-Cupertino platforms.",
       "dart": {
         "symbol": "CatchConfirmDialog",
-        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
         "constructors": [
           "CatchConfirmDialog"
         ]
@@ -10958,7 +10976,7 @@
       "summary": "Catch dialog shell for compact form bodies with title, slotted form content, and optional trailing action row.",
       "dart": {
         "symbol": "CatchFormDialog",
-        "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
         "constructors": [
           "CatchFormDialog"
         ]

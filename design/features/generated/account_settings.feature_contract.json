@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:56047a9c786be7e502a9112fde6d95bde8ee2f89a7783c876921da437dac1618",
+  "resolvedDigest": "sha256:a76ffe37fe02d11b7d08893fda497e3b2d4993718312f94d7587a9cdfc0453d7",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2052,7 +2052,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchConfirmDialog",
-              "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
               "constructors": [
                 "CatchConfirmDialog"
               ]

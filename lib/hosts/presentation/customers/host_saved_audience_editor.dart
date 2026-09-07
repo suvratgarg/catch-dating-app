@@ -502,6 +502,7 @@ class _HostSavedAudienceEditorFormState
     final audience = _audience;
     if (_busy || audience == null) return;
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.hostSavedAudienceArchiveTitle,
       message: context.l10n.hostSavedAudienceArchiveBody,

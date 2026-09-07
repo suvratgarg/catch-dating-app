@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:034d0e08a27a775019f21930eb8e57e35f4a05c383ccfc3e029624237e617104",
+  "resolvedDigest": "sha256:2971ef66b6be827751fc5a4770eae7930e244e065a8bae4b678e3096ac771a0b",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5150,7 +5150,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchConfirmDialog",
-              "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
               "constructors": [
                 "CatchConfirmDialog"
               ]

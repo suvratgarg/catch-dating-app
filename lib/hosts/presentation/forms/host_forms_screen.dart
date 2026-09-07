@@ -4,13 +4,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -402,6 +402,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           };
           if (lifecycleAction == HostFormLifecycleAction.archive) {
             final confirmed = await showCatchConfirmDialog(
+              copy: catchDialogCopy(context.l10n),
               context: context,
               title: context.l10n.hostFormsArchiveConfirmTitle,
               message: context.l10n.hostFormsArchiveConfirmBody,
@@ -417,6 +418,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           return;
         case _HostFormRowAction.delete:
           final confirmed = await showCatchConfirmDialog(
+            copy: catchDialogCopy(context.l10n),
             context: context,
             title: context.l10n.hostFormsDeleteConfirmTitle,
             message: context.l10n.hostFormsDeleteConfirmBody,

@@ -10,11 +10,11 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -791,6 +791,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: initialDate.isAfter(lastDate) ? lastDate : initialDate,
       firstDate: today,
@@ -811,6 +812,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   Future<void> _pickStartTime() async {
     if (_savePending) return;
     final picked = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: _selectedStartTime,
       title: context.l10n.hostsEditHostedEventScreenTitleStartTime,

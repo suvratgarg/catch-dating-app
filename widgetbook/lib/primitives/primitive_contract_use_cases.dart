@@ -13,8 +13,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_sliver_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
@@ -9377,9 +9375,18 @@ final _contractFourTabBarItems = [
   ..._contractTabBarItems,
 ];
 
-const _contractDialogActions = [
-  CatchDialogAction(label: 'Cancel', value: false),
-  CatchDialogAction(label: 'Confirm', value: true, isDefault: true),
+const CatchDialogCopy _contractDialogCopy = CatchDialogCopy(
+  cancelLabel: 'Cancel',
+  confirmLabel: 'Confirm',
+);
+
+final _contractDialogActions = [
+  CatchDialogAction(label: _contractDialogCopy.cancelLabel, value: false),
+  CatchDialogAction(
+    label: _contractDialogCopy.confirmLabel,
+    value: true,
+    isDefault: true,
+  ),
 ];
 
 class CatchAdaptivePickerHarness extends StatefulWidget {
@@ -9453,6 +9460,7 @@ class _CatchAdaptivePickerHarnessState
 
   Future<void> _pickDate(BuildContext context) async {
     final result = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: _selectedDate ?? DateTime(2026, 6, 26),
       firstDate: DateTime(2026),
@@ -9465,6 +9473,7 @@ class _CatchAdaptivePickerHarnessState
 
   Future<void> _pickTime(BuildContext context) async {
     final result = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: _selectedTime ?? const TimeOfDay(hour: 19, minute: 30),
       title: 'Event time',

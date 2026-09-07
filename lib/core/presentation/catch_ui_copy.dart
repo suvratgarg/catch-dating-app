@@ -41,3 +41,23 @@ CatchPersonRowCopy catchPersonRowCopy(AppLocalizations l10n) =>
               label: catchCountLabel(count),
             ),
     );
+
+/// Resolves the date picker's fixed toolbar and default-title copy.
+CatchPickerCopy catchDatePickerCopy(AppLocalizations l10n) => CatchPickerCopy(
+  title: l10n.coreCatchAdaptivePickerVisiblecopySelectDate,
+  cancelLabel: l10n.coreCatchAdaptivePickerTextCancel,
+  doneLabel: l10n.coreCatchAdaptivePickerTextDone,
+);
+
+/// Resolves the time picker's fixed toolbar and default-title copy.
+CatchPickerCopy catchTimePickerCopy(AppLocalizations l10n) => CatchPickerCopy(
+  title: l10n.coreCatchAdaptivePickerVisiblecopySelectTime,
+  cancelLabel: l10n.coreCatchAdaptivePickerTextCancel,
+  doneLabel: l10n.coreCatchAdaptivePickerTextDone,
+);
+
+/// Resolves confirmation defaults without importing the app catalog in shared UI.
+CatchDialogCopy catchDialogCopy(AppLocalizations l10n) => CatchDialogCopy(
+  cancelLabel: l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+  confirmLabel: l10n.coreCatchAdaptiveDialogVisiblecopyConfirm,
+);

@@ -847,6 +847,7 @@ class RotationsHostCard extends StatelessWidget {
     int roundIndex,
   ) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.eventSuccessLiveControlPublishRotationTitle,
       message: context.l10n.eventSuccessLiveControlPublishRotationMessage(

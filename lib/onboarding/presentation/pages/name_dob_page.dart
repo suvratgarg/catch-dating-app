@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -42,6 +42,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   Future<void> _pickDate(OnboardingNameDobDatePickerRequest request) async {
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: request.initialDate,
       firstDate: request.firstDate,

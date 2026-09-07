@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
@@ -187,6 +186,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
 
   Future<void> _revoke(HostEventStaffMember member) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.hostsEventStaffRevokeTitle,
       message: context.l10n.hostsEventStaffRevokeMessage(

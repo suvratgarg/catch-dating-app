@@ -6,9 +6,9 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -347,6 +347,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(widget.now());
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: _selectedDate ?? today,
       firstDate: today,
@@ -367,6 +368,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   Future<void> _pickStartTime() async {
     final picked = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime:
           _selectedStartTime ??

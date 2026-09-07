@@ -789,6 +789,12 @@ and interaction bodies. The former private tab indicator becomes a registered
 member with a direct preview; geometry and gesture state stay with the tab bar.
 The bottom-action overlay also has a direct scrolling/safe-area preview while
 retaining its existing embedded coverage.
+Confirmation and form dialogs keep their distinct layouts in individual shared
+files. Typed dialog actions and picker toolbar copy are presentation inputs;
+app copy adapters resolve the existing translated defaults. The native picker
+sheet becomes a registered member of the sheet family with a direct date/time
+preview. iOS date clamping, cancellation and the Material picker paths retain
+their existing behavior.
 
 ### Phase 4 — One registry, binding grammar
 

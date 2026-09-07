@@ -200,7 +200,6 @@ scan_raw_material_buttons() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_adaptive_picker.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_button.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_text_button.dart' || true)"
 
