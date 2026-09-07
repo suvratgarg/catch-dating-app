@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.52.0
+version: 1.53.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -523,6 +523,23 @@ and live-runtime readiness and destination choices. They do not grant access
 or guarantee a later command: confirmation rechecks current scope, permission,
 expiry, source, revision and any named checkpoint reporter. Duty changes cannot
 preserve the earlier UI permission or make an old command executable.
+
+The Flutter departure repository now decodes this response into typed group
+scope, role authority, confirmed progress, saved destination choices and current
+guidance. It rejects mixed scopes/accounts and inconsistent or expired evidence.
+The shared joining-target value supports exact command serialization and value
+comparison. A prepared departure freezes the reviewed source and revision;
+transport retries retain that decision and operation ID, while a replay's newer
+current view remains separate from its original receipt revision.
+
+Roster review binds the explicit, sorted attendee selection to that exact
+client snapshot. An omitted roster remains different from an explicitly reviewed
+empty roster. A checkpoint request requires that review and a route/itinerary
+target, and applies the caller's reporter restriction before submission. The
+backend still rechecks selected attendance, membership, source, revision and the
+reporter's current duty/deadline. The repository does not retry automatically,
+write attendance, or send messages. Account-lifecycle state, the Host controls
+and their simulated rehearsal execution remain subsequent integration work.
 
 An existing link follows the workflow thread once a fresh instruction is
 published. Until then it returns `noInstructions`, and neither web nor native

@@ -5,6 +5,56 @@ enum AssistanceLateEntry { allowed, hostDecision, closed }
 sealed class AssistanceJoiningTarget {
   const AssistanceJoiningTarget();
 
+  Map<String, Object?> toJson() => switch (this) {
+    AssistanceFixedPlace(:final placeId, :final lateEntry) => {
+      'kind': 'fixedPlace',
+      'placeId': placeId,
+      'lateEntry': lateEntry.name,
+    },
+    AssistanceItineraryStop(:final itineraryId, :final stopId) => {
+      'kind': 'itineraryStop',
+      'itineraryId': itineraryId,
+      'stopId': stopId,
+    },
+    AssistanceGroupCheckpoint(
+      :final routeId,
+      :final groupId,
+      :final checkpointId,
+    ) =>
+      {
+        'kind': 'groupCheckpoint',
+        'routeId': routeId,
+        'groupId': groupId,
+        'checkpointId': checkpointId,
+      },
+  };
+
+  Object get _identity => switch (this) {
+    AssistanceFixedPlace(:final placeId, :final lateEntry) => (
+      'fixedPlace',
+      placeId,
+      lateEntry,
+    ),
+    AssistanceItineraryStop(:final itineraryId, :final stopId) => (
+      'itineraryStop',
+      itineraryId,
+      stopId,
+    ),
+    AssistanceGroupCheckpoint(
+      :final routeId,
+      :final groupId,
+      :final checkpointId,
+    ) =>
+      ('groupCheckpoint', routeId, groupId, checkpointId),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is AssistanceJoiningTarget && other._identity == _identity;
+
+  @override
+  int get hashCode => _identity.hashCode;
+
   factory AssistanceJoiningTarget.fromJson(Object? value) {
     final map = assistanceObject(value);
     switch (map['kind']) {
