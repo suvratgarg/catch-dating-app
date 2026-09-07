@@ -1,6 +1,5 @@
+import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
 import 'package:flutter/widgets.dart';
-
-import 'catch_divided_field_interaction.dart';
 
 /// Internal responsive policy scope published by section-page composition.
 class CatchDividedFieldInteractionScope extends InheritedWidget {

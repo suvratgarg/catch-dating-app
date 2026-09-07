@@ -1,6 +1,5 @@
+import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
 import 'package:flutter/foundation.dart';
-
-import 'catch_divided_field_interaction.dart';
 
 /// Responsive defaults for divided field-section interaction.
 ///

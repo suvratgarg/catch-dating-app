@@ -1,9 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
+import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart';
+import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:flutter/widgets.dart';
-
-import 'catch_field_gutter_ownership.dart';
-import 'catch_field_interaction_plane_scope.dart';
-import 'catch_field_interaction_shape.dart';
 
 /// Ambient contract for field-row content and interaction geometry.
 ///
