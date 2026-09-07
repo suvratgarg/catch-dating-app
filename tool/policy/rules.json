@@ -1953,7 +1953,7 @@
         "lib/routing/go_router.dart",
         "lib/**/presentation/**",
         "lib/core/presentation/**",
-        "lib/core/widgets/catch_section_layout.dart"
+        "packages/catch_ui/lib/src/components/catch_section.dart"
       ],
       "instruction": "Every direct consumer and host StatefulShellBranch must be registered in tool/design/root_screen_composition_contracts.json. Exact route-to-layout ownership belongs in design/screens/catch.screens.json and is enforced by the analyzer-backed UI composition gate. Ordinary roots select CatchRootScreenScaffold.standard or .fullBleed, or the matching CatchRootScreenScrollView constructor. Roots with pinned peer navigation use .withPrimaryRail plus one of CatchRootScreenPageScrollView.standard, .fullBleed, or .embeddedViewport. These semantic constructors centralize SafeArea(bottom: false), title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and terminal clearance. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
       "sunset_when": [

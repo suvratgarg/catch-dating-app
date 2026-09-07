@@ -2150,7 +2150,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchSectionImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_section_layout.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_section.dart',
+    );
   }
 
   bool get _isCatchMenuImplementationPath {

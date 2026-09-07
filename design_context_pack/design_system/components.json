@@ -58,7 +58,7 @@
     },
     "field_section": {
       "owner": "CatchSection",
-      "source": "lib/core/widgets/catch_section_layout.dart",
+      "source": "packages/catch_ui/lib/src/components/catch_section.dart",
       "variants": [
         "divided",
         "fieldRows",
@@ -2952,6 +2952,25 @@
             }
           },
           {
+            "id": "catch.field.divider_geometry",
+            "symbol": "CatchFieldDividerGeometry",
+            "file": "packages/catch_ui/lib/src/components/catch_field_divider_geometry.dart",
+            "summary": "Presentation-only numeric leading inset contract implemented by direct field rows, allowing Section to align separators without importing the app field class. Plain and add rows report zero; icon and custom-leading rows retain their existing text-lane calculation.",
+            "states": [
+              "plain",
+              "icon",
+              "custom-leading",
+              "add"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.trailing",
             "symbol": "CatchFieldTrailing",
             "summary": "Public trailing-slot member used by CatchField for value text, chevrons, toggles, clear actions, validation, and custom trailing content. CatchField composes non-centered trailing content into one lane after a single 18 px caption reserve and centers it within the 18.9 px value line. Saving progress appears here only when no explicit commit bar is visible.",
@@ -3891,6 +3910,28 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.section.body",
+            "symbol": "CatchSectionBody",
+            "file": "packages/catch_ui/lib/src/components/catch_section_body.dart",
+            "summary": "Section child stack with content, divided-field and contained-field separator placement. Direct field geometry supplies exact text-lane insets; unknown adapters preserve the canonical fallback. Header and surface chrome remain Section-owned.",
+            "states": [
+              "content",
+              "divided-fields",
+              "contained-fields",
+              "direct-child",
+              "empty",
+              "hidden-separators",
+              "unknown-adapter-fallback"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
             "id": "catch.section.header",
             "symbol": "CatchSectionHeader",
             "file": "packages/catch_ui/lib/src/components/catch_section_header.dart",
@@ -4153,7 +4194,7 @@
       },
       "dart": {
         "symbol": "CatchSection",
-        "file": "lib/core/widgets/catch_section_layout.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_section.dart",
         "constructors": [
           "CatchSection.divided",
           "CatchSection.fieldRows",

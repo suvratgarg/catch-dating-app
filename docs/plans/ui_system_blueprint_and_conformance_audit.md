@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.7
+version: 1.9.8
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1061,8 +1061,16 @@ The section kicker becomes a cataloged shared member. All six section heading
 placements use the same extracted renderer, preserving title/count semantics,
 baseline alignment, and the existing separate trailing-action lane at large
 text scales. Its direct preview covers the previously private heading anatomy;
-the section's old helper is deleted. Section body and field-row orchestration
-remain app-side until their dependent field geometry protocol moves.
+the section's old helper is deleted.
+
+The canonical `CatchSection` and its private configuration records now live in
+the shared component package. Named const constructors and supported slots are
+preserved; widget slots are immutable fields, and all variant rendering belongs
+to `build`. `CatchSectionBody` owns child stacks and separator placement.
+`CatchFieldDividerGeometry` exposes only the direct field's numeric leading
+text inset, replacing the section's app-class dependency while preserving the
+fallback for unknown adapter rows. The old section libraries are deleted and
+callers, constructor ownership, schema metadata, and previews follow the move.
 
 ### Phase 4 — One registry, binding grammar
 

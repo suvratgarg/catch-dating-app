@@ -2679,6 +2679,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Fields',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldDividerGeometry',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Direct-row divider geometry',
+                builder:
+                    _widgetbook_workspace_primitives_section_anatomy_use_cases
+                        .fieldDividerGeometryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldStatusIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3921,6 +3932,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSectionContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSectionBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content and field separator modes',
+                builder:
+                    _widgetbook_workspace_primitives_section_anatomy_use_cases
+                        .sectionBodyStates,
               ),
             ],
           ),

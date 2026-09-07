@@ -15,7 +15,7 @@ const thinSectionWrapperPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+StatelessWidget\s*\{/gu;
 const allowedRawDividerFiles = new Set([
   "packages/catch_ui/lib/src/primitives/catch_divider.dart",
-  "lib/core/widgets/catch_section_layout.dart",
+  "packages/catch_ui/lib/src/components/catch_section.dart",
 ]);
 const wrapperAllowedPathPrefixes = ["lib/core/widgets/"];
 

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:72a47cfadb2db03a99d01b6e7e7082b4e6b80079ee712465823e4b4ab2259d4c",
+  "resolvedDigest": "sha256:f4412839fe0875deca36cc71c669659b00b31fa42678cefb2b24d3f704dfdef6",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1223,7 +1223,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchSection",
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "constructors": [
                 "CatchSection.divided",
                 "CatchSection.fieldRows",

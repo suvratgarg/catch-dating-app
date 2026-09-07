@@ -24568,7 +24568,7 @@
               "SettingsAccountSection"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + CatchSettingsRow",
@@ -24595,7 +24595,7 @@
               "SettingsNotificationPreferences"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + CatchToggle",
@@ -24622,7 +24622,7 @@
               "SettingsPrivacySafetySection"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + SettingsController",
@@ -24685,7 +24685,7 @@
               "SettingsSignOutSection"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
             "currentOwner": "_SettingsSection + AuthSessionController",

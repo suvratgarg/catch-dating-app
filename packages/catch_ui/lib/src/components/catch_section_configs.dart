@@ -1,4 +1,4 @@
-part of 'catch_section_layout.dart';
+part of 'catch_section.dart';
 
 /// Closed, renderer-facing records for [CatchSection].
 ///
@@ -9,12 +9,9 @@ part of 'catch_section_layout.dart';
 typedef _SectionCommonConfig = ({
   String? title,
   String? subtitle,
-  Widget? trailing,
   Object? count,
   Color? titleColor,
   double bodyGap,
-  List<Widget>? children,
-  Widget? child,
 });
 
 typedef _DividedSectionConfig = ({
@@ -34,14 +31,12 @@ typedef _DividedFieldRowsSectionConfig = ({
   Color? leadAccent,
   bool lead,
   bool first,
-  Widget? footer,
   CatchDividedFieldInteraction? interaction,
 });
 
 typedef _ContainedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
   List<CatchSectionFieldGroup>? groups,
-  Widget? footer,
   bool focused,
   bool hasError,
   CatchSectionHeaderPlacement headerPlacement,

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
-  "resolvedDigest": "sha256:6f0b1bce450d8504477e990f90883663fa14ba3a34c719dcd5e7060f5b3fd66a",
+  "resolvedDigest": "sha256:577bd15c1190994c1a628659d1dbf8146a51fa872545a0b22943c22a8a0457ac",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2351,7 +2351,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchSection",
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "constructors": [
                 "CatchSection.divided",
                 "CatchSection.fieldRows",

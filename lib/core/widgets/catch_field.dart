@@ -19,20 +19,10 @@ part 'catch_field_state.dart';
 /// Stack fields in a CatchSection when the surrounding section owns box or
 /// divider chrome.
 ///
-/// Each named constructor owns one sealed private configuration. Illegal mode
-/// mixtures are therefore rejected by the type system:
-///
-/// ```dart
-/// // Intentionally does not compile: toggle fields cannot own controllers.
-/// CatchField.toggle(
-///   copy: fieldCopy,
-///   title: 'Notifications',
-///   value: true,
-///   onChanged: null,
-///   controller: TextEditingController(),
-/// );
-/// ```
-abstract class CatchField extends StatefulWidget {
+/// Named constructors reject unsupported mode mixtures, such as a text
+/// controller on a toggle. Sections consume its numeric divider geometry.
+abstract class CatchField extends StatefulWidget
+    implements CatchFieldDividerGeometry {
   /// Stable key for the contextual pressed surface used by field rows.
   ///
   /// The enclosing section or lane supplies the interaction shape. Divided
@@ -715,6 +705,16 @@ abstract class CatchField extends StatefulWidget {
     final _ControlConfig config => config,
     _ => null,
   };
+
+  @override
+  double get fieldDividerLeadingInset => add
+      ? 0
+      : leading != null
+      ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+            CatchFieldTokens.leadingGap
+      : icon != null || prefixIcon != null
+      ? CatchFieldTokens.textLaneInset
+      : 0;
 
   /// End-aligned text for compact read and navigation rows.
   String? get valueText => _rowConfig?.valueText;

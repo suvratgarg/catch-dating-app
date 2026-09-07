@@ -13,7 +13,7 @@ import {
 
 const source = fs.readFileSync("lib/core/widgets/catch_field.dart", "utf8");
 const sectionSource = fs.readFileSync(
-  "lib/core/widgets/catch_section_layout.dart",
+  "packages/catch_ui/lib/src/components/catch_section.dart",
   "utf8",
 );
 const statusPath = "packages/catch_ui/lib/src/components/catch_field_status.dart";

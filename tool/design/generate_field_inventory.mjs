@@ -7,7 +7,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const DEFAULT_SOURCE = "lib/core/widgets/catch_field.dart";
-const DEFAULT_SECTION_SOURCE = "lib/core/widgets/catch_section_layout.dart";
+const DEFAULT_SECTION_SOURCE = "packages/catch_ui/lib/src/components/catch_section.dart";
 const DEFAULT_STATUS_SOURCE = "packages/catch_ui/lib/src/components/catch_field_status.dart";
 const DEFAULT_CONTRACTS = "design/components/catch.components.json";
 const DEFAULT_OUTPUT = "build/reports/field_facade_inventory.json";
