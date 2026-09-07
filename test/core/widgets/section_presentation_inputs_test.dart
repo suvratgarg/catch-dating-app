@@ -6,6 +6,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 void main() {
   testWidgets('caller accents follow theme changes and preserve precedence', (
     tester,
@@ -80,7 +82,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(tester.widget<Text>(find.text('LEAD')).style?.color, accent);
       expect(
         tester.widget<Text>(find.text('LEAD FIELDS')).style?.color,
