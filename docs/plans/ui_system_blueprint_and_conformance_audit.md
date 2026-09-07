@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.0
-updated: 2026-09-07
+version: 1.9.1
+updated: 2026-09-08
 owner: app_architecture
 status: active
 ---
@@ -1003,6 +1003,14 @@ pointer interaction; disabling real-layout skeletonization restores the content.
 The dependency gate pins Skeletonizer to 2.1.3 and rejects engine declarations
 in app packages. Loading motion and accessibility are verified at the rendered
 widget boundary, and affected visual baselines follow the approved D1 change.
+
+The 16-field `CatchContractFieldConstraints` value type and
+`CatchContractFieldPolicy` move into the shared component package. The schema
+generator imports the shared type when emitting app-owned field constants;
+the projected values and their lookup remain unchanged in the app. Runtime
+input bounds and validators retain their existing implementation and consume
+caller-supplied validation copy. This removes the schema import boundary that
+prevented the remaining field and form renderers from moving into `catch_ui`.
 
 ### Phase 4 — One registry, binding grammar
 

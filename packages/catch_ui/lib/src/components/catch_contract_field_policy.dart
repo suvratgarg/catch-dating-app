@@ -1,13 +1,12 @@
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
+import 'package:catch_ui/src/components/catch_form_validation_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Runtime policy derived from one generated JSON Schema field contract.
+/// Runtime input policy derived from caller-supplied field constraints.
 ///
-/// Product surfaces still own labels, layout, and save orchestration. This
-/// policy owns reusable validation and input bounds so a UI cannot silently
-/// accept values that the authoritative schema rejects.
+/// Callers own labels, localized validation copy, layout, and save orchestration.
+/// Explicit UI bounds may narrow the supplied contract but cannot relax it.
 abstract final class CatchContractFieldPolicy {
   static int? effectiveMaxLength(
     CatchContractFieldConstraints? contract,

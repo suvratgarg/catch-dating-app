@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.29.0
-updated: 2026-09-07
+version: 1.30.0
+updated: 2026-09-08
 owner: app_architecture
 status: active
 ---
@@ -69,6 +69,9 @@ and loading semantics. The separate `shimmer` package is removed in the same
 migration. Engine imports remain internal to `catch_ui`. `AppTheme` remains
 an app adapter that adds the activity-domain palette to `CatchTheme`; it does
 not define another theme.
+Shared field constraints and input-bound policies live in `catch_ui`.
+App-generated schema constants supply their concrete paths and values; callers
+retain localized validation copy and save orchestration.
 `CatchLocalizedErrorState`, scaffold, sliver and inline adapters map app errors
 and inherited-locale copy onto the shared error family. Shared retry actions
 receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.
