@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_field.dart'
-    show CatchFieldRow;
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
