@@ -84,7 +84,7 @@ export function parseSourceWork(value: unknown, now: number): SourceWork {
   for (const key of [...c.failures.map(sourceFailureId),
     ...(c.cursor === null ? [] : [c.cursor])]) {
     if (isEventSourceScope(value.scope)) {
-      if (!/^work:(assistance|delivery):[a-f0-9]{64}$/.test(key)) {
+      if (!/^work:(assistance|delivery|checkpoint):[a-f0-9]{64}$/.test(key)) {
         throw invalidWork();
       }
     } else {

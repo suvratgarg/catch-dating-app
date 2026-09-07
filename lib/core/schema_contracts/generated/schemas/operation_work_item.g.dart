@@ -22,6 +22,312 @@ const schemaOperationWorkItemSchema = <String, Object?>{
             ],
             'properties': <String, Object?>{
               'kind': <String, Object?>{
+                'const': 'liveCheckpointReport',
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'workflowId': <String, Object?>{
+            'const': 'event-assistance',
+          },
+          'entityKind': <String, Object?>{
+            'const': 'checkpoint_report',
+          },
+          'normalizedPayload': <String, Object?>{
+            'title': 'EventAssistanceCheckpointWork',
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'schemaVersion',
+              'kind',
+              'scope',
+              'rosterId',
+              'rosterHash',
+              'request',
+              'requestedAt',
+              'checkpoint',
+            ],
+            'properties': <String, Object?>{
+              'schemaVersion': <String, Object?>{
+                'const': 1,
+              },
+              'kind': <String, Object?>{
+                'const': 'liveCheckpointReport',
+              },
+              'scope': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'context',
+                  'groupId',
+                  'checkpointId',
+                  'progressRevision',
+                ],
+                'properties': <String, Object?>{
+                  'context': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'mode',
+                      'eventId',
+                      'organizerId',
+                    ],
+                    'properties': <String, Object?>{
+                      'mode': <String, Object?>{
+                        'type': 'string',
+                        'const': 'live',
+                      },
+                      'eventId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 160,
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                      },
+                      'organizerId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 2000,
+                      },
+                    },
+                  },
+                  'groupId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'checkpointId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 2000,
+                  },
+                  'progressRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                },
+              },
+              'rosterId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^departure-roster:[a-f0-9]{64}\$',
+              },
+              'rosterHash': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              'request': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'responsibleOperatorId',
+                  'dueAt',
+                ],
+                'properties': <String, Object?>{
+                  'responsibleOperatorId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 128,
+                    'pattern': '^[^/]+\$',
+                  },
+                  'dueAt': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                },
+              },
+              'requestedAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'checkpoint': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'dueAt',
+                  'evaluatedAt',
+                  'failures',
+                  'observation',
+                ],
+                'properties': <String, Object?>{
+                  'dueAt': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 9007199254740991,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'evaluatedAt': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 9007199254740991,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'failures': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 5,
+                  },
+                  'observation': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'oneOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'request',
+                              'reportRevision',
+                              'sourceHash',
+                              'ownerValidUntil',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'observed',
+                              },
+                              'request': <String, Object?>{
+                                'oneOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'responsibleOperatorId',
+                                      'dueAt',
+                                      'state',
+                                      'ownerAvailability',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'responsibleOperatorId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 128,
+                                        'pattern': '^[^/]+\$',
+                                      },
+                                      'dueAt': <String, Object?>{
+                                        'type': 'integer',
+                                        'minimum': 0,
+                                        'maximum': 9007199254740991,
+                                      },
+                                      'state': <String, Object?>{
+                                        'enum': <Object?>[
+                                          'awaitingReport',
+                                          'overdue',
+                                          'discrepancy',
+                                          'sourceUnavailable',
+                                        ],
+                                      },
+                                      'ownerAvailability': <String, Object?>{
+                                        'enum': <Object?>[
+                                          'current',
+                                          'needsReassignment',
+                                        ],
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'responsibleOperatorId',
+                                      'dueAt',
+                                      'state',
+                                      'ownerAvailability',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'responsibleOperatorId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 128,
+                                        'pattern': '^[^/]+\$',
+                                      },
+                                      'dueAt': <String, Object?>{
+                                        'type': 'integer',
+                                        'minimum': 0,
+                                        'maximum': 9007199254740991,
+                                      },
+                                      'state': <String, Object?>{
+                                        'const': 'complete',
+                                      },
+                                      'ownerAvailability': <String, Object?>{
+                                        'const': 'notRequired',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                              'reportRevision': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 9007199254740991,
+                              },
+                              'sourceHash': <String, Object?>{
+                                'type': 'string',
+                                'pattern': '^[a-f0-9]{64}\$',
+                              },
+                              'ownerValidUntil': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 9007199254740991,
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'reason',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'unavailable',
+                              },
+                              'reason': <String, Object?>{
+                                'const': 'factsUnavailable',
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'kind',
+            ],
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
                 'const': 'liveMessageDelivery',
               },
             },
@@ -764,6 +1070,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                       'eventAssistanceWhatsappBudgets',
                       'organizerWhatsappEndpointStops',
                       'organizerContactChannelStates',
+                      'eventStaffGrants',
                     ],
                   },
                   'documentId': <String, Object?>{

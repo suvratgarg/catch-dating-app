@@ -87,6 +87,7 @@ export {eventAssistanceGuestResponseSchema} from "./schemas/eventAssistanceGuest
 export {eventAssistancePolicySchema} from "./schemas/eventAssistancePolicy";
 export {eventAssistanceCommandSchema} from "./schemas/eventAssistanceCommand";
 export {eventAssistanceSourceWorkSchema} from "./schemas/eventAssistanceSourceWork";
+export {eventAssistanceCheckpointWorkSchema} from "./schemas/eventAssistanceCheckpointWork";
 export {eventAssistanceDeliveryWorkSchema} from "./schemas/eventAssistanceDeliveryWork";
 export {eventAssistanceRosterWorkSchema} from "./schemas/eventAssistanceRosterWork";
 export {eventAssistanceLiveWorkSchema} from "./schemas/eventAssistanceLiveWork";

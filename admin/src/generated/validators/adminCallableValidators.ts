@@ -5820,6 +5820,36 @@ const model = {
                 ],
                 "properties": {
                   "kind": {
+                    "const": "liveCheckpointReport"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "checkpoint_report"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_checkpoint_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
                     "const": "liveMessageDelivery"
                   }
                 }
@@ -7291,118 +7321,604 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/event_assistance_delivery_work.schema.json",
-      "title": "EventAssistanceDeliveryWork",
-      "description": "Private resumable delivery coordination for one published automatic message. The outbox owns provider attempts; a checkpoint never grants dispatch authority.",
+      "$id": "https://catch.app/contracts/operations/event_assistance_checkpoint_work.schema.json",
+      "title": "EventAssistanceCheckpointWork",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "schemaVersion",
         "kind",
-        "messageId",
-        "intentHash",
-        "threadId",
         "scope",
-        "createdAt",
-        "expiresAt",
+        "rosterId",
+        "rosterHash",
+        "request",
+        "requestedAt",
         "checkpoint"
       ],
       "properties": {
         "schemaVersion": {
-          "type": "integer",
           "const": 1
         },
         "kind": {
-          "type": "string",
-          "const": "liveMessageDelivery"
-        },
-        "messageId": {
-          "$ref": "common.schema.json#/definitions/id"
-        },
-        "intentHash": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "threadId": {
-          "$ref": "common.schema.json#/definitions/id"
+          "const": "liveCheckpointReport"
         },
         "scope": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "context",
-            "attendeeId",
-            "episodeId"
-          ],
-          "properties": {
-            "context": {
-              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
-            },
-            "attendeeId": {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            "episodeId": {
-              "$ref": "common.schema.json#/definitions/id"
-            }
-          }
+          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReadInput"
         },
-        "createdAt": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
+        "rosterId": {
+          "type": "string",
+          "pattern": "^departure-roster:[a-f0-9]{64}$"
         },
-        "expiresAt": {
+        "rosterHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "request": {
+          "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/CheckpointRequest"
+        },
+        "requestedAt": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
         },
         "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dueAt",
+            "evaluatedAt",
+            "failures",
+            "observation"
+          ],
+          "properties": {
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evaluatedAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "failures": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "observation": {
+              "anyOf": [
+                {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "request",
+                        "reportRevision",
+                        "sourceHash",
+                        "ownerValidUntil"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "observed"
+                        },
+                        "request": {
+                          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/RequestView"
+                        },
+                        "reportRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "sourceHash": {
+                          "$ref": "common.schema.json#/definitions/sha256"
+                        },
+                        "ownerValidUntil": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "unavailable"
+                        },
+                        "reason": {
+                          "const": "factsUnavailable"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_assistance_checkpoint.schema.json",
+      "title": "EventAssistanceCheckpointContracts",
+      "definitions": {
+        "ReadInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "WriteInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/RecordCheckpointCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Member": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "observation",
+            "visit"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "observation": {
+              "enum": [
+                "accountedFor",
+                "unconfirmed"
+              ]
+            },
+            "visit": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "current"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    },
+                    "reason": {
+                      "enum": [
+                        "registrationMissing",
+                        "visitChanged",
+                        "notCheckedIn",
+                        "invalidSource"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "Report": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "reportId",
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision",
+            "rosterId",
+            "rosterHash",
+            "revision",
+            "accountedFor",
+            "reportedBy",
+            "reportedAt",
+            "correctionReason",
+            "createdAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "reportId": {
+              "type": "string",
+              "pattern": "^checkpoint:[a-f0-9]{64}$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "rosterId": {
+              "type": "string",
+              "pattern": "^departure-roster:[a-f0-9]{64}$"
+            },
+            "rosterHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "accountedFor": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            },
+            "reportedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "reportedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "correctionReason": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "View": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision",
+            "serverTime",
+            "sourceHash",
+            "revision",
+            "report",
+            "availability",
+            "request"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "report": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Report"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "availability": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "rosterId",
+                    "label",
+                    "reportStatus",
+                    "members"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "ready"
+                    },
+                    "rosterId": {
+                      "type": "string",
+                      "pattern": "^departure-roster:[a-f0-9]{64}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "reportStatus": {
+                      "enum": [
+                        "unreported",
+                        "partial",
+                        "complete"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "maxItems": 1000,
+                      "items": {
+                        "$ref": "#/definitions/Member"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    },
+                    "reason": {
+                      "enum": [
+                        "rosterNotRecorded",
+                        "destinationNotRecorded",
+                        "differentCheckpoint",
+                        "notCheckpoint",
+                        "setupChanged"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "request": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/RequestView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "Receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "report"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-action:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "report": {
+              "$ref": "#/definitions/Report"
+            }
+          }
+        },
+        "Response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "operationRevision",
+            "view"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "read",
+                "applied",
+                "replayed"
+              ]
+            },
+            "operationRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "view": {
+              "$ref": "#/definitions/View"
+            }
+          }
+        },
+        "RequestView": {
           "oneOf": [
             {
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "phase",
-                "reason",
+                "responsibleOperatorId",
                 "dueAt",
-                "messageRevision",
-                "messageHash",
-                "failures",
-                "evaluations"
+                "state",
+                "ownerAvailability"
               ],
               "properties": {
-                "phase": {
+                "responsibleOperatorId": {
                   "type": "string",
-                  "const": "queued"
-                },
-                "reason": {
-                  "type": "null"
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
                 },
                 "dueAt": {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 9007199254740991
                 },
-                "messageRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                "state": {
+                  "enum": [
+                    "awaitingReport",
+                    "overdue",
+                    "discrepancy",
+                    "sourceUnavailable"
+                  ]
                 },
-                "messageHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 5,
-                  "const": 0
-                },
-                "evaluations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100,
-                  "const": 0
+                "ownerAvailability": {
+                  "enum": [
+                    "current",
+                    "needsReassignment"
+                  ]
                 }
               }
             },
@@ -7410,211 +7926,28 @@ const model = {
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "phase",
-                "reason",
+                "responsibleOperatorId",
                 "dueAt",
-                "messageRevision",
-                "messageHash",
-                "failures",
-                "evaluations"
+                "state",
+                "ownerAvailability"
               ],
               "properties": {
-                "phase": {
+                "responsibleOperatorId": {
                   "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "state": {
                   "const": "complete"
                 },
-                "reason": {
-                  "enum": [
-                    "delivered",
-                    "responded",
-                    "cancelled",
-                    "superseded",
-                    "expired",
-                    "eventClosed",
-                    "permissionRevoked",
-                    "guestPresent",
-                    "guestDeclined",
-                    "notAdmitted",
-                    "hostStopped",
-                    "participationInactive"
-                  ]
-                },
-                "dueAt": {
-                  "type": "null"
-                },
-                "messageRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 5
-                },
-                "evaluations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100
-                }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "phase",
-                "reason",
-                "dueAt",
-                "messageRevision",
-                "messageHash",
-                "failures",
-                "evaluations"
-              ],
-              "properties": {
-                "phase": {
-                  "type": "string",
-                  "const": "receipt"
-                },
-                "reason": {
-                  "const": "providerPending"
-                },
-                "dueAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 5
-                },
-                "evaluations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100
-                }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "phase",
-                "reason",
-                "dueAt",
-                "messageRevision",
-                "messageHash",
-                "failures",
-                "evaluations"
-              ],
-              "properties": {
-                "phase": {
-                  "type": "string",
-                  "const": "retry"
-                },
-                "reason": {
-                  "enum": [
-                    "retryBackoff",
-                    "eventFactsStale",
-                    "routeFactsStale",
-                    "workerUnavailable"
-                  ]
-                },
-                "dueAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 5
-                },
-                "evaluations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100
-                }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "phase",
-                "reason",
-                "dueAt",
-                "messageRevision",
-                "messageHash",
-                "failures",
-                "evaluations"
-              ],
-              "properties": {
-                "phase": {
-                  "type": "string",
-                  "const": "review"
-                },
-                "reason": {
-                  "enum": [
-                    "noEligibleRoute",
-                    "attemptLimit",
-                    "policyRejected",
-                    "recipientNeedsReview",
-                    "providerOwnsFallback",
-                    "conflictingDeliveryEvidence",
-                    "providerPending",
-                    "workerUnavailable",
-                    "recoveryLimit",
-                    "eventFactsStale",
-                    "routeFactsStale"
-                  ]
-                },
-                "dueAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "messageHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
-                "failures": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 5
-                },
-                "evaluations": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100
+                "ownerAvailability": {
+                  "const": "notRequired"
                 }
               }
             }
@@ -15716,6 +16049,339 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_delivery_work.schema.json",
+      "title": "EventAssistanceDeliveryWork",
+      "description": "Private resumable delivery coordination for one published automatic message. The outbox owns provider attempts; a checkpoint never grants dispatch authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "messageId",
+        "intentHash",
+        "threadId",
+        "scope",
+        "createdAt",
+        "expiresAt",
+        "checkpoint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "const": "liveMessageDelivery"
+        },
+        "messageId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "intentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "threadId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "episodeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkpoint": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "queued"
+                },
+                "reason": {
+                  "type": "null"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5,
+                  "const": 0
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "const": 0
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "complete"
+                },
+                "reason": {
+                  "enum": [
+                    "delivered",
+                    "responded",
+                    "cancelled",
+                    "superseded",
+                    "expired",
+                    "eventClosed",
+                    "permissionRevoked",
+                    "guestPresent",
+                    "guestDeclined",
+                    "notAdmitted",
+                    "hostStopped",
+                    "participationInactive"
+                  ]
+                },
+                "dueAt": {
+                  "type": "null"
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "receipt"
+                },
+                "reason": {
+                  "const": "providerPending"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "retry"
+                },
+                "reason": {
+                  "enum": [
+                    "retryBackoff",
+                    "eventFactsStale",
+                    "routeFactsStale",
+                    "workerUnavailable"
+                  ]
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "review"
+                },
+                "reason": {
+                  "enum": [
+                    "noEligibleRoute",
+                    "attemptLimit",
+                    "policyRejected",
+                    "recipientNeedsReview",
+                    "providerOwnsFallback",
+                    "conflictingDeliveryEvidence",
+                    "providerPending",
+                    "workerUnavailable",
+                    "recoveryLimit",
+                    "eventFactsStale",
+                    "routeFactsStale"
+                  ]
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/operations/event_assistance_roster_work.schema.json",
       "title": "EventAssistanceRosterWork",
       "description": "Private resumable roster enrollment bound to current manager runtime permission. Enrollment never infers attendance or sends messages.",
@@ -17792,7 +18458,8 @@ const model = {
                 "organizerMessageTemplates",
                 "eventAssistanceWhatsappBudgets",
                 "organizerWhatsappEndpointStops",
-                "organizerContactChannelStates"
+                "organizerContactChannelStates",
+                "eventStaffGrants"
               ]
             },
             "documentId": {

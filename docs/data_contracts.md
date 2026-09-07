@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.57.0
+version: 1.58.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -260,12 +260,25 @@ records retain their existing hashes and bindings; credentials are never copied
 into delivery-work payloads.
 
 `event_assistance_source_work.schema.json` also accepts event-specific SMS and
-WhatsApp permission sources. Its bounded cursor/failure set can reference either
-canonical guest or delivery work ids; scope and immutable record validation
+WhatsApp permission and scoped staff sources. Its bounded cursor/failure set can
+reference canonical guest, delivery or checkpoint work ids; scope and immutable record validation
 remain mandatory before each wake. Source payloads retain identifiers rather
 than consent contents or recipient endpoints. Delivery wake action receipts bind
 the signal hash and target, deduplicate source replay, and preserve terminal
 work, recovery caps and unresolved provider submissions.
+
+`event_assistance_checkpoint_work.schema.json` binds the `checkpoint_report`
+Operations entity to an immutable departure request, full roster hash and exact
+checkpoint scope. Departure confirmation atomically creates the run/item when a
+request is supplied and rechecks caller/owner expiry, deadline and event end after
+those additional reads. Legacy departures create no inferred request work.
+The worker stores typed observed/unavailable facts and a finite next due time,
+with five scheduled retries for unreadable sources. Completed observations have
+no due time, but remain nonterminal so corrected reports can reopen the same
+request. The current lease fences run/item/action-receipt commits; source wake
+receipts bind signal and target and deduplicate old deliveries. There are no new
+collections, client grants, contact fields, provider effects or automatic
+attendance mutations. Operational closeout and retention remain unimplemented.
 
 Source scopes also distinguish sender discovery and organizer/WhatsApp endpoint
 discovery from event fanout. Readiness failures use `targetKey`, a stable
@@ -354,8 +367,9 @@ Time and owner availability do not alter the report's reviewed evidence hash.
 Complete original observations survive later source changes; partial corrections
 reopen the request. These are projections of immutable request facts and current
 observations, not a second durable workflow or an automatic arrival inference.
-Operations request scheduling, reassignment and staff notification delivery are
-separate integration work; this contract does not authorize provider sends.
+Operations request scheduling now consumes those facts under its own lease.
+Reassignment, disposition-based closeout and staff notification delivery remain
+integration work; this contract does not authorize provider sends.
 
 Both collections deny direct client access and have no TTL. The report's
 `accountedFor` and receipt's `report` fields are excluded from indexes. Limits match

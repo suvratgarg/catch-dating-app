@@ -427,6 +427,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventAssistanceSourceWorkSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventAssistanceCheckpointWork',
+    source: 'operations/event_assistance_checkpoint_work.schema.json',
+    schema: schemaEventAssistanceCheckpointWorkSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceDeliveryWork',
     source: 'operations/event_assistance_delivery_work.schema.json',
     schema: schemaEventAssistanceDeliveryWorkSchema,
@@ -3176,6 +3181,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventAssistancePolicy': schemaEventAssistancePolicySchema,
   'EventAssistanceCommand': schemaEventAssistanceCommandSchema,
   'EventAssistanceSourceWork': schemaEventAssistanceSourceWorkSchema,
+  'EventAssistanceCheckpointWork': schemaEventAssistanceCheckpointWorkSchema,
   'EventAssistanceDeliveryWork': schemaEventAssistanceDeliveryWorkSchema,
   'EventAssistanceRosterWork': schemaEventAssistanceRosterWorkSchema,
   'EventAssistanceLiveWork': schemaEventAssistanceLiveWorkSchema,
@@ -3794,6 +3800,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'operations/event_assistance_policy.schema.json': schemaEventAssistancePolicySchema,
   'operations/event_assistance_command.schema.json': schemaEventAssistanceCommandSchema,
   'operations/event_assistance_source_work.schema.json': schemaEventAssistanceSourceWorkSchema,
+  'operations/event_assistance_checkpoint_work.schema.json': schemaEventAssistanceCheckpointWorkSchema,
   'operations/event_assistance_delivery_work.schema.json': schemaEventAssistanceDeliveryWorkSchema,
   'operations/event_assistance_roster_work.schema.json': schemaEventAssistanceRosterWorkSchema,
   'operations/event_assistance_live_work.schema.json': schemaEventAssistanceLiveWorkSchema,

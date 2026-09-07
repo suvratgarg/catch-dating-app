@@ -60,7 +60,8 @@
             "organizerMessageTemplates",
             "eventAssistanceWhatsappBudgets",
             "organizerWhatsappEndpointStops",
-            "organizerContactChannelStates"
+            "organizerContactChannelStates",
+            "eventStaffGrants"
           ]
         },
         "documentId": {

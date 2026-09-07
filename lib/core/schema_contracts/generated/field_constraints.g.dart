@@ -12820,6 +12820,125 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventAssistanceCheckpointWorkCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.checkpoint.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCheckpointEvaluatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.checkpoint.evaluatedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkCheckpointFailures = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.checkpoint.failures',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventAssistanceCheckpointWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkRequestDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.request.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkRequestResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.request.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointWorkRequestedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.requestedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointWorkRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointWorkSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointWorkScopeCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointWorkScopeGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointWorkScopeProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointWork.scope.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceCommandContextClockId = CatchContractFieldConstraints(
     path: 'eventAssistanceCommand.context.clockId',
     maxLength: 2000,
@@ -20565,7 +20684,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.source.collection',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions', 'eventAssistanceSmsSenders', 'eventAssistanceSmsBudgets', 'organizerSenderConnections', 'eventAssistanceWhatsappPolicies', 'organizerMessageTemplates', 'eventAssistanceWhatsappBudgets', 'organizerWhatsappEndpointStops', 'organizerContactChannelStates'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions', 'eventAssistanceSmsSenders', 'eventAssistanceSmsBudgets', 'organizerSenderConnections', 'eventAssistanceWhatsappPolicies', 'organizerMessageTemplates', 'eventAssistanceWhatsappBudgets', 'organizerWhatsappEndpointStops', 'organizerContactChannelStates', 'eventStaffGrants'],
   );
 
   static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(
@@ -77348,6 +77467,22 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointReceiptDocument.report.rosterId': eventAssistanceCheckpointReceiptDocumentReportRosterId,
     'eventAssistanceCheckpointReceiptDocument.report.schemaVersion': eventAssistanceCheckpointReceiptDocumentReportSchemaVersion,
     'eventAssistanceCheckpointReceiptDocument.requestHash': eventAssistanceCheckpointReceiptDocumentRequestHash,
+    'eventAssistanceCheckpointWork.checkpoint.dueAt': eventAssistanceCheckpointWorkCheckpointDueAt,
+    'eventAssistanceCheckpointWork.checkpoint.evaluatedAt': eventAssistanceCheckpointWorkCheckpointEvaluatedAt,
+    'eventAssistanceCheckpointWork.checkpoint.failures': eventAssistanceCheckpointWorkCheckpointFailures,
+    'eventAssistanceCheckpointWork.kind': eventAssistanceCheckpointWorkKind,
+    'eventAssistanceCheckpointWork.request.dueAt': eventAssistanceCheckpointWorkRequestDueAt,
+    'eventAssistanceCheckpointWork.request.responsibleOperatorId': eventAssistanceCheckpointWorkRequestResponsibleOperatorId,
+    'eventAssistanceCheckpointWork.requestedAt': eventAssistanceCheckpointWorkRequestedAt,
+    'eventAssistanceCheckpointWork.rosterHash': eventAssistanceCheckpointWorkRosterHash,
+    'eventAssistanceCheckpointWork.rosterId': eventAssistanceCheckpointWorkRosterId,
+    'eventAssistanceCheckpointWork.schemaVersion': eventAssistanceCheckpointWorkSchemaVersion,
+    'eventAssistanceCheckpointWork.scope.checkpointId': eventAssistanceCheckpointWorkScopeCheckpointId,
+    'eventAssistanceCheckpointWork.scope.context.eventId': eventAssistanceCheckpointWorkScopeContextEventId,
+    'eventAssistanceCheckpointWork.scope.context.mode': eventAssistanceCheckpointWorkScopeContextMode,
+    'eventAssistanceCheckpointWork.scope.context.organizerId': eventAssistanceCheckpointWorkScopeContextOrganizerId,
+    'eventAssistanceCheckpointWork.scope.groupId': eventAssistanceCheckpointWorkScopeGroupId,
+    'eventAssistanceCheckpointWork.scope.progressRevision': eventAssistanceCheckpointWorkScopeProgressRevision,
     'eventAssistanceCommand.context.clockId': eventAssistanceCommandContextClockId,
     'eventAssistanceCommand.context.eventId': eventAssistanceCommandContextEventId,
     'eventAssistanceCommand.context.mode': eventAssistanceCommandContextMode,

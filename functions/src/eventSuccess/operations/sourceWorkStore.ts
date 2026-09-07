@@ -12,6 +12,7 @@ import type {OperationActionReceipt, OperationLease} from
 import {requireDocumentId} from "./guestRecords";
 import {advanceFanoutPage} from "./boundedFanout";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
+import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner, errorCode, releaseAssistanceWorkLease} from
   "./liveWorkRunner";
@@ -30,13 +31,18 @@ export class AssistanceSourceWorkStore {
   readonly operations: FirestoreOperationsRepository;
   private readonly target: Pick<LiveAssistanceWorkRunner, "process">;
   private readonly delivery: Pick<AssistanceDeliveryWorkStore, "process">;
+  private readonly checkpointWork: Pick<AssistanceCheckpointWorkStore,
+    "process">;
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now,
     target?: Pick<LiveAssistanceWorkRunner, "process">,
-    delivery?: Pick<AssistanceDeliveryWorkStore, "process">) {
+    delivery?: Pick<AssistanceDeliveryWorkStore, "process">,
+    checkpointWork?: Pick<AssistanceCheckpointWorkStore, "process">) {
     this.operations = new FirestoreOperationsRepository(db, clock);
     this.target = target ?? new LiveAssistanceWorkRunner(db, clock);
     this.delivery = delivery ?? new AssistanceDeliveryWorkStore(db, clock);
+    this.checkpointWork = checkpointWork ??
+      new AssistanceCheckpointWorkStore(db, clock);
   }
 
   async enqueue(input: SourceWorkInput) {
@@ -135,23 +141,30 @@ export class AssistanceSourceWorkStore {
       }
       // Re-read the work's scope before invoking the generic target port.
       const workItemId = targetId;
+      const isCheckpoint = workItemId.startsWith("work:checkpoint:");
       const isDelivery = workItemId.startsWith("work:delivery:");
-      const target = isDelivery ?
-        await new AssistanceDeliveryWorkStore(this.db, this.clock)
-          .get(workItemId) :
-        await new LiveAssistanceWorkRunner(this.db, this.clock)
-          .store.get(workItemId);
+      const target = isCheckpoint ?
+        await new AssistanceCheckpointWorkStore(this.db, this.clock)
+          .get(workItemId) : isDelivery ?
+          await new AssistanceDeliveryWorkStore(this.db, this.clock)
+            .get(workItemId) :
+          await new LiveAssistanceWorkRunner(this.db, this.clock)
+            .store.get(workItemId);
       if (operationContentHash(target.payload.scope.context) !==
           operationContentHash(payload.scope.context) ||
           (payload.scope.attendeeId !== null &&
-            target.payload.scope.attendeeId !== payload.scope.attendeeId)) {
+            (!("attendeeId" in target.payload.scope) ||
+            target.payload.scope.attendeeId !== payload.scope.attendeeId))) {
         throw invalidWork();
       }
       const action = {kind: "wake" as const, signalId: payload.signalId};
-      const result = isDelivery ?
-        await this.delivery.process(workItemId, action,
+      const result = isCheckpoint ?
+        await this.checkpointWork.process(workItemId, action,
           Math.min(Date.parse(lease.expiresAt), payload.expiresAt)) :
-        await this.target.process(workItemId, action);
+        isDelivery ?
+          await this.delivery.process(workItemId, action,
+            Math.min(Date.parse(lease.expiresAt), payload.expiresAt)) :
+          await this.target.process(workItemId, action);
       return result.kind === "busy" ? {workItemId, reason: "busy"} : null;
     } catch {
       // Keep the exact target for bounded retry and eventual human review;
@@ -173,9 +186,12 @@ export class AssistanceSourceWorkStore {
       return new SourceReadinessTargets(this.db, this.clock)
         .list(scope, occurredAt, cursor, limit);
     }
-    // Reuse the two equality-query indexes; merge their bounded pages using
+    // Reuse equality-query indexes; merge their bounded pages using
     // the same ordinal ordering as Firestore document-id cursors.
-    const kinds = ["liveLateJoin", "liveMessageDelivery"] as const;
+    // A guest change is not authority to scan unrelated group rosters.
+    const kinds = scope.attendeeId === null ?
+      ["liveLateJoin", "liveMessageDelivery", "liveCheckpointReport"] as const :
+      ["liveLateJoin", "liveMessageDelivery"] as const;
     const pages = await Promise.all(kinds.map((kind) =>
       this.targetQuery(scope, cursor, kind)
         .limit(limit).get()));
@@ -184,7 +200,7 @@ export class AssistanceSourceWorkStore {
   }
 
   private targetQuery(scope: EventSourceScope, cursor: string | null,
-    kind: "liveLateJoin" | "liveMessageDelivery") {
+    kind: "liveLateJoin" | "liveMessageDelivery" | "liveCheckpointReport") {
     let query = this.db.collection(operationCollections.workItems)
       .where("workflowId", "==", ASSISTANCE_WORKFLOW)
       .where("normalizedPayload.kind", "==", kind)

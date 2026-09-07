@@ -5,12 +5,14 @@ import {logger} from "firebase-functions";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
 import {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
+import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {enqueueAssistanceSourceChange} from "./sourceWorkSignals";
 import type {SourceWork} from "./sourceWorkRecords";
 
 type Collection = SourceWork["source"]["collection"];
 type WorkPorts = {
+  checkpoint: Pick<AssistanceCheckpointWorkStore, "process" | "listDue">;
   delivery: Pick<AssistanceDeliveryWorkStore, "process" | "listDue">;
   roster: Pick<AssistanceRosterWorkStore, "process" | "listDue">;
   source: Pick<AssistanceSourceWorkStore, "process" | "listDue">;
@@ -21,6 +23,7 @@ type WorkPorts = {
 
 function ports(db: Firestore, clock: () => number): WorkPorts {
   return {roster: new AssistanceRosterWorkStore(db, clock),
+    checkpoint: new AssistanceCheckpointWorkStore(db, clock),
     delivery: new AssistanceDeliveryWorkStore(db, clock),
     source: new AssistanceSourceWorkStore(db, clock),
     guest: new LiveAssistanceWorkRunner(db, clock)};
@@ -36,7 +39,9 @@ export async function processChangedAssistanceWork(workItemId: string,
   if (typeof dueAt !== "number" || !Number.isSafeInteger(dueAt) ||
       dueAt < 0 || dueAt > now) return;
   let busy: boolean;
-  if (payload?.kind === "liveMessageDelivery") {
+  if (payload?.kind === "liveCheckpointReport") {
+    busy = (await worker.checkpoint.process(workItemId)).kind === "busy";
+  } else if (payload?.kind === "liveMessageDelivery") {
     busy = (await worker.delivery.process(workItemId)).kind === "busy";
   } else if (payload?.kind === "liveRosterEnrollment") {
     busy = (await worker.roster.process(workItemId)).kind === "busy";
@@ -51,9 +56,11 @@ export async function processChangedAssistanceWork(workItemId: string,
 
 /** Scheduled recovery evaluates saved due work, never an inferred event. */
 export async function evaluateDueAssistanceWork(worker: WorkPorts) {
-  const [rosters, sources, guests, deliveries] = await Promise.all([
-    worker.roster.listDue(5), worker.source.listDue(10),
-    worker.guest.store.listDue(30), worker.delivery.listDue(10)]);
+  const [rosters, sources, guests, deliveries, checkpoints] =
+    await Promise.all([
+      worker.roster.listDue(5), worker.source.listDue(10),
+      worker.guest.store.listDue(30), worker.delivery.listDue(10),
+      worker.checkpoint.listDue(10)]);
   const failed: string[] = [];
   let busy = 0;
   for (const [kind, id] of [
@@ -61,12 +68,14 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
     ...sources.map((id) => ["source", id] as const),
     ...guests.map((item) => ["guest", item.workItemId] as const),
     ...deliveries.map((id) => ["delivery", id] as const),
+    ...checkpoints.map((id) => ["checkpoint", id] as const),
   ]) {
     try {
       const result = kind === "roster" ? await worker.roster.process(id) :
         kind === "source" ? await worker.source.process(id) :
           kind === "delivery" ? await worker.delivery.process(id) :
-            await worker.guest.process(id, {kind: "evaluate"});
+            kind === "checkpoint" ? await worker.checkpoint.process(id) :
+              await worker.guest.process(id, {kind: "evaluate"});
       if (result.kind === "busy") busy += 1;
     } catch {
       failed.push(id);
@@ -78,7 +87,8 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
     throw new Error("Some event assistance work could not advance");
   }
   return {rosterItems: rosters.length, sourceItems: sources.length,
-    guestItems: guests.length, deliveryItems: deliveries.length, busy};
+    guestItems: guests.length, deliveryItems: deliveries.length,
+    checkpointItems: checkpoints.length, busy};
 }
 
 function sourceTrigger(collection: Collection) {
@@ -106,6 +116,7 @@ function sourceTrigger(collection: Collection) {
 
 export const onAssistanceEventChanged = sourceTrigger("events");
 export const onAssistanceRosterChanged = sourceTrigger("eventAttendees");
+export const onAssistanceStaffChanged = sourceTrigger("eventStaffGrants");
 export const onAssistanceRuntimeChanged = sourceTrigger("eventSuccessPlans");
 export const onAssistanceGuestChanged = sourceTrigger("eventAssistanceGuests");
 export const onAssistanceSettingChanged = sourceTrigger(
@@ -148,6 +159,16 @@ export const onAssistanceWorkChanged = onDocumentWritten({
   if (!value) return;
   await processChangedAssistanceWork(event.params.workItemId, value,
     ports(getFirestore(), Date.now), Date.now());
+});
+
+export const onAssistanceCheckpointChanged = onDocumentWritten({
+  document: "eventAssistanceCheckpoints/{reportId}", retry: true,
+  timeoutSeconds: 120, maxInstances: 5,
+}, async (event) => {
+  if (!event.data) return;
+  const result = await new AssistanceCheckpointWorkStore(getFirestore())
+    .processReport(event.params.reportId, event.id);
+  if (result.kind === "busy") throw new AssistanceWorkBusy();
 });
 
 export const evaluateDueEventAssistanceWork = onSchedule({

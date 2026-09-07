@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.19.0
+version: 1.20.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -645,6 +645,36 @@ The visited count measures discovery, never successful enrollment or delivery.
 No provider is invoked, and no new Firestore collection or client permission is
 introduced. Complete, stopped, expired and review outcomes remain distinct.
 
+### Durable checkpoint request work
+
+An explicit departure `checkpointRequest` creates one `liveCheckpointReport`
+run/item in the same transaction as the immutable roster and departure receipt.
+The payload is enforced by `event_assistance_checkpoint_work.schema.json` and
+the generic work-item schema. Its identity binds context, group, departure
+revision and destination checkpoint; its basis pins the complete roster hash,
+original reporter, deadline and request time. It grants no staff access.
+
+`AssistanceCheckpointWorkStore` re-reads that original roster, current report,
+source availability and reporter authority under an Operations work-item lease.
+Each observed state, run/item revision and immutable action receipt commit
+atomically. Unreported requests raise an operator action; overdue, partial,
+source-unavailable or owner-unavailable requests raise human review. The next
+due time is the earlier future report deadline or finite staff expiry. Passing
+either time cannot establish a physical fact. Unreadable facts retain review
+and get at most five scheduled attempts with exponential backoff; a new source
+wake can re-read repaired evidence. No provider or attendee writer is involved.
+
+Complete reports become dormant `report_complete` items with no task flags or
+due time. The run stays running and the item waiting so an explicit report
+correction can reopen it under the existing fenced action protocol; generic
+terminal work is never reopened. Partial corrections restore follow-up, and
+duplicate or delayed source deliveries replay immutable wake receipts instead
+of reapplying older states. Event completion, cancellation or schedule expiry
+cannot discard unresolved original departure members. There is no generic
+expiry or TTL: terminal retention/reconciliation is separate work. The current
+adapter does not implement reassignment, disposition-based closeout, staff
+notifications or the Host queue UI.
+
 ### Source changes and due-work recovery
 
 `AssistanceSourceWorkStore` persists each source delivery and target scope as
@@ -655,22 +685,24 @@ scopes carry an exact sender selection or organizer/WhatsApp endpoint hash.
 Repeated delivery reuses the same work. Source payloads only request a fresh
 evaluation and cannot supply authoritative domain facts or sender permission.
 
-The nineteen source triggers cover relevant event configuration/lifecycle,
+The twenty source triggers cover relevant event configuration/lifecycle,
 roster/check-in, live plan status, participation/replies, late-join settings,
 confirmed group progress, membership, runtime permission, message evidence and
 event-specific SMS/WhatsApp consent, sender configuration, approved templates,
-spending authority, provider STOP and CRM suppression. Owner or scope
+spending authority, provider STOP, CRM suppression and scoped staff grants. Owner or scope
 changes wake both previous and current affected scopes. Unrelated event
 counters and rehearsal state create no work. No-target checks avoid creating
-source runs when no guest or delivery work exists; newly created work evaluates
+source runs when no guest, delivery or checkpoint work exists; newly created work evaluates
 current facts on its first execution.
 
 Fanout scans only work for the exact organizer/event and optional attendee,
-then revalidates each target before waking it. It merges bounded guest and
-delivery queries in document-id order using the existing scope indexes. Each
+then revalidates each target before waking it. Event-wide scopes merge bounded
+guest, delivery and checkpoint queries in document-id order using the existing
+scope indexes; attendee scopes only select guest and delivery work. Each
 scan reads at most 21 candidates per kind, including lookahead, and visits at
 most 20 total. Guest
-wakes make policy evaluation due; delivery wakes re-evaluate the saved message
+wakes make policy evaluation due; checkpoint wakes reconcile the original report;
+delivery wakes re-evaluate the saved message
 under its own lease and the remaining source execution deadline. Both scan and
 retry pages process at most 20 targets under a 60-second lease. The checkpoint cursor is
 the last scanned work id during discovery and the last attempted failed work
@@ -683,10 +715,10 @@ explicit review items with failed ids retained; expiry closes unfinished work.
 
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
 `evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,
-10 source items and 30 guest items per invocation; one failure does not skip
+10 source, 30 guest, 10 delivery and 10 checkpoint items per invocation; one failure does not skip
 the other selected items. Future due times remain saved until reached. All
-nineteen source triggers,
-the work-item trigger and the scheduler are in the dormant target policy and
+twenty source triggers, the direct `onAssistanceCheckpointChanged` report hook,
+the work-item trigger and scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.
 

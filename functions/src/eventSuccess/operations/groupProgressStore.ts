@@ -30,6 +30,7 @@ import {validateEventAssistanceDepartureRosterDocument} from
 import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
 import {authorizeCheckpointRequest, assertCheckpointRequestDeadline} from
   "./checkpointRequest";
+import {prepareCheckpointWorkEnqueue} from "./checkpointWorkEnqueue";
 export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
 
@@ -160,11 +161,26 @@ export class EventGroupProgressStore {
           !validateEventAssistanceDepartureRosterDocument(manifest)) {
         throw invalidSource();
       }
+      const work = manifest ? await prepareCheckpointWorkEnqueue(this.db, tx,
+        manifest, state.now) : null;
+      const committedAt = this.clock();
+      if (!Number.isSafeInteger(committedAt) || committedAt < state.now) {
+        throw invalidSource();
+      }
+      if (committedAt >= state.access.validUntil) throw denied();
+      if (committedAt >= state.source.endAt) {
+        throw new HttpsError("failed-precondition", "This event has ended.");
+      }
+      if (checkpointRequest) {
+        assertCheckpointRequestDeadline(checkpointRequest, ownerValidUntil!,
+          committedAt, state.source.endAt);
+      }
       const result = response("applied", {...state, progress},
         progress.revision);
       tx.set(this.db.collection(GROUP_PROGRESS).doc(progress.progressId),
         progress);
       tx.create(receiptRef, savedReceipt);
+      work?.commit();
       if (manifest) {
         tx.create(this.db.collection(DEPARTURE_ROSTERS).doc(rosterId!),
           manifest);

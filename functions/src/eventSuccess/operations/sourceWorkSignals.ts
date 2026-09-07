@@ -109,6 +109,7 @@ function scopeFor(collection: Collection, documentId: string,
     attendeeId = null;
     break;
   case "eventAttendees":
+  case "eventStaffGrants":
   case "eventSuccessPlans":
     context = {mode: "live", eventId: value.eventId ?? documentId,
       organizerId: value.organizerId ?? value.clubId};
@@ -167,6 +168,8 @@ function projection(collection: Collection, snapshot: Snapshot) {
     break;
   case "eventSuccessPlans": fields = ["eventId", "organizerId", "clubId",
     "status"]; break;
+  case "eventStaffGrants": fields = ["eventId", "organizerId", "uid",
+    "status", "expiresAt", "groupDuties"]; break;
   case "eventAssistanceGuests":
   case "eventAssistanceSmsPermissions":
   case "eventAssistanceWhatsappPermissions":

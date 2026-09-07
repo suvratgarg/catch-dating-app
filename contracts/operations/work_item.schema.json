@@ -16,6 +16,36 @@
             ],
             "properties": {
               "kind": {
+                "const": "liveCheckpointReport"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "checkpoint_report"
+          },
+          "normalizedPayload": {
+            "$ref": "event_assistance_checkpoint_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
                 "const": "liveMessageDelivery"
               }
             }

@@ -70,7 +70,8 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
             "organizerMessageTemplates",
             "eventAssistanceWhatsappBudgets",
             "organizerWhatsappEndpointStops",
-            "organizerContactChannelStates"
+            "organizerContactChannelStates",
+            "eventStaffGrants"
           ]
         },
         "documentId": {

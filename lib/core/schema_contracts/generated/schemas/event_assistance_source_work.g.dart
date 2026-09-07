@@ -73,6 +73,7 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
             'eventAssistanceWhatsappBudgets',
             'organizerWhatsappEndpointStops',
             'organizerContactChannelStates',
+            'eventStaffGrants',
           ],
         },
         'documentId': <String, Object?>{

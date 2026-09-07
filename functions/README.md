@@ -184,7 +184,8 @@ options when specific functions need higher or lower limits.
 | `onAssistanceMessageChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Late-join delivery and response evidence enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
 | `onAssistanceSmsPermissionChanged` / `onAssistanceWhatsappPermissionChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Event-specific consent changes wake scoped guest and delivery work with replay-safe receipts; dormant pending activation |
 | `onAssistanceSmsSenderChanged` / `onAssistanceSmsBudgetChanged` / `onAssistanceWhatsappSenderChanged` / `onAssistanceWhatsappPolicyChanged` / `onAssistanceWhatsappTemplateChanged` / `onAssistanceWhatsappBudgetChanged` / `onAssistanceWhatsappStopChanged` / `onAssistanceWhatsappSuppressionChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Sender, template, budget and endpoint suppression changes discover bounded event/guest scopes and wake existing assistance work; dormant pending activation |
-| `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due source fanout or guest work under Operations leases; dormant pending activation |
+| `onAssistanceStaffChanged` / `onAssistanceCheckpointChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Current staff changes wake bounded event work; checkpoint report changes wake their original request, including corrections; dormant pending activation |
+| `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due roster, source, guest, delivery or checkpoint work under Operations leases; dormant pending activation |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
@@ -199,7 +200,7 @@ options when specific functions need higher or lower limits.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
-| `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of persisted due source and guest work; dormant pending operating-budget approval |
+| `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, guest, delivery and checkpoint work; dormant pending operating-budget approval |
 
 ### Storage-triggered
 

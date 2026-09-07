@@ -30,7 +30,8 @@ export interface EventAssistanceSourceWork {
       | "organizerMessageTemplates"
       | "eventAssistanceWhatsappBudgets"
       | "organizerWhatsappEndpointStops"
-      | "organizerContactChannelStates";
+      | "organizerContactChannelStates"
+      | "eventStaffGrants";
     documentId: string;
     occurredAt: number;
   };

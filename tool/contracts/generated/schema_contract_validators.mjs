@@ -85,6 +85,7 @@ import {
   eventAssistancePolicySchema,
   eventAssistanceCommandSchema,
   eventAssistanceSourceWorkSchema,
+  eventAssistanceCheckpointWorkSchema,
   eventAssistanceDeliveryWorkSchema,
   eventAssistanceRosterWorkSchema,
   eventAssistanceLiveWorkSchema,
@@ -724,6 +725,7 @@ export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceG
 export const validateEventAssistancePolicy = ajv.compile(eventAssistancePolicySchema);
 export const validateEventAssistanceCommand = ajv.compile(eventAssistanceCommandSchema);
 export const validateEventAssistanceSourceWork = ajv.compile(eventAssistanceSourceWorkSchema);
+export const validateEventAssistanceCheckpointWork = ajv.compile(eventAssistanceCheckpointWorkSchema);
 export const validateEventAssistanceDeliveryWork = ajv.compile(eventAssistanceDeliveryWorkSchema);
 export const validateEventAssistanceRosterWork = ajv.compile(eventAssistanceRosterWorkSchema);
 export const validateEventAssistanceLiveWork = ajv.compile(eventAssistanceLiveWorkSchema);

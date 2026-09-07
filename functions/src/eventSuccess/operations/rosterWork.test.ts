@@ -1,3 +1,4 @@
+import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
@@ -317,6 +318,7 @@ test("due orchestration advances roster work and ignores unrelated payloads",
     const h = await rosterHarness();
     const created = await h.enqueue();
     const ports = {roster: h.roster, source: h.source, guest: h.runner,
+      checkpoint: new AssistanceCheckpointWorkStore(h.db, () => h.clock.now),
       delivery: new AssistanceDeliveryWorkStore(h.db, () => h.clock.now)};
     await processChangedAssistanceWork(created.item.workItemId,
       created.item, ports, start);

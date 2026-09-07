@@ -88,6 +88,7 @@ export {onEventAssistanceWhatsappEventCreated} from
   "./eventSuccess/operations/whatsappWebhookProcessing";
 export {
   onAssistanceEventChanged, onAssistanceRosterChanged,
+  onAssistanceStaffChanged, onAssistanceCheckpointChanged,
   onAssistanceRuntimeChanged, onAssistanceGuestChanged,
   onAssistanceSettingChanged, onAssistanceProgressChanged,
   onAssistanceRuntimeConfigChanged,

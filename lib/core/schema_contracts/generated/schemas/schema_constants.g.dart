@@ -148,6 +148,7 @@ export 'event_assistance_case_document.g.dart';
 export 'event_assistance_checkpoint_callable_response.g.dart';
 export 'event_assistance_checkpoint_document.g.dart';
 export 'event_assistance_checkpoint_receipt_document.g.dart';
+export 'event_assistance_checkpoint_work.g.dart';
 export 'event_assistance_command.g.dart';
 export 'event_assistance_delivery_attempt.g.dart';
 export 'event_assistance_delivery_work.g.dart';

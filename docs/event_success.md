@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.40.0
+version: 1.41.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -541,13 +541,21 @@ back to a partial set reopens the discrepancy. A wrong checkpoint never inherits
 another stop's request. Legacy rosters invent no request or owner, and empty rosters
 still require an explicit empty report.
 
-This bounded slice supplies request facts and read projections; it does not yet
-enqueue the Operations request/reminder worker or deliver staff notifications.
-Acceptance covers atomic interruption/retry, delegation and current authority,
-deadline/expiry races, partial/corrected reports, historical legs, source failures
-and Firestore concurrency. Automated `requestCheckpointReport`, reminder/escalation
-policy, reassignment commands, Host controls and rehearsal adapters remain
-integration work. This change activates no automation or provider effects.
+Departure confirmation also creates durable Operations request work atomically.
+The worker reconciles the report at the saved deadline and finite reporter expiry;
+unreported, overdue, incomplete, unavailable-source and unavailable-owner states
+remain distinct. A report-change hook wakes its exact original request, including
+corrections. Scoped staff changes enter bounded event fanout. Complete reports go
+dormant with no due timer; a correction reopens the same work through a fenced
+action receipt. Source-read failures have five scheduled attempts before review,
+and changed source evidence can wake the request again. Event end is never an
+automatic closeout of unresolved departure members.
+
+Acceptance covers atomic enrollment/interruption/retry, current authority,
+deadline/lease races, corrected reports, bounded source fanout, source failures
+and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
+Staff notifications, reassignment, disposition-based closeout, Host controls and
+rehearsal adapters remain integration work; no provider effect is activated.
 
 ### Scoped group staff
 

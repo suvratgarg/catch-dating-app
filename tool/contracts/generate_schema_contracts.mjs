@@ -414,6 +414,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceSourceWork.ts",
   },
   {
+    name: "EventAssistanceCheckpointWork",
+    source: "operations/event_assistance_checkpoint_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceCheckpointWork.ts",
+  },
+  {
     name: "EventAssistanceDeliveryWork",
     source: "operations/event_assistance_delivery_work.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryWork.ts",

@@ -1,3 +1,4 @@
+import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
@@ -621,6 +622,7 @@ test("work trigger routes saved delivery work", async () => {
   const h = await setup();
   const work = await h.store.get(h.id);
   const ports = {delivery: h.store,
+    checkpoint: new AssistanceCheckpointWorkStore(h.db, () => h.clock.now),
     roster: new AssistanceRosterWorkStore(h.db, () => h.clock.now),
     source: new AssistanceSourceWorkStore(h.db, () => h.clock.now),
     guest: new LiveAssistanceWorkRunner(h.db, () => h.clock.now)};

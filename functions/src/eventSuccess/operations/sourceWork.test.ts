@@ -1,3 +1,4 @@
+import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
@@ -260,6 +261,8 @@ test("all source collections derive their event or guest scope on deletion",
       events: {value: {clubId: h.context.organizerId}, attendeeId: null},
       eventAttendees: {value: {eventId: h.context.eventId,
         clubId: h.context.organizerId}, attendeeId: h.context.eventId},
+      eventStaffGrants: {value: {eventId: h.context.eventId,
+        organizerId: h.context.organizerId}, attendeeId: null},
       eventSuccessPlans: {value: {eventId: h.context.eventId,
         organizerId: h.context.organizerId}, attendeeId: null},
       eventAssistanceGuests: {value: {context: h.context,
@@ -342,6 +345,7 @@ test("due orchestration selects saved work and ignores unrelated writes",
     const h = await harness();
     const source = await h.work.enqueue(h.input);
     const ports = {
+      checkpoint: new AssistanceCheckpointWorkStore(h.db, () => h.clock.now),
       delivery: new AssistanceDeliveryWorkStore(h.db, () => h.clock.now),
       source: h.work, guest: h.guests,
       roster: new AssistanceRosterWorkStore(h.db, () => h.clock.now)};
@@ -355,6 +359,7 @@ test("due orchestration selects saved work and ignores unrelated writes",
       return {kind: "busy" as const};
     };
     const fakePorts = {
+      checkpoint: {listDue: async () => [], process: busy},
       delivery: {listDue: async () => ["delivery"], process: busy},
       source: {listDue: async () => ["source"], process: busy},
       roster: {listDue: async () => [], process: busy},
@@ -362,7 +367,7 @@ test("due orchestration selects saved work and ignores unrelated writes",
         [{workItemId: "guest", revision: 1}]}, process: busy}};
     assert.deepEqual(await evaluateDueAssistanceWork(fakePorts),
       {rosterItems: 0, sourceItems: 1, guestItems: 1,
-        deliveryItems: 1, busy: 3});
+        deliveryItems: 1, checkpointItems: 0, busy: 3});
     assert.deepEqual(calls, ["source", "guest", "delivery"]);
     calls.length = 0;
     await processChangedAssistanceWork("unrelated", {normalizedPayload:
@@ -382,6 +387,7 @@ test("roster change wakes the real evaluator and check-in resolves its work",
     const item = await guest.store.start({scope: h.scope,
       ...runtime.configuration, runtimeBinding: runtime.binding});
     const ports = {guest, source,
+      checkpoint: new AssistanceCheckpointWorkStore(h.db, () => h.clock.now),
       delivery: new AssistanceDeliveryWorkStore(h.db, () => h.clock.now),
       roster: new AssistanceRosterWorkStore(h.db, () => h.clock.now)};
     await processChangedAssistanceWork(item.item.workItemId,
