@@ -31,7 +31,6 @@ import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
-import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -2923,7 +2922,10 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
-                activityKind: ActivityKind.socialRun,
+                colors: ActivityPalette.resolve(
+                  context,
+                  ActivityKind.socialRun,
+                ).avatarColors,
                 name: 'Sunday sea-face crew',
                 meta: 'HOSTING SINCE FEB 2026 - BANDRA',
                 onMessage: _noop,
@@ -2931,10 +2933,13 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
                 onTap: _noop,
               ),
             ),
-            const SizedBox(
+            SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
-                activityKind: ActivityKind.dinner,
+                colors: ActivityPalette.resolve(
+                  context,
+                  ActivityKind.dinner,
+                ).avatarColors,
                 name: 'Catch supper club',
                 meta: 'HOSTING SINCE MAR 2026',
                 verified: false,
@@ -2943,7 +2948,10 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchHostRow(
-                activityKind: ActivityKind.pickleball,
+                colors: ActivityPalette.resolve(
+                  context,
+                  ActivityKind.pickleball,
+                ).avatarColors,
                 name: 'Courtside social',
                 meta: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
                 nameColor: t.primaryInk,

@@ -22,7 +22,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
@@ -7661,10 +7660,10 @@ class _RootScreenContractUseCase extends StatelessWidget {
   path: '[Core primitives]/Product composites',
 )
 Widget catchHostRowContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchHostRow',
     contractId: 'catch.host_row',
-    states: [
+    states: const [
       'identity-only',
       'navigable',
       'message-enabled',
@@ -7676,7 +7675,10 @@ Widget catchHostRowContractStates(BuildContext context) {
       _StateCard(
         label: 'identity-only',
         child: CatchHostRow(
-          activityKind: ActivityKind.socialRun,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
           name: 'Sunday sea-face crew',
           meta: 'HOSTING SINCE FEB 2026',
         ),
@@ -7684,7 +7686,10 @@ Widget catchHostRowContractStates(BuildContext context) {
       _StateCard(
         label: 'navigable / message / verified / divider',
         child: CatchHostRow(
-          activityKind: ActivityKind.dinner,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
           name: 'Catch supper club',
           meta: 'HOSTING SINCE MAR 2026 · REPLIES FAST',
           verified: true,
@@ -7697,7 +7702,10 @@ Widget catchHostRowContractStates(BuildContext context) {
       _StateCard(
         label: 'long-copy',
         child: CatchHostRow(
-          activityKind: ActivityKind.openActivity,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.openActivity,
+          ).avatarColors,
           name: 'A deliberately long organizer identity for text-scale review',
           meta: 'LONG LOCATION AND RESPONSE METADATA',
         ),

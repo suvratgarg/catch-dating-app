@@ -766,6 +766,10 @@ helpers. Direct previews cover bounded/intrinsic height and item/trailing-slot
 sizing. Existing item-width clamps, lazy scrolling, gutters and divider
 behavior are preserved. The rail scanner follows the package owner and scans
 package callers, with package-neighbor and retired-path negative probes.
+The host-row renderer is classified as L3 identity material and moves unchanged
+with caller-resolved avatar colors replacing its activity-domain input. The
+same accent still paints the verified mark; localized message copy and
+callback-owned affordances remain app inputs.
 
 ### Phase 4 — One registry, binding grammar
 

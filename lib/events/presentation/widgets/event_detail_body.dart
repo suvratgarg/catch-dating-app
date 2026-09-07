@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -377,7 +377,10 @@ class EventDetailHostsSection extends StatelessWidget {
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
           child: CatchHostRow(
-            activityKind: event.activityKind,
+            colors: ActivityPalette.resolve(
+              context,
+              event.activityKind,
+            ).avatarColors,
             name: state.hostName!,
             imageUrl: state.photoUrl,
             meta: state.meta,

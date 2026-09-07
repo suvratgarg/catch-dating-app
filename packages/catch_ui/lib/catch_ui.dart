@@ -37,6 +37,7 @@ export 'src/components/catch_framework_error_view.dart';
 export 'src/components/catch_horizontal_rail.dart';
 export 'src/components/catch_horizontal_rail_body.dart';
 export 'src/components/catch_horizontal_rail_item.dart';
+export 'src/components/catch_host_row.dart';
 export 'src/components/catch_icon_action.dart';
 export 'src/components/catch_icon_button.dart';
 export 'src/components/catch_index_row.dart';

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "584518264ab368d17437a86ec83b7de579dd04ccd5b6e208bff88d34debdee7a",
+  "sourceDigest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "584518264ab368d17437a86ec83b7de579dd04ccd5b6e208bff88d34debdee7a",
-    "contractDigest": "584518264ab368d17437a86ec83b7de579dd04ccd5b6e208bff88d34debdee7a"
+    "digest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68",
+    "contractDigest": "15c3ad472ae59d2b4652ac8292f804f61b74d7932bb9d0edc26ae75443044c68"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "a61a15e04c76b002a637813ad47ac05069d02317d8f15d05ef2fc0d752174c79",
+    "handoffRequestDigest": "9d96b31733c80fcff392a84577418425ec66f6663dedea8b9099bc4cdd3da277",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -2669,7 +2669,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.host_row",
       "dartSymbol": "CatchHostRow",
-      "dartFile": "lib/core/widgets/catch_host_row.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_host_row.dart",
       "figmaName": "Catch/HostRow",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2685,8 +2685,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 8,
-      "figmaExpectedPropertyDigest": "7200ae4e144942ef2ecf9641772ab9ac36a09efe65e327d9a31c91559e4c2823",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "6f4b82ca45a2e2747bdb208d95ac7388eeeb5809846fd1b71b715a3203ae1a2f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2694,7 +2694,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "HostRow",
       "claudeAllowed": true,
-      "contractDigest": "a17fad667aaf6aa3be47ac982311af054b77058570124d2feecd10060802c0af"
+      "contractDigest": "081e5e2a934629ab44036eb009cdc4da5c8278ac08f740cb6a76a0df4fa41748"
     },
     {
       "contractId": "catch.map_preview",

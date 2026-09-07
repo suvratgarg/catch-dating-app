@@ -1,7 +1,11 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_avatar_colors.dart';
+import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_person_avatar.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Compact, provider-free identity row for a host or organizer.
@@ -12,7 +16,7 @@ import 'package:flutter/material.dart';
 class CatchHostRow extends StatelessWidget {
   const CatchHostRow({
     super.key,
-    required this.activityKind,
+    required this.colors,
     required this.name,
     this.imageUrl,
     this.meta,
@@ -30,7 +34,8 @@ class CatchHostRow extends StatelessWidget {
          'CatchHostRow requires messageTooltip when onMessage is provided.',
        );
 
-  final ActivityKind activityKind;
+  /// Caller-resolved identity colors, shared by the avatar and verified mark.
+  final CatchAvatarColors colors;
   final String name;
   final String? imageUrl;
   final String? meta;
@@ -51,7 +56,6 @@ class CatchHostRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final activity = ActivityPalette.resolve(context, activityKind);
     final effectiveMetaColor = metaColor ?? t.ink3;
     final effectiveActionColor = actionColor ?? t.primary;
 
@@ -63,7 +67,7 @@ class CatchHostRow extends StatelessWidget {
             name: name,
             imageUrl: imageUrl,
             size: CatchSpacing.s10,
-            colors: ActivityPalette.resolve(context, activityKind).avatarColors,
+            colors: colors,
           ),
           gapW12,
           Expanded(
@@ -86,7 +90,7 @@ class CatchHostRow extends StatelessWidget {
                       Icon(
                         CatchIcons.sealCheck,
                         size: CatchIcon.sm,
-                        color: activity.accent,
+                        color: colors.accent,
                       ),
                     ],
                   ],

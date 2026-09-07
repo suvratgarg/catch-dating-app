@@ -14272,28 +14272,10 @@
       "contract": {
         "props": [
           {
-            "name": "activityKind",
-            "type": "enum",
+            "name": "colors",
+            "type": "object",
             "required": true,
-            "dartType": "ActivityKind",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
+            "dartType": "CatchAvatarColors"
           },
           {
             "name": "name",
@@ -14369,7 +14351,7 @@
           "CatchPersonAvatar",
           "CatchRowPressSurface",
           "CatchIconButton",
-          "ActivityPalette"
+          "CatchAvatarColors"
         ],
         "goldens": [],
         "members": [],
@@ -14413,7 +14395,7 @@
       },
       "dart": {
         "symbol": "CatchHostRow",
-        "file": "lib/core/widgets/catch_host_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_host_row.dart",
         "constructors": [
           "CatchHostRow"
         ]
