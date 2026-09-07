@@ -362,7 +362,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   const CatchTopBar.identity({
     super.key,
     required this.identityName,
-    required String identitySemanticLabel,
+    required String this.identitySemanticLabel,
     this.identityPhotoUrl,
     this.onIdentityTap,
     this.leading,
@@ -383,8 +383,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
     this.bottom,
     this.trailing,
-  }) : identitySemanticLabel = identitySemanticLabel,
-       title = null,
+  }) : title = null,
        subtitle = null,
        eyebrow = null,
        kicker = null,
