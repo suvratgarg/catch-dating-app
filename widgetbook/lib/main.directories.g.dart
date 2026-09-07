@@ -2001,6 +2001,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Standard full-bleed and pinned-rail panes',
+                builder:
+                    _widgetbook_workspace_primitives_page_protocol_use_cases
+                        .rootScrollOwnerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchRouteScaffold',
             useCases: [
               _widgetbook.WidgetbookUseCase(

@@ -1170,7 +1170,7 @@
     {
       "siteId": "material-page:lib/core/widgets/ordered_photo_picker.dart:1",
       "sourcePath": "lib/core/widgets/ordered_photo_picker.dart",
-      "line": 201,
+      "line": 200,
       "ordinal": 1,
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
       "presentationTarget": "OrderedPhotoManagerScreen",
@@ -1233,7 +1233,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
-      "line": 312,
+      "line": 313,
       "ordinal": 1,
       "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
       "presentationTarget": "RoutePathBuilderScreen",

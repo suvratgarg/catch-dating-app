@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +48,61 @@ Widget routeBodyRoleStates(BuildContext context) => WidgetbookCatalogFrame(
 );
 
 @widgetbook.UseCase(
+  name: 'Standard full-bleed and pinned-rail panes',
+  type: CatchRootScreenScrollView,
+  path: '[Core patterns]/Page protocols',
+)
+Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
+  title: 'Root scroll panes',
+  catalogId: 'catch.screen_body.root_screen_scroll_view',
+  children: [
+    for (final fullBleed in [false, true])
+      WidgetbookViewportFrame.device(
+        size: const Size(360, 320),
+        child: CatchScreenScaffold.workspace(
+          body: fullBleed
+              ? CatchRootScreenScrollView.fullBleed(
+                  header: const CatchScreenHeaderTitle.block(
+                    title: 'Full-bleed pane',
+                    titleMaxLines: 2,
+                    padding: CatchInsets.screenTitleBlock,
+                  ),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: ColoredBox(
+                        color: CatchTokens.of(context).primarySoft,
+                        child: Text(
+                          'Edge-owned content reaches the pane edges.',
+                          style: CatchTextStyles.bodyM(context),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : CatchRootScreenScrollView.standard(
+                  header: const CatchScreenHeaderTitle.block(
+                    title: 'Standard pane',
+                    padding: CatchInsets.screenTitleBlock,
+                  ),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Text(
+                        'The scroll owner supplies the readable gutter and terminal clearance.',
+                        style: CatchTextStyles.bodyM(context),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    const WidgetbookViewportFrame.device(
+      size: Size(360, 480),
+      child: _RootPageProtocolPreview(embedded: true),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
   name: 'Typed pages and scroll-position controller',
   type: CatchRootScreenBody,
   path: '[Core patterns]/Page protocols',
@@ -66,7 +120,9 @@ Widget rootPageProtocolStates(BuildContext context) =>
     );
 
 class _RootPageProtocolPreview extends StatefulWidget {
-  const _RootPageProtocolPreview();
+  const _RootPageProtocolPreview({this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<_RootPageProtocolPreview> createState() =>
@@ -111,48 +167,58 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
         CatchOption(value: 'detail', label: 'Detail'),
       ],
     );
-    return CatchRootScreenScaffold.withPrimaryRail(
-      header: CatchRootScreenHeader.title(
-        title: 'Root page',
-        actions: [
-          CatchTopBarTextAction(
-            label: 'Save',
-            onPressed: () =>
-                setState(() => _savedOffset = _scroll.captureOffset()),
-          ),
-          CatchTopBarTextAction(
-            label: 'Restore',
-            onPressed: _savedOffset == null
-                ? null
-                : () => _scroll.restoreOffset(_savedOffset),
-          ),
-        ],
-      ),
-      primaryRail: rail,
-      body: CatchRootScreenBody.paged(
-        controller: _tabs,
-        pages: [
-          CatchRootScreenPageSpec.surface(
-            page: records,
-            backgroundColor: CatchTokens.of(context).bg,
-          ),
-          CatchRootScreenPageSpec.masterDetail(
-            expanded: false,
-            master: CatchRootScreenPageScrollView.fullBleed(
-              scrollKey: const PageStorageKey<String>('protocol-detail'),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Text(
-                    'Full-bleed page',
-                    style: CatchTextStyles.bodyM(context),
-                  ),
-                ),
-              ],
-            ),
-            detail: const SizedBox.shrink(),
-          ),
-        ],
-      ),
+    final header = CatchRootScreenHeader.title(
+      title: 'Root page',
+      actions: [
+        CatchTopBarTextAction(
+          label: 'Save',
+          onPressed: () =>
+              setState(() => _savedOffset = _scroll.captureOffset()),
+        ),
+        CatchTopBarTextAction(
+          label: 'Restore',
+          onPressed: _savedOffset == null
+              ? null
+              : () => _scroll.restoreOffset(_savedOffset),
+        ),
+      ],
     );
+    final body = CatchRootScreenBody.paged(
+      controller: _tabs,
+      pages: [
+        CatchRootScreenPageSpec.surface(
+          page: records,
+          backgroundColor: CatchTokens.of(context).bg,
+        ),
+        CatchRootScreenPageSpec.masterDetail(
+          expanded: false,
+          master: CatchRootScreenPageScrollView.fullBleed(
+            scrollKey: const PageStorageKey<String>('protocol-detail'),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Text(
+                  'Full-bleed page',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+            ],
+          ),
+          detail: const SizedBox.shrink(),
+        ),
+      ],
+    );
+    return widget.embedded
+        ? CatchScreenScaffold.workspace(
+            body: CatchRootScreenScrollView.withPrimaryRail(
+              header: header,
+              primaryRail: rail,
+              body: body,
+            ),
+          )
+        : CatchRootScreenScaffold.withPrimaryRail(
+            header: header,
+            primaryRail: rail,
+            body: body,
+          );
   }
 }

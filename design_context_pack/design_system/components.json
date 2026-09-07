@@ -8041,7 +8041,25 @@
               "floating-bottom-navigation",
               "side-navigation"
             ],
-            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_scroll_view",
+            "symbol": "CatchRootScreenScrollView",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart",
+            "summary": "Root scroll owner for a parent-owned surface, retaining standard/full-bleed geometry, pinned primary rails, status, safe area, nested overlap and terminal clearance.",
+            "states": [
+              "standard",
+              "full-bleed",
+              "primary-rail"
+            ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",

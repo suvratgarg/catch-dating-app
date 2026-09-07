@@ -10824,7 +10824,7 @@
               "ClubSwitcher"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_screen_scaffold.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
               "symbol": "CatchRootScreenScaffold.withPrimaryRail"
             },
             "currentOwner": "HostClubsScaffold + CatchRootScreenScaffold.withPrimaryRail",

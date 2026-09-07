@@ -25,7 +25,9 @@ const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
 const _canonicalScaffoldPath =
     'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart';
 const _canonicalRootScaffoldPath =
-    'lib/core/widgets/catch_screen_scaffold.dart';
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart';
+const _canonicalRootScrollPath =
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart';
 const _canonicalRouteScaffoldPath =
     'packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart';
 const _canonicalRootScreenBodyPath =
@@ -89,6 +91,8 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
   },
   _canonicalRootScaffoldPath: <String, Set<String>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
+  },
+  _canonicalRootScrollPath: <String, Set<String>>{
     'CatchRootScreenScrollView': _rootScrollExpressions,
   },
   _canonicalRootScreenPageScrollPath: <String, Set<String>>{

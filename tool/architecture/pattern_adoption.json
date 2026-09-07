@@ -1307,7 +1307,7 @@
         "lib/core/presentation/app_shell_active_tab.dart",
         "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart",
         "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
-        "lib/core/widgets/catch_screen_scaffold.dart",
+        "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
         "lib/core/widgets/catch_section_layout.dart",
         "packages/catch_ui/lib/src/components/catch_tab_bar.dart",
         "packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart",
@@ -1382,7 +1382,7 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-composition-001-semantic-screen-composition",
       "prototypeFiles": [
-        "lib/core/widgets/catch_screen_scaffold.dart",
+        "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
         "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
         "packages/catch_ui/lib/src/components/catch_status_strip.dart",
         "lib/core/widgets/catch_section_layout.dart",

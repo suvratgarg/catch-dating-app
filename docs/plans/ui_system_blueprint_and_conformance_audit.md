@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.4
+version: 1.9.5
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1037,6 +1037,18 @@ references follow the move. The last schema-constant re-export is removed from
 the app field library, with its remaining consumers importing app-owned schema
 values directly. This prevents transitional widget exports from duplicating the
 explicit schema boundary.
+
+Root scaffolds and scroll views now have individual shared pattern owners.
+The closed header descriptor stays in the scroll owner’s Dart library in its
+own part file, preserving the private rendering protocol. The scaffold uses
+the existing public standard/full-bleed scroll constructors, so the obsolete
+private constructor is removed. Scrolling, pinned status/rail geometry, overlap,
+safe area and field obstruction retain their implementation. Constructor gates
+and their seeded negative fixture follow the two package owners. The status
+publication lint permits only the actual scroll renderer; retired app paths
+and the delegating root scaffold remain negative probes. A direct catalog matrix
+registers the scroll-only member and covers standard, full-bleed and pinned-rail
+panes under both themes and text scales.
 
 ### Phase 4 — One registry, binding grammar
 

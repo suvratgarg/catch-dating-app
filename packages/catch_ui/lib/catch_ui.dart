@@ -242,6 +242,8 @@ export 'src/patterns/catch_root_screen_body.dart';
 export 'src/patterns/catch_root_screen_page_owner.dart';
 export 'src/patterns/catch_root_screen_page_scroll_view.dart';
 export 'src/patterns/catch_root_screen_page_spec.dart';
+export 'src/patterns/catch_root_screen_scaffold.dart';
+export 'src/patterns/catch_root_screen_scroll_view.dart';
 export 'src/patterns/catch_root_screen_top_edge.dart';
 export 'src/patterns/catch_route_scaffold.dart';
 export 'src/patterns/catch_scene_viewport.dart';
