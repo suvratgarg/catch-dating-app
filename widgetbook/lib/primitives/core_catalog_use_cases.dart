@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -4087,31 +4086,124 @@ Widget celebrationNoteCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: ResponsiveBuilder,
+  type: CatchViewport,
   path: '[Core catalog]/Layout',
 )
 Widget responsiveBuilderCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'ResponsiveBuilder',
+    title: 'CatchViewport',
     catalogId: 'core.responsive.responsive_builder',
     children: [
       _StateCard(
         label: 'compact / medium / expanded',
         child: SizedBox(
           height: WidgetbookPreviewLayout.catalogSliverSpacerHeight,
-          child: ResponsiveBuilder(
-            compact: (_) =>
-                const CatchSurface.card(child: Text('Compact layout')),
-            medium: (_) =>
-                const CatchSurface.card(child: Text('Medium layout')),
-            expanded: (_) =>
-                const CatchSurface.card(child: Text('Expanded layout')),
+          child: CatchViewport(
+            compactBuilder: (_) => CatchSurface.card(
+              child: Text(
+                'Compact layout',
+                style: CatchTextStyles.bodyM(context),
+              ),
+            ),
+            mediumBuilder: (_) => CatchSurface.card(
+              child: Text(
+                'Medium layout',
+                style: CatchTextStyles.bodyM(context),
+              ),
+            ),
+            expandedBuilder: (_) => CatchSurface.card(
+              child: Text(
+                'Expanded layout',
+                style: CatchTextStyles.bodyM(context),
+              ),
+            ),
           ),
         ),
       ),
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Local breakpoint',
+  type: CatchViewportBreakpoint,
+  path: '[Core catalog]/Layout',
+)
+Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'CatchViewportBreakpoint',
+      catalogId: 'catch.viewport',
+      children: [
+        for (final width in [319.0, 320.0, 321.0])
+          _StateCard(
+            label: '${width.toInt()} px at a 320 px component breakpoint',
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: width,
+                child: CatchViewportBreakpoint(
+                  breakpoint: 320,
+                  compactBuilder: (_) => CatchSurface.card(
+                    child: Text(
+                      'Compact component',
+                      style: CatchTextStyles.bodyM(context),
+                    ),
+                  ),
+                  expandedBuilder: (_) => CatchSurface.card(
+                    child: Text(
+                      'Expanded component',
+                      style: CatchTextStyles.bodyM(context),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'Local sliver geometry',
+  type: CatchViewportSliver,
+  path: '[Core catalog]/Layout',
+)
+Widget catchViewportSliverCatalogStates(
+  BuildContext context,
+) => WidgetbookCatalogFrame(
+  title: 'CatchViewportSliver',
+  catalogId: 'catch.viewport',
+  children: [
+    for (final width in [320.0, 600.0, 840.0])
+      _StateCard(
+        label: '${width.toInt()} px sliver cross-axis extent',
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: width,
+            height: 100,
+            child: CustomScrollView(
+              slivers: [
+                CatchViewportSliver(
+                  sliverBuilder:
+                      (
+                        BuildContext context,
+                        CatchViewportGeometry viewport,
+                      ) => SliverToBoxAdapter(
+                        child: CatchSurface.card(
+                          child: Text(
+                            '${viewport.width.toInt()} px · ${viewport.sizeClass.name}',
+                            style: CatchTextStyles.bodyM(context),
+                          ),
+                        ),
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+  ],
+);
 
 class _StateCard extends StatelessWidget {
   const _StateCard({

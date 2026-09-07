@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -88,13 +87,13 @@ class HostTodayHeader extends StatelessWidget {
     final date = now == null
         ? null
         : MaterialLocalizations.of(context).formatFullDate(now!);
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compact: (_) => CatchScreenHeaderTitle.block(
+      compactBuilder: (_) => CatchScreenHeaderTitle.block(
         title: context.l10n.hostNavigationToday,
         titleStyle: CatchTextStyles.eventTitle(context),
       ),
-      expanded: (_) => CatchScreenHeaderTitle.block(
+      expandedBuilder: (_) => CatchScreenHeaderTitle.block(
         title: context.l10n.hostNavigationToday,
         eyebrow: date,
         titleStyle: CatchTextStyles.eventTitle(context),

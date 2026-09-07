@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -41,8 +40,8 @@ class EventDetailHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveSliverBuilder(
-      builder: (context, viewport) {
+    return CatchViewportSliver(
+      sliverBuilder: (context, viewport) {
         const d = CatchTokens.dark;
         final t = CatchTokens.of(context);
         final width = viewport.width;

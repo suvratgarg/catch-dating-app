@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show
@@ -481,10 +480,10 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
       return _buildSingleColumn();
     }
 
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: breakpoint,
-      compact: (_) => _buildSingleColumn(),
-      expanded: (_) => _buildTwoColumns(),
+      compactBuilder: (_) => _buildSingleColumn(),
+      expandedBuilder: (_) => _buildTwoColumns(),
     );
   }
 

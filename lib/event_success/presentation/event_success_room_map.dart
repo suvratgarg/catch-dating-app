@@ -5,7 +5,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -248,10 +247,10 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
       ],
     );
 
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.eventSuccessSpatialDragBreakpoint,
-      compact: (_) => content(false),
-      expanded: (_) => content(true),
+      compactBuilder: (_) => content(false),
+      expandedBuilder: (_) => content(true),
     );
   }
 
@@ -607,11 +606,11 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ComponentResponsiveBuilder(
+          CatchViewportBreakpoint(
             breakpoint: ComponentBreakpoints
                 .eventSuccessSelectedPlacementInlineBreakpoint,
-            compact: (_) => stackedHeader,
-            expanded: (_) => largeText
+            compactBuilder: (_) => stackedHeader,
+            expandedBuilder: (_) => largeText
                 ? stackedHeader
                 : Row(
                     children: [

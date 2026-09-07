@@ -6,7 +6,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
@@ -1109,9 +1108,9 @@ class HostInviteLinksList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ComponentResponsiveBuilder(
+        CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint,
-          compact: (context) => Column(
+          compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               heading,
@@ -1119,7 +1118,7 @@ class HostInviteLinksList extends StatelessWidget {
               Align(alignment: Alignment.centerLeft, child: button),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               Expanded(child: heading),
               button,
@@ -1283,9 +1282,9 @@ class HostInviteLinkRow extends StatelessWidget {
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: ComponentResponsiveBuilder(
+        child: CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
-          compact: (context) => Column(
+          compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               details,
@@ -1293,7 +1292,7 @@ class HostInviteLinkRow extends StatelessWidget {
               Align(alignment: Alignment.centerRight, child: actions),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               Expanded(child: details),
               gapW8,
@@ -1770,9 +1769,9 @@ class HostEventSummaryRow extends StatelessWidget {
 
     return Column(
       children: [
-        ComponentResponsiveBuilder(
+        CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostEventSummaryRowStackBreakpoint,
-          compact: (context) => Row(
+          compactBuilder: (context) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               iconWidget,
@@ -1794,7 +1793,7 @@ class HostEventSummaryRow extends StatelessWidget {
               ),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               iconWidget,
               gapW10,

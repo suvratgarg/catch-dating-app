@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,14 +19,6 @@ void main() {
       expect(CatchWindowSize.fromWidth(840), CatchWindowSize.expanded);
       expect(CatchWindowSize.fromWidth(1024), CatchWindowSize.expanded);
       expect(CatchWindowSize.fromWidth(1920), CatchWindowSize.expanded);
-    });
-  });
-
-  group('responsiveGridCount', () {
-    test('returns 2 for compact, 3 for medium, 4 for expanded', () {
-      expect(responsiveGridCount(375), 2);
-      expect(responsiveGridCount(768), 3);
-      expect(responsiveGridCount(1024), 4);
     });
   });
 }

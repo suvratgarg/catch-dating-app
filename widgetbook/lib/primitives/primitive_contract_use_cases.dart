@@ -4624,6 +4624,84 @@ Widget catchTicketContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchViewport,
+  path: '[Core primitives]/Layout',
+)
+Widget catchViewportContractStates(BuildContext context) => _ContractScreen(
+  title: 'Viewport layouts',
+  contractId: 'catch.viewport',
+  states: const [
+    'compact',
+    'medium',
+    'expanded',
+    'expanded-falls-back-to-medium',
+    'missing-overrides-use-compact',
+    'large-text',
+  ],
+  children: [
+    for (final width in [599.0, 600.0, 839.0, 840.0])
+      _StateCard(
+        label: '${width.toInt()} px available width',
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: width,
+            child: CatchViewport(
+              compactBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Compact layout',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+              mediumBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Medium layout',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+              expandedBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Expanded layout',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    for (final provideMedium in [true, false])
+      _StateCard(
+        label: provideMedium
+            ? 'Expanded falls back to medium'
+            : 'All widths fall back to compact',
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: 840,
+            child: CatchViewport(
+              compactBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Compact fallback',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+              mediumBuilder: provideMedium
+                  ? (_) => CatchSurface.card(
+                      child: Text(
+                        'Medium fallback',
+                        style: CatchTextStyles.bodyM(context),
+                      ),
+                    )
+                  : null,
+            ),
+          ),
+        ),
+      ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchMetricStrip,
   path: '[Core primitives]/Data display',
 )

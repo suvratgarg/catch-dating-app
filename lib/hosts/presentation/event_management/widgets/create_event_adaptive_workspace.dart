@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
@@ -37,13 +36,14 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.hostCreateEventStepRailBreakpoint,
-      compact: (_) => CreateEventWorkspaceFrame(header: header, body: body),
-      expanded: (_) => ComponentResponsiveBuilder(
+      compactBuilder: (_) =>
+          CreateEventWorkspaceFrame(header: header, body: body),
+      expandedBuilder: (_) => CatchViewportBreakpoint(
         breakpoint:
             ComponentBreakpoints.hostCreateEventConsequencePaneBreakpoint,
-        compact: (_) => CreateEventWorkspaceFrame(
+        compactBuilder: (_) => CreateEventWorkspaceFrame(
           header: header,
           body: CreateEventSplitWorkspace(
             body: body,
@@ -55,7 +55,7 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
             showsConsequencePane: false,
           ),
         ),
-        expanded: (_) => CreateEventWorkspaceFrame(
+        expandedBuilder: (_) => CreateEventWorkspaceFrame(
           header: header,
           body: CreateEventSplitWorkspace(
             body: body,

@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/formatters/catch_count_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -113,9 +112,9 @@ class ActivityTypeRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint,
-      compact: (context) => Column(
+      compactBuilder: (context) => Column(
         children: [
           for (final slot in slots)
             ActivitySlotView(
@@ -126,7 +125,7 @@ class ActivityTypeRows extends StatelessWidget {
             ),
         ],
       ),
-      expanded: (context) {
+      expandedBuilder: (context) {
         const columns = 2;
         final rowCount = (slots.length / columns).ceil();
         return Column(

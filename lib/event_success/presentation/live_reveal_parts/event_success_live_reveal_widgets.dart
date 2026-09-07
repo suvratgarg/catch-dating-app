@@ -1589,13 +1589,13 @@ class RevealHostStatusLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint,
-      compact: (context) => Column(
+      compactBuilder: (context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [number, gapH14, copy],
       ),
-      expanded: (context) => Row(
+      expandedBuilder: (context) => Row(
         children: [
           number,
           gapW16,

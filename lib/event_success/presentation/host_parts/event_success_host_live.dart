@@ -1393,10 +1393,10 @@ class LiveNowConsole extends StatelessWidget {
       if (largeText) {
         return compactLayout;
       }
-      return ComponentResponsiveBuilder(
+      return CatchViewportBreakpoint(
         breakpoint: ComponentBreakpoints.hostEventLiveSupportingPaneBreakpoint,
-        compact: (_) => compactLayout,
-        expanded: (_) => expandedLayout,
+        compactBuilder: (_) => compactLayout,
+        expandedBuilder: (_) => expandedLayout,
       );
     }
 

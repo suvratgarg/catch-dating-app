@@ -1240,12 +1240,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ResponsiveBuilder',
+            name: 'CatchViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .responsiveBuilderCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchViewportBreakpoint',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Local breakpoint',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchViewportBreakpointCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchViewportSliver',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Local sliver geometry',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchViewportSliverCatalogStates,
               ),
             ],
           ),
@@ -2769,6 +2789,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
                         .pagerFocusStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchViewportContractStates,
               ),
             ],
           ),

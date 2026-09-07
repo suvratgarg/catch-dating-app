@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -248,9 +247,9 @@ class CatchesProfileReview extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: ComponentResponsiveBuilder(
+          child: CatchViewportBreakpoint(
             breakpoint: ComponentBreakpoints.catchesWidePaddingBreakpoint,
-            compact: (context) => ProfileSurface(
+            compactBuilder: (context) => ProfileSurface(
               key: ValueKey(profile.uid),
               profile: profile,
               mode: ProfileSurfaceMode.catches,
@@ -261,7 +260,7 @@ class CatchesProfileReview extends StatelessWidget {
               reactionsEnabled: actionsEnabled,
               reactionsPending: actionState.isReactionPending,
             ),
-            expanded: (context) => Padding(
+            expandedBuilder: (context) => Padding(
               padding: CatchInsets.catchesWideProfile,
               child: ProfileSurface(
                 key: ValueKey(profile.uid),

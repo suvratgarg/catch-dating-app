@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -419,9 +418,9 @@ class CatchRosterTable extends StatelessWidget {
       color: t.ink3,
     ).copyWith(fontSize: 8.5);
 
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.hostRosterTableCompactBreakpoint,
-      compact: (context) {
+      compactBuilder: (context) {
         if (showEmpty) {
           return CatchEmptyState(
             surface: true,
@@ -465,7 +464,7 @@ class CatchRosterTable extends StatelessWidget {
           ),
         );
       },
-      expanded: (context) => CatchSurface(
+      expandedBuilder: (context) => CatchSurface(
         radius: CatchRadius.md,
         backgroundColor: t.surface,
         borderColor: t.line2,

@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
@@ -220,18 +219,18 @@ class VibeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      compact: (context) => _VibeGridLayout(
+    return CatchViewport(
+      compactBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 2,
       ),
-      medium: (context) => _VibeGridLayout(
+      mediumBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 3,
       ),
-      expanded: (context) => _VibeGridLayout(
+      expandedBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 4,
@@ -371,10 +370,13 @@ class VibeGridSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      compact: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 2),
-      medium: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 3),
-      expanded: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 4),
+    return CatchViewport(
+      compactBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 2),
+      mediumBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 3),
+      expandedBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 4),
     );
   }
 }

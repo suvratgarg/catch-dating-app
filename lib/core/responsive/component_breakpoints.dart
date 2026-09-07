@@ -1,7 +1,7 @@
 /// Component-level layout breakpoints, in logical pixels.
 ///
 /// Compared against the component's **local** box width through
-/// `ComponentResponsiveBuilder` — not the window size — so an individual
+/// `CatchViewportBreakpoint` — not the window size — so an individual
 /// widget can reflow based on the space it is actually given.
 ///
 /// Deliberately distinct from `CatchWindowSize` in `package:catch_tokens/catch_tokens.dart`, which
@@ -11,7 +11,7 @@
 abstract final class ComponentBreakpoints {
   /// A section page can place two readable field lanes side by side above this
   /// local width. The shell may already have removed rail or sidebar space, so
-  /// this is deliberately measured by `ComponentResponsiveBuilder` rather than
+  /// this is deliberately measured by `CatchViewportBreakpoint` rather than
   /// by the whole-window [CatchWindowSize].
   static const double sectionPageTwoColumnBreakpoint = 660.0;
 

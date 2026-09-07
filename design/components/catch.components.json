@@ -16121,6 +16121,177 @@
       "surfaces": {
         "flutter": "CatchTicketHeroLayout"
       }
+    },
+    {
+      "id": "catch.viewport",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchViewport",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "Available-width layout selection with Material size classes, explicit component breakpoints and sliver geometry.",
+      "dart": {
+        "symbol": "CatchViewport",
+        "file": "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
+        "constructors": [
+          "CatchViewport"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Viewport",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Viewport",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "compactBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "WidgetBuilder"
+          },
+          {
+            "name": "mediumBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "WidgetBuilder?"
+          },
+          {
+            "name": "expandedBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "WidgetBuilder?"
+          }
+        ],
+        "states": [
+          "compact",
+          "medium",
+          "expanded",
+          "expanded-falls-back-to-medium",
+          "missing-overrides-use-compact",
+          "large-text"
+        ],
+        "slots": [
+          "compactBuilder",
+          "mediumBuilder",
+          "expandedBuilder"
+        ],
+        "tokens": [],
+        "dartRoles": [
+          "CatchWindowSize",
+          "CatchViewportBreakpoint",
+          "CatchViewportSliver",
+          "CatchViewportGeometry",
+          "CatchViewportSliverBuilder"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.viewport.breakpoint",
+            "symbol": "CatchViewportBreakpoint",
+            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_breakpoint.dart",
+            "summary": "Selects compact or expanded content at a caller-owned local-width breakpoint.",
+            "states": [
+              "below-breakpoint",
+              "at-breakpoint",
+              "above-breakpoint"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.viewport",
+              "parentConceptId": "catch.viewport",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.viewport"
+            }
+          },
+          {
+            "id": "catch.viewport.sliver",
+            "symbol": "CatchViewportSliver",
+            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_sliver.dart",
+            "summary": "Supplies local cross-axis width and its size class to a caller-owned sliver.",
+            "states": [
+              "local-cross-axis-width",
+              "compact",
+              "medium",
+              "expanded"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.viewport",
+              "parentConceptId": "catch.viewport",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.viewport"
+            }
+          },
+          {
+            "id": "catch.viewport.geometry",
+            "symbol": "CatchViewportGeometry",
+            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_geometry.dart",
+            "summary": "Immutable local width and Material size class delivered by the sliver viewport.",
+            "states": [
+              "width-and-size-class"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.viewport",
+              "parentConceptId": "catch.viewport",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.viewport"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Pass inherited text scaling through unchanged; caller-owned compact, medium and expanded layouts retain their text and actions at scale 2.0."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "CatchViewport applies CatchWindowSize thresholds to its actual available width. Missing expanded content falls back to medium, then compact.",
+          "CatchViewportBreakpoint uses a caller-owned local threshold; feature-specific ComponentBreakpoints remain app policy.",
+          "CatchViewportSliver reports its sliver cross-axis extent without reading global window metrics.",
+          "The renderers do not own product copy, provider state, route selection or typography scaling."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.viewport",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.viewport"
+      },
+      "surfaces": {
+        "flutter": "CatchViewport"
+      }
     }
   ]
 }

@@ -813,6 +813,12 @@ entity material. They move into individual package files with presentation-neutr
 feature barrel no longer exports the retired app owner. The ticket contract
 separates this material from domain-aware event cards and retains their rendering.
 
+Responsive renderers move as the L4 `CatchViewport` family: available-width
+selection, named local breakpoints and sliver cross-axis geometry. Builder slots
+are explicit, fallback order and boundary comparisons are preserved, and the
+unused grid-count helper is deleted. Feature-specific breakpoint values remain
+app policy; direct contract previews exercise boundaries, fallback and geometry.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

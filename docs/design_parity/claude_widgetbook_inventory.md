@@ -448,7 +448,7 @@ Inputs:
 
 Layout:
 
-- `ResponsiveBuilder`
+- `CatchViewport`
 
 Loading:
 
@@ -801,7 +801,7 @@ model as separate primitives.
 - `EventActivityStamp`
 - `CatchTicketPerforatedDivider`
 - `ProfileInfoTile`
-- `ResponsiveBuilder`
+- `CatchViewport`
 
 ## Immediate Inventory Findings
 

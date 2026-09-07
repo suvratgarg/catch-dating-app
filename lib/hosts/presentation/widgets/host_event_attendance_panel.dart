@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -1333,9 +1332,9 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
-      child: ComponentResponsiveBuilder(
+      child: CatchViewportBreakpoint(
         breakpoint: ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint,
-        compact: (context) => Column(
+        compactBuilder: (context) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             summary,
@@ -1343,7 +1342,7 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
             Align(alignment: Alignment.centerLeft, child: button),
           ],
         ),
-        expanded: (context) => Row(
+        expandedBuilder: (context) => Row(
           children: [
             Expanded(child: summary),
             gapW10,

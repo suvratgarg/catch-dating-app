@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,10 +11,10 @@ void main() {
         alignment: Alignment.topLeft,
         child: SizedBox(
           width: width,
-          child: ComponentResponsiveBuilder(
+          child: CatchViewportBreakpoint(
             breakpoint: 320,
-            compact: (_) => const Text('compact'),
-            expanded: (_) => const Text('expanded'),
+            compactBuilder: (_) => const Text('compact'),
+            expandedBuilder: (_) => const Text('expanded'),
           ),
         ),
       ),
@@ -41,8 +41,8 @@ void main() {
             height: 300,
             child: CustomScrollView(
               slivers: [
-                ResponsiveSliverBuilder(
-                  builder: (context, viewport) => SliverToBoxAdapter(
+                CatchViewportSliver(
+                  sliverBuilder: (context, viewport) => SliverToBoxAdapter(
                     child: Text('${viewport.width.toInt()}'),
                   ),
                 ),

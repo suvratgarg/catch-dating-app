@@ -818,7 +818,7 @@ widths; it does not scale typography, icons, cards, or spacing proportionally.
 | expanded | `>= 840` | labelled 240 px sidebar | bounded workspace canvas; master-detail and multi-pane composition; pointer and keyboard affordances |
 
 The whole-window class comes only from `CatchWindowSize`. Feature components use
-`ComponentResponsiveBuilder` and a named local threshold when their own width,
+`CatchViewportBreakpoint` and a named local threshold when their own width,
 not the application window, determines a table, grid, preview, or control-row
 reflow. Very wide three-pane workspaces may add named local thresholds around
 1100 or 1280 logical pixels without adding a second global breakpoint system.

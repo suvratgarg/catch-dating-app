@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -57,9 +56,9 @@ class HostTodayOverview extends StatelessWidget {
       onOpenAttention: onOpenAttention,
     );
 
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compact: (_) => Column(
+      compactBuilder: (_) => Column(
         key: const ValueKey<String>('host-today-compact-layout'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -81,15 +80,15 @@ class HostTodayOverview extends StatelessWidget {
           ),
         ],
       ),
-      expanded: (_) => ComponentResponsiveBuilder(
+      expandedBuilder: (_) => CatchViewportBreakpoint(
         breakpoint: CatchLayout.hostTodayExpandedAttentionPaneBreakpoint,
-        compact: (_) => _HostTodayWideLayout(
+        compactBuilder: (_) => _HostTodayWideLayout(
           primary: primary,
           attention: attention,
           attentionVisible: attentionVisible,
           attentionPaneWidth: CatchLayout.hostTodayAttentionPaneCompactWidth,
         ),
-        expanded: (_) => _HostTodayWideLayout(
+        expandedBuilder: (_) => _HostTodayWideLayout(
           primary: primary,
           attention: attention,
           attentionVisible: attentionVisible,
