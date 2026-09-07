@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_section.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -2888,40 +2887,6 @@ Widget eventMonthMarkerStates(BuildContext context) {
         hasEvent: false,
         enabled: false,
         onTap: _noop,
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Visual atom clock',
-  type: EventClockMark,
-  path: '[Events]/Tiles',
-)
-Widget eventClockMarkState(BuildContext context) {
-  return EventClockMark(
-    accent: CatchTokens.of(context).primary,
-    time: TimeOfDay.fromDateTime(_event.startTime),
-    size: 42,
-    centerDotRadius: 2,
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Visual atom status',
-  type: EventStatusPill,
-  path: '[Events]/Tiles',
-)
-Widget eventStatusPillState(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Wrap(
-    spacing: CatchSpacing.s2,
-    children: [
-      EventStatusPill(label: 'Open', color: t.primary),
-      EventStatusPill(
-        label: 'Booked',
-        color: t.success,
-        tone: EventStatusPillTone.dark,
       ),
     ],
   );

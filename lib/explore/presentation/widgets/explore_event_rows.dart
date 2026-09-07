@@ -94,7 +94,10 @@ class ExploreExternalEventRow extends StatelessWidget {
                   child: CatchMonoLabel(state.sourceLabel, color: t.ink3),
                 ),
                 gapW8,
-                EventStatusPill(label: state.statusLabel, color: visual.accent),
+                CatchTicketStatusBadge(
+                  label: state.statusLabel,
+                  color: visual.accent,
+                ),
               ],
             ),
             gapH8,
@@ -118,7 +121,7 @@ class ExploreExternalEventRow extends StatelessWidget {
             gapH10,
             Row(
               children: [
-                EventClockMark(
+                CatchTicketClock(
                   accent: visual.accent,
                   time: TimeOfDay.fromDateTime(event.startTime),
                   size: 17,

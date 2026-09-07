@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -88,10 +87,10 @@ class CatchEventCard extends StatelessWidget {
                             left: CatchSpacing.s3,
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: EventStatusPill(
+                              child: CatchTicketStatusBadge(
                                 label: status,
                                 color: visual.accent,
-                                tone: EventStatusPillTone.dark,
+                                tone: CatchTicketStatusBadgeTone.dark,
                               ),
                             ),
                           ),
@@ -112,7 +111,7 @@ class CatchEventCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            EventClockMark(
+                            CatchTicketClock(
                               accent: visual.accent,
                               time:
                                   clockTime ?? _parseClockTimeLabel(timeLabel),

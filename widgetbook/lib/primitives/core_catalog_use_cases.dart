@@ -3032,17 +3032,17 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             EventActivityStamp(visual: visual),
-            EventClockMark(
+            CatchTicketClock(
               accent: visual.accent,
               time: const TimeOfDay(hour: 18, minute: 30),
               size: 42,
               centerDotRadius: 2,
             ),
-            EventStatusPill(label: 'Going', color: visual.accent),
-            EventStatusPill(
+            CatchTicketStatusBadge(label: 'Going', color: visual.accent),
+            CatchTicketStatusBadge(
               label: 'Full',
               color: visual.accent,
-              tone: EventStatusPillTone.dark,
+              tone: CatchTicketStatusBadgeTone.dark,
             ),
           ],
         ),

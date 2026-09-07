@@ -883,6 +883,13 @@ spoken labels, hit targets, summary wrapping and label/mono/operational renderin
 retain their bodies. The group controller and schema validation remain app-side;
 its existing catalog cases cover the extracted option model and item directly.
 
+The ticket clock and compact status badge are presentation-neutral entity
+material: their APIs accept time, color, text and rendering geometry. They move
+as `CatchTicketClock` and `CatchTicketStatusBadge`, retaining their existing
+event-card member identities and the status badge's keep-distinct decision.
+Their direct cases move into the primitive corpus with text scale 2.0 coverage;
+the activity stamp and backdrop retain their app-domain visual specification.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

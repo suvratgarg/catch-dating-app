@@ -95,6 +95,8 @@ import 'package:widgetbook_workspace/primitives/tab_bar_use_cases.dart'
     as _widgetbook_workspace_primitives_tab_bar_use_cases;
 import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
     as _widgetbook_workspace_primitives_text_input_use_cases;
+import 'package:widgetbook_workspace/primitives/ticket_atom_use_cases.dart'
+    as _widgetbook_workspace_primitives_ticket_atom_use_cases;
 import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_viewport_layout_use_cases;
 import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
@@ -4872,6 +4874,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Tiles',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchTicketClock',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Visual atom clock',
+                builder: _widgetbook_workspace_primitives_ticket_atom_use_cases
+                    .eventClockMarkState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTicketStatusBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Visual atom status',
+                builder: _widgetbook_workspace_primitives_ticket_atom_use_cases
+                    .eventStatusPillState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'DateRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -4922,32 +4944,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventClockMark',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Visual atom clock',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventClockMarkState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventDateRailCard',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Date rail card',
                 builder: _widgetbook_workspace_events_event_detail_use_cases
                     .eventDateRailCardState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventStatusPill',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Visual atom status',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .eventStatusPillState,
               ),
             ],
           ),

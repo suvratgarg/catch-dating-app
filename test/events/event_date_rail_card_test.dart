@@ -41,8 +41,8 @@ void main() {
     expect(find.text('Social run'), findsOneWidget);
     expect(find.text('FREE'), findsOneWidget);
     expect(find.byType(EventActivityStamp), findsNothing);
-    expect(find.byType(EventClockMark), findsNothing);
-    expect(find.byType(EventStatusPill), findsNothing);
+    expect(find.byType(CatchTicketClock), findsNothing);
+    expect(find.byType(CatchTicketStatusBadge), findsNothing);
 
     final glyph = tester.widget<Icon>(
       find.byKey(const ValueKey('event_date_rail_card.activity_glyph')),
