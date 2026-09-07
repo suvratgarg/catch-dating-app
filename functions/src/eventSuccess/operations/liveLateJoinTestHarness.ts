@@ -72,4 +72,3 @@ export async function setup(realDb?: Firestore, id = randomUUID()) {
   return {...h, options, scope, publisher, publish, publishReady, delivery,
     configure, template};
 }
-
