@@ -630,6 +630,9 @@ Widget catchSkeletonContractStates(BuildContext context) {
       'custom',
       'derived-content',
       'list',
+      'rows',
+      'box-row',
+      'chips',
       'async-screen',
       'async-sliver',
     ],
@@ -700,6 +703,17 @@ Widget catchSkeletonContractStates(BuildContext context) {
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
         ),
       ),
+      const _StateCard(label: 'rows', child: CatchSkeletonRows(count: 2)),
+      const _StateCard(
+        label: 'box-row',
+        child: CatchSkeletonBoxRow(
+          count: 3,
+          height: CatchLayout.controlCompactMinHeight,
+          radius: CatchRadius.sm,
+          gap: CatchSpacing.s2,
+        ),
+      ),
+      const _StateCard(label: 'chips', child: CatchSkeletonChips()),
       const _StateCard(
         label: 'async-screen',
         child: SizedBox(
