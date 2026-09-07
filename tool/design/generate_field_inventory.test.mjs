@@ -3,6 +3,8 @@ import fs from "node:fs";
 import test from "node:test";
 
 import {
+  buildFieldFacadeInventory,
+  buildFromRepo,
   extractCatchFieldFacades,
   extractCatchSectionContract,
   extractCatchSectionVariants,
@@ -14,6 +16,43 @@ const sectionSource = fs.readFileSync(
   "lib/core/widgets/catch_section_layout.dart",
   "utf8",
 );
+const statusPath = "packages/catch_ui/lib/src/components/catch_field_status.dart";
+const statusSource = fs.readFileSync(statusPath, "utf8");
+const {interactionContracts} = JSON.parse(
+  fs.readFileSync("design/components/catch.components.json", "utf8"),
+);
+
+test("builds the live inventory from the package-owned status enum", () => {
+  const inventory = buildFromRepo();
+  assert.equal(inventory.summary.facadeCount, 14);
+  assert.equal(inventory.summary.saveStateCount, 3);
+  assert.equal(inventory.source.catchFieldStatus, statusPath);
+  assert.match(inventory.source.catchFieldStatusApiSha256, /^[a-f0-9]{64}$/u);
+});
+
+test("rejects package status drift even when the former owner has a matching enum", () => {
+  assert.throws(
+    () => buildFieldFacadeInventory({
+      fieldSource: `${source}\n${statusSource}`,
+      sectionSource,
+      statusSource: statusSource.replace(/\bsaved\b/u, "synced"),
+      interactionContracts,
+    }),
+    /interactionContracts\.field_row\.saveStates drifted/u,
+  );
+});
+
+test("does not fall back to a status enum in the former owner", () => {
+  assert.throws(
+    () => buildFieldFacadeInventory({
+      fieldSource: `${source}\n${statusSource}`,
+      sectionSource,
+      statusSource: "",
+      interactionContracts,
+    }),
+    /Unable to find enum CatchFieldStatus/u,
+  );
+});
 
 test("extracts every current facade and semantic slot", () => {
   const facades = extractCatchFieldFacades(source);
