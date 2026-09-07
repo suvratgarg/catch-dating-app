@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:8c99c2419256b4e8cf232e233bd1bcc6e3607e5a6078fac001d391a47f3bc653",
-  "resolvedDigest": "sha256:0f1fd08e5360c0c6acf3a8a3bac6f559b02081d432ed6b2526e3fb9a34ef2d53",
+  "resolvedDigest": "sha256:a7a455253a2e693b397db5d7d29e068687b8045ea871d1318b93c3dbc8d02cac",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -798,7 +798,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -811,10 +811,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },
@@ -846,7 +846,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

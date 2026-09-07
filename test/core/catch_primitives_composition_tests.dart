@@ -152,6 +152,8 @@ void _registerCatchPrimitivesCompositionTests() {
               ),
               const SizedBox(height: 12),
               CatchNumberStepper(
+                decreaseTooltip: 'Decrease',
+                increaseTooltip: 'Increase',
                 key: const Key('control-number-stepper'),
                 value: 60,
                 min: 30,
@@ -216,7 +218,13 @@ void _registerCatchPrimitivesCompositionTests() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(const CatchFormFieldLabel(label: 'Instagram', isOptional: true)),
+      _wrap(
+        CatchFormFieldLabel(
+          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+          label: 'Instagram',
+          isOptional: true,
+        ),
+      ),
     );
 
     expect(find.text('Instagram'), findsOneWidget);
@@ -595,21 +603,25 @@ void _registerCatchPrimitivesCompositionTests() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const Wrap(
+          Wrap(
             children: [
               CatchPersonAvatar(
                 size: 48,
                 name: 'Social run',
-                activityKind: ActivityKind.socialRun,
+                colors: ActivityPalette.light
+                    .getActivity(ActivityKind.socialRun)
+                    .avatarColors,
                 initials: 'SR',
                 borderWidth: 2,
               ),
               CatchPersonAvatar(
                 size: 44,
                 name: 'Pickleball',
-                activityKind: ActivityKind.pickleball,
+                colors: ActivityPalette.light
+                    .getActivity(ActivityKind.pickleball)
+                    .avatarColors,
                 initials: 'PB',
-                activityDim: true,
+                dim: true,
               ),
             ],
           ),
@@ -649,11 +661,13 @@ void _registerCatchPrimitivesCompositionTests() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const CatchPersonAvatar(
+          CatchPersonAvatar(
             size: 48,
             name: 'Sea Face Social',
             imageUrl: 'assets/fixtures/does-not-exist.png',
-            activityKind: ActivityKind.socialRun,
+            colors: ActivityPalette.light
+                .getActivity(ActivityKind.socialRun)
+                .avatarColors,
             initials: 'SF',
           ),
         ),
@@ -671,13 +685,16 @@ void _registerCatchPrimitivesCompositionTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchPersonAvatarStack(
-          items: [CatchPersonAvatarItem(name: 'Asha Shah')],
+        CatchPersonAvatarStack(
+          countLabelBuilder: catchAvatarCountLabelBuilder(AppLocalizationsEn()),
+          items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
           totalCount: 4,
           size: 42,
           limit: 3,
           veiledCount: 2,
-          activityKind: ActivityKind.yoga,
+          veiledColors: ActivityPalette.light
+              .getActivity(ActivityKind.yoga)
+              .avatarColors,
         ),
       ),
     );

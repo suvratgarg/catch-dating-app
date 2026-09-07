@@ -355,7 +355,7 @@ Platform bindings should be descriptive, not implementation-owning:
   "platformBindings": {
     "flutter": {
       "symbol": "CatchButton",
-      "file": "lib/core/widgets/catch_button.dart"
+      "file": "packages/catch_ui/lib/src/components/catch_button.dart"
     },
     "web": {
       "cssClass": "c-button",

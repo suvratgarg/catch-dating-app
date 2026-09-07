@@ -287,7 +287,7 @@ section in `analysis_options.yaml`. The deterministic CLI load path is a
 repository-root `dart analyze`; CI caches that one machine-diagnostic census
 and applies each severity gate to the exact diagnostic-code field.
 The Catch UI plugin runs across handwritten `lib/**` while exempting
-`packages/catch_tokens/lib/**` token definitions, `lib/core/theme/**` foundations,
+`packages/catch_tokens/lib/**` token definitions, `packages/catch_ui/lib/src/foundations/**` foundations and `lib/core/theme/**` app adapters,
 and generated code.
 
 Smoke wrappers stay in `tool/` because CI needs deterministic proof that the

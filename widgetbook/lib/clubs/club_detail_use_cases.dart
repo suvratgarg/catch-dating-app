@@ -25,13 +25,8 @@ import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import "package:catch_dating_app/core/widgets/catch_meta_row.dart";
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -40,6 +35,7 @@ import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -1761,7 +1757,7 @@ class _ClubComposedPreview extends StatelessWidget {
       body: Column(
         children: [
           if (mutationError != null)
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               mutationError!,
               context: AppErrorContext.club,
               onRetry: _noop,

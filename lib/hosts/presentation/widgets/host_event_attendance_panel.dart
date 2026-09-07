@@ -3,27 +3,19 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -41,6 +33,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.d
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -571,7 +564,7 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (mutationState.participantActionError != null)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             mutationState.participantActionError!,
             context: AppErrorContext.event,
           ),
@@ -899,7 +892,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
               ),
               if (mutationState.reportExportError != null) ...[
                 gapH12,
-                CatchErrorBanner.fromError(
+                CatchLocalizedErrorBanner(
                   mutationState.reportExportError!,
                   context: AppErrorContext.event,
                 ),

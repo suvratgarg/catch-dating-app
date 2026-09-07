@@ -1,0 +1,1 @@
+enum CatchPersonAvatarShape { circle, square }

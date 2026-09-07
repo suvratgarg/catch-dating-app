@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:95e0d435db31467baa1a45fa8926b2b151b20b112366cd1e7344056907d2717c",
+  "resolvedDigest": "sha256:32c3e0d911e0c924faa59086abbe01ba780098acf02d96ea1174c71d6eb7b2ff",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4462,7 +4462,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -4475,10 +4475,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },
@@ -4566,7 +4566,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

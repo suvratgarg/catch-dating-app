@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
-  "resolvedDigest": "sha256:7b45dfca1d798b45a54d4fa930516fd1ca7b89600aae6230fc5c0863f1170b2f",
+  "resolvedDigest": "sha256:1402ad93decd39c111eb11908f2db6ce05d4703195f34d474656ebef2069b768",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1569,7 +1569,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1582,10 +1582,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },
@@ -1617,7 +1617,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1646,7 +1646,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

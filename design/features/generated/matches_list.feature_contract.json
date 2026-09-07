@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:af4b7740d0942678d1eec751ed41f2e17263711f7e79e71b0e54668534492bf3",
+  "resolvedDigest": "sha256:0348f8df680867ca4f7a02f38afadc7c076c99a588a2517cb2b088fd35692e9c",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -884,7 +884,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",
@@ -903,7 +903,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -950,7 +950,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

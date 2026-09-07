@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "6a6f5af678e0061db1cbaa9386d447598d179f53bd7142a0c68cefece09c7227",
+  "sourceDigest": "ab6067a32799532732c544ac4b6f14afc6e646176d6545ecf7b95b0f4f353aca",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -22,7 +22,7 @@
       "conceptId": "catch.badge",
       "parentConceptId": null,
       "dartSymbol": "CatchBadge",
-      "dartFile": "lib/core/widgets/catch_badge.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_badge.dart",
       "claudeHandoffName": "Badge",
       "figmaComponentName": "Catch/Badge",
       "supportedStates": [

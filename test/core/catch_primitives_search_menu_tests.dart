@@ -237,9 +237,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: AppShellActiveTab(
+          home: CatchTabViewportScope(
             index: 0,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             bottomOverlayInset: 100,
             child: Scaffold(
               body: Align(
@@ -295,9 +295,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: AppShellActiveTab(
+          home: CatchTabViewportScope(
             index: 0,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             bottomOverlayInset: 100,
             child: Scaffold(
               body: Align(
@@ -354,9 +354,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: AppShellActiveTab(
+        home: CatchTabViewportScope(
           index: 0,
-          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
           bottomOverlayInset: 100,
           child: Scaffold(
             body: Align(

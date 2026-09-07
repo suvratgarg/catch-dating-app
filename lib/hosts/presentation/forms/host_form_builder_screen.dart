@@ -1,19 +1,11 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
@@ -32,6 +24,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -1395,6 +1388,7 @@ class _FormStatusNotices extends StatelessWidget {
     final notices = <Widget>[
       if (state.saveState == HostFormSaveState.conflict) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-save-conflict',
             title: context.l10n.hostFormConflictTitle,
@@ -1408,6 +1402,7 @@ class _FormStatusNotices extends StatelessWidget {
         gapH12,
       ] else if (state.saveState == HostFormSaveState.failed) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-save-failed',
             title: context.l10n.hostFormSaveFailed,
@@ -1422,6 +1417,7 @@ class _FormStatusNotices extends StatelessWidget {
       ],
       if (state.editor.validationIssues.isNotEmpty) ...[
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'form-validation',
             title: context.l10n.hostFormValidationTitle(

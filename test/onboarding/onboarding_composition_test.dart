@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'onboarding_test_helpers.dart';

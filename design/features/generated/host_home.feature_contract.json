@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:2f32d77fc4a7430e28daf736b4f6a98ab1e7e6964027f2949c5f1fd8e1282ccc",
+  "resolvedDigest": "sha256:42e960dcc8734e17864e6e4265a682e0dbe2d39c07d0324b88e0553fc9c33c75",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1894,7 +1894,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1907,7 +1907,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -1964,7 +1964,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchMenu",
-              "file": "lib/core/widgets/catch_menu.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
                 "CatchMenu"
               ]
@@ -1975,7 +1975,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchRecordRow",
-              "file": "lib/core/widgets/catch_record_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
               "constructors": [
                 "CatchRecordRow"
               ]
@@ -2018,7 +2018,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

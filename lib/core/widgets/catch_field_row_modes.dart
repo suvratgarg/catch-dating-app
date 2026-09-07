@@ -837,6 +837,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                         children: [
                           Flexible(
                             child: CatchFormFieldLabel.inline(
+                              copy: catchFormFieldLabelCopy(context.l10n),
                               label: labelText,
                               style: effectiveLabelStyle,
                               maxLines: widget.titleMaxLines,
@@ -851,6 +852,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                         ],
                       )
                     : CatchFormFieldLabel.inline(
+                        copy: catchFormFieldLabelCopy(context.l10n),
                         label: labelText,
                         style: effectiveLabelStyle,
                         maxLines: widget.titleMaxLines,

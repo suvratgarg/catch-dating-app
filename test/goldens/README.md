@@ -95,7 +95,9 @@ activity art or inject a fake image.
 
 ## How fonts work (the tricky part)
 
-Goldens load the same bundled font assets the app ships:
+Goldens load the same package-owned font assets the app ships from
+`packages/catch_ui/assets/fonts`, registering branded families under
+`packages/catch_ui/<family>` as Flutter does at runtime:
 
 1. `flutter_test_config.dart` registers Archivo and IBM Plex Mono via
    `FontLoader`; deterministic Roboto files stand in for the concrete platform

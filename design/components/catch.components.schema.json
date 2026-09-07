@@ -172,7 +172,7 @@
             },
             "file": {
               "type": "string",
-              "pattern": "^lib/.+\\.dart$"
+              "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
             },
             "constructors": {
               "type": "array",
@@ -713,7 +713,7 @@
         },
         "file": {
           "type": "string",
-          "pattern": "^lib/.+\\.dart$"
+          "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
         },
         "summary": {
           "type": "string",

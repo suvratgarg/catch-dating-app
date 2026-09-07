@@ -11,21 +11,12 @@ import 'package:catch_dating_app/core/data/initial_load_policy.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -42,6 +33,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dar
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -87,7 +79,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final activeIndex = AppShellActiveTab.maybeIndexOf(context);
+    final activeIndex = CatchTabViewportScope.maybeIndexOf(context);
     if (activeIndex == null) return;
     final isActive = activeIndex == appShellClubsTabIndex;
     final shouldRefresh = _wasExploreTabActive == false && isActive;
@@ -785,7 +777,7 @@ bool exploreShowsAccountControls({
 }) => authResolved && uid != null;
 
 double _mapLauncherBottomOffset(BuildContext context) {
-  return AppShellActiveTab.bottomOverlayClearanceOf(
+  return CatchTabViewportScope.bottomOverlayClearanceOf(
     context,
     minimum: CatchSpacing.s5,
   );

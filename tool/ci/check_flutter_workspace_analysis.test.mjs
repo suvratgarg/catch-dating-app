@@ -14,6 +14,8 @@ function snapshot(pubspecs) {
 }
 
 const repositoryPubspecs = {
+  "packages/catch_ui/pubspec.yaml": "name: catch_ui\nresolution: workspace\n",
+  "packages/catch_ui/test/foundations_test.dart": "",
   "packages/catch_tokens/pubspec.yaml": "name: catch_tokens\nresolution: workspace\n",
   "widgetbook/pubspec.yaml": "name: widgetbook_workspace\n",
   "apps/host/pubspec.yaml": "name: catch_host_app\nresolution: workspace\n",
@@ -25,13 +27,13 @@ test("workspace plan discovers every pubspec and resolves workspace members once
   const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
   assert.deepEqual(
     plan.packages.map((entry) => entry.directory),
-    ["", "apps/host", "packages/catch_tokens", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "tool/widget_dedupe", "widgetbook"],
   );
   assert.deepEqual(
     plan.steps.filter((step) => step.phase === "resolve").map((step) => step.directory),
     ["", "tool/widget_dedupe", "widgetbook"],
   );
-  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 5);
+  assert.equal(plan.steps.filter((step) => step.phase === "analyze").length, 6);
   assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_tokens" && step.phase === "analyze"), {
     phase: "analyze", directory: "packages/catch_tokens", command: "dart",
     args: ["analyze", "lib", "--fatal-infos"],
@@ -58,7 +60,7 @@ test("every nested package is analyzed from its own package boundary", () => {
     .map((step) => step.directory);
   assert.deepEqual(
     analyzedDirectories,
-    ["", "apps/host", "packages/catch_tokens", "tool/widget_dedupe", "widgetbook"],
+    ["", "apps/host", "packages/catch_tokens", "packages/catch_ui", "tool/widget_dedupe", "widgetbook"],
   );
 });
 
@@ -105,4 +107,21 @@ test("analyzer plugin crashes cannot be reused as successful diagnostics", (t) =
     runner(command) {return {status: 0, stdout: command === "dart" ? "An error occurred while executing an analyzer plugin" : ""};},
   }), /plugin failed/);
   assert.equal(fs.readFileSync(path.join(directory, "analyze.status"), "utf8"), "1\n");
+});
+
+test("UI source and tests both receive explicit analyzer targets", () => {
+  const plan = buildWorkspaceAnalysisPlan(snapshot(repositoryPubspecs));
+  assert.deepEqual(plan.steps.find((step) => step.directory === "packages/catch_ui" && step.phase === "analyze"), {
+    phase: "analyze", directory: "packages/catch_ui", command: "dart",
+    args: ["analyze", "lib", "test", "--fatal-infos"],
+  });
+});
+
+// Catch UI is excluded from root analysis, so its own options must retain the
+// semantic plugin when source moves across that package boundary.
+test("the shared UI package enables the Catch semantic lint plugin", () => {
+  const optionsUrl = new URL("../../packages/catch_ui/analysis_options.yaml", import.meta.url);
+  const options = fs.readFileSync(optionsUrl, "utf8");
+  assert.match(options, /^plugins:\n  catch_ui_lints:\n    path: \.\.\/catch_ui_lints$/mu);
+  assert.ok(fs.existsSync(new URL("../catch_ui_lints/pubspec.yaml", optionsUrl)));
 });

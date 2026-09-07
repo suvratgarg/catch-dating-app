@@ -4210,14 +4210,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String coreCatchStepProgressTextValue1Totalsteps({
-    required Object value1,
-    required Object totalSteps,
-  }) {
-    return '$value1/$totalSteps';
-  }
-
-  @override
   String coreCatchTopBarLabelViewNameProfile({required Object name}) {
     return 'View $name profile';
   }

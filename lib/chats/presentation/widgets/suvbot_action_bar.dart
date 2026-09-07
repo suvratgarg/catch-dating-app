@@ -1,19 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

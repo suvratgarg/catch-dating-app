@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:6da241c2669ea5491035e8718ae74b93ef8ce17ef79355f99feb150260d94853",
+  "resolvedDigest": "sha256:f788132eea0d2a52d4ebfd8a791be3aeedbcf822a4221176577d7cbfee577238",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1188,7 +1188,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1239,7 +1239,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

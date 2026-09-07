@@ -82,7 +82,10 @@ class _CompatibilityQuestionnaireSectionState
                     .eventSuccessEventSuccessCompanionQuestionnaireTextAFewQuickQuestions,
                 style: CatchTextStyles.sectionTitle(context),
               ),
-              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+              CatchPrivacyBadge(
+                copy: catchPrivacyBadgeCopy(context.l10n),
+                kind: CatchPrivacyBadgeKind.catchPrivate,
+              ),
               CatchBadge(
                 label: rankingOn
                     ? context

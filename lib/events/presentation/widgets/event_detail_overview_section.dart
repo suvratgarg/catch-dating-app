@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -8,6 +6,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_design
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class EventDetailOverviewSection extends StatelessWidget {

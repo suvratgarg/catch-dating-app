@@ -66,7 +66,7 @@ common_globs=(
   --glob '!**/*_controller.dart'
   --glob '!**/*_notifier.dart'
   --glob '!**/data/**'
-  --glob '!lib/core/theme/catch_spacing.dart'
+  --glob '!packages/catch_ui/lib/src/primitives/catch_gap.dart'
   --glob '!build/**'
 )
 
@@ -201,8 +201,8 @@ scan_raw_material_buttons() {
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_adaptive_picker.dart' \
-    --glob '!lib/core/widgets/catch_button.dart' \
-    --glob '!lib/core/widgets/catch_text_button.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_button.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_text_button.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -271,7 +271,7 @@ scan_raw_number_steppers() {
     "${common_globs[@]}" \
     'Icons\.(add|remove)_rounded|Icons\.(add|remove)\b' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_number_stepper.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_number_stepper.dart' || true)"
 
   local output=""
   while IFS=: read -r file line _; do

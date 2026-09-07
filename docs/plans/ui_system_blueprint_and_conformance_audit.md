@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.6.0
+version: 1.8.0
 updated: 2026-09-06
 owner: app_architecture
 status: active
@@ -637,6 +637,9 @@ standard Flutter lints reject undeclared app imports. The workspace analyzer
 explicitly targets the package's `lib` source after a seeded probe demonstrated
 that directory-wide Flutter analysis could skip it.
 
+The owner closed the Phase 2 gate by approving PR #365 for merge and
+authorizing continuation. It merged as `8ba30b124288c4f36a7f39850d07a50bbc672fd6`.
+
 ### Phase 3 — `packages/catch_ui`
 
 Sub-slices, each independently gated by compiler + goldens:
@@ -657,6 +660,104 @@ DoD per slice: moved files deleted at origin; workspace analyze green;
 goldens unchanged or intentionally re-baselined with review; `catch_ui`
 pubspec contains no riverpod/firebase/app dependency (checked by a one-line
 manifest assertion, replacing the scanners it obsoletes).
+
+Phase 3a moves the font registry, semantic text styles, icon facade, motion
+helpers, and bundled font/license assets into `catch_ui/lib/src/foundations`.
+`CatchTheme` owns feature-neutral Material wiring; the app retains `AppTheme`
+as the activity-palette adapter. Branded styles use package-qualified font
+families, and the existing golden loader resolves the same bundled bytes.
+The package boundary permits only Flutter, `catch_tokens`, and Phosphor;
+workspace analysis explicitly visits its library and test sources.
+
+Phase 3b moves the provider-free surface, control shell, row-press surface,
+text/icon atoms, gap values, image loading/grade/scrim, dividers, indicators,
+and focused sizing/reveal protocols into `catch_ui/src/primitives`. The image
+fallback has its own file. Motion render helpers become cataloged viewport
+widgets with the same transitions; each has a single owning file. Each original
+app file is deleted. Golden discovery
+counts both remaining app classes and extracted primitives, preserving every
+pre-move class and case instead of losing coverage at the package boundary.
+Components, patterns/adapters, entity materials, and final public-barrel cleanup
+remain the later Phase 3 sub-slices.
+
+Phase 3c begins with provider-free badges, icon actions, status displays, charts,
+record rows, section headers, and timestamp layout. These component bodies and
+caller-owned copy are preserved at their package home; original files are
+deleted and their exact corpus coverage follows the move. Buttons and index
+rows follow, with button label/loading anatomy in individual files. Share-card
+footers receive their existing localized brand label from app callers;
+step progress receives a caller-owned counter formatter. The latter has only
+catalog/test consumers, so its unused app-catalog entry is removed. The copy
+ownership gate scans the package as well as the app. Optional field labels and
+framework-error displays also receive resolved copy through the app presentation
+adapter, including screen-reader labels and the debug-details disclosure. Their
+public badge/disclosure anatomy has individual files. Provider-free bottom-sheet
+chrome, day headers, metadata rows, and metric strips retain their public APIs
+and layout behavior in individual package files. Hero backdrops and journey-step
+anatomy follow the same ownership rule. Number steppers receive explicit caller
+tooltips; their previous English defaults had no production consumers. The
+remaining l10n-coupled field/section/sheet families retain their later extraction
+work. Empty-state renderers and box/sliver placement also move into the package.
+The route-neutral `CatchTabViewportScope` owns inherited active-page and bottom-
+obstruction metrics; app tab identities remain app-side. Pattern discovery is
+included in the same corpus coverage and runner so moving a placement owner
+cannot remove its existing golden cases.
+Persistent status rendering/publication and the basic screen scaffold also move
+without changing their bodies. Their app state publishers and the root-header/
+scroll compositions remain at their current owners for the next pattern slices.
+Privacy badges receive their three translated visibility labels through the app
+copy adapter. Their fixed mode-to-icon pairing and single accessible label are
+preserved in the package; no app catalog is imported.
+The low-level text-entry primitive and code-input row/cell/caret visuals have
+individual package owners with unchanged bodies. Search and OTP keep app-side
+constraint validation and localization until their remaining D2 extraction.
+A direct text-input catalog matrix covers empty, populated and disabled states
+at both themes and text scale 2.0, retiring its former coverage waiver.
+Menus, their anchor/row owners, bottom docks, draggable sheet shells and inline
+message surfaces also move with unchanged bodies. Anchored menu placement gains
+direct top/bottom previews while retaining route-neutral obstruction metrics.
+The shared package enables the Catch analyzer plugin at its own analysis root.
+Exact foundation-definition and raw-control ownership follows the moved files;
+seeded package-neighbor probes prevent extraction from bypassing enforcement.
+Box viewport scrolling and bounded scene geometry move unchanged to the package.
+Direct short/overflow, scene-size/inset and master-detail breakpoint previews
+cover the four layouts and scene descriptor, retiring five waivers. Master-detail
+source remains at its app owner
+until its state-matrix reference can move in the same slice.
+The person polaroid is classified as L3 entity material: its API contains only
+widget/string/color/callback presentation inputs, so the unchanged renderer
+moves to the package. Distance rings retain their size negotiation and label
+behavior, with a registered viewport member replacing the private body and
+an individual file for the native-map-compatible edge label.
+Person avatars and their clipping, obscuring, initials, veil and stack anatomy
+also move into individual package files. App callers resolve activity colors
+through the existing palette and pass count-label formatters through the app
+copy adapter. Failed-image fallback, theme changes, rings, veils and stack
+ordering retain their existing behavior; the shared API has no activity model
+or app-localization dependency.
+
+AsyncValue box/sliver boundaries, their state translator, mutation-error listeners
+and mutation-message translation move to `lib/core/riverpod_ui`. Each public
+widget has its own file, preserving deadline/retry and pending-to-error behavior.
+The sliver boundary inlines its local error selection into the exhaustive build
+switch, resolving the private helper instead of carrying it across the move.
+The two provider-free skeleton placement helpers remain with their app-side
+layout dependencies in individual files until those patterns move. Golden
+discovery includes the Riverpod adapter root so relocation cannot remove its
+classes or designated cases. Notice queue/controller state and the app-level
+host also move to the Riverpod adapter root. The host keeps its bounded queue,
+priority/FIFO ordering, replacement-safe timers, gestures and accessibility
+behavior. Provider-free notice data, tones and rendering have individual package
+files; every caller supplies the existing localized dismiss label. The exact
+resolved-symbol placement lint and its alias/tear-off probes follow the host.
+
+Inline error-banner visuals and the canonical snackbar publisher move to the
+package. Retry banners require caller-resolved labels through `withRetry`.
+App-localized error mapping and mutation-state translation stay with the app
+adapters, preserving retry eligibility and inherited-locale updates. The former
+private localized banner is a public registered adapter with a direct preview.
+The raw-feedback lint follows only the exact package publisher; package-neighbor
+and retired-app-path probes reject bypasses.
 
 ### Phase 4 — One registry, binding grammar
 

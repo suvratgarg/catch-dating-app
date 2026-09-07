@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:c7d51c1c53d5f7b3af01a1ac45156bca613cbedda70e0a27ab5905a1ee5a3252",
+  "resolvedDigest": "sha256:af01b927c0b8fdcb1646ca7f2f8c8ad0cc71568b03aa62bf5f209bfc2e58fede",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4680,7 +4680,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -4707,7 +4707,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -4753,7 +4753,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchMenu",
-              "file": "lib/core/widgets/catch_menu.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
                 "CatchMenu"
               ]
@@ -4764,7 +4764,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchNotice",
-              "file": "lib/core/widgets/catch_notice.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
               "constructors": [
                 "CatchNotice"
               ]
@@ -4854,7 +4854,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

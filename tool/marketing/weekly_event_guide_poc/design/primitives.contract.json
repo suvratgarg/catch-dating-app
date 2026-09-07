@@ -89,7 +89,7 @@
       {
         "contractId": "catch.badge",
         "componentRegistry": "design/components/catch.components.json",
-        "runtimeFile": "lib/core/widgets/catch_badge.dart",
+        "runtimeFile": "packages/catch_ui/lib/src/components/catch_badge.dart",
         "runtimeSymbol": "CatchBadge"
       },
       {
@@ -101,7 +101,7 @@
       {
         "contractId": "catch.button",
         "componentRegistry": "design/components/catch.components.json",
-        "runtimeFile": "lib/core/widgets/catch_button.dart",
+        "runtimeFile": "packages/catch_ui/lib/src/components/catch_button.dart",
         "runtimeSymbol": "CatchButton"
       }
     ]

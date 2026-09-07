@@ -1,12 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart'
     show
         CatchField,
@@ -18,13 +15,12 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart'
         CatchFieldInteractionShape,
         CatchFieldVisibilityScope,
         CatchResponsiveFieldInteractionPolicy;
-import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'package:catch_dating_app/core/widgets/catch_divider.dart';
+export 'package:catch_ui/catch_ui.dart' show CatchDivider, CatchDividerRole;
 
 part 'catch_section_configs.dart';
 
@@ -312,7 +308,7 @@ class CatchScrollTerminalPadding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = includeSafeArea
-        ? AppShellActiveTab.scrollTerminalClearanceOf(context, extra: extra)
+        ? CatchTabViewportScope.scrollTerminalClearanceOf(context, extra: extra)
         : extra;
     return SizedBox(height: height);
   }
@@ -611,7 +607,9 @@ class CatchResponsiveSectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomObstruction = AppShellActiveTab.bottomOverlayInsetOf(context);
+    final bottomObstruction = CatchTabViewportScope.bottomOverlayInsetOf(
+      context,
+    );
     return CatchFieldVisibilityScope(
       bottomObstruction: bottomObstruction,
       child: CatchScreenBody(

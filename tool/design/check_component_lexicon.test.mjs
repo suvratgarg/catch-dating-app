@@ -3,6 +3,16 @@ import {spawnSync} from "node:child_process";
 import {readFileSync} from "node:fs";
 import test from "node:test";
 
+test("component lexicon resolves both app and extracted package surfaces", () => {
+  const result = spawnSync(
+    process.execPath,
+    ["tool/design/check_component_lexicon.mjs"],
+    {cwd: process.cwd(), encoding: "utf8"}
+  );
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Component lexicon check passed/u);
+});
+
 test("component lexicon rejects a declared surface symbol that does not exist", () => {
   const result = spawnSync(
     process.execPath,

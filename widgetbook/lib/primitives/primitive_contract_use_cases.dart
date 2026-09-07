@@ -6,79 +6,38 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_sliver_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
-import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
-import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
-import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
-import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
-import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
-import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_polaroid.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_privacy_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_scrim.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeletonized.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
@@ -91,6 +50,7 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1421,11 +1381,11 @@ Widget catchErrorBannerContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'from-error',
-        child: CatchErrorBanner.fromError(Exception('Booking failed.')),
+        child: CatchLocalizedErrorBanner(Exception('Booking failed.')),
       ),
       _StateCard(
         label: 'with-retry',
-        child: CatchErrorBanner.fromError(
+        child: CatchLocalizedErrorBanner(
           Exception('Booking failed. Try once more.'),
           onRetry: _noop,
         ),
@@ -1456,40 +1416,44 @@ Widget catchNoticeContractStates(BuildContext context) {
       'arrival-reduced-motion',
     ],
     children: [
-      const _StateCard(
+      _StateCard(
         label: 'status',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'status',
             title: 'Event updated',
             message: 'The start time moved to 7:30 PM.',
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'success',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'success',
             title: 'Booking confirmed',
             tone: CatchNoticeTone.success,
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'warning',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'warning',
             title: 'Update paused',
             tone: CatchNoticeTone.warning,
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'danger',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'danger',
             title: 'Payment failed',
             message: 'Try a different card.',
@@ -1497,10 +1461,11 @@ Widget catchNoticeContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'event',
         child: CatchNotice(
-          notice: CatchNoticeData(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+          notice: const CatchNoticeData(
             id: 'event',
             title: 'Event starts soon',
             message: 'Arrive by 7:20 PM.',
@@ -1511,6 +1476,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'with-action',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'action',
             title: 'Event updated',
@@ -1523,6 +1489,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'dismissible',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: const CatchNoticeData(
             id: 'dismissible',
             title: 'Preferences saved',
@@ -1534,6 +1501,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'arrival-tap-to-open',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData.arrival(
             id: 'arrival-open',
             title: 'Ananya Rao',
@@ -1546,6 +1514,7 @@ Widget catchNoticeContractStates(BuildContext context) {
       _StateCard(
         label: 'arrival-swipe-to-dismiss',
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData.arrival(
             id: 'arrival-dismiss',
             title: 'New message',
@@ -1560,6 +1529,7 @@ Widget catchNoticeContractStates(BuildContext context) {
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(disableAnimations: true),
           child: CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData.arrival(
               id: 'arrival-reduced-motion',
               title: 'New message',
@@ -2004,7 +1974,7 @@ Widget catchChipContractStates(BuildContext context) {
   path: '[Core primitives]/Inputs',
 )
 Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchFormFieldOptionalBadge',
     contractId: 'catch.field.form_field_label.optional_badge',
     states: ['default', 'error'],
@@ -2013,8 +1983,13 @@ Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
         label: 'badge states',
         child: _InlineWrap(
           children: [
-            CatchFormFieldOptionalBadge(),
-            CatchFormFieldOptionalBadge(hasError: true),
+            CatchFormFieldOptionalBadge(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+            ),
+            CatchFormFieldOptionalBadge(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+              hasError: true,
+            ),
           ],
         ),
       ),
@@ -4186,6 +4161,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'interactive',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 2,
           min: 1,
           max: 5,
@@ -4196,6 +4173,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'min-bound',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 1,
           min: 1,
           max: 5,
@@ -4206,6 +4185,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'max-bound',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 5,
           min: 1,
           max: 5,
@@ -4216,6 +4197,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'disabled',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 2,
           formatValue: whole,
           enabled: false,
@@ -4225,6 +4208,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'custom-step',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 30,
           min: 0,
           max: 90,
@@ -4236,6 +4221,8 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       _StateCard(
         label: 'custom-format',
         child: CatchNumberStepper(
+          decreaseTooltip: 'Decrease',
+          increaseTooltip: 'Increase',
           value: 1499,
           step: 100,
           formatValue: (value) => 'Rs ${value.toStringAsFixed(0)}',
@@ -5020,14 +5007,23 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
     contractId: 'catch.privacy_badge',
     states: const ['private-to-you', 'catch-private', 'host-visible'],
     children: [
-      _StateCard(label: 'private-to-you', child: CatchPrivacyBadge()),
+      _StateCard(
+        label: 'private-to-you',
+        child: CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
+      ),
       _StateCard(
         label: 'catch-private',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+        child: CatchPrivacyBadge(
+          copy: catchPrivacyBadgeCopy(context.l10n),
+          kind: CatchPrivacyBadgeKind.catchPrivate,
+        ),
       ),
       _StateCard(
         label: 'host-visible',
-        child: CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
+        child: CatchPrivacyBadge(
+          copy: catchPrivacyBadgeCopy(context.l10n),
+          kind: CatchPrivacyBadgeKind.hostCanSee,
+        ),
       ),
     ],
   );
@@ -8526,23 +8522,29 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
         label: 'fallback-initials',
         child: CatchPersonAvatar(size: 56, name: 'Dev Malhotra'),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'activity-context',
         child: CatchPersonAvatar(
           size: 56,
           name: 'Run club',
           initials: 'RC',
-          activityKind: ActivityKind.socialRun,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'activity-dim',
         child: CatchPersonAvatar(
           size: 56,
           name: 'Dinner',
           initials: 'DN',
-          activityKind: ActivityKind.dinner,
-          activityDim: true,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
+          dim: true,
         ),
       ),
       _StateCard(
@@ -8578,9 +8580,13 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
           shape: CatchPersonAvatarShape.square,
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'count',
-        child: CatchPersonAvatar.count(size: 48, count: 19),
+        child: CatchPersonAvatar.count(
+          countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
+          size: 48,
+          count: 19,
+        ),
       ),
     ],
   );
@@ -8661,7 +8667,10 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         label: 'run',
         child: CatchVeiledPersonAvatar(
           size: 48,
-          activityKind: ActivityKind.socialRun,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
           borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
@@ -8670,7 +8679,10 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
         label: 'dinner',
         child: CatchVeiledPersonAvatar(
           size: 48,
-          activityKind: ActivityKind.dinner,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
           borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
         ),
@@ -8685,7 +8697,7 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
   path: '[Core primitives]/People',
 )
 Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchActivityInitialsPlaceholder',
     contractId: 'catch.person_avatar.activity_initials',
     states: ['initials', 'dim', 'empty'],
@@ -8695,7 +8707,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.socialRun,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.socialRun,
+            ).avatarColors,
             initials: 'SR',
             size: 56,
           ),
@@ -8706,7 +8721,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.dinner,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.dinner,
+            ).avatarColors,
             initials: 'DN',
             size: 56,
             dim: true,
@@ -8718,7 +8736,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
           child: CatchActivityInitialsPlaceholder(
-            kind: ActivityKind.yoga,
+            colors: ActivityPalette.resolve(
+              context,
+              ActivityKind.yoga,
+            ).avatarColors,
             initials: '',
             size: 56,
           ),
@@ -9511,6 +9532,75 @@ class _NotificationFrame extends StatelessWidget {
       child: child,
     );
   }
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFadeScaleViewport,
+  path: '[Core primitives]/Motion',
+)
+Widget catchMotionViewportContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'Motion viewport',
+    contractId: 'catch.motion_viewport',
+    states: const ['initial', 'mid-transition', 'settled'],
+    children: [
+      for (final pose in const [
+        ('initial', 0.0),
+        ('mid-transition', 0.5),
+        ('settled', 1.0),
+      ])
+        _StateCard(
+          label: pose.$1,
+          child: CatchFadeScaleViewport(
+            animation: AlwaysStoppedAnimation<double>(pose.$2),
+            child: CatchSurface.card(
+              child: Text(
+                'Route content',
+                style: CatchTextStyles.bodyM(context),
+              ),
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTimestampedMessageText,
+  path: '[Core primitives]/Data display',
+)
+Widget catchTimestampedMessageContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'Timestamped message',
+    contractId: 'catch.timestamped_message',
+    states: const [
+      'inline-timestamp',
+      'stacked-timestamp',
+      'empty-message',
+      'large-text',
+    ],
+    children: [
+      for (final example in const [
+        ('inline-timestamp', 'Hi!', '19:30', 240.0),
+        ('stacked-timestamp', 'See you', '19:30', 80.0),
+        ('empty-message', '', '19:30', 240.0),
+      ])
+        _StateCard(
+          label: example.$1,
+          child: SizedBox(
+            width: example.$4,
+            child: CatchTimestampedMessageText(
+              text: example.$2,
+              timestamp: example.$3,
+              textStyle: CatchTextStyles.bodyM(context),
+              timestampStyle: CatchTextStyles.numericMeta(context),
+            ),
+          ),
+        ),
+    ],
+  );
 }
 
 class _ContractScreen extends StatelessWidget {

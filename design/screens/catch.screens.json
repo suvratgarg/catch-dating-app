@@ -3046,7 +3046,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "symbol": "CatchEmptyState"
             },
             "currentOwner": "ExploreScreen, ExploreScreenBodyState, ExploreDiscoveryEmptyState, ExploreEventsEmptyState, and ExploreEventsSection",
@@ -11130,7 +11130,7 @@
               "CatchSliverEmptyState"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_sliver_empty_state.dart",
               "symbol": "CatchSliverEmptyState"
             },
             "currentOwner": "HostOrganizerStateScaffold + CatchSliverEmptyState",
@@ -20211,7 +20211,7 @@
               "SavedEventsStateSurfaces"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "symbol": "CatchEmptyState"
             },
             "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
@@ -21283,7 +21283,7 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "lib/core/widgets/catch_bottom_dock.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
             "symbol": "CatchBottomDock"
           },
           {
@@ -22501,7 +22501,7 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_bottom_dock.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
               "symbol": "CatchBottomDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",

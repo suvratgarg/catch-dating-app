@@ -3,9 +3,8 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
@@ -14,6 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

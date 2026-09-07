@@ -796,7 +796,7 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreCatchAdaptivePickerTextDone;
 
-  /// Product copy used by lib/core/widgets/catch_error_banner.dart (label).
+  /// Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Try again'**
@@ -844,7 +844,7 @@ abstract class AppLocalizations {
   /// **'Saved'**
   String get coreCatchFieldSemanticSaved;
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Optional'**
@@ -880,13 +880,13 @@ abstract class AppLocalizations {
   /// **'Enter a valid {field}'**
   String coreCatchFormValidationPattern({required String field});
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get coreCatchFrameworkErrorViewTextSomethingWentWrong;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Developer details'**
@@ -910,7 +910,7 @@ abstract class AppLocalizations {
   /// **'New match'**
   String get coreCatchPersonRowLabelNewMatch;
 
-  /// Product copy used by lib/core/widgets/catch_share_card_footer.dart (Text).
+  /// Brand footer copy supplied by chat, organizer, and event share-card callers.
   ///
   /// In en, this message translates to:
   /// **'CATCH'**
@@ -6953,7 +6953,7 @@ abstract class AppLocalizations {
   /// **'Clear {value1}'**
   String coreCatchFieldTooltipClearValue1({required Object value1});
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label}, optional'**
@@ -6971,13 +6971,13 @@ abstract class AppLocalizations {
   /// **'New message'**
   String get notificationArrivalMessageTitle;
 
-  /// Product copy used by lib/core/widgets/catch_notice.dart (tooltip).
+  /// Product copy supplied by app callers to the shared CatchNotice dismiss control (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get coreCatchNoticeTooltipDismiss;
 
-  /// Product copy used by lib/core/widgets/catch_person_avatar.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).
   ///
   /// In en, this message translates to:
   /// **'+{count}'**
@@ -7034,15 +7034,6 @@ abstract class AppLocalizations {
   String coreCatchStepFlowHeaderTextCompactStepClampedstepTotal({
     required int clampedStep,
     required int total,
-  });
-
-  /// Product copy used by lib/core/widgets/catch_step_progress.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}/{totalSteps}'**
-  String coreCatchStepProgressTextValue1Totalsteps({
-    required Object value1,
-    required Object totalSteps,
   });
 
   /// Product copy used by lib/core/widgets/catch_top_bar.dart (label).
@@ -10597,7 +10588,7 @@ abstract class AppLocalizations {
   /// **'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.'**
   String get coreBlockUserDialogMessageYouWillStopSeeing;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'This screen hit a temporary app error. Please go back or try again in a moment.'**
@@ -16408,19 +16399,19 @@ abstract class AppLocalizations {
   /// **'Insights get sharper after more post-event profile views.'**
   String get userAnalyticsUserAnalyticsCopyBodyInsightsGetSharperAfter;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Private to you'**
   String get coreCatchPrivacyBadgeLabelPrivateToYou;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host can see'**
   String get coreCatchPrivacyBadgeLabelHostCanSee;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Catch private'**

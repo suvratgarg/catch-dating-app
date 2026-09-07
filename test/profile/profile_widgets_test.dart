@@ -6,12 +6,8 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
@@ -40,6 +36,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_slive
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -123,10 +120,10 @@ Future<void> _pumpObstructedProfileScreen(WidgetTester tester) async {
             padding: EdgeInsets.only(bottom: 34),
             viewPadding: EdgeInsets.only(bottom: 34),
           ),
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellProfileTabIndex,
             bottomOverlayInset: _profileBottomOverlayInset,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: ProfileScreen(),
           ),
         ),

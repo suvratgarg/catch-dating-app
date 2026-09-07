@@ -59,6 +59,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                 gapH12,
                 if (!setup.providerConfigured)
                   CatchNotice(
+                    dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
                     notice: CatchNoticeData(
                       id: 'host.audience.whatsapp.provider-unavailable',
                       title: context.l10n.hostsHostAudienceProviderUnavailable,

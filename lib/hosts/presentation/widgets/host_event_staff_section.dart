@@ -2,24 +2,18 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,7 +72,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
             ),
             gapH12,
             if (_mutationError case final error?) ...[
-              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+              CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
               gapH12,
             ],
             if (_loaded)

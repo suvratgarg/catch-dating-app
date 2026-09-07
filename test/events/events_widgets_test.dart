@@ -2,20 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -36,11 +24,13 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/shared/map_pin_tile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,7 +53,11 @@ void main() {
         Scaffold(
           body: Column(
             children: [
-              const CatchFormFieldLabel(label: 'Distance', large: true),
+              CatchFormFieldLabel(
+                copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+                label: 'Distance',
+                large: true,
+              ),
               _TestPickerTile(
                 icon: CatchIcons.calendarTodayOutlined,
                 value: null,
@@ -760,7 +754,11 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              const CatchStepProgress(currentStep: 1, totalSteps: 4),
+              CatchStepProgress(
+                currentStep: 1,
+                totalSteps: 4,
+                counterLabelBuilder: (step, total) => '$step/$total',
+              ),
               CatchButton(
                 label: 'Next',
                 onPressed: () => footerTapped = true,

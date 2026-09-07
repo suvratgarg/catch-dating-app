@@ -6,7 +6,6 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -23,6 +22,7 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -112,7 +112,7 @@ void main() {
       expect(find.text(monthLabel), findsOneWidget);
       expect(
         tester.widget<Text>(find.text(monthLabel)).style?.fontFamily,
-        CatchFonts.voiceFamily,
+        'packages/catch_ui/${CatchFonts.voiceFamily}',
       );
       expect(find.text('Planned'), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);

@@ -3,16 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -30,6 +24,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -935,6 +930,7 @@ class _HostSendsAnnouncementReport extends StatelessWidget {
       CatchSection.divided(
         title: context.l10n.hostSendsAnnouncementType,
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.sends.announcement.${announcement.broadcastId}',
             title: announcement.eventName,
@@ -973,6 +969,7 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
       CatchSection.divided(
         title: context.l10n.hostSendsFollowerUpdateChannel,
         child: CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.sends.follower-update.${update.postId}',
             title: context.l10n.hostSendsFollowersAudience,

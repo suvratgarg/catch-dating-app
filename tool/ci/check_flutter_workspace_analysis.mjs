@@ -42,10 +42,10 @@ export function buildWorkspaceAnalysisPlan(snapshot = createRepositorySnapshot()
             args: ["analyze", "--format", "machine", "--fatal-infos"],
           }
         // The root excludes nested packages. Flutter's directory-wide analyzer
-        // can report success without visiting catch_tokens; an explicit Dart
+        // can report success without visiting design packages; an explicit Dart
         // source target is required (verified with a seeded unresolved symbol).
-        : entry.directory === "packages/catch_tokens"
-          ? {phase: "analyze", directory: entry.directory, command: "dart", args: ["analyze", "lib", "--fatal-infos"]}
+        : ["packages/catch_tokens", "packages/catch_ui"].includes(entry.directory)
+          ? {phase: "analyze", directory: entry.directory, command: "dart", args: ["analyze", "lib", ...(snapshot.listFiles().some((file) => file.startsWith(`${entry.directory}/test/`)) ? ["test"] : []), "--fatal-infos"]}
           : {phase: "analyze", directory: entry.directory, command: "flutter", args: ["analyze", "--fatal-infos", "--no-pub"]}),
     ],
   };

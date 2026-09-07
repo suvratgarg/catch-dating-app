@@ -4,8 +4,8 @@ import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

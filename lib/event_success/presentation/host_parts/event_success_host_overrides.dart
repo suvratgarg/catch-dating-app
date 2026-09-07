@@ -96,7 +96,7 @@ class MicroPodsHostCard extends StatelessWidget {
           ],
           if (actionState.error != null) ...[
             gapH8,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               actionState.error!,
               context: AppErrorContext.event,
             ),
@@ -229,7 +229,7 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               _saveError!,
               context: AppErrorContext.event,
             ),
@@ -756,7 +756,7 @@ class RotationsHostCard extends StatelessWidget {
           ],
           if (actionState.error != null) ...[
             gapH8,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               actionState.error!,
               context: AppErrorContext.event,
             ),
@@ -926,7 +926,7 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               _saveError!,
               context: AppErrorContext.event,
             ),

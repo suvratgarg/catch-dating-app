@@ -32,7 +32,8 @@ export function newWidgetPolicyIssues(
   const issues = [];
   if (!widgetbookCovered) issues.push("missing-widgetbook");
   if (!catalogMentioned) issues.push("missing-widget-catalog");
-  if (entry.file.startsWith("lib/core/widgets/")) {
+  if (entry.file.startsWith("lib/core/widgets/") ||
+      entry.file.startsWith("packages/catch_ui/lib/")) {
     if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
       issues.push("noncanonical-core-widget-name");
     }

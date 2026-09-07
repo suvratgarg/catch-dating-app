@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 

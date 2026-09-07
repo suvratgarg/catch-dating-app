@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -212,9 +212,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: AppShellActiveTab(
+        home: CatchTabViewportScope(
           index: 0,
-          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
           bottomOverlayInset: 96,
           child: CatchRouteScaffold(
             topBarBuilder: (_, _) => const PreferredSize(
@@ -253,7 +253,7 @@ void main() {
       await tester.pumpWidget(
         _standardRouteWithBottomGeometry(
           safeBottom: 34,
-          bottomBarPlacement: AppShellBottomBarPlacement.floating,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
           bottomOverlayInset: 100,
         ),
       );
@@ -271,7 +271,7 @@ void main() {
       await tester.pumpWidget(
         _standardRouteWithBottomGeometry(
           safeBottom: 34,
-          bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+          bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
           bottomOverlayInset: 100,
         ),
       );
@@ -322,7 +322,7 @@ void main() {
 
 Widget _standardRouteWithBottomGeometry({
   required double safeBottom,
-  AppShellBottomBarPlacement? bottomBarPlacement,
+  CatchTabViewportScopePlacement? bottomBarPlacement,
   double bottomOverlayInset = 0,
 }) {
   Widget route = CatchRouteScaffold(
@@ -331,7 +331,7 @@ Widget _standardRouteWithBottomGeometry({
     body: const CatchRouteBody.standard(child: SizedBox(height: 40)),
   );
   if (bottomBarPlacement != null) {
-    route = AppShellActiveTab(
+    route = CatchTabViewportScope(
       index: 0,
       bottomBarPlacement: bottomBarPlacement,
       bottomOverlayInset: bottomOverlayInset,
@@ -383,9 +383,9 @@ Widget _rootScreen({
   };
   return MaterialApp(
     theme: AppTheme.light,
-    home: AppShellActiveTab(
+    home: CatchTabViewportScope(
       index: 0,
-      bottomBarPlacement: AppShellBottomBarPlacement.floating,
+      bottomBarPlacement: CatchTabViewportScopePlacement.floating,
       bottomOverlayInset: 100,
       child: root,
     ),

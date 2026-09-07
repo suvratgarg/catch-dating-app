@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -21,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

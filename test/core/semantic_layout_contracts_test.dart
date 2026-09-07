@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -230,10 +230,10 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
               viewInsets: EdgeInsets.only(bottom: 300),
             ),
-            child: AppShellActiveTab(
+            child: CatchTabViewportScope(
               index: appShellHomeTabIndex,
               bottomOverlayInset: 102,
-              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomBarPlacement: CatchTabViewportScopePlacement.floating,
               child: CatchScrollTerminalPadding(
                 key: terminalPaddingKey,
                 extra: 10,
@@ -267,9 +267,9 @@ void main() {
             padding: EdgeInsets.only(bottom: 34),
             viewPadding: EdgeInsets.only(bottom: 34),
           ),
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
-            bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+            bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
             child: CatchScrollTerminalPadding(
               key: terminalPaddingKey,
               extra: 10,
@@ -303,7 +303,7 @@ void main() {
               viewPadding: EdgeInsets.only(bottom: 34),
               viewInsets: EdgeInsets.only(bottom: 300),
             ),
-            child: AppShellActiveTab(
+            child: CatchTabViewportScope(
               index: appShellHomeTabIndex,
               child: CatchScrollTerminalPadding(
                 key: terminalPaddingKey,

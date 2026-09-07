@@ -4,11 +4,7 @@
 
 import "package:catch_dating_app/activity/domain/activity_taxonomy.dart";
 import "package:catch_dating_app/core/presentation/catch_async_state.dart";
-import "package:catch_dating_app/core/theme/catch_spacing.dart";
-import "package:catch_dating_app/core/theme/catch_text_styles.dart";
-import "package:catch_dating_app/core/widgets/catch_badge.dart";
 import "package:catch_dating_app/core/widgets/catch_progress_cue.dart";
-import "package:catch_dating_app/core/widgets/catch_surface.dart";
 import "package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart";
 import "package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart";
 import "package:catch_dating_app/event_success/domain/event_success_defaults.dart";
@@ -30,6 +26,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_struct
 import "package:catch_dating_app/events/domain/event_participation_roster.dart";
 import "package:catch_dating_app/l10n/l10n.dart";
 import "package:catch_tokens/catch_tokens.dart";
+import "package:catch_ui/catch_ui.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:widgetbook/widgetbook.dart";

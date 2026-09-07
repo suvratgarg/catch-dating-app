@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
@@ -12,7 +10,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -234,10 +232,7 @@ class HostSavedPlacesSection extends StatelessWidget {
       ),
       children: [
         if (loadError != null)
-          CatchErrorBanner.fromError(
-            loadError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(loadError!, context: AppErrorContext.event),
         for (final venue in venues)
           CatchField.nav(
             title: venue.label,
@@ -258,10 +253,7 @@ class HostSavedPlacesSection extends StatelessWidget {
           onTap: !canSave || saving ? null : onSave,
         ),
         if (saveError != null)
-          CatchErrorBanner.fromError(
-            saveError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(saveError!, context: AppErrorContext.event),
       ],
     );
   }

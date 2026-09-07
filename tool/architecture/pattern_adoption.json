@@ -387,7 +387,7 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-route-chrome-001-pushed-route-chrome",
       "prototypeFiles": [
         "lib/core/widgets/catch_route_scaffold.dart",
-        "lib/core/theme/catch_text_styles.dart",
+        "packages/catch_ui/lib/src/foundations/catch_text_styles.dart",
         "test/core/catch_top_bar_test.dart"
       ],
       "adopters": [
@@ -483,7 +483,7 @@
       ],
       "adopters": [
         {
-          "path": "lib/core/widgets/catch_empty_state.dart",
+          "path": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
           "role": "reference CatchStateViewport geometry shared by box and sliver empty/error placement; preserves responsive overflow while shifting the optical center above floating shell chrome",
           "providerFree": true,
           "status": "aligned"
@@ -495,7 +495,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/presentation/catch_async_value_adapter.dart",
+          "path": "lib/core/riverpod_ui/catch_async_value_adapter.dart",
           "role": "route-edge Riverpod translation into provider-free CatchAsyncState with known-error, credible-data, then loading precedence",
           "status": "aligned"
         },
@@ -1165,7 +1165,7 @@
         "lib/l10n/l10n.dart",
         "lib/app.dart",
         "lib/core/presentation/app_shell.dart",
-        "lib/core/widgets/catch_notice.dart",
+        "lib/core/riverpod_ui/catch_notice_host.dart",
         "copy/native_en.json",
         "copy/notifications_en.json",
         "copy/event_success_questionnaires_en.json",
@@ -1187,7 +1187,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/widgets/catch_notice.dart",
+          "path": "lib/core/riverpod_ui/catch_notice_host.dart",
           "role": "shared semantic notice localization seam",
           "status": "aligned"
         },
@@ -1303,6 +1303,8 @@
         "lib/core/presentation/host_app_shell.dart",
         "lib/core/presentation/catch_adaptive_tab_scaffold.dart",
         "lib/core/presentation/app_shell_active_tab.dart",
+        "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart",
+        "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
         "lib/core/widgets/catch_screen_scaffold.dart",
         "lib/core/widgets/catch_section_layout.dart",
         "lib/core/widgets/catch_tab_bar.dart",
@@ -1376,6 +1378,8 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-screen-composition-001-semantic-screen-composition",
       "prototypeFiles": [
         "lib/core/widgets/catch_screen_scaffold.dart",
+        "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
+        "packages/catch_ui/lib/src/components/catch_status_strip.dart",
         "lib/core/widgets/catch_section_layout.dart",
         "lib/core/widgets/catch_root_screen_body.dart",
         "test/core/widgets/catch_screen_scaffold_test.dart",
@@ -2084,7 +2088,7 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-entity-material-001-entity-material-composition",
       "prototypeFiles": [
         "lib/clubs/shared/catch_organizer_poster.dart",
-        "lib/core/widgets/catch_person_polaroid.dart",
+        "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
         "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
         "lib/swipes/shared/profile_surface/catch_profile_view.dart",
         "test/clubs/club_hero_app_bar_test.dart",
@@ -2111,7 +2115,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/widgets/catch_person_polaroid.dart",
+          "path": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
           "role": "canonical provider-free person polaroid with portrait media, identity caption, optional context overlay, and callback-only interaction",
           "providerFree": true,
           "status": "aligned"

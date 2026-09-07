@@ -7,77 +7,49 @@ import 'package:catch_dating_app/core/celebration/celebration_effects_controller
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_screen_loading.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_sliver_loading.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet_grabber.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
-import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
-import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
-import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
-import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
-import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
-import 'package:catch_dating_app/core/widgets/catch_status_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_vertical_section.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
-import 'package:catch_dating_app/core/widgets/src/catch_inline_message_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
@@ -89,6 +61,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -524,20 +497,36 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
     title: 'CatchFormFieldLabel',
     catalogId: 'core.widgets.catch_form_field_label',
     children: [
-      const _StateCard(
+      _StateCard(
         label: 'required / optional / error / large',
         child: _InlineWrap(
           children: [
-            CatchFormFieldLabel(label: 'Name'),
-            CatchFormFieldLabel(label: 'Note', isOptional: true),
-            CatchFormFieldLabel(label: 'Activity', hasError: true),
-            CatchFormFieldLabel(label: 'Host copy', large: true),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Name',
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Note',
+              isOptional: true,
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Activity',
+              hasError: true,
+            ),
+            CatchFormFieldLabel(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              label: 'Host copy',
+              large: true,
+            ),
           ],
         ),
       ),
       _StateCard(
         label: 'field inline optional suffix',
         child: CatchFormFieldLabel.inline(
+          copy: catchFormFieldLabelCopy(context.l10n),
           label: 'Religion',
           isOptional: true,
           style: CatchTextStyles.fieldRowTitle(context),
@@ -829,10 +818,11 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
                     builder: (context) {
                       final overlay = CatchTabBar.reservedBottomInset(context);
                       final total = overlay + CatchSpacing.screenPb;
-                      return AppShellActiveTab(
+                      return CatchTabViewportScope(
                         index: appShellHomeTabIndex,
                         bottomOverlayInset: overlay,
-                        bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                        bottomBarPlacement:
+                            CatchTabViewportScopePlacement.floating,
                         child: clearanceBand(
                           '${total.toStringAsFixed(0)} px · overlay + breathing',
                         ),
@@ -849,9 +839,9 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
                   'The scaffold reserves the bar; this adds breathing.',
               child: MediaQuery(
                 data: previewMediaQuery,
-                child: AppShellActiveTab(
+                child: CatchTabViewportScope(
                   index: appShellHomeTabIndex,
-                  bottomBarPlacement: AppShellBottomBarPlacement.anchored,
+                  bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
                   child: clearanceBand(
                     '${CatchSpacing.screenPb.toStringAsFixed(0)} px · breathing',
                   ),
@@ -879,17 +869,17 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketHero,
+  type: CatchTicketHeroViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchTicketHeroCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTicketHero',
+    title: 'Ticket hero viewport',
     catalogId: 'core.motion.catch_ticket_hero',
     children: [
       _StateCard(
         label: 'ticket hero wrapper',
-        child: CatchTicketHero(
+        child: CatchTicketHeroViewport(
           prefix: 'event',
           id: 'widgetbook-ticket',
           child: CatchSurface.card(
@@ -906,32 +896,38 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMapRevealTransition,
+  type: CatchMapRevealViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMapRevealTransition',
+    title: 'Map reveal viewport',
     catalogId: 'core.motion.catch_map_reveal_transition',
     children: [
-      _StateCard(
-        label: 'paper veil / mid reveal',
-        child: SizedBox(
-          height: CatchLayout.distanceRingDefaultSize,
-          child: CatchMapRevealTransition(
-            animation: const AlwaysStoppedAnimation<double>(0.58),
-            child: CatchSurface.card(
-              child: Center(
-                child: Text(
-                  'Native map remains stationary below the veil.',
-                  style: CatchTextStyles.proseM(context),
-                  textAlign: TextAlign.center,
+      for (final reducedMotion in [false, true])
+        _StateCard(
+          label: reducedMotion ? 'reduced motion' : 'paper veil / mid reveal',
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(disableAnimations: reducedMotion),
+            child: SizedBox(
+              height: CatchLayout.distanceRingDefaultSize,
+              child: CatchMapRevealViewport(
+                animation: const AlwaysStoppedAnimation<double>(0.58),
+                child: CatchSurface.card(
+                  child: Center(
+                    child: Text(
+                      'Native map remains stationary below the veil.',
+                      style: CatchTextStyles.proseM(context),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
     ],
   );
 }
@@ -1350,9 +1346,15 @@ Widget catchStepProgressCatalogStates(BuildContext context) {
         label: 'counter / unlabeled',
         child: Column(
           children: [
-            CatchStepProgress(currentStep: 1, totalSteps: 5, label: 'Basics'),
+            CatchStepProgress(
+              counterLabelBuilder: (step, total) => '$step/$total',
+              currentStep: 1,
+              totalSteps: 5,
+              label: 'Basics',
+            ),
             SizedBox(height: CatchSpacing.s4),
             CatchStepProgress(
+              counterLabelBuilder: (step, total) => '$step/$total',
               currentStep: 3,
               totalSteps: 5,
               showCounter: false,
@@ -1694,10 +1696,10 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
         label: 'box body / floating-shell optical center',
         child: SizedBox(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CatchStateViewport(
               child: CatchEmptyState(
                 icon: CatchIcons.calendarTodayOutlined,
@@ -1726,10 +1728,10 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
         label: 'floating-shell optical center',
         child: SizedBox(
           height: WidgetbookPreviewLayout.feedbackViewportHeight,
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
             bottomOverlayInset: 88,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CustomScrollView(
               slivers: [
                 CatchSliverStateViewport(
@@ -1825,7 +1827,7 @@ Widget catchErrorBannerCatalogStates(BuildContext context) {
         child: Column(
           children: [
             const CatchErrorBanner(message: 'Card details could not be saved.'),
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               Exception('Booking failed. Try once more.'),
               onRetry: _noop,
             ),
@@ -2003,6 +2005,7 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CatchFrameworkErrorView(
+            copy: catchFrameworkErrorCopy(context.l10n),
             details: FlutterErrorDetails(
               exception: StateError('Widgetbook sample framework failure'),
             ),
@@ -2020,19 +2023,21 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
-  return const WidgetbookCatalogFrame(
+  return WidgetbookCatalogFrame(
     title: 'CatchFrameworkErrorDebugDetails',
     catalogId: 'core.widgets.catch_framework_error_debug_details',
     children: [
       _StateCard(
         label: 'collapsed',
         child: CatchFrameworkErrorDebugDetails(
+          label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
         ),
       ),
       _StateCard(
         label: 'expanded',
         child: CatchFrameworkErrorDebugDetails(
+          label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
           initiallyExpanded: true,
         ),
@@ -2070,6 +2075,44 @@ Widget catchNoticeHostCatalogStates(BuildContext context) {
       ),
     ],
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Queued arrival',
+  type: CatchNoticeController,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchNoticeQueueCatalogState(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Queued notice',
+      catalogId: 'catch.notice',
+      children: [
+        ProviderScope(
+          overrides: [
+            catchNoticeControllerProvider.overrideWith(
+              _NoticeQueuePreviewController.new,
+            ),
+          ],
+          child: const SizedBox(
+            height: WidgetbookPreviewLayout.stateViewportHeight,
+            child: CatchNoticeHost(child: SizedBox.expand()),
+          ),
+        ),
+      ],
+    );
+
+class _NoticeQueuePreviewController extends CatchNoticeController {
+  @override
+  CatchNoticeQueue build() => const CatchNoticeQueue([
+    CatchNoticeData(
+      id: 'queued',
+      title: 'Preferences saved',
+      message: 'Your changes are ready.',
+      tone: CatchNoticeTone.success,
+      person: CatchPersonAvatarItem(name: 'Ananya Rao', initials: 'AR'),
+      duration: null,
+    ),
+  ]);
 }
 
 @widgetbook.UseCase(
@@ -3424,14 +3467,18 @@ Widget catchShareCardFooterCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
     title: 'CatchShareCardFooter',
     catalogId: 'core.widgets.catch_share_card_footer',
-    children: const [
+    children: [
       _StateCard(
         label: 'default',
-        child: CatchShareCardFooter(trailing: 'Curated singles event'),
+        child: CatchShareCardFooter(
+          brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
+          trailing: 'Curated singles event',
+        ),
       ),
       _StateCard(
         label: 'long trailing',
         child: CatchShareCardFooter(
+          brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Hosted by The Longest Possible Club Collective',
         ),
       ),
@@ -3645,20 +3692,30 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
               name: 'Host Team',
               shape: CatchPersonAvatarShape.square,
             ),
-            const CatchPersonAvatar(
+            CatchPersonAvatar(
               size: 48,
               name: 'Social run',
               initials: 'SR',
-              activityKind: ActivityKind.socialRun,
+              colors: ActivityPalette.resolve(
+                context,
+                ActivityKind.socialRun,
+              ).avatarColors,
             ),
-            const CatchPersonAvatar(
+            CatchPersonAvatar(
               size: 48,
               name: 'Dinner',
               initials: 'DN',
-              activityKind: ActivityKind.dinner,
-              activityDim: true,
+              colors: ActivityPalette.resolve(
+                context,
+                ActivityKind.dinner,
+              ).avatarColors,
+              dim: true,
             ),
-            const CatchPersonAvatar.count(size: 48, count: 8),
+            CatchPersonAvatar.count(
+              size: 48,
+              count: 8,
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
+            ),
           ],
         ),
       ),
@@ -3672,7 +3729,7 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
   path: '[Core catalog]/People',
 )
 Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
-  return const WidgetbookCatalogFrame(
+  return WidgetbookCatalogFrame(
     title: 'CatchPersonAvatarStack',
     catalogId: 'core.widgets.catch_person_avatar_stack',
     children: [
@@ -3681,6 +3738,7 @@ Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             CatchPersonAvatarStack(
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
               items: [
                 CatchPersonAvatarItem(name: 'Aarav Kapoor', initials: 'AK'),
                 CatchPersonAvatarItem(name: 'Riya Shah', initials: 'RS'),
@@ -3689,10 +3747,14 @@ Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
               totalCount: 8,
             ),
             CatchPersonAvatarStack(
+              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
               items: [CatchPersonAvatarItem(name: 'Visible guest')],
               totalCount: 6,
               veiledCount: 3,
-              activityKind: ActivityKind.dinner,
+              veiledColors: ActivityPalette.resolve(
+                context,
+                ActivityKind.dinner,
+              ).avatarColors,
             ),
           ],
         ),

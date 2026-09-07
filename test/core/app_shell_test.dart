@@ -3,13 +3,13 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -68,15 +68,18 @@ void main() {
       final scaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
 
       expect(scaffold.extendBody, isTrue);
       expect(scaffold.body, isA<Stack>());
       expect(scaffold.bottomNavigationBar, isNull);
       expect(find.byKey(navigationKey), findsOneWidget);
-      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.floating);
+      expect(
+        activeTab.bottomBarPlacement,
+        CatchTabViewportScopePlacement.floating,
+      );
       expect(
         activeTab.bottomOverlayInset,
         CatchLayout.tabBarReservedBottomInset(34),
@@ -120,9 +123,9 @@ void main() {
         expect(find.byKey(navigationKey), findsOneWidget);
         expect(
           tester
-              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
               .bottomBarPlacement,
-          AppShellBottomBarPlacement.floating,
+          CatchTabViewportScopePlacement.floating,
         );
 
         tester.view.viewInsets = const FakeViewPadding(bottom: 318);
@@ -131,8 +134,8 @@ void main() {
         final keyboardScaffold = tester.widget<Scaffold>(
           find.byKey(AppShellKeys.scaffold),
         );
-        final keyboardActiveTab = tester.widget<AppShellActiveTab>(
-          find.byType(AppShellActiveTab),
+        final keyboardActiveTab = tester.widget<CatchTabViewportScope>(
+          find.byType(CatchTabViewportScope),
         );
         expect(keyboardScaffold.extendBody, isFalse);
         expect(keyboardScaffold.body, isA<Stack>());
@@ -140,7 +143,7 @@ void main() {
         expect(find.byKey(navigationKey), findsNothing);
         expect(
           keyboardActiveTab.bottomBarPlacement,
-          AppShellBottomBarPlacement.none,
+          CatchTabViewportScopePlacement.none,
         );
         expect(keyboardActiveTab.bottomOverlayInset, 0);
         expect(tester.element(find.byKey(editorKey)), same(editorElement));
@@ -153,9 +156,9 @@ void main() {
         expect(find.byKey(navigationKey), findsOneWidget);
         expect(
           tester
-              .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+              .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
               .bottomBarPlacement,
-          AppShellBottomBarPlacement.floating,
+          CatchTabViewportScopePlacement.floating,
         );
       },
     );
@@ -186,15 +189,18 @@ void main() {
       final scaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
 
       expect(scaffold.extendBody, isFalse);
-      expect(scaffold.body, isA<AppShellActiveTab>());
+      expect(scaffold.body, isA<CatchTabViewportScope>());
       expect(scaffold.bottomNavigationBar, isNotNull);
       expect(find.byKey(navigationKey), findsOneWidget);
-      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+      expect(
+        activeTab.bottomBarPlacement,
+        CatchTabViewportScopePlacement.anchored,
+      );
       expect(activeTab.bottomOverlayInset, 0);
     });
 
@@ -216,14 +222,17 @@ void main() {
       final scaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
 
       expect(scaffold.extendBody, isFalse);
       expect(scaffold.bottomNavigationBar, isNotNull);
       expect(find.byKey(fallbackKey), findsOneWidget);
-      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.anchored);
+      expect(
+        activeTab.bottomBarPlacement,
+        CatchTabViewportScopePlacement.anchored,
+      );
 
       tester.view.viewInsets = const FakeViewPadding(bottom: 318);
       await tester.pump();
@@ -231,15 +240,15 @@ void main() {
       final keyboardScaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final keyboardActiveTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final keyboardActiveTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
       expect(keyboardScaffold.extendBody, isFalse);
       expect(keyboardScaffold.bottomNavigationBar, isNull);
       expect(find.byKey(fallbackKey), findsNothing);
       expect(
         keyboardActiveTab.bottomBarPlacement,
-        AppShellBottomBarPlacement.none,
+        CatchTabViewportScopePlacement.none,
       );
       expect(keyboardActiveTab.bottomOverlayInset, 0);
     });
@@ -269,8 +278,8 @@ void main() {
       final scaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
       final terminal = tester.widget<SizedBox>(
         find.descendant(
@@ -281,7 +290,7 @@ void main() {
 
       expect(scaffold.extendBody, isFalse);
       expect(scaffold.bottomNavigationBar, isNull);
-      expect(activeTab.bottomBarPlacement, AppShellBottomBarPlacement.none);
+      expect(activeTab.bottomBarPlacement, CatchTabViewportScopePlacement.none);
       expect(terminal.height, 44);
     });
   });

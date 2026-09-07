@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

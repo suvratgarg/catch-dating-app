@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -11,7 +9,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef EventSuccessHostDraftUpdate =

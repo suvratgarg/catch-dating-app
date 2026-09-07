@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.11.0
-updated: 2026-09-04
+version: 1.12.0
+updated: 2026-09-06
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -145,8 +145,9 @@ Dynamic Type behavior.
 > The old serif/custom-sans direction is retired. Keep the swap centralized in
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
 Generated Flutter scales and handwritten L0 roles live in `packages/catch_tokens`,
-imported through `package:catch_tokens/catch_tokens.dart`. App theme wiring and
-activity-domain color mapping remain in `lib/core/theme`.
+imported through `package:catch_tokens/catch_tokens.dart`. Shared theme wiring, text styles, icons, motion, and bundled fonts live in
+`packages/catch_ui`, imported through `package:catch_ui/catch_ui.dart`.
+`AppTheme` attaches the app-specific activity palette to `CatchTheme`.
 
 **Legibility-first craft:**
 - **Single Archivo width — 78% (ratified 2026-07-06).** The DS
@@ -614,10 +615,10 @@ that detaches the explanation from the options it describes.
   enlarge phone components. The canonical Host contract lives in
   [`app_architecture.md#host-adaptive-workspace-specification`](app_architecture.md#host-adaptive-workspace-specification).
 - **Motion:** route motion through `CatchMotion` and
-  `lib/core/motion/catch_transitions.dart`. Use `catchSelectionHaptic()` for
+  `package:catch_ui/catch_ui.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
-  `catchFadeScalePageTransition` for calm card-to-detail routes, and
-  `catchHeroSurface`/`CatchTicketHero` for ticket or polaroid flights. Avoid
+  `CatchFadeScaleViewport` for calm card-to-detail routes, and
+  `CatchHeroViewport`/`CatchTicketHeroViewport` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
 

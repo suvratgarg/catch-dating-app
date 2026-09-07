@@ -7,10 +7,8 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
@@ -71,6 +69,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -286,7 +285,8 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     child: _clubDetailScreen(state),
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: catchFadeScalePageTransition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        CatchFadeScaleViewport(animation: animation, child: child),
   );
 }
 
@@ -298,7 +298,7 @@ Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return CatchMapRevealTransition(animation: animation, child: child);
+      return CatchMapRevealViewport(animation: animation, child: child);
     },
   );
 }
@@ -319,7 +319,8 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
     child: child,
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: catchFadeScalePageTransition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        CatchFadeScaleViewport(animation: animation, child: child),
   );
 }
 

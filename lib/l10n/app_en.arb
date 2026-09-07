@@ -896,7 +896,7 @@
   },
   "coreCatchErrorBannerLabelTryAgain": "Try again",
   "@coreCatchErrorBannerLabelTryAgain": {
-    "description": "Product copy used by lib/core/widgets/catch_error_banner.dart (label).",
+    "description": "Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_error_banner"
@@ -952,7 +952,7 @@
   },
   "coreCatchFormFieldLabelTextOptional": "Optional",
   "@coreCatchFormFieldLabelTextOptional": {
-    "description": "Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
@@ -1013,14 +1013,14 @@
   },
   "coreCatchFrameworkErrorViewTextSomethingWentWrong": "Something went wrong",
   "@coreCatchFrameworkErrorViewTextSomethingWentWrong": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
   },
   "coreCatchFrameworkErrorViewTextDeveloperDetails": "Developer details",
   "@coreCatchFrameworkErrorViewTextDeveloperDetails": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
@@ -1048,7 +1048,7 @@
   },
   "coreCatchShareCardFooterTextCatch": "CATCH",
   "@coreCatchShareCardFooterTextCatch": {
-    "description": "Product copy used by lib/core/widgets/catch_share_card_footer.dart (Text).",
+    "description": "Brand footer copy supplied by chat, organizer, and event share-card callers.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_share_card_footer"
@@ -8013,7 +8013,7 @@
   },
   "coreCatchFormFieldLabelLabelLabelOptional": "{label}, optional",
   "@coreCatchFormFieldLabelLabelLabelOptional": {
-    "description": "Product copy used by lib/core/widgets/catch_form_field_label.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "placeholders": {
       "label": {}
     },
@@ -8037,14 +8037,14 @@
   },
   "coreCatchNoticeTooltipDismiss": "Dismiss",
   "@coreCatchNoticeTooltipDismiss": {
-    "description": "Product copy used by lib/core/widgets/catch_notice.dart (tooltip).",
+    "description": "Product copy supplied by app callers to the shared CatchNotice dismiss control (tooltip).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_notice"
   },
   "coreCatchPersonAvatarTextCount": "+{count}",
   "@coreCatchPersonAvatarTextCount": {
-    "description": "Product copy used by lib/core/widgets/catch_person_avatar.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).",
     "placeholders": {
       "count": {}
     },
@@ -8122,17 +8122,6 @@
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_step_flow_header"
-  },
-  "coreCatchStepProgressTextValue1Totalsteps": "{value1}/{totalSteps}",
-  "@coreCatchStepProgressTextValue1Totalsteps": {
-    "description": "Product copy used by lib/core/widgets/catch_step_progress.dart (Text).",
-    "placeholders": {
-      "value1": {},
-      "totalSteps": {}
-    },
-    "x-audience": "shared",
-    "x-owner": "product",
-    "x-surface": "core.widgets.catch_step_progress"
   },
   "coreCatchTopBarLabelViewNameProfile": "View {name} profile",
   "@coreCatchTopBarLabelViewNameProfile": {
@@ -12292,7 +12281,7 @@
   },
   "coreCatchFrameworkErrorViewTextThisScreenHitA": "This screen hit a temporary app error. Please go back or try again in a moment.",
   "@coreCatchFrameworkErrorViewTextThisScreenHitA": {
-    "description": "Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
@@ -19028,21 +19017,21 @@
   },
   "coreCatchPrivacyBadgeLabelPrivateToYou": "Private to you",
   "@coreCatchPrivacyBadgeLabelPrivateToYou": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelHostCanSee": "Host can see",
   "@coreCatchPrivacyBadgeLabelHostCanSee": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelCatchPrivate": "Catch private",
   "@coreCatchPrivacyBadgeLabelCatchPrivate": {
-    "description": "Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).",
+    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"

@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' show Icons, TextField;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';

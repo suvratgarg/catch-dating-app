@@ -9,13 +9,6 @@
       "reason": "Nonvisual ChangeNotifier has no independent renderable golden surface."
     },
     {
-      "class": "CatchTextInput",
-      "file": "lib/core/widgets/catch_field_edit.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Part-owned low-level editor is not exposed as a Widgetbook annotation type."
-    },
-    {
       "class": "CatchFieldVisibilityScope",
       "file": "lib/core/widgets/catch_field_scopes.dart",
       "owner": "ui_system_program",
@@ -51,25 +44,11 @@
       "reason": "Inherited geometry scope has no independent renderable golden surface."
     },
     {
-      "class": "CatchFillViewportScrollView",
-      "file": "lib/core/widgets/catch_fill_viewport_scroll_view.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Viewport helper still needs a directly registered core catalog case."
-    },
-    {
       "class": "CatchFormStepSpec",
       "file": "lib/core/widgets/catch_form_step_flow.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Nonvisual form-step descriptor has no independent renderable golden surface."
-    },
-    {
-      "class": "CatchFormStepReviewItem",
-      "file": "lib/core/widgets/catch_form_step_flow.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual form-step review item cannot be a Widgetbook component type."
     },
     {
       "class": "CatchFormReviewState",
@@ -79,60 +58,18 @@
       "reason": "Nonvisual review-state protocol has no independent renderable golden surface."
     },
     {
-      "class": "CatchFractionalMaxWidth",
-      "file": "lib/core/widgets/catch_fractional_max_width.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Layout helper still needs a directly registered geometry golden case."
-    },
-    {
-      "class": "CatchMasterDetailLayout",
-      "file": "lib/core/widgets/catch_master_detail_layout.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Master-detail layout still needs a directly registered geometry golden case."
-    },
-    {
-      "class": "CatchAdaptiveMasterDetailLayout",
-      "file": "lib/core/widgets/catch_master_detail_layout.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Adaptive master-detail layout still needs a registered breakpoint matrix."
-    },
-    {
       "class": "CatchNoticeControllerProvider",
-      "file": "lib/core/widgets/catch_notice.g.dart",
+      "file": "lib/core/riverpod_ui/catch_notice_controller.g.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Generated provider type is nonvisual and has no independent golden surface."
     },
     {
-      "class": "CatchPagerFocusBoundary",
-      "file": "lib/core/widgets/catch_pager_focus_boundary.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Focus-boundary render object still needs a registered behavior fixture."
-    },
-    {
       "class": "CatchScaledPreferredSize",
-      "file": "lib/core/widgets/catch_scaled_preferred_size.dart",
+      "file": "packages/catch_ui/lib/src/primitives/catch_scaled_preferred_size.dart",
       "owner": "ui_system_program",
       "expires": "2026-10-04",
       "reason": "Preferred-size adapter still needs a directly registered geometry case."
-    },
-    {
-      "class": "CatchSceneViewportData",
-      "file": "lib/core/widgets/catch_scene_viewport.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Nonvisual viewport descriptor is not yet bound to a registered host golden."
-    },
-    {
-      "class": "CatchSceneViewport",
-      "file": "lib/core/widgets/catch_scene_viewport.dart",
-      "owner": "ui_system_program",
-      "expires": "2026-10-04",
-      "reason": "Scene viewport still needs a directly registered geometry golden case."
     }
   ]
 }

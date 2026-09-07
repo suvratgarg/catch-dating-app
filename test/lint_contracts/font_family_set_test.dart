@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui_lints/catch_ui_lints.dart';
 import 'package:flutter_test/flutter_test.dart';
 

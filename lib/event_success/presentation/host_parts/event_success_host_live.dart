@@ -605,12 +605,12 @@ class LiveTab extends StatelessWidget {
             compact: compactLiveControls,
           ),
       if (actionState.stepError != null)
-        CatchErrorBanner.fromError(
+        CatchLocalizedErrorBanner(
           actionState.stepError!,
           context: AppErrorContext.event,
         ),
       if (actionState.completeError != null)
-        CatchErrorBanner.fromError(
+        CatchLocalizedErrorBanner(
           actionState.completeError!,
           context: AppErrorContext.event,
         ),
@@ -841,7 +841,7 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
           ),
           if (error != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(error!, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error!, context: AppErrorContext.event),
           ],
           if (isLoading && attendees.isEmpty) ...[
             gapH12,
@@ -964,7 +964,7 @@ class _EventSuccessPresenceCard extends StatelessWidget {
           ),
           if (presenceError != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               presenceError!,
               context: AppErrorContext.event,
             ),
@@ -1033,7 +1033,7 @@ class _EventSuccessPresenceCard extends StatelessWidget {
           ],
           if (lateArrivalError != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               lateArrivalError!,
               context: AppErrorContext.event,
             ),

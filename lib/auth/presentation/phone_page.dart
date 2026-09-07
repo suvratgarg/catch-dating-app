@@ -8,18 +8,13 @@ import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart'
 import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -217,7 +212,10 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             gutter: false,
           ),
           gapH28,
-          CatchFormFieldLabel(label: l10n.authPhoneFieldLabel),
+          CatchFormFieldLabel(
+            copy: catchFormFieldLabelCopy(context.l10n),
+            label: l10n.authPhoneFieldLabel,
+          ),
           const SizedBox(height: CatchSpacing.s2),
           CatchFieldLanes.custom(
             child: Row(

@@ -82,7 +82,8 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     final uri = element?.library?.uri.toString();
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchNoticeHost' &&
-        uri == 'package:catch_dating_app/core/widgets/catch_notice.dart' &&
+        uri ==
+            'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' &&
         !const {
           '/lib/app.dart',
           '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
@@ -103,9 +104,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
     }
     if (element is ConstructorElement &&
         element.enclosingElement.name == 'CatchStatusStrip' &&
-        uri ==
-            'package:catch_dating_app/core/widgets/catch_status_strip.dart' &&
+        uri == 'package:catch_ui/src/components/catch_status_strip.dart' &&
         !const {
+          '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/lib/core/widgets/catch_route_scaffold.dart',
@@ -128,7 +129,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         uri == 'package:flutter/src/material/scaffold.dart' &&
         const {'showSnackBar', 'showMaterialBanner'}.contains(element.name);
     if ((constructor || publisher) &&
-        !path.endsWith('/lib/core/widgets/catch_error_snackbar.dart')) {
+        !path.endsWith(
+          '/packages/catch_ui/lib/src/components/catch_snack_bar.dart',
+        )) {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchFeedbackRules.useCanonicalFeedback,
@@ -168,6 +171,15 @@ const _excludedPathFragments = <String>[
   '/lib/core/schema_contracts/generated/',
   '/lib/l10n/generated/',
 ];
+
+// These exact L1 definitions replace the former core/theme owners.
+// Neighboring foundation files remain checked like any other shared source.
+const _foundationDefinitionPaths = <String>{
+  '/packages/catch_ui/lib/src/foundations/catch_fonts.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_icons.dart',
+  '/packages/catch_ui/lib/src/foundations/catch_theme.dart',
+};
 
 const _spacingNamedArguments = <String>{
   'height',
@@ -262,8 +274,9 @@ const _manualAsyncSnapshotMembers = <String>{
 const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
 
 const _lowLevelTypographyOwnerPaths = <String>{
-  '/lib/core/widgets/catch_bottom_sheet.dart',
-  '/lib/core/widgets/catch_empty_state.dart',
+  '/packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart',
+  '/packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart',
+  '/packages/catch_ui/lib/src/components/catch_empty_state.dart',
   '/lib/core/widgets/catch_search_field.dart',
 };
 
@@ -756,6 +769,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   bool _isAppPath(String path) {
     return path.contains('/lib/') &&
         !_excludedPathFragments.any(path.contains) &&
+        !_foundationDefinitionPaths.any(path.endsWith) &&
         !path.endsWith('.g.dart') &&
         !path.endsWith('.freezed.dart');
   }
@@ -792,7 +806,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
-    return path.contains('/lib/core/widgets/') ||
+    return path.contains('/packages/catch_ui/lib/src/') ||
+        path.contains('/lib/core/widgets/') ||
         path.contains('/lib/core/presentation/') ||
         path.contains('/presentation/');
   }
@@ -982,7 +997,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (typeName == 'Image' &&
         constructorName == 'network' &&
-        !_isCoreWidgetPrimitivePath) {
+        !_isCoreWidgetPrimitivePath &&
+        !path.endsWith(
+          '/packages/catch_ui/lib/src/primitives/catch_network_image.dart',
+        )) {
       _reportAtNode(node, CatchUiLayoutRules.noRawNetworkImage);
     }
 
@@ -1291,7 +1309,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isThemeIndependentArtAllow(int offset) {
     final isKnownArtPath =
-        path.endsWith('/lib/core/widgets/catch_graded_image.dart') ||
+        path.endsWith(
+          '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
+        ) ||
         path.endsWith('/lib/core/widgets/event_activity_visuals.dart') ||
         path.endsWith('/lib/events/presentation/widgets/event_pins_map.dart');
     return isKnownArtPath &&
@@ -2130,15 +2150,21 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchMenuImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_menu.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_menu_anchor.dart',
+    );
   }
 
   bool get _isCatchTextButtonImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_text_button.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_text_button.dart',
+    );
   }
 
   bool get _isCatchTextInputImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_text_input.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/primitives/catch_text_input.dart',
+    );
   }
 
   bool get _isCatchRangeSliderImplementationPath {

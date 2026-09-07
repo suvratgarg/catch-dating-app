@@ -87,7 +87,8 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                       .eventSuccessEventSuccessCompanionArrivalMissionLabelFirstHello,
                   color: t.primary,
                 ),
-                const CatchPrivacyBadge(
+                CatchPrivacyBadge(
+                  copy: catchPrivacyBadgeCopy(context.l10n),
                   kind: CatchPrivacyBadgeKind.catchPrivate,
                 ),
               ],
@@ -305,7 +306,10 @@ class _FirstHelloMissionEditor extends StatelessWidget {
                   .eventSuccessEventSuccessCompanionArrivalMissionLabelFirstHello,
               color: t.primary,
             ),
-            const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+            CatchPrivacyBadge(
+              copy: catchPrivacyBadgeCopy(context.l10n),
+              kind: CatchPrivacyBadgeKind.catchPrivate,
+            ),
           ],
         ),
         gapH12,

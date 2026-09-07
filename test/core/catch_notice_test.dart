@@ -1,9 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,6 +37,7 @@ void main() {
                         context,
                       ).copyWith(textScaler: TextScaler.linear(scale)),
                       child: CatchNotice(
+                        dismissLabel: 'Dismiss',
                         notice: CatchNoticeData(
                           id: 'configured',
                           title: 'Congratulations',
@@ -73,6 +71,7 @@ void main() {
           theme: AppTheme.light,
           home: const Scaffold(
             body: CatchNotice(
+              dismissLabel: 'Dismiss',
               notice: CatchNoticeData(
                 id: 'person',
                 title: 'Hello',
@@ -108,6 +107,7 @@ void main() {
         theme: AppTheme.light,
         home: const Scaffold(
           body: CatchNotice(
+            dismissLabel: 'Dismiss',
             notice: CatchNoticeData(
               id: 'photo',
               title: 'Hello',

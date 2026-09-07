@@ -48,9 +48,9 @@ Tokens:
 Components:
 
 - `design/components/catch.components.json`
-- `lib/core/widgets/catch_badge.dart`
+- `packages/catch_ui/lib/src/components/catch_badge.dart`
 - `lib/core/widgets/catch_chip.dart`
-- `lib/core/widgets/catch_button.dart`
+- `packages/catch_ui/lib/src/components/catch_button.dart`
 
 Logo:
 

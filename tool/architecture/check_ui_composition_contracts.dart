@@ -22,7 +22,10 @@ const _registryPath = 'design/screens/catch.screens.json';
 const _screenCoveragePath = 'design/screens/screen_coverage.json';
 const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
 const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
-const _canonicalScaffoldPath = 'lib/core/widgets/catch_screen_scaffold.dart';
+const _canonicalScaffoldPath =
+    'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart';
+const _canonicalRootScaffoldPath =
+    'lib/core/widgets/catch_screen_scaffold.dart';
 const _canonicalRouteScaffoldPath =
     'lib/core/widgets/catch_route_scaffold.dart';
 const _canonicalRootScreenBodyPath =
@@ -77,6 +80,8 @@ const catchScreenLayoutOwnerExpressions = <String>{
 const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
   _canonicalScaffoldPath: <String, Set<String>>{
     'CatchScreenScaffold': _screenScaffoldExpressions,
+  },
+  _canonicalRootScaffoldPath: <String, Set<String>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
     'CatchRootScreenScrollView': _rootScrollExpressions,
   },
@@ -2673,7 +2678,11 @@ AnalysisContextCollection _analysisContextCollection(String root) {
   final dartSdk = Directory(analysisDartSdkPath());
   final includedPaths = <String>[
     root,
-    for (final nestedRoot in const <String>['apps/consumer', 'apps/host'])
+    for (final nestedRoot in const <String>[
+      'apps/consumer',
+      'apps/host',
+      'packages/catch_ui',
+    ])
       if (Directory(_fromRoot(root, nestedRoot)).existsSync())
         _fromRoot(root, nestedRoot),
   ];
@@ -2832,6 +2841,7 @@ final class _ProductionAnalysis {
       'lib',
       'apps/host/lib',
       'apps/consumer/lib',
+      'packages/catch_ui/lib',
     ]) {
       final directory = Directory(_fromRoot(root, sourceRoot));
       if (!directory.existsSync()) continue;
@@ -3341,6 +3351,7 @@ bool _isHandAuthoredPresentationSource(String relativePath) =>
     !relativePath.endsWith('.g.dart') &&
     !relativePath.endsWith('.freezed.dart') &&
     (relativePath.startsWith('lib/') ||
+        relativePath.startsWith('packages/catch_ui/lib/') ||
         relativePath.startsWith('apps/host/lib/') ||
         relativePath.startsWith('apps/consumer/lib/'));
 

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:0e1532d8a45368e704d9f5f7b8e20318f66ecf3573852bd57319e189743b39ad",
+  "resolvedDigest": "sha256:0bdbd55129d1bb0b9ace10517fc61f09f6b076c72208268cf9f0b63d66be4dbc",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -1597,7 +1597,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchAsyncValueView",
-              "file": "lib/core/widgets/catch_async_value_view.dart",
+              "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
               "constructors": [
                 "CatchAsyncValueView"
               ]
@@ -3178,7 +3178,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -3214,7 +3214,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

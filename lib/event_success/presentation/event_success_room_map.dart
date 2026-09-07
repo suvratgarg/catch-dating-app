@@ -5,23 +5,18 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -166,7 +161,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             ),
           ),
         if (widget.interactive && _error != null)
-          CatchErrorBanner.fromError(_error!, context: AppErrorContext.event),
+          CatchLocalizedErrorBanner(_error!, context: AppErrorContext.event),
         if (widget.interactive && _selected != null)
           _EventSuccessSelectedPlacementCard(
             assignment: _selected!,
@@ -986,7 +981,9 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
       size: extent,
       name: profile?.name ?? assignment.displayTitle,
       imageUrl: profile?.primaryPhotoThumbnailUrl,
-      activityKind: activityKind,
+      colors: activityKind == null
+          ? null
+          : ActivityPalette.resolve(context, activityKind!).avatarColors,
       borderWidth: CatchStroke.underline,
       borderColor: ringColor,
     );

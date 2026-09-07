@@ -11,8 +11,9 @@ import 'package:flutter/services.dart';
 Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   final platformFunctionFonts = _platformFunctionFontFiles();
   final loaders = <FontLoader>[
-    FontLoader('Archivo')..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
-    FontLoader('IBM Plex Mono')
+    FontLoader('packages/catch_ui/Archivo')
+      ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
+    FontLoader('packages/catch_ui/IBM Plex Mono')
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Regular.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Medium.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-SemiBold.ttf'))
@@ -47,8 +48,9 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   await Future.wait([for (final loader in loaders) loader.load()]);
 }
 
-Future<ByteData> _bytes(String path) =>
-    File(path).readAsBytes().then(ByteData.sublistView);
+Future<ByteData> _bytes(String path) => File(
+  '${_packageRoot('catch_ui').path}/$path',
+).readAsBytes().then(ByteData.sublistView);
 
 Future<ByteData> _fileBytes(File file) =>
     file.readAsBytes().then(ByteData.sublistView);

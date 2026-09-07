@@ -7,6 +7,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  catch_ui:
+    path: ../packages/catch_ui
   catch_tokens:
     path: ../packages/catch_tokens
   flutter:

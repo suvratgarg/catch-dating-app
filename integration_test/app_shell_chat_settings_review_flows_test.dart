@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
 

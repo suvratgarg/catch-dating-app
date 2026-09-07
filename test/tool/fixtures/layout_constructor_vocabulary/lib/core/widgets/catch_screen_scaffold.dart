@@ -1,9 +1,3 @@
-class CatchScreenScaffold {
-  CatchScreenScaffold.standalone();
-  CatchScreenScaffold.stepFlow();
-  CatchScreenScaffold.workspace();
-}
-
 class CatchRootScreenScaffold {
   CatchRootScreenScaffold.standard();
   CatchRootScreenScaffold.fullBleed();

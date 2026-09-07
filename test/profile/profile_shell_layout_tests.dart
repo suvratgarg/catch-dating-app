@@ -12,9 +12,9 @@ void _registerProfileShellLayoutTests() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const AppShellActiveTab(
+              home: const CatchTabViewportScope(
                 index: appShellProfileTabIndex,
-                bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                bottomBarPlacement: CatchTabViewportScopePlacement.floating,
                 bottomOverlayInset: _profileBottomOverlayInset,
                 child: ProfileScreen(),
               ),

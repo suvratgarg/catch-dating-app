@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:37896addf642d29713002d913bbc36c7285a4c35db12fb124ea031cbb489fb5d",
+  "resolvedDigest": "sha256:0bae325d3cfc225da9eca8d29c83b62d5bd3ac2af561584face1249168dc5110",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1658,7 +1658,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1694,7 +1694,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1707,7 +1707,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -3938,7 +3938,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -3986,7 +3986,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -3999,7 +3999,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

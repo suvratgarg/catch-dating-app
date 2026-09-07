@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:52d0e2302330856879f925df9d7d80708c96eb27259937f635addda64a59c362",
+  "resolvedDigest": "sha256:06356a0f1b7720d0da21f96d07d4c95cf312e9c4aeca60625b19ef131362f162",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -864,7 +864,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",
@@ -883,7 +883,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -896,7 +896,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -919,7 +919,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -1656,7 +1656,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -1679,7 +1679,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

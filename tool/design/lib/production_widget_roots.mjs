@@ -1,5 +1,6 @@
 export const productionWidgetRoots = Object.freeze([
   "lib",
+  "packages/catch_ui/lib",
   "apps/consumer/lib",
   "apps/host/lib",
 ]);

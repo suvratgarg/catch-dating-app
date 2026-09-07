@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,7 +28,13 @@ void main() {
       expect(surface.tone, CatchSurfaceTone.primarySoft);
       expect(surface.elevation, CatchSurfaceElevation.none);
       expect(surface.radius, CatchRadius.sm);
-      expect(surface.borderWidth, 0);
+      final container = tester.widget<AnimatedContainer>(
+        find.descendant(
+          of: find.byType(CatchSurface),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+      expect(container.foregroundDecoration, isNull);
       expect(
         surface.padding,
         const EdgeInsets.symmetric(

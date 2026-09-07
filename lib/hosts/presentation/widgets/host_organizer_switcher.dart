@@ -1,11 +1,8 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 Future<String?> showHostOrganizerSwitcherSheet({
@@ -44,7 +41,10 @@ class HostOrganizerAvatar extends StatelessWidget {
       name: club.name,
       initials: CatchPersonAvatar.initialsOf(club.name),
       imageUrl: rawLogoUrl?.isNotEmpty == true ? rawLogoUrl : null,
-      activityKind: club.hostDefaults.primaryActivityKind,
+      colors: ActivityPalette.resolve(
+        context,
+        club.hostDefaults.primaryActivityKind,
+      ).avatarColors,
       borderWidth: selected ? CatchStroke.underline : CatchStroke.hairline,
       borderColor: selected ? t.ink : t.line2,
     );

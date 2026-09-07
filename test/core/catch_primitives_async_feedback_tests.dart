@@ -858,6 +858,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFrameworkErrorView(
+          copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
           showDebugDetails: false,
         ),
@@ -900,6 +901,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFrameworkErrorView(
+          copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
         ),
       ),
@@ -918,7 +920,9 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchFrameworkErrorDebugDetails(
+        CatchFrameworkErrorDebugDetails(
+          label: AppLocalizationsEn()
+              .coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'debug exception details',
           initiallyExpanded: true,
         ),

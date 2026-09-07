@@ -66,6 +66,10 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     fs.mkdirSync(tokenRoot, {recursive: true});
     fs.writeFileSync(path.join(tokenRoot, "pubspec.yaml"),
       "name: catch_tokens\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n");
+    const uiRoot = path.join(root, "packages/catch_ui");
+    fs.mkdirSync(uiRoot, {recursive: true});
+    fs.writeFileSync(path.join(uiRoot, "pubspec.yaml"),
+      "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -90,4 +94,13 @@ test("token package rejects every dependency outside Flutter", () => {
   }
   assert.deepEqual(validateRoleGraph({role: "catch_tokens", declaredPackages: new Set(), pluginPackages: new Set()}),
     ["catch_tokens: required package 'flutter' is absent."]);
+});
+
+test("UI package rejects app, state, backend and unrelated dependencies", () => {
+  const allowed = ["flutter", "catch_tokens", "phosphor_flutter"];
+  assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set(allowed), pluginPackages: new Set()}), []);
+  for (const dependency of ["catch_dating_app", "riverpod", "flutter_riverpod", "firebase_core", "collection"]) {
+    assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set([...allowed, dependency]), pluginPackages: new Set()}),
+      [`catch_ui: dependency '${dependency}' is outside the presentation-only UI boundary.`]);
+  }
 });

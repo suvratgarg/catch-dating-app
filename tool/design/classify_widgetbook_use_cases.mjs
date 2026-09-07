@@ -12,6 +12,7 @@ const dispositionPath = path.join(
 );
 export const classes = ["component-mount", "body-mount", "screen-scope", "prototype"];
 export const dispositions = ["migrate-to-ui-capture", "keep-widgetbook"];
+const sharedSource = (file) => ["lib/core/", "packages/catch_ui/lib/", "packages/catch_tokens/lib/"].some((prefix) => file.startsWith(prefix));
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const key = (row) => [row.file, row.builder, simpleType(row.type), row.name].join(":");
 const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
@@ -26,7 +27,7 @@ export function classify(row, routeTargets = new Set()) {
     // These marker types name token specimens, not alternative product UI.
     if (row.typeFile === "widgetbook/lib/foundation/foundation_token_use_cases.dart" &&
         row.type.startsWith("Foundation") &&
-        row.productionReferences.some((ref) => ref.file.startsWith("lib/core/theme/"))) {
+        row.productionReferences.some((ref) => ["lib/core/theme/", "packages/catch_ui/lib/src/foundations/", "packages/catch_tokens/lib/"].some((prefix) => ref.file.startsWith(prefix)))) {
       return {classification: "component-mount", reason: "Production foundation/token specimen"};
     }
     if (!proposalMarker.test(row.name)) {
@@ -39,15 +40,15 @@ export function classify(row, routeTargets = new Set()) {
   }
   const route = row.productionReferences.find((ref) => routeTargets.has(ref.symbol));
   const providerFeature = row.productionReferences.find((ref) =>
-    !ref.file.startsWith("lib/core/") && /^Consumer(?:Stateful)?Widget$/u.test(ref.base ?? ""));
+    !sharedSource(ref.file) && /^Consumer(?:Stateful)?Widget$/u.test(ref.base ?? ""));
   const featureUi = row.productionReferences.find((ref) =>
-    ref.ui && !ref.file.startsWith("lib/core/"));
+    ref.ui && !sharedSource(ref.file));
   if (route || providerFeature) {
     return {classification: "screen-scope", reason: route
       ? `Mount dependency includes route target ${route.symbol}`
       : `Mount dependency includes provider-owned feature ${providerFeature.symbol}`};
   }
-  if (!featureUi && row.typeFile.startsWith("lib/core/")) {
+  if (!featureUi && sharedSource(row.typeFile)) {
     return {classification: "component-mount", reason: "Production shared component/pattern or adapter"};
   }
   if (!featureUi) {
@@ -213,14 +214,21 @@ export function applyScreenScopeDispositions(result, policy) {
 function selfTest() {
   const component = {
     file: "widgetbook/lib/primitives/sample.dart", builder: "sample",
-    type: "CatchButton", name: "Default", typeFile: "lib/core/widgets/catch_button.dart",
-    productionReferences: [{symbol: "CatchButton", file: "lib/core/widgets/catch_button.dart", base: "StatelessWidget", ui: true}],
+    type: "CatchButton", name: "Default", typeFile: "packages/catch_ui/lib/src/components/catch_button.dart",
+    productionReferences: [{symbol: "CatchButton", file: "packages/catch_ui/lib/src/components/catch_button.dart", base: "StatelessWidget", ui: true}],
     wrappers: [],
   };
   const body = {...component, type: "ExampleBody", typeFile: "lib/example/presentation/widgets/example_body.dart",
     productionReferences: [{symbol: "ExampleBody", file: "lib/example/presentation/widgets/example_body.dart", base: "StatelessWidget", ui: true}]};
   const prototype = {...component, typeFile: "widgetbook/lib/example/prototype.dart", name: "Option · proposed"};
   assert.equal(classify(component).classification, "component-mount");
+  for (const file of ["packages/catch_ui/lib/src/foundations/example.dart", "packages/catch_tokens/lib/example.dart"]) {
+    const moved = {...component, typeFile: file,
+      productionReferences: [{...component.productionReferences[0], file}]};
+    assert.equal(classify(moved).classification, "component-mount");
+    assert.equal(classify({...body, productionReferences: [...body.productionReferences, ...moved.productionReferences]}).classification, "body-mount");
+  }
+
   assert.equal(classify(body).classification, "body-mount");
   assert.equal(classify({...body, productionReferences: component.productionReferences}).classification, null);
   assert.equal(classify({...body, typeFile: component.typeFile}).classification, "body-mount");

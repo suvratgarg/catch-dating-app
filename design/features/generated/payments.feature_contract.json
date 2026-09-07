@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:c8b46d5347325b9ef0ce25c49fe911e4fe6e475acc98c0904e3d60b74d65fa82",
+  "resolvedDigest": "sha256:2aaa5b1dd4e1896d912a9e427c0b043056dbfb5b41cfbc3e4f1c5bffe13306e8",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1409,7 +1409,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchBadge",
-              "file": "lib/core/widgets/catch_badge.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
               "constructors": [
                 "CatchBadge",
                 "CatchBadge.functional",
@@ -1428,7 +1428,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchBottomSheetScaffold",
-              "file": "lib/core/widgets/catch_bottom_sheet.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
               "constructors": [
                 "CatchBottomSheetScaffold"
               ]
@@ -1439,7 +1439,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1452,7 +1452,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]

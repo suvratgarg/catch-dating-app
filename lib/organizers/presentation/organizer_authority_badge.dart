@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 String organizerTrustLabel(

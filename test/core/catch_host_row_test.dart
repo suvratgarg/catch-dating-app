@@ -1,10 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,7 +34,10 @@ void main() {
       find.byType(CatchPersonAvatar),
     );
     expect(avatar.size, CatchSpacing.s10);
-    expect(avatar.activityKind, ActivityKind.socialRun);
+    final colors = ActivityPalette.light.getActivity(ActivityKind.socialRun);
+    expect(avatar.colors?.accent, colors.accent);
+    expect(avatar.colors?.deep, colors.deep);
+    expect(avatar.colors?.soft, colors.soft);
     expect(find.byIcon(CatchIcons.sealCheck), findsOneWidget);
     expect(find.byIcon(CatchIcons.chatBubbleOutlineRounded), findsOneWidget);
     expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);

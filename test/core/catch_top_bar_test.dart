@@ -1,13 +1,9 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,7 +33,10 @@ void main() {
       ),
     );
     final titleStyle = tester.widget<Text>(find.text('Settings')).style!;
-    expect(titleStyle.fontFamily, CatchFonts.voiceFamily);
+    expect(
+      titleStyle.fontFamily,
+      'packages/catch_ui/${CatchFonts.voiceFamily}',
+    );
     expect(titleStyle.fontSize, 20);
     expect(titleStyle.fontWeight, FontWeight.w700);
     expect(titleStyle.height, 1.16);

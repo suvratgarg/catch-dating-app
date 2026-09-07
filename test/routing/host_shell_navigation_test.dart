@@ -3,7 +3,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -12,6 +11,7 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -229,18 +229,18 @@ void main() {
         tester.element(find.byType(HostAppShell)),
       );
       final expectedPlacement = tabBarFloats
-          ? AppShellBottomBarPlacement.floating
-          : AppShellBottomBarPlacement.anchored;
+          ? CatchTabViewportScopePlacement.floating
+          : CatchTabViewportScopePlacement.anchored;
       final shellScaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
       expect(shellScaffold.extendBody, tabBarFloats);
       expect(
         shellScaffold.body,
-        tabBarFloats ? isA<Stack>() : isA<AppShellActiveTab>(),
+        tabBarFloats ? isA<Stack>() : isA<CatchTabViewportScope>(),
       );
       expect(
         shellScaffold.bottomNavigationBar,
@@ -278,7 +278,7 @@ void main() {
       expect(find.byType(AppShellNavigationBar), findsOneWidget);
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
         expectedPlacement,
       );
@@ -289,19 +289,19 @@ void main() {
       final keyboardScaffold = tester.widget<Scaffold>(
         find.byKey(AppShellKeys.scaffold),
       );
-      final keyboardActiveTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final keyboardActiveTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
       expect(find.byType(AppShellNavigationBar), findsNothing);
       expect(keyboardScaffold.extendBody, isFalse);
       expect(keyboardScaffold.bottomNavigationBar, isNull);
       expect(
         keyboardScaffold.body,
-        tabBarFloats ? isA<Stack>() : isA<AppShellActiveTab>(),
+        tabBarFloats ? isA<Stack>() : isA<CatchTabViewportScope>(),
       );
       expect(
         keyboardActiveTab.bottomBarPlacement,
-        AppShellBottomBarPlacement.none,
+        CatchTabViewportScopePlacement.none,
       );
       expect(keyboardActiveTab.bottomOverlayInset, 0);
       expect(tester.element(editor), same(editorElement));
@@ -325,7 +325,7 @@ void main() {
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
         expectedPlacement,
       );
@@ -534,14 +534,14 @@ void main() {
         find.byType(CatchTabBar<int>),
         scenario.sideNavigation ? findsNothing : findsOneWidget,
       );
-      final activeTab = tester.widget<AppShellActiveTab>(
-        find.byType(AppShellActiveTab),
+      final activeTab = tester.widget<CatchTabViewportScope>(
+        find.byType(CatchTabViewportScope),
       );
       expect(
         activeTab.bottomBarPlacement,
         scenario.sideNavigation
-            ? AppShellBottomBarPlacement.none
-            : AppShellBottomBarPlacement.anchored,
+            ? CatchTabViewportScopePlacement.none
+            : CatchTabViewportScopePlacement.anchored,
       );
       expect(
         find.text('Catch Host'),

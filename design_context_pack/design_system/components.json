@@ -1,9 +1,9 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-04",
+  "updated": "2026-09-06",
   "sourceOfTruth": {
-    "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
+    "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
     "designTools": "Figma and Claude Design may compose these contracts, but they do not own production widget implementation.",
     "handoff": "Design handoffs should name contract ids and props. Arbitrary JSX/CSS is proposal material until mapped to these contracts."
@@ -105,7 +105,7 @@
       "summary": "Passive metadata and status with named compact, editorial, and readable rounded-rectangle recipes.",
       "dart": {
         "symbol": "CatchBadge",
-        "file": "lib/core/widgets/catch_badge.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_badge.dart",
         "constructors": [
           "CatchBadge",
           "CatchBadge.functional",
@@ -293,7 +293,7 @@
               "overflow-count",
               "standalone"
             ],
-            "file": "lib/core/widgets/catch_count_badge.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_count_badge.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -313,7 +313,7 @@
               "danger",
               "bordered"
             ],
-            "file": "lib/core/widgets/catch_status_dot.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_status_dot.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -334,7 +334,7 @@
               "live",
               "scaled"
             ],
-            "file": "lib/core/widgets/catch_inline_status.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_inline_status.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
@@ -497,7 +497,7 @@
       },
       "dart": {
         "symbol": "CatchSectionLabel",
-        "file": "lib/core/widgets/catch_section_label.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
         "constructors": [
           "CatchSectionLabel"
         ]
@@ -536,7 +536,7 @@
       "summary": "Canonical action button for product CTAs, destructive actions, and secondary commands.",
       "dart": {
         "symbol": "CatchButton",
-        "file": "lib/core/widgets/catch_button.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_button.dart",
         "constructors": [
           "CatchButton",
           "CatchButton.command",
@@ -712,7 +712,7 @@
           {
             "id": "catch.button.text",
             "symbol": "CatchTextButton",
-            "file": "lib/core/widgets/catch_text_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_text_button.dart",
             "summary": "Text-only action with naturally wrapping labels, native disabled/keyboard semantics, optional FocusNode forwarding, and a platform minimum that local minimumSize, shrinkWrap, or compact density cannot reduce.",
             "states": [
               "primary",
@@ -733,7 +733,7 @@
           {
             "id": "catch.button.label",
             "symbol": "CatchButtonLabel",
-            "file": "lib/core/widgets/catch_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_button_label.dart",
             "summary": "Direct button label renderer for icon, loading, and typography composition.",
             "states": [
               "label",
@@ -751,7 +751,7 @@
           {
             "id": "catch.button.loading_dots",
             "symbol": "CatchButtonLoadingDots",
-            "file": "lib/core/widgets/catch_button.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_button_loading_dots.dart",
             "summary": "Direct loading-dot renderer used inside loading buttons.",
             "states": [
               "primary",
@@ -1093,7 +1093,7 @@
       "summary": "Canonical success-empty-state composition for stacked or inline empty content, optional icon, optional action, and optional contained surface.",
       "dart": {
         "symbol": "CatchEmptyState",
-        "file": "lib/core/widgets/catch_empty_state.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
         "constructors": [
           "CatchEmptyState"
         ]
@@ -1212,7 +1212,7 @@
           {
             "id": "catch.empty_state.content",
             "symbol": "CatchEmptyStateContent",
-            "file": "lib/core/widgets/catch_empty_state.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_empty_state_content.dart",
             "summary": "Direct empty-state content renderer for title, message, action, and layout variants.",
             "states": [
               "stacked",
@@ -1230,7 +1230,7 @@
           {
             "id": "catch.empty_state.icon",
             "symbol": "CatchEmptyStateIcon",
-            "file": "lib/core/widgets/catch_empty_state.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_empty_state_icon.dart",
             "summary": "Direct empty-state icon renderer for plain and bubble icon treatments.",
             "states": [
               "plain",
@@ -1242,6 +1242,61 @@
               "conceptId": "catch.empty_state",
               "parentConceptId": "catch.empty_state",
               "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.state_viewport",
+            "symbol": "CatchStateViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_state_viewport.dart",
+            "summary": "Box placement that accounts for the inherited bottom obstruction when centering terminal content.",
+            "states": [
+              "without-overlay",
+              "floating-overlay",
+              "overlay-opt-out"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.sliver_state_viewport",
+            "symbol": "CatchSliverStateViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_state_viewport.dart",
+            "summary": "Sliver placement for terminal content with the same bottom-obstruction geometry and bounded scroll-body constraints.",
+            "states": [
+              "without-overlay",
+              "floating-overlay",
+              "overlay-opt-out"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
+          },
+          {
+            "id": "catch.empty_state.sliver_empty_state",
+            "symbol": "CatchSliverEmptyState",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_empty_state.dart",
+            "summary": "Sliver-native empty content combining the canonical empty-state renderer and terminal-state viewport.",
+            "states": [
+              "stacked",
+              "inline",
+              "with-action",
+              "floating-overlay"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.empty_state"
             }
           }
@@ -1428,7 +1483,7 @@
           {
             "id": "catch.error_state.icon",
             "symbol": "CatchErrorIcon",
-            "file": "lib/core/widgets/catch_error_icon.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_error_icon.dart",
             "summary": "Shared branded icon medallion composed by app-facing and framework-facing error surfaces.",
             "states": [
               "default",
@@ -1500,7 +1555,7 @@
           {
             "id": "catch.error_state.framework_error_view",
             "symbol": "CatchFrameworkErrorView",
-            "file": "lib/core/widgets/catch_framework_error_view.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_framework_error_view.dart",
             "summary": "Framework-build-error fallback that stays intentionally boring and robust while composing the shared branded error medallion.",
             "states": [
               "user-safe",
@@ -1519,7 +1574,7 @@
           {
             "id": "catch.error_state.framework_error_debug_details",
             "symbol": "CatchFrameworkErrorDebugDetails",
-            "file": "lib/core/widgets/catch_framework_error_view.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_framework_error_debug_details.dart",
             "summary": "Tokenized debug-only framework error disclosure used by CatchFrameworkErrorView.",
             "states": [
               "collapsed",
@@ -1609,10 +1664,10 @@
       "summary": "Persistent inline error-feedback banner family for mutation and async failures inside existing page content.",
       "dart": {
         "symbol": "CatchErrorBanner",
-        "file": "lib/core/widgets/catch_error_banner.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
         "constructors": [
           "CatchErrorBanner",
-          "CatchErrorBanner.fromError"
+          "CatchErrorBanner.withRetry"
         ]
       },
       "design": {
@@ -1638,6 +1693,12 @@
             "type": "string",
             "required": true,
             "dartType": "String"
+          },
+          {
+            "name": "retryLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
           },
           {
             "name": "onRetry",
@@ -1682,7 +1743,7 @@
           {
             "id": "catch.error_banner.mutation",
             "symbol": "CatchMutationErrorBanner",
-            "file": "lib/core/widgets/catch_error_banner.dart",
+            "file": "lib/core/riverpod_ui/catch_mutation_error_banner.dart",
             "summary": "Persistent inline mutation-error adapter that renders CatchErrorBanner when a MutationState has an error.",
             "states": [
               "hidden",
@@ -1698,9 +1759,28 @@
             }
           },
           {
+            "id": "catch.error_banner.localized",
+            "symbol": "CatchLocalizedErrorBanner",
+            "file": "lib/core/riverpod_ui/catch_localized_error_banner.dart",
+            "summary": "App-localized error mapping and retry eligibility, rendered by the provider-free banner with caller-resolved copy.",
+            "states": [
+              "mapped-error",
+              "retryable-with-action",
+              "retryable-without-action",
+              "nonretryable"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_banner",
+              "parentConceptId": "catch.error_banner",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_banner"
+            }
+          },
+          {
             "id": "catch.error_banner.mutation_listener",
             "symbol": "CatchMutationErrorListener",
-            "file": "lib/core/widgets/catch_mutation_error_listener.dart",
+            "file": "lib/core/riverpod_ui/catch_mutation_error_listener.dart",
             "summary": "Transient snackbar boundary for one mutation's pending-to-error transition.",
             "states": [
               "single-mutation",
@@ -1718,7 +1798,7 @@
           {
             "id": "catch.error_banner.mutation_listeners",
             "symbol": "CatchMutationErrorListeners",
-            "file": "lib/core/widgets/catch_mutation_error_listener.dart",
+            "file": "lib/core/riverpod_ui/catch_mutation_error_listeners.dart",
             "summary": "Transient snackbar boundary for several mutations that should share one error-feedback policy.",
             "states": [
               "multiple-mutations",
@@ -1792,7 +1872,7 @@
       "summary": "Configurable notice family. CatchNoticeData.arrival uses whole-card open and swipe dismissal in one app-level safe-area host; ordinary inline notices retain optional controls. Features own copy, identity, tone and routing; the primitive owns geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
-        "file": "lib/core/widgets/catch_notice.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
         "constructors": [
           "CatchNotice"
         ]
@@ -1815,6 +1895,12 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "dismissLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
           {
             "name": "notice",
             "type": "object",
@@ -1883,7 +1969,7 @@
           {
             "id": "catch.notice.host",
             "symbol": "CatchNoticeHost",
-            "file": "lib/core/widgets/catch_notice.dart",
+            "file": "lib/core/riverpod_ui/catch_notice_host.dart",
             "summary": "One MyApp-owned safe-area overlay above the router, enforced by catch_notice_host_is_app_owned. Owns entry motion, gesture/keyboard dismissal and interaction-aware timers; persistent context remains with CatchStatusStrip below tabs.",
             "states": [
               "empty",
@@ -1956,7 +2042,7 @@
       "summary": "Durable header context, placed below the complete primary tab rail by canonical screen owners; distinct from transient notices and local errors.",
       "dart": {
         "symbol": "CatchStatusStrip",
-        "file": "lib/core/widgets/catch_status_strip.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_status_strip.dart",
         "constructors": [
           "CatchStatusStrip"
         ]
@@ -2013,7 +2099,7 @@
           {
             "id": "catch.status_strip.scope",
             "symbol": "CatchStatusStripScope",
-            "file": "lib/core/widgets/catch_status_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_status_strip_scope.dart",
             "summary": "Inherited publication scope, consumed once by canonical screen owners and cleared for nested body content.",
             "states": [
               "empty",
@@ -2708,6 +2794,24 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.field.text_input",
+            "symbol": "CatchTextInput",
+            "file": "packages/catch_ui/lib/src/primitives/catch_text_input.dart",
+            "summary": "Shared low-level platform text-entry owner used by specialized field compositions.",
+            "states": [
+              "empty",
+              "populated",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.geometry_scope",
             "symbol": "CatchFieldGeometryScope",
             "summary": "Ambient semantic geometry contract that independently publishes content-gutter ownership, interaction bleed, and whether fields own a rounded silhouette or inherit corners from one section clip. CatchSectionFocusSurface field-row surfaces publish one hairline of bleed plus section-clipped geometry; omitted bleed preserves the divided container-gutter default.",
@@ -2738,7 +2842,7 @@
               "error",
               "large"
             ],
-            "file": "lib/core/widgets/catch_form_field_label.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_form_field_label.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3075,7 +3179,7 @@
           {
             "id": "catch.field.form_field_label.optional_badge",
             "symbol": "CatchFormFieldOptionalBadge",
-            "file": "lib/core/widgets/catch_form_field_label.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_form_field_optional_badge.dart",
             "summary": "Direct optional-badge renderer used inside form field labels.",
             "states": [
               "default",
@@ -3606,7 +3710,7 @@
           {
             "id": "catch.section.header",
             "symbol": "CatchSectionHeader",
-            "file": "lib/core/widgets/catch_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_section_header.dart",
             "summary": "Standard section title row with optional trailing action, uppercase, heavy, and custom padding/style states.",
             "states": [
               "plain",
@@ -3626,7 +3730,7 @@
           {
             "id": "catch.section.label",
             "symbol": "CatchSectionLabel",
-            "file": "lib/core/widgets/catch_section_label.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
             "summary": "Activity-accent eyebrow label for section introductions with optional leading glyph and bounded text.",
             "states": [
               "label",
@@ -3666,7 +3770,7 @@
           {
             "id": "catch.section.day_header",
             "symbol": "CatchDaySectionHeader",
-            "file": "lib/core/widgets/catch_day_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_day_section_header.dart",
             "summary": "Chronological section header for day-grouped feeds with optional count and sticky sliver delegate support.",
             "states": [
               "regular",
@@ -3686,7 +3790,7 @@
           {
             "id": "catch.section.day_header_count",
             "symbol": "CatchDaySectionHeaderCount",
-            "file": "lib/core/widgets/catch_day_section_header.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_day_section_header_count.dart",
             "summary": "Direct animated numeric count renderer used by CatchDaySectionHeader.",
             "states": [
               "single-digit",
@@ -3725,7 +3829,7 @@
           {
             "id": "catch.section.vertical_section",
             "symbol": "CatchVerticalSection",
-            "file": "lib/core/widgets/catch_vertical_section.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_vertical_section.dart",
             "summary": "Titled vertical list section with standard section header and separated embedded rows.",
             "states": [
               "embedded-list",
@@ -3738,6 +3842,24 @@
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
               "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
+            "id": "catch.section.divider",
+            "symbol": "CatchDivider",
+            "file": "packages/catch_ui/lib/src/primitives/catch_divider.dart",
+            "summary": "Shared semantic section and field-row separator.",
+            "states": [
+              "section",
+              "field-section",
+              "field-row"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.section"
             }
           }
@@ -3969,7 +4091,7 @@
           {
             "id": "catch.skeleton.async_screen",
             "symbol": "CatchAsyncScreenLoading",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/widgets/catch_async_screen_loading.dart",
             "summary": "Screen-body placement adapter that composes CatchSkeletonList with CatchScreenBody.",
             "states": [
               "async-screen",
@@ -3989,7 +4111,7 @@
           {
             "id": "catch.skeleton.async_sliver",
             "symbol": "CatchAsyncSliverLoading",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/widgets/catch_async_sliver_loading.dart",
             "summary": "Sliver placement adapter that composes CatchSkeletonList with CatchSliverPageBody.",
             "states": [
               "async-sliver",
@@ -4061,7 +4183,7 @@
       "summary": "Indeterminate progress indicator for unknown, compact, or one-off work where content-shaped placeholders are not useful.",
       "dart": {
         "symbol": "CatchLoadingIndicator",
-        "file": "lib/core/widgets/catch_loading_indicator.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart",
         "constructors": [
           "CatchLoadingIndicator"
         ]
@@ -4173,7 +4295,7 @@
       "summary": "Exhaustive AsyncValue transition boundary with branded defaults for box and sliver layouts.",
       "dart": {
         "symbol": "CatchAsyncValueView",
-        "file": "lib/core/widgets/catch_async_value_view.dart",
+        "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
         "constructors": [
           "CatchAsyncValueView"
         ]
@@ -4285,7 +4407,7 @@
           {
             "id": "catch.async_value.sliver",
             "symbol": "CatchAsyncValueSliver",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "file": "lib/core/riverpod_ui/catch_async_value_sliver.dart",
             "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
             "states": [
               "data-sliver",
@@ -4459,7 +4581,7 @@
       "summary": "Public text-role atom family for uppercase kicker labels and single-line mono metadata labels.",
       "dart": {
         "symbol": "CatchKicker",
-        "file": "lib/core/widgets/catch_kicker.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_kicker.dart",
         "constructors": [
           "CatchKicker"
         ]
@@ -4546,7 +4668,7 @@
           {
             "id": "catch.typography.mono_label",
             "symbol": "CatchMonoLabel",
-            "file": "lib/core/widgets/catch_mono_label.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_mono_label.dart",
             "summary": "Single-line mono metadata label for cards, rails, distances, and compact facts.",
             "states": [
               "metadata",
@@ -4612,7 +4734,7 @@
       "summary": "Compact mini bar chart for dense metric panels and data-coverage summaries.",
       "dart": {
         "symbol": "CatchMiniBarChart",
-        "file": "lib/core/widgets/catch_mini_bar_chart.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_mini_bar_chart.dart",
         "constructors": [
           "CatchMiniBarChart"
         ]
@@ -4704,7 +4826,27 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.mini_bar_chart.bar",
+            "symbol": "CatchAnalyticsBar",
+            "file": "packages/catch_ui/lib/src/components/catch_analytics_bar.dart",
+            "summary": "Single bottom-anchored fractional bar for composed analytics panels.",
+            "states": [
+              "zero-stub",
+              "fractional",
+              "maximum"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.mini_bar_chart",
+              "parentConceptId": "catch.mini_bar_chart",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.mini_bar_chart"
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -4742,7 +4884,7 @@
       "summary": "Canonical compact value-over-label metric rail for detail stats and summary data pairs.",
       "dart": {
         "symbol": "CatchMetricStrip",
-        "file": "lib/core/widgets/catch_metric_strip.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_metric_strip.dart",
         "constructors": [
           "CatchMetricStrip"
         ]
@@ -4852,7 +4994,7 @@
           {
             "id": "catch.metric_strip.stat_column",
             "symbol": "CatchStatColumn",
-            "file": "lib/core/widgets/catch_stat_column.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_stat_column.dart",
             "summary": "Vertical value-over-label metric member using the platform metric role and readable supporting label, with natural-height wrapping, optional icons, centered alignment, and surfaced single-stat blocks.",
             "states": [
               "plain",
@@ -4873,7 +5015,7 @@
           {
             "id": "catch.metric_strip.meta_dot_row",
             "symbol": "CatchMetaDotRow",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_dot_row.dart",
             "summary": "Dot-separated inline metadata row for event and club cards with optional icons and trailing strong metadata.",
             "states": [
               "entries",
@@ -4893,7 +5035,7 @@
           {
             "id": "catch.metric_strip.meta_entry_flow",
             "symbol": "CatchMetaEntryFlow",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_flow.dart",
             "summary": "Direct dot-separated metadata flow renderer used by CatchMetaDotRow.",
             "states": [
               "entries",
@@ -4913,7 +5055,7 @@
           {
             "id": "catch.metric_strip.meta_entry_view",
             "symbol": "CatchMetaEntryView",
-            "file": "lib/core/widgets/catch_meta_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_view.dart",
             "summary": "Direct metadata entry renderer for optional icon, color override, strong trailing weight, and ellipsis behavior.",
             "states": [
               "label",
@@ -4933,7 +5075,7 @@
           {
             "id": "catch.metric_strip.cell",
             "symbol": "CatchMetricStripCell",
-            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_cell.dart",
             "summary": "Direct metric-strip value/label cell renderer.",
             "states": [
               "default",
@@ -4952,7 +5094,7 @@
           {
             "id": "catch.metric_strip.divider",
             "symbol": "CatchMetricStripDivider",
-            "file": "lib/core/widgets/catch_metric_strip.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_divider.dart",
             "summary": "Direct metric-strip divider renderer.",
             "states": [
               "default",
@@ -5019,7 +5161,7 @@
       "summary": "Canonical sheet-shell family for rounded bottom-sheet surfaces, grabber handles, draggable persistent shells, and share-card sheet presentation.",
       "dart": {
         "symbol": "CatchBottomSheetScaffold",
-        "file": "lib/core/widgets/catch_bottom_sheet.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
         "constructors": [
           "CatchBottomSheetScaffold"
         ]
@@ -5161,7 +5303,7 @@
           {
             "id": "catch.sheet.grabber",
             "symbol": "CatchBottomSheetGrabber",
-            "file": "lib/core/widgets/catch_bottom_sheet_grabber.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_bottom_sheet_grabber.dart",
             "summary": "Centered sheet drag affordance used by bottom-sheet and draggable-sheet shells.",
             "states": [
               "default",
@@ -5179,7 +5321,7 @@
           {
             "id": "catch.sheet.draggable_shell",
             "symbol": "CatchDraggableSheetShell",
-            "file": "lib/core/widgets/catch_draggable_sheet_shell.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_draggable_sheet_shell.dart",
             "summary": "Persistent draggable sheet shell with optional handle, top radius, and raised shadow.",
             "states": [
               "with-handle",
@@ -5217,9 +5359,26 @@
             }
           },
           {
+            "id": "catch.sheet.share_card_footer",
+            "symbol": "CatchShareCardFooter",
+            "file": "packages/catch_ui/lib/src/components/catch_share_card_footer.dart",
+            "summary": "Shared brand footer for card previews, with caller-localized brand and trailing copy.",
+            "states": [
+              "default",
+              "long-trailing"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.sheet"
+            }
+          },
+          {
             "id": "catch.sheet.plain_header",
             "symbol": "CatchPlainSheetHeader",
-            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart",
             "summary": "Direct plain sheet-header renderer for title, subtitle, badge, and trailing content.",
             "states": [
               "title-subtitle",
@@ -5237,7 +5396,7 @@
           {
             "id": "catch.sheet.branded_header",
             "symbol": "CatchBrandedSheetHeader",
-            "file": "lib/core/widgets/catch_bottom_sheet.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart",
             "summary": "Direct branded sheet-header renderer with glyph, title, subtitle, badge, and trailing content.",
             "states": [
               "title-subtitle",
@@ -5314,7 +5473,7 @@
       "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
       "dart": {
         "symbol": "CatchIconButton",
-        "file": "lib/core/widgets/catch_icon_button.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
         "constructors": [
           "CatchIconButton",
           "CatchIconButton.icon",
@@ -5442,7 +5601,29 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.icon_button.action",
+            "symbol": "CatchIconAction",
+            "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
+            "summary": "Required-tooltip icon action adapter for top bars and floating chrome.",
+            "states": [
+              "enabled",
+              "disabled",
+              "bordered",
+              "float",
+              "plain"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.icon_button",
+              "parentConceptId": "catch.icon_button",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.icon_button"
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
@@ -5491,7 +5672,7 @@
       "summary": "Canonical menu family with separate command overflow and adaptive mutually-exclusive selection contracts.",
       "dart": {
         "symbol": "CatchMenu",
-        "file": "lib/core/widgets/catch_menu.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
         "constructors": [
           "CatchMenu"
         ]
@@ -5582,7 +5763,7 @@
           {
             "id": "catch.menu.anchor",
             "symbol": "CatchMenuAnchor",
-            "file": "lib/core/widgets/catch_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_menu_anchor.dart",
             "summary": "Canonical low-level anchored menu owner; applies the shell-aware viewport boundary before rendering typed CatchMenu rows.",
             "states": [
               "closed",
@@ -5602,7 +5783,7 @@
           {
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
-            "file": "lib/core/widgets/catch_menu.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_menu_row.dart",
             "summary": "Direct menu-row renderer with explicit action or mutually-exclusive choice semantics.",
             "states": [
               "action",
@@ -5755,7 +5936,7 @@
       "summary": "Decorative square icon tile for quick actions, data cards, and compact labeled rows where the icon is content rather than a tappable command.",
       "dart": {
         "symbol": "CatchIconTile",
-        "file": "lib/core/widgets/catch_icon_tile.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
         "constructors": [
           "CatchIconTile"
         ]
@@ -5900,7 +6081,7 @@
       "summary": "Shared one-line control chrome for fields, selects, steppers, search controls, and compact picker triggers.",
       "dart": {
         "symbol": "CatchControlShell",
-        "file": "lib/core/widgets/catch_control_shell.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_control_shell.dart",
         "constructors": [
           "CatchControlShell"
         ]
@@ -6090,7 +6271,7 @@
       "summary": "Canonical numeric increment/decrement control with bounded step logic, accessible tooltips, and Catch control-shell chrome.",
       "dart": {
         "symbol": "CatchNumberStepper",
-        "file": "lib/core/widgets/catch_number_stepper.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_number_stepper.dart",
         "constructors": [
           "CatchNumberStepper"
         ]
@@ -6385,7 +6566,7 @@
       "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted notes, inline messages, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
-        "file": "lib/core/widgets/catch_surface.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
         "constructors": [
           "CatchSurface",
           "CatchSurface.card",
@@ -6583,7 +6764,7 @@
               "danger",
               "with-action"
             ],
-            "file": "lib/core/widgets/src/catch_inline_message_surface.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_inline_message_surface.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.surface",
@@ -7082,10 +7263,10 @@
       "name": "CatchPrivacyBadge",
       "status": "active",
       "kind": "primitive",
-      "summary": "Localized privacy/visibility adapter that maps domain meaning into CatchBadge.privacy.",
+      "summary": "Privacy/visibility adapter with caller-resolved labels and fixed mode-to-icon pairing in CatchBadge.privacy.",
       "dart": {
         "symbol": "CatchPrivacyBadge",
-        "file": "lib/core/widgets/catch_privacy_badge.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_privacy_badge.dart",
         "constructors": [
           "CatchPrivacyBadge"
         ]
@@ -7108,6 +7289,13 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "copy",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchPrivacyBadgeCopy",
+            "notes": "Caller-resolved private-to-you, host-visible and Catch-private labels."
+          },
           {
             "name": "kind",
             "type": "enum",
@@ -7194,7 +7382,7 @@
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
         "symbol": "CatchJourneySteps",
-        "file": "lib/core/widgets/catch_journey_steps.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_journey_steps.dart",
         "constructors": [
           "CatchJourneySteps"
         ]
@@ -7258,7 +7446,7 @@
           {
             "id": "catch.journey_steps.node",
             "symbol": "CatchJourneyStepNode",
-            "file": "lib/core/widgets/catch_journey_steps.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_journey_step_node.dart",
             "summary": "Direct journey-step node renderer for step status, icon, and connector composition.",
             "states": [
               "default",
@@ -7453,7 +7641,7 @@
               "workspace-owned-insets",
               "keyboard-resize"
             ],
-            "file": "lib/core/widgets/catch_screen_scaffold.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
@@ -7604,6 +7792,134 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.fractional_max_width",
+            "symbol": "CatchFractionalMaxWidth",
+            "file": "packages/catch_ui/lib/src/primitives/catch_fractional_max_width.dart",
+            "summary": "Caps a local content fraction without measuring the parent imperatively.",
+            "states": [
+              "half-width",
+              "capped-full-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.pager_focus_boundary",
+            "symbol": "CatchPagerFocusBoundary",
+            "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart",
+            "summary": "Preserves inner caret reveal while preventing horizontal pager leakage.",
+            "states": [
+              "editable-content",
+              "inner-reveal"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.tab_viewport_scope",
+            "symbol": "CatchTabViewportScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart",
+            "summary": "Route-neutral active-page and bottom-obstruction scope; anchored, floating and absent bars preserve their distinct terminal-clearance rules.",
+            "states": [
+              "no-bar",
+              "anchored",
+              "floating",
+              "safe-area",
+              "active-index"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.fill_viewport_scroll_view",
+            "symbol": "CatchFillViewportScrollView",
+            "file": "packages/catch_ui/lib/src/patterns/catch_fill_viewport_scroll_view.dart",
+            "summary": "Box viewport scroller that fills short content, scrolls overflow and caps its content width.",
+            "states": [
+              "short-content",
+              "overflowing-content",
+              "capped-width"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.scene_viewport",
+            "symbol": "CatchSceneViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scene_viewport.dart",
+            "summary": "Bounded scene geometry supplying local width, height and inherited safe-area metrics.",
+            "states": [
+              "width-capped",
+              "local-width",
+              "local-height",
+              "safe-area-metrics"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.master_detail_layout",
+            "symbol": "CatchMasterDetailLayout",
+            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "summary": "Master and detail pane placement with an explicit compact or expanded decision and canonical index width.",
+            "states": [
+              "compact",
+              "expanded",
+              "index-width",
+              "shared-divider"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.adaptive_master_detail_layout",
+            "symbol": "CatchAdaptiveMasterDetailLayout",
+            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "summary": "Resolves master-detail expansion from route-body constraints and forwards that decision to the master builder.",
+            "states": [
+              "below-breakpoint",
+              "at-breakpoint",
+              "master-builder-state"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
           }
@@ -8454,7 +8770,7 @@
       "summary": "Canonical remote and bundled image primitive with decode sizing, branded fallback, loading hook, and semantic-label support.",
       "dart": {
         "symbol": "CatchNetworkImage",
-        "file": "lib/core/widgets/catch_network_image.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_network_image.dart",
         "constructors": [
           "CatchNetworkImage"
         ]
@@ -8551,7 +8867,7 @@
           {
             "id": "catch.network_image.fallback",
             "symbol": "CatchNetworkImageFallback",
-            "file": "lib/core/widgets/catch_network_image.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_network_image_fallback.dart",
             "summary": "Direct branded image fallback renderer used by network and asset image loading failures.",
             "states": [
               "default",
@@ -8617,7 +8933,7 @@
       "summary": "Map-adjacent radius ring with an optional readable control-role edge label and accessible label action.",
       "dart": {
         "symbol": "CatchDistanceRing",
-        "file": "lib/core/widgets/catch_distance_ring.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_distance_ring.dart",
         "constructors": [
           "CatchDistanceRing"
         ]
@@ -8692,12 +9008,30 @@
               "label",
               "tappable"
             ],
-            "file": "lib/core/widgets/catch_distance_ring.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_label.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.distance_ring",
               "parentConceptId": "catch.distance_ring",
               "qualifier": "variant",
+              "decisionRef": "contract-family:catch.distance_ring"
+            }
+          },
+          {
+            "id": "catch.distance_ring.viewport",
+            "symbol": "CatchDistanceRingViewport",
+            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_viewport.dart",
+            "summary": "Resolved-diameter geometry and label overhang, owned separately from available-size negotiation and the label surface.",
+            "states": [
+              "ring-only",
+              "edge-label",
+              "tappable-label"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.distance_ring",
+              "parentConceptId": "catch.distance_ring",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.distance_ring"
             }
           }
@@ -8752,7 +9086,7 @@
       "summary": "Static one-time-code visual row for handoff previews and externally managed code-entry state.",
       "dart": {
         "symbol": "CatchCodeInput",
-        "file": "lib/core/widgets/catch_otp_code_field.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_code_input.dart",
         "constructors": [
           "CatchCodeInput"
         ]
@@ -8844,6 +9178,7 @@
           {
             "id": "catch.code_input.otp_code_field",
             "symbol": "CatchOtpCodeField",
+            "file": "lib/core/widgets/catch_otp_code_field.dart",
             "summary": "Real one-time-code text input that composes CatchCodeInput visual cells over one hidden platform TextField.",
             "states": [
               "empty",
@@ -8864,7 +9199,7 @@
           {
             "id": "catch.code_input.row",
             "symbol": "CatchCodeInputRow",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_code_input_row.dart",
             "summary": "Direct code-input row renderer for fixed-length verification cells.",
             "states": [
               "empty",
@@ -8882,7 +9217,7 @@
           {
             "id": "catch.code_input.cell",
             "symbol": "CatchCodeInputCell",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart",
             "summary": "Direct single code-input cell renderer.",
             "states": [
               "digit",
@@ -8900,7 +9235,7 @@
           {
             "id": "catch.code_input.caret",
             "symbol": "CatchCodeInputCaret",
-            "file": "lib/core/widgets/catch_otp_code_field.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_caret.dart",
             "summary": "Direct active-caret renderer used inside code-input cells.",
             "states": [
               "default",
@@ -10049,7 +10384,7 @@
               "partial",
               "complete"
             ],
-            "file": "lib/core/widgets/catch_step_progress.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_step_progress.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.step_header",
@@ -10296,7 +10631,7 @@
       "summary": "Anchored bottom utility surface for chat inputs, filter actions, and compact controls above the device safe area.",
       "dart": {
         "symbol": "CatchBottomDock",
-        "file": "lib/core/widgets/catch_bottom_dock.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
         "constructors": [
           "CatchBottomDock"
         ]
@@ -10671,7 +11006,7 @@
       "summary": "Labelled floating action with a required callback, optional icon, and typed count overlay.",
       "dart": {
         "symbol": "CatchCountPill",
-        "file": "lib/core/widgets/catch_count_pill.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_count_pill.dart",
         "constructors": [
           "CatchCountPill.label"
         ]
@@ -10814,7 +11149,7 @@
       "summary": "Compact page/progress dot indicator with selected-width emphasis, semantic label support, and motion-token transitions.",
       "dart": {
         "symbol": "CatchPageDots",
-        "file": "lib/core/widgets/catch_page_dots.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_page_dots.dart",
         "constructors": [
           "CatchPageDots"
         ]
@@ -11312,7 +11647,7 @@
       "summary": "Canonical person/avatar bubble for photos, deterministic initials, activity-context fallback, rings, status dots, obscured states, square host shapes, and overflow counts.",
       "dart": {
         "symbol": "CatchPersonAvatar",
-        "file": "lib/core/widgets/catch_person_avatar.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_person_avatar.dart",
         "constructors": [
           "CatchPersonAvatar",
           "CatchPersonAvatar.count"
@@ -11400,35 +11735,25 @@
             ]
           },
           {
-            "name": "activityKind",
-            "type": "enum",
+            "name": "colors",
+            "type": "object",
             "required": false,
-            "dartType": "ActivityKind?",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
+            "dartType": "CatchAvatarColors?",
+            "notes": "Caller-resolved accent/deep/soft colors; no app activity model is read by the renderer."
           },
           {
-            "name": "activityDim",
+            "name": "dim",
             "type": "bool",
             "required": false,
             "default": false,
             "dartType": "bool"
+          },
+          {
+            "name": "countLabelBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "String Function(int)?",
+            "notes": "Required by CatchPersonAvatar.count and CatchPersonAvatarStack; formats the actual overflow count using caller-owned copy."
           },
           {
             "name": "count",
@@ -11462,7 +11787,7 @@
         ],
         "dartRoles": [
           "CatchNetworkImage",
-          "ActivityPalette.resolve",
+          "CatchAvatarColors",
           "CatchTextStyles.avatarCount",
           "CatchLayout.avatarStatusDotExtent",
           "CatchPersonAvatarStack"
@@ -11470,8 +11795,25 @@
         "goldens": [],
         "members": [
           {
+            "id": "catch.person_avatar.colors",
+            "symbol": "CatchAvatarColors",
+            "file": "packages/catch_ui/lib/src/components/catch_avatar_colors.dart",
+            "summary": "Presentation-only accent, deep and soft colors supplied by callers to avatar fallbacks and veils.",
+            "states": [
+              "caller-resolved"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
+          },
+          {
             "id": "catch.person_avatar.stack",
             "symbol": "CatchPersonAvatarStack",
+            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_stack.dart",
             "summary": "Stacked person-avatar composition with overlap, border, and overflow-count handling.",
             "states": [
               "two-avatars",
@@ -11490,7 +11832,7 @@
           {
             "id": "catch.person_avatar.shell",
             "symbol": "CatchPersonAvatarShell",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_shell.dart",
             "summary": "Direct person-avatar shell renderer for shape, image, fallback, and adornment composition.",
             "states": [
               "circle",
@@ -11507,7 +11849,7 @@
           {
             "id": "catch.person_avatar.obscured_content",
             "symbol": "CatchObscuredAvatarContent",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_obscured_avatar_content.dart",
             "summary": "Direct obscured-avatar content renderer.",
             "states": [
               "default"
@@ -11523,7 +11865,7 @@
           {
             "id": "catch.person_avatar.veiled",
             "symbol": "CatchVeiledPersonAvatar",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_veiled_person_avatar.dart",
             "summary": "Direct veiled-avatar renderer for obscured people in stacks and cards.",
             "states": [
               "run",
@@ -11540,7 +11882,7 @@
           {
             "id": "catch.person_avatar.activity_initials",
             "symbol": "CatchActivityInitialsPlaceholder",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_activity_initials_placeholder.dart",
             "summary": "Direct activity-context initials placeholder renderer.",
             "states": [
               "initials",
@@ -11558,7 +11900,7 @@
           {
             "id": "catch.person_avatar.initials",
             "symbol": "CatchInitialsAvatarPlaceholder",
-            "file": "lib/core/widgets/catch_person_avatar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_initials_avatar_placeholder.dart",
             "summary": "Direct initials placeholder renderer for person avatars.",
             "states": [
               "derived",
@@ -11620,7 +11962,7 @@
       "summary": "Natural-height read-only record with heading, important facts, evidence metadata, prose, semantic marker and optional navigation.",
       "dart": {
         "symbol": "CatchRecordRow",
-        "file": "lib/core/widgets/catch_record_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
         "constructors": [
           "CatchRecordRow"
         ]
@@ -11763,7 +12105,7 @@
       "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
       "dart": {
         "symbol": "CatchRowPressSurface",
-        "file": "lib/core/widgets/catch_row_press_surface.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_row_press_surface.dart",
         "constructors": [
           "CatchRowPressSurface"
         ]
@@ -12500,7 +12842,7 @@
       "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media.",
       "dart": {
         "symbol": "CatchGradedImage",
-        "file": "lib/core/widgets/catch_graded_image.dart",
+        "file": "packages/catch_ui/lib/src/primitives/catch_graded_image.dart",
         "constructors": [
           "CatchGradedImage"
         ]
@@ -12613,7 +12955,7 @@
       "summary": "Canonical detail-page media backdrop state for photo-backed and branded-fallback heroes with optional scrim treatment.",
       "dart": {
         "symbol": "CatchDetailHeroBackdrop",
-        "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart",
         "constructors": [
           "CatchDetailHeroBackdrop"
         ]
@@ -12677,7 +13019,7 @@
           {
             "id": "catch.detail_media.fallback",
             "symbol": "CatchDetailHeroFallback",
-            "file": "lib/core/widgets/catch_detail_hero_backdrop.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_detail_hero_fallback.dart",
             "summary": "Direct detail-hero fallback renderer for no-photo media states.",
             "states": [
               "gradient"
@@ -12693,7 +13035,7 @@
           {
             "id": "catch.detail_media.scrim",
             "symbol": "CatchScrim",
-            "file": "lib/core/widgets/catch_scrim.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_scrim.dart",
             "summary": "Shared photo scrim renderer for detail heroes, photo frames, and profile hero tinting.",
             "states": [
               "detail-hero",
@@ -14251,7 +14593,7 @@
       "summary": "Single icon-and-label metadata line for compact factual context; distinct from structural section labels.",
       "dart": {
         "symbol": "CatchMetaRow",
-        "file": "lib/core/widgets/catch_meta_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_meta_row.dart",
         "constructors": [
           "CatchMetaRow"
         ]
@@ -14368,7 +14710,7 @@
       "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
       "dart": {
         "symbol": "CatchIndexRow",
-        "file": "lib/core/widgets/catch_index_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_index_row.dart",
         "constructors": [
           "CatchIndexRow"
         ]
@@ -14745,7 +15087,7 @@
       "summary": "Canonical portrait-first person material with a quiet identity caption lane and optional contextual overlay.",
       "dart": {
         "symbol": "CatchPersonPolaroid",
-        "file": "lib/core/widgets/catch_person_polaroid.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
         "constructors": [
           "CatchPersonPolaroid"
         ]
@@ -14998,6 +15340,274 @@
       },
       "surfaces": {
         "flutter": "CatchClubCover"
+      }
+    },
+    {
+      "id": "catch.motion_viewport",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Production viewports are rendered at fixed animation poses through the shared Widgetbook golden harness."
+      },
+      "name": "CatchFadeScaleViewport",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Route and shared-element motion viewports preserve child layout and shared flight behavior.",
+      "dart": {
+        "symbol": "CatchFadeScaleViewport",
+        "file": "packages/catch_ui/lib/src/primitives/catch_fade_scale_viewport.dart",
+        "constructors": [
+          "CatchFadeScaleViewport"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchFadeScaleViewport"
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/MotionViewport",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MotionViewport",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "animation",
+            "type": "object",
+            "dartType": "Animation<double>",
+            "required": true
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "dartType": "Widget",
+            "required": true
+          }
+        ],
+        "states": [
+          "initial",
+          "mid-transition",
+          "settled"
+        ],
+        "slots": [
+          "child"
+        ],
+        "tokens": [],
+        "dartRoles": [
+          "CatchMotion.standardCurve",
+          "CatchMotion.easeInCubicCurve",
+          "CatchMotion.springCurve"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Child layout remains unconstrained by the transition viewport and preserves the active text scale."
+          },
+          "reducedMotion": {
+            "policy": "Map reveal removes its veil when animations are disabled; other viewports retain their existing route-owned animation policy."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        },
+        "members": [
+          {
+            "id": "catch.motion_viewport.map_reveal",
+            "symbol": "CatchMapRevealViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_map_reveal_viewport.dart",
+            "summary": "Reveals a stationary map beneath a token-colored paper veil.",
+            "states": [
+              "mid-reveal",
+              "reduced-motion"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          },
+          {
+            "id": "catch.motion_viewport.hero",
+            "symbol": "CatchHeroViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_hero_viewport.dart",
+            "summary": "Owns transparent Material chrome and gesture-enabled Hero flights.",
+            "states": [
+              "resting",
+              "transparent-material"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          },
+          {
+            "id": "catch.motion_viewport.ticket_hero",
+            "symbol": "CatchTicketHeroViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_ticket_hero_viewport.dart",
+            "summary": "Shares deterministic prefix/id tags and spring-backed ticket flights.",
+            "states": [
+              "resting",
+              "shared-tag"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.motion_viewport",
+              "parentConceptId": "catch.motion_viewport",
+              "qualifier": "recipe",
+              "decisionRef": "contract-family:catch.motion_viewport"
+            }
+          }
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.motion_viewport",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.motion_viewport"
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.surface"
+        ],
+        "notes": [
+          "Callers own route state, animation lifetimes, Hero tags, and child content."
+        ]
+      }
+    },
+    {
+      "id": "catch.timestamped_message",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchTimestampedMessageText",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Message text with a caller-formatted timestamp on the final line when it fits, or directly below it.",
+      "dart": {
+        "symbol": "CatchTimestampedMessageText",
+        "file": "packages/catch_ui/lib/src/components/catch_timestamped_message_text.dart",
+        "constructors": [
+          "CatchTimestampedMessageText"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/TimestampedMessage",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "TimestampedMessage",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "text",
+            "type": "string",
+            "dartType": "String",
+            "required": true
+          },
+          {
+            "name": "timestamp",
+            "type": "string",
+            "dartType": "String",
+            "required": true
+          },
+          {
+            "name": "textStyle",
+            "type": "object",
+            "dartType": "TextStyle",
+            "required": true
+          },
+          {
+            "name": "timestampStyle",
+            "type": "object",
+            "dartType": "TextStyle",
+            "required": true
+          }
+        ],
+        "states": [
+          "inline-timestamp",
+          "stacked-timestamp",
+          "empty-message",
+          "large-text"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.micro3"
+        ],
+        "dartRoles": [
+          "CatchSpacing.s2",
+          "CatchSpacing.micro3"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Measure both caller-supplied text styles at the active text scale; move the timestamp below the message when the final line has insufficient space."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Callers provide already-localized message and timestamp strings and semantic text styles. The component owns line measurement and timestamp placement."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.timestamped_message",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.timestamped_message"
+      },
+      "surfaces": {
+        "flutter": "CatchTimestampedMessageText"
       }
     }
   ]

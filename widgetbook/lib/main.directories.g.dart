@@ -49,14 +49,28 @@ import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
     as _widgetbook_workspace_onboarding_onboarding_use_cases;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
+import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
+    as _widgetbook_workspace_primitives_avatar_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
+import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
+    as _widgetbook_workspace_primitives_distance_ring_use_cases;
+import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
+    as _widgetbook_workspace_primitives_error_feedback_use_cases;
 import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
+import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
+    as _widgetbook_workspace_primitives_layout_motion_use_cases;
+import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
+    as _widgetbook_workspace_primitives_menu_anchor_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_skeleton_layout_use_cases;
+import 'package:widgetbook_workspace/primitives/text_input_use_cases.dart'
+    as _widgetbook_workspace_primitives_text_input_use_cases;
+import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart'
+    as _widgetbook_workspace_primitives_viewport_layout_use_cases;
 import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
     as _widgetbook_workspace_profiles_profile_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
@@ -633,6 +647,27 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookCategory(
+    name: 'Core adapters',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Feedback',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLocalizedErrorBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mapped failures and retry policy',
+                builder:
+                    _widgetbook_workspace_primitives_error_feedback_use_cases
+                        .localizedErrorBannerStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
     name: 'Core catalog',
     children: [
       _widgetbook.WidgetbookFolder(
@@ -950,6 +985,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchMutationErrorListenersCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchNoticeController',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Queued arrival',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchNoticeQueueCatalogState,
               ),
             ],
           ),
@@ -1453,7 +1498,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Motion',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMapRevealTransition',
+            name: 'CatchMapRevealViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1463,7 +1508,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTicketHero',
+            name: 'CatchTicketHeroViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1767,6 +1812,71 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookCategory(
+    name: 'Core patterns',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Viewport',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAdaptiveMasterDetailLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route body breakpoint',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .adaptiveMasterDetailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFillViewportScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Short and overflowing content',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .fillViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMasterDetailLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Compact and split panes',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .masterDetailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSceneViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bounded scene geometry',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .sceneViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTabViewportScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .tabViewportContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
     name: 'Core primitives',
     children: [
       _widgetbook.WidgetbookFolder(
@@ -1862,6 +1972,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchDistanceRingContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchDistanceRingViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fixed diameter and edge label',
+                builder:
+                    _widgetbook_workspace_primitives_distance_ring_use_cases
+                        .distanceRingViewportStates,
               ),
             ],
           ),
@@ -1965,6 +2086,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchMiniBarChartContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTimestampedMessageText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchTimestampedMessageContractStates,
               ),
             ],
           ),
@@ -2476,6 +2608,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchTextInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_text_input_use_cases
+                    .catchTextInputContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchToggle',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2483,6 +2625,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchToggleContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Layout',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFractionalMaxWidth',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fraction and absolute cap',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .fractionalWidthStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPagerFocusBoundary',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Editable pager content',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .pagerFocusStates,
               ),
             ],
           ),
@@ -2680,6 +2849,26 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Menus',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMenuAnchor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bottom anchored menu',
+                builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
+                    .catchMenuAnchorBottom,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Top anchored menu',
+                builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
+                    .catchMenuAnchorTop,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Metadata',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -2690,6 +2879,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchMetaRowContractStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Motion',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFadeScaleViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchMotionViewportContractStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Resting and transition poses',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .fadeScaleStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHeroViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Transparent hero material',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .heroViewportStates,
               ),
             ],
           ),
@@ -2843,6 +3065,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchActivityInitialsPlaceholderContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAvatarColors',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Caller colors and count copy',
+                builder: _widgetbook_workspace_primitives_avatar_use_cases
+                    .avatarCallerColors,
               ),
             ],
           ),

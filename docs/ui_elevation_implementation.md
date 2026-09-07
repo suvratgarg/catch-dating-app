@@ -222,7 +222,7 @@ List<double> _saturationMatrix(double s) {
 then a `Positioned.fill(IgnorePointer(DecoratedBox(BoxDecoration(color: CatchGrade.warmth,
 backgroundBlendMode: BlendMode.multiply))))` ]. Expose an `enabled` flag (default true).
 **Apply at** the photo branches of: `lib/core/widgets/catch_event_thumbnail.dart`,
-`lib/core/widgets/catch_detail_hero_backdrop.dart`, club cover image (`club_list_tile_parts/club_image.dart`),
+`packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart`, club cover image (`club_list_tile_parts/club_image.dart`),
 profile photos (`lib/swipes/presentation/widgets/card_photo_section.dart`). Keep originals untouched.
 **DoD:** every displayed user photo shares one grade; a mixed feed reads as one family.
 

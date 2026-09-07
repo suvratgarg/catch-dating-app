@@ -68,7 +68,7 @@ void _registerCatchPrimitivesControlsTests() {
         MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),
           child: Builder(
-            builder: (context) => CatchMapRevealTransition(
+            builder: (context) => CatchMapRevealViewport(
               animation: animation,
               child: const Text('Map surface'),
             ),
@@ -777,9 +777,10 @@ void _registerCatchPrimitivesControlsTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchStepProgress(
+            counterLabelBuilder: (step, total) => '$step/$total',
             label: 'Profile setup',
             currentStep: 1,
             totalSteps: 5,

@@ -1,0 +1,11 @@
+include: package:flutter_lints/flutter.yaml
+
+plugins:
+  catch_ui_lints:
+    path: ../catch_ui_lints
+
+linter:
+  rules:
+    - always_use_package_imports
+    - directives_ordering
+    - prefer_single_quotes

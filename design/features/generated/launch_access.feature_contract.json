@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:745d73d767054534e972d2123c93a253560ef52d5d8e62bd43e710253aeb0f15",
+  "resolvedDigest": "sha256:39966eac7fd72179ca47a12b42a816308ceb76216fcff1e4e0bb5cc8c13f1292",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -867,7 +867,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -880,7 +880,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -891,10 +891,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },

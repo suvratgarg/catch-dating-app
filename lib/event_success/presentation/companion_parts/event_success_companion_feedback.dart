@@ -67,7 +67,10 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                           .eventSuccessEventSuccessCompanionFeedbackTextYourFeedbackIsSaved,
                 style: CatchTextStyles.titleL(context),
               ),
-              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+              CatchPrivacyBadge(
+                copy: catchPrivacyBadgeCopy(context.l10n),
+                kind: CatchPrivacyBadgeKind.catchPrivate,
+              ),
             ],
           ),
           gapH4,

@@ -34,7 +34,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                     .eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow,
                 color: t.primary,
               ),
-              const CatchPrivacyBadge(),
+              CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
             ],
           ),
           gapH10,

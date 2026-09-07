@@ -1,8 +1,7 @@
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/responsive/breakpoints.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Shared adaptive placement contract for consumer and host tab shells.
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 /// Floating tab chrome overlays the body and publishes its raw physical
 /// obstruction to root scroll owners. Anchored chrome is assigned to
 /// [Scaffold.bottomNavigationBar], while a transient shell with no bottom
-/// chrome leaves device-safe terminal clearance to [AppShellActiveTab].
+/// chrome leaves device-safe terminal clearance to [CatchTabViewportScope].
 class CatchAdaptiveTabScaffold extends StatelessWidget {
   const CatchAdaptiveTabScaffold({
     super.key,
@@ -47,7 +46,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
               children: [
                 sideNavigation,
                 Expanded(
-                  child: AppShellActiveTab(index: activeIndex, child: body),
+                  child: CatchTabViewportScope(index: activeIndex, child: body),
                 ),
               ],
             ),
@@ -63,14 +62,14 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
             ? null
             : navigationBar ?? anchoredFallback;
         final placement = tabBarFloats
-            ? AppShellBottomBarPlacement.floating
+            ? CatchTabViewportScopePlacement.floating
             : anchoredBar != null
-            ? AppShellBottomBarPlacement.anchored
-            : AppShellBottomBarPlacement.none;
+            ? CatchTabViewportScopePlacement.anchored
+            : CatchTabViewportScopePlacement.none;
         final bottomOverlayInset = tabBarFloats
             ? CatchTabBar.reservedBottomInset(context)
             : 0.0;
-        final scopedBody = AppShellActiveTab(
+        final scopedBody = CatchTabViewportScope(
           index: activeIndex,
           bottomOverlayInset: bottomOverlayInset,
           bottomBarPlacement: placement,
