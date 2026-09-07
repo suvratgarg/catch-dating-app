@@ -98,7 +98,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
     }
 
     await pump(const Locale('en'));
