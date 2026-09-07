@@ -6865,7 +6865,12 @@
             "host_create_submit_error",
             "host_create_submit_offline",
             "host_create_photo_upload_offline",
-            "host_create_success_manage"
+            "host_create_success_manage",
+            "host_create_runtime_basics",
+            "host_create_runtime_schedule",
+            "host_create_runtime_guests",
+            "host_create_runtime_review",
+            "host_create_runtime_customize"
           ],
           "designRefs": [
             {
@@ -7373,6 +7378,81 @@
               ],
               "captureIds": [
                 "host_create_light_dark"
+              ]
+            },
+            {
+              "id": "runtime_basics",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Runtime basics without required photos or roster.",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "previewIds": [
+                "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_runtime_basics"
+              ]
+            },
+            {
+              "id": "runtime_schedule",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Combined schedule and location.",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "previewIds": [
+                "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_runtime_schedule"
+              ]
+            },
+            {
+              "id": "runtime_guests",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Capacity, optional roster, walk-ins and enabled live guide; no Catch ticketing fields.",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "previewIds": [
+                "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_runtime_guests"
+              ]
+            },
+            {
+              "id": "runtime_review",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Explicit review before runtime event creation, including without a roster.",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "previewIds": [
+                "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_runtime_review"
+              ]
+            },
+            {
+              "id": "runtime_customize",
+              "kind": "populated",
+              "status": "captured",
+              "notes": "Optional customization of the enabled runtime guide.",
+              "tests": [
+                "test/hosts/host_create_event_screen_test.dart"
+              ],
+              "previewIds": [
+                "HostCreateEventRouteScreen/Route and wizard states"
+              ],
+              "captureIds": [
+                "host_create_runtime_customize"
               ]
             }
           ],

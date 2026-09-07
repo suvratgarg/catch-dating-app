@@ -45,6 +45,16 @@ class CreateEventPrefill {
         id: 'repeat-template-${event.id}',
         clubId: event.clubId,
         savedAt: createdAt,
+        name: event.name,
+        externalBookingMode: event.isExternalCompanion,
+        externalBookingProvider: event.isExternalCompanion
+            ? event.eventOrigin?.provider.name
+            : null,
+        runtimeWalkInPolicy: event.isExternalCompanion
+            ? event.runtimeAccess?.walkInPolicy.name
+            : null,
+        // A repeat is a different event: never copy its external id, link,
+        // roster attachment, or guests.
         distance: event.activityKind.isDistanceBased
             ? _decimalText(event.distanceKm)
             : null,
@@ -106,6 +116,7 @@ class CreateEventPrefill {
         // the old event's private plan was copied.
         eventSuccessDefaults: EventSuccessDefaults.recommendedForFormat(
           event.eventFormat,
+          enabled: event.isExternalCompanion,
           targetAttendeeCount: event.capacityLimit,
         ),
       ),

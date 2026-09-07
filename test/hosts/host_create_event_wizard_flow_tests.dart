@@ -1,12 +1,91 @@
 part of 'host_create_event_screen_test.dart';
 
 void _registerCreateEventWizardFlowTests() {
+  testWidgets(
+    'runtime-only creation needs no roster or presentation and ignores hidden booking rules',
+    (tester) async {
+      final now = DateTime(2026, 9, 4, 12);
+      final repository = FakeEventRepository();
+      await _pumpCreateEventFlow(
+        tester,
+        now: () => now,
+        initialStep: 2,
+        initialDraft: EventDraft(
+          id: 'runtime-draft',
+          clubId: 'club-1',
+          savedAt: now,
+          name: 'Friday supper',
+          activityKind: 'dinner',
+          capacity: '24',
+          externalBookingMode: true,
+          externalBookingProvider: 'luma',
+          runtimeWalkInPolicy: 'hostApproval',
+          meetingPoint: 'Garden room',
+          startingPointLat: 19.1,
+          startingPointLng: 72.9,
+          selectedDateMillis: now
+              .add(const Duration(days: 1))
+              .millisecondsSinceEpoch,
+          selectedStartHour: 19,
+          selectedStartMinute: 0,
+          admissionPreset: 'inviteOnly',
+          inviteCode: 'x',
+          price: 'invalid',
+          dynamicPricingEnabled: true,
+          dynamicPricingStep: 'invalid',
+          maxMen: 'invalid',
+          crossPathsPairInventoryEnabled: true,
+          crossPathsPairCapacity: 'invalid',
+          eventSuccessDefaults: const EventSuccessDefaults(
+            attendeePrompt: 'Welcome together',
+          ),
+        ),
+        overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
+      );
+      await _openCreateEventFlow(tester);
+      expect(find.text('Guests & live guide'), findsWidgets);
+      expect(find.byKey(CreateEventFormKeys.price), findsNothing);
+      expect(find.byKey(CreateEventFormKeys.inviteCode), findsNothing);
+      expect(
+        find.byKey(CreateEventFormKeys.crossPathsPairInventoryToggle),
+        findsNothing,
+      );
+      expect(find.text('Customize guide'), findsOneWidget);
+      await _tapPrimaryButton(tester, 'Review event');
+      expect(find.text('Import now or later'), findsOneWidget);
+      await _tapPrimaryButton(tester, 'Create event');
+      expect(repository.createdEvent, isNotNull);
+      expect(repository.createdEvent!.description, isEmpty);
+      expect(repository.createdEvent!.eventPhotos, isEmpty);
+      expect(repository.createdEvent!.priceInPaise, 0);
+      expect(
+        repository.createdEvent!.eventPolicy!.admissionPolicy.format,
+        EventAdmissionFormat.open,
+      );
+      expect(repository.createdEvent!.constraints.maxMen, isNull);
+      expect(repository.createdEventInviteCode, isNull);
+      expect(
+        repository.createdExternalOrigin!.provider,
+        ExternalBookingProvider.luma,
+      );
+      expect(
+        repository.createdRuntimeWalkInPolicy,
+        EventRuntimeWalkInPolicy.hostApproval,
+      );
+      expect(repository.createdEventSuccessDefaults!.enabled, isTrue);
+      expect(
+        repository.createdEventSuccessDefaults!.attendeePrompt,
+        'Welcome together',
+      );
+    },
+  );
+
   testWidgets('allows sections to be completed out of order', (tester) async {
     await _pumpCreateEventFlow(tester);
     await _openCreateEventFlow(tester);
     await _tapPrimaryButton(tester, 'Next');
     await _pumpTestAnimation(tester);
-    expect(find.text('Meeting location'), findsWidgets);
+    expect(find.text('When & where'), findsWidgets);
     expect(find.text('Required'), findsNothing);
     expect(find.text('Select a pace'), findsNothing);
     expect(find.text('Previous'), findsOneWidget);
@@ -24,6 +103,7 @@ void _registerCreateEventWizardFlowTests() {
       findsOneWidget,
     );
 
+    await _openCatchField(tester, 'Description & photos · Optional');
     final organizerFinder = find.byKey(
       const ValueKey('create_event.inherited_organizer_logo'),
     );
@@ -55,6 +135,11 @@ void _registerCreateEventWizardFlowTests() {
     await _pumpCreateEventFlow(tester);
     await _openCreateEventFlow(tester);
 
+    expect(
+      find.byKey(const ValueKey('create_event.add_event_photos')),
+      findsNothing,
+    );
+    await _openCatchField(tester, 'Description & photos · Optional');
     final nameRect = tester.getRect(find.byKey(CreateEventFormKeys.name));
     final mediaRect = tester.getRect(
       find.byKey(const ValueKey('create_event.add_event_photos')),
@@ -97,20 +182,20 @@ void _registerCreateEventWizardFlowTests() {
 
     await tester.tap(find.byKey(const ValueKey('catch-form-step-overview-1')));
     await _pumpTestAnimation(tester);
-    expect(find.text('Meeting location'), findsWidgets);
+    expect(find.text('When & where'), findsWidgets);
 
     tester.view.physicalSize = const Size(1024, 1000);
     await tester.pump();
     expect(rail, findsOneWidget);
     expect(lane, findsOneWidget);
     expect(consequence, findsNothing);
-    expect(find.text('Meeting location'), findsWidgets);
+    expect(find.text('When & where'), findsWidgets);
 
     tester.view.physicalSize = const Size(430, 1000);
     await tester.pump();
     expect(rail, findsNothing);
     expect(consequence, findsNothing);
-    expect(find.text('Meeting location'), findsWidgets);
+    expect(find.text('When & where'), findsWidgets);
   });
 
   testWidgets('demand pricing preserves four lines for consequence copy', (
@@ -119,12 +204,12 @@ void _registerCreateEventWizardFlowTests() {
     await _pumpCreateEventFlow(tester);
     await _openCreateEventFlow(tester);
 
-    for (var step = 0; step < 3; step += 1) {
+    for (var step = 0; step < 2; step += 1) {
       await _tapPrimaryButton(tester, 'Next');
       await _pumpTestAnimation(tester);
     }
 
-    expect(find.text('Event policy'), findsOneWidget);
+    expect(find.text('Booking & live guide'), findsOneWidget);
     await _openCatchField(tester, 'Admission format');
     await tester.tap(
       find.byKey(const ValueKey('catch-field-option-card-Balanced singles')),
@@ -169,6 +254,11 @@ void _registerCreateEventWizardFlowTests() {
       await _pumpCreateEventFlow(tester, initialRosterImportPlan: rosterPlan);
       await _openCreateEventFlow(tester);
 
+      for (var step = 0; step < 2; step += 1) {
+        await _tapPrimaryButton(tester, 'Next');
+        await _pumpTestAnimation(tester);
+      }
+
       expect(find.text('Guest list'), findsOneWidget);
       expect(
         find.text('luma-guests.csv · 2 ready · 1 need review · 1 excluded'),
@@ -176,12 +266,7 @@ void _registerCreateEventWizardFlowTests() {
       );
       expect(find.text('Luma'), findsWidgets);
 
-      for (var step = 0; step < 3; step += 1) {
-        await _tapPrimaryButton(tester, 'Next');
-        await _pumpTestAnimation(tester);
-      }
-
-      expect(find.text('Event policy'), findsOneWidget);
+      expect(find.text('Guests & live guide'), findsOneWidget);
       expect(find.text('Event price'), findsNothing);
       expect(find.text('Cancellation policy'), findsNothing);
       final capacity = tester.widget<EditableText>(

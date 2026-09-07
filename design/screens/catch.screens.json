@@ -12287,6 +12287,10 @@
           {
             "file": "lib/hosts/presentation/event_management/create/create_event_success_screen.dart",
             "symbol": "CreateEventSuccessScreen"
+          },
+          {
+            "file": "lib/hosts/presentation/event_management/widgets/create_event_guests_section.dart",
+            "symbol": "CreateEventGuestsSection"
           }
         ],
         "mutationOwners": [
@@ -12573,6 +12577,31 @@
           "id": "host_create_success_manage",
           "status": "captured",
           "notes": "Deterministic capture renders the open created-event success screen with Manage event and Back to club actions; invite-code success should be tracked as a separate future state."
+        },
+        {
+          "id": "host_create_runtime_basics",
+          "status": "captured",
+          "notes": "Deterministic production Flutter capture. Runtime basics without required photos or roster."
+        },
+        {
+          "id": "host_create_runtime_schedule",
+          "status": "captured",
+          "notes": "Deterministic production Flutter capture. Combined schedule and location."
+        },
+        {
+          "id": "host_create_runtime_guests",
+          "status": "captured",
+          "notes": "Deterministic production Flutter capture. Capacity, optional roster, walk-ins and enabled live guide; no Catch ticketing fields."
+        },
+        {
+          "id": "host_create_runtime_review",
+          "status": "captured",
+          "notes": "Deterministic production Flutter capture. Explicit review before runtime event creation, including without a roster."
+        },
+        {
+          "id": "host_create_runtime_customize",
+          "status": "captured",
+          "notes": "Deterministic production Flutter capture. Optional customization of the enabled runtime guide."
         }
       ],
       "states": [
@@ -12857,7 +12886,7 @@
           "id": "event_success_step",
           "kind": "populated",
           "status": "captured",
-          "source": "Final step renders Event Success defaults and capacity-aware host guide recommendations before scheduling.",
+          "source": "Compact guide summary and optional customization in the final setup stage, followed by review.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -13052,10 +13081,90 @@
           "captureIds": [
             "host_create_light_dark"
           ]
+        },
+        {
+          "id": "runtime_basics",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Runtime basics without required photos or roster.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_runtime_basics"
+          ],
+          "nextAction": "Keep focused runtime creation tests and fresh light/dark captures current when this composition changes."
+        },
+        {
+          "id": "runtime_schedule",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Combined schedule and location.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_runtime_schedule"
+          ],
+          "nextAction": "Keep focused runtime creation tests and fresh light/dark captures current when this composition changes."
+        },
+        {
+          "id": "runtime_guests",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Capacity, optional roster, walk-ins and enabled live guide; no Catch ticketing fields.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_runtime_guests"
+          ],
+          "nextAction": "Keep focused runtime creation tests and fresh light/dark captures current when this composition changes."
+        },
+        {
+          "id": "runtime_review",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Explicit review before runtime event creation, including without a roster.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_runtime_review"
+          ],
+          "nextAction": "Keep focused runtime creation tests and fresh light/dark captures current when this composition changes."
+        },
+        {
+          "id": "runtime_customize",
+          "kind": "populated",
+          "status": "captured",
+          "source": "Optional customization of the enabled runtime guide.",
+          "tests": [
+            "test/hosts/host_create_event_screen_test.dart"
+          ],
+          "previewIds": [
+            "HostCreateEventRouteScreen/Route and wizard states"
+          ],
+          "captureIds": [
+            "host_create_runtime_customize"
+          ],
+          "nextAction": "Keep focused runtime creation tests and fresh light/dark captures current when this composition changes."
         }
       ],
       "composition": {
-        "currentLayout": "HostCreateEventRouteState resolves route club loading/error/not-found/ready branches before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
+        "currentLayout": "One three-stage form serves new events, repeated templates, restored drafts, and imported events: Event basics; When & where; then Guests/Booking & live guide. Optional details are disclosed on demand. Review is explicit before creation. HostCreateEventRouteState resolves route club loading/error/not-found/ready branches before HostCreateEventRouteScreen renders CreateEventScreen. CreateEventWizardStep owns canonical step order, titles, form-key spec construction, and schedule-validation metadata. CreateEventWizardValidationPlan owns current form-key selection and schedule validation policy. CreateEventWizardState owns step header/footer/mutation/success display state plus typed back/primary/save-draft intents. CreateEventSuccessNavigationEffect owns success destination, manage-event route parameters, and route extra payload. CreateEventDraftSnapshot owns draft dirty-tracking signature and EventDraft serialization. CreateEventDraftActionState owns new-vs-existing draft dirty decisions, draft id selection, and save/update success copy. CreateEventDraftRestoreState owns EventDraft-to-form restore mapping, stale enum fallback, restored schedule text, location restore state, policy restore state, and restored Event Success defaults. CreateEventDraftSideEffectState owns draft-check, picker visibility, picker delete intent, and post-submit delete intent policy. CreateEventScreen keeps form-controller assignment, PageController movement, platform picker execution, controller mutation triggers, and Navigator/context side effects inline.",
         "targetLayout": "Host Create Event should keep expanding route-level and wizard/controller state boundaries until validation, draft persistence, submit state, picker callbacks, Event Success defaults, and navigation intents are outside visual step sections.",
         "sections": [
           {
@@ -13402,6 +13511,35 @@
             "previewIds": [
               "HostCreateEventRouteScreen/Route and wizard states"
             ]
+          },
+          {
+            "id": "section.host.event_create_guests",
+            "name": "Create event guest import and access",
+            "status": "implemented_local",
+            "layer": "section",
+            "claudeComponents": [
+              "CreateEventGuestsSection"
+            ],
+            "flutter": {
+              "file": "lib/hosts/presentation/event_management/widgets/create_event_guests_section.dart",
+              "symbol": "CreateEventGuestsSection"
+            },
+            "currentOwner": "CreateEventScreen",
+            "targetOwner": "provider-free guest source and runtime access section",
+            "dependencies": [
+              "catch.field"
+            ],
+            "states": [
+              "import_later",
+              "roster_attached",
+              "reattach_required",
+              "optional_booking_source",
+              "walk_in_policy"
+            ],
+            "previewIds": [
+              "CreateEventGuestsSection/Guest import states"
+            ],
+            "migration": "Reuses the parent form and draft state; picking and import mutations remain in CreateEventScreen and CreateEventController."
           }
         ]
       },
