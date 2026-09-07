@@ -7958,7 +7958,7 @@
           {
             "id": "catch.screen_body.master_detail_layout",
             "symbol": "CatchMasterDetailLayout",
-            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
             "summary": "Master and detail pane placement with an explicit compact or expanded decision and canonical index width.",
             "states": [
               "compact",
@@ -7977,7 +7977,7 @@
           {
             "id": "catch.screen_body.adaptive_master_detail_layout",
             "symbol": "CatchAdaptiveMasterDetailLayout",
-            "file": "lib/core/widgets/catch_master_detail_layout.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_adaptive_master_detail_layout.dart",
             "summary": "Resolves master-detail expansion from route-body constraints and forwards that decision to the master builder.",
             "states": [
               "below-breakpoint",

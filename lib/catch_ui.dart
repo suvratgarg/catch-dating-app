@@ -57,8 +57,6 @@ export 'core/widgets/catch_form_step_flow.dart'
         CatchFormStepReviewItem,
         CatchFormStepSpec,
         CatchFormStepStatus;
-export 'core/widgets/catch_master_detail_layout.dart'
-    show CatchAdaptiveMasterDetailLayout, CatchMasterDetailLayout;
 export 'core/widgets/catch_screen_scaffold.dart'
     show CatchRootScreenScaffold, CatchRootScreenScrollView;
 export 'core/widgets/catch_section_layout.dart'

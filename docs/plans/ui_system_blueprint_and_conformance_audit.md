@@ -722,8 +722,9 @@ seeded package-neighbor probes prevent extraction from bypassing enforcement.
 Box viewport scrolling and bounded scene geometry move unchanged to the package.
 Direct short/overflow, scene-size/inset and master-detail breakpoint previews
 cover the four layouts and scene descriptor, retiring five waivers. Master-detail
-source remains at its app owner
-until its state-matrix reference can move in the same slice.
+and adaptive master-detail now have individual package owners with the same
+route-body breakpoint, index width and divider. Their state-matrix and catalog
+references move with the source.
 The person polaroid is classified as L3 entity material: its API contains only
 widget/string/color/callback presentation inputs, so the unchanged renderer
 moves to the package. Distance rings retain their size negotiation and label

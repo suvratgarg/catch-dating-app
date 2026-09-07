@@ -8740,7 +8740,7 @@
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
             "lib/core/widgets/catch_person_row.dart",
-            "lib/core/widgets/catch_master_detail_layout.dart",
+            "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
