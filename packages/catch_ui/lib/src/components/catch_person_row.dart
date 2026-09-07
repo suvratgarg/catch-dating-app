@@ -38,7 +38,7 @@ class CatchPersonRow extends StatelessWidget {
   const CatchPersonRow({
     super.key,
     required this.data,
-    required CatchPersonRowCopy copy,
+    required CatchPersonRowCopy this.copy,
     this.trailing,
     this.onTap,
     this.avatarSize = CatchSpacing.s12,
@@ -49,8 +49,7 @@ class CatchPersonRow extends StatelessWidget {
     this.divider = false,
     this.dividerInset = CatchLayout.chatListDividerInset,
     this.showFreshBackground = true,
-  }) : copy = copy,
-       _directory = false,
+  }) : _directory = false,
        metadata = null,
        contextContent = null,
        status = null;
