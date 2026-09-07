@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.53.0
+version: 1.54.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -538,7 +538,20 @@ empty roster. A checkpoint request requires that review and a route/itinerary
 target, and applies the caller's reporter restriction before submission. The
 backend still rechecks selected attendance, membership, source, revision and the
 reporter's current duty/deadline. The repository does not retry automatically,
-write attendance, or send messages. Account-lifecycle state, the Host controls
+write attendance, or send messages.
+
+The Flutter departure read and form controller now bind each review to one
+continuous authenticated account identity. Signing out, switching accounts, or
+switching away and back removes the renderable form and cannot revive a pending
+decision. Reads and commands recheck that identity after asynchronous work;
+an older account's completion cannot publish a view or trigger success navigation.
+The form requires an explicit destination choice, discloses roster review and
+checkpoint configuration progressively, and clears their dependent decisions
+when the host changes selection or destination. A fresh roster review discards
+its earlier proof before reading. Confirmation freezes all controls and shares
+one request across duplicate triggers. Ambiguous failures retain the exact
+command for retry; source/permission conflicts require a newly loaded review.
+Success refreshes group progress and the Host assistance read. The Host widgets
 and their simulated rehearsal execution remain subsequent integration work.
 
 An existing link follows the workflow thread once a fresh instruction is
