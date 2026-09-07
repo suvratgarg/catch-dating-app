@@ -1192,42 +1192,147 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         },
         "payload": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "attendeeId",
-            "state",
-            "resumeAtUnit"
-          ],
-          "properties": {
-            "attendeeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "state": {
-              "type": "string",
-              "enum": [
-                "active",
-                "temporaryBreak",
-                "departed"
-              ]
-            },
-            "resumeAtUnit": {
-              "anyOf": [
-                {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
                   "type": "string",
                   "minLength": 1,
-                  "maxLength": 2000
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
                 },
-                {
-                  "type": "null",
-                  "const": null
+                "state": {
+                  "const": "active"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
                 }
-              ]
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "temporaryBreak"
+                },
+                "resumeAtUnit": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "departed"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
             }
-          }
+          ]
         }
       }
     },

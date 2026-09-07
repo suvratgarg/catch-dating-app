@@ -220,7 +220,8 @@ export const eventAssistanceLateJoinInputSchema: Record<string, unknown> = {
         "admission",
         "attendance",
         "intention",
-        "deliveryEligibility"
+        "deliveryEligibility",
+        "participation"
       ],
       "properties": {
         "attendeeId": {
@@ -526,6 +527,14 @@ export const eventAssistanceLateJoinInputSchema: Record<string, unknown> = {
           "enum": [
             "eligible",
             "unreachable",
+            "unknown"
+          ]
+        },
+        "participation": {
+          "enum": [
+            "active",
+            "temporaryBreak",
+            "departed",
             "unknown"
           ]
         }

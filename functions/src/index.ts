@@ -496,3 +496,6 @@ export {
 export {
   recordOrganizerAnalyticsEvent,
 } from "./analytics/organizerAnalyticsEvents";
+
+export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
+  "./eventSuccess/operations/participationHandlers";

@@ -9,7 +9,11 @@ export type EventAssistanceLateJoinDecision =
     }
   | {
       kind: "cancelled";
-      reason: "eventClosed" | "notAdmitted" | "policyDisabled";
+      reason:
+        | "eventClosed"
+        | "notAdmitted"
+        | "policyDisabled"
+        | "participationInactive";
     }
   | {
       kind: "expired";
@@ -22,7 +26,8 @@ export type EventAssistanceLateJoinDecision =
         | "attendanceUnknown"
         | "guidanceUnavailable"
         | "throttled"
-        | "unchanged";
+        | "unchanged"
+        | "participationUnknown";
     }
   | {
       kind: "hostDecision";

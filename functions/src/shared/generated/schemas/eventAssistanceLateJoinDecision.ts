@@ -42,7 +42,8 @@ export const eventAssistanceLateJoinDecisionSchema: Record<string, unknown> = {
           "enum": [
             "eventClosed",
             "notAdmitted",
-            "policyDisabled"
+            "policyDisabled",
+            "participationInactive"
           ]
         }
       }
@@ -87,7 +88,8 @@ export const eventAssistanceLateJoinDecisionSchema: Record<string, unknown> = {
             "attendanceUnknown",
             "guidanceUnavailable",
             "throttled",
-            "unchanged"
+            "unchanged",
+            "participationUnknown"
           ]
         }
       }

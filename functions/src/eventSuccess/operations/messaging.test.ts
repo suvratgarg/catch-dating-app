@@ -54,7 +54,7 @@ function input(): EventAssistanceLateJoinInput {
         source: "host",
       },
       intention: {kind: "unknown"},
-      deliveryEligibility: "eligible",
+      participation: "active", deliveryEligibility: "eligible",
     },
     guidance: {
       kind: "known",

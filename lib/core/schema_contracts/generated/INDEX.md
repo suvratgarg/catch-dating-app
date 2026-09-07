@@ -12,6 +12,10 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceParticipationReceiptDocument | `firestore/event_assistance_participation_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts` |
+| GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceParticipationCallablePayload.ts` |
+| SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceParticipationCallablePayload.ts` |
+| EventAssistanceParticipationCallableResponse | `callable_responses/event_assistance_participation_response.schema.json` | `functions/src/shared/generated/eventAssistanceParticipationCallableResponse.ts` |
 | EventAssistanceSettingDocument | `firestore/event_assistance_settings.schema.json` | `functions/src/shared/generated/eventAssistanceSettingDocument.ts` |
 | EventAssistanceSettingReceiptDocument | `firestore/event_assistance_setting_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceSettingReceiptDocument.ts` |
 | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSettingCallablePayload.ts` |
@@ -598,6 +602,10 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceParticipationReceiptDocumentSchema` | EventAssistanceParticipationReceiptDocument | `firestore/event_assistance_participation_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_participation_receipt_document.g.dart` |
+| `schemaGetEventAssistanceParticipationCallablePayloadSchema` | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_participation_callable_payload.g.dart` |
+| `schemaSetEventAssistanceParticipationCallablePayloadSchema` | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_participation_callable_payload.g.dart` |
+| `schemaEventAssistanceParticipationCallableResponseSchema` | EventAssistanceParticipationCallableResponse | `callable_responses/event_assistance_participation_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_participation_callable_response.g.dart` |
 | `schemaEventAssistanceSettingDocumentSchema` | EventAssistanceSettingDocument | `firestore/event_assistance_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_setting_document.g.dart` |
 | `schemaEventAssistanceSettingReceiptDocumentSchema` | EventAssistanceSettingReceiptDocument | `firestore/event_assistance_setting_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_setting_receipt_document.g.dart` |
 | `schemaGetEventAssistanceSettingCallablePayloadSchema` | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_setting_callable_payload.g.dart` |
@@ -1184,6 +1192,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceParticipationCallableRequest | GetEventAssistanceParticipationCallablePayload | `callables/get_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_participation_callable_request.g.dart` |
+| SetEventAssistanceParticipationCallableRequest | SetEventAssistanceParticipationCallablePayload | `callables/set_event_assistance_participation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_assistance_participation_callable_request.g.dart` |
 | GetEventAssistanceSettingCallableRequest | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_setting_callable_request.g.dart` |
 | GetEventAssistanceGroupProgressCallableRequest | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_progress_callable_request.g.dart` |
 | ConfirmEventAssistanceDepartureCallableRequest | ConfirmEventAssistanceDepartureCallablePayload | `callables/confirm_event_assistance_departure_payload.schema.json` | `lib/core/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart` |

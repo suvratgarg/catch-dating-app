@@ -48,4 +48,18 @@ export interface EventAssistanceGuestDocument {
       };
   createdAt: number;
   updatedAt: number;
+  sourceGeneration: string;
+  participation:
+    | {
+        state: "active";
+        resumeAtUnit: null;
+      }
+    | {
+        state: "temporaryBreak";
+        resumeAtUnit: string | null;
+      }
+    | {
+        state: "departed";
+        resumeAtUnit: null;
+      };
 }

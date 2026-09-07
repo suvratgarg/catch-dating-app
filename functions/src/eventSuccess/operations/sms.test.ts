@@ -285,12 +285,17 @@ test("failed claim commit rolls back both spending and dispatch evidence",
 test("fresh source changes withhold a previously reserved send", async () => {
   for (const change of ["checkIn", "phone", "uid", "generation", "permission",
     "expiredPermission", "grant", "sender", "configSameRevision", "budget",
-    "expiredPermit"]) {
+    "expiredPermit", "participation"]) {
     const h = await harness();
     const outbox = h.store.outbox(h.link.linkId);
     const {record} = await outbox.reserve(h.messageId);
     assert.equal(record.attempts.length, 1);
     const attendee = (await h.read(h.attendeePath))!;
+    if (change === "participation") {
+      await h.write(guestCollections.guests + "/" + h.guest.guestId,
+        {...h.guest, participation: {state: "temporaryBreak",
+          resumeAtUnit: null}, revision: h.guest.revision + 1});
+    }
     if (change === "checkIn") {
       await h.write(h.attendeePath,
         {...attendee, status: "checkedIn"});

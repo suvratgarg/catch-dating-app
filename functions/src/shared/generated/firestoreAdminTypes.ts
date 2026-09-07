@@ -537,6 +537,16 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceParticipationReceiptDocument {
+  receiptId: string;
+  guestId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  revision: number;
+  episodeId: string;
+  createdAt: number;
+}
+
 export interface EventAssistanceSettingDocument {
   schemaVersion: 1;
   settingId: string;
@@ -1992,6 +2002,20 @@ export interface EventAssistanceGuestDocument {
       };
   createdAt: number;
   updatedAt: number;
+  sourceGeneration: string;
+  participation:
+    | {
+        state: "active";
+        resumeAtUnit: null;
+      }
+    | {
+        state: "temporaryBreak";
+        resumeAtUnit: string | null;
+      }
+    | {
+        state: "departed";
+        resumeAtUnit: null;
+      };
 }
 
 export interface EventAssistanceThreadDocument {

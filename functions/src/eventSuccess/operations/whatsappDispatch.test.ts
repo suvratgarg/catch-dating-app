@@ -10,6 +10,7 @@ import {MetaWhatsappProvider} from
   "../../organizers/organizerWhatsappProvider";
 import {WHATSAPP_ENDPOINT_STOPS, parseWhatsappStop, whatsappStopId} from
   "../../shared/organizerWhatsappStops";
+import {guestCollections, guestIdentity} from "./guestRecords";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import {parseMessageIntent} from "./messageProtocol";
 import {assistanceMessageId} from "./messageOutbox";
@@ -762,5 +763,25 @@ test("changed destination between reservation and WhatsApp claim stops send",
     assert.equal(requests, 0);
     for (const path of h.budgetPaths) {
       assert.equal((await h.read(path))?.chargedMicros, 0);
+    }
+  });
+
+
+test("a participation break prevents WhatsApp claim and budget charge",
+  async () => {
+    const h = await harness();
+    const reserved = await h.reserve();
+    assert.equal(reserved.decision.kind, "dispatch");
+    const path = guestCollections.guests + "/" +
+      guestIdentity(h.context, h.scope.attendeeId);
+    const guest = (await h.read(path))!;
+    await h.write(path, {...guest, participation: {state: "temporaryBreak",
+      resumeAtUnit: null}, revision: Number(guest.revision) + 1});
+    const claim = await h.outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.expected));
+    assert.equal(claim.kind, "withheld");
+    for (const budget of h.budgetPaths) {
+      assert.equal((await h.read(budget))?.chargedMicros, 0);
     }
   });

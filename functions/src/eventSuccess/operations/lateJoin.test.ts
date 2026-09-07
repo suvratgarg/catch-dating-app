@@ -63,7 +63,7 @@ function input(): EventAssistanceLateJoinInput {
         source: "host",
       },
       intention: {kind: "unknown"},
-      deliveryEligibility: "eligible",
+      participation: "active", deliveryEligibility: "eligible",
     },
     guidance: {
       kind: "known",
@@ -379,4 +379,21 @@ test("decisions satisfy the wire contract", () => {
       true
     );
   }
+});
+
+
+test("late joining requires an active participation", () => {
+  for (const participation of ["temporaryBreak", "departed"] as const) {
+    const value = input();
+    value.guest.participation = participation;
+    assert.deepEqual(evaluateLateJoin(value), {
+      kind: "cancelled", reason: "participationInactive"});
+  }
+  const unknown = input();
+  unknown.guest.participation = "unknown";
+  assert.deepEqual(evaluateLateJoin(unknown), {
+    kind: "wait", reason: "participationUnknown"});
+  const {participation, ...missing} = input().guest;
+  assert.throws(() => parseLateJoinInput({...input(), guest: missing}));
+  void participation;
 });

@@ -1,6 +1,589 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventAssistanceParticipationReceiptDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "guestId",
+    "requestHash",
+    "sourceGeneration",
+    "revision",
+    "episodeId",
+    "createdAt"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^participation-action:[a-f0-9]{64}$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceParticipationReceiptDocument",
+  "x-firestore-collection": "eventAssistanceParticipationReceipts",
+  "x-firestore-path": "eventAssistanceParticipationReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event-assistance participation command"
+};
+
+export const getEventAssistanceParticipationCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "attendeeId"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "title": "GetEventAssistanceParticipationCallablePayload"
+};
+
+export const setEventAssistanceParticipationCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "expectedSourceHash"
+  ],
+  "properties": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setParticipation"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "active"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "temporaryBreak"
+                },
+                "resumeAtUnit": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "departed"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expectedSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "SetEventAssistanceParticipationCallablePayload"
+};
+
+export const eventAssistanceParticipationCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "operationRevision",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "enum": [
+        "read",
+        "applied",
+        "replayed"
+      ]
+    },
+    "operationRevision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "attendeeId",
+        "serverTime",
+        "sourceHash",
+        "freshness",
+        "revision",
+        "episodeId",
+        "participation",
+        "canChange",
+        "checkedIn",
+        "resumeUnits"
+      ],
+      "properties": {
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "freshness": {
+          "enum": [
+            "uninitialized",
+            "current",
+            "sourceChanged"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "episodeId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "participation": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "resumeAtUnit"
+                  ],
+                  "properties": {
+                    "state": {
+                      "const": "active"
+                    },
+                    "resumeAtUnit": {
+                      "type": "null"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "resumeAtUnit"
+                  ],
+                  "properties": {
+                    "state": {
+                      "const": "temporaryBreak"
+                    },
+                    "resumeAtUnit": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "resumeAtUnit"
+                  ],
+                  "properties": {
+                    "state": {
+                      "const": "departed"
+                    },
+                    "resumeAtUnit": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "canChange": {
+          "type": "boolean"
+        },
+        "checkedIn": {
+          "type": "boolean"
+        },
+        "resumeUnits": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "label"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceParticipationCallableResponse"
+};
+
 export const eventAssistanceSettingDocumentSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -27789,7 +28372,9 @@ export const eventAssistanceGuestDocumentSchema = {
     "lifecycle",
     "intention",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "sourceGeneration",
+    "participation"
   ],
   "properties": {
     "schemaVersion": {
@@ -28025,6 +28610,72 @@ export const eventAssistanceGuestDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "sourceGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "participation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "active"
+            },
+            "resumeAtUnit": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "temporaryBreak"
+            },
+            "resumeAtUnit": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "departed"
+            },
+            "resumeAtUnit": {
+              "type": "null"
+            }
+          }
+        }
+      ]
     }
   },
   "title": "EventAssistanceGuestDocument",
@@ -45658,42 +46309,147 @@ export const eventAssistanceCommandSchema = {
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         },
         "payload": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "attendeeId",
-            "state",
-            "resumeAtUnit"
-          ],
-          "properties": {
-            "attendeeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "state": {
-              "type": "string",
-              "enum": [
-                "active",
-                "temporaryBreak",
-                "departed"
-              ]
-            },
-            "resumeAtUnit": {
-              "anyOf": [
-                {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
                   "type": "string",
                   "minLength": 1,
-                  "maxLength": 2000
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
                 },
-                {
-                  "type": "null",
-                  "const": null
+                "state": {
+                  "const": "active"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
                 }
-              ]
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "temporaryBreak"
+                },
+                "resumeAtUnit": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "state",
+                "resumeAtUnit",
+                "episodeId",
+                "expectedParticipationRevision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "state": {
+                  "const": "departed"
+                },
+                "resumeAtUnit": {
+                  "type": "null"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "expectedParticipationRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
             }
-          }
+          ]
         }
       }
     },
@@ -49890,7 +50646,8 @@ export const eventAssistanceLateJoinInputSchema = {
         "admission",
         "attendance",
         "intention",
-        "deliveryEligibility"
+        "deliveryEligibility",
+        "participation"
       ],
       "properties": {
         "attendeeId": {
@@ -50196,6 +50953,14 @@ export const eventAssistanceLateJoinInputSchema = {
           "enum": [
             "eligible",
             "unreachable",
+            "unknown"
+          ]
+        },
+        "participation": {
+          "enum": [
+            "active",
+            "temporaryBreak",
+            "departed",
             "unknown"
           ]
         }
@@ -50762,7 +51527,8 @@ export const eventAssistanceLateJoinDecisionSchema = {
           "enum": [
             "eventClosed",
             "notAdmitted",
-            "policyDisabled"
+            "policyDisabled",
+            "participationInactive"
           ]
         }
       }
@@ -50807,7 +51573,8 @@ export const eventAssistanceLateJoinDecisionSchema = {
             "attendanceUnknown",
             "guidanceUnavailable",
             "throttled",
-            "unchanged"
+            "unchanged",
+            "participationUnknown"
           ]
         }
       }

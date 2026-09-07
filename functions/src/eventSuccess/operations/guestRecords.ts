@@ -1,5 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import type {Transaction, Firestore} from "firebase-admin/firestore";
+import type {Transaction, Firestore, DocumentSnapshot} from
+  "firebase-admin/firestore";
 import type {EventAssistanceGuestDocument as Guest} from
   "../../shared/generated/eventAssistanceGuestDocument";
 import type {EventAssistanceThreadDocument as Thread} from
@@ -76,6 +77,7 @@ export interface GuestSourceFacts {
   attendeeStatus: "invited" | "registered" | "waitlisted" |
     "checkedIn" | "cancelled";
   attendeeGeneration: string;
+  sourceGeneration: string;
 }
 
 /** Exact roster generation; a deleted/recreated row cannot inherit a grant. */
@@ -99,6 +101,14 @@ export async function readGuestSourceFacts(
     db.collection("events").doc(context.eventId),
     db.collection("eventAttendees").doc(attendeeId),
   );
+  return guestSourceFactsFromSnapshots(context, attendeeId, eventSnapshot,
+    attendeeSnapshot);
+}
+
+export function guestSourceFactsFromSnapshots(context: Guest["context"],
+  attendeeId: string, eventSnapshot: DocumentSnapshot,
+  attendeeSnapshot: DocumentSnapshot): GuestSourceFacts {
+  guestIdentity(context, attendeeId);
   const event = eventSnapshot.data();
   const attendee = attendeeSnapshot.data();
   if (!event || !attendee ||
@@ -114,6 +124,9 @@ export async function readGuestSourceFacts(
       event.name.trim().slice(0, 160) : "Your event",
     eventStatus: event.status, eventEnd: seconds * 1000 + nanos / 1_000_000,
     attendeeStatus: attendee.status,
+    sourceGeneration: operationContentHash([
+      timestampParts(eventSnapshot.createTime),
+      timestampParts(attendeeSnapshot.createTime)]),
     attendeeGeneration: operationContentHash(
       timestampParts(attendee.createdAt)),
   };
@@ -146,16 +159,41 @@ export function messageWindowOpen(
 export function currentGuest(guest: Guest, source: GuestSourceFacts): boolean {
   return guest.lifecycle === "active" &&
     guest.attendeeGeneration === source.attendeeGeneration &&
+    guest.sourceGeneration === source.sourceGeneration &&
     (source.attendeeStatus === "registered" ||
       source.attendeeStatus === "checkedIn");
+}
+
+/** Participation stops activity prompts while preserving essential updates. */
+export function messageRequiresActiveParticipation(
+  intent: MessageRecord["intent"]
+): boolean {
+  if (intent.kind === "joiningUpdate") return true;
+  switch (intent.noticeKind) {
+  case "joiningInstructions":
+  case "guestRequirement":
+  case "assignmentChanged":
+  case "participationCheck": return true;
+  case "eventCancelled":
+  case "eventFinished":
+  case "followUp":
+  case "planChanged": return false;
+  default: {
+    const unhandled: never = intent.noticeKind;
+    throw new Error("Unhandled participation message purpose: " + unhandled);
+  }
+  }
 }
 
 export function guestCanReceiveMessage(
   guest: Guest, source: GuestSourceFacts, intent: MessageRecord["intent"]
 ): boolean {
+  if (messageRequiresActiveParticipation(intent) &&
+      guest.participation.state !== "active") return false;
   if (currentGuest(guest, source)) return true;
   return guest.lifecycle === "active" &&
     guest.attendeeGeneration === source.attendeeGeneration &&
+    guest.sourceGeneration === source.sourceGeneration &&
     source.attendeeStatus === "cancelled" &&
     intent.kind === "operationalNotice" &&
     intent.noticeKind === "eventCancelled";

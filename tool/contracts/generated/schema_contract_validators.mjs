@@ -3,6 +3,10 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceParticipationReceiptDocumentSchema,
+  getEventAssistanceParticipationCallablePayloadSchema,
+  setEventAssistanceParticipationCallablePayloadSchema,
+  eventAssistanceParticipationCallableResponseSchema,
   eventAssistanceSettingDocumentSchema,
   eventAssistanceSettingReceiptDocumentSchema,
   getEventAssistanceSettingCallablePayloadSchema,
@@ -608,6 +612,10 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceParticipationReceiptDocument = ajv.compile(eventAssistanceParticipationReceiptDocumentSchema);
+export const validateGetEventAssistanceParticipationCallablePayload = ajv.compile(getEventAssistanceParticipationCallablePayloadSchema);
+export const validateSetEventAssistanceParticipationCallablePayload = ajv.compile(setEventAssistanceParticipationCallablePayloadSchema);
+export const validateEventAssistanceParticipationCallableResponse = ajv.compile(eventAssistanceParticipationCallableResponseSchema);
 export const validateEventAssistanceSettingDocument = ajv.compile(eventAssistanceSettingDocumentSchema);
 export const validateEventAssistanceSettingReceiptDocument = ajv.compile(eventAssistanceSettingReceiptDocumentSchema);
 export const validateGetEventAssistanceSettingCallablePayload = ajv.compile(getEventAssistanceSettingCallablePayloadSchema);

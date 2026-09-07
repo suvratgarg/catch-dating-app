@@ -16,6 +16,27 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "EventAssistanceParticipationReceiptDocument",
+    "source": "firestore/event_assistance_participation_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceParticipationCallablePayload",
+    "source": "callables/get_event_assistance_participation_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceParticipationCallablePayload.ts"
+  },
+  {
+    "name": "SetEventAssistanceParticipationCallablePayload",
+    "source": "callables/set_event_assistance_participation_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/setEventAssistanceParticipationCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceParticipationCallableResponse",
+    "source": "callable_responses/event_assistance_participation_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationCallableResponse.ts"
+  },
+
+  {
       "name": "EventAssistanceSettingDocument",
       "source": "firestore/event_assistance_settings.schema.json",
       "typeOutput": "functions/src/shared/generated/eventAssistanceSettingDocument.ts"

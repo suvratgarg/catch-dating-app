@@ -19,6 +19,8 @@ const schemaEventAssistanceGuestDocumentSchema = <String, Object?>{
     'intention',
     'createdAt',
     'updatedAt',
+    'sourceGeneration',
+    'participation',
   ],
   'properties': <String, Object?>{
     'schemaVersion': <String, Object?>{
@@ -254,6 +256,72 @@ const schemaEventAssistanceGuestDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 9007199254740991,
+    },
+    'sourceGeneration': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
+    'participation': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'state',
+            'resumeAtUnit',
+          ],
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'const': 'active',
+            },
+            'resumeAtUnit': <String, Object?>{
+              'type': 'null',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'state',
+            'resumeAtUnit',
+          ],
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'const': 'temporaryBreak',
+            },
+            'resumeAtUnit': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'state',
+            'resumeAtUnit',
+          ],
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'const': 'departed',
+            },
+            'resumeAtUnit': <String, Object?>{
+              'type': 'null',
+            },
+          },
+        },
+      ],
     },
   },
   'title': 'EventAssistanceGuestDocument',

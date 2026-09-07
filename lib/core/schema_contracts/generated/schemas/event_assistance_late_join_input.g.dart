@@ -223,6 +223,7 @@ const schemaEventAssistanceLateJoinInputSchema = <String, Object?>{
         'attendance',
         'intention',
         'deliveryEligibility',
+        'participation',
       ],
       'properties': <String, Object?>{
         'attendeeId': <String, Object?>{
@@ -528,6 +529,14 @@ const schemaEventAssistanceLateJoinInputSchema = <String, Object?>{
           'enum': <Object?>[
             'eligible',
             'unreachable',
+            'unknown',
+          ],
+        },
+        'participation': <String, Object?>{
+          'enum': <Object?>[
+            'active',
+            'temporaryBreak',
+            'departed',
             'unknown',
           ],
         },

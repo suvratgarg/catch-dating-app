@@ -28,6 +28,12 @@ export function evaluateLateJoinPolicy(input) {
     if (guest.admission !== "admitted") {
         return { kind: "cancelled", reason: "notAdmitted" };
     }
+    if (guest.participation === "unknown") {
+        return { kind: "wait", reason: "participationUnknown" };
+    }
+    if (guest.participation !== "active") {
+        return { kind: "cancelled", reason: "participationInactive" };
+    }
     if (guest.attendance.kind === "known" && guest.attendance.value.checkedIn) {
         return { kind: "resolved", reason: "joined" };
     }

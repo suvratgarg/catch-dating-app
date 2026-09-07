@@ -320,7 +320,8 @@ test("changed progress withholds publication, links and guest effects",
       const before = h.db.entries();
       assert.deepEqual(await h.store.getView(h.link.linkId, h.link.secret),
         {status: "unavailable", serverTime: h.clock.now,
-          reason: "noInstructions"});
+          reason: change === "generation" ?
+            "guestUnavailable" : "noInstructions"});
       assert.equal((await h.store.submit(h.submission)).result.kind,
         "rejected");
       await assert.rejects(h.store.publishMessage(h.intent, null),
@@ -330,7 +331,8 @@ test("changed progress withholds publication, links and guest effects",
       const db = h.db as unknown as Firestore;
       const gate = await db.runTransaction((tx) =>
         readEventAssistanceMessageGate(db, tx, h.intent, h.clock.now));
-      assert.deepEqual(gate, {kind: "stop", reason: "superseded"});
+      assert.deepEqual(gate, {kind: "stop", reason: change === "generation" ?
+        "notAdmitted" : "superseded"});
       assert.deepEqual(h.db.entries(), before);
     }
   });

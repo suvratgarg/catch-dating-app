@@ -58,10 +58,14 @@ export class GuestAssistanceStore {
         attendeeId);
       const now = this.now();
       const episodeId = "episode:" + operationContentHash([
-        guestId, source.attendeeGeneration, operationId,
+        guestId, source.attendeeGeneration, source.sourceGeneration,
+        operationId, expectedRevision,
       ]);
       const existing = snapshot.exists ? parseGuest(snapshot.data()) : null;
-      if (existing && existing.guestId !== guestId) throw unavailable();
+      if (existing && (existing.guestId !== guestId ||
+          existing.updatedAt > now)) {
+        throw unavailable();
+      }
       if (existing?.episodeId === episodeId) return existing;
       if ((existing?.revision ?? null) !== expectedRevision) throw conflict();
       if (source.attendeeStatus !== "registered" &&
@@ -69,9 +73,12 @@ export class GuestAssistanceStore {
           !(source.attendeeStatus === "cancelled" &&
             source.eventStatus === "cancelled")) throw unavailable();
       const guest = parseGuest({schemaVersion: 1, guestId, context, attendeeId,
-        attendeeGeneration: source.attendeeGeneration, episodeId,
+        attendeeGeneration: source.attendeeGeneration,
+        sourceGeneration: source.sourceGeneration, episodeId,
+        participation: {state: "active", resumeAtUnit: null},
         revision: existing ? existing.revision + 1 : 0, lifecycle: "active",
-        intention: {kind: "unknown"}, createdAt: now, updatedAt: now});
+        intention: {kind: "unknown"}, createdAt: existing?.createdAt ?? now,
+        updatedAt: now});
       tx.set(reference, guest);
       return guest;
     });

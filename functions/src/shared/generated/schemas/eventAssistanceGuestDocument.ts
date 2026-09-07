@@ -16,7 +16,9 @@ export const eventAssistanceGuestDocumentSchema: Record<string, unknown> = {
     "lifecycle",
     "intention",
     "createdAt",
-    "updatedAt"
+    "updatedAt",
+    "sourceGeneration",
+    "participation"
   ],
   "properties": {
     "schemaVersion": {
@@ -252,6 +254,72 @@ export const eventAssistanceGuestDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "sourceGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "participation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "active"
+            },
+            "resumeAtUnit": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "temporaryBreak"
+            },
+            "resumeAtUnit": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "state": {
+              "const": "departed"
+            },
+            "resumeAtUnit": {
+              "type": "null"
+            }
+          }
+        }
+      ]
     }
   },
   "title": "EventAssistanceGuestDocument",

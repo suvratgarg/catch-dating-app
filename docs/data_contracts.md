@@ -104,6 +104,33 @@ domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
 
+### Event Assistance Participation Contract
+
+`eventAssistanceGuests` owns explicit participation independently of its reported
+joining intention. `participation` is a correlated state: active and departed
+require a null return point; temporaryBreak may carry a currently saved itinerary
+unit reference. The record also binds the exact Firestore creation generations
+of its event and roster row. Source replacement withholds the old state and
+requires a new reviewed episode. Reads expose only participation, source/revision
+fences, check-in status and return choices; they contain no contact information
+or reported joining intention.
+
+`eventAssistanceParticipationReceipts/{receiptId}` is a server-only immutable
+command receipt. Its identity binds event/guest/operation; its request hash
+includes the authenticated actor. State and receipt commit together. Exact
+retries return the original revision plus current state; changed reuse, source
+replacement and stale commands fail. No direct client access or TTL is enabled.
+Retention must cover executable commands and outstanding guest capabilities.
+
+The get/set participation callables require Auth, App Check, rate limiting and
+current organizer-manager or linked-attendee authority. Set consumes the canonical
+`setParticipation` command with episode and revision fences and a reviewed source
+hash. Admission must be registered/checked-in and the event must remain open.
+Re-entry starts a fresh episode; other state changes preserve it. The command
+never checks someone in, allocates them, changes consent or infers that they have
+returned. All messaging boundaries suppress affected activity prompts while
+retaining independently eligible essential and post-event updates.
+
 ### Event Assistance Settings Contract
 
 `eventAssistanceSettings/{settingId}` stores a typed preference for one live
@@ -2426,7 +2453,9 @@ receipts through this capability's lifetime and provider reconciliation window.
 ### Event Assistance Guest Response Contract
 
 `eventAssistanceGuests` stores the event/attendee binding, exact roster creation
-generation, participation episode and revisioned reported intent. It deliberately
+generation, explicit participation, episode and revisioned reported intent.
+Firestore event/roster creation generations also fence source replacement.
+It deliberately
 does not extend or mutate the admission/attendance projection. Replacing an
 episode invalidates all earlier grants. `eventAssistanceThreads` stores one
 current message head per guest episode, workflow kind and occurrence; separate

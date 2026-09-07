@@ -3,6 +3,7 @@ import type {MessageRecord} from "./messageOutbox";
 import type {DispatchGate} from "./messagingPolicy";
 import {
   guestCanReceiveMessage, guestCollections, guestIdentity, messageWindowOpen,
+  messageRequiresActiveParticipation,
   parseGuest, parseThread, readGuestSourceFacts, threadIdentity,
 } from "./guestRecords";
 import {joiningGuidanceIsCurrent} from "./groupProgressReader";
@@ -33,6 +34,10 @@ export async function readEventAssistanceMessageGate(
   }
   const source = await readGuestSourceFacts(db, tx, intent.context,
     intent.attendeeId);
+  if (messageRequiresActiveParticipation(intent) &&
+      guest.participation.state !== "active") {
+    return {kind: "stop", reason: "participationInactive"};
+  }
   if (!guestCanReceiveMessage(guest, source, intent)) {
     return {kind: "stop", reason: "notAdmitted"};
   }

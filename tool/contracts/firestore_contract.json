@@ -1847,6 +1847,16 @@
       ]
     },
     {
+      "id": "eventAssistanceParticipationReceipts",
+      "path": "eventAssistanceParticipationReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceParticipationReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance participation command",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": ["setEventAssistanceParticipation"]
+    },
+    {
       "id": "eventAssistanceSettingReceipts",
       "path": "eventAssistanceSettingReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceSettingReceipts/{receiptId}",
@@ -1894,6 +1904,8 @@
       "write": "server only",
       "exportedFunctions": [
         "getEventAssistanceGuestView",
+        "getEventAssistanceParticipation",
+        "setEventAssistanceParticipation",
         "submitEventAssistanceGuestChoice"
       ]
     },

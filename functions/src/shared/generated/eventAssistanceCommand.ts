@@ -243,11 +243,28 @@ export type EventAssistanceCommand =
           };
       eventId: string;
       operationId: string;
-      payload: {
-        attendeeId: string;
-        state: "active" | "temporaryBreak" | "departed";
-        resumeAtUnit: string | null;
-      };
+      payload:
+        | {
+            attendeeId: string;
+            state: "active";
+            resumeAtUnit: null;
+            episodeId: string | null;
+            expectedParticipationRevision: number;
+          }
+        | {
+            attendeeId: string;
+            state: "temporaryBreak";
+            resumeAtUnit: string | null;
+            episodeId: string | null;
+            expectedParticipationRevision: number;
+          }
+        | {
+            attendeeId: string;
+            state: "departed";
+            resumeAtUnit: null;
+            episodeId: string | null;
+            expectedParticipationRevision: number;
+          };
     }
   | {
       kind: "proposeAllocation";

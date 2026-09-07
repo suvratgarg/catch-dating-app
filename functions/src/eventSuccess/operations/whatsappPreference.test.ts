@@ -4,7 +4,7 @@ import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore} from "./groupProgressTestFixtures";
 import type {SetEventWhatsappPreferenceCallablePayload as Submission} from
   "../../shared/generated/setEventWhatsappPreferenceCallablePayload";
 import {
@@ -24,7 +24,7 @@ import {
 const start = Date.parse("2026-09-07T12:00:00Z");
 
 async function harness(realDb?: Firestore, key = "one") {
-  const fake = new FakeFirestore();
+  const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
   const clock = {now: start};
   const paths = new Set<string>();

@@ -45,7 +45,7 @@ function input() {
         source: "host",
       },
       intention: {kind: "unknown"},
-      deliveryEligibility: "eligible",
+      participation: "active", deliveryEligibility: "eligible",
     },
     guidance: {
       kind: "known",

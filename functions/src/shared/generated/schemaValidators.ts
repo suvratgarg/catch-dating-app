@@ -5,6 +5,10 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateEventAssistanceParticipationReceiptDocument} from "./validators/eventAssistanceParticipationReceiptDocument";
+export {validateGetEventAssistanceParticipationCallablePayload} from "./validators/getEventAssistanceParticipationInput";
+export {validateSetEventAssistanceParticipationCallablePayload} from "./validators/setEventAssistanceParticipationInput";
+export {validateEventAssistanceParticipationCallableResponse} from "./validators/eventAssistanceParticipationOutput";
 export {validateEventAssistanceSettingDocument} from "./validators/eventAssistanceSettingDocument";
 export {validateEventAssistanceSettingReceiptDocument} from "./validators/eventAssistanceSettingReceiptDocument";
 export {validateGetEventAssistanceSettingCallablePayload} from "./validators/getEventAssistanceSettingInput";

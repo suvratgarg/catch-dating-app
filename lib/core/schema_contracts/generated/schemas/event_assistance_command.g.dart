@@ -1194,42 +1194,147 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
           'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
         },
         'payload': <String, Object?>{
-          'type': 'object',
-          'additionalProperties': false,
-          'required': <Object?>[
-            'attendeeId',
-            'state',
-            'resumeAtUnit',
-          ],
-          'properties': <String, Object?>{
-            'attendeeId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-            },
-            'state': <String, Object?>{
-              'type': 'string',
-              'enum': <Object?>[
-                'active',
-                'temporaryBreak',
-                'departed',
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'attendeeId',
+                'state',
+                'resumeAtUnit',
+                'episodeId',
+                'expectedParticipationRevision',
               ],
-            },
-            'resumeAtUnit': <String, Object?>{
-              'anyOf': <Object?>[
-                <String, Object?>{
+              'properties': <String, Object?>{
+                'attendeeId': <String, Object?>{
                   'type': 'string',
                   'minLength': 1,
-                  'maxLength': 2000,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
                 },
-                <String, Object?>{
+                'state': <String, Object?>{
+                  'const': 'active',
+                },
+                'resumeAtUnit': <String, Object?>{
                   'type': 'null',
-                  'const': null,
                 },
-              ],
+                'episodeId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'expectedParticipationRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+              },
             },
-          },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'attendeeId',
+                'state',
+                'resumeAtUnit',
+                'episodeId',
+                'expectedParticipationRevision',
+              ],
+              'properties': <String, Object?>{
+                'attendeeId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'state': <String, Object?>{
+                  'const': 'temporaryBreak',
+                },
+                'resumeAtUnit': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'episodeId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'expectedParticipationRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'attendeeId',
+                'state',
+                'resumeAtUnit',
+                'episodeId',
+                'expectedParticipationRevision',
+              ],
+              'properties': <String, Object?>{
+                'attendeeId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'state': <String, Object?>{
+                  'const': 'departed',
+                },
+                'resumeAtUnit': <String, Object?>{
+                  'type': 'null',
+                },
+                'episodeId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'expectedParticipationRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+          ],
         },
       },
     },

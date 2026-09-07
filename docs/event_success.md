@@ -125,6 +125,37 @@ The local shadow factory does not load live event facts or send messages.
 Trusted worker scheduling, complete live policy fact readers, provider adapters,
 and the Host/rehearsal application adapters remain integration work.
 
+### Participation commands
+
+`getEventAssistanceParticipation` and `setEventAssistanceParticipation` expose
+explicit active, temporary-break and departed states on the existing assistance
+guest record. Organizer managers and the attendee's current server-linked UID
+can read/change this state; check-in staff and bearer message links cannot.
+The writer re-reads canonical event, roster, organizer and plan documents inside
+its transaction. Command context, source hash, participation revision and episode
+must still match. An immutable receipt makes exact retries return their original
+operation revision and the latest state, without replaying an earlier choice.
+
+Participation and joining intent remain separate from admission, physical
+attendance, seating, group membership, message consent and safety cases. A break
+or departure suppresses joining guidance and activity prompts at publication,
+guest interaction and SMS/WhatsApp dispatch. Essential plan/cancellation updates
+and post-event follow-up remain eligible for their independent window and consent
+checks. Re-entry, including an explicit return after declining, creates a fresh
+episode and clears earlier joining intent; old grants and buttons cannot act on
+it. Source identity includes both Firestore event/roster creation generations,
+so identical deleted/recreated source rows cannot inherit a guest episode.
+
+A temporary break may carry a planned return point from the saved itinerary.
+That value is a preference, not an observed return: clock time and a scheduled
+stop never reactivate a guest. Other programme/round return points require their
+canonical unit reader before they become selectable. The shared late-join policy
+requires known active participation; unknown participation waits, and inactive
+participation cancels its proposed work. Missing guest records remain uninitialized
+on reads. App controls, module-specific opt-outs, future allocation exclusion,
+re-entry placement, group membership and rehearsal adapters remain integration
+work. The new command receipts need terminal retention before activation.
+
 ### Saved assistance settings
 
 `event_assistance_settings.schema.json` defines reusable templates for all 46

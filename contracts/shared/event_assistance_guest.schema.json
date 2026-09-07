@@ -73,7 +73,9 @@
         "lifecycle",
         "intention",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "sourceGeneration",
+        "participation"
       ],
       "properties": {
         "schemaVersion": {
@@ -127,6 +129,13 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "sourceGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "participation": {
+          "$ref": "event_assistance_common.schema.json#/definitions/Participation"
         }
       }
     },

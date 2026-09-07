@@ -124,6 +124,7 @@ export type EventAssistanceLateJoinInput = {
           kind: "notComing";
         };
     deliveryEligibility: "eligible" | "unreachable" | "unknown";
+    participation: "active" | "temporaryBreak" | "departed" | "unknown";
   };
   guidance:
     | {

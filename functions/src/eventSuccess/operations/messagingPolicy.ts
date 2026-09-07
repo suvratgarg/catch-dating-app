@@ -21,7 +21,7 @@ export type RouteReadiness = {
 };
 export type StopReason = "responded" | "cancelled" | "superseded" |
   "expired" | "eventClosed" | "permissionRevoked" | "guestPresent" |
-  "guestDeclined" | "notAdmitted" | "hostStopped";
+  "guestDeclined" | "notAdmitted" | "hostStopped" | "participationInactive";
 export type MessageLifecycle = "active" | "responded" | "cancelled" |
   "superseded";
 export type DispatchGate =

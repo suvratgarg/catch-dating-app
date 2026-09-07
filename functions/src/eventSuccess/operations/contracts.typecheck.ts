@@ -75,3 +75,16 @@ export function assertCorrelatedMessagingTypes(
   const invalidResponse: ResponseValue = {kind: "checkIn"};
   void [invalidPractice, invalidSender, invalidResponse, routeCoverage];
 }
+
+
+export function assertParticipationCommandsAreCorrelated(): void {
+  type Payload = Extract<EventAssistanceCommand,
+    {kind: "setParticipation"}>["payload"];
+  // @ts-expect-error A state change must fence both the episode and revision.
+  const missingRevision: Payload = {attendeeId: "a", state: "active",
+    resumeAtUnit: null};
+  // @ts-expect-error A departed guest cannot have a pending return point.
+  const contradictory: Payload = {attendeeId: "a", state: "departed",
+    episodeId: "e", expectedParticipationRevision: 1, resumeAtUnit: "unit"};
+  void [missingRevision, contradictory];
+}
