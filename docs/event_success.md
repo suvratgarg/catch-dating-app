@@ -248,19 +248,22 @@ registration. Safety requests retain their restricted owner. Server time is
 sampled again after source reads, and the shared event gate cannot extend a
 pre-event action past event end.
 
-The binding and consumer are invocable server services with signed-queue and
-Firestore race tests. The webhook trigger does not invoke this consumer yet.
-The existing Meta adapter can render template quick-reply payloads against
-complete approved button metadata, retain named/positional parameters, attach
-bounded callback correlation, read sender-bound credentials and enforce a
-pre-I/O dispatch deadline. These adapter capabilities are not yet connected to
-Event Assistance's permission, budget and dispatch transaction. Optional
-callback echo and finality still need account/version verification.
+`onEventAssistanceWhatsappEventCreated` connects the signed queue to the
+delivery and native reply consumers. Its retry-enabled Firestore trigger records
+an independent, source-bound `assistanceProcessing` checkpoint. An early reply's
+`waiting` result retries until correlation becomes available or authority
+expires. Permanent rejections terminate. Checkpoint failure after a successful
+guest effect retries idempotently; concurrent completion cannot be overwritten
+by an older waiting result. Campaign/Inbox processing retains its own fields.
+Signed-ingress tests and real Firestore contention tests cover these boundaries.
 
-WhatsApp dispatch, delivery correlation and durable retry scheduling must be
-connected together so an early reply's `waiting`
-result is resumed after delivery evidence arrives. Reply handling itself never
-sends an acknowledgement or fallback. Retention must preserve binding evidence
+The Meta worker connects approved template material, named/positional
+parameters, native choices, sender credentials and dispatch deadlines to the
+permission/budget transaction. Optional callback echo and failure finality
+still need account/version verification. Unconfirmed failures retain their
+delivery hold; processing them does not authorize fallback. Reply handling
+itself never sends an acknowledgement or fallback. Live executor integration
+and activation remain separate work. Retention must preserve binding evidence
 through outbox reconciliation before activation.
 
 ### Reviewed WhatsApp message material
@@ -377,15 +380,15 @@ example. Missing credentials or a different shape cannot update the outbox.
 This is an invocable server worker tested with an injected transport and the
 Firestore emulator, not an enabled provider integration. Gupshup is the first
 candidate adapter; account selection and actual use-case/DLT approvals remain
-unconfirmed. This bounded worker only accepts SMS-only intents; multi-route
-intents are withheld until a shared reader can assess all permitted channels.
+unconfirmed. The channel-specific worker only accepts SMS-only intents;
+multi-route intents use `EventMessageWorker` and its shared authority reader.
 Before activation, complete the remaining consent/withdrawal entry points,
 audited sender/budget provisioning, live Operations scheduling, authenticated delivery
 ingress and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
-fixture permission or quote can satisfy live onboarding. WhatsApp/RCS routing
-and Host/rehearsal projections remain later delivery slices.
+fixture permission or quote can satisfy live onboarding. RCS routing and
+Host/rehearsal projections remain later delivery slices.
 
 The implementation sequence is shared contracts and durable execution, an
 SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow

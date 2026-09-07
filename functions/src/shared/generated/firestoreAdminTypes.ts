@@ -5253,6 +5253,48 @@ export interface OrganizerMessagingWebhookEventDocument {
   inboundBody: string | null;
   providerErrorCode: number | null;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.
+   */
+  assistanceProcessing?: {
+    sourceHash: string;
+    attemptCount: number;
+    updatedAt: FirebaseFirestore.Timestamp;
+    outcome:
+      | {
+          kind: "delivery";
+          disposition:
+            | "applied"
+            | "duplicateOrOlder"
+            | "conflictingEvidence"
+            | "unconfirmed";
+        }
+      | {
+          kind: "reply";
+          disposition: "accepted" | "replayed";
+        }
+      | {
+          kind: "waiting";
+          reason: "deliveryUnconfirmed";
+        }
+      | {
+          kind: "ignored";
+        }
+      | {
+          kind: "rejected";
+          reason:
+            | "unavailable"
+            | "deliveryScope"
+            | "scopeMismatch"
+            | "staleIntent"
+            | "invalidChoice"
+            | "expired"
+            | "alreadyResponded"
+            | "noLongerNeeded"
+            | "factsStale"
+            | "guestStateChanged";
+        };
+  };
   processingStatus: "pending" | "processed" | "unmatched" | "failed";
   attemptCount: number;
   createdAt: FirebaseFirestore.Timestamp;

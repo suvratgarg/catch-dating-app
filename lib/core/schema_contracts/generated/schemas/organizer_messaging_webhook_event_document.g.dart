@@ -267,6 +267,147 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'assistanceProcessing': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.',
+      'required': <Object?>[
+        'sourceHash',
+        'attemptCount',
+        'updatedAt',
+        'outcome',
+      ],
+      'properties': <String, Object?>{
+        'sourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'attemptCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000000,
+        },
+        'updatedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'outcome': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'delivery',
+                },
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'applied',
+                    'duplicateOrOlder',
+                    'conflictingEvidence',
+                    'unconfirmed',
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'reply',
+                },
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'accepted',
+                    'replayed',
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'waiting',
+                },
+                'reason': <String, Object?>{
+                  'const': 'deliveryUnconfirmed',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'ignored',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'rejected',
+                },
+                'reason': <String, Object?>{
+                  'enum': <Object?>[
+                    'unavailable',
+                    'deliveryScope',
+                    'scopeMismatch',
+                    'staleIntent',
+                    'invalidChoice',
+                    'expired',
+                    'alreadyResponded',
+                    'noLongerNeeded',
+                    'factsStale',
+                    'guestStateChanged',
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     'processingStatus': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

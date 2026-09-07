@@ -265,6 +265,147 @@ export const organizerMessagingWebhookEventDocumentSchema: Record<string, unknow
         }
       ]
     },
+    "assistanceProcessing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.",
+      "required": [
+        "sourceHash",
+        "attemptCount",
+        "updatedAt",
+        "outcome"
+      ],
+      "properties": {
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "outcome": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "disposition"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "delivery"
+                },
+                "disposition": {
+                  "enum": [
+                    "applied",
+                    "duplicateOrOlder",
+                    "conflictingEvidence",
+                    "unconfirmed"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "disposition"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "reply"
+                },
+                "disposition": {
+                  "enum": [
+                    "accepted",
+                    "replayed"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "waiting"
+                },
+                "reason": {
+                  "const": "deliveryUnconfirmed"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "ignored"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "rejected"
+                },
+                "reason": {
+                  "enum": [
+                    "unavailable",
+                    "deliveryScope",
+                    "scopeMismatch",
+                    "staleIntent",
+                    "invalidChoice",
+                    "expired",
+                    "alreadyResponded",
+                    "noLongerNeeded",
+                    "factsStale",
+                    "guestStateChanged"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "processingStatus": {
       "type": "string",
       "enum": [

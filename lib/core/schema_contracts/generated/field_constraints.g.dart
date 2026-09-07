@@ -53181,6 +53181,52 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeDisposition = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.disposition',
+    required: true,
+    enumValues: <String>['accepted', 'replayed'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.kind',
+    required: true,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeReason = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.reason',
+    required: true,
+    enumValues: <String>['unavailable', 'deliveryScope', 'scopeMismatch', 'staleIntent', 'invalidChoice', 'expired', 'alreadyResponded', 'noLongerNeeded', 'factsStale', 'guestStateChanged'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingSourceHash = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerMessagingWebhookEventDocumentAttemptCount = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.attemptCount',
     required: true,
@@ -76859,6 +76905,13 @@ abstract final class CatchContractConstraints {
     'organizerMessagingSetupCallableResponse.templates.items.templateId': organizerMessagingSetupCallableResponseTemplatesItemsTemplateId,
     'organizerMessagingSetupCallableResponse.templates.items.variableNames': organizerMessagingSetupCallableResponseTemplatesItemsVariableNames,
     'organizerMessagingSetupCallableResponse.templates.items.variableNames.items': organizerMessagingSetupCallableResponseTemplatesItemsVariableNamesItems,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.attemptCount': organizerMessagingWebhookEventDocumentAssistanceProcessingAttemptCount,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.disposition': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeDisposition,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.kind': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeKind,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.reason': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeReason,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.sourceHash': organizerMessagingWebhookEventDocumentAssistanceProcessingSourceHash,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._nanoseconds': organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._seconds': organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtSeconds,
     'organizerMessagingWebhookEventDocument.attemptCount': organizerMessagingWebhookEventDocumentAttemptCount,
     'organizerMessagingWebhookEventDocument.callbackData': organizerMessagingWebhookEventDocumentCallbackData,
     'organizerMessagingWebhookEventDocument.connectionId': organizerMessagingWebhookEventDocumentConnectionId,

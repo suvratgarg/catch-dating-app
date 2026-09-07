@@ -164,9 +164,18 @@ recipient and original provider message correlation precede the shared
 `applyGuestChoice` transaction. Unknown delivery correlation yields a waiting
 result; expired, replaced or mismatched authority cannot execute a choice.
 The webpage and provider consumer share response deduplication and case/intent
-writes. Neither can change attendance, assignment or registration. Connecting
-this consumer to the live sender and its durable deferred-reply scheduling
-remains integration work. These bindings have no TTL yet; activation requires
+writes. Neither can change attendance, assignment or registration.
+
+`onEventAssistanceWhatsappEventCreated` now invokes delivery and native reply
+consumers from the authenticated queue. The optional `assistanceProcessing`
+checkpoint is independent of campaign/Inbox processing fields. It binds the
+immutable queue evidence and ingress receipt to a content hash, validates their
+identity and scope, and records only bounded processing outcomes. A waiting
+reply throws for the trigger's bounded retry policy; expired or permanently
+rejected choices terminate. A failed checkpoint after an applied guest effect
+replays the idempotent consumer, and an older waiting result cannot overwrite
+terminal completion. Unrelated webhook traffic is ignored. No provider I/O
+runs in this processor. These bindings have no TTL yet; activation requires
 retention aligned with the outbox's reconciliation window.
 
 Approved template snapshots now retain optional `parameterFormat`,
@@ -2234,9 +2243,10 @@ a conflict. It does not execute guest choices or grant fallback permission.
 
 Failed or inconsistent provider statuses remain unconfirmed until the provider
 error/finality mapping is reviewed. The configured Meta API version's callback
-echo still requires controlled account verification. Durable queue/reply
-retries and failure classification remain integration work. These boundaries do not
-activate automated sending.
+echo still requires controlled account verification. The durable queue consumer
+records unconfirmed delivery outcomes without retrying them or permitting
+fallback; reviewed failure classification and reconciliation remain integration
+work. These boundaries do not activate automated sending.
 
 ### Event Assistance Channel Selection Contract
 
