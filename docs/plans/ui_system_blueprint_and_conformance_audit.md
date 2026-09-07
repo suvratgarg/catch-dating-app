@@ -885,6 +885,12 @@ helper methods, 21 raw decorations continue through the widget-consolidation
 worklog's K/R/D lanes (that spec keeps ownership; this program does not
 duplicate it); golden waivers burn to zero.
 
+Golden coverage now has zero waivers: the generated notice provider is exercised
+through its production controller and host, and scaled preferred-size geometry
+through the production scaffold, top bar and tab rail. These direct previews
+cover empty/published notices and direct/nested header reservation at both themes
+and text scales. The remaining conformance and consolidation lanes stay open.
+
 ### Work packet template (every Codex slice)
 
 ```text

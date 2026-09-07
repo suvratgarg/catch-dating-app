@@ -71,8 +71,12 @@ import 'package:widgetbook_workspace/primitives/layout_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_layout_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
     as _widgetbook_workspace_primitives_menu_anchor_use_cases;
+import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart'
+    as _widgetbook_workspace_primitives_notice_provider_use_cases;
 import 'package:widgetbook_workspace/primitives/picker_use_cases.dart'
     as _widgetbook_workspace_primitives_picker_use_cases;
+import 'package:widgetbook_workspace/primitives/preferred_size_use_cases.dart'
+    as _widgetbook_workspace_primitives_preferred_size_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
@@ -1923,6 +1927,38 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_form_protocol_use_cases
                         .formStepSpecificationStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Header sizing',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchScaledPreferredSize',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Direct and nested scaled header reservation',
+                builder:
+                    _widgetbook_workspace_primitives_preferred_size_use_cases
+                        .scaledHeaderReservationStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Notice provider',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchNoticeControllerProvider',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Empty and published notice queue',
+                builder:
+                    _widgetbook_workspace_primitives_notice_provider_use_cases
+                        .noticeProviderStates,
               ),
             ],
           ),
