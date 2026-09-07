@@ -282,6 +282,10 @@ export const eventAssistanceGroupProgressCallableResponseSchema: Record<string, 
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 9007199254740991
+                },
+                "departureRosterId": {
+                  "type": "string",
+                  "pattern": "^departure-roster:[a-f0-9]{64}$"
                 }
               }
             },

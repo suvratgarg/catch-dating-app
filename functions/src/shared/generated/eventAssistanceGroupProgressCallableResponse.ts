@@ -51,6 +51,7 @@ export interface EventAssistanceGroupProgressCallableResponse {
       requestHash: string;
       createdAt: number;
       updatedAt: number;
+      departureRosterId?: string;
     } | null;
     guidance: {
       /**

@@ -206,6 +206,31 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
               'maximum': 9007199254740991,
               'description': 'Nonnegative safe integer revision.',
             },
+            'departureRoster': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'attendeeIds',
+                'expectedSourceHash',
+              ],
+              'properties': <String, Object?>{
+                'attendeeIds': <String, Object?>{
+                  'type': 'array',
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'uniqueItems': true,
+                  'maxItems': 1000,
+                },
+                'expectedSourceHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+              },
+            },
           },
         },
       },

@@ -32,6 +32,9 @@ export {validateEventAssistanceSettingReceiptDocument} from "./validators/eventA
 export {validateGetEventAssistanceSettingCallablePayload} from "./validators/getEventAssistanceSettingInput";
 export {validateSetEventAssistanceSettingCallablePayload} from "./validators/setEventAssistanceSettingInput";
 export {validateEventAssistanceSettingCallableResponse} from "./validators/eventAssistanceSettingOutput";
+export {validateGetEventAssistanceDepartureRosterCallablePayload} from "./validators/getEventAssistanceDepartureRosterInput";
+export {validateEventAssistanceDepartureRosterCallableResponse} from "./validators/eventAssistanceDepartureRosterOutput";
+export {validateEventAssistanceDepartureRosterDocument} from "./validators/eventAssistanceDepartureRosterDocument";
 export {validateEventAssistanceProgressReceiptDocument} from "./validators/eventAssistanceProgressReceiptDocument";
 export {validateEventAssistanceGroupProgressDocument} from "./validators/eventAssistanceGroupProgressDocument";
 export {validateGetEventAssistanceGroupProgressCallablePayload} from "./validators/getEventAssistanceGroupProgressInput";

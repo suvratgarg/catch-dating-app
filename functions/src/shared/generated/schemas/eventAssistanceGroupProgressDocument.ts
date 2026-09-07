@@ -188,6 +188,10 @@ export const eventAssistanceGroupProgressDocumentSchema: Record<string, unknown>
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "departureRosterId": {
+      "type": "string",
+      "pattern": "^departure-roster:[a-f0-9]{64}$"
     }
   },
   "title": "EventAssistanceGroupProgressDocument",

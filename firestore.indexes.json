@@ -1474,6 +1474,11 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "eventAssistanceDepartureRosters",
+      "fieldPath": "members",
+      "indexes": []
+    },
+    {
       "collectionGroup": "organizerFormAggregateEvents",
       "fieldPath": "expiresAt",
       "ttl": true,

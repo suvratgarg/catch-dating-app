@@ -119,6 +119,21 @@ const schemaSpecs = [
       "typeOutput": "functions/src/shared/generated/eventAssistanceSettingCallableResponse.ts"
   },
   {
+    "name": "GetEventAssistanceDepartureRosterCallablePayload",
+    "source": "callables/get_event_assistance_departure_roster_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceDepartureRosterCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceDepartureRosterCallableResponse",
+    "source": "callable_responses/event_assistance_departure_roster_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceDepartureRosterCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceDepartureRosterDocument",
+    "source": "firestore/event_assistance_departure_rosters.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceDepartureRosterDocument.ts"
+  },
+  {
     name: "EventAssistanceProgressReceiptDocument",
     source: "firestore/event_assistance_progress_receipts.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts",

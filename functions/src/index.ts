@@ -527,3 +527,6 @@ export {getEventAssistanceGroupStaff, setEventAssistanceGroupStaff} from
 
 export {getEventAssistanceMembership, transferEventAssistanceGroup} from
   "./eventSuccess/operations/membershipHandlers";
+
+export {getEventAssistanceDepartureRoster} from
+  "./eventSuccess/operations/departureRosterHandlers";

@@ -191,6 +191,10 @@ const schemaEventAssistanceGroupProgressDocumentSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'departureRosterId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^departure-roster:[a-f0-9]{64}\$',
+    },
   },
   'title': 'EventAssistanceGroupProgressDocument',
   'x-firestore-collection': 'eventAssistanceGroupProgress',

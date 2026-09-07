@@ -23,6 +23,10 @@ import {
   projectGroupProgress,
 } from "./groupProgressSource";
 
+import {DEPARTURE_ROSTERS, departureRosterIdentity,
+  readDepartureRoster} from "./departureRosterSource";
+import {validateEventAssistanceDepartureRosterDocument} from
+  "../../shared/generated/validators/eventAssistanceDepartureRosterDocument";
 import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
 export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
@@ -93,10 +97,29 @@ export class EventGroupProgressStore {
         throw new HttpsError("failed-precondition",
           "Choose a destination from the current event setup.");
       }
+      const selection = command.payload.departureRoster;
+      const roster = selection ? await readDepartureRoster(this.db, tx,
+        state, selection.attendeeIds) : null;
+      const afterRoster = this.clock();
+      if (!Number.isSafeInteger(afterRoster) || afterRoster < state.now) {
+        throw invalidSource();
+      }
+      state.now = afterRoster;
+      if (afterRoster >= state.access.validUntil) throw denied();
+      if (afterRoster >= state.source.endAt) {
+        throw new HttpsError("failed-precondition", "This event has ended.");
+      }
+      if (roster && roster.sourceHash !== selection!.expectedSourceHash) {
+        throw conflict();
+      }
+      const nextRevision = (state.progress?.revision ?? 0) + 1;
+      const rosterId = roster ? departureRosterIdentity(context,
+        command.payload.groupId, nextRevision) : undefined;
       const progress: Progress = {
         schemaVersion: 1, progressId: progressIdentity(context,
           command.payload.groupId), context, groupId: command.payload.groupId,
-        revision: (state.progress?.revision ?? 0) + 1,
+        revision: nextRevision,
+        ...(rosterId ? {departureRosterId: rosterId} : {}),
         destination: target.target, sourceHash: state.source.sourceHash,
         confirmedBy: actorUid, confirmedAt: state.now,
         operationId: command.operationId, requestHash: hash,
@@ -110,11 +133,24 @@ export class EventGroupProgressStore {
       if (!validateEventAssistanceProgressReceiptDocument(savedReceipt)) {
         throw invalidSource();
       }
+      const manifest = roster ? {schemaVersion: 1, rosterId,
+        context, groupId: progress.groupId, progressId: progress.progressId,
+        progressRevision: progress.revision, sourceHash: progress.sourceHash,
+        confirmedBy: actorUid, confirmedAt: state.now,
+        members: roster.members} : null;
+      if (manifest &&
+          !validateEventAssistanceDepartureRosterDocument(manifest)) {
+        throw invalidSource();
+      }
       const result = response("applied", {...state, progress},
         progress.revision);
       tx.set(this.db.collection(GROUP_PROGRESS).doc(progress.progressId),
         progress);
       tx.create(receiptRef, savedReceipt);
+      if (manifest) {
+        tx.create(this.db.collection(DEPARTURE_ROSTERS).doc(rosterId!),
+          manifest);
+      }
       return result;
     });
   }

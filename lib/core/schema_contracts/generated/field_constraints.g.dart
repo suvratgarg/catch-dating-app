@@ -6756,6 +6756,31 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIds = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationCheckpointId = CatchContractFieldConstraints(
     path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.checkpointId',
     maxLength: 2000,
@@ -12686,6 +12711,213 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceDepartureRosterCallableResponseContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseSelectionAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.selection.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseSelectionAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.selection.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseSelectionExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.selection.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentConfirmedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.confirmedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRosterDocumentGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembers = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsCheckInHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.checkInHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsMembershipHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.membershipHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentMembersItemsSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.members.items.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentProgressId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.progressId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^progress:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDepartureRosterDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceDepartureRosterDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRosterDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceGroupProgressCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -13007,6 +13239,12 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDepartureRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.departureRosterId',
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationCheckpointId = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.checkpointId',
     maxLength: 2000,
@@ -13204,6 +13442,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressDocumentDepartureRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.departureRosterId',
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceGroupProgressDocumentDestinationCheckpointId = CatchContractFieldConstraints(
@@ -33608,6 +33852,56 @@ abstract final class CatchContractConstraints {
 
   static const getEventAssistanceAccountabilityCallablePayloadGroupId = CatchContractFieldConstraints(
     path: 'getEventAssistanceAccountabilityCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadAttendeeIds = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceDepartureRosterCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceDepartureRosterCallablePayload.groupId',
     maxLength: 160,
     minLength: 1,
     required: true,
@@ -75377,6 +75671,9 @@ abstract final class CatchContractConstraints {
     'confirmEventAssistanceDepartureCallablePayload.command.eventId': confirmEventAssistanceDepartureCallablePayloadCommandEventId,
     'confirmEventAssistanceDepartureCallablePayload.command.kind': confirmEventAssistanceDepartureCallablePayloadCommandKind,
     'confirmEventAssistanceDepartureCallablePayload.command.operationId': confirmEventAssistanceDepartureCallablePayloadCommandOperationId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIds,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.attendeeIds.items': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterAttendeeIdsItems,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.departureRoster.expectedSourceHash': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDepartureRosterExpectedSourceHash,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.checkpointId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationCheckpointId,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.groupId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationGroupId,
     'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.itineraryId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationItineraryId,
@@ -76193,6 +76490,33 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDeliveryWork.scope.context.organizerId': eventAssistanceDeliveryWorkScopeContextOrganizerId,
     'eventAssistanceDeliveryWork.scope.episodeId': eventAssistanceDeliveryWorkScopeEpisodeId,
     'eventAssistanceDeliveryWork.threadId': eventAssistanceDeliveryWorkThreadId,
+    'eventAssistanceDepartureRosterCallableResponse.context.eventId': eventAssistanceDepartureRosterCallableResponseContextEventId,
+    'eventAssistanceDepartureRosterCallableResponse.context.mode': eventAssistanceDepartureRosterCallableResponseContextMode,
+    'eventAssistanceDepartureRosterCallableResponse.context.organizerId': eventAssistanceDepartureRosterCallableResponseContextOrganizerId,
+    'eventAssistanceDepartureRosterCallableResponse.groupId': eventAssistanceDepartureRosterCallableResponseGroupId,
+    'eventAssistanceDepartureRosterCallableResponse.progressRevision': eventAssistanceDepartureRosterCallableResponseProgressRevision,
+    'eventAssistanceDepartureRosterCallableResponse.selection.attendeeIds': eventAssistanceDepartureRosterCallableResponseSelectionAttendeeIds,
+    'eventAssistanceDepartureRosterCallableResponse.selection.attendeeIds.items': eventAssistanceDepartureRosterCallableResponseSelectionAttendeeIdsItems,
+    'eventAssistanceDepartureRosterCallableResponse.selection.expectedSourceHash': eventAssistanceDepartureRosterCallableResponseSelectionExpectedSourceHash,
+    'eventAssistanceDepartureRosterCallableResponse.serverTime': eventAssistanceDepartureRosterCallableResponseServerTime,
+    'eventAssistanceDepartureRosterDocument.confirmedAt': eventAssistanceDepartureRosterDocumentConfirmedAt,
+    'eventAssistanceDepartureRosterDocument.confirmedBy': eventAssistanceDepartureRosterDocumentConfirmedBy,
+    'eventAssistanceDepartureRosterDocument.context.eventId': eventAssistanceDepartureRosterDocumentContextEventId,
+    'eventAssistanceDepartureRosterDocument.context.mode': eventAssistanceDepartureRosterDocumentContextMode,
+    'eventAssistanceDepartureRosterDocument.context.organizerId': eventAssistanceDepartureRosterDocumentContextOrganizerId,
+    'eventAssistanceDepartureRosterDocument.groupId': eventAssistanceDepartureRosterDocumentGroupId,
+    'eventAssistanceDepartureRosterDocument.members': eventAssistanceDepartureRosterDocumentMembers,
+    'eventAssistanceDepartureRosterDocument.members.items.attendeeGeneration': eventAssistanceDepartureRosterDocumentMembersItemsAttendeeGeneration,
+    'eventAssistanceDepartureRosterDocument.members.items.attendeeId': eventAssistanceDepartureRosterDocumentMembersItemsAttendeeId,
+    'eventAssistanceDepartureRosterDocument.members.items.checkInHash': eventAssistanceDepartureRosterDocumentMembersItemsCheckInHash,
+    'eventAssistanceDepartureRosterDocument.members.items.episodeId': eventAssistanceDepartureRosterDocumentMembersItemsEpisodeId,
+    'eventAssistanceDepartureRosterDocument.members.items.membershipHash': eventAssistanceDepartureRosterDocumentMembersItemsMembershipHash,
+    'eventAssistanceDepartureRosterDocument.members.items.sourceGeneration': eventAssistanceDepartureRosterDocumentMembersItemsSourceGeneration,
+    'eventAssistanceDepartureRosterDocument.progressId': eventAssistanceDepartureRosterDocumentProgressId,
+    'eventAssistanceDepartureRosterDocument.progressRevision': eventAssistanceDepartureRosterDocumentProgressRevision,
+    'eventAssistanceDepartureRosterDocument.rosterId': eventAssistanceDepartureRosterDocumentRosterId,
+    'eventAssistanceDepartureRosterDocument.schemaVersion': eventAssistanceDepartureRosterDocumentSchemaVersion,
+    'eventAssistanceDepartureRosterDocument.sourceHash': eventAssistanceDepartureRosterDocumentSourceHash,
     'eventAssistanceGroupProgressCallableResponse.operationRevision': eventAssistanceGroupProgressCallableResponseOperationRevision,
     'eventAssistanceGroupProgressCallableResponse.outcome': eventAssistanceGroupProgressCallableResponseOutcome,
     'eventAssistanceGroupProgressCallableResponse.view.context.eventId': eventAssistanceGroupProgressCallableResponseViewContextEventId,
@@ -76235,6 +76559,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressCallableResponse.view.progress.context.mode': eventAssistanceGroupProgressCallableResponseViewProgressContextMode,
     'eventAssistanceGroupProgressCallableResponse.view.progress.context.organizerId': eventAssistanceGroupProgressCallableResponseViewProgressContextOrganizerId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.createdAt': eventAssistanceGroupProgressCallableResponseViewProgressCreatedAt,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.departureRosterId': eventAssistanceGroupProgressCallableResponseViewProgressDepartureRosterId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.destination.checkpointId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationCheckpointId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.destination.groupId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationGroupId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.destination.itineraryId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationItineraryId,
@@ -76261,6 +76586,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressDocument.context.mode': eventAssistanceGroupProgressDocumentContextMode,
     'eventAssistanceGroupProgressDocument.context.organizerId': eventAssistanceGroupProgressDocumentContextOrganizerId,
     'eventAssistanceGroupProgressDocument.createdAt': eventAssistanceGroupProgressDocumentCreatedAt,
+    'eventAssistanceGroupProgressDocument.departureRosterId': eventAssistanceGroupProgressDocumentDepartureRosterId,
     'eventAssistanceGroupProgressDocument.destination.checkpointId': eventAssistanceGroupProgressDocumentDestinationCheckpointId,
     'eventAssistanceGroupProgressDocument.destination.groupId': eventAssistanceGroupProgressDocumentDestinationGroupId,
     'eventAssistanceGroupProgressDocument.destination.itineraryId': eventAssistanceGroupProgressDocumentDestinationItineraryId,
@@ -79011,6 +79337,12 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceAccountabilityCallablePayload.context.mode': getEventAssistanceAccountabilityCallablePayloadContextMode,
     'getEventAssistanceAccountabilityCallablePayload.context.organizerId': getEventAssistanceAccountabilityCallablePayloadContextOrganizerId,
     'getEventAssistanceAccountabilityCallablePayload.groupId': getEventAssistanceAccountabilityCallablePayloadGroupId,
+    'getEventAssistanceDepartureRosterCallablePayload.attendeeIds': getEventAssistanceDepartureRosterCallablePayloadAttendeeIds,
+    'getEventAssistanceDepartureRosterCallablePayload.attendeeIds.items': getEventAssistanceDepartureRosterCallablePayloadAttendeeIdsItems,
+    'getEventAssistanceDepartureRosterCallablePayload.context.eventId': getEventAssistanceDepartureRosterCallablePayloadContextEventId,
+    'getEventAssistanceDepartureRosterCallablePayload.context.mode': getEventAssistanceDepartureRosterCallablePayloadContextMode,
+    'getEventAssistanceDepartureRosterCallablePayload.context.organizerId': getEventAssistanceDepartureRosterCallablePayloadContextOrganizerId,
+    'getEventAssistanceDepartureRosterCallablePayload.groupId': getEventAssistanceDepartureRosterCallablePayloadGroupId,
     'getEventAssistanceGroupProgressCallablePayload.context.eventId': getEventAssistanceGroupProgressCallablePayloadContextEventId,
     'getEventAssistanceGroupProgressCallablePayload.context.mode': getEventAssistanceGroupProgressCallablePayloadContextMode,
     'getEventAssistanceGroupProgressCallablePayload.context.organizerId': getEventAssistanceGroupProgressCallablePayloadContextOrganizerId,

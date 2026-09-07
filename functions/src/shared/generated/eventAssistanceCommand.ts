@@ -42,6 +42,13 @@ export type EventAssistanceCommand =
          * Nonnegative safe integer revision.
          */
         expectedProgressRevision: number;
+        departureRoster?: {
+          /**
+           * @maxItems 1000
+           */
+          attendeeIds: string[];
+          expectedSourceHash: string;
+        };
       };
     }
   | {

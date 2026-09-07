@@ -1680,6 +1680,33 @@ export interface EventAssistanceSettingReceiptDocument {
   createdAt: number;
 }
 
+export interface EventAssistanceDepartureRosterDocument {
+  schemaVersion: 1;
+  rosterId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  progressId: string;
+  progressRevision: number;
+  sourceHash: string;
+  confirmedBy: string;
+  confirmedAt: number;
+  /**
+   * @maxItems 1000
+   */
+  members: {
+    attendeeId: string;
+    sourceGeneration: string;
+    attendeeGeneration: string;
+    checkInHash: string;
+    episodeId: string | null;
+    membershipHash: string | null;
+  }[];
+}
+
 export interface EventAssistanceProgressReceiptDocument {
   receiptId: string;
   progressId: string;
@@ -1722,6 +1749,7 @@ export interface EventAssistanceGroupProgressDocument {
   requestHash: string;
   createdAt: number;
   updatedAt: number;
+  departureRosterId?: string;
 }
 
 export interface EventWhatsappWithdrawalGrantDocument {

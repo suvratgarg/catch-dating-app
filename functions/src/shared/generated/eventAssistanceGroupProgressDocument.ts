@@ -36,4 +36,5 @@ export interface EventAssistanceGroupProgressDocument {
   requestHash: string;
   createdAt: number;
   updatedAt: number;
+  departureRosterId?: string;
 }

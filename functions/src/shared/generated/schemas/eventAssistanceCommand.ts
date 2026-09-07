@@ -203,6 +203,31 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
               "minimum": 0,
               "maximum": 9007199254740991,
               "description": "Nonnegative safe integer revision."
+            },
+            "departureRoster": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeIds",
+                "expectedSourceHash"
+              ],
+              "properties": {
+                "attendeeIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "uniqueItems": true,
+                  "maxItems": 1000
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
             }
           }
         }

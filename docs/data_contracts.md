@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.54.0
+version: 1.55.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -305,6 +305,23 @@ progress, without roster data. Confirmation requires matching source and
 progress revisions, a current destination, an open event and a live runtime.
 The collections deny all direct client reads and writes. This boundary records
 a physical fact and does not authorize provider I/O or guest attendance changes.
+
+`eventAssistanceDepartureRosters/{rosterId}` stores an immutable explicitly
+selected departure roster. Its ID hashes execution context, group and committed
+progress revision. Each member pins the registration creation generations,
+exact check-in plus attendance revision, optional current participation episode
+and accepted membership hash for a pace group. It contains no contact fields.
+The optional `departureRosterId` on progress references only that departure;
+absence denotes an unrecorded roster, while a recorded empty roster is explicit.
+
+`getEventAssistanceDepartureRoster` reviews caller-selected attendee IDs under
+current scoped read authority. The optional departure command selection carries
+these IDs and a reviewed source hash. The write revalidates every selected row
+and creates progress, command receipt and roster atomically. Selection is bounded
+to 1,000 unique IDs with batched transactional reads; the `members` field is
+exempted from indexing. No client can read or write the roster collection.
+It has no TTL: checkpoint reconciliation and the retention policy must preserve
+the original departure evidence before any terminal cleanup is introduced.
 
 Live joining updates must match the canonical guidance derived from current
 confirmed progress. Publication, guest-link issuance, guest views/actions and

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.37.0
+version: 1.38.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -445,6 +445,40 @@ Operational notices retain their separate event-window rules. This binding
 also verifies the guest's accepted membership for group checkpoints. The
 complete policy/participation fact reader and workflow publisher remain
 integration work.
+
+### Departure rosters for checkpoint reporting
+
+`getEventAssistanceDepartureRoster` reviews an explicit selection of up to 1,000
+attendee IDs. It requires current group read authority before looking up guests.
+The response contains a source-bound selection, without contact details or an
+implicit event-wide roster scan. Every selected guest must be currently checked
+in. A selected pace-group guest also needs a current accepted membership;
+pending receiving handovers do not qualify. Existing participation must
+be resumed if paused or departed. Whole-event capture works without initializing
+assistance or requiring linked guest accounts. Reported intentions do not count
+as physical evidence and do not override a host's explicit observation.
+
+The optional `confirmDeparture.payload.departureRoster` binds this selection to
+the current event setup, progress revision, registration generations, exact
+check-in and accepted membership. Confirmation re-reads these facts in its
+transaction, rechecks staff expiry and event end after roster reads, and writes
+an immutable `eventAssistanceDepartureRosters` record with progress and receipt.
+The record preserves only attendee IDs and source/visit/membership evidence.
+Each departure has its own roster identity; later moves, cancellations or group
+changes cannot rewrite who was recorded as departing on the earlier leg.
+
+An absent selection means the departure roster was not recorded. It does not
+reuse the previous departure's roster or imply an empty group. An explicitly
+confirmed empty selection creates an empty immutable roster. Capture never
+checks a person in, starts participation, transfers a group, assigns a seat,
+resolves accountability or sends a message.
+
+This slice supplies the stable departure scope required by the typed checkpoint
+workflow. Acceptance covers atomic interruption/retry, exact-visit and source
+changes, scoped authority, bounds and emulator concurrency. Checkpoint reports,
+missing-person reconciliation, corrections/additions during a leg, roster
+selection controls and rehearsal adapters remain separate implementation work.
+No live automation or provider boundary is activated by this change.
 
 ### Scoped group staff
 

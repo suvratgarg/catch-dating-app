@@ -32,6 +32,9 @@ export {eventAssistanceSettingReceiptDocumentSchema} from "./schemas/eventAssist
 export {getEventAssistanceSettingCallablePayloadSchema} from "./schemas/getEventAssistanceSettingInput";
 export {setEventAssistanceSettingCallablePayloadSchema} from "./schemas/setEventAssistanceSettingInput";
 export {eventAssistanceSettingCallableResponseSchema} from "./schemas/eventAssistanceSettingOutput";
+export {getEventAssistanceDepartureRosterCallablePayloadSchema} from "./schemas/getEventAssistanceDepartureRosterInput";
+export {eventAssistanceDepartureRosterCallableResponseSchema} from "./schemas/eventAssistanceDepartureRosterOutput";
+export {eventAssistanceDepartureRosterDocumentSchema} from "./schemas/eventAssistanceDepartureRosterDocument";
 export {eventAssistanceProgressReceiptDocumentSchema} from "./schemas/eventAssistanceProgressReceiptDocument";
 export {eventAssistanceGroupProgressDocumentSchema} from "./schemas/eventAssistanceGroupProgressDocument";
 export {getEventAssistanceGroupProgressCallablePayloadSchema} from "./schemas/getEventAssistanceGroupProgressInput";

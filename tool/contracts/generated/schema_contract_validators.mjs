@@ -30,6 +30,9 @@ import {
   getEventAssistanceSettingCallablePayloadSchema,
   setEventAssistanceSettingCallablePayloadSchema,
   eventAssistanceSettingCallableResponseSchema,
+  getEventAssistanceDepartureRosterCallablePayloadSchema,
+  eventAssistanceDepartureRosterCallableResponseSchema,
+  eventAssistanceDepartureRosterDocumentSchema,
   eventAssistanceProgressReceiptDocumentSchema,
   eventAssistanceGroupProgressDocumentSchema,
   getEventAssistanceGroupProgressCallablePayloadSchema,
@@ -661,6 +664,9 @@ export const validateEventAssistanceSettingReceiptDocument = ajv.compile(eventAs
 export const validateGetEventAssistanceSettingCallablePayload = ajv.compile(getEventAssistanceSettingCallablePayloadSchema);
 export const validateSetEventAssistanceSettingCallablePayload = ajv.compile(setEventAssistanceSettingCallablePayloadSchema);
 export const validateEventAssistanceSettingCallableResponse = ajv.compile(eventAssistanceSettingCallableResponseSchema);
+export const validateGetEventAssistanceDepartureRosterCallablePayload = ajv.compile(getEventAssistanceDepartureRosterCallablePayloadSchema);
+export const validateEventAssistanceDepartureRosterCallableResponse = ajv.compile(eventAssistanceDepartureRosterCallableResponseSchema);
+export const validateEventAssistanceDepartureRosterDocument = ajv.compile(eventAssistanceDepartureRosterDocumentSchema);
 export const validateEventAssistanceProgressReceiptDocument = ajv.compile(eventAssistanceProgressReceiptDocumentSchema);
 export const validateEventAssistanceGroupProgressDocument = ajv.compile(eventAssistanceGroupProgressDocumentSchema);
 export const validateGetEventAssistanceGroupProgressCallablePayload = ajv.compile(getEventAssistanceGroupProgressCallablePayloadSchema);

@@ -116,7 +116,8 @@ export function parseMembership(value: unknown, scope: Scope, now: number) {
   }
   return value;
 }
-export function currentMembership(s: MembershipState): boolean {
+export function currentMembership(s: Pick<MembershipState,
+  "membership" | "guest" | "source" | "groups">): boolean {
   const m = s.membership;
   return !!m && !!s.guest && currentGuest(s.guest, s.source) &&
     m.sourceGeneration === s.source.sourceGeneration &&

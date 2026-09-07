@@ -14921,6 +14921,9 @@ const model = {
                   "minimum": 0,
                   "maximum": 9007199254740991,
                   "description": "Nonnegative safe integer revision."
+                },
+                "departureRoster": {
+                  "$ref": "event_assistance_departure_roster.schema.json#/definitions/Selection"
                 }
               }
             }
@@ -15434,6 +15437,224 @@ const model = {
                     "unresolved"
                   ]
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_assistance_departure_roster.schema.json",
+      "title": "EventAssistanceDepartureRosterContracts",
+      "definitions": {
+        "Selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeIds",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "attendeeIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "Member": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "sourceGeneration",
+            "attendeeGeneration",
+            "checkInHash",
+            "episodeId",
+            "membershipHash"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "checkInHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "episodeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "membershipHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "ReadInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "attendeeIds"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            }
+          }
+        },
+        "Response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "serverTime",
+            "progressRevision",
+            "selection"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "selection": {
+              "$ref": "#/definitions/Selection"
+            }
+          }
+        },
+        "Roster": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "rosterId",
+            "context",
+            "groupId",
+            "progressId",
+            "progressRevision",
+            "sourceHash",
+            "confirmedBy",
+            "confirmedAt",
+            "members"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "rosterId": {
+              "type": "string",
+              "pattern": "^departure-roster:[a-f0-9]{64}$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "progressId": {
+              "type": "string",
+              "pattern": "^progress:[a-f0-9]{64}$"
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "confirmedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "confirmedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "members": {
+              "type": "array",
+              "maxItems": 1000,
+              "items": {
+                "$ref": "#/definitions/Member"
               }
             }
           }
