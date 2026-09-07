@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.62.0
+version: 1.63.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -2726,13 +2726,25 @@ Gupshup's `extra` field; decoded delivery reports must prove this credential
 and match the dispatch scope before updating the private outbox. The credential
 does not authorize a send, opt-in or budget release. Retain the immutable
 dispatch and outbox through the provider reconciliation window, independently
-of guest-link or event expiry. Cleanup and HTTP ingress remain unimplemented.
+of guest-link or event expiry. Cleanup remains unimplemented.
 The dispatch stores neither message content, reporting credential nor the guest
 URL secret. Conservative debits
 remain charged across uncertain outcomes and provider rejections until an
 explicit reconciliation implementation accounts for them. They are spending
 reservations, not billing receipts. Firestore clients, including admins, cannot
 read or write any of these six collections.
+
+The dormant `eventAssistanceSmsDeliveryWebhook` accepts a bounded, strictly
+decoded GET report and delegates credential/scope validation to the reporting
+store. Duplicate parameters, bodies, unknown fields and partial string matches
+are rejected before database access. The HTTP response exposes no internal
+identifiers or report contents, waits for completed processing, and returns a
+retryable service error on infrastructure failure. Delivery reporting grants
+no write authority over attendance, consent or budgets. The handler logs no
+request material or thrown error, but GET callback secrets also require verified
+platform request-log redaction/exclusion before activation. No new persisted
+document or client grant is introduced; existing outbox evidence owns duplicate
+and contradictory delivery reports.
 
 `eventAssistanceSmsWithdrawalGrants` is created in the same transaction as a
 live SMS dispatch claim. It binds the original guest-link hash to one permission,

@@ -1,4 +1,5 @@
-import type {CallableRequest} from "firebase-functions/v2/https";
+import type {CallableRequest, Request} from "firebase-functions/v2/https";
+import type {Response} from "express";
 import {SmsWithdrawalStore} from "./smsWithdrawalStore";
 import {SMS_WITHDRAWAL_GRANTS, newSmsWithdrawalGrant} from
   "./smsWithdrawalRecords";
@@ -32,6 +33,7 @@ import {smsProviderCorrelation, smsReportTokenMatches} from
   "./smsReportCredentials";
 import {SmsPreferenceStore} from "./smsPreferenceStore";
 import {SmsDeliveryReportStore} from "./smsDeliveryReports";
+import {eventAssistanceSmsDeliveryWebhookHandler} from "./smsDeliveryWebhook";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
@@ -855,18 +857,53 @@ test("SMS final causes retain technical, suppression and policy meaning",
     }
   });
 
+async function receiveHttpReport(store: SmsDeliveryReportStore,
+  report: Record<string, string>) {
+  const received: Awaited<ReturnType<SmsDeliveryReportStore["receive"]>>[] = [];
+  let status = 0;
+  let body: unknown;
+  const response = {
+    set: () => response,
+    status: (value: number) => {
+      status = value; return response;
+    },
+    send: (value: unknown) => {
+      body = value; return response;
+    },
+  };
+  await eventAssistanceSmsDeliveryWebhookHandler({method: "GET",
+    originalUrl: "/?" + new URLSearchParams(report), headers: {},
+    rawBody: Buffer.alloc(0)} as Request, response as unknown as Response, {
+      enabled: () => true,
+      receive: async (value) => {
+        const result = await store.receive(value);
+        received.push(result);
+        return result;
+      },
+      failed: () => assert.fail("HTTP delivery reporting failed"),
+    });
+  assert.equal(received.length, 1);
+  const rejected = received[0].kind === "rejected";
+  assert.equal(status, rejected ? 403 : 200);
+  assert.equal(body, rejected ? "Invalid report" : "ok");
+  return received[0];
+}
+
 async function competingReports(h: Awaited<ReturnType<typeof harness>>) {
   await h.worker.dispatch(h.messageId, h.link.linkId);
   const report = await deliveryReport(h);
   const reports = new SmsDeliveryReportStore(h.db, () => h.clock.now);
+  assert.deepEqual(await receiveHttpReport(reports,
+    {...report, extra: "c".repeat(48)}), {kind: "rejected"});
   const results = await Promise.all(Array.from({length: 8}, () =>
-    reports.receive(report)));
+    receiveHttpReport(reports, report)));
   assert.equal(results.filter((r) => r.kind === "recorded" &&
     r.disposition === "applied").length, 1);
   assert.equal(results.filter((r) => r.kind === "recorded" &&
     r.disposition === "duplicateOrOlder").length, 7);
-  assert.deepEqual(await reports.receive({...report, status: "FAILURE",
-    cause: "SERVICE_DOWN", errCode: "004"}), {kind: "recorded",
+  assert.deepEqual(await receiveHttpReport(reports,
+    {...report, status: "FAILURE",
+      cause: "SERVICE_DOWN", errCode: "004"}), {kind: "recorded",
     messageId: h.messageId, disposition: "conflictingEvidence"});
   const record = await h.store.outbox(h.link.linkId).get(h.messageId);
   assert.equal(record?.deliveryConflict, true);

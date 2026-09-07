@@ -86,6 +86,8 @@ export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
 export {onEventAssistanceWhatsappEventCreated} from
   "./eventSuccess/operations/whatsappWebhookProcessing";
+export {eventAssistanceSmsDeliveryWebhook} from
+  "./eventSuccess/operations/smsDeliveryWebhook";
 export {
   onAssistanceEventChanged, onAssistanceRosterChanged,
   onAssistanceStaffChanged, onAssistanceCheckpointChanged,

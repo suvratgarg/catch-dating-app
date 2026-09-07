@@ -36,13 +36,13 @@ export type SmsReportResult =
  * query values (arrays), missing correlation/extra and mixed status codes fail
  * closed. Parsing alone establishes no authenticity.
  */
-function parseReport(value: unknown): Report | null {
+export function parseSmsDeliveryReport(value: unknown): Report | null {
   if (!value || typeof value !== "object" || Array.isArray(value) ||
       Object.keys(value).length > 20) return null;
   const v = value as Record<string, unknown>;
   const string = (key: string, pattern: RegExp, max: number): string | null =>
     typeof v[key] === "string" && v[key].length <= max &&
-      pattern.test(v[key]) ? v[key] : null;
+      pattern.exec(v[key])?.[0] === v[key] ? v[key] : null;
   const correlation = string("msg_id", /^catchSms1[a-f0-9]{64}$/, 73);
   const attemptId = correlation ? smsAttemptFromCorrelation(correlation) : null;
   const token = string("extra", /^[a-f0-9]{48}$/, 48);
@@ -93,8 +93,8 @@ function failureClassification(report: Report):
 /**
  * Reconciles independently of guest/event/permission liveness. The credential
  * is a per-attempt bearer capability echoed in extra, not a provider signature.
- * Only its hash is kept with the immutable dispatch. This service neither
- * exposes an HTTP endpoint nor grants permission to send or refund a message.
+ * Only its hash is kept with the immutable dispatch. This service grants no
+ * permission to send or refund a message.
  */
 export class SmsDeliveryReportStore {
   private readonly outbox: FirestoreMessageOutbox;
@@ -107,7 +107,7 @@ export class SmsDeliveryReportStore {
   }
 
   async receive(value: unknown): Promise<SmsReportResult> {
-    const report = parseReport(value);
+    const report = parseSmsDeliveryReport(value);
     if (!report) return {kind: "rejected"};
     const snap = await this.db.collection(smsCollections.dispatches)
       .doc(report.attemptId).get();

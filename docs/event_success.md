@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.44.0
+version: 1.45.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -796,8 +796,9 @@ selection. `deliveryReceipts.ts` preserves delivered/read evidence when delayed
 or contradictory provider statuses arrive, and rejects another sender,
 connection revision, endpoint or provider message id. The WhatsApp consumer
 correlates the signed private webhook queue and dispatch evidence; the SMS
-consumer verifies per-attempt report credentials. SMS HTTP ingress and reviewed
-WhatsApp failure finality remain pending.
+consumer verifies per-attempt report credentials. The SMS HTTP boundary below
+is dormant; verified callback activation and reviewed WhatsApp failure finality
+remain pending.
 
 `FirestoreMessageOutbox` persists immutable intents and at most six attempts in
 the private `eventAssistanceMessages` collection. Re-enqueueing the same scoped
@@ -1088,12 +1089,33 @@ message, changes consent or releases a spending debit.
 This bearer credential is scoped to one attempt; it is not a Gupshup signature.
 The field contracts come from Gupshup's [single-message API](https://docs.gupshup.io/docs/send-message-to-single-number)
 and [delivery-report documentation](https://docs.gupshup.io/docs/real-time-delivery-reports).
-There is no deployed or exported HTTP ingress for the reporting service yet.
-Before adding it, verify the account's actual echoed field names, secure callback
-transport, URL/log redaction and report finality with provider evidence. POST
-reporting requires provider support configuration and has a different shape;
-the service does not guess a mapping from the documentation's malformed POST
-example. Missing credentials or a different shape cannot update the outbox.
+`eventAssistanceSmsDeliveryWebhook` now supplies the GET HTTP boundary. It is
+excluded from logical and exact deployment plans and its
+`EVENT_ASSISTANCE_SMS_REPORTS_ENABLED` parameter defaults to false. The handler
+limits the raw request target to 4,096 bytes, accepts only the documented fields,
+rejects duplicate or nested parameters after URL decoding, and validates the
+complete field strings before opening the reporting store. Express query
+coercion, request bodies and forwarded identity headers supply no authority.
+Only the matching per-attempt credential can reach delivery reconciliation.
+
+Responses are opaque plain text with no-store headers. A successful response
+follows completed reconciliation; duplicate, contradictory and indeterminate
+reports acknowledge without a new send. Rejected credentials cannot update the
+outbox. Processing failures return 503 with Retry-After rather than claiming an
+acknowledged commit, and application logging receives no URL, query, phone,
+credential or thrown error. Provider retries must still be verified; a retry
+header is not a delivery-recovery guarantee.
+
+Before activation, verify the account's actual echoed field names, HTTPS
+callback configuration and finality with provider evidence. GET callbacks carry
+the report credential and phone in the URL: application log hygiene cannot
+redact platform request logs. Verify request-log redaction/exclusion across the
+deployed ingress and provider support tooling before enabling this endpoint.
+POST reporting requires provider support configuration and has a different
+shape; the handler rejects it rather than guessing a mapping from the malformed
+documentation example. Missing credentials or a different shape cannot update
+the outbox. Local HTTP-boundary and Firestore tests do not prove account setup
+or deployed transport behavior.
 
 This is an invocable server worker tested with an injected transport and the
 Firestore emulator, not an enabled provider integration. Gupshup is the first
@@ -1102,8 +1124,7 @@ unconfirmed. The channel-specific worker only accepts SMS-only intents;
 multi-route intents use `EventMessageWorker` and its shared authority reader.
 Before activation, complete the remaining consent/withdrawal entry points,
 audited sender/budget provisioning, activation of the dormant coordination,
-authenticated delivery
-ingress and lookup/reconciliation, provider freshness/expiry behavior,
+verified callback activation and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
 fixture permission or quote can satisfy live onboarding. RCS routing and

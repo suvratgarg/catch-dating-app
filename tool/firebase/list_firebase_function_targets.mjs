@@ -10,6 +10,7 @@ const defaultRepoRoot = path.resolve(toolDir, "../..");
 // path must not recreate their recurring infrastructure until product usage and
 // an explicit operating budget justify activation.
 export const dormantFirebaseFunctionTargets = Object.freeze([
+  "functions:eventAssistanceSmsDeliveryWebhook",
   "functions:onAssistanceEventChanged",
   "functions:onAssistanceRosterChanged",
   "functions:onAssistanceStaffChanged",
