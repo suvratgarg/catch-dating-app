@@ -15,6 +15,7 @@ import {Grant, guestCollections, parseGrant,
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
 import type {RouteReadiness} from "./messagingPolicy";
 import {readWhatsappMessagePermission} from "./messagePermissionReader";
+import {messageAllowsSender} from "./lateJoinDispatchPolicy";
 import {whatsappConsentSender} from "./whatsappConsentSender";
 import type {Permission} from "./whatsappPermissionRecords";
 import {whatsappEndpointHash} from "./whatsappReplyProtocol";
@@ -182,6 +183,9 @@ export class WhatsappDispatchStore {
       facts: {gate, routes: [{routeId: "organizerEventWhatsapp",
         state: {kind: "blocked", reason}}]}});
     if (gate.kind === "stop" || intent.context.mode !== "live") {
+      return blocked("policyBlocked");
+    }
+    if (!messageAllowsSender(intent, "organizerEventWhatsapp", this.senderId)) {
       return blocked("policyBlocked");
     }
     const context = intent.context;

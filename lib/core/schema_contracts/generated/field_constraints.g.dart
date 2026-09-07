@@ -15396,6 +15396,78 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceMessageDocumentIntentAutomationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.policyVersion',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationRoutesItemsSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.routes.items.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.settingId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationSettingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.settingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceMessageDocumentIntentBody = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.intent.body',
     maxLength: 2000,
@@ -15780,6 +15852,78 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentAutomationPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.policyVersion',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentAutomationResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentAutomationRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceMessageIntentAutomationRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentAutomationRoutesItemsSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.routes.items.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.settingId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationSettingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.settingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventAssistanceMessageIntentBody = CatchContractFieldConstraints(
@@ -74631,6 +74775,15 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.createdAt': eventAssistanceMessageDocumentCreatedAt,
     'eventAssistanceMessageDocument.deliveryConflict': eventAssistanceMessageDocumentDeliveryConflict,
     'eventAssistanceMessageDocument.intent.attendeeId': eventAssistanceMessageDocumentIntentAttendeeId,
+    'eventAssistanceMessageDocument.intent.automation.groupId': eventAssistanceMessageDocumentIntentAutomationGroupId,
+    'eventAssistanceMessageDocument.intent.automation.kind': eventAssistanceMessageDocumentIntentAutomationKind,
+    'eventAssistanceMessageDocument.intent.automation.policyVersion': eventAssistanceMessageDocumentIntentAutomationPolicyVersion,
+    'eventAssistanceMessageDocument.intent.automation.responseDeadline': eventAssistanceMessageDocumentIntentAutomationResponseDeadline,
+    'eventAssistanceMessageDocument.intent.automation.routes': eventAssistanceMessageDocumentIntentAutomationRoutes,
+    'eventAssistanceMessageDocument.intent.automation.routes.items.routeId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsRouteId,
+    'eventAssistanceMessageDocument.intent.automation.routes.items.senderId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsSenderId,
+    'eventAssistanceMessageDocument.intent.automation.settingId': eventAssistanceMessageDocumentIntentAutomationSettingId,
+    'eventAssistanceMessageDocument.intent.automation.settingRevision': eventAssistanceMessageDocumentIntentAutomationSettingRevision,
     'eventAssistanceMessageDocument.intent.body': eventAssistanceMessageDocumentIntentBody,
     'eventAssistanceMessageDocument.intent.choices': eventAssistanceMessageDocumentIntentChoices,
     'eventAssistanceMessageDocument.intent.choices.items.choiceId': eventAssistanceMessageDocumentIntentChoicesItemsChoiceId,
@@ -74680,6 +74833,15 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.schemaVersion': eventAssistanceMessageDocumentSchemaVersion,
     'eventAssistanceMessageDocument.updatedAt': eventAssistanceMessageDocumentUpdatedAt,
     'eventAssistanceMessageIntent.attendeeId': eventAssistanceMessageIntentAttendeeId,
+    'eventAssistanceMessageIntent.automation.groupId': eventAssistanceMessageIntentAutomationGroupId,
+    'eventAssistanceMessageIntent.automation.kind': eventAssistanceMessageIntentAutomationKind,
+    'eventAssistanceMessageIntent.automation.policyVersion': eventAssistanceMessageIntentAutomationPolicyVersion,
+    'eventAssistanceMessageIntent.automation.responseDeadline': eventAssistanceMessageIntentAutomationResponseDeadline,
+    'eventAssistanceMessageIntent.automation.routes': eventAssistanceMessageIntentAutomationRoutes,
+    'eventAssistanceMessageIntent.automation.routes.items.routeId': eventAssistanceMessageIntentAutomationRoutesItemsRouteId,
+    'eventAssistanceMessageIntent.automation.routes.items.senderId': eventAssistanceMessageIntentAutomationRoutesItemsSenderId,
+    'eventAssistanceMessageIntent.automation.settingId': eventAssistanceMessageIntentAutomationSettingId,
+    'eventAssistanceMessageIntent.automation.settingRevision': eventAssistanceMessageIntentAutomationSettingRevision,
     'eventAssistanceMessageIntent.body': eventAssistanceMessageIntentBody,
     'eventAssistanceMessageIntent.choices': eventAssistanceMessageIntentChoices,
     'eventAssistanceMessageIntent.choices.items.choiceId': eventAssistanceMessageIntentChoicesItemsChoiceId,

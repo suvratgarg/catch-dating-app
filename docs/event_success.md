@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.27.0
+version: 1.28.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -190,11 +190,11 @@ group progress and its saved destination choices; absent guidance remains
 unresolved. It does not infer pace-group membership from seating or social pods.
 The source reader below now joins live participant, group, settings and progress
 facts. Late-join communication facts now join them through the evaluator below.
-The policy-aware workflow publisher/scheduler, complete runtime readiness checks,
-Host settings controls and rehearsal adapter
-remain integration work. Configured preferences do not claim that an executor
-is implemented or activated. Terminal setting/receipt retention remains to be
-defined before activation.
+The atomic policy-aware publisher below now prepares current instructions.
+Durable worker scheduling, complete runtime readiness checks, Host settings
+controls and the rehearsal adapter remain integration work. Configured preferences
+do not claim that an executor is implemented or activated. Terminal setting/receipt
+retention remains to be defined before activation.
 
 ### Live late-join source assembly
 
@@ -224,10 +224,9 @@ propagate rather than producing a safe-looking empty state.
 
 The source hash is evidence for a single snapshot, not a lasting execution
 permit. The communication/history join below completes live late-join evaluation.
-Durable worker integration, policy-aware publication, scheduling and final
-transactional rechecks remain required before automatic assistance can execute.
-This slice adds no network submission, provider activation, Host UI or rehearsal
-runtime integration.
+The atomic publication and final dispatch recheck below now consume these facts.
+Durable worker scheduling, provider activation, Host UI and rehearsal runtime
+integration remain required before automatic assistance can execute in the app.
 
 ### Live communication facts and evaluation
 
@@ -270,8 +269,55 @@ cooldown. A delayed older receipt cannot replace newer guidance or shorten the
 interval. Complete empty history can yield zero; unavailable, malformed, foreign
 or truncated history cannot. These records must remain retained while an episode
 can execute. The evaluator result is a proposal, not an execution permit. Durable
-publication/scheduling, UI case handling and other workflow fact adapters remain
+worker scheduling, UI case handling and other workflow fact adapters remain
 integration work.
+
+### Atomic late-join publication and current dispatch policy
+
+`LiveLateJoinPublisher` evaluates current domain facts, consent and complete episode
+history inside the same transaction that publishes an immutable message and moves
+its workflow thread. It accepts a trusted expected guest episode and runtime
+configuration, never caller-authored instructions or an eligibility verdict. An old
+episode cannot act on a re-entered guest. Suggestion-only settings and unresolved
+required response deadlines publish nothing.
+
+The publisher uses one lateJoin occurrence per guest episode. Its semantic message
+identity includes current confirmed guidance, policy binding, sender selection,
+response choices and delivery policy while excluding the evaluation clock. An exact
+retry reuses the original immutable creation time and existing thread revision.
+Changed content creates a new intent and supersedes the previous thread message;
+existing guest links follow the current thread. Interrupted commits create neither
+a partial thread nor a partial message.
+
+An automatic joining intent carries a strict optional `automation` binding containing
+policy version, selected setting identity/revision, accepted group, exact ordered
+sender routes and the explicit response deadline. The field is optional only for
+the pre-existing trusted explicit publisher path; absence is never automatic
+execution authority. Rehearsal and non-lateJoin intents cannot claim this binding.
+The automatic publisher always attaches it. No new client access is granted.
+
+Current instructions may be published while outreach is capped or throttled, so the
+joining page can stay useful without sending another message. At both reservation
+and final dispatch claim, automatic messages re-evaluate current policy, saved
+setting revision, group, participation, attendance, intent, consent and episode
+history. The message's own exact immutable intent is excluded only from that final
+outreach count/cooldown calculation: retries reuse one logical slot rather than
+charging that slot twice. Its conflicting delivery evidence still blocks execution,
+and all other attempted intents, including superseded messages, still count.
+The existing outbox independently gates retry/fallback and ambiguous submissions.
+Disabling, replacing or reducing the authority of a setting withholds queued sends.
+A different ready sender cannot substitute for the frozen sender selection.
+
+`prepareGuestMessagePublication` and `prepareLiveLateJoinPublication` complete all
+reads before returning their write-staging closures, allowing a future fenced
+Operations checkpoint to share the commit. The automatic preparation expires after
+at most 30 seconds and never crosses the intent or unanswered-response deadline.
+This is a trusted transaction seam, not a new scheduler or a public callable. The
+live Operations worker still needs to persist due times, decisions, checkpoints and
+message references, invoke these primitives under its lease, and handle terminal
+and human-review outcomes. A publication result does not assert provider submission
+or delivery; provider activation and the broader Host/rehearsal workflow remain
+separate integration work.
 
 ### Confirmed group progress
 
@@ -408,8 +454,8 @@ removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
 Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment, policy-aware publication, scheduling and rehearsal adapters remain
-integration work.
+reassignment, durable worker scheduling and rehearsal adapters remain integration
+work.
 
 ### Shared message delivery
 

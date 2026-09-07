@@ -6,6 +6,7 @@ import {readLateJoinMessageHistory} from "./lateJoinMessageHistory";
 import {EventMessageRouteSelection, readEventMessageContactability} from
   "./messageContactability";
 import {evaluateLateJoin} from "./lateJoin";
+import type {MessageRecord} from "./messageOutbox";
 
 /** Runtime choices; never accept channel or deadline authority from clients. */
 export interface LateJoinEvaluationOptions {
@@ -18,13 +19,14 @@ export interface LateJoinEvaluationOptions {
  * read-only; publication and dispatch must revalidate at their own commit.
  */
 export async function readLiveLateJoinEvaluation(db: Firestore, tx: Transaction,
-  scope: LateJoinSourceScope, options: LateJoinEvaluationOptions, now: number) {
+  scope: LateJoinSourceScope, options: LateJoinEvaluationOptions, now: number,
+  currentIntent?: MessageRecord["intent"]) {
   const source = await readLateJoinSource(db, tx, scope, now);
   if (source.kind === "notReady") {
     return {kind: "sourceNotReady" as const, source};
   }
   const history = await readLateJoinMessageHistory(db, tx,
-    {...scope, episodeId: source.facts.guest.episodeId}, now);
+    {...scope, episodeId: source.facts.guest.episodeId}, now, currentIntent);
   if (history.kind === "unavailable") {
     return {kind: "historyUnavailable" as const, reason: history.reason};
   }
@@ -39,6 +41,8 @@ export async function readLiveLateJoinEvaluation(db: Firestore, tx: Transaction,
     deliveryEligibility: routes.some((r) => r.state.kind === "canPrepare") ?
       "eligible" : "unreachable", responseDeadline: options.responseDeadline});
   return {kind: "evaluated" as const, input, decision: evaluateLateJoin(input),
+    binding: {groupId: source.groupId, settingId: source.settingId,
+      settingRevision: source.settingRevision},
     routes, sourceHash: operationContentHash([source.sourceHash,
       history.evidenceHash, routes, options.responseDeadline])};
 }

@@ -32018,6 +32018,124 @@ export const eventAssistanceMessageDocumentSchema = {
                   }
                 }
               }
+            },
+            "automation": {
+              "type": "object",
+              "description": "Trusted live publisher binding. Queued delivery rechecks the saved policy, current group and episode outreach budget. Absence denotes the pre-existing trusted explicit publisher path, never automatic execution authority.",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "policyVersion",
+                "groupId",
+                "settingId",
+                "settingRevision",
+                "routes",
+                "responseDeadline"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "lateJoin"
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "settingId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "settingRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "routes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId",
+                          "senderId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "catchEventSms"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId",
+                          "senderId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "organizerEventWhatsapp"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "catchEventRcs"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "responseDeadline": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null",
+                      "const": null
+                    }
+                  ]
+                }
+              }
             }
           }
         },
@@ -34958,6 +35076,124 @@ export const eventAssistanceMessageIntentSchema = {
                   }
                 ]
               }
+            }
+          }
+        },
+        "automation": {
+          "type": "object",
+          "description": "Trusted live publisher binding. Queued delivery rechecks the saved policy, current group and episode outreach budget. Absence denotes the pre-existing trusted explicit publisher path, never automatic execution authority.",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "policyVersion",
+            "groupId",
+            "settingId",
+            "settingRevision",
+            "routes",
+            "responseDeadline"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "lateJoin"
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "routes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "catchEventSms"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "organizerEventWhatsapp"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "catchEventRcs"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "responseDeadline": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
             }
           }
         }

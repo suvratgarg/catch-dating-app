@@ -18,7 +18,8 @@ export type LateJoinMessageHistory =
 
 /** All occurrences and lifecycle states of this guest's late-join episode. */
 export async function readLateJoinMessageHistory(db: Firestore, tx: Transaction,
-  scope: LateJoinHistoryScope, now: number): Promise<LateJoinMessageHistory> {
+  scope: LateJoinHistoryScope, now: number,
+  currentIntent?: MessageRecord["intent"]): Promise<LateJoinMessageHistory> {
   guestIdentity(scope.context, scope.attendeeId);
   requireDocumentId(scope.episodeId);
   const snapshots = await tx.get(db.collection(EVENT_ASSISTANCE_MESSAGES)
@@ -39,12 +40,13 @@ export async function readLateJoinMessageHistory(db: Firestore, tx: Transaction,
     }
     return record;
   });
-  return projectLateJoinMessageHistory(scope, records, now);
+  return projectLateJoinMessageHistory(scope, records, now, currentIntent);
 }
 
 /** Reduce a proven complete bounded snapshot, never a partial page. */
 export function projectLateJoinMessageHistory(scope: LateJoinHistoryScope,
-  records: readonly MessageRecord[], now: number): LateJoinMessageHistory {
+  records: readonly MessageRecord[], now: number,
+  currentIntent?: MessageRecord["intent"]): LateJoinMessageHistory {
   guestIdentity(scope.context, scope.attendeeId);
   requireDocumentId(scope.episodeId);
   if (!Number.isSafeInteger(now) || now < 0) {
@@ -57,6 +59,7 @@ export function projectLateJoinMessageHistory(scope: LateJoinHistoryScope,
   const counted: Array<{materialKey: string; createdAt: number;
     at: number}> = [];
   let conflict = false;
+  let currentFound = false;
   for (const value of records) {
     const record = parseMessageRecord(value);
     const intent = record.intent;
@@ -71,6 +74,17 @@ export function projectLateJoinMessageHistory(scope: LateJoinHistoryScope,
     }
     ids.add(record.messageId);
     conflict ||= record.deliveryConflict;
+    if (currentIntent && intent.intentId === currentIntent.intentId &&
+        intent.revision === currentIntent.revision) {
+      if (operationContentHash(intent) !==
+          operationContentHash(currentIntent)) {
+        throw new Error("Dispatch intent does not match complete history");
+      }
+      currentFound = true;
+      // The outbox owns this logical intent's bounded retries. Its reservation
+      // must not consume the same episode slot twice at the final send claim.
+      continue;
+    }
     const attempts = record.attempts.filter((a) =>
       countsTowardOutreach(a.state));
     if (attempts.length) {
@@ -79,6 +93,9 @@ export function projectLateJoinMessageHistory(scope: LateJoinHistoryScope,
         // A late receipt can extend cooldown, but must never make it shorter.
         at: Math.max(...attempts.map((a) => a.state.at))});
     }
+  }
+  if (currentIntent && !currentFound) {
+    throw new Error("Dispatch intent is absent from complete history");
   }
   if (conflict) return {kind: "unavailable", reason: "deliveryConflict"};
   const latestCreatedAt = Math.max(...counted.map((m) => m.createdAt));
@@ -90,7 +107,7 @@ export function projectLateJoinMessageHistory(scope: LateJoinHistoryScope,
     at: Math.max(...counted.map((m) => m.at))} : null;
   return {kind: "ready", facts: {lastMessage,
     messagesThisEpisode: counted.length}, evidenceHash: operationContentHash([
-    scope, now, [...records].sort((a, b) =>
+    scope, now, currentIntent ?? null, [...records].sort((a, b) =>
       a.messageId.localeCompare(b.messageId))])};
 }
 

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.47.0
+version: 1.48.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -207,7 +207,28 @@ latest material and overflow withhold evaluation. No new projection collection,
 client access or cleanup policy is introduced. Active episode history must remain
 available for policy caps and cooldowns. Final dispatch rechecks exact message
 material, credentials and spending separately from preparation eligibility.
-The durable publisher, scheduler and terminal retention remain integration work.
+The atomic publisher below now consumes these facts. Durable worker scheduling and
+terminal retention remain integration work.
+
+Automatic lateJoin message intents now include an optional strict `automation`
+binding in the canonical messaging schema: policy version, setting identity and
+revision, group, ordered sender routes and nullable explicit response deadline.
+The trusted automatic publisher always emits it; existing explicit publications do
+not acquire automation authority by omitting it. Wire validation plus runtime
+cross-field checks reject mismatched routes, duplicate route ids, non-live contexts
+and a different workflow. Generated Functions/Dart schemas and private Firestore
+message types carry the same contract.
+
+The automatic publisher joins source evaluation and message/thread writes in one
+transaction. Its semantic identity excludes only creation time, so later retries
+reuse the original immutable record while changed content creates a distinct intent.
+Final automatic dispatch re-evaluates current policy and exact setting/group/sender
+bindings. Episode history excludes only the exact stored intent being dispatched,
+after full identity/content/conflict validation; other lifecycle states remain in
+the complete query. This prevents a reservation from consuming its own logical slot
+twice and preserves the shared cap across replaced instructions. Instruction refresh
+and permission to send remain separate. No new collection, client rule, credential
+read or provider submission is introduced by publication.
 
 ### Event Assistance Group Progress Contract
 

@@ -33,6 +33,15 @@ export function parseMessageIntent(value: unknown): MessageIntent {
        value.expiresAt > value.guidance.validUntil)) {
     throw new Error("Message intent scope or expiry mismatch");
   }
+  if (value.kind === "joiningUpdate" && value.automation) {
+    const routes = value.automation.routes.map((r) => r.routeId);
+    if (value.context.mode !== "live" || value.workflow.kind !== "lateJoin" ||
+        new Set(routes).size !== routes.length ||
+        operationContentHash(routes) !==
+          operationContentHash(value.permittedRoutes)) {
+      throw new Error("Automatic message has inconsistent route authority");
+    }
+  }
   const ids = new Set<string>();
   for (const choice of value.choices) {
     if (ids.has(choice.choiceId)) throw new Error("Duplicate response choice");
@@ -104,6 +113,29 @@ export function buildLateJoinMessageIntent(
 ): MessageIntent | null {
   const decision = evaluateLateJoin(input);
   if (decision.kind !== "update" || !decision.shouldSend) return null;
+  return buildJoiningIntent(input, options, decision);
+}
+
+export type LateJoinAutomation = NonNullable<Extract<MessageIntent,
+  {kind: "joiningUpdate"}>["automation"]>;
+
+/** Refresh the guest page while outreach is throttled, with a dispatch gate. */
+export function buildLateJoinInstructionIntent(input: LateJoinInput,
+  options: LateJoinMessageOptions, automation: LateJoinAutomation) {
+  const decision = evaluateLateJoin(input);
+  if (decision.kind !== "update" || input.setting.kind !== "enabled" ||
+      input.setting.authority !== "executeWithinPolicy") return null;
+  const intent = buildJoiningIntent(input, options, decision);
+  const bound = {...intent, automation};
+  // Freeze semantic content; retries at a later clock reuse the same record.
+  // Changed policy, choices or confirmed guidance get a distinct immutable id.
+  return parseMessageIntent({...bound, intentId: "message:" +
+    operationContentHash({...bound, createdAt: 0})});
+}
+
+function buildJoiningIntent(input: LateJoinInput,
+  options: LateJoinMessageOptions,
+  decision: Extract<ReturnType<typeof evaluateLateJoin>, {kind: "update"}>) {
   const choices: Extract<MessageIntent, {kind: "joiningUpdate"}>["choices"] = [
     {choiceId: "on-my-way", label: "I'm on my way",
       value: {kind: "joinIntent", intention: {kind: "onMyWay",

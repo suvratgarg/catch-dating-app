@@ -82,7 +82,9 @@ class FakeQuery {
         new FakeSnapshot(path.slice(prefix.length), value))
       .filter((snapshot) => !this.cursor || snapshot.id > this.cursor)
       .filter((snapshot) => this.filters.every(([field, operator, value]) => {
-        const stored = snapshot.data()?.[field];
+        const stored = field.split(".").reduce<unknown>((value, part) =>
+          value && typeof value === "object" ?
+            (value as FakeData)[part] : undefined, snapshot.data());
         return operator === "array-contains" ?
           Array.isArray(stored) && stored.includes(value) :
           stored === value;

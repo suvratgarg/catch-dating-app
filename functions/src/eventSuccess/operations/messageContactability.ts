@@ -10,12 +10,10 @@ import {whatsappConsentSender} from "./whatsappConsentSender";
 import {WHATSAPP_POLICIES} from "./whatsappTemplate";
 import {MessagePermissionScope, readSmsMessagePermission,
   readWhatsappMessagePermission} from "./messagePermissionReader";
+import type {LateJoinAutomation} from "./messageProtocol";
 
 /** The trusted workflow chooses senders; consent never selects them. */
-export type EventMessageRouteSelection =
-  | {routeId: "catchEventSms"; senderId: string}
-  | {routeId: "organizerEventWhatsapp"; senderId: string}
-  | {routeId: "catchEventRcs"};
+export type EventMessageRouteSelection = LateJoinAutomation["routes"][number];
 type WireRoute = MessageRecord["intent"]["permittedRoutes"][number];
 const completeRoutes: [
   Exclude<WireRoute, EventMessageRouteSelection["routeId"]>,

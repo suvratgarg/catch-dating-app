@@ -12,9 +12,9 @@ import {operationContentHash} from "../../operations/durableActions";
 import {joiningGuidanceIsCurrent} from "./groupProgressReader";
 import {applyGuestChoice} from "./guestChoiceActions";
 import {
-  assistanceMessageId, MessageRecord, newMessageRecord, parseMessageRecord,
+  MessageRecord, parseMessageRecord,
 } from "./messageOutbox";
-import {parseMessageIntent} from "./messageProtocol";
+import {prepareGuestMessagePublication} from "./guestMessagePublication";
 import {sameMessageContext} from "./messagingPolicy";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {
@@ -88,67 +88,11 @@ export class GuestAssistanceStore {
   async publishMessage(
     value: unknown, expectedThreadRevision: number | null
   ): Promise<Thread> {
-    const intent = parseMessageIntent(value);
-    if (intent.context.mode !== "live") throw unavailable();
-    const context = intent.context;
-    const guestId = guestIdentity(context, intent.attendeeId);
-    const threadId = threadIdentity(intent);
-    const messageId = assistanceMessageId(intent);
     return this.db.runTransaction(async (tx) => {
-      const threadRef = this.db.collection(guestCollections.threads)
-        .doc(threadId);
-      const messageRef = this.db.collection(EVENT_ASSISTANCE_MESSAGES)
-        .doc(messageId);
-      const [guestSnap, threadSnap, messageSnap] = await Promise.all([
-        tx.get(this.db.collection(guestCollections.guests).doc(guestId)),
-        tx.get(threadRef), tx.get(messageRef),
-      ]);
-      const guest = parseGuest(guestSnap.data());
-      if (guest.guestId !== guestId) throw unavailable();
-      const source = await readGuestSourceFacts(this.db, tx, context,
-        intent.attendeeId);
-      if (!guestCanReceiveMessage(guest, source, intent) ||
-          guest.episodeId !== intent.episodeId) {
-        throw unavailable();
-      }
-      if (!await joiningGuidanceIsCurrent(this.db, tx, intent, this.now())) {
-        throw unavailable();
-      }
-      const previous = threadSnap.exists ?
-        parseThread(threadSnap.data()) : null;
-      if (previous && previous.threadId !== threadId) throw unavailable();
-      const existing = messageSnap.exists ?
-        parseMessageRecord(messageSnap.data()) : null;
-      if (existing && operationContentHash(existing.intent) !==
-          operationContentHash(intent)) throw conflict();
-      if (previous?.messageId === messageId && existing) return previous;
-      if ((previous?.revision ?? null) !== expectedThreadRevision) {
-        throw conflict();
-      }
-      const priorRef = previous ? this.db.collection(EVENT_ASSISTANCE_MESSAGES)
-        .doc(previous.messageId) : null;
-      const prior = priorRef ? parseMessageRecord((await tx.get(priorRef))
-        .data()) : null;
-      if (prior && (prior.messageId !== previous?.messageId ||
-          threadIdentity(prior.intent) !== threadId)) throw unavailable();
-      const now = this.now();
-      if (!messageWindowOpen(intent, source, now)) throw unavailable();
-      const message = existing ?? newMessageRecord(intent, now);
-      if (message.lifecycle !== "active" || now >= intent.expiresAt) {
-        throw unavailable();
-      }
-      const thread = parseThread({schemaVersion: 1, threadId, guestId, context,
-        attendeeId: intent.attendeeId, episodeId: intent.episodeId,
-        workflow: intent.workflow, messageId,
-        revision: previous ? previous.revision + 1 : 0,
-        createdAt: previous?.createdAt ?? now, updatedAt: now});
-      if (!existing) tx.create(messageRef, message);
-      if (priorRef && prior?.lifecycle === "active") {
-        tx.set(priorRef, parseMessageRecord({...prior, lifecycle: "superseded",
-          revision: prior.revision + 1, updatedAt: now}));
-      }
-      tx.set(threadRef, thread);
-      return thread;
+      const prepared = await prepareGuestMessagePublication(this.db, tx,
+        value, expectedThreadRevision, () => this.now());
+      prepared.commit();
+      return prepared.thread;
     });
   }
 

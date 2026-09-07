@@ -586,6 +586,124 @@ const schemaEventAssistanceMessageIntentSchema = <String, Object?>{
             },
           },
         },
+        'automation': <String, Object?>{
+          'type': 'object',
+          'description': 'Trusted live publisher binding. Queued delivery rechecks the saved policy, current group and episode outreach budget. Absence denotes the pre-existing trusted explicit publisher path, never automatic execution authority.',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'policyVersion',
+            'groupId',
+            'settingId',
+            'settingRevision',
+            'routes',
+            'responseDeadline',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'lateJoin',
+            },
+            'policyVersion': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'groupId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+            },
+            'settingId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+            },
+            'settingRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'routes': <String, Object?>{
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'routeId',
+                      'senderId',
+                    ],
+                    'properties': <String, Object?>{
+                      'routeId': <String, Object?>{
+                        'type': 'string',
+                        'const': 'catchEventSms',
+                      },
+                      'senderId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 160,
+                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'routeId',
+                      'senderId',
+                    ],
+                    'properties': <String, Object?>{
+                      'routeId': <String, Object?>{
+                        'type': 'string',
+                        'const': 'organizerEventWhatsapp',
+                      },
+                      'senderId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 160,
+                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'routeId',
+                    ],
+                    'properties': <String, Object?>{
+                      'routeId': <String, Object?>{
+                        'type': 'string',
+                        'const': 'catchEventRcs',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            'responseDeadline': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                  'const': null,
+                },
+              ],
+            },
+          },
+        },
       },
     },
     <String, Object?>{

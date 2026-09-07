@@ -2402,6 +2402,34 @@ export interface EventAssistanceMessageDocument {
                   | "other";
               };
         }[];
+        /**
+         * Trusted live publisher binding. Queued delivery rechecks the saved policy, current group and episode outreach budget. Absence denotes the pre-existing trusted explicit publisher path, never automatic execution authority.
+         */
+        automation?: {
+          kind: "lateJoin";
+          policyVersion: string;
+          groupId: string;
+          settingId: string;
+          settingRevision: number;
+          /**
+           * @minItems 1
+           * @maxItems 3
+           */
+          routes: (
+            | {
+                routeId: "catchEventSms";
+                senderId: string;
+              }
+            | {
+                routeId: "organizerEventWhatsapp";
+                senderId: string;
+              }
+            | {
+                routeId: "catchEventRcs";
+              }
+          )[];
+          responseDeadline: number | null;
+        };
       }
     | {
         schemaVersion: 1;
