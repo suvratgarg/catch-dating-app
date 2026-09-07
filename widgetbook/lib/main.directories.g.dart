@@ -10386,7 +10386,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFormMultiChoiceRowEditor<dynamic, Labelled>',
+                name: 'CatchFormMultiChoiceRowEditor<dynamic, dynamic>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
@@ -10416,7 +10416,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFormSingleChoiceRowEditor<dynamic, Labelled>',
+                name: 'CatchFormSingleChoiceRowEditor<dynamic, dynamic>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ void main() {
               body: 'Verified',
             ),
             CatchFormSingleChoiceRow<_Patch, _Option>(
+              itemLabel: (value) => value.label,
               id: 'city',
               icon: CatchIcons.locationOnOutlined,
               label: 'City',
@@ -81,6 +84,7 @@ void main() {
 
   test('descriptor family preserves typed patch factories', () {
     final text = CatchFormTextRow<_Patch>(
+      validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
       id: 'name',
       icon: CatchIcons.personOutlined,
       label: 'Name',
@@ -88,6 +92,7 @@ void main() {
       patchForValue: (value) => _Patch(value as String),
     );
     final multi = CatchFormMultiChoiceRow<_Patch, _Option>(
+      itemLabel: (value) => value.label,
       id: 'cities',
       icon: CatchIcons.locationOnOutlined,
       label: 'Cities',
@@ -123,6 +128,7 @@ void main() {
         CatchFormRowList<_Patch>(
           rows: [
             CatchFormTextRow<_Patch>(
+              validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
               id: 'name',
               icon: CatchIcons.personOutlined,
               label: 'Name',
@@ -168,6 +174,7 @@ void main() {
           textCommitMode: CatchFormTextCommitMode.onBlur,
           rows: [
             CatchFormTextRow<_Patch>(
+              validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
               id: 'name',
               icon: CatchIcons.personOutlined,
               label: 'Name',

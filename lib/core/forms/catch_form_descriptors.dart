@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/labelled.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -79,6 +76,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     required super.icon,
     required super.label,
     required this.currentValue,
+    required this.validationCopy,
     required this.patchForValue,
     this.fieldName,
     this.currentFieldValue,
@@ -101,6 +99,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   });
 
   final String currentValue;
+  final CatchFormValidationCopy validationCopy;
   final Object? currentFieldValue;
   final String? fieldName;
   final String? emptyValueText;
@@ -131,14 +130,13 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
         explicitMaxLength: maxLength,
       );
 
-  String? validate(BuildContext context, String value) =>
-      CatchContractFieldPolicy.validateText(
-        copy: catchFormValidationCopy(context.l10n),
-        label: label,
-        value: value,
-        contract: contract,
-        explicitValidator: validator,
-      );
+  String? validate(String value) => CatchContractFieldPolicy.validateText(
+    copy: validationCopy,
+    label: label,
+    value: value,
+    contract: contract,
+    explicitValidator: validator,
+  );
 
   @override
   Widget buildRow(
@@ -161,13 +159,13 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   }
 }
 
-final class CatchFormSingleChoiceRow<P, T extends Labelled>
-    extends CatchFormRowDescriptor<P> {
+final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
   const CatchFormSingleChoiceRow({
     required super.id,
     required super.icon,
     required super.label,
     required this.values,
+    required this.itemLabel,
     required this.value,
     required this.patchForValue,
     this.fieldName,
@@ -181,6 +179,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
   });
 
   final List<T> values;
+  final String Function(T value) itemLabel;
   final T? value;
   final String? fieldName;
   final String? emptyValueText;
@@ -214,13 +213,13 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
   }
 }
 
-final class CatchFormMultiChoiceRow<P, T extends Labelled>
-    extends CatchFormRowDescriptor<P> {
+final class CatchFormMultiChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
   const CatchFormMultiChoiceRow({
     required super.id,
     required super.icon,
     required super.label,
     required this.values,
+    required this.itemLabel,
     required this.selected,
     required this.patchForValues,
     this.fieldName,
@@ -235,6 +234,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
   });
 
   final List<T> values;
+  final String Function(T value) itemLabel;
   final List<T> selected;
   final String? fieldName;
   final String? emptyValueText;
@@ -550,7 +550,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
         selection: TextSelection.collapsed(offset: normalized.length),
       );
     }
-    final validationError = descriptor.validate(context, normalized);
+    final validationError = descriptor.validate(normalized);
     if (validationError != null) {
       setState(() => _validationError = validationError);
       return;
@@ -678,8 +678,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   }
 }
 
-class CatchFormSingleChoiceRowEditor<P, T extends Labelled>
-    extends StatefulWidget {
+class CatchFormSingleChoiceRowEditor<P, T> extends StatefulWidget {
   const CatchFormSingleChoiceRowEditor({
     super.key,
     required this.descriptor,
@@ -696,7 +695,7 @@ class CatchFormSingleChoiceRowEditor<P, T extends Labelled>
       _CatchFormSingleChoiceRowEditorState<P, T>();
 }
 
-class _CatchFormSingleChoiceRowEditorState<P, T extends Labelled>
+class _CatchFormSingleChoiceRowEditorState<P, T>
     extends State<CatchFormSingleChoiceRowEditor<P, T>> {
   late T? _selected = widget.descriptor.value;
   final _saveState = _CatchFormSaveState();
@@ -789,7 +788,7 @@ class _CatchFormSingleChoiceRowEditorState<P, T extends Labelled>
       values: descriptor.values,
       contract: descriptor.contract,
       contractValue: descriptor.contractValue,
-      itemLabel: (value) => value.label,
+      itemLabel: descriptor.itemLabel,
       selected: {?_selected},
       allowEmptySelection: descriptor.allowEmptySelection,
       onSelectionChanged: (selection) {
@@ -804,8 +803,7 @@ class _CatchFormSingleChoiceRowEditorState<P, T extends Labelled>
   }
 }
 
-class CatchFormMultiChoiceRowEditor<P, T extends Labelled>
-    extends StatefulWidget {
+class CatchFormMultiChoiceRowEditor<P, T> extends StatefulWidget {
   const CatchFormMultiChoiceRowEditor({
     super.key,
     required this.descriptor,
@@ -822,7 +820,7 @@ class CatchFormMultiChoiceRowEditor<P, T extends Labelled>
       _CatchFormMultiChoiceRowEditorState<P, T>();
 }
 
-class _CatchFormMultiChoiceRowEditorState<P, T extends Labelled>
+class _CatchFormMultiChoiceRowEditorState<P, T>
     extends State<CatchFormMultiChoiceRowEditor<P, T>> {
   late Set<T> _selected = widget.descriptor.selected.toSet();
   final _saveState = _CatchFormSaveState();
@@ -917,7 +915,7 @@ class _CatchFormMultiChoiceRowEditorState<P, T extends Labelled>
       values: descriptor.values,
       contract: descriptor.contract,
       contractValue: descriptor.contractValue,
-      itemLabel: (value) => value.label,
+      itemLabel: descriptor.itemLabel,
       selected: _selected,
       multi: true,
       allowEmptySelection: descriptor.allowEmptySelection,

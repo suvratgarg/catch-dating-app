@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -1508,7 +1509,7 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormRowListStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1517,7 +1518,7 @@ Widget catchFormRowListStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormTextRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1526,7 +1527,7 @@ Widget catchFormTextRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1535,7 +1536,7 @@ Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1544,10 +1545,10 @@ Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormRangeRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
-Widget _catchFormDescriptorPreview() {
+Widget _catchFormDescriptorPreview(BuildContext context) {
   return _ProfileCatalog(
     title: 'CatchFormRowList',
     contractId: 'catch.form.descriptors.prototype',
@@ -1567,6 +1568,7 @@ Widget _catchFormDescriptorPreview() {
                 body: 'Verified',
               ),
               CatchFormTextRow<_WidgetbookFormPatch>(
+                validationCopy: catchFormValidationCopy(context.l10n),
                 id: 'name',
                 icon: CatchIcons.personOutlined,
                 label: 'Name',
@@ -1577,6 +1579,7 @@ Widget _catchFormDescriptorPreview() {
                 _WidgetbookFormPatch,
                 _WidgetbookFormOption
               >(
+                itemLabel: (value) => value.label,
                 id: 'city',
                 icon: CatchIcons.locationOnOutlined,
                 label: 'City',
@@ -1588,6 +1591,7 @@ Widget _catchFormDescriptorPreview() {
                 _WidgetbookFormPatch,
                 _WidgetbookFormOption
               >(
+                itemLabel: (value) => value.label,
                 id: 'communities',
                 icon: CatchIcons.groupsOutlined,
                 label: 'Communities',

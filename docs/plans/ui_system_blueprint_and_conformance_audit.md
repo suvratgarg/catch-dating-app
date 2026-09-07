@@ -925,6 +925,12 @@ catalog. Digit-key prefixes remain stable implementation identifiers; their
 former catalog key and allowlist entry are removed. Input formatting, autofill,
 submission, and visible cells retain their bodies without an app-copy import.
 
+Typed form descriptors receive caller-resolved validation formatters and choice
+labels. Their editors no longer import the app catalog or require `Labelled`;
+normalization, schema filtering, pending saves, explicit/on-blur confirmation,
+and typed patch factories retain their existing behavior. Shared field, section,
+and constraint dependencies still precede the pattern package move.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

@@ -698,6 +698,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
 
     return [
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
+        itemLabel: (value) => value.label,
         id: HostClubEditFieldKeys.organizerType,
         icon: CatchIcons.groups3Outlined,
         label: context.l10n.hostsOrganizerTypeLabel,
@@ -709,6 +710,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(organizerType: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.name,
         icon: CatchIcons.groups3Outlined,
         label: context.l10n.hostsHostClubProfileLabelClubName,
@@ -720,6 +722,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(name: value as String),
       ),
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostClubCityOption>(
+        itemLabel: (value) => value.label,
         id: HostClubEditFieldKeys.location,
         icon: CatchIcons.locationCityOutlined,
         label: context.l10n.hostsHostClubProfileLabelCity,
@@ -731,6 +734,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(location: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.area,
         icon: CatchIcons.locationOnOutlined,
         label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
@@ -742,6 +746,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(area: value as String),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.description,
         icon: CatchIcons.descriptionOutlined,
         label: context.l10n.hostsHostClubProfileLabelDescription,
@@ -787,6 +792,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
 
     return [
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.instagramHandle,
         icon: CatchIcons.alternateEmailRounded,
         label: context.l10n.hostsHostClubProfileLabelInstagram,
@@ -800,6 +806,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(instagramHandle: value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.phoneNumber,
         icon: CatchIcons.phoneOutlined,
         label: context.l10n.hostsHostClubProfileLabelPhone,
@@ -813,6 +820,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(phoneNumber: value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.email,
         icon: CatchIcons.emailOutlined,
         label: context.l10n.hostsHostClubProfileLabelEmail,
