@@ -1,3 +1,4 @@
+import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import test from "node:test";
@@ -315,7 +316,8 @@ test("due orchestration advances roster work and ignores unrelated payloads",
   async () => {
     const h = await rosterHarness();
     const created = await h.enqueue();
-    const ports = {roster: h.roster, source: h.source, guest: h.runner};
+    const ports = {roster: h.roster, source: h.source, guest: h.runner,
+      delivery: new AssistanceDeliveryWorkStore(h.db, () => h.clock.now)};
     await processChangedAssistanceWork(created.item.workItemId,
       created.item, ports, start);
     assert.equal((await h.roster.get(created.item.workItemId)).run.status,

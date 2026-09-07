@@ -145,6 +145,7 @@ export 'duplicate_organizer_form_callable_response.g.dart';
 export 'event_assistance_case_document.g.dart';
 export 'event_assistance_command.g.dart';
 export 'event_assistance_delivery_attempt.g.dart';
+export 'event_assistance_delivery_work.g.dart';
 export 'event_assistance_group_progress_callable_response.g.dart';
 export 'event_assistance_group_progress_document.g.dart';
 export 'event_assistance_group_staff_callable_response.g.dart';

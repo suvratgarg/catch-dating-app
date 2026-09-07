@@ -10,6 +10,36 @@
       "if": {
         "properties": {
           "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveMessageDelivery"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "message_delivery"
+          },
+          "normalizedPayload": {
+            "$ref": "event_assistance_delivery_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
             "type": "object", "required": ["kind"],
             "properties": {"kind": {"const": "liveRosterEnrollment"}}
           }

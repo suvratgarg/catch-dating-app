@@ -6,6 +6,7 @@ import {assistanceMessageId, newMessageRecord, parseMessageRecord} from
   "./messageOutbox";
 import {parseMessageIntent} from "./messageProtocol";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
+import {prepareDeliveryWorkEnqueue} from "./deliveryWorkEnqueue";
 import {guestCanReceiveMessage, guestCollections, guestIdentity,
   messageWindowOpen, parseGuest, parseThread, readGuestSourceFacts,
   threadIdentity, unavailable} from "./guestRecords";
@@ -74,6 +75,7 @@ export async function prepareGuestMessagePublication(db: Firestore,
     workflow: intent.workflow, messageId,
     revision: previous ? previous.revision + 1 : 0,
     createdAt: previous?.createdAt ?? now, updatedAt: now});
+  const delivery = await prepareDeliveryWorkEnqueue(db, tx, message, now);
   return {thread, replayed: false, commit: () => {
     if (!existing) tx.create(messageRef, message);
     if (priorRef && prior?.lifecycle === "active") {
@@ -81,6 +83,7 @@ export async function prepareGuestMessagePublication(db: Firestore,
         revision: prior.revision + 1, updatedAt: now}));
     }
     tx.set(threadRef, thread);
+    delivery.commit();
   }};
 }
 

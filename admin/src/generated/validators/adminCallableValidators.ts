@@ -5820,6 +5820,36 @@ const model = {
                 ],
                 "properties": {
                   "kind": {
+                    "const": "liveMessageDelivery"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "message_delivery"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_delivery_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
                     "const": "liveRosterEnrollment"
                   }
                 }
@@ -7261,86 +7291,65 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/event_assistance_roster_work.schema.json",
-      "title": "EventAssistanceRosterWork",
-      "description": "Private resumable roster enrollment bound to current manager runtime permission. Enrollment never infers attendance or sends messages.",
+      "$id": "https://catch.app/contracts/operations/event_assistance_delivery_work.schema.json",
+      "title": "EventAssistanceDeliveryWork",
+      "description": "Private resumable delivery coordination for one published automatic message. The outbox owns provider attempts; a checkpoint never grants dispatch authority.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "schemaVersion",
         "kind",
-        "signalId",
-        "source",
+        "messageId",
+        "intentHash",
+        "threadId",
         "scope",
+        "createdAt",
         "expiresAt",
-        "checkpoint",
-        "runtimeBinding"
+        "checkpoint"
       ],
       "properties": {
         "schemaVersion": {
-          "const": 1,
-          "type": "integer"
+          "type": "integer",
+          "const": 1
         },
         "kind": {
-          "const": "liveRosterEnrollment",
-          "type": "string"
+          "type": "string",
+          "const": "liveMessageDelivery"
         },
-        "signalId": {
+        "messageId": {
           "$ref": "common.schema.json#/definitions/id"
         },
-        "source": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "eventId",
-            "collection",
-            "documentId",
-            "occurredAt"
-          ],
-          "properties": {
-            "eventId": {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            "collection": {
-              "type": "string",
-              "enum": [
-                "eventAttendees",
-                "eventAssistanceGuests",
-                "eventAssistanceRuntimeConfigs"
-              ]
-            },
-            "documentId": {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            "occurredAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            }
-          }
+        "intentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "threadId": {
+          "$ref": "common.schema.json#/definitions/id"
         },
         "scope": {
           "type": "object",
           "additionalProperties": false,
           "required": [
             "context",
-            "attendeeId"
+            "attendeeId",
+            "episodeId"
           ],
           "properties": {
             "context": {
               "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
             },
             "attendeeId": {
-              "anyOf": [
-                {
-                  "$ref": "common.schema.json#/definitions/id"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "episodeId": {
+              "$ref": "common.schema.json#/definitions/id"
             }
           }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         },
         "expiresAt": {
           "type": "integer",
@@ -7348,100 +7357,268 @@ const model = {
           "maximum": 9007199254740991
         },
         "checkpoint": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "phase",
-            "cursor",
-            "visited",
-            "dueAt",
-            "failures",
-            "retries",
-            "stopReason"
-          ],
-          "properties": {
-            "phase": {
-              "type": "string",
-              "enum": [
-                "scan",
-                "retry",
-                "complete",
-                "review",
-                "expired",
-                "stopped"
-              ]
-            },
-            "cursor": {
-              "anyOf": [
-                {
-                  "$ref": "common.schema.json#/definitions/id"
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "queued"
                 },
-                {
+                "reason": {
                   "type": "null"
-                }
-              ]
-            },
-            "visited": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 10000
-            },
-            "dueAt": {
-              "anyOf": [
-                {
+                },
+                "dueAt": {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 9007199254740991
                 },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "failures": {
-              "type": "array",
-              "maxItems": 100,
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "attendeeId",
-                  "reason"
-                ],
-                "properties": {
-                  "reason": {
-                    "type": "string",
-                    "enum": [
-                      "busy",
-                      "unavailable"
-                    ]
-                  },
-                  "attendeeId": {
-                    "$ref": "common.schema.json#/definitions/id"
-                  }
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5,
+                  "const": 0
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "const": 0
                 }
               }
             },
-            "retries": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 5
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "complete"
+                },
+                "reason": {
+                  "enum": [
+                    "delivered",
+                    "responded",
+                    "cancelled",
+                    "superseded",
+                    "expired",
+                    "eventClosed",
+                    "permissionRevoked",
+                    "guestPresent",
+                    "guestDeclined",
+                    "notAdmitted",
+                    "hostStopped",
+                    "participationInactive"
+                  ]
+                },
+                "dueAt": {
+                  "type": "null"
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
             },
-            "stopReason": {
-              "enum": [
-                null,
-                "missing",
-                "paused",
-                "configurationChanged",
-                "sourceChanged",
-                "expired",
-                "eventClosed"
-              ]
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "receipt"
+                },
+                "reason": {
+                  "const": "providerPending"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "retry"
+                },
+                "reason": {
+                  "enum": [
+                    "retryBackoff",
+                    "eventFactsStale",
+                    "routeFactsStale",
+                    "workerUnavailable"
+                  ]
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "phase",
+                "reason",
+                "dueAt",
+                "messageRevision",
+                "messageHash",
+                "failures",
+                "evaluations"
+              ],
+              "properties": {
+                "phase": {
+                  "type": "string",
+                  "const": "review"
+                },
+                "reason": {
+                  "enum": [
+                    "noEligibleRoute",
+                    "attemptLimit",
+                    "policyRejected",
+                    "recipientNeedsReview",
+                    "providerOwnsFallback",
+                    "conflictingDeliveryEvidence",
+                    "providerPending",
+                    "workerUnavailable",
+                    "recoveryLimit",
+                    "eventFactsStale",
+                    "routeFactsStale"
+                  ]
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "messageHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "failures": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "evaluations": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
             }
-          }
-        },
-        "runtimeBinding": {
-          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
+          ]
         }
       }
     },
@@ -15249,6 +15426,192 @@ const model = {
               }
             }
           }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_roster_work.schema.json",
+      "title": "EventAssistanceRosterWork",
+      "description": "Private resumable roster enrollment bound to current manager runtime permission. Enrollment never infers attendance or sends messages.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "signalId",
+        "source",
+        "scope",
+        "expiresAt",
+        "checkpoint",
+        "runtimeBinding"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "liveRosterEnrollment",
+          "type": "string"
+        },
+        "signalId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "collection",
+            "documentId",
+            "occurredAt"
+          ],
+          "properties": {
+            "eventId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "collection": {
+              "type": "string",
+              "enum": [
+                "eventAttendees",
+                "eventAssistanceGuests",
+                "eventAssistanceRuntimeConfigs"
+              ]
+            },
+            "documentId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "occurredAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "cursor",
+            "visited",
+            "dueAt",
+            "failures",
+            "retries",
+            "stopReason"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "scan",
+                "retry",
+                "complete",
+                "review",
+                "expired",
+                "stopped"
+              ]
+            },
+            "cursor": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visited": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "failures": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "attendeeId",
+                  "reason"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  },
+                  "attendeeId": {
+                    "$ref": "common.schema.json#/definitions/id"
+                  }
+                }
+              }
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "stopReason": {
+              "enum": [
+                null,
+                "missing",
+                "paused",
+                "configurationChanged",
+                "sourceChanged",
+                "expired",
+                "eventClosed"
+              ]
+            }
+          }
+        },
+        "runtimeBinding": {
+          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
         }
       }
     },

@@ -26,8 +26,18 @@ export class EventMessageWorker {
     private readonly workers: Workers,
     private readonly clock: () => number = Date.now) {}
 
-  async dispatch(messageId: string, linkId: string):
+  async dispatch(messageId: string, linkId: string,
+    executionDeadline = Number.MAX_SAFE_INTEGER):
     Promise<EventMessageWorkerResult> {
+    const requireWindow = () => {
+      const now = this.clock();
+      if (!Number.isSafeInteger(executionDeadline) ||
+          !Number.isSafeInteger(now) || now < 0 ||
+          now >= executionDeadline) {
+        throw new Error("Message worker execution window expired");
+      }
+    };
+    requireWindow();
     if (!/^[a-f0-9]{32}$/.test(linkId)) {
       throw new Error("Invalid message guest grant id");
     }
@@ -58,6 +68,7 @@ export class EventMessageWorker {
       }
       channels.set(routeId, channel);
     }));
+    requireWindow();
     const outbox = new FirestoreMessageOutbox(this.db,
       this.readFacts(channels), this.clock);
     const reservation = await outbox.reserve(messageId);
@@ -71,6 +82,7 @@ export class EventMessageWorker {
       // A previously reserved attempt is never reassigned to a new channel.
       return {kind: "waiting", decision: reservation.decision};
     }
+    requireWindow();
     const result = await channel.dispatchReserved(outbox, messageId,
       attempt.attemptId);
     return result.kind === "submitted" ? {...result,

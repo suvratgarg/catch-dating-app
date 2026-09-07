@@ -12365,6 +12365,151 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceDeliveryWorkCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointEvaluations = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.evaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointFailures = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.failures',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointMessageHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.messageHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointMessageRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.messageRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.phase',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryWorkCheckpointReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.checkpoint.reason',
+    required: true,
+    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'providerPending', 'workerUnavailable', 'recoveryLimit', 'eventFactsStale', 'routeFactsStale'],
+  );
+
+  static const eventAssistanceDeliveryWorkCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryWorkExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryWorkIntentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryWorkMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryWorkSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceDeliveryWorkScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.scope.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryWorkScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryWorkScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryWorkScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryWorkScopeEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.scope.episodeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryWorkThreadId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryWork.threadId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceGroupProgressCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -75600,6 +75745,25 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDeliveryAttempt.state.providerMessageId': eventAssistanceDeliveryAttemptStateProviderMessageId,
     'eventAssistanceDeliveryAttempt.state.reason': eventAssistanceDeliveryAttemptStateReason,
     'eventAssistanceDeliveryAttempt.state.reconcileAfter': eventAssistanceDeliveryAttemptStateReconcileAfter,
+    'eventAssistanceDeliveryWork.checkpoint.dueAt': eventAssistanceDeliveryWorkCheckpointDueAt,
+    'eventAssistanceDeliveryWork.checkpoint.evaluations': eventAssistanceDeliveryWorkCheckpointEvaluations,
+    'eventAssistanceDeliveryWork.checkpoint.failures': eventAssistanceDeliveryWorkCheckpointFailures,
+    'eventAssistanceDeliveryWork.checkpoint.messageHash': eventAssistanceDeliveryWorkCheckpointMessageHash,
+    'eventAssistanceDeliveryWork.checkpoint.messageRevision': eventAssistanceDeliveryWorkCheckpointMessageRevision,
+    'eventAssistanceDeliveryWork.checkpoint.phase': eventAssistanceDeliveryWorkCheckpointPhase,
+    'eventAssistanceDeliveryWork.checkpoint.reason': eventAssistanceDeliveryWorkCheckpointReason,
+    'eventAssistanceDeliveryWork.createdAt': eventAssistanceDeliveryWorkCreatedAt,
+    'eventAssistanceDeliveryWork.expiresAt': eventAssistanceDeliveryWorkExpiresAt,
+    'eventAssistanceDeliveryWork.intentHash': eventAssistanceDeliveryWorkIntentHash,
+    'eventAssistanceDeliveryWork.kind': eventAssistanceDeliveryWorkKind,
+    'eventAssistanceDeliveryWork.messageId': eventAssistanceDeliveryWorkMessageId,
+    'eventAssistanceDeliveryWork.schemaVersion': eventAssistanceDeliveryWorkSchemaVersion,
+    'eventAssistanceDeliveryWork.scope.attendeeId': eventAssistanceDeliveryWorkScopeAttendeeId,
+    'eventAssistanceDeliveryWork.scope.context.eventId': eventAssistanceDeliveryWorkScopeContextEventId,
+    'eventAssistanceDeliveryWork.scope.context.mode': eventAssistanceDeliveryWorkScopeContextMode,
+    'eventAssistanceDeliveryWork.scope.context.organizerId': eventAssistanceDeliveryWorkScopeContextOrganizerId,
+    'eventAssistanceDeliveryWork.scope.episodeId': eventAssistanceDeliveryWorkScopeEpisodeId,
+    'eventAssistanceDeliveryWork.threadId': eventAssistanceDeliveryWorkThreadId,
     'eventAssistanceGroupProgressCallableResponse.operationRevision': eventAssistanceGroupProgressCallableResponseOperationRevision,
     'eventAssistanceGroupProgressCallableResponse.outcome': eventAssistanceGroupProgressCallableResponseOutcome,
     'eventAssistanceGroupProgressCallableResponse.view.context.eventId': eventAssistanceGroupProgressCallableResponseViewContextEventId,

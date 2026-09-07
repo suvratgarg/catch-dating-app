@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.16.0
+version: 1.17.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -553,7 +553,8 @@ closed workflow cannot discard a later provider receipt. The workflow will
 reference that private message state instead of treating a work-item action
 receipt as delivery proof. `EventMessageWorker` now composes the concrete SMS
 and WhatsApp authority readers and adapters through that one outbox history;
-only the selected channel can claim spending and send. Scheduler activation,
+only the selected channel can claim spending and send. The dormant message
+delivery coordinator below supplies durable invocation. Scheduler activation,
 remaining workflow source readers, RCS and provider failure reconciliation
 remain integration work. These primitives do not enable Supply Intake
 publication.
@@ -686,6 +687,40 @@ discovery are wired in source. Readiness-change signals for
 consent/sender/template/budget changes, provider dispatch coordination and Host
 queue projections remain integration work. Activating the dormant functions
 also requires the corresponding operating-budget and delivery configuration.
+
+### Durable message delivery work
+
+`event_assistance_delivery_work.schema.json` binds one immutable automatic
+message to a `message_delivery` work item and run. Publication creates those
+records atomically; no provider or signing-key access occurs in that transaction.
+Its basis binds the message, intent hash, thread, participation scope and expiry.
+Checkpoints retain the observed outbox revision/hash, bounded recovery counts,
+next due time and typed reason. They contain no guest endpoint or bearer secret.
+
+`AssistanceDeliveryWorkStore` leases one job and invokes the existing shared
+message worker at most once per execution. The outbox's claim transaction is the
+provider authority; the Operations lease fences the later checkpoint. If a worker
+loses its lease or checkpoint after submitting, the next execution observes the
+outbox's pending submission and does not submit it again. Checkpoint receipts
+record coordination progress, with zero publication/spend counters; provider
+attempts and debits remain in their owning records.
+
+Missing keys/domain facts retry at bounded delays and become review after five
+failures. Evaluations are capped at 100. Accepted/unknown submissions get one
+receipt wait of at least two minutes, bounded by expiry, then retain a review
+issue until a message change or expiry. A review item keeps its run active so a
+receipt can resolve it without an administrative resume. Completed runs/items
+remain terminal; the independent outbox accepts later evidence. No elapsed-time
+transition claims a provider failed or permits fallback by itself.
+
+The existing dormant message trigger resumes a saved delivery job; the work
+trigger selects `liveMessageDelivery` due payloads. Each scheduled batch reads
+at most ten due delivery items in addition to its roster/source/guest limits.
+Independent items continue after another item fails. Message changes are only
+wake requests: the store re-reads the canonical outbox and current authority.
+Readiness-change fanout, provider lookup/finality, Host projection and terminal
+retention remain required before full activation. Signing-key requirements and
+channel controls are owned by [Event Success](event_success.md#durable-message-delivery-coordination).
 
 ## Adding Another Workflow
 

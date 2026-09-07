@@ -82,6 +82,7 @@ Do not edit it by hand.
 | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `functions/src/shared/generated/eventAssistancePolicy.ts` |
 | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `functions/src/shared/generated/eventAssistanceCommand.ts` |
 | EventAssistanceSourceWork | `operations/event_assistance_source_work.schema.json` | `functions/src/shared/generated/eventAssistanceSourceWork.ts` |
+| EventAssistanceDeliveryWork | `operations/event_assistance_delivery_work.schema.json` | `functions/src/shared/generated/eventAssistanceDeliveryWork.ts` |
 | EventAssistanceRosterWork | `operations/event_assistance_roster_work.schema.json` | `functions/src/shared/generated/eventAssistanceRosterWork.ts` |
 | EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `functions/src/shared/generated/eventAssistanceLiveWork.ts` |
 | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinInput.ts` |
@@ -689,6 +690,7 @@ Do not edit it by hand.
 | `schemaEventAssistancePolicySchema` | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_policy.g.dart` |
 | `schemaEventAssistanceCommandSchema` | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_command.g.dart` |
 | `schemaEventAssistanceSourceWorkSchema` | EventAssistanceSourceWork | `operations/event_assistance_source_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_source_work.g.dart` |
+| `schemaEventAssistanceDeliveryWorkSchema` | EventAssistanceDeliveryWork | `operations/event_assistance_delivery_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_delivery_work.g.dart` |
 | `schemaEventAssistanceRosterWorkSchema` | EventAssistanceRosterWork | `operations/event_assistance_roster_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_roster_work.g.dart` |
 | `schemaEventAssistanceLiveWorkSchema` | EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_live_work.g.dart` |
 | `schemaEventAssistanceLateJoinInputSchema` | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_input.g.dart` |

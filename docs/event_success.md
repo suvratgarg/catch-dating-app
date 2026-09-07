@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.32.0
+version: 1.33.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -597,8 +597,9 @@ reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
 or accept a real provider receipt. The selected worker connects the outbox to
 Gupshup SMS or Meta WhatsApp outside the transaction. An unknown or accepted
 submission holds all fallback even if its channel later becomes unavailable.
-A scheduled live Operations executor, Host read model and rehearsal runtime
-remain separate integration steps. Terminal cleanup must be added before
+The dormant delivery coordinator below now resumes the published automatic
+late-join messages. Host read models and rehearsal runtime remain separate
+integration steps. Terminal cleanup must be added before
 activation and retain deduplication state throughout the provider reconciliation
 window.
 
@@ -625,10 +626,57 @@ roster gate for all channel adapters. It rejects a replaced episode or thread
 head, expired event phase, declined guest or confirmed arrival. Channel-specific
 consent, suppression and sender authority must still be read in the same outbox
 transaction. The guest webpage at `/event-update/:linkId` uses the public
-read/reply boundary and the existing web runtime primitives. Key provisioning,
-the live workflow publisher, Host case projection/resolution and rehearsal
-response adapter remain separate
-integration steps; recording a help case does not yet notify a Host.
+read/reply boundary and the existing web runtime primitives. Key provisioning, Host case projection/resolution and the rehearsal
+response adapter remain separate integration steps; recording a help case does not yet notify a Host.
+
+### Durable message delivery coordination
+
+Automatic late-join publication with a saved runtime binding now creates its
+`liveMessageDelivery` Operations run/item in the same transaction as the
+message/thread. Explicit legacy publications and rehearsal intents do not enroll
+automatic delivery. Retries reuse the immutable message identity and one
+per-message guest grant across channel attempts. A publication counter still
+means an intent was created; it does not measure provider submission or delivery.
+
+`AssistanceDeliveryWorkStore` resumes due work under an Operations lease, while
+`LiveMessageDispatcher` loads signing keys, issues the deterministic grant and
+composes the current SMS/WhatsApp workers. The outbox retains independent final
+claim authority. Slow key/credential access cannot start a new send after the
+worker deadline. A lost checkpoint after a claimed or accepted submission reads
+the outbox on restart and cannot repeat that submission. Neither a work lease
+nor a signing key grants recipient permission, template approval or spending.
+
+The existing dormant message-change handler wakes saved delivery work after a
+receipt or response. It cannot create delivery work from an arbitrary outbox
+row. The existing work handler and scheduled recovery also process delivery
+items. One execution invokes at most one channel worker; outbox retry bounds and
+backoff remain authoritative. Refreshed guidance can wait until the shared
+late-join policy permits outreach; its temporary cooldown is preserved as a due
+time. Unreachable routes retain review work instead of completing the job.
+Missing keys or domain facts have five bounded
+repair attempts, and a work item permits at most 100 evaluations. Unresolved
+provider outcomes get one bounded receipt wait, then a review flag with the next
+check at message expiry. Review keeps the coordinator runnable for a receipt;
+it does not grant a new provider submission.
+
+Recorded delivery evidence remains readable after sender or event authority
+changes. Completed Operations work never reopens; later contradictory or delayed
+receipts remain in the outbox, whose current state must inform the Host read
+model. A delivery review flag is not yet a surfaced Host case or notification.
+Provider lookup/finality, readiness-change wakes, retention and financial
+reconciliation remain separate work.
+
+The worker reads a pinned numbered Secret Manager version named by
+`EVENT_ASSISTANCE_GUEST_KEY_VERSION`, under the
+`EVENT_ASSISTANCE_GUEST_KEYS` secret. Its `catch.event-assistance-guest-keys/v1`
+envelope contains a current key id and up to ten uniquely identified 256-bit
+keys encoded as canonical base64url. Retain old keys through outstanding grant
+lifetimes; replacing a key under the same id cannot silently regenerate an
+existing grant. Secret bytes and response-link secrets never enter Operations
+payloads or errors. The same loaded key ring serves grant issuance and both
+channel renderers. WhatsApp also requires `META_WHATSAPP_ENABLED=true`; sender,
+consent, template, credential and budget checks still apply independently.
+No secret or sender is provisioned or activated by this implementation.
 
 ### WhatsApp native reply boundary
 
@@ -791,7 +839,8 @@ candidate adapter; account selection and actual use-case/DLT approvals remain
 unconfirmed. The channel-specific worker only accepts SMS-only intents;
 multi-route intents use `EventMessageWorker` and its shared authority reader.
 Before activation, complete the remaining consent/withdrawal entry points,
-audited sender/budget provisioning, live Operations scheduling, authenticated delivery
+audited sender/budget provisioning, activation of the dormant coordination,
+authenticated delivery
 ingress and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,

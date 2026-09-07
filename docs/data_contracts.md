@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.49.0
+version: 1.50.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -244,6 +244,20 @@ limits and lifecycle are documented in
 Runtime configuration commits its roster run/item with the configuration and
 request receipt. Configuration triggers reuse that revision's logical source
 identity, while registration/re-entry sources retain their CloudEvent identity.
+
+The strict `event_assistance_delivery_work.schema.json` payload binds an
+automatic message to the Event Assistance `message_delivery` entity in existing
+Operations collections. Phase-specific schema constraints distinguish queued,
+retry, receipt wait, review and completed checkpoints. Runtime validation checks
+the entire run/item projection, frozen intent/thread/scope, message revision/hash
+and timestamp bounds. The publisher creates the message, thread and delivery
+run/item in one transaction. A raw outbox row or unbound legacy intent cannot
+create scheduled send authority. No new client-readable collection is added.
+[Operations](operations_platform.md#durable-message-delivery-work) owns execution
+limits, recovery and receipts; [Event Success](event_success.md#durable-message-delivery-coordination)
+owns signing-key configuration and the channel bridge. Private grant/dispatch
+records retain their existing hashes and bindings; credentials are never copied
+into delivery-work payloads.
 
 ### Event Assistance Group Progress Contract
 
