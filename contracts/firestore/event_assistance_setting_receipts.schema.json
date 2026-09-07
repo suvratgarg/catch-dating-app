@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_setting_receipts.schema.json",
+  "title": "EventAssistanceSettingReceiptDocument",
+  "$ref": "../shared/event_assistance_settings.schema.json#/definitions/Receipt",
+  "x-firestore-collection": "eventAssistanceSettingReceipts",
+  "x-firestore-path": "eventAssistanceSettingReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "event-assistance policy configuration"
+}

@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceSettingDocument | `firestore/event_assistance_settings.schema.json` | `functions/src/shared/generated/eventAssistanceSettingDocument.ts` |
+| EventAssistanceSettingReceiptDocument | `firestore/event_assistance_setting_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceSettingReceiptDocument.ts` |
+| GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSettingCallablePayload.ts` |
+| SetEventAssistanceSettingCallablePayload | `callables/set_event_assistance_setting_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceSettingCallablePayload.ts` |
+| EventAssistanceSettingCallableResponse | `callable_responses/event_assistance_setting_response.schema.json` | `functions/src/shared/generated/eventAssistanceSettingCallableResponse.ts` |
 | EventAssistanceProgressReceiptDocument | `firestore/event_assistance_progress_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts` |
 | EventAssistanceGroupProgressDocument | `firestore/event_assistance_group_progress.schema.json` | `functions/src/shared/generated/eventAssistanceGroupProgressDocument.ts` |
 | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGroupProgressCallablePayload.ts` |
@@ -593,6 +598,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceSettingDocumentSchema` | EventAssistanceSettingDocument | `firestore/event_assistance_settings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_setting_document.g.dart` |
+| `schemaEventAssistanceSettingReceiptDocumentSchema` | EventAssistanceSettingReceiptDocument | `firestore/event_assistance_setting_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_setting_receipt_document.g.dart` |
+| `schemaGetEventAssistanceSettingCallablePayloadSchema` | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_setting_callable_payload.g.dart` |
+| `schemaSetEventAssistanceSettingCallablePayloadSchema` | SetEventAssistanceSettingCallablePayload | `callables/set_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_setting_callable_payload.g.dart` |
+| `schemaEventAssistanceSettingCallableResponseSchema` | EventAssistanceSettingCallableResponse | `callable_responses/event_assistance_setting_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_setting_callable_response.g.dart` |
 | `schemaEventAssistanceProgressReceiptDocumentSchema` | EventAssistanceProgressReceiptDocument | `firestore/event_assistance_progress_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_progress_receipt_document.g.dart` |
 | `schemaEventAssistanceGroupProgressDocumentSchema` | EventAssistanceGroupProgressDocument | `firestore/event_assistance_group_progress.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_group_progress_document.g.dart` |
 | `schemaGetEventAssistanceGroupProgressCallablePayloadSchema` | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_group_progress_callable_payload.g.dart` |
@@ -1174,6 +1184,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceSettingCallableRequest | GetEventAssistanceSettingCallablePayload | `callables/get_event_assistance_setting_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_setting_callable_request.g.dart` |
 | GetEventAssistanceGroupProgressCallableRequest | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_progress_callable_request.g.dart` |
 | ConfirmEventAssistanceDepartureCallableRequest | ConfirmEventAssistanceDepartureCallablePayload | `callables/confirm_event_assistance_departure_payload.schema.json` | `lib/core/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart` |
 | GetEventWhatsappWithdrawalCallableRequest | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_withdrawal_callable_request.g.dart` |
@@ -1403,6 +1414,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventAssistanceSettingCallablePayload | cannot map field "preference" (no type) |
 | SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |

@@ -104,6 +104,7 @@ export 'callables/finalize_organizer_form_asset_callable_request.g.dart';
 export 'callables/get_cross_paths_suggestions_callable_request.g.dart';
 export 'callables/get_event_assistance_group_progress_callable_request.g.dart';
 export 'callables/get_event_assistance_guest_view_callable_request.g.dart';
+export 'callables/get_event_assistance_setting_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_preference_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_withdrawal_callable_request.g.dart';
 export 'callables/get_event_invite_link_token_callable_request.g.dart';

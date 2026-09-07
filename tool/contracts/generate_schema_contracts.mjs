@@ -16,6 +16,31 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+      "name": "EventAssistanceSettingDocument",
+      "source": "firestore/event_assistance_settings.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingDocument.ts"
+  },
+  {
+      "name": "EventAssistanceSettingReceiptDocument",
+      "source": "firestore/event_assistance_setting_receipts.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingReceiptDocument.ts"
+  },
+  {
+      "name": "GetEventAssistanceSettingCallablePayload",
+      "source": "callables/get_event_assistance_setting_payload.schema.json",
+      "typeOutput": "functions/src/shared/generated/getEventAssistanceSettingCallablePayload.ts"
+  },
+  {
+      "name": "SetEventAssistanceSettingCallablePayload",
+      "source": "callables/set_event_assistance_setting_payload.schema.json",
+      "typeOutput": "functions/src/shared/generated/setEventAssistanceSettingCallablePayload.ts"
+  },
+  {
+      "name": "EventAssistanceSettingCallableResponse",
+      "source": "callable_responses/event_assistance_setting_response.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingCallableResponse.ts"
+  },
+  {
     name: "EventAssistanceProgressReceiptDocument",
     source: "firestore/event_assistance_progress_receipts.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts",

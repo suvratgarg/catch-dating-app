@@ -113,6 +113,48 @@ function checkEventAssistanceContracts(parsed) {
         fail("Missing workflow " + field + ": " + row.kind);
     }
   }
+  const settings = parsed.get(path.join(contractRoot,
+    "shared/event_assistance_settings.schema.json"));
+  const templates = settings?.definitions?.Template?.oneOf ?? [];
+  if (JSON.stringify(templates.map((t) => t.properties?.kind?.const)) !==
+      JSON.stringify(kinds)) fail("Settings templates must cover every workflow.");
+  for (const [index, template] of templates.entries()) {
+    const row = rows[index];
+    const expectedRef = row?.kind === "lateJoin" ?
+      "#/definitions/LateJoinTemplateConfig" :
+      "event_assistance_common.schema.json#/definitions/" +
+        row?.configDefinition;
+    if (template.additionalProperties !== false ||
+        !["kind", "version", "config", "setting"].every((key) =>
+          template.required?.includes(key)) ||
+        template.properties?.config?.$ref !== expectedRef ||
+        template.properties?.setting?.$ref !== "#/definitions/TemplateSetting") {
+      fail("Settings template lost its correlated configuration: " + row?.kind);
+    }
+  }
+  const templateSetting = structuredClone(common.definitions.PolicySetting);
+  templateSetting.anyOf[0].required = templateSetting.anyOf[0].required
+    .filter((key) => key !== "policyVersion");
+  delete templateSetting.anyOf[0].properties.policyVersion;
+  if (JSON.stringify(settings?.definitions?.TemplateSetting) !==
+      JSON.stringify(templateSetting)) {
+    fail("Template authority must match runtime authority without code version.");
+  }
+  const lateTemplate = settings?.definitions?.LateJoinTemplateConfig;
+  const lateRuntime = common.definitions.LateJoinPolicy;
+  if (lateTemplate?.additionalProperties !== false ||
+      JSON.stringify(lateTemplate?.required) !==
+        JSON.stringify(lateRuntime.required) ||
+      JSON.stringify(Object.keys(lateTemplate?.properties ?? {})) !==
+        JSON.stringify(Object.keys(lateRuntime.properties))) {
+    fail("Late-join templates must retain the runtime configuration fields.");
+  }
+  for (const [key, value] of Object.entries(lateRuntime.properties)) {
+    if (key !== "destination" && JSON.stringify(lateTemplate?.properties?.[key])
+        !== JSON.stringify(value)) {
+      fail("Late-join template constraint drift: " + key);
+    }
+  }
   const commands = (common.definitions?.Command?.oneOf ?? []).map((entry) => {
     if (!entry.$ref) return entry;
     const match = /^#\/definitions\/([^/]+)$/.exec(entry.$ref);

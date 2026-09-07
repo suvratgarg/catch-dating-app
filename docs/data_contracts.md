@@ -104,6 +104,32 @@ domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
 
+### Event Assistance Settings Contract
+
+`eventAssistanceSettings/{settingId}` stores a typed preference for one live
+event, group scope and workflow kind. The ID hashes those three identities.
+The whole-event default uses `event:whole`; configured pace-group IDs may own
+an override. `inherit`, explicit disablement and a correlated configured
+template are distinct wire states. Templates bind configuration to workflow
+kind without requiring a guest episode during setup; runtime policy binding
+supplies the concrete subject and the server-owned implementation version.
+
+`eventAssistanceSettingReceipts/{receiptId}` stores immutable request hashes
+and original committed revisions. Actor identity participates in the request
+hash; context/group/workflow/request identity determines the receipt ID. Both
+records commit together. Exact replay returns its original operation revision
+and the latest projected settings. Changed request reuse or an outdated
+revision/source hash fails. Neither collection has client access or a TTL;
+terminal retention must be decided before activation.
+
+The two settings callables require Auth, App Check, rate limiting and current
+organizer-manager authority. They expose only settings and source hashes, not
+roster details. A projection cannot claim current configuration after a
+structural source change, while explicit disablement remains suppressive.
+Current participation, capability/readiness, consent and execution authority
+must still be resolved by their owning runtime boundaries. Saving an automatic
+preference does not itself send a message or enable a production worker.
+
 ### Event Assistance Group Progress Contract
 
 `eventAssistanceGroupProgress/{progressId}` is the current explicitly confirmed

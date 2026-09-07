@@ -15571,6 +15571,418 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceSettingCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOrigin = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.origin',
+    required: true,
+    enumValues: <String>['none', 'event', 'group'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.kind',
+    required: true,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigMetrics = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.config.metrics',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigMissingCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.config.missingCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigSensitiveDetails = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.config.sensitiveDetails',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.preference.template.version',
+    required: true,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnPropertyRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.settingId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^setting:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnUpdatedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.updatedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.own.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.ownRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.status',
+    required: true,
+    enumValues: <String>['unconfigured', 'disabled', 'sourceChanged', 'configured'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceSettingDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingDocumentGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.kind',
+    required: true,
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateConfigMetrics = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.config.metrics',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateConfigMissingCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.config.missingCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateConfigSensitiveDetails = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.config.sensitiveDetails',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateSettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateSettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistanceSettingDocumentPreferenceTemplateVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.preference.template.version',
+    required: true,
+  );
+
+  static const eventAssistanceSettingDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceSettingDocumentSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.settingId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^setting:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingDocumentUpdatedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.updatedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingDocumentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingDocument.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceSettingReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^setting-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSettingReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSettingReceiptDocumentSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingReceiptDocument.settingId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^setting:[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceSmsBudgetDocumentApprovalId = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsBudgetDocument.approvalId',
     maxLength: 160,
@@ -30691,6 +31103,45 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const getEventAssistanceSettingCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSettingCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSettingCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSettingCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceSettingCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSettingCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceSettingCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSettingCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSettingCallablePayloadWorkflowKind = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSettingCallablePayload.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
   );
 
   static const getEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -62022,6 +62473,123 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssistanceSettingCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSettingCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceSettingCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventAssistanceSettingCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.kind',
+    required: true,
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigMetrics = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.config.metrics',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigMissingCoverage = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.config.missingCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigSensitiveDetails = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.config.sensitiveDetails',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingAuthority = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingReason = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const setEventAssistanceSettingCallablePayloadPreferenceTemplateVersion = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.preference.template.version',
+    required: true,
+  );
+
+  static const setEventAssistanceSettingCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSettingCallablePayloadWorkflowKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSettingCallablePayload.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
   static const setEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventAssistanceSmsPreferenceCallablePayload.attendeeId',
     maxLength: 160,
@@ -72609,6 +73177,65 @@ abstract final class CatchContractConstraints {
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
     'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
+    'eventAssistanceSettingCallableResponse.operationRevision': eventAssistanceSettingCallableResponseOperationRevision,
+    'eventAssistanceSettingCallableResponse.outcome': eventAssistanceSettingCallableResponseOutcome,
+    'eventAssistanceSettingCallableResponse.view.context.eventId': eventAssistanceSettingCallableResponseViewContextEventId,
+    'eventAssistanceSettingCallableResponse.view.context.mode': eventAssistanceSettingCallableResponseViewContextMode,
+    'eventAssistanceSettingCallableResponse.view.context.organizerId': eventAssistanceSettingCallableResponseViewContextOrganizerId,
+    'eventAssistanceSettingCallableResponse.view.groupId': eventAssistanceSettingCallableResponseViewGroupId,
+    'eventAssistanceSettingCallableResponse.view.origin': eventAssistanceSettingCallableResponseViewOrigin,
+    'eventAssistanceSettingCallableResponse.view.own.context.eventId': eventAssistanceSettingCallableResponseViewOwnContextEventId,
+    'eventAssistanceSettingCallableResponse.view.own.context.mode': eventAssistanceSettingCallableResponseViewOwnContextMode,
+    'eventAssistanceSettingCallableResponse.view.own.context.organizerId': eventAssistanceSettingCallableResponseViewOwnContextOrganizerId,
+    'eventAssistanceSettingCallableResponse.view.own.createdAt': eventAssistanceSettingCallableResponseViewOwnCreatedAt,
+    'eventAssistanceSettingCallableResponse.view.own.groupId': eventAssistanceSettingCallableResponseViewOwnGroupId,
+    'eventAssistanceSettingCallableResponse.view.own.preference.kind': eventAssistanceSettingCallableResponseViewOwnPreferenceKind,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.config.metrics': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigMetrics,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.config.missingCoverage': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigMissingCoverage,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.config.sensitiveDetails': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateConfigSensitiveDetails,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.kind': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateKind,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.authority': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingAuthority,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.kind': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingKind,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.setting.reason': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateSettingReason,
+    'eventAssistanceSettingCallableResponse.view.own.preference.template.version': eventAssistanceSettingCallableResponseViewOwnPreferenceTemplateVersion,
+    'eventAssistanceSettingCallableResponse.view.own.revision': eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnPropertyRevision,
+    'eventAssistanceSettingCallableResponse.view.own.schemaVersion': eventAssistanceSettingCallableResponseViewOwnSchemaVersion,
+    'eventAssistanceSettingCallableResponse.view.own.settingId': eventAssistanceSettingCallableResponseViewOwnSettingId,
+    'eventAssistanceSettingCallableResponse.view.own.sourceHash': eventAssistanceSettingCallableResponseViewOwnSourceHash,
+    'eventAssistanceSettingCallableResponse.view.own.updatedAt': eventAssistanceSettingCallableResponseViewOwnUpdatedAt,
+    'eventAssistanceSettingCallableResponse.view.own.updatedBy': eventAssistanceSettingCallableResponseViewOwnUpdatedBy,
+    'eventAssistanceSettingCallableResponse.view.own.workflowKind': eventAssistanceSettingCallableResponseViewOwnWorkflowKind,
+    'eventAssistanceSettingCallableResponse.view.ownRevision': eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnRevision,
+    'eventAssistanceSettingCallableResponse.view.serverTime': eventAssistanceSettingCallableResponseViewServerTime,
+    'eventAssistanceSettingCallableResponse.view.sourceHash': eventAssistanceSettingCallableResponseViewSourceHash,
+    'eventAssistanceSettingCallableResponse.view.status': eventAssistanceSettingCallableResponseViewStatus,
+    'eventAssistanceSettingCallableResponse.view.workflowKind': eventAssistanceSettingCallableResponseViewWorkflowKind,
+    'eventAssistanceSettingDocument.context.eventId': eventAssistanceSettingDocumentContextEventId,
+    'eventAssistanceSettingDocument.context.mode': eventAssistanceSettingDocumentContextMode,
+    'eventAssistanceSettingDocument.context.organizerId': eventAssistanceSettingDocumentContextOrganizerId,
+    'eventAssistanceSettingDocument.createdAt': eventAssistanceSettingDocumentCreatedAt,
+    'eventAssistanceSettingDocument.groupId': eventAssistanceSettingDocumentGroupId,
+    'eventAssistanceSettingDocument.preference.kind': eventAssistanceSettingDocumentPreferenceKind,
+    'eventAssistanceSettingDocument.preference.template.config.metrics': eventAssistanceSettingDocumentPreferenceTemplateConfigMetrics,
+    'eventAssistanceSettingDocument.preference.template.config.missingCoverage': eventAssistanceSettingDocumentPreferenceTemplateConfigMissingCoverage,
+    'eventAssistanceSettingDocument.preference.template.config.sensitiveDetails': eventAssistanceSettingDocumentPreferenceTemplateConfigSensitiveDetails,
+    'eventAssistanceSettingDocument.preference.template.kind': eventAssistanceSettingDocumentPreferenceTemplateKind,
+    'eventAssistanceSettingDocument.preference.template.setting.authority': eventAssistanceSettingDocumentPreferenceTemplateSettingAuthority,
+    'eventAssistanceSettingDocument.preference.template.setting.kind': eventAssistanceSettingDocumentPreferenceTemplateSettingKind,
+    'eventAssistanceSettingDocument.preference.template.setting.reason': eventAssistanceSettingDocumentPreferenceTemplateSettingReason,
+    'eventAssistanceSettingDocument.preference.template.version': eventAssistanceSettingDocumentPreferenceTemplateVersion,
+    'eventAssistanceSettingDocument.revision': eventAssistanceSettingDocumentRevision,
+    'eventAssistanceSettingDocument.schemaVersion': eventAssistanceSettingDocumentSchemaVersion,
+    'eventAssistanceSettingDocument.settingId': eventAssistanceSettingDocumentSettingId,
+    'eventAssistanceSettingDocument.sourceHash': eventAssistanceSettingDocumentSourceHash,
+    'eventAssistanceSettingDocument.updatedAt': eventAssistanceSettingDocumentUpdatedAt,
+    'eventAssistanceSettingDocument.updatedBy': eventAssistanceSettingDocumentUpdatedBy,
+    'eventAssistanceSettingDocument.workflowKind': eventAssistanceSettingDocumentWorkflowKind,
+    'eventAssistanceSettingReceiptDocument.createdAt': eventAssistanceSettingReceiptDocumentCreatedAt,
+    'eventAssistanceSettingReceiptDocument.receiptId': eventAssistanceSettingReceiptDocumentReceiptId,
+    'eventAssistanceSettingReceiptDocument.requestHash': eventAssistanceSettingReceiptDocumentRequestHash,
+    'eventAssistanceSettingReceiptDocument.revision': eventAssistanceSettingReceiptDocumentRevision,
+    'eventAssistanceSettingReceiptDocument.settingId': eventAssistanceSettingReceiptDocumentSettingId,
     'eventAssistanceSmsBudgetDocument.approvalId': eventAssistanceSmsBudgetDocumentApprovalId,
     'eventAssistanceSmsBudgetDocument.budgetId': eventAssistanceSmsBudgetDocumentBudgetId,
     'eventAssistanceSmsBudgetDocument.chargedMicros': eventAssistanceSmsBudgetDocumentChargedMicros,
@@ -74667,6 +75294,11 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceGroupProgressCallablePayload.groupId': getEventAssistanceGroupProgressCallablePayloadGroupId,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
+    'getEventAssistanceSettingCallablePayload.context.eventId': getEventAssistanceSettingCallablePayloadContextEventId,
+    'getEventAssistanceSettingCallablePayload.context.mode': getEventAssistanceSettingCallablePayloadContextMode,
+    'getEventAssistanceSettingCallablePayload.context.organizerId': getEventAssistanceSettingCallablePayloadContextOrganizerId,
+    'getEventAssistanceSettingCallablePayload.groupId': getEventAssistanceSettingCallablePayloadGroupId,
+    'getEventAssistanceSettingCallablePayload.workflowKind': getEventAssistanceSettingCallablePayloadWorkflowKind,
     'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
     'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
     'getEventAssistanceSmsWithdrawalCallablePayload.linkId': getEventAssistanceSmsWithdrawalCallablePayloadLinkId,
@@ -78985,6 +79617,23 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssistanceSettingCallablePayload.context.eventId': setEventAssistanceSettingCallablePayloadContextEventId,
+    'setEventAssistanceSettingCallablePayload.context.mode': setEventAssistanceSettingCallablePayloadContextMode,
+    'setEventAssistanceSettingCallablePayload.context.organizerId': setEventAssistanceSettingCallablePayloadContextOrganizerId,
+    'setEventAssistanceSettingCallablePayload.expectedRevision': setEventAssistanceSettingCallablePayloadExpectedRevision,
+    'setEventAssistanceSettingCallablePayload.expectedSourceHash': setEventAssistanceSettingCallablePayloadExpectedSourceHash,
+    'setEventAssistanceSettingCallablePayload.groupId': setEventAssistanceSettingCallablePayloadGroupId,
+    'setEventAssistanceSettingCallablePayload.preference.kind': setEventAssistanceSettingCallablePayloadPreferenceKind,
+    'setEventAssistanceSettingCallablePayload.preference.template.config.metrics': setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigMetrics,
+    'setEventAssistanceSettingCallablePayload.preference.template.config.missingCoverage': setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigMissingCoverage,
+    'setEventAssistanceSettingCallablePayload.preference.template.config.sensitiveDetails': setEventAssistanceSettingCallablePayloadPreferenceTemplateConfigSensitiveDetails,
+    'setEventAssistanceSettingCallablePayload.preference.template.kind': setEventAssistanceSettingCallablePayloadPreferenceTemplateKind,
+    'setEventAssistanceSettingCallablePayload.preference.template.setting.authority': setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingAuthority,
+    'setEventAssistanceSettingCallablePayload.preference.template.setting.kind': setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingKind,
+    'setEventAssistanceSettingCallablePayload.preference.template.setting.reason': setEventAssistanceSettingCallablePayloadPreferenceTemplateSettingReason,
+    'setEventAssistanceSettingCallablePayload.preference.template.version': setEventAssistanceSettingCallablePayloadPreferenceTemplateVersion,
+    'setEventAssistanceSettingCallablePayload.requestId': setEventAssistanceSettingCallablePayloadRequestId,
+    'setEventAssistanceSettingCallablePayload.workflowKind': setEventAssistanceSettingCallablePayloadWorkflowKind,
     'setEventAssistanceSmsPreferenceCallablePayload.attendeeId': setEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
     'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion': setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion,
     'setEventAssistanceSmsPreferenceCallablePayload.decision.kind': setEventAssistanceSmsPreferenceCallablePayloadDecisionKind,

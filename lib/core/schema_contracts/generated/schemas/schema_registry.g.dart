@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceSettingDocument',
+    source: 'firestore/event_assistance_settings.schema.json',
+    schema: schemaEventAssistanceSettingDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSettingReceiptDocument',
+    source: 'firestore/event_assistance_setting_receipts.schema.json',
+    schema: schemaEventAssistanceSettingReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventAssistanceSettingCallablePayload',
+    source: 'callables/get_event_assistance_setting_payload.schema.json',
+    schema: schemaGetEventAssistanceSettingCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetEventAssistanceSettingCallablePayload',
+    source: 'callables/set_event_assistance_setting_payload.schema.json',
+    schema: schemaSetEventAssistanceSettingCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceSettingCallableResponse',
+    source: 'callable_responses/event_assistance_setting_response.schema.json',
+    schema: schemaEventAssistanceSettingCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceProgressReceiptDocument',
     source: 'firestore/event_assistance_progress_receipts.schema.json',
     schema: schemaEventAssistanceProgressReceiptDocumentSchema,
@@ -2899,6 +2924,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceSettingDocument': schemaEventAssistanceSettingDocumentSchema,
+  'EventAssistanceSettingReceiptDocument': schemaEventAssistanceSettingReceiptDocumentSchema,
+  'GetEventAssistanceSettingCallablePayload': schemaGetEventAssistanceSettingCallablePayloadSchema,
+  'SetEventAssistanceSettingCallablePayload': schemaSetEventAssistanceSettingCallablePayloadSchema,
+  'EventAssistanceSettingCallableResponse': schemaEventAssistanceSettingCallableResponseSchema,
   'EventAssistanceProgressReceiptDocument': schemaEventAssistanceProgressReceiptDocumentSchema,
   'EventAssistanceGroupProgressDocument': schemaEventAssistanceGroupProgressDocumentSchema,
   'GetEventAssistanceGroupProgressCallablePayload': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
@@ -3478,6 +3508,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_settings.schema.json': schemaEventAssistanceSettingDocumentSchema,
+  'firestore/event_assistance_setting_receipts.schema.json': schemaEventAssistanceSettingReceiptDocumentSchema,
+  'callables/get_event_assistance_setting_payload.schema.json': schemaGetEventAssistanceSettingCallablePayloadSchema,
+  'callables/set_event_assistance_setting_payload.schema.json': schemaSetEventAssistanceSettingCallablePayloadSchema,
+  'callable_responses/event_assistance_setting_response.schema.json': schemaEventAssistanceSettingCallableResponseSchema,
   'firestore/event_assistance_progress_receipts.schema.json': schemaEventAssistanceProgressReceiptDocumentSchema,
   'firestore/event_assistance_group_progress.schema.json': schemaEventAssistanceGroupProgressDocumentSchema,
   'callables/get_event_assistance_group_progress_payload.schema.json': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,

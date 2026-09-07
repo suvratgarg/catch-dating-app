@@ -125,6 +125,44 @@ The local shadow factory does not load live event facts or send messages.
 Trusted worker scheduling, complete live policy fact readers, provider adapters,
 and the Host/rehearsal application adapters remain integration work.
 
+### Saved assistance settings
+
+`event_assistance_settings.schema.json` defines reusable templates for all 46
+workflow configurations. Templates omit a runtime subject and the server-owned
+policy implementation version. Runtime `EventAssistancePolicy` instances retain
+their correlated event/guest/group/resource/unit scopes. Catalog checks enforce
+complete template coverage and configuration/authority constraint parity.
+
+`getEventAssistanceSetting` and `setEventAssistanceSetting` expose manager-owned
+settings for one event/group/workflow. Groups inherit the event default unless
+they have an override; `inherit` resets an override and `disabled` suppresses
+that workflow. A configured template can also retain its configuration with a
+disabled setting. The projection distinguishes unconfigured, configured,
+disabled and sourceChanged, and identifies whether the value came from the
+event or group. A late-join suggestion uses review-before-send authority and
+confirmed group progress, an event-end cutoff, three messages and ten minutes
+between material updates. Suggestions are never implicitly persisted or enabled.
+
+Saving re-reads organizer authority, canonical event/group source, own and
+inherited settings, and a command receipt in one transaction. Source hashes
+bind event creation generation, format, schedule, routing, admission and pricing
+inputs while excluding attendance counters and live step progress. Changed
+configuration source requires review; explicit disablement remains effective.
+Revision checks and immutable receipts prevent concurrent or replayed requests
+from replacing a newer choice. Explicit joining destinations must exist in the
+reviewed group/event setup. No setting write creates a guest episode, message,
+workflow run or provider authority.
+
+`bindPolicyTemplate` adds a concrete runtime subject and the server-owned policy
+version. The late-join selector resolves only from supplied current confirmed
+group progress and its saved destination choices; absent guidance remains
+unresolved. It does not infer pace-group membership from seating or social pods.
+The participant/group fact reader, policy-aware workflow publisher/scheduler,
+complete runtime readiness checks, Host settings controls and rehearsal adapter
+remain integration work. Configured preferences do not claim that an executor
+is implemented or activated. Terminal setting/receipt retention remains to be
+defined before activation.
+
 ### Confirmed group progress
 
 `getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` provide

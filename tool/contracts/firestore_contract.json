@@ -1847,6 +1847,31 @@
       ]
     },
     {
+      "id": "eventAssistanceSettingReceipts",
+      "path": "eventAssistanceSettingReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceSettingReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance policy configuration",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "setEventAssistanceSetting"
+      ]
+    },
+    {
+      "id": "eventAssistanceSettings",
+      "path": "eventAssistanceSettings/{settingId}",
+      "rulesMatch": "/eventAssistanceSettings/{settingId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance policy configuration",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceSetting",
+        "setEventAssistanceSetting"
+      ]
+    },
+    {
       "id": "eventAssistanceGroupProgress",
       "path": "eventAssistanceGroupProgress/{progressId}",
       "rulesMatch": "/eventAssistanceGroupProgress/{progressId}",

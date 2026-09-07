@@ -80,6 +80,8 @@ export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";
+export {getEventAssistanceSetting, setEventAssistanceSetting} from
+  "./eventSuccess/operations/policySettingsHandlers";
 export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
 export {onEventAssistanceWhatsappEventCreated} from
