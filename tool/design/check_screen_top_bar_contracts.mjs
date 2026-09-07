@@ -12,7 +12,7 @@ const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/
 const routeTopBarBuilderPattern =
   /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchScreenTopBar|CatchTopBar(?:\.identity)?)/gu;
 const canonicalRouteScaffoldPath =
-  "lib/core/widgets/catch_route_scaffold.dart";
+  "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart";
 const canonicalScreenScaffoldSymbol = "CatchScreenScaffold";

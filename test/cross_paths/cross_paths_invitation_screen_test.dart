@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';

@@ -1,7 +1,19 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
+import 'package:catch_ui/src/components/catch_status_strip.dart';
+import 'package:catch_ui/src/components/catch_status_strip_data.dart';
+import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
+import 'package:catch_ui/src/patterns/catch_responsive_section_composition.dart';
+import 'package:catch_ui/src/patterns/catch_responsive_section_item.dart';
+import 'package:catch_ui/src/patterns/catch_responsive_section_page.dart';
+import 'package:catch_ui/src/patterns/catch_screen_body.dart';
+import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
+import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
+import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
+import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:flutter/material.dart';
 
 typedef CatchRouteTopBarBuilder =

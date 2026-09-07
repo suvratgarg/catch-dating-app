@@ -109,7 +109,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
           '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_screen_scaffold.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
-          '/lib/core/widgets/catch_route_scaffold.dart',
+          '/packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart',
           '/widgetbook/lib/primitives/primitive_contract_use_cases.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(

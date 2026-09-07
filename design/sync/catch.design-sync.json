@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648",
+  "sourceDigest": "3764c9beb3f11859c91f4b49061aa943ddb24b84b0da80e1ce6471be42abfe8b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648",
-    "contractDigest": "97092cd175756c81e673ea00b6ea92303f00c82bf17e7d6b329bd9a9c8f2f648"
+    "digest": "3764c9beb3f11859c91f4b49061aa943ddb24b84b0da80e1ce6471be42abfe8b",
+    "contractDigest": "3764c9beb3f11859c91f4b49061aa943ddb24b84b0da80e1ce6471be42abfe8b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1ab9347040f6b94363fb38333be798b6865850e656ef361ad8e1a7c17d0fc1c1",
+    "handoffRequestDigest": "5bc334483f1d7afaa625853ab49a5d89144718a96e3f017a1763c8d7ebfa029b",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 275,
+    "publicClassCount": 281,
     "conceptCount": 72,
-    "memberCount": 185,
-    "membersPerConcept": 2.57,
+    "memberCount": 191,
+    "membersPerConcept": 2.65,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 185,
+      "member": 191,
       "screen": 15
     },
     "collisionCount": 39,
@@ -382,8 +382,14 @@
           "CatchPageBody",
           "CatchPagerFocusBoundary",
           "CatchResponsiveSectionPage",
+          "CatchRootScreenBody",
+          "CatchRootScreenPageOwner",
+          "CatchRootScreenPageScrollController",
           "CatchRootScreenPageScrollView",
+          "CatchRootScreenPageSpec",
           "CatchRootScreenScaffold",
+          "CatchRouteBody",
+          "CatchRouteScaffold",
           "CatchSceneViewport",
           "CatchScreenBody",
           "CatchScreenScaffold",
@@ -1589,7 +1595,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "3569363a2e368f6698b9503ebdd5b2f2d2daea0fd0ade0a635ab41476893655e"
+      "contractDigest": "65e08079ede42fb291956a862be8e101ca8b2e3e539b62c272d39d028142d972"
     },
     {
       "contractId": "catch.section_stack",

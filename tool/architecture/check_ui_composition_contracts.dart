@@ -27,9 +27,15 @@ const _canonicalScaffoldPath =
 const _canonicalRootScaffoldPath =
     'lib/core/widgets/catch_screen_scaffold.dart';
 const _canonicalRouteScaffoldPath =
-    'lib/core/widgets/catch_route_scaffold.dart';
+    'packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart';
 const _canonicalRootScreenBodyPath =
-    'lib/core/widgets/catch_root_screen_body.dart';
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart';
+const _canonicalRootScreenPageSpecPath =
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart';
+const _canonicalRootScreenPageScrollPath =
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart';
+const _canonicalRootScreenPageOwnerPath =
+    'packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart';
 
 const _rootScaffoldExpressions = <String>{
   'CatchRootScreenScaffold.standard',
@@ -85,9 +91,13 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
     'CatchRootScreenScrollView': _rootScrollExpressions,
   },
-  _canonicalRootScreenBodyPath: <String, Set<String>>{
+  _canonicalRootScreenPageScrollPath: <String, Set<String>>{
     'CatchRootScreenPageScrollView': catchRootScreenPageScrollExpressions,
+  },
+  _canonicalRootScreenBodyPath: <String, Set<String>>{
     'CatchRootScreenBody': catchRootScreenBodyExpressions,
+  },
+  _canonicalRootScreenPageSpecPath: <String, Set<String>>{
     'CatchRootScreenPageSpec': catchRootScreenPageSpecExpressions,
   },
   _canonicalRouteScaffoldPath: <String, Set<String>>{
@@ -2528,7 +2538,7 @@ Future<void> _validateProductionRootPageOwners(
         continue;
       }
       final symbol = declaration.namePart.typeName.lexeme;
-      if (unit.relativePath == _canonicalRootScreenBodyPath &&
+      if (unit.relativePath == _canonicalRootScreenPageScrollPath &&
           symbol == 'CatchRootScreenPageScrollView') {
         continue;
       }
@@ -2554,7 +2564,7 @@ bool _implementsCatchRootScreenPageOwner(InterfaceElement element) =>
         '\\',
         '/',
       );
-      return source.endsWith('/$_canonicalRootScreenBodyPath');
+      return source.endsWith('/$_canonicalRootScreenPageOwnerPath');
     });
 
 List<String> resolvedScaffoldOwnershipFailures({

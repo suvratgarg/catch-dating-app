@@ -7952,7 +7952,7 @@
               "terminal-clearance",
               "readable-width"
             ],
-            "file": "lib/core/widgets/catch_root_screen_body.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
@@ -8296,6 +8296,118 @@
               "complete",
               "needs-information",
               "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.route_scaffold",
+            "symbol": "CatchRouteScaffold",
+            "file": "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart",
+            "summary": "Canonical pushed-route surface, status publication and scroll-under header boundary.",
+            "states": [
+              "top",
+              "scrolled",
+              "status",
+              "bottom-navigation"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.route_body",
+            "symbol": "CatchRouteBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart",
+            "summary": "Closed standard, constrained, sliver, section, paged and full-bleed body descriptors; kept with the route renderer to preserve private construction.",
+            "states": [
+              "standard",
+              "viewport",
+              "constrained",
+              "slivers",
+              "sections",
+              "paged",
+              "full-bleed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_body",
+            "symbol": "CatchRootScreenBody",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart",
+            "summary": "Closed single-page or tabbed root-body protocol with caller-owned tab control.",
+            "states": [
+              "single",
+              "paged"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_page_spec",
+            "symbol": "CatchRootScreenPageSpec",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart",
+            "summary": "Typed scroll-page, surface or master-detail adapter around the canonical page owner.",
+            "states": [
+              "scroll",
+              "surface",
+              "master-detail"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_page_owner",
+            "symbol": "CatchRootScreenPageOwner",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart",
+            "summary": "Interface identifying a canonical root-page scroll owner; feature delegates remain checked by resolved source identity.",
+            "states": [
+              "canonical-owner",
+              "feature-delegate"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.root_screen_page_scroll_controller",
+            "symbol": "CatchRootScreenPageScrollController",
+            "file": "packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart",
+            "summary": "Captures and restores one mounted page offset; shares the page widget library so private attachment and lifetime remain unchanged.",
+            "states": [
+              "attached",
+              "detached",
+              "saved",
+              "restored"
             ],
             "governance": {
               "conceptRole": "member",

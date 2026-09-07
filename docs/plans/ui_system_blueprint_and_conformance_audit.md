@@ -856,6 +856,14 @@ The unused icon-action alias is removed in favor of its existing canonical owner
 Search configuration and the app top bars stay with their coupled field and
 localized-copy extraction.
 
+Pushed-route scaffolds, closed route-body descriptors, root-page bodies, page
+specifications and semantic page owners now live in the shared patterns layer.
+The page scroll widget keeps its controller and private state in one library;
+the route scaffold keeps its closed body renderer. Rendering, scroll retention,
+status publication and constructor vocabulary are preserved. Composition checks
+resolve the extracted canonical source identities and retain their negative
+constructor probe; direct previews mount the route and typed page protocols.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

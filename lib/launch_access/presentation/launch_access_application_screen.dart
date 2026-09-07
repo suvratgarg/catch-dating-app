@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

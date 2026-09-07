@@ -75,6 +75,8 @@ import 'package:widgetbook_workspace/primitives/menu_anchor_use_cases.dart'
     as _widgetbook_workspace_primitives_menu_anchor_use_cases;
 import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart'
     as _widgetbook_workspace_primitives_notice_provider_use_cases;
+import 'package:widgetbook_workspace/primitives/page_protocol_use_cases.dart'
+    as _widgetbook_workspace_primitives_page_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/picker_use_cases.dart'
     as _widgetbook_workspace_primitives_picker_use_cases;
 import 'package:widgetbook_workspace/primitives/preferred_size_use_cases.dart'
@@ -1961,6 +1963,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_notice_provider_use_cases
                         .noticeProviderStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Page protocols',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRootScreenBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed pages and scroll-position controller',
+                builder:
+                    _widgetbook_workspace_primitives_page_protocol_use_cases
+                        .rootPageProtocolStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRouteScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Standard and full-bleed route bodies',
+                builder:
+                    _widgetbook_workspace_primitives_page_protocol_use_cases
+                        .routeBodyRoleStates,
               ),
             ],
           ),

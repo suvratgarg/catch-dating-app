@@ -690,7 +690,7 @@ expect_probe exact catch_notification_delivery_is_service_owned 0
 for status_owner in \
   "lib/core/widgets/catch_screen_scaffold.dart" \
   "lib/core/widgets/catch_tabbed_screen.dart" \
-  "lib/core/widgets/catch_route_scaffold.dart" \
+  "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart"; do
   probe_path="$probe_root/$status_owner"
   stage_probe "status owner $status_owner" <<'DART'
@@ -699,6 +699,13 @@ final status = CatchStatusStrip(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 0
 done
+
+probe_path="$probe_root/lib/core/widgets/catch_route_scaffold.dart"
+stage_probe "retired app route status owner" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+final status = CatchStatusStrip(statuses: const []);
+DART
+expect_probe exact catch_status_strip_is_layout_owned 1
 
 probe_path="$probe_root/packages/catch_ui/lib/src/components/catch_snack_bar.dart"
 stage_probe "canonical feedback owner" <<'DART'
