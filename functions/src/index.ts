@@ -71,6 +71,24 @@ export {
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
 export {
+  getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms,
+} from "./eventSuccess/operations/smsWithdrawalHandlers";
+export {
+  getEventWhatsappWithdrawal, withdrawEventWhatsapp,
+} from "./eventSuccess/operations/whatsappWithdrawalHandlers";
+export {
+  getEventAssistanceSmsPreference,
+  setEventAssistanceSmsPreference,
+} from "./eventSuccess/operations/smsPreferenceHandlers";
+export {onEventAssistanceWhatsappEventCreated} from
+  "./eventSuccess/operations/whatsappWebhookProcessing";
+export {getEventWhatsappPreference, setEventWhatsappPreference} from
+  "./eventSuccess/operations/whatsappPreferenceHandlers";
+export {
+  getEventAssistanceGuestView,
+  submitEventAssistanceGuestChoice,
+} from "./eventSuccess/operations/guestHandlers";
+export {
   completeEventRehearsal,
   controlEventRehearsal,
   controlEventRehearsalSpatial,

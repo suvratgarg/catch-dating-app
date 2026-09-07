@@ -1,0 +1,1419 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_sms.schema.json",
+  "title": "EventAssistanceSms",
+  "description": "Explicitly provisioned event-service SMS sender, approved template parts and bounded cost quote. No provider secrets or opt-in claims are included.",
+  "definitions": {
+    "SenderConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "senderId",
+        "revision",
+        "provider",
+        "senderIdentity",
+        "country",
+        "status",
+        "mask",
+        "principalEntityId",
+        "credentialVersion",
+        "activation",
+        "maxSegments",
+        "quote",
+        "templates"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "provider": {
+          "type": "string",
+          "const": "gupshup"
+        },
+        "senderIdentity": {
+          "type": "string",
+          "const": "catchPlatform"
+        },
+        "country": {
+          "type": "string",
+          "const": "IN"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "inactive",
+            "ready",
+            "paused"
+          ]
+        },
+        "mask": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{6}$"
+        },
+        "principalEntityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "pattern": "^[0-9]+$"
+        },
+        "credentialVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$"
+        },
+        "activation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "useCaseApprovalId",
+            "senderApprovalId",
+            "approvedAt",
+            "validUntil"
+          ],
+          "properties": {
+            "useCaseApprovalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "senderApprovalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "maxSegments": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "quote": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "currency",
+            "maxMicrosPerSegment",
+            "validUntil"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "currency": {
+              "type": "string",
+              "const": "INR"
+            },
+            "maxMicrosPerSegment": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000000
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "templates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "templateId",
+              "revision",
+              "purpose",
+              "dltTemplateId",
+              "status",
+              "parts"
+            ],
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "purpose": {
+                "type": "string",
+                "enum": [
+                  "joiningUpdate",
+                  "joiningInstructions",
+                  "planChanged",
+                  "guestRequirement",
+                  "assignmentChanged",
+                  "participationCheck",
+                  "eventCancelled",
+                  "eventFinished",
+                  "followUp"
+                ]
+              },
+              "dltTemplateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 30,
+                "pattern": "^[0-9]+$"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "paused"
+                ]
+              },
+              "parts": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 16,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "text"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "literal"
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1200
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "name",
+                        "maxCharacters"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "variable"
+                        },
+                        "name": {
+                          "type": "string",
+                          "enum": [
+                            "eventTitle",
+                            "instruction",
+                            "responseUrl"
+                          ]
+                        },
+                        "maxCharacters": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 1200
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Permission": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "permissionId",
+            "revision",
+            "context",
+            "attendeeId",
+            "attendeeGeneration",
+            "senderId",
+            "routeId",
+            "purpose",
+            "phoneE164",
+            "recipientEndpointId",
+            "status",
+            "evidence",
+            "expiresAt",
+            "updatedAt",
+            "currentReceiptId"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "permissionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "routeId": {
+              "type": "string",
+              "const": "catchEventSms"
+            },
+            "purpose": {
+              "type": "string",
+              "const": "eventService"
+            },
+            "phoneE164": {
+              "type": "string",
+              "pattern": "^\\+91[6-9][0-9]{9}$"
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "type": "string",
+              "const": "granted"
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receiptId",
+                "copyVersion",
+                "acceptedAt",
+                "phoneVerifiedAt",
+                "subjectUid"
+              ],
+              "properties": {
+                "receiptId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "copyVersion": {
+                  "type": "string",
+                  "const": "catch-event-service-sms-v1"
+                },
+                "acceptedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "phoneVerifiedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "currentReceiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "permissionId",
+            "revision",
+            "context",
+            "attendeeId",
+            "attendeeGeneration",
+            "senderId",
+            "routeId",
+            "purpose",
+            "phoneE164",
+            "recipientEndpointId",
+            "status",
+            "evidence",
+            "expiresAt",
+            "updatedAt",
+            "currentReceiptId"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "permissionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "routeId": {
+              "type": "string",
+              "const": "catchEventSms"
+            },
+            "purpose": {
+              "type": "string",
+              "const": "eventService"
+            },
+            "phoneE164": {
+              "type": "string",
+              "pattern": "^\\+91[6-9][0-9]{9}$"
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "type": "string",
+              "const": "revoked"
+            },
+            "evidence": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "receiptId",
+                    "copyVersion",
+                    "acceptedAt",
+                    "phoneVerifiedAt",
+                    "subjectUid"
+                  ],
+                  "properties": {
+                    "receiptId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "copyVersion": {
+                      "type": "string",
+                      "const": "catch-event-service-sms-v1"
+                    },
+                    "acceptedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "phoneVerifiedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "subjectUid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                }
+              ]
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "currentReceiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      ]
+    },
+    "Budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "budgetId",
+        "revision",
+        "senderId",
+        "scope",
+        "status",
+        "approvalId",
+        "currency",
+        "limitMicros",
+        "chargedMicros",
+        "startsAt",
+        "endsAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "budgetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "scope": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "context"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "organizerId",
+                    "eventId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "day"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "senderDay"
+                },
+                "day": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                }
+              }
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "paused"
+          ]
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "currency": {
+          "type": "string",
+          "const": "INR"
+        },
+        "limitMicros": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "chargedMicros": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "startsAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "endsAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "Dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "messageId",
+        "senderId",
+        "bindingRevision",
+        "configHash",
+        "permissionId",
+        "permissionRevision",
+        "recipientEndpointId",
+        "payloadHash",
+        "templateId",
+        "templateRevision",
+        "quoteRevision",
+        "grantId",
+        "encoding",
+        "segments",
+        "maxCostMicros",
+        "budgetIds",
+        "createdAt",
+        "reportTokenHash",
+        "senderMask"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "messageId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "bindingRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "configHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "permissionRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payloadHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "templateRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "quoteRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "grantId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "encoding": {
+          "type": "string",
+          "enum": [
+            "gsm7",
+            "unicode"
+          ]
+        },
+        "segments": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "maxCostMicros": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "budgetIds": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reportTokenHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderMask": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{6}$"
+        }
+      }
+    },
+    "ConsentReceipt": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "receiptId",
+            "requestHash",
+            "context",
+            "attendeeId",
+            "attendeeGeneration",
+            "senderId",
+            "routeId",
+            "actorUid",
+            "recipientEndpointId",
+            "decision",
+            "copyVersion",
+            "copyHash",
+            "appliedRevision",
+            "createdAt",
+            "permissionHash",
+            "source",
+            "linkId"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "routeId": {
+              "type": "string",
+              "const": "catchEventSms"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "grant",
+                "revoke"
+              ]
+            },
+            "copyVersion": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "const": "catch-event-service-sms-v1"
+                }
+              ]
+            },
+            "copyHash": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              ]
+            },
+            "appliedRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "permissionHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source": {
+              "type": "string",
+              "const": "verifiedParticipant"
+            },
+            "linkId": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "receiptId",
+            "requestHash",
+            "context",
+            "attendeeId",
+            "attendeeGeneration",
+            "senderId",
+            "routeId",
+            "actorUid",
+            "recipientEndpointId",
+            "decision",
+            "copyVersion",
+            "copyHash",
+            "appliedRevision",
+            "createdAt",
+            "permissionHash",
+            "source",
+            "linkId"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "routeId": {
+              "type": "string",
+              "const": "catchEventSms"
+            },
+            "actorUid": {
+              "type": "null"
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "decision": {
+              "type": "string",
+              "const": "revoke"
+            },
+            "copyVersion": {
+              "type": "null"
+            },
+            "copyHash": {
+              "type": "null"
+            },
+            "appliedRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "permissionHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source": {
+              "type": "string",
+              "const": "messageLink"
+            },
+            "linkId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            }
+          }
+        }
+      ]
+    },
+    "PreferenceView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId",
+        "serverTime",
+        "revision",
+        "preference",
+        "canEnable",
+        "availability",
+        "phoneLastFour",
+        "expiresAt",
+        "consent"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "notSet",
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "canEnable": {
+          "type": "boolean"
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "senderUnavailable",
+            "eventClosed",
+            "notAdmitted",
+            "verifyPhone"
+          ]
+        },
+        "phoneLastFour": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}$"
+            }
+          ]
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "text"
+          ],
+          "properties": {
+            "version": {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    },
+    "WithdrawalGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "linkId",
+        "permissionId",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "subjectUid",
+        "senderId",
+        "recipientEndpointId",
+        "guestGrantHash",
+        "permissionRevisionAtIssue",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "linkId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "subjectUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "guestGrantHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "permissionRevisionAtIssue": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "issuedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "WithdrawalView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverTime",
+        "revision",
+        "preference",
+        "expiresAt"
+      ],
+      "properties": {
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

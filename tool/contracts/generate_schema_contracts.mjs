@@ -16,6 +16,261 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    "name": "EventWhatsappWithdrawalGrantDocument",
+    "source": "firestore/event_assistance_whatsapp_withdrawal_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts"
+  },
+  {
+    "name": "GetEventWhatsappWithdrawalCallablePayload",
+    "source": "callables/get_event_whatsapp_withdrawal_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventWhatsappWithdrawalCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "WithdrawEventWhatsappCallablePayload",
+    "source": "callables/withdraw_event_whatsapp_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/withdrawEventWhatsappCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventWhatsappWithdrawalCallableResponse",
+    "source": "callable_responses/event_whatsapp_withdrawal_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventWhatsappWithdrawalCallableResponse.ts"
+    ]
+  },
+
+  {
+    name: "EventWhatsappBudgetDocument",
+    source: "firestore/event_whatsapp_budgets.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappBudgetDocument.ts",
+  },
+  {
+    name: "EventWhatsappDispatchDocument",
+    source: "firestore/event_whatsapp_dispatches.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappEndpointStopDocument",
+    source: "firestore/organizer_whatsapp_endpoint_stops.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts",
+  },
+  {
+    name: "EventWhatsappPermissionDocument",
+    source: "firestore/event_assistance_whatsapp_permissions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPermissionDocument.ts",
+  },
+  {
+    name: "EventWhatsappConsentReceiptDocument",
+    source: "firestore/event_assistance_whatsapp_consent_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts",
+  },
+  {
+    name: "GetEventWhatsappPreferenceCallablePayload",
+    source: "callables/get_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts",
+  },
+  {
+    name: "SetEventWhatsappPreferenceCallablePayload",
+    source: "callables/set_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts",
+  },
+  {
+    name: "EventWhatsappPreferenceCallableResponse",
+    source: "callable_responses/event_whatsapp_preference_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts",
+  },
+  {
+    name: "EventWhatsappPolicyDocument",
+    source: "firestore/event_assistance_whatsapp_policies.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPolicyDocument.ts",
+  },
+  {
+    name: "EventWhatsappReplyBindingDocument",
+    source: "firestore/event_assistance_whatsapp_reply_bindings.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts",
+  },
+{
+  "name": "EventAssistanceSmsWithdrawalGrantDocument",
+  "source": "firestore/event_assistance_sms_withdrawal_grants.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "source": "callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts"
+  ]
+},
+{
+  "name": "WithdrawEventAssistanceSmsCallablePayload",
+  "source": "callables/withdraw_event_assistance_sms_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsWithdrawalCallableResponse",
+  "source": "callable_responses/event_assistance_sms_withdrawal_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsWithdrawalCallableResponse.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsConsentReceiptDocument",
+  "source": "firestore/event_assistance_sms_consent_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/get_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "SetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/set_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/setEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsPreferenceCallableResponse",
+  "source": "callable_responses/event_assistance_sms_preference_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsPreferenceCallableResponse.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsSenderDocument",
+  "source": "firestore/event_assistance_sms_senders.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsPermissionDocument",
+  "source": "firestore/event_assistance_sms_permissions.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsBudgetDocument",
+  "source": "firestore/event_assistance_sms_budgets.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsDispatchDocument",
+  "source": "firestore/event_assistance_sms_dispatches.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts"
+},
+  {
+    name: "EventAssistanceSmsConfig",
+    source: "operations/event_assistance_sms_config.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceSmsConfig.ts",
+  },
+  {
+    "name": "EventAssistanceGuestDocument",
+    "source": "firestore/event_assistance_guests.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"
+  },
+  {
+    "name": "EventAssistanceThreadDocument",
+    "source": "firestore/event_assistance_threads.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceThreadDocument.ts"
+  },
+  {
+    "name": "EventAssistanceGuestGrantDocument",
+    "source": "firestore/event_assistance_guest_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts"
+  },
+  {
+    "name": "EventAssistanceCaseDocument",
+    "source": "firestore/event_assistance_cases.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceCaseDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGuestViewCallablePayload",
+    "source": "callables/get_event_assistance_guest_view_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventAssistanceGuestViewCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallablePayload",
+    "source": "callables/submit_event_assistance_guest_choice_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventAssistanceGuestViewCallableResponse",
+    "source": "callable_responses/event_assistance_guest_view_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestViewCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventAssistanceGuestViewCallableResponse.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallableResponse",
+    "source": "callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallableResponse.ts"
+    ]
+  },
+  {
+    name: "EventAssistanceMessageDocument",
+    source: "firestore/event_assistance_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageDocument.ts",
+  },
+  {
+    name: "EventAssistanceMessageIntent",
+    source: "operations/event_assistance_message_intent.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageIntent.ts",
+  },
+  {
+    name: "EventAssistanceDeliveryAttempt",
+    source: "operations/event_assistance_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts",
+  },
+  {
+    name: "EventAssistanceGuestResponse",
+    source: "operations/event_assistance_guest_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceGuestResponse.ts",
+  },
+  {
+    name: "EventAssistancePolicy",
+    source: "operations/event_assistance_policy.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistancePolicy.ts"
+  },
+  {
+    name: "EventAssistanceCommand",
+    source: "operations/event_assistance_command.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceCommand.ts"
+  },
+  {
+    name: "EventAssistanceLateJoinInput",
+    source: "operations/event_assistance_late_join_input.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinInput.ts"
+  },
+  {
+    name: "EventAssistanceLateJoinDecision",
+    source: "operations/event_assistance_late_join_decision.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinDecision.ts"
+  },
+  {
     name: "MobileFormState",
     source: "forms/mobile_form_state.schema.json",
     typeOutput: "functions/src/shared/generated/mobileFormState.ts",
@@ -3858,6 +4113,27 @@ async function main() {
   const profileDecisionMigration = readContractJson(
     "migrations/swipes_to_profile_decisions.json"
   );
+  const eventAssistanceCatalog = readContractJson(
+    "catalogs/event_assistance_workflows.json"
+  );
+  const assistanceCommon = readContractJson(
+    "shared/event_assistance_common.schema.json"
+  );
+  const workflowKinds = assistanceCommon.definitions.workflowKind.enum;
+  const commandKinds = assistanceCommon.definitions.Command.oneOf.map(
+    (variant) => variant.properties.kind.const
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+      "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n\n" +
+      "enum EventAssistanceWorkflowKind {\n" +
+      workflowKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n\n" +
+      "enum EventAssistanceCommandKind {\n" +
+      commandKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n"
+  );
   const bundledSchemas = new Map();
 
   for (const spec of schemaSpecs) {
@@ -3874,6 +4150,7 @@ async function main() {
     "functions/src/shared/generated/schemaRegistry.ts",
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -3904,6 +4181,7 @@ async function main() {
     "tool/contracts/generated/schema_contract_registry.mjs",
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -5133,6 +5411,7 @@ function runtimeSchemaModuleName(spec) {
 
 function renderTsSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5156,6 +5435,7 @@ function renderTsSchemaRegistry({
     exports.push(`export {${name}} from "./schemas/${module}";`);
   }
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
@@ -5266,6 +5546,7 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 
 function renderToolSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5275,6 +5556,7 @@ function renderToolSchemaRegistry({
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],

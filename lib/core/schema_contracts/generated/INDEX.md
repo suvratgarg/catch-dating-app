@@ -12,6 +12,49 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts` |
+| GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts` |
+| WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts` |
+| EventWhatsappWithdrawalCallableResponse | `callable_responses/event_whatsapp_withdrawal_response.schema.json` | `functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse.ts` |
+| EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `functions/src/shared/generated/eventWhatsappBudgetDocument.ts` |
+| EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `functions/src/shared/generated/eventWhatsappDispatchDocument.ts` |
+| OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts` |
+| EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `functions/src/shared/generated/eventWhatsappPermissionDocument.ts` |
+| EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts` |
+| GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts` |
+| SetEventWhatsappPreferenceCallablePayload | `callables/set_event_whatsapp_preference_payload.schema.json` | `functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts` |
+| EventWhatsappPreferenceCallableResponse | `callable_responses/event_whatsapp_preference_response.schema.json` | `functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts` |
+| EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `functions/src/shared/generated/eventWhatsappPolicyDocument.ts` |
+| EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts` |
+| EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts` |
+| GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts` |
+| WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload.ts` |
+| EventAssistanceSmsWithdrawalCallableResponse | `callable_responses/event_assistance_sms_withdrawal_response.schema.json` | `functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse.ts` |
+| EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts` |
+| GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts` |
+| SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts` |
+| EventAssistanceSmsPreferenceCallableResponse | `callable_responses/event_assistance_sms_preference_response.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse.ts` |
+| EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts` |
+| EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts` |
+| EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts` |
+| EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts` |
+| EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConfig.ts` |
+| EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
+| EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
+| EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts` |
+| EventAssistanceCaseDocument | `firestore/event_assistance_cases.schema.json` | `functions/src/shared/generated/eventAssistanceCaseDocument.ts` |
+| GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload.ts` |
+| SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload.ts` |
+| EventAssistanceGuestViewCallableResponse | `callable_responses/event_assistance_guest_view_response.schema.json` | `functions/src/shared/generated/eventAssistanceGuestViewCallableResponse.ts` |
+| SubmitEventAssistanceGuestChoiceCallableResponse | `callable_responses/submit_event_assistance_guest_choice_response.schema.json` | `functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse.ts` |
+| EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `functions/src/shared/generated/eventAssistanceMessageDocument.ts` |
+| EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `functions/src/shared/generated/eventAssistanceMessageIntent.ts` |
+| EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts` |
+| EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `functions/src/shared/generated/eventAssistanceGuestResponse.ts` |
+| EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `functions/src/shared/generated/eventAssistancePolicy.ts` |
+| EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `functions/src/shared/generated/eventAssistanceCommand.ts` |
+| EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinInput.ts` |
+| EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinDecision.ts` |
 | MobileFormState | `forms/mobile_form_state.schema.json` | `functions/src/shared/generated/mobileFormState.ts` |
 | OperationRun | `operations/run.schema.json` | `functions/src/shared/generated/operationRunContract.ts` |
 | OperationWorkItem | `operations/work_item.schema.json` | `functions/src/shared/generated/operationWorkItemContract.ts` |
@@ -545,6 +588,49 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventWhatsappWithdrawalGrantDocumentSchema` | EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_withdrawal_grant_document.g.dart` |
+| `schemaGetEventWhatsappWithdrawalCallablePayloadSchema` | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_withdrawal_callable_payload.g.dart` |
+| `schemaWithdrawEventWhatsappCallablePayloadSchema` | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_whatsapp_callable_payload.g.dart` |
+| `schemaEventWhatsappWithdrawalCallableResponseSchema` | EventWhatsappWithdrawalCallableResponse | `callable_responses/event_whatsapp_withdrawal_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_withdrawal_callable_response.g.dart` |
+| `schemaEventWhatsappBudgetDocumentSchema` | EventWhatsappBudgetDocument | `firestore/event_whatsapp_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_budget_document.g.dart` |
+| `schemaEventWhatsappDispatchDocumentSchema` | EventWhatsappDispatchDocument | `firestore/event_whatsapp_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_dispatch_document.g.dart` |
+| `schemaOrganizerWhatsappEndpointStopDocumentSchema` | OrganizerWhatsappEndpointStopDocument | `firestore/organizer_whatsapp_endpoint_stops.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_whatsapp_endpoint_stop_document.g.dart` |
+| `schemaEventWhatsappPermissionDocumentSchema` | EventWhatsappPermissionDocument | `firestore/event_assistance_whatsapp_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_permission_document.g.dart` |
+| `schemaEventWhatsappConsentReceiptDocumentSchema` | EventWhatsappConsentReceiptDocument | `firestore/event_assistance_whatsapp_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_consent_receipt_document.g.dart` |
+| `schemaGetEventWhatsappPreferenceCallablePayloadSchema` | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_preference_callable_payload.g.dart` |
+| `schemaSetEventWhatsappPreferenceCallablePayloadSchema` | SetEventWhatsappPreferenceCallablePayload | `callables/set_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_whatsapp_preference_callable_payload.g.dart` |
+| `schemaEventWhatsappPreferenceCallableResponseSchema` | EventWhatsappPreferenceCallableResponse | `callable_responses/event_whatsapp_preference_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart` |
+| `schemaEventWhatsappPolicyDocumentSchema` | EventWhatsappPolicyDocument | `firestore/event_assistance_whatsapp_policies.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_policy_document.g.dart` |
+| `schemaEventWhatsappReplyBindingDocumentSchema` | EventWhatsappReplyBindingDocument | `firestore/event_assistance_whatsapp_reply_bindings.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_reply_binding_document.g.dart` |
+| `schemaEventAssistanceSmsWithdrawalGrantDocumentSchema` | EventAssistanceSmsWithdrawalGrantDocument | `firestore/event_assistance_sms_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_grant_document.g.dart` |
+| `schemaGetEventAssistanceSmsWithdrawalCallablePayloadSchema` | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_withdrawal_callable_payload.g.dart` |
+| `schemaWithdrawEventAssistanceSmsCallablePayloadSchema` | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_assistance_sms_callable_payload.g.dart` |
+| `schemaEventAssistanceSmsWithdrawalCallableResponseSchema` | EventAssistanceSmsWithdrawalCallableResponse | `callable_responses/event_assistance_sms_withdrawal_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_withdrawal_callable_response.g.dart` |
+| `schemaEventAssistanceSmsConsentReceiptDocumentSchema` | EventAssistanceSmsConsentReceiptDocument | `firestore/event_assistance_sms_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_consent_receipt_document.g.dart` |
+| `schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema` | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_sms_preference_callable_payload.g.dart` |
+| `schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema` | SetEventAssistanceSmsPreferenceCallablePayload | `callables/set_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart` |
+| `schemaEventAssistanceSmsPreferenceCallableResponseSchema` | EventAssistanceSmsPreferenceCallableResponse | `callable_responses/event_assistance_sms_preference_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart` |
+| `schemaEventAssistanceSmsSenderDocumentSchema` | EventAssistanceSmsSenderDocument | `firestore/event_assistance_sms_senders.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_sender_document.g.dart` |
+| `schemaEventAssistanceSmsPermissionDocumentSchema` | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_permission_document.g.dart` |
+| `schemaEventAssistanceSmsBudgetDocumentSchema` | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_budget_document.g.dart` |
+| `schemaEventAssistanceSmsDispatchDocumentSchema` | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_dispatch_document.g.dart` |
+| `schemaEventAssistanceSmsConfigSchema` | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_config.g.dart` |
+| `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
+| `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |
+| `schemaEventAssistanceGuestGrantDocumentSchema` | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_grant_document.g.dart` |
+| `schemaEventAssistanceCaseDocumentSchema` | EventAssistanceCaseDocument | `firestore/event_assistance_cases.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_case_document.g.dart` |
+| `schemaGetEventAssistanceGuestViewCallablePayloadSchema` | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_guest_view_callable_payload.g.dart` |
+| `schemaSubmitEventAssistanceGuestChoiceCallablePayloadSchema` | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_assistance_guest_choice_callable_payload.g.dart` |
+| `schemaEventAssistanceGuestViewCallableResponseSchema` | EventAssistanceGuestViewCallableResponse | `callable_responses/event_assistance_guest_view_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_view_callable_response.g.dart` |
+| `schemaSubmitEventAssistanceGuestChoiceCallableResponseSchema` | SubmitEventAssistanceGuestChoiceCallableResponse | `callable_responses/submit_event_assistance_guest_choice_response.schema.json` | `lib/core/schema_contracts/generated/schemas/submit_event_assistance_guest_choice_callable_response.g.dart` |
+| `schemaEventAssistanceMessageDocumentSchema` | EventAssistanceMessageDocument | `firestore/event_assistance_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_document.g.dart` |
+| `schemaEventAssistanceMessageIntentSchema` | EventAssistanceMessageIntent | `operations/event_assistance_message_intent.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_message_intent.g.dart` |
+| `schemaEventAssistanceDeliveryAttemptSchema` | EventAssistanceDeliveryAttempt | `operations/event_assistance_delivery_attempt.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_delivery_attempt.g.dart` |
+| `schemaEventAssistanceGuestResponseSchema` | EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_response.g.dart` |
+| `schemaEventAssistancePolicySchema` | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_policy.g.dart` |
+| `schemaEventAssistanceCommandSchema` | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_command.g.dart` |
+| `schemaEventAssistanceLateJoinInputSchema` | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_input.g.dart` |
+| `schemaEventAssistanceLateJoinDecisionSchema` | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_decision.g.dart` |
 | `schemaMobileFormStateSchema` | MobileFormState | `forms/mobile_form_state.schema.json` | `lib/core/schema_contracts/generated/schemas/mobile_form_state.g.dart` |
 | `schemaOperationRunSchema` | OperationRun | `operations/run.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_run.g.dart` |
 | `schemaOperationWorkItemSchema` | OperationWorkItem | `operations/work_item.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_work_item.g.dart` |
@@ -1078,6 +1164,14 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventWhatsappWithdrawalCallableRequest | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_withdrawal_callable_request.g.dart` |
+| WithdrawEventWhatsappCallableRequest | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_whatsapp_callable_request.g.dart` |
+| GetEventWhatsappPreferenceCallableRequest | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart` |
+| GetEventAssistanceSmsWithdrawalCallableRequest | GetEventAssistanceSmsWithdrawalCallablePayload | `callables/get_event_assistance_sms_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_withdrawal_callable_request.g.dart` |
+| WithdrawEventAssistanceSmsCallableRequest | WithdrawEventAssistanceSmsCallablePayload | `callables/withdraw_event_assistance_sms_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_assistance_sms_callable_request.g.dart` |
+| GetEventAssistanceSmsPreferenceCallableRequest | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart` |
+| GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
+| SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
 | CreateOrganizerCallableRequest | CreateOrganizerCallablePayload | `callables/create_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_callable_request.g.dart` |
@@ -1297,6 +1391,8 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
+| SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |

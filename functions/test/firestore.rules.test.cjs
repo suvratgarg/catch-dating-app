@@ -4336,6 +4336,34 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps event-service messages private to trusted workers", async () => {
+      for (const collectionName of ["eventAssistanceMessages",
+        "eventAssistanceGuests", "eventAssistanceThreads",
+        "eventAssistanceGuestGrants", "eventAssistanceCases",
+        "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
+        "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
+        "eventAssistanceSmsConsentReceipts",
+        "eventAssistanceSmsWithdrawalGrants",
+        "eventAssistanceWhatsappWithdrawalGrants",
+        "eventAssistanceWhatsappReplyBindings",
+        "eventAssistanceWhatsappPolicies",
+        "eventAssistanceWhatsappBudgets",
+        "eventAssistanceWhatsappDispatches",
+        "organizerWhatsappEndpointStops",
+
+        "eventAssistanceWhatsappPermissions",
+        "eventAssistanceWhatsappConsentReceipts"]) {
+        await seed([collectionName, "record-1"], {schemaVersion: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {schemaVersion: 1}));
+          await assertFails(deleteDoc(reference));
+        }
+      }
+    });
+
     it("keeps durable operations records server-owned", async () => {
       const collections = [
         "operationRuns",

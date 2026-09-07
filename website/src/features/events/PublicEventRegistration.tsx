@@ -1,4 +1,5 @@
 import {type FormEvent, useEffect, useId, useRef, useState} from "react";
+import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {eventDetailCopy} from "../../content/events";
 import {
   beginPublicEventPhoneVerification,
@@ -33,6 +34,7 @@ export function PublicEventRegistration({
   const [whatsappUpdates, setWhatsappUpdates] = useState(false);
   const [smsUpdates, setSmsUpdates] = useState(false);
   const [stage, setStage] = useState<"details" | "code" | "success">("details");
+  const [registeredScope, setRegisteredScope] = useState<{eventId: string; attendeeId: string} | null>(null);
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<FormStatusModel>({message: "", tone: ""});
   const copy = eventDetailCopy.hero.webRegistration;
@@ -89,6 +91,8 @@ export function PublicEventRegistration({
       verificationRef.current?.clear();
       verificationRef.current = null;
       setStage("success");
+      setRegisteredScope(response.status === "waitlisted" ? null :
+        {eventId: response.eventId, attendeeId: response.attendeeId});
       setStatus({
         message: response.status === "alreadyRegistered" ?
           copy.alreadyRegistered : response.status === "waitlisted" ?
@@ -172,6 +176,8 @@ export function PublicEventRegistration({
         </Button>
       ) : null}
       <FormStatus status={status} />
+      {stage === "success" && registeredScope?.eventId === eventId ?
+        <EventSmsPreferencePanel {...registeredScope} /> : null}
       <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
     </EventRegistrationForm>
   );

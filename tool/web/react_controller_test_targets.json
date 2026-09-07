@@ -153,6 +153,21 @@
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
+      "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
+      "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventMessageWithdrawalController.ts",
+      "test": "website/src/features/eventMessaging/useEventMessageWithdrawalController.test.tsx",
+      "status": "required"
     }
   ]
 }

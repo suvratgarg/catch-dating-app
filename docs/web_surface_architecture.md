@@ -1092,9 +1092,21 @@ attendee web route, or the Consumer app according to capability. A web RSVP
 creates/links the same operational attendee record consumed by Host mobile and
 web; it does not require or silently create a dating profile.
 
+Verified event-service SMS preferences are owned by `features/eventMessaging`
+and composed by successful public registration and the guest runtime. The import
+scanner permits these consumers plus message-link withdrawal composition;
+messaging does not depend on its consumer pages.
+The optional control appears after a confirmed roster place and on the guest's
+venue/live page using only their own bootstrap `eventAttendeeId`. It never grants
+organizer marketing permission. Auth changes and event/attendee changes discard
+pending presentation state; unknown submissions retry the same request ID.
+Server revision and time keep stale reads from replacing a confirmed choice.
+Sender provisioning, Consumer app preferences, inbound opt-out and activation
+remain separate work. Rehearsal never mounts this live preference controller.
+
 ### No-Download Event Runtime And Invite Landing
 
-The React marketing runtime owns three non-SEO transactional routes:
+The React marketing runtime owns the following non-SEO transactional routes:
 
 - `/join/:publicRuntimeId` resolves only a bounded event projection before
   Firebase phone OTP. After authentication it claims or requests one roster
@@ -1112,6 +1124,27 @@ The React marketing runtime owns three non-SEO transactional routes:
   creating a Consumer profile or booking edge. The conversation roster is
   fetched through an attendee-authorized callable; Hosts receive only numeric
   scorecard counts and exclusion, never who named whom.
+
+- `/event-update/:linkId` is a scoped event-service update, with its bearer secret
+  only in the URL fragment. It shows the current instruction and approved reply
+  choices through App-Check-protected callables. The route does not unlock the
+  full attendee runtime or check-in. Marketing initialization, attribution and
+  events are excluded. The secret never enters query keys or mutation variables;
+  private cache state is discarded when the page instance unmounts. A separate
+  shared message-withdrawal controller uses the same bearer link with narrower
+  authority and independent SMS/WhatsApp ports. It can stop only the original
+  channel permission through its consent window, even if instructions are
+  closed. An unissued channel hides its control. No guest identity or enable
+  action is exposed. A changed secret or channel remounts the controller using
+  an opaque key; secrets never enter query/mutation state.
+  Withdrawal retries reuse the request id and confirmed changes reject stale
+  reads. Reads poll
+  only while visible, refresh on reconnect/focus, and use conservative server
+  expiry. Stale reads cannot overwrite a confirmed response. The controller
+  locks repeat taps and reuses an uncertain submission identity. Responses are
+  recorded server-side before the page confirms them. It is noindex, excluded
+  from the sitemap and emitted through `/event-update/**`; sender activation,
+  worker-issued links and Host case handling remain separate delivery steps.
 
 - `/rehearse/:publicRehearsalId` is the synthetic-only guest phone for a Host
   dress rehearsal. It never enters the OTP, attendee-claim, booking, payment,

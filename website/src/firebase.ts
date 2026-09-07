@@ -1,3 +1,16 @@
+import type {GetEventWhatsappWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload";
+import type {WithdrawEventWhatsappCallablePayload} from "../../functions/src/shared/generated/withdrawEventWhatsappCallablePayload";
+import type {EventWhatsappWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse";
+import type {GetEventAssistanceSmsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload";
+import type {WithdrawEventAssistanceSmsCallablePayload} from "../../functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload";
+import type {EventAssistanceSmsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse";
+import type {GetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload";
+import type {SetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload";
+import type {EventAssistanceSmsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse";
+import type {EventAssistanceGuestViewCallableResponse} from "../../functions/src/shared/generated/eventAssistanceGuestViewCallableResponse";
+import type {GetEventAssistanceGuestViewCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload";
+import type {SubmitEventAssistanceGuestChoiceCallablePayload} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
+import type {SubmitEventAssistanceGuestChoiceCallableResponse} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
 import type {FirebaseApp} from "firebase/app";
 import type {Auth, User} from "firebase/auth";
 import type {Functions} from "firebase/functions";
@@ -953,4 +966,58 @@ async function invokeWebsiteCallable<Request, Response>(
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<Request, Response>(runtime.functions, name);
   return (await callable(payload)).data;
+}
+
+export async function getEventAssistanceGuestView(
+  payload: GetEventAssistanceGuestViewCallablePayload
+): Promise<EventAssistanceGuestViewCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceGuestView", payload,
+    eventRuntimeFirebaseConfigured, "Event updates");
+}
+
+export async function submitEventAssistanceGuestChoice(
+  payload: SubmitEventAssistanceGuestChoiceCallablePayload
+): Promise<SubmitEventAssistanceGuestChoiceCallableResponse> {
+  return invokeWebsiteCallable("submitEventAssistanceGuestChoice", payload,
+    eventRuntimeFirebaseConfigured, "Event updates");
+}
+
+export async function getEventAssistanceSmsPreference(
+  payload: GetEventAssistanceSmsPreferenceCallablePayload
+): Promise<EventAssistanceSmsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceSmsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event text preferences");
+}
+
+export async function setEventAssistanceSmsPreference(
+  payload: SetEventAssistanceSmsPreferenceCallablePayload
+): Promise<EventAssistanceSmsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("setEventAssistanceSmsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event text preferences");
+}
+
+export async function getEventAssistanceSmsWithdrawal(
+  payload: GetEventAssistanceSmsWithdrawalCallablePayload
+): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("getEventAssistanceSmsWithdrawal", payload,
+    eventRuntimeFirebaseConfigured, "Event text withdrawal");
+}
+export async function withdrawEventAssistanceSms(
+  payload: WithdrawEventAssistanceSmsCallablePayload
+): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("withdrawEventAssistanceSms", payload,
+    eventRuntimeFirebaseConfigured, "Event text withdrawal");
+}
+
+export async function getEventWhatsappWithdrawal(
+  payload: GetEventWhatsappWithdrawalCallablePayload
+): Promise<EventWhatsappWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("getEventWhatsappWithdrawal", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
+}
+export async function withdrawEventWhatsapp(
+  payload: WithdrawEventWhatsappCallablePayload
+): Promise<EventWhatsappWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("withdrawEventWhatsapp", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
 }

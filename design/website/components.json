@@ -3188,6 +3188,191 @@
         ]
       },
       "notes": "Governed visual primitives for the public form frame, question sections, choices, progress, consent, and response review."
+    },
+    {
+      "id": "route_event_assistance",
+      "kind": "route",
+      "routeIds": [
+        "event_assistance"
+      ],
+      "owner": "features/eventAssistance",
+      "source": "website/src/features/eventAssistance/EventAssistancePage.tsx",
+      "exportName": "EventAssistancePage",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/EventAssistance.stories.tsx",
+        "exportName": "EventAssistance",
+        "states": [
+          "loading",
+          "instructions",
+          "responded",
+          "stale",
+          "unavailable"
+        ]
+      },
+      "notes": "Uses existing runtime primitives for a scoped event update. Stories are deterministic; promotion requires reviewed visual baselines."
+    },
+    {
+      "id": "event_assistance_view",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance"
+      ],
+      "owner": "features/eventAssistance",
+      "source": "website/src/features/eventAssistance/EventAssistancePage.tsx",
+      "exportName": "EventAssistanceView",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/EventAssistance.stories.tsx",
+        "exportName": "GuestInstructions",
+        "states": [
+          "loading",
+          "instructions",
+          "responded",
+          "stale",
+          "unavailable"
+        ]
+      },
+      "notes": "Uses existing runtime primitives for a scoped event update. Stories are deterministic; promotion requires reviewed visual baselines."
+    },
+    {
+      "id": "event_sms_preference_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventSmsPreferencePanel.tsx",
+      "exportName": "EventSmsPreferencePanel",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "uncertain",
+          "unavailable",
+          "loading",
+          "error"
+        ]
+      },
+      "notes": "Optional verified event text preferences shared by successful registration and guest runtime. Sender availability never grants consent; the existing event-service copy is returned by the server."
+    },
+    {
+      "id": "event_sms_preference_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventSmsPreferencePanel.tsx",
+      "exportName": "EventSmsPreferenceCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "uncertain",
+          "unavailable",
+          "loading",
+          "error"
+        ],
+        "story": "website/src/stories/EventMessaging.stories.tsx",
+        "exportName": "Preference"
+      },
+      "notes": "Optional verified event text preferences shared by successful registration and guest runtime. Sender availability never grants consent; the existing event-service copy is returned by the server."
+    },
+    {
+      "id": "event_message_withdrawal_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventMessageWithdrawalPanel.tsx",
+      "exportName": "EventMessageWithdrawalPanel",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "enabled",
+          "disabled",
+          "uncertain",
+          "error",
+          "loading",
+          "closed-instructions",
+          "whatsapp"
+        ]
+      },
+      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
+    },
+    {
+      "id": "event_message_withdrawal_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventMessageWithdrawalPanel.tsx",
+      "exportName": "EventMessageWithdrawalCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "enabled",
+          "disabled",
+          "uncertain",
+          "error",
+          "loading",
+          "closed-instructions",
+          "whatsapp"
+        ],
+        "story": "website/src/stories/EventMessaging.stories.tsx",
+        "exportName": "MessageWithdrawal"
+      },
+      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
+    },
+    {
+      "id": "event_runtime_section_stack",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance"
+      ],
+      "owner": "shared/ui/primitives",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimeSectionStack",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "story": "website/src/stories/EventMessaging.stories.tsx",
+        "exportName": "EventSectionStack",
+        "states": [
+          "sections",
+          "closed-instructions"
+        ]
+      },
+      "notes": "Neutral vertical spacing between event sections without notice-specific paragraph styling."
     }
   ]
 }

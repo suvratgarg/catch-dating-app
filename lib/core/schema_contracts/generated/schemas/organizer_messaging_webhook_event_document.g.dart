@@ -8,7 +8,7 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_messaging_webhook_events.schema.json',
   'title': 'OrganizerMessagingWebhookEventDocument',
-  'description': 'Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.',
+  'description': 'Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerMessagingWebhookEvents',
@@ -88,6 +88,116 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 240,
     },
+    'providerAccountId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[0-9]{1,32}\$',
+    },
+    'providerPhoneNumberId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[0-9]{1,32}\$',
+    },
+    'callbackData': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 512,
+    },
+    'inboundReply': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'label',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'templateQuickReply',
+            },
+            'payload': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'id',
+            'label',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'replyButton',
+            },
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'id',
+            'label',
+            'description',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'listReply',
+            },
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 1024,
+            },
+            'description': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 4096,
+            },
+          },
+        },
+      ],
+    },
     'deliveryStatus': <String, Object?>{
       'type': <Object?>[
         'string',
@@ -156,6 +266,147 @@ const schemaOrganizerMessagingWebhookEventDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'assistanceProcessing': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.',
+      'required': <Object?>[
+        'sourceHash',
+        'attemptCount',
+        'updatedAt',
+        'outcome',
+      ],
+      'properties': <String, Object?>{
+        'sourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'attemptCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000000,
+        },
+        'updatedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'outcome': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'delivery',
+                },
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'applied',
+                    'duplicateOrOlder',
+                    'conflictingEvidence',
+                    'unconfirmed',
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'reply',
+                },
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'accepted',
+                    'replayed',
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'waiting',
+                },
+                'reason': <String, Object?>{
+                  'const': 'deliveryUnconfirmed',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'ignored',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'rejected',
+                },
+                'reason': <String, Object?>{
+                  'enum': <Object?>[
+                    'unavailable',
+                    'deliveryScope',
+                    'scopeMismatch',
+                    'staleIntent',
+                    'invalidChoice',
+                    'expired',
+                    'alreadyResponded',
+                    'noLongerNeeded',
+                    'factsStale',
+                    'guestStateChanged',
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
     },
     'processingStatus': <String, Object?>{
       'type': 'string',

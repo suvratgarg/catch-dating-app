@@ -34,6 +34,7 @@ function main() {
   checkPromptCatalogs(parsed);
   checkPersonFieldCatalog(parsed);
   checkHostAttentionPolicyCatalog(parsed);
+  checkEventAssistanceContracts(parsed);
   checkFixturePlacement(parsed);
   checkCurrentCodeDrift(parsed);
 
@@ -43,6 +44,94 @@ function main() {
       file.endsWith(".schema.json")
     ).length,
   });
+}
+
+function checkEventAssistanceContracts(parsed) {
+  const catalog = parsed.get(
+    path.join(contractRoot, "catalogs/event_assistance_workflows.json")
+  );
+  const common = parsed.get(
+    path.join(contractRoot, "shared/event_assistance_common.schema.json")
+  );
+  if (!catalog || !common) {
+    fail("Missing event assistance contracts.");
+    return;
+  }
+  const kinds = common.definitions?.workflowKind?.enum ?? [];
+  const policies = common.definitions?.WorkflowPolicy?.oneOf ?? [];
+  const rows = catalog.definitions ?? [];
+  if (
+    catalog.schemaVersion !== 1 ||
+    catalog.kind !== "eventAssistanceWorkflows"
+  )
+    fail("Invalid event assistance catalog identity.");
+  if (new Set(kinds).size !== kinds.length || kinds.length === 0)
+    fail("Workflow kinds must be nonempty and unique.");
+  if (JSON.stringify(rows.map((row) => row.kind)) !== JSON.stringify(kinds))
+    fail(
+      "Event assistance catalog must cover workflow kinds exactly and in order."
+    );
+  if (
+    JSON.stringify(policies.map((row) => row.properties?.kind?.const)) !==
+    JSON.stringify(kinds)
+  )
+    fail("Each assistance workflow requires a correlated policy schema.");
+  const rules = new Set([
+    "all",
+    "moving",
+    "groups",
+    "movingSubgroups",
+    "resources",
+    "rounds",
+    "outcomes",
+    "accountability",
+    "paid",
+    "requiredData",
+    "roles",
+    "admission",
+    "tracking",
+    "groupsOrResources",
+    "independentUnits",
+  ]);
+  for (const [index, row] of rows.entries()) {
+    const policy = policies[index];
+    if (!rules.has(row.applicability))
+      fail("Unknown assistance applicability rule: " + row.kind);
+    if (
+      !common.definitions[row.configDefinition] ||
+      policy?.properties?.config?.$ref !==
+        "#/definitions/" + row.configDefinition
+    )
+      fail("Missing or mismatched workflow configuration: " + row.kind);
+    for (const field of [
+      "trigger",
+      "automatic",
+      "hostDecision",
+      "resolution",
+    ]) {
+      if (typeof row[field] !== "string" || row[field].trim().length === 0)
+        fail("Missing workflow " + field + ": " + row.kind);
+    }
+  }
+  const commands = common.definitions?.Command?.oneOf ?? [];
+  const commandKinds = commands.map(
+    (command) => command.properties?.kind?.const
+  );
+  if (
+    !commands.length ||
+    new Set(commandKinds).size !== commands.length ||
+    commandKinds.some((kind) => typeof kind !== "string")
+  )
+    fail("Assistance command variants must be unique and named.");
+  for (const command of commands) {
+    if (
+      command.additionalProperties !== false ||
+      !["kind", "context", "eventId", "operationId", "payload"].every((field) =>
+        command.required?.includes(field)
+      )
+    )
+      fail("Assistance commands require closed context-bound envelopes.");
+  }
 }
 
 function checkHostAttentionPolicyCatalog(parsed) {

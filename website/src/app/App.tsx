@@ -18,6 +18,7 @@ import {
 import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
 import {publishedLegalContent} from "../content/legal";
+import {assistanceCredential} from "../features/eventAssistance/eventAssistanceModel";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
   getEventDetailForPath,
@@ -41,6 +42,9 @@ const EventDetailPage = lazy(async () => ({
 }));
 const EventRuntimePage = lazy(async () => ({
   default: (await import("../features/eventRuntime/EventRuntimePage")).EventRuntimePage,
+}));
+const EventAssistancePage = lazy(async () => ({
+  default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
 }));
 const EventRehearsalPage = lazy(async () => ({
   default: (await import("../features/eventRehearsal/EventRehearsalPage"))
@@ -94,7 +98,8 @@ function MarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
-  const routeKey = `${location.pathname}${location.search}${location.hash}`;
+  const routeKey = page === "event_assistance" ? "event_assistance" :
+    `${location.pathname}${location.search}${location.hash}`;
   const meta = event
     ? pageMetaForEvent(event)
     : listingRoute ?
@@ -112,7 +117,7 @@ function MarketingRouteShell() {
         <RouteLifecycleEffects
           page={page}
           routeKey={routeKey}
-          hash={location.hash}
+          hash={page === "event_assistance" ? "" : location.hash}
         />
         <Routes>
           <Route
@@ -146,6 +151,10 @@ function MarketingRouteShell() {
           <Route
             path={marketingRoutePaths.event_runtime}
             element={<EventRuntimePage />}
+          />
+          <Route
+            path={marketingRoutePaths.event_assistance}
+            element={<EventAssistanceRoute />}
           />
           <Route
             path={marketingRoutePaths.event_rehearsal}
@@ -201,6 +210,7 @@ function MarketingRouteShell() {
         </Routes>
       </Suspense>
       {page === "event_runtime" || page === "event_rehearsal" ||
+       page === "event_assistance" ||
        page === "event_invite" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
@@ -220,6 +230,13 @@ function pageKeyForCurrentRoute(
     return "not_found";
   }
   return getPageKey(pathname);
+}
+
+function EventAssistanceRoute() {
+  const location = useLocation();
+  const {linkId = ""} = useParams<{linkId: string}>();
+  return <EventAssistancePage key={location.key}
+    credential={assistanceCredential(linkId, location.hash)} />;
 }
 
 function ClaimRoute() {

@@ -11,6 +11,7 @@ export type PageKey =
   | "listing"
   | "event_detail"
   | "event_runtime"
+  | "event_assistance"
   | "event_rehearsal"
   | "event_invite"
   | "public_form"
@@ -79,6 +80,7 @@ export function getPageKey(
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/help")) return "help";
   if (pathname.startsWith("/join/")) return "event_runtime";
+  if (pathname.startsWith("/event-update/")) return "event_assistance";
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";
   if (pathname.startsWith("/f/")) return "public_form";
@@ -93,6 +95,7 @@ export function pageClassFor(page: PageKey) {
   if (page === "listing") return "listing-page";
   if (page === "event_detail") return "event-detail-page";
   if (page === "event_runtime" || page === "event_rehearsal" ||
+      page === "event_assistance" ||
       page === "event_invite" ||
       page === "public_form") {
     return "event-runtime-page";

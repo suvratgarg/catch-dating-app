@@ -188,6 +188,7 @@ export async function getEventRuntimeBootstrapHandler(
       now.toMillis()
     ),
     participant: participant ? {
+      eventAttendeeId: participant.eventAttendeeId,
       accessStatus: participant.accessStatus,
       attendanceStatus: attendeeStatus,
       eventId: resolved.eventId,

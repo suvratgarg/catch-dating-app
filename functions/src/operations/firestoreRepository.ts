@@ -5,13 +5,30 @@ import {
   Firestore,
   Query,
 } from "firebase-admin/firestore";
+import {isDeepStrictEqual} from "node:util";
 import {operationCollections} from "./collections";
+import {
+  CommitWorkItemAction,
+  CommittedWorkItemAction,
+  operationActionId,
+  operationContentHash,
+} from "./durableActions";
+import {
+  assertCurrentOperationLease,
+  FirestoreOperationLeaseRepository,
+  operationResourceLeaseId,
+  validatedLease,
+} from "./firestoreLeaseRepository";
 import {
   OperationConflictError,
   OperationDomainError,
   OperationNotFoundError,
 } from "./errors";
-import {OperationRun, OperationWorkItem} from "./models";
+import {
+  OperationActionReceipt,
+  OperationRun,
+  OperationWorkItem,
+} from "./models";
 import {
   ListPage,
   OperationRunRepository,
@@ -20,6 +37,7 @@ import {
   WorkItemListQuery,
 } from "./repositories";
 import {
+  validateOperationActionReceipt,
   validateOperationRun,
   validateOperationWorkItem,
   ValidationResult,
@@ -56,9 +74,145 @@ function assertPageLimit(limit: number): void {
   }
 }
 
-export class FirestoreOperationsRepository implements
+export class FirestoreOperationsRepository extends
+  FirestoreOperationLeaseRepository implements
   DurableOperationsRepository {
-  constructor(private readonly db: Firestore) {}
+  constructor(db: Firestore, leaseClock: () => number = Date.now) {
+    super(db, leaseClock);
+  }
+
+  /**
+   * Commit the work-item checkpoint and immutable evidence together. This
+   * transaction never invokes a provider; a worker must reserve an external
+   * attempt durably before calling it and reconcile an uncertain outcome.
+   */
+  async commitWorkItemAction(input: CommitWorkItemAction):
+    Promise<CommittedWorkItemAction> {
+    const {workItem, receipt, lease: proof} = input;
+    validated(validateOperationWorkItem(workItem), "work item");
+    validated(validateOperationActionReceipt(receipt), "action receipt");
+    if (receipt.actionId !== operationActionId(
+      receipt.runId, receipt.workItemId, receipt.idempotencyKey
+    ) || receipt.runId !== workItem.runId ||
+        receipt.workItemId !== workItem.workItemId ||
+        receipt.fromRevision + 1 !== workItem.revision ||
+        receipt.toRevision !== workItem.revision ||
+        receipt.sequence !== workItem.revision ||
+        receipt.outputHash !== operationContentHash(workItem)) {
+      throw new OperationDomainError("action_binding_mismatch",
+        "Receipt must bind the exact work item, revision and idempotency key");
+    }
+    if (proof.leaseId !== operationResourceLeaseId(
+      "work_item", workItem.workItemId
+    )) {
+      throw new OperationDomainError("lease_resource_mismatch",
+        "Action requires the work item's lease");
+    }
+    const itemRef = this.db.collection(operationCollections.workItems)
+      .doc(workItem.workItemId);
+    const receiptRef = this.db.collection(operationCollections.actionReceipts)
+      .doc(receipt.actionId);
+    const leaseRef = this.db.collection(operationCollections.leases)
+      .doc(proof.leaseId);
+    const runRef = this.db.collection(operationCollections.runs)
+      .doc(workItem.runId);
+    return this.db.runTransaction(async (transaction) => {
+      const [itemSnapshot, receiptSnapshot, leaseSnapshot, runSnapshot] =
+        await Promise.all([
+          transaction.get(itemRef), transaction.get(receiptRef),
+          transaction.get(leaseRef), transaction.get(runRef),
+        ]);
+      if (!itemSnapshot.exists || !runSnapshot.exists) {
+        throw new OperationNotFoundError("operation", workItem.workItemId);
+      }
+      const current = validated(
+        validateOperationWorkItem(itemSnapshot.data()), "stored work item"
+      );
+      const run = validated(
+        validateOperationRun(runSnapshot.data()), "stored run"
+      );
+      if (current.workItemId !== workItem.workItemId ||
+          current.runId !== run.runId || run.runId !== workItem.runId ||
+          current.workflowId !== workItem.workflowId ||
+          run.workflowId !== workItem.workflowId ||
+          current.entityKind !== workItem.entityKind) {
+        throw new OperationDomainError("action_scope_mismatch",
+          "Action cannot change the owning run, workflow or entity");
+      }
+      if (receiptSnapshot.exists) {
+        const existing = validated(validateOperationActionReceipt(
+          receiptSnapshot.data()
+        ), "stored action receipt");
+        if (!isDeepStrictEqual(existing, receipt)) {
+          throw new OperationConflictError("idempotency_conflict",
+            "Action key has already been committed with different evidence");
+        }
+        if (current.revision < existing.toRevision ||
+            (current.revision === existing.toRevision &&
+             operationContentHash(current) !== existing.outputHash)) {
+          throw new OperationConflictError("action_checkpoint_drift",
+            "Work item no longer contains the committed checkpoint");
+        }
+        return {workItem: clone(current), receipt: clone(existing),
+          replayed: true};
+      }
+      if (!leaseSnapshot.exists) {
+        throw new OperationNotFoundError("lease", proof.leaseId);
+      }
+      const now = this.leaseClock();
+      assertCurrentOperationLease(
+        validatedLease(leaseSnapshot.data()), proof, now
+      );
+      if (run.status !== "running" ||
+          (run.budgets.deadlineAt !== null &&
+           Date.parse(run.budgets.deadlineAt) <= now)) {
+        throw new OperationConflictError("run_not_executable",
+          "Work can advance only within an active run's deadline");
+      }
+      if (current.lifecycleStatus === "terminal" ||
+          current.lifecycleStatus === "published") {
+        throw new OperationConflictError("terminal_work_item",
+          "Completed work cannot re-enter execution");
+      }
+      if (current.revision !== receipt.fromRevision) {
+        throw new OperationConflictError("revision_conflict",
+          "Work item advanced after this action was prepared");
+      }
+      transaction.set(itemRef, workItem);
+      transaction.create(receiptRef, receipt);
+      return {workItem: clone(workItem), receipt: clone(receipt),
+        replayed: false};
+    });
+  }
+
+  async getActionReceipt(actionId: string):
+    Promise<OperationActionReceipt | null> {
+    const snapshot = await this.db
+      .collection(operationCollections.actionReceipts).doc(actionId).get();
+    if (!snapshot.exists) return null;
+    const receipt = validated(validateOperationActionReceipt(snapshot.data()),
+      "stored action receipt");
+    if (receipt.actionId !== actionId) {
+      throw new OperationDomainError("action_identity_mismatch",
+        "Stored receipt does not match its document id");
+    }
+    return receipt;
+  }
+
+  async findActionReceiptByIdempotencyKey(
+    runId: string, workItemId: string, idempotencyKey: string
+  ): Promise<OperationActionReceipt | null> {
+    const receipt = await this.getActionReceipt(operationActionId(
+      runId, workItemId, idempotencyKey
+    ));
+    if (receipt && (receipt.runId !== runId ||
+        receipt.workItemId !== workItemId ||
+        receipt.idempotencyKey !== idempotencyKey)) {
+      throw new OperationDomainError("action_scope_mismatch",
+        "Receipt lookup does not match its idempotency scope");
+    }
+    return receipt;
+  }
 
   async createRun(run: OperationRun): Promise<OperationRun> {
     validated(validateOperationRun(run), "run");

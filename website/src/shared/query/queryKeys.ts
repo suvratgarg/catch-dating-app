@@ -8,10 +8,22 @@ export const websiteQueryKeys = {
       [...websiteQueryKeys.claims.requests(), listingId ?? "none"] as const,
     requests: () => [...websiteQueryKeys.claims.all(), "requests"] as const,
   },
+  eventMessaging: {
+    messageWithdrawal: (instance: string, channel: "sms" | "whatsapp") =>
+      [...websiteQueryKeys.all, "event-messaging", "withdrawal", channel, instance] as const,
+    smsPreference: (instance: string, identity: string) =>
+      [...websiteQueryKeys.all, "event-messaging", "sms-preference", instance, identity] as const,
+  },
   eventRuntime: {
     conversationGraph: (eventId: string | null) =>
       [...websiteQueryKeys.all, "event-runtime", "conversation-graph",
         eventId ?? "none"] as const,
+  },
+  eventAssistance: {
+    guest: (instanceId: string) =>
+      [...websiteQueryKeys.all, "event-assistance", "guest", instanceId] as const,
+    reply: (instanceId: string) =>
+      [...websiteQueryKeys.all, "event-assistance", "reply", instanceId] as const,
   },
   eventRehearsal: {
     guest: (publicRehearsalId: string) =>

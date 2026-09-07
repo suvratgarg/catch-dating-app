@@ -3,6 +3,49 @@
 
 import {createRequire} from "node:module";
 import {
+  eventWhatsappWithdrawalGrantDocumentSchema,
+  getEventWhatsappWithdrawalCallablePayloadSchema,
+  withdrawEventWhatsappCallablePayloadSchema,
+  eventWhatsappWithdrawalCallableResponseSchema,
+  eventWhatsappBudgetDocumentSchema,
+  eventWhatsappDispatchDocumentSchema,
+  organizerWhatsappEndpointStopDocumentSchema,
+  eventWhatsappPermissionDocumentSchema,
+  eventWhatsappConsentReceiptDocumentSchema,
+  getEventWhatsappPreferenceCallablePayloadSchema,
+  setEventWhatsappPreferenceCallablePayloadSchema,
+  eventWhatsappPreferenceCallableResponseSchema,
+  eventWhatsappPolicyDocumentSchema,
+  eventWhatsappReplyBindingDocumentSchema,
+  eventAssistanceSmsWithdrawalGrantDocumentSchema,
+  getEventAssistanceSmsWithdrawalCallablePayloadSchema,
+  withdrawEventAssistanceSmsCallablePayloadSchema,
+  eventAssistanceSmsWithdrawalCallableResponseSchema,
+  eventAssistanceSmsConsentReceiptDocumentSchema,
+  getEventAssistanceSmsPreferenceCallablePayloadSchema,
+  setEventAssistanceSmsPreferenceCallablePayloadSchema,
+  eventAssistanceSmsPreferenceCallableResponseSchema,
+  eventAssistanceSmsSenderDocumentSchema,
+  eventAssistanceSmsPermissionDocumentSchema,
+  eventAssistanceSmsBudgetDocumentSchema,
+  eventAssistanceSmsDispatchDocumentSchema,
+  eventAssistanceSmsConfigSchema,
+  eventAssistanceGuestDocumentSchema,
+  eventAssistanceThreadDocumentSchema,
+  eventAssistanceGuestGrantDocumentSchema,
+  eventAssistanceCaseDocumentSchema,
+  getEventAssistanceGuestViewCallablePayloadSchema,
+  submitEventAssistanceGuestChoiceCallablePayloadSchema,
+  eventAssistanceGuestViewCallableResponseSchema,
+  submitEventAssistanceGuestChoiceCallableResponseSchema,
+  eventAssistanceMessageDocumentSchema,
+  eventAssistanceMessageIntentSchema,
+  eventAssistanceDeliveryAttemptSchema,
+  eventAssistanceGuestResponseSchema,
+  eventAssistancePolicySchema,
+  eventAssistanceCommandSchema,
+  eventAssistanceLateJoinInputSchema,
+  eventAssistanceLateJoinDecisionSchema,
   mobileFormStateSchema,
   operationRunSchema,
   operationWorkItemSchema,
@@ -555,6 +598,49 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventWhatsappWithdrawalGrantDocument = ajv.compile(eventWhatsappWithdrawalGrantDocumentSchema);
+export const validateGetEventWhatsappWithdrawalCallablePayload = ajv.compile(getEventWhatsappWithdrawalCallablePayloadSchema);
+export const validateWithdrawEventWhatsappCallablePayload = ajv.compile(withdrawEventWhatsappCallablePayloadSchema);
+export const validateEventWhatsappWithdrawalCallableResponse = ajv.compile(eventWhatsappWithdrawalCallableResponseSchema);
+export const validateEventWhatsappBudgetDocument = ajv.compile(eventWhatsappBudgetDocumentSchema);
+export const validateEventWhatsappDispatchDocument = ajv.compile(eventWhatsappDispatchDocumentSchema);
+export const validateOrganizerWhatsappEndpointStopDocument = ajv.compile(organizerWhatsappEndpointStopDocumentSchema);
+export const validateEventWhatsappPermissionDocument = ajv.compile(eventWhatsappPermissionDocumentSchema);
+export const validateEventWhatsappConsentReceiptDocument = ajv.compile(eventWhatsappConsentReceiptDocumentSchema);
+export const validateGetEventWhatsappPreferenceCallablePayload = ajv.compile(getEventWhatsappPreferenceCallablePayloadSchema);
+export const validateSetEventWhatsappPreferenceCallablePayload = ajv.compile(setEventWhatsappPreferenceCallablePayloadSchema);
+export const validateEventWhatsappPreferenceCallableResponse = ajv.compile(eventWhatsappPreferenceCallableResponseSchema);
+export const validateEventWhatsappPolicyDocument = ajv.compile(eventWhatsappPolicyDocumentSchema);
+export const validateEventWhatsappReplyBindingDocument = ajv.compile(eventWhatsappReplyBindingDocumentSchema);
+export const validateEventAssistanceSmsWithdrawalGrantDocument = ajv.compile(eventAssistanceSmsWithdrawalGrantDocumentSchema);
+export const validateGetEventAssistanceSmsWithdrawalCallablePayload = ajv.compile(getEventAssistanceSmsWithdrawalCallablePayloadSchema);
+export const validateWithdrawEventAssistanceSmsCallablePayload = ajv.compile(withdrawEventAssistanceSmsCallablePayloadSchema);
+export const validateEventAssistanceSmsWithdrawalCallableResponse = ajv.compile(eventAssistanceSmsWithdrawalCallableResponseSchema);
+export const validateEventAssistanceSmsConsentReceiptDocument = ajv.compile(eventAssistanceSmsConsentReceiptDocumentSchema);
+export const validateGetEventAssistanceSmsPreferenceCallablePayload = ajv.compile(getEventAssistanceSmsPreferenceCallablePayloadSchema);
+export const validateSetEventAssistanceSmsPreferenceCallablePayload = ajv.compile(setEventAssistanceSmsPreferenceCallablePayloadSchema);
+export const validateEventAssistanceSmsPreferenceCallableResponse = ajv.compile(eventAssistanceSmsPreferenceCallableResponseSchema);
+export const validateEventAssistanceSmsSenderDocument = ajv.compile(eventAssistanceSmsSenderDocumentSchema);
+export const validateEventAssistanceSmsPermissionDocument = ajv.compile(eventAssistanceSmsPermissionDocumentSchema);
+export const validateEventAssistanceSmsBudgetDocument = ajv.compile(eventAssistanceSmsBudgetDocumentSchema);
+export const validateEventAssistanceSmsDispatchDocument = ajv.compile(eventAssistanceSmsDispatchDocumentSchema);
+export const validateEventAssistanceSmsConfig = ajv.compile(eventAssistanceSmsConfigSchema);
+export const validateEventAssistanceGuestDocument = ajv.compile(eventAssistanceGuestDocumentSchema);
+export const validateEventAssistanceThreadDocument = ajv.compile(eventAssistanceThreadDocumentSchema);
+export const validateEventAssistanceGuestGrantDocument = ajv.compile(eventAssistanceGuestGrantDocumentSchema);
+export const validateEventAssistanceCaseDocument = ajv.compile(eventAssistanceCaseDocumentSchema);
+export const validateGetEventAssistanceGuestViewCallablePayload = ajv.compile(getEventAssistanceGuestViewCallablePayloadSchema);
+export const validateSubmitEventAssistanceGuestChoiceCallablePayload = ajv.compile(submitEventAssistanceGuestChoiceCallablePayloadSchema);
+export const validateEventAssistanceGuestViewCallableResponse = ajv.compile(eventAssistanceGuestViewCallableResponseSchema);
+export const validateSubmitEventAssistanceGuestChoiceCallableResponse = ajv.compile(submitEventAssistanceGuestChoiceCallableResponseSchema);
+export const validateEventAssistanceMessageDocument = ajv.compile(eventAssistanceMessageDocumentSchema);
+export const validateEventAssistanceMessageIntent = ajv.compile(eventAssistanceMessageIntentSchema);
+export const validateEventAssistanceDeliveryAttempt = ajv.compile(eventAssistanceDeliveryAttemptSchema);
+export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceGuestResponseSchema);
+export const validateEventAssistancePolicy = ajv.compile(eventAssistancePolicySchema);
+export const validateEventAssistanceCommand = ajv.compile(eventAssistanceCommandSchema);
+export const validateEventAssistanceLateJoinInput = ajv.compile(eventAssistanceLateJoinInputSchema);
+export const validateEventAssistanceLateJoinDecision = ajv.compile(eventAssistanceLateJoinDecisionSchema);
 export const validateMobileFormState = ajv.compile(mobileFormStateSchema);
 export const validateOperationRun = ajv.compile(operationRunSchema);
 export const validateOperationWorkItem = ajv.compile(operationWorkItemSchema);

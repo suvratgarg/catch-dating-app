@@ -537,6 +537,1215 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventWhatsappWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+}
+
+/**
+ * Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.
+ */
+export interface EventWhatsappBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: string;
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Immutable debit and material identity committed with one outbox dispatch claim. No credentials, body, guest secret or recipient phone.
+ */
+export interface EventWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  senderHash: string;
+  policyHash: string;
+  policyRevision: number;
+  permissionId: string;
+  permissionRevision: number;
+  permissionHash: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  payloadHash: string;
+  quoteRevision: number;
+  grantId: string;
+  currency: string;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  replyBindingId: null | string;
+  stopRecordHash: null | string;
+  createdAt: number;
+}
+
+/**
+ * Latest authenticated text STOP for an organizer and WhatsApp endpoint, independent of CRM contact resolution. No TTL until suppression and consent retention are reconciled.
+ */
+export interface OrganizerWhatsappEndpointStopDocument {
+  schemaVersion: 1;
+  stopId: string;
+  organizerId: string;
+  endpointHash: string;
+  connectionId: string;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  providerEventId: string;
+  payloadHash: string;
+  stoppedAt: number;
+  observedAt: number;
+  revision: number;
+}
+
+export interface EventWhatsappPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventWhatsappConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Reviewed event-service template and spend policy for one existing organizer-owned WhatsApp sender. This policy alone grants no guest consent or send authority.
+ */
+export interface EventWhatsappPolicyDocument {
+  schemaVersion: 1;
+  senderId: string;
+  organizerId: string;
+  revision: number;
+  maxTemplateAgeSeconds: number;
+  status: "inactive" | "ready" | "paused";
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  activation: {
+    approvalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  quote: {
+    revision: number;
+    currency: string;
+    /**
+     * @minItems 1
+     * @maxItems 250
+     */
+    recipientPrefixes: string[];
+    maxMicrosPerMessage: number;
+    validUntil: number;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 32
+   */
+  templates: {
+    templateDocumentId: string;
+    purpose:
+      | "joiningUpdate"
+      | "joiningInstructions"
+      | "planChanged"
+      | "guestRequirement"
+      | "assignmentChanged"
+      | "participationCheck"
+      | "eventCancelled"
+      | "eventFinished"
+      | "followUp";
+    templateHash: string;
+    /**
+     * @minItems 1
+     * @maxItems 20
+     */
+    variables: {
+      providerName: string;
+      source:
+        | "eventTitle"
+        | "instruction"
+        | "responseUrl"
+        | "responseUrlSuffix";
+      maxCharacters: number;
+    }[];
+    /**
+     * @maxItems 10
+     */
+    quickReplies: {
+      buttonIndex: number;
+      choiceId: string;
+      label: string;
+      action:
+        | "onMyWay"
+        | "notComing"
+        | "joinLater"
+        | "helpLogistics"
+        | "helpAccessibility"
+        | "helpSafety"
+        | "helpOther"
+        | "acknowledge";
+    }[];
+  }[];
+}
+
+/**
+ * Private immutable choice mapping committed with one live outbox dispatch claim. Native IDs provide correlation, never bearer authentication. A signed queued reply must match the original sender, recipient and confirmed provider message before the shared guest-action transaction can apply its stored choice.
+ */
+export interface EventWhatsappReplyBindingDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  guestId: string;
+  attendeeId: string;
+  episodeId: string;
+  attendeeGeneration: string;
+  guestRevision: number;
+  attemptScopeHash: string;
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  replyKind: "templateQuickReply" | "replyButton" | "listReply";
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  choices: {
+    nativeId: string;
+    choiceId: string;
+  }[];
+  createdAt: number;
+  expiresAt: number;
+  intentHash: string;
+}
+
+export interface EventAssistanceSmsWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+export interface EventAssistanceSmsConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceSmsSenderDocument {
+  schemaVersion: 1;
+  senderId: string;
+  revision: number;
+  provider: "gupshup";
+  senderIdentity: "catchPlatform";
+  country: "IN";
+  status: "inactive" | "ready" | "paused";
+  mask: string;
+  principalEntityId: string;
+  credentialVersion: string;
+  activation: {
+    useCaseApprovalId: string;
+    senderApprovalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  maxSegments: number;
+  quote: {
+    revision: number;
+    currency: "INR";
+    maxMicrosPerSegment: number;
+    validUntil: number;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 32
+   */
+  templates: {
+    templateId: string;
+    revision: number;
+    purpose:
+      | "joiningUpdate"
+      | "joiningInstructions"
+      | "planChanged"
+      | "guestRequirement"
+      | "assignmentChanged"
+      | "participationCheck"
+      | "eventCancelled"
+      | "eventFinished"
+      | "followUp";
+    dltTemplateId: string;
+    status: "pending" | "approved" | "paused";
+    /**
+     * @minItems 1
+     * @maxItems 16
+     */
+    parts: (
+      | {
+          kind: "literal";
+          text: string;
+        }
+      | {
+          kind: "variable";
+          name: "eventTitle" | "instruction" | "responseUrl";
+          maxCharacters: number;
+        }
+    )[];
+  }[];
+}
+
+export interface EventAssistanceSmsPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceSmsBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: "INR";
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceSmsDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  senderId: string;
+  bindingRevision: number;
+  configHash: string;
+  permissionId: string;
+  permissionRevision: number;
+  recipientEndpointId: string;
+  payloadHash: string;
+  templateId: string;
+  templateRevision: number;
+  quoteRevision: number;
+  grantId: string;
+  encoding: "gsm7" | "unicode";
+  segments: number;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  createdAt: number;
+  reportTokenHash: string;
+  senderMask: string;
+}
+
+export interface EventAssistanceGuestDocument {
+  schemaVersion: 1;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  episodeId: string;
+  revision: number;
+  lifecycle: "active" | "closed";
+  intention:
+    | {
+        kind: "unknown";
+      }
+    | {
+        kind: "onMyWay";
+        claimedEta: number | null;
+      }
+    | {
+        kind: "joinLater";
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+      }
+    | {
+        kind: "notComing";
+      };
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceThreadDocument {
+  schemaVersion: 1;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  workflow: {
+    kind:
+      | "venueReadiness"
+      | "routeReadiness"
+      | "formatReadiness"
+      | "rosterReadiness"
+      | "requiredGuestData"
+      | "resourceReadiness"
+      | "staffingReadiness"
+      | "messagingReadiness"
+      | "admissionReview"
+      | "financialReadiness"
+      | "joiningInstructions"
+      | "identityResolution"
+      | "guestAdmission"
+      | "guestCheckIn"
+      | "lateJoin"
+      | "participationChange"
+      | "guestPrerequisite"
+      | "allocationRepair"
+      | "placementConfirmation"
+      | "resourceRecovery"
+      | "fairParticipation"
+      | "roundPublication"
+      | "unitProgress"
+      | "outcomeRecording"
+      | "programmeRecovery"
+      | "departure"
+      | "checkpoint"
+      | "groupTransfer"
+      | "routeRecovery"
+      | "locationFreshness"
+      | "accountability"
+      | "planChangeCommunication"
+      | "deliveryRecovery"
+      | "replyOwnership"
+      | "guestAssistance"
+      | "comfortSafety"
+      | "attendanceSync"
+      | "concurrencyRecovery"
+      | "operationRecovery"
+      | "contextBoundary"
+      | "overrideReview"
+      | "eventClosure"
+      | "attendanceReconciliation"
+      | "financialReconciliation"
+      | "postEventFollowUp"
+      | "eventLearning";
+    occurrenceId: string;
+  };
+  messageId: string;
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceGuestGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  tokenHash: string;
+  signingKeyId: string;
+  issuedAt: number;
+  expiresAt: number;
+  revokedAt: number | null;
+}
+
+export interface EventAssistanceCaseDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Private durable event-service outbox. The immutable intent and bounded attempt history survive workflow completion and delayed callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.
+ */
+export interface EventAssistanceMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent:
+    | {
+        schemaVersion: 1;
+        intentId: string;
+        revision: number;
+        context:
+          | {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            }
+          | {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+        eventId: string;
+        attendeeId: string;
+        episodeId: string;
+        workflow: {
+          kind:
+            | "venueReadiness"
+            | "routeReadiness"
+            | "formatReadiness"
+            | "rosterReadiness"
+            | "requiredGuestData"
+            | "resourceReadiness"
+            | "staffingReadiness"
+            | "messagingReadiness"
+            | "admissionReview"
+            | "financialReadiness"
+            | "joiningInstructions"
+            | "identityResolution"
+            | "guestAdmission"
+            | "guestCheckIn"
+            | "lateJoin"
+            | "participationChange"
+            | "guestPrerequisite"
+            | "allocationRepair"
+            | "placementConfirmation"
+            | "resourceRecovery"
+            | "fairParticipation"
+            | "roundPublication"
+            | "unitProgress"
+            | "outcomeRecording"
+            | "programmeRecovery"
+            | "departure"
+            | "checkpoint"
+            | "groupTransfer"
+            | "routeRecovery"
+            | "locationFreshness"
+            | "accountability"
+            | "planChangeCommunication"
+            | "deliveryRecovery"
+            | "replyOwnership"
+            | "guestAssistance"
+            | "comfortSafety"
+            | "attendanceSync"
+            | "concurrencyRecovery"
+            | "operationRecovery"
+            | "contextBoundary"
+            | "overrideReview"
+            | "eventClosure"
+            | "attendanceReconciliation"
+            | "financialReconciliation"
+            | "postEventFollowUp"
+            | "eventLearning";
+          occurrenceId: string;
+        };
+        createdAt: number;
+        expiresAt: number;
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        permittedRoutes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        kind: "joiningUpdate";
+        guidance: {
+          /**
+           * Nonnegative safe integer revision.
+           */
+          revision: number;
+          destination:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+          materialKey: string;
+          text: string;
+          /**
+           * UTC milliseconds.
+           */
+          validUntil: number;
+        };
+        /**
+         * @minItems 1
+         * @maxItems 20
+         */
+        choices: {
+          choiceId: string;
+          label: string;
+          value:
+            | {
+                kind: "joinIntent";
+                intention:
+                  | {
+                      kind: "onMyWay";
+                      claimedEta: number | null;
+                    }
+                  | {
+                      kind: "joinLater";
+                      target:
+                        | {
+                            kind: "fixedPlace";
+                            placeId: string;
+                            lateEntry: "allowed" | "hostDecision" | "closed";
+                          }
+                        | {
+                            kind: "itineraryStop";
+                            itineraryId: string;
+                            stopId: string;
+                          }
+                        | {
+                            kind: "groupCheckpoint";
+                            routeId: string;
+                            groupId: string;
+                            checkpointId: string;
+                          };
+                    }
+                  | {
+                      kind: "notComing";
+                    };
+              }
+            | {
+                kind: "requestHelp";
+                category:
+                  | "eventLogistics"
+                  | "accessibility"
+                  | "comfortSafety"
+                  | "other";
+              };
+        }[];
+      }
+    | {
+        schemaVersion: 1;
+        intentId: string;
+        revision: number;
+        context:
+          | {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            }
+          | {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+        eventId: string;
+        attendeeId: string;
+        episodeId: string;
+        workflow: {
+          kind:
+            | "venueReadiness"
+            | "routeReadiness"
+            | "formatReadiness"
+            | "rosterReadiness"
+            | "requiredGuestData"
+            | "resourceReadiness"
+            | "staffingReadiness"
+            | "messagingReadiness"
+            | "admissionReview"
+            | "financialReadiness"
+            | "joiningInstructions"
+            | "identityResolution"
+            | "guestAdmission"
+            | "guestCheckIn"
+            | "lateJoin"
+            | "participationChange"
+            | "guestPrerequisite"
+            | "allocationRepair"
+            | "placementConfirmation"
+            | "resourceRecovery"
+            | "fairParticipation"
+            | "roundPublication"
+            | "unitProgress"
+            | "outcomeRecording"
+            | "programmeRecovery"
+            | "departure"
+            | "checkpoint"
+            | "groupTransfer"
+            | "routeRecovery"
+            | "locationFreshness"
+            | "accountability"
+            | "planChangeCommunication"
+            | "deliveryRecovery"
+            | "replyOwnership"
+            | "guestAssistance"
+            | "comfortSafety"
+            | "attendanceSync"
+            | "concurrencyRecovery"
+            | "operationRecovery"
+            | "contextBoundary"
+            | "overrideReview"
+            | "eventClosure"
+            | "attendanceReconciliation"
+            | "financialReconciliation"
+            | "postEventFollowUp"
+            | "eventLearning";
+          occurrenceId: string;
+        };
+        createdAt: number;
+        expiresAt: number;
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        permittedRoutes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        kind: "operationalNotice";
+        noticeKind:
+          | "joiningInstructions"
+          | "planChanged"
+          | "eventCancelled"
+          | "eventFinished"
+          | "guestRequirement"
+          | "assignmentChanged"
+          | "participationCheck"
+          | "followUp";
+        title: string;
+        body: string;
+        instructionRevision: number;
+        /**
+         * @minItems 0
+         * @maxItems 20
+         */
+        choices: {
+          choiceId: string;
+          label: string;
+          value:
+            | {
+                kind: "acknowledge";
+                instructionRevision: number;
+              }
+            | {
+                kind: "requestHelp";
+                category:
+                  | "eventLogistics"
+                  | "accessibility"
+                  | "comfortSafety"
+                  | "other";
+              };
+        }[];
+      };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: (
+    | {
+        schemaVersion: 1;
+        attemptId: string;
+        intentId: string;
+        intentRevision: number;
+        ordinal: number;
+        createdAt: number;
+        state:
+          | {
+              kind: "reserved";
+              at: number;
+              reconcileAfter: number;
+            }
+          | {
+              kind: "unknown";
+              at: number;
+              providerMessageId: string | null;
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+              reconcileAfter: number;
+            }
+          | {
+              kind: "accepted";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "delivered";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "read";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "failed";
+              at: number;
+              providerMessageId: string | null;
+              classification:
+                | "technical"
+                | "invalidRecipient"
+                | "policy"
+                | "suppressed";
+              evidenceId: string;
+            }
+          | {
+              kind: "revoked";
+              at: number;
+              providerMessageId: string;
+              evidenceId: string;
+            }
+          | {
+              kind: "notDispatched";
+              at: number;
+              reason:
+                | "superseded"
+                | "eventClosed"
+                | "responded"
+                | "expired"
+                | "permissionRevoked"
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
+            };
+        mode: "live";
+        context: {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        };
+        binding:
+          | {
+              routeId: "catchEventSms";
+              transport: "sms";
+              senderIdentity: "catchPlatform";
+              provider: "sinch" | "gupshup";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            }
+          | {
+              routeId: "catchEventRcs";
+              transport: "rcs";
+              senderIdentity: "catchPlatform";
+              provider: "sinch" | "gupshup";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            }
+          | {
+              routeId: "organizerEventWhatsapp";
+              transport: "whatsapp";
+              senderIdentity: "organizerManaged";
+              provider: "meta";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            };
+        authorization: {
+          permissionRevision: string;
+          checkedAt: number;
+          validUntil: number;
+          instructionRevision: number;
+        };
+      }
+    | {
+        schemaVersion: 1;
+        attemptId: string;
+        intentId: string;
+        intentRevision: number;
+        ordinal: number;
+        createdAt: number;
+        state:
+          | {
+              kind: "reserved";
+              at: number;
+              reconcileAfter: number;
+            }
+          | {
+              kind: "unknown";
+              at: number;
+              providerMessageId: string | null;
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+              reconcileAfter: number;
+            }
+          | {
+              kind: "accepted";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "delivered";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "read";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "failed";
+              at: number;
+              providerMessageId: string | null;
+              classification:
+                | "technical"
+                | "invalidRecipient"
+                | "policy"
+                | "suppressed";
+              evidenceId: string;
+            }
+          | {
+              kind: "revoked";
+              at: number;
+              providerMessageId: string;
+              evidenceId: string;
+            }
+          | {
+              kind: "notDispatched";
+              at: number;
+              reason:
+                | "superseded"
+                | "eventClosed"
+                | "responded"
+                | "expired"
+                | "permissionRevoked"
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
+            };
+        mode: "rehearsal";
+        context: {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        };
+        routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+        authorization: {
+          permissionRevision: string;
+          checkedAt: number;
+          validUntil: number;
+          instructionRevision: number;
+        };
+      }
+  )[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+  response:
+    | (
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "guestWeb";
+              linkId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "provider";
+              attemptId: string;
+              providerEventId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+            source: {
+              kind: "simulation";
+              actionId: string;
+            };
+          }
+      )
+    | null;
+}
+
 /**
  * Immutable idempotency and audit receipt for a dry-run or applied external-event publication/takedown action.
  */
@@ -3748,6 +4957,16 @@ export interface OrganizerMessageTemplateDocument {
     | "COPY_CODE"
     | "UNKNOWN"
   )[];
+  /**
+   * @maxItems 10
+   */
+  buttonLabels?: (string | null)[];
+  parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
+  /**
+   * @maxItems 10
+   */
+  buttonUrls?: (string | null)[];
+  contentHash?: string;
   providerUpdatedAt: FirebaseFirestore.Timestamp | null;
   syncedAt: FirebaseFirestore.Timestamp;
 }
@@ -3990,7 +5209,7 @@ export interface OrganizerCampaignWebhookReceiptDocument {
 }
 
 /**
- * Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.
+ * Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.
  */
 export interface OrganizerMessagingWebhookEventDocument {
   provider: "metaCloudApi";
@@ -4006,6 +5225,27 @@ export interface OrganizerMessagingWebhookEventDocument {
     | "unmatched";
   providerMessageId: string | null;
   contextProviderMessageId: string | null;
+  providerAccountId?: string | null;
+  providerPhoneNumberId?: string | null;
+  callbackData?: string | null;
+  inboundReply?:
+    | null
+    | {
+        kind: "templateQuickReply";
+        payload: string;
+        label: string;
+      }
+    | {
+        kind: "replyButton";
+        id: string;
+        label: string;
+      }
+    | {
+        kind: "listReply";
+        id: string;
+        label: string;
+        description: string | null;
+      };
   deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
   endpointHash: string | null;
   isStop: boolean;
@@ -4013,6 +5253,48 @@ export interface OrganizerMessagingWebhookEventDocument {
   inboundBody: string | null;
   providerErrorCode: number | null;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.
+   */
+  assistanceProcessing?: {
+    sourceHash: string;
+    attemptCount: number;
+    updatedAt: FirebaseFirestore.Timestamp;
+    outcome:
+      | {
+          kind: "delivery";
+          disposition:
+            | "applied"
+            | "duplicateOrOlder"
+            | "conflictingEvidence"
+            | "unconfirmed";
+        }
+      | {
+          kind: "reply";
+          disposition: "accepted" | "replayed";
+        }
+      | {
+          kind: "waiting";
+          reason: "deliveryUnconfirmed";
+        }
+      | {
+          kind: "ignored";
+        }
+      | {
+          kind: "rejected";
+          reason:
+            | "unavailable"
+            | "deliveryScope"
+            | "scopeMismatch"
+            | "staleIntent"
+            | "invalidChoice"
+            | "expired"
+            | "alreadyResponded"
+            | "noLongerNeeded"
+            | "factsStale"
+            | "guestStateChanged";
+        };
+  };
   processingStatus: "pending" | "processed" | "unmatched" | "failed";
   attemptCount: number;
   createdAt: FirebaseFirestore.Timestamp;

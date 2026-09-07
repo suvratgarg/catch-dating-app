@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.43.0
-updated: 2026-09-04
+version: 1.44.0
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -103,6 +103,122 @@ obligation, and post-event reconciliation stay blocked until their owning
 domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
+
+### Event Service Outbox Contract
+
+`eventAssistanceMessages/{messageId}` is server-only delivery state owned by
+trusted Event Assistance workers. Its canonical Firestore schema embeds the
+portable message intent and delivery-attempt contracts. The id hashes execution
+context, intent identity and revision; the immutable intent holds one guest
+episode and bounded choices. Delivery attempts and guest response identities
+also bind the execution context. Recipient endpoints are opaque references;
+provider credentials and guest bearer grants remain outside this record.
+
+Firestore transactions arbitrate immutable enqueue, attempt reservation,
+one-time live dispatch claiming, closure and normalized receipt merging. The
+history is capped at six attempts. Reservation and claiming use the same
+transaction to read current event/guest/permission facts through the trusted
+reader port. A claim commits an uncertain attempt before yielding permission
+for provider I/O. Duplicate claims do not return that permission, and delayed
+receipts remain reconcilable after closure. Contradictory delivery evidence is
+sticky and blocks further dispatch pending an owned resolution.
+
+A reservation still in `reserved` at its authorization deadline can be recorded
+as `notDispatched/reservationExpired` by the next reservation transaction.
+Release and claim contend on the same outbox document: a committed `unknown`
+or accepted attempt can never be released by the clock. A worker with adapter
+proof that permit expiry prevented all provider I/O records the separate
+`notDispatched/permitExpired` reason. The older `expired` reason continues to
+stop the logical message; it is not retroactively treated as retry evidence.
+
+Both new reasons permit fresh evaluation after exponential backoff, provided
+the event, guest, instruction and consent still require and allow outreach.
+A replacement has a new attempt id and ordinal, and the old sender/permission
+snapshot remains unchanged. Unsent attempts count against the total history
+ceiling but not a channel's submission allowance. A reservation's reconciliation
+hint is capped at its authorization deadline. No budget is charged for an
+unclaimed reservation; spending already reserved by a claim remains charged
+until separate financial reconciliation. Any later provider receipt that
+contradicts an unsent record preserves a conflict and blocks pending dispatch.
+
+No browser or mobile client can read or write this collection directly, even
+with an admin claim. Guest responses use the separate scoped grant and atomic
+mutation boundary described below; this outbox does not grant full runtime
+access or turn self-reported intention into attendance. Scheduling, provider
+activation, RCS permission readers and terminal cleanup remain delivery work.
+The collection currently has no TTL; executable or reconcilable deduplication state
+must not be deleted merely because the message's instruction has expired.
+
+### Event Service Native Reply Contract
+
+`eventAssistanceWhatsappReplyBindings/{attemptId}` is an immutable, server-only
+choice mapping committed with a claimed live outbox attempt. Its schema pins
+intent and attempt hashes, original sender/account/phone, recipient endpoint,
+roster generation, guest episode and revision, response kind and offered choice
+IDs. It contains no phone number, credential or guest webpage secret. The
+correlation ID alone grants no action authority.
+
+`WhatsappReplyStore.consumeQueued` reads signature-verified evidence from the
+existing private `organizerMessagingWebhookEvents` queue. Exact sender,
+recipient and original provider message correlation precede the shared
+`applyGuestChoice` transaction. Unknown delivery correlation yields a waiting
+result; expired, replaced or mismatched authority cannot execute a choice.
+The webpage and provider consumer share response deduplication and case/intent
+writes. Neither can change attendance, assignment or registration.
+
+`onEventAssistanceWhatsappEventCreated` now invokes delivery and native reply
+consumers from the authenticated queue. The optional `assistanceProcessing`
+checkpoint is independent of campaign/Inbox processing fields. It binds the
+immutable queue evidence and ingress receipt to a content hash, validates their
+identity and scope, and records only bounded processing outcomes. A waiting
+reply throws for the trigger's bounded retry policy; expired or permanently
+rejected choices terminate. A failed checkpoint after an applied guest effect
+replays the idempotent consumer, and an older waiting result cannot overwrite
+terminal completion. Unrelated webhook traffic is ignored. No provider I/O
+runs in this processor. These bindings have no TTL yet; activation requires
+retention aligned with the outbox's reconciliation window.
+
+Approved template snapshots now retain optional `parameterFormat`,
+index-aligned `buttonLabels` and `buttonUrls`, and a `contentHash` of provider
+identity, category, parameter format and complete raw components (including
+body/footer/buttons). They retain the existing parameter bindings and
+button kinds. Older documents still validate; native quick-reply sending
+requires complete labels and a known format when variables are present. The
+Meta adapter binds every quick-reply slot to an exact expected label and unique
+payload, preserves parameter text, and emits names for named header/body
+parameters. This metadata does not establish event-service consent or map a
+label to a domain action; the trusted dispatch composition owns that mapping.
+
+`eventAssistanceWhatsappPolicies/{senderId}` is a server-only reviewed policy
+for one organizer connection and provider account/phone. Its strict schema
+binds each supported message purpose to a template document, stable snapshot
+hash, complete variable sources, exact native action/label/slot mappings,
+maximum template age, recipient-prefix quote and bounded activation window.
+Native action selectors distinguish joining intent, acknowledgement and all
+four help categories. The template-purpose unions for SMS, WhatsApp and message
+intents are checked for exact equality by TypeScript.
+
+`renderEventWhatsapp` requires current matching metadata, a scoped guest grant,
+exact instruction content and a complete webpage response path even when only
+a subset of choices fits native buttons. Dynamic URL buttons accept only the
+Catch event-update base and its grant suffix. Variables cannot be silently
+trimmed or truncated; prepared-content hashes fence native payload numbering.
+The snapshot hash includes provider content evidence and send metadata while
+excluding sync timestamps. It detects edits observed by synchronization, not
+provider-side changes after that read. Activation must enforce the reviewed
+editing and synchronization policy. This record does not create consent,
+debit spending or authorize dispatch; provisioning and composition with those
+transactional resources remain required. Guest URL secrets stay in worker
+memory, outside the policy and outbox.
+
+`OrganizerTokenStore.accessBound` requires a numbered version in the configured
+vault and the exact organizer/connection envelope. It rejects raw migration
+tokens, mismatched scope and unknown envelope fields. Provider transport
+rejects redirects, bounds response reads, redacts transport/provider errors and
+checks a supplied deadline immediately before I/O. Once I/O starts, an uncertain
+response cannot prove non-delivery. Optional callback data is correlation only;
+its echo and status semantics require verification against the configured
+provider account/version before Event Assistance activates it.
 
 ### Event Dress Rehearsal Isolation Contract
 
@@ -1998,3 +2114,268 @@ source identity, original occurrence time, due time and fenced lease fields.
 Message actions pin a draft campaign revision and generated campaigns carry
 server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
+
+### Event Service WhatsApp Consent Contract
+
+`eventAssistanceWhatsappPermissions` binds the event, attendee creation
+generation, verified subject and recipient endpoint to an explicit organizer
+sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
+copy version, displayed sender hash and complete resulting permission hash.
+Future-event announcement consent remains separate and is never read as an
+Event Assistance grant. The receipt union distinguishes verified-participant
+decisions from revocation-only message-link decisions with a null actor UID.
+Authenticated endpoint STOP evidence also suppresses the saved preference.
+
+The App-Check-protected `getEventWhatsappPreference` and
+`setEventWhatsappPreference` callables require the roster's linked UID. Scope
+includes the exact sender ID; most-recently-updated connection selection cannot
+silently switch consent. Grants additionally require the matching signed phone
+claim, an admitted participant, eligible event, reviewed sender policy and
+current verified sender identity. The client submits only scope, decision,
+expected revision, request ID, copy version and the previously displayed sender
+hash plus the current nullable STOP-record hash. An unseen STOP cannot be
+reversed by an older in-flight enable request. Provider identities, recipient
+number, consent copy and evidence times
+come from trusted server data. The response exposes the sender display name and
+business number, masked recipient number and preference state; no provider
+account IDs or credentials are exposed.
+
+Credential rotation and health-sync revisions preserve permission. A changed
+provider account or sending phone requires fresh consent. Display-name updates
+do not erase a saved grant, but a new grant must match the newly displayed
+identity. Consent expires no later than 24 hours after the event end captured
+at grant time; dispatch must also recheck the current event window. Sender
+readiness is independent of a recorded enabled preference.
+
+Permission and receipt commit in one transaction. Exact replays return current
+state, while revision conflicts cannot reverse a later withdrawal. The shared
+preference transaction adapter maps only the exact closed-transaction callback
+RPC error into the SDK's bounded ABORTED retry path. It does not catch commit
+uncertainty or reclassify other validation errors. SMS preference and link
+withdrawal use this same boundary; paired withdrawal reads are batched. A first
+opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
+preserves the old recipient/sender evidence even after either changes, and
+paused, deleted or malformed sender provisioning cannot obstruct it. These
+authenticated APIs still require a current authorized event/roster identity;
+the independent message-link withdrawal APIs below require neither. Client
+access to permission and receipt collections is denied, including with an admin
+claim. Verified opt-in UI and sender activation remain separate delivery work.
+
+`eventAssistanceWhatsappWithdrawalGrants/{linkId}` commits with the dispatch
+claim, debits and native reply binding. It pins the original event, attendee
+generation, verified subject, recipient endpoint and provider account/phone to
+the immutable guest grant hash. A changed identity or longer consent lifetime
+requires a new link for dispatch; an existing link cannot silently acquire that
+authority. The grant exposes no secret or recipient phone number.
+
+`getEventWhatsappWithdrawal` and `withdrawEventWhatsapp` are App-Check-protected,
+network- and credential-rate-limited bearer callables. They return only the
+permission state, revision and validity. Withdrawal has the original consent
+lifetime and needs no current event, roster, sender or instruction availability.
+An expired instruction never regains read/reply authority. Revoked links and
+replacement recipients, subjects or provider identities cannot act. Withdrawal
+writes a revocation-only immutable receipt and permission revision atomically;
+replaying an old request returns the current state without undoing later consent.
+A new stop requires the currently displayed revision. It leaves SMS permission,
+registration, check-in and organizer announcement preferences untouched. Retain
+the guest grant, withdrawal grant and request receipts through this lifetime.
+
+### Event Service WhatsApp Dispatch Contract
+
+`WhatsappDispatchStore` reads event/guest authority, the explicit sender and its
+reviewed policy, the original verified recipient, exact consent receipt,
+endpoint STOP evidence, CRM pauses/provider blocks, template and scoped guest
+link. These facts are read in the same transaction as the outbox claim. The
+single-route outbox refuses mixed-route intents; `readFacts` exposes this
+channel to the shared composer without silently skipping other channels.
+The shared message gate caps all event-service routes at 24 hours after the
+current event end, including after a schedule change shortens a previously
+granted consent window.
+
+`eventAssistanceWhatsappBudgets` supplies independently approved event and UTC
+sender-day ceilings. Budget identity includes currency. Missing, paused, stale,
+wrong-scope or exhausted authority withholds the claim. Both conservative cost
+debits, `eventAssistanceWhatsappDispatches` material evidence and any native
+reply binding commit with the outbox's single unknown attempt. Failure rolls
+all of them back. A second outbox still contends on the same spending records.
+Unknown/accepted delivery does not release spending or authorize another send.
+These records store hashes and scoped references, not credentials, recipient
+phone numbers, message text or guest URL secrets. Native payloads are returned
+only to the trusted caller. No TTL is applied before reconciliation is defined.
+
+`organizerWhatsappEndpointStops` records the latest authenticated text STOP per
+organizer and endpoint independently of CRM contact resolution. It commits with
+the signed webhook's receipt and queue item, after transactionally rechecking
+an unambiguous provider account/phone connection. Native labels cannot become
+STOP commands. Duplicate or older events cannot advance the stop time; absent
+or future provider timestamps are conservatively capped at receipt time.
+The event preference view reports a stopped grant as disabled. A fresh explicit
+grant must acknowledge the current STOP hash and occur later than that stop.
+Dispatch requires that later grant and its immutable receipt. Credentials and
+sender changes cannot evade an organizer-wide endpoint stop.
+
+CRM admin/provider suppression remains independent. Announcement preference
+withdrawal does not revoke separately granted event-service permission. Legacy
+CRM inbound-STOP suppression without endpoint evidence stays blocked until
+reconciled; the new ledger cannot retroactively prove old consent ordering.
+A STOP committed after a dispatch claim prevents later claims but cannot undo
+provider I/O already authorized or started.
+
+`EventWhatsappWorker` loads the pinned sender credential before reserving,
+claims the exact rendered material and sends once through the Meta adapter
+outside the transaction. Submission acceptance is recorded independently from
+delivery. A lost response or receipt commit cannot trigger another send. Only
+the adapter's proof that permit expiry prevented all I/O can mark an attempt
+unsent. HTTP errors and uncertain outcomes retain their conservative debit and
+reconciliation hold. The worker requires an explicit provider and is not wired
+to a callable, scheduler or live Operations executor.
+
+The worker sends versioned callback correlation containing the attempt and
+rendered payload hashes, never credentials, phone numbers or guest secrets.
+`WhatsappDeliveryStore` reads the private signed queue and its ingress receipt;
+it correlates exact organizer, sender, WABA, phone, recipient endpoint, immutable
+dispatch and outbox attempt. Provider timestamps have a five-minute clock-skew
+tolerance relative to dispatch and ingestion, not a delivery SLA. The consumer
+can recover a lost submission ID from `sent`, `delivered` or `read` evidence.
+It merges late/duplicate receipts without regressing delivery, even after event
+closure or sender removal; unexpected delivery after an unsent record preserves
+a conflict. It does not execute guest choices or grant fallback permission.
+
+Failed or inconsistent provider statuses remain unconfirmed until the provider
+error/finality mapping is reviewed. The configured Meta API version's callback
+echo still requires controlled account verification. The durable queue consumer
+records unconfirmed delivery outcomes without retrying them or permitting
+fallback; reviewed failure classification and reconciliation remain integration
+work. These boundaries do not activate automated sending.
+
+### Event Assistance Channel Selection Contract
+
+`EventMessageWorker` uses one immutable intent and one bounded outbox history
+for all permitted channels. It composes the existing SMS and WhatsApp workers;
+it is a trusted port, not a callable, scheduler or registered live executor.
+Only explicitly permitted routes can prepare credentials. Each channel loads
+its pinned secret before reservation; a changed sender snapshot makes that
+prepared channel ineligible. RCS currently returns `notProvisioned` and cannot
+load credentials or dispatch. Missing credentials return `channelUnavailable`.
+A malformed source or inconsistent channel gate fails the whole evaluation.
+
+Every route's event gate, consent, suppression, template, recipient and spending
+facts are read in the same transaction as reservation, and again at claim.
+Channels must agree on the shared event gate and expose exactly their own route.
+The shared policy preserves the intent's route order, tries an eligible untried
+route before retrying a confirmed failed route, and retains retry backoff and
+attempt ceilings. Only the selected channel prepares material, debits its two
+budgets and claims the single provider attempt. The channel-specific stores
+reject mixed-route reservation so callers cannot accidentally omit competing
+channel authority.
+
+A preflight unavailable channel can give way to another independently permitted
+and consented route. After submission, unknown or accepted outcomes hold all
+fallback even if the original sender, credential or consent later disappears.
+Only trusted confirmed technical non-delivery can permit fallback. Policy,
+suppression and invalid-recipient rejections require resolution; conflicting
+delivery evidence stops a pending fallback claim. Raw Meta failed statuses still
+lack a reviewed finality mapping and therefore do not unlock this path. This
+composition does not imply provider activation or guaranteed delivery.
+
+An existing unsent reservation keeps its original channel, sender and permission
+snapshot. On authorization expiry the outbox records it as unsent; recovery uses
+a new bounded attempt and fresh authority, never repurposes the old id. Durable
+reconciliation wakeups, RCS implementation and live Operations executor
+integration remain separate work.
+
+### Event Assistance SMS Delivery Contract
+
+The canonical `event_assistance_sms.schema.json` vocabulary supplies private
+sender, permission, budget and dispatch documents. `eventAssistanceSmsSenders`
+records explicit use-case/header approval, the exact numbered credential
+reference, approved template parts and a bounded INR rate quote. It contains
+no provider password. Missing, inactive, paused or expired configuration never
+implies readiness.
+
+`eventAssistanceSmsPermissions` binds Catch event-service SMS to an event,
+attendee creation generation, verified subject, phone endpoint and sender.
+The exact consent-copy version, receipt, timestamps, expiry and withdrawal
+state are required. Organizer marketing preference records are not permission
+for this route. The App-Check-protected preference callables require the roster's
+linked Firebase UID. A grant additionally requires the signed phone claim to
+match the roster phone and an admitted guest in an eligible event. Client input
+contains only event/attendee scope, decision, copy version, expected revision
+and request ID. Sender identity, number and evidence timestamps come from the
+server. Revocation can proceed without a ready sender or current phone claim.
+
+`eventAssistanceSmsConsentReceipts` records each exact decision atomically with
+its permission revision. Grant receipts pin the displayed copy hash and the
+hash of the complete resulting permission; dispatch requires that matching
+receipt. Receipt timestamps record when the signed phone claim was checked,
+not when a new OTP was sent. Revision conflicts return current state; replaying
+an earlier grant cannot reverse a later withdrawal. An initial opt-out writes a
+revoked tombstone with no fabricated consent evidence. Recreated roster entries
+cannot inherit consent. Responses reveal only the participant's masked number,
+status, availability and consent text; there is no client collection access.
+Sender approval and activation remain separate trusted provisioning steps.
+
+`eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
+Asia/Kolkata. A trusted worker atomically charges both ceilings with the
+outbox claim. `eventAssistanceSmsDispatches` keeps one immutable attempt debit,
+rendered-material hash and sender/template/permission/quote references. It
+also binds the original sender mask and the hash of a random 192-bit reporting
+credential. Only the worker receives the plaintext credential, submitted in
+Gupshup's `extra` field; decoded delivery reports must prove this credential
+and match the dispatch scope before updating the private outbox. The credential
+does not authorize a send, opt-in or budget release. Retain the immutable
+dispatch and outbox through the provider reconciliation window, independently
+of guest-link or event expiry. Cleanup and HTTP ingress remain unimplemented.
+The dispatch stores neither message content, reporting credential nor the guest
+URL secret. Conservative debits
+remain charged across uncertain outcomes and provider rejections until an
+explicit reconciliation implementation accounts for them. They are spending
+reservations, not billing receipts. Firestore clients, including admins, cannot
+read or write any of these six collections.
+
+`eventAssistanceSmsWithdrawalGrants` is created in the same transaction as a
+live SMS dispatch claim. It binds the original guest-link hash to one permission,
+attendee generation, subject, sender and phone endpoint. Its separate lifetime
+ends with the permission captured at dispatch. An expired instruction does not
+expire this narrowly scoped ability to withdraw; it grants no event read/reply
+access. A revoked guest grant invalidates both uses. Reusing a link for a new
+recipient or a longer consent lifetime requires a fresh grant before dispatch.
+
+`getEventAssistanceSmsWithdrawal` and `withdrawEventAssistanceSms` require that
+bearer capability, App Check and network/credential rate limits. They need no
+current event, roster or sender status, so cancellation cannot obstruct opt-out.
+They expose only text status, revision and validity, with no name, phone or event
+identifier. Changing the permission's attendee generation, subject or endpoint
+invalidates the old capability. Only an explicit mutation withdraws permission;
+link reads and previews never do. Its immutable consent receipt uses
+`source: messageLink`, the link id and `actorUid: null`; authenticated preference
+receipts use `source: verifiedParticipant` and their verified UID. A bearer
+receipt can never grant consent. Replayed withdrawals return current state,
+including later verified opt-in, and stale revisions require a new explicit
+choice. Retention must keep the guest grant, withdrawal binding and deduplication
+receipts through this capability's lifetime and provider reconciliation window.
+
+### Event Assistance Guest Response Contract
+
+`eventAssistanceGuests` stores the event/attendee binding, exact roster creation
+generation, participation episode and revisioned reported intent. It deliberately
+does not extend or mutate the admission/attendance projection. Replacing an
+episode invalidates all earlier grants. `eventAssistanceThreads` stores one
+current message head per guest episode, workflow kind and occurrence; separate
+workflow conversations cannot overwrite each other.
+
+`eventAssistanceGuestGrants` contains only the hashed bearer secret and its
+thread/guest/episode scope, signing key id, issue/expiry times and optional
+revocation. Grants live for at most 24 hours, bounded by the event end when it
+is still upcoming. The raw secret is regenerated only for the trusted worker;
+it is never stored in the outbox or returned by the public read endpoint.
+
+Guest response acceptance checks the current thread head and intent revision;
+joining intent additionally fences the participation revision. The response,
+message closure and any intention/help-case effect commit in one transaction.
+The response remains in the message for retry deduplication. `eventAssistanceCases`
+correlates a help request with the accepted response; comfort/safety categories
+are assigned only to the restricted safety owner, other categories to the event
+lead. No SDK client, including an administrator, can access any of these four
+collections directly. Host projections and case-resolution commands require
+separate authorized boundaries before this feature can be enabled.

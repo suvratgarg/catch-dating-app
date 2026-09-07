@@ -731,6 +731,82 @@ service cloud.firestore {
 
     // Durable business-workflow state. Trusted operations workers use the
     // Admin SDK; browser and mobile clients never access these records directly.
+    match /eventAssistanceSmsSenders/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGuests/{guestId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceThreads/{threadId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGuestGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCases/{caseId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappReplyBindings/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /organizerWhatsappEndpointStops/{stopId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappPolicies/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceMessages/{messageId} {
+      allow read, write: if false;
+    }
+
     match /operationRuns/{runId} {
       allow read, write: if false;
     }

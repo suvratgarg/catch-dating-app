@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.20.1
-updated: 2026-08-31
+version: 1.24.0
+updated: 2026-09-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -87,6 +87,323 @@ or rotation publication requires an explicit confirmation. The persisted plan
 is the restart source of truth, so process death resumes the current beat and
 published rounds without a local recovery mode. Revisioned undo and pause are
 not part of the shipped control model.
+
+## Typed event assistance
+
+The event-assistance outcome vocabulary is owned by
+`contracts/catalogs/event_assistance_workflows.json`. Its 46 definitions map
+to correlated policy variants in
+`contracts/shared/event_assistance_common.schema.json`. Command variants bind
+the command kind, payload and live/rehearsal context. Generated TypeScript
+contracts and Dart vocabularies must be regenerated together; the schema check
+requires complete catalog/configuration coverage.
+
+`functions/src/eventSuccess/operations/` owns the pure policy evaluators and
+command-boundary validation. The late-join evaluator accepts explicit time,
+attendance, admission, guidance, participation episode and policy authority.
+Reported intention cannot manufacture physical attendance; confirmed presence
+resolves an older decline. Throttled material updates retain a next evaluation
+time. Effect identities include the execution context and participation episode.
+Live and rehearsal adapters must use this policy with mode-scoped effects;
+the pure evaluator alone does not establish application integration.
+
+The registered `event-assistance` workflow now evaluates bounded late-join
+snapshots through the existing Operations engine. Its manifest exposes plan,
+run, resume, queue and status, with zero network/public-write authority. A run
+is one event/context and frozen evaluation time; duplicate participation
+episodes, schema-invalid facts and changed plan authority fail closed. Its
+queue separates evaluating, waiting, host review, proposed effect and terminal
+outcomes. Completion means snapshot evaluation finished, not that a guest was
+contacted or the event is complete.
+
+`lateJoinPolicy.ts` is the single authored pure implementation. The Operations
+runtime generator transpiles it to the checked JavaScript module consumed by
+Operations;
+the Functions adapter validates the same schemas before invoking it. Changing
+the policy therefore requires both generated-output parity and runtime tests.
+The local shadow factory does not load live event facts or send messages.
+Trusted worker scheduling, complete live policy fact readers, provider adapters,
+and the Host/rehearsal application adapters remain integration work.
+
+`contracts/shared/event_assistance_messaging.schema.json` separates immutable
+message intent, a channel attempt and a guest response. Joining updates carry
+only approved joining choices; operational notices carry scoped acknowledgements
+or help requests. A response cannot represent physical check-in. Provider
+attempts require a live context and a sender binding correlated with the route;
+rehearsal attempts cannot carry that binding. Reserved attempts freeze the
+permission revision, validity interval and instruction revision used to select
+the route. Opaque provider ids are not restricted to Firestore path syntax.
+
+`messageProtocol.ts` creates late-join message proposals and reservations,
+validates wire records, and resolves a scoped submitted choice to its stored
+value. An expired grant, changed episode, stale instruction, unknown choice or
+duplicate response cannot create a new effect. The trusted adapter must resolve
+the bearer grant or provider correlation and atomically persist an accepted
+response with the owner domain's revision check; this pure resolver is not an
+authenticated endpoint or a persistence implementation.
+
+`messagingPolicy.ts` owns the shared delivery decision. Reserved, accepted and
+uncertain attempts require reconciliation, and delivered/read attempts cannot
+trigger fallback. Confirmed technical failures permit bounded retries across
+freshly eligible routes. Policy rejection, suppression, invalid recipient and
+provider-owned fallback create owned exceptions. Event/guest state, current
+instruction, expiry, permission freshness and attempt limits are checked before
+selection. `deliveryReceipts.ts` preserves delivered/read evidence when delayed
+or contradictory provider statuses arrive, and rejects another sender,
+connection revision, endpoint or provider message id. The WhatsApp consumer
+correlates the signed private webhook queue and dispatch evidence; the SMS
+consumer verifies per-attempt report credentials. SMS HTTP ingress and reviewed
+WhatsApp failure finality remain pending.
+
+`FirestoreMessageOutbox` persists immutable intents and at most six attempts in
+the private `eventAssistanceMessages` collection. Re-enqueueing the same scoped
+intent returns its existing history; changed content cannot reuse the identity.
+Reservation and dispatch claiming each re-read trusted domain and permission
+facts in their Firestore transaction. The fact reader is trusted server authority.
+`EventMessageWorker` composes the concrete SMS and WhatsApp readers through one
+outbox, so both independent permissions and spending limits are checked before
+selection and claim. A prepared credential must match the current sender
+snapshot. Single-channel stores cannot reserve mixed-route intents; RCS remains
+explicitly unavailable.
+
+Only one transaction can claim a reserved live attempt. It records an uncertain
+outcome before returning a short-lived dispatch permit, and the provider runs
+after commit. An interrupted claim therefore requires reconciliation; replay
+does not grant another send. Provider adapters must check permit expiry and use
+the attempt id for provider idempotency when supported. This boundary does not
+claim exactly-once delivery by an external provider.
+
+A worker interrupted before claiming can recover after the reservation's
+original authorization expires. The next reservation transaction preserves
+that attempt as `notDispatched/reservationExpired`; a fresh attempt uses a new
+id, current authority and bounded backoff. Adapter-proven expiry before all
+provider I/O uses `permitExpired`. These unsent attempts consume the total
+recovery ceiling but not the route's submission allowance. Neither elapsed
+time nor sender unavailability can release an unknown or accepted submission.
+Claimed spending remains conservatively charged until reconciliation.
+
+Normalized receipts can update an expired or cancelled message independently
+of its workflow run. They cannot reopen sending. Contradictory evidence creates
+a persistent conflict that withholds new dispatch, including an already
+reserved fallback. Rehearsal reservations cannot obtain a live dispatch permit
+or accept a real provider receipt. The selected worker connects the outbox to
+Gupshup SMS or Meta WhatsApp outside the transaction. An unknown or accepted
+submission holds all fallback even if its channel later becomes unavailable.
+A scheduled live Operations executor, Host read model and rehearsal runtime
+remain separate integration steps. Terminal cleanup must be added before
+activation and retain deduplication state throughout the provider reconciliation
+window.
+
+`GuestAssistanceStore` supplies the trusted publisher and scoped guest-response
+boundary. Private guest state records the roster document's exact creation
+generation and a participation episode. Each workflow occurrence has its own
+thread head, so joining guidance and another operational notice can coexist.
+Publishing a replacement atomically supersedes the prior message. A link
+resolves the thread's current head; an old button cannot mutate newer guidance.
+
+The worker issues a bounded, revocable grant using a versioned signing key.
+Firestore stores only its secret hash. Link redemption rechecks current event,
+roster generation, admission, episode, instruction expiry and message purpose.
+Cancellation and post-event notices have their own event-phase eligibility.
+The public App-Check-protected callables return only the event label, current
+instruction and approved response labels, not guest identity or roster data.
+A response and its effect commit together: joining intent advances a fenced
+private participation revision, acknowledgement records the receipt, and help
+creates an owned case. Comfort/safety requests require the restricted safety
+owner. None of these responses checks in, cancels or assigns an attendee.
+
+`readEventAssistanceMessageGate` is the concrete transaction-scoped event and
+roster gate for all channel adapters. It rejects a replaced episode or thread
+head, expired event phase, declined guest or confirmed arrival. Channel-specific
+consent, suppression and sender authority must still be read in the same outbox
+transaction. The guest webpage at `/event-update/:linkId` uses the public
+read/reply boundary and the existing web runtime primitives. Key provisioning,
+the live workflow publisher, Host case projection/resolution and rehearsal
+response adapter remain separate
+integration steps; recording a help case does not yet notify a Host.
+
+### WhatsApp native reply boundary
+
+`WhatsappReplyStore` freezes the exact offered choices in the private
+`eventAssistanceWhatsappReplyBindings` collection as part of the outbox's
+single dispatch-claim transaction. The mapping pins the immutable intent and
+attempt authority, original sender/account/phone, recipient endpoint, roster
+generation, participation episode and guest revision. Native IDs are opaque
+correlation, not bearer grants. This resource does not authorize sending;
+the live sender must compose it with event-service consent, approved template,
+credential and spending authority.
+
+The consumer reads an event ID from the existing signature-verified private
+WhatsApp queue. It checks sender and recipient ownership again, matches the
+exact native reply kind and the provider's original message ID, then resolves
+the stored choice. Unknown original-message correlation returns `waiting`
+without a domain effect. Display labels, free text and callback data cannot
+select an action. Changed instructions, roster generation, phone, episode or
+participation revision cannot inherit the old choice's authority.
+
+Web and WhatsApp responses use `applyGuestChoice` in the same message/guest
+transaction. Concurrent responses have one winner, help requests create one
+owned case, and reported joining intent cannot change physical attendance or
+registration. Safety requests retain their restricted owner. Server time is
+sampled again after source reads, and the shared event gate cannot extend a
+pre-event action past event end.
+
+`onEventAssistanceWhatsappEventCreated` connects the signed queue to the
+delivery and native reply consumers. Its retry-enabled Firestore trigger records
+an independent, source-bound `assistanceProcessing` checkpoint. An early reply's
+`waiting` result retries until correlation becomes available or authority
+expires. Permanent rejections terminate. Checkpoint failure after a successful
+guest effect retries idempotently; concurrent completion cannot be overwritten
+by an older waiting result. Campaign/Inbox processing retains its own fields.
+Signed-ingress tests and real Firestore contention tests cover these boundaries.
+
+The Meta worker connects approved template material, named/positional
+parameters, native choices, sender credentials and dispatch deadlines to the
+permission/budget transaction. Optional callback echo and failure finality
+still need account/version verification. Unconfirmed failures retain their
+delivery hold; processing them does not authorize fallback. Reply handling
+itself never sends an acknowledgement or fallback. Live executor integration
+and activation remain separate work. Retention must preserve binding evidence
+through outbox reconciliation before activation.
+
+### Reviewed WhatsApp message material
+
+`whatsappTemplate.ts` composes a current synchronized template, the server-only
+`eventAssistanceWhatsappPolicies` policy, a message intent and its guest grant.
+Review binds provider content and send metadata together; changed template
+copy, variable destinations, category, sender ownership or native action
+semantics cannot inherit the old review. Quotes declare a maximum message cost,
+currency and supported recipient prefixes; they are neither actual prices nor
+spending debits. Template freshness, review, quote and guest-link expiry bound
+the prepared material's lifetime.
+
+Every template retains a scoped guest-page link. Native buttons can offer a
+subset of the approved choices without removing the others from that page.
+Native payload indices follow the frozen choice order independently of the
+provider's button positions. Content hashes are rechecked before those IDs are
+constructed. Both joining updates and operational notices use this renderer;
+acknowledgements keep their instruction revision and help categories retain
+their exact meaning. A policy record alone grants no recipient permission.
+Event-specific WhatsApp consent now has verified-participant get/set callables,
+explicit sender identity, revision-fenced permission and immutable receipt
+contracts. They do not read organizer announcement permission. Invalid sender
+provisioning blocks new grants while preserving withdrawal. The owning data
+contract describes identity, expiry and replay semantics. Guest UI wiring,
+independent message-link withdrawal, provider submission and delivery/reply
+reconciliation remain necessary before this material can be submitted.
+`WhatsappDispatchStore` now composes current consent, authenticated endpoint
+STOP state, approved material, two spending ceilings and native reply bindings
+inside one outbox claim. It returns prepared material only after that transaction
+commits, with no provider I/O or activation. UTC sender-day and event debits
+remain conservative until financial reconciliation is implemented.
+
+### SMS submission and spending boundary
+
+`SmsDispatchStore` reads the current sender, exact guest generation/linked UID
+and phone, event-service permission, revocable guest grant, approved template,
+and event/sender-day budgets in the same transaction as dispatch authority.
+A permission must use the Catch event-service copy and verified subject;
+existing organizer marketing opt-ins cannot grant this purpose. Verified guest
+registration and the no-download runtime now offer optional event text controls
+through `getEventAssistanceSmsPreference` and `setEventAssistanceSmsPreference`.
+The server records exact consent receipts with the current permission and
+requires their matching hash before dispatch. Repeat requests are idempotent;
+withdrawal fences old grants. The website reuses uncertain request IDs, rejects
+stale read results and scopes pending state to the current account and event.
+The control is hidden when there is no preference and enabling is unavailable;
+an existing grant retains a withdrawal control when the sender is paused.
+
+Web registration and guest runtime supply verified opt-in and withdrawal.
+The SMS dispatch claim additionally issues narrow withdrawal authority for its
+response link. The guest update page loads that text preference independently
+of instruction availability, so guests can stop texts after cancellation or
+instruction expiry. The link cannot enable texts, change registration, expose
+identity or reopen event instructions. Its current-revision check prevents an
+old withdrawal request from undoing a later verified opt-in. Revoked links and
+replacement recipients cannot act on the original permission.
+
+Waitlist marketing preferences do not authorize event-service texts. Consumer
+app controls, provider inbound opt-out handling, deployed verification and
+retention cleanup remain integration work; no sender has been activated by
+these controls.
+
+`EventSmsWorker` loads an exact numbered Secret Manager credential before the
+short reservation window. The resource claim atomically debits both spending
+ceilings and records the exact material hash with the outbox's single-send
+claim. A competing message cannot spend the same remaining budget. Payload,
+recipient, template, config and permission changes invalidate the reservation,
+even if a provisioning writer failed to advance its revision. Only hashes and
+scope/cost evidence enter dispatch records; credentials and the response-link
+secret remain in worker memory. The sender-day window is Asia/Kolkata.
+
+`smsProtocol.ts` renders exact approved DLT template parts with bounded
+variables. It never truncates or rewrites the instruction to fit a widget or
+SMS limit. GSM extension characters and Unicode pairs are counted when packing
+segments. Overlong content, missing approval, expired quote or insufficient
+budget withholds delivery. The configured rate ceiling is conservative spend
+control, not a claim about the provider's final invoice.
+
+`GupshupSmsProvider` submits one HTTPS POST with the configured entity, header,
+template, alphanumeric attempt correlation and a random per-attempt reporting
+credential in `extra`. Correlation is not provider idempotency. It checks the
+permit immediately before I/O; acceptance is stored
+separately from delivery. Unknown/malformed responses, transport loss and the
+provider's auto-resubmitting maintenance response remain uncertain and cannot
+cause fallback. Explicit account/policy/recipient rejection needs resolution.
+If permit expiry provably prevented provider I/O, the attempt is recorded as
+not dispatched. Debits are conservatively retained until reconciliation;
+there is no automatic refund or release on timeout or rejection.
+
+`SmsDeliveryReportStore` accepts decoded Enterprise GET report fields only when
+the echoed credential matches the hash committed with that attempt's debit.
+It binds the original recipient endpoint, sender mask when reported, fragment
+count and known provider message id. Provider time is bounded by a five-minute
+clock-skew tolerance; state timestamps use the server receipt clock. Reports
+need no current roster, sender, grant, permission or event liveness, so closing
+an event cannot erase later delivery evidence. Duplicate reports converge in
+the outbox transaction. Contradictory final reports retain a delivery conflict;
+unknown causes, deferred delivery, SMSC timeout and missing operator
+acknowledgement cannot authorize fallback. Policy, suppression and invalid
+recipient causes retain their distinct meaning. Reporting never sends a
+message, changes consent or releases a spending debit.
+
+This bearer credential is scoped to one attempt; it is not a Gupshup signature.
+The field contracts come from Gupshup's [single-message API](https://docs.gupshup.io/docs/send-message-to-single-number)
+and [delivery-report documentation](https://docs.gupshup.io/docs/real-time-delivery-reports).
+There is no deployed or exported HTTP ingress for the reporting service yet.
+Before adding it, verify the account's actual echoed field names, secure callback
+transport, URL/log redaction and report finality with provider evidence. POST
+reporting requires provider support configuration and has a different shape;
+the service does not guess a mapping from the documentation's malformed POST
+example. Missing credentials or a different shape cannot update the outbox.
+
+This is an invocable server worker tested with an injected transport and the
+Firestore emulator, not an enabled provider integration. Gupshup is the first
+candidate adapter; account selection and actual use-case/DLT approvals remain
+unconfirmed. The channel-specific worker only accepts SMS-only intents;
+multi-route intents use `EventMessageWorker` and its shared authority reader.
+Before activation, complete the remaining consent/withdrawal entry points,
+audited sender/budget provisioning, live Operations scheduling, authenticated delivery
+ingress and lookup/reconciliation, provider freshness/expiry behavior,
+financial reconciliation and retention. Provision the guest signing key and
+verify the deployed branded response route. No fabricated approval receipt,
+fixture permission or quote can satisfy live onboarding. RCS routing and
+Host/rehearsal projections remain later delivery slices.
+
+The implementation sequence is shared contracts and durable execution, an
+SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow
+families, then verified provider activation. Catalog membership describes an
+outcome contract; it does not assert a registered executor or provider readiness.
+Applicability, implementation availability, missing facts and host settings must
+remain separate. Existing format, attendance, assignment, safety and payment
+owners remain authoritative. Ordinary check-in remains an atomic domain command.
+
+The delivery acceptance includes typed/wire-invalid fixtures, duplicate and
+reordered signals, revision/context fences, provider ambiguity, current consent,
+mode isolation and live/rehearsal parity. Production sends, provider activation,
+full layout redesign, autonomous emergency judgement, new payment/tournament
+engines and continuous background interception require their own implemented
+adapters and acceptance; they are not conferred by these type definitions.
 
 ## Format Mapping And Wiring
 

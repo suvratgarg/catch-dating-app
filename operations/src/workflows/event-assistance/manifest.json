@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "workflowId": "event-assistance",
+  "version": "0.1.0",
+  "executionModes": ["shadow"],
+  "capabilities": {
+    "network": false,
+    "modelCalls": false,
+    "publicWrites": false,
+    "ruleDeployment": false
+  },
+  "commands": ["plan", "run", "resume", "queue", "status"],
+  "primaryStages": ["evaluating", "waiting", "host_review", "ready", "finished"],
+  "entityKinds": ["guest_episode"],
+  "allowedTransitions": {
+    "evaluating": ["waiting", "host_review", "ready", "finished"],
+    "waiting": ["evaluating", "host_review", "ready", "finished"],
+    "host_review": ["evaluating", "waiting", "ready", "finished"],
+    "ready": ["evaluating", "waiting", "host_review", "finished"],
+    "finished": []
+  },
+  "lifecycleStatuses": ["active", "resolved", "cancelled", "expired"],
+  "lifecycleSemantics": {
+    "activeStatuses": ["active"],
+    "publishedStatuses": [],
+    "expiredStatuses": ["expired"]
+  },
+  "maxWorkItemsPerRun": 10000,
+  "sourceProfiles": [],
+  "compatibilityInputs": []
+}

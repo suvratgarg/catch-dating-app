@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.9.1
-updated: 2026-08-07
+version: 1.11.0
+updated: 2026-09-06
 owner: operations_platform
 status: active
 ---
@@ -522,9 +522,64 @@ Reconciliation is a first-class recurring child run rather than an in-place
 mutation. Event velocity is measured as fresh future inventory, not cumulative
 historical output.
 
+### Trusted worker checkpoints
+
+`FirestoreOperationsRepository.commitWorkItemAction` commits one work-item
+revision and its immutable action receipt in the same Firestore transaction.
+The transaction re-reads the owning run, item and lease, checks the run's
+execution deadline and the worker's current fencing token, and rejects stale
+revisions or scope changes. Receipt ids hash the run, item and idempotency key
+as an ordered JSON array; the receipt binds the complete resulting checkpoint.
+An exact retry returns the committed receipt and latest item without repeating
+the write. Changed evidence under the same key fails closed.
+
+`FirestoreOperationLeaseRepository` retains one deterministic lease document
+per resource in `operationLeases`. Acquisition and renewal use the live server
+clock, leases last at most two minutes, and replacing an expired or released
+lease increments its fencing token. These documents must not receive TTL
+cleanup while a resource can be executed: deleting one would reset its fence.
+An expired acquisition cannot be resurrected by replaying its key. Rehearsal
+virtual time must never be injected as the worker lease clock.
+
+These are trusted persistence primitives, not authorization or a provider
+executor. A worker must resolve current scoped authority and domain policy,
+reserve an external attempt durably, call the provider outside the transaction,
+and reconcile ambiguous provider outcomes. A receipt saying that an attempt
+was reserved is not proof that a message was delivered. Event Assistance's
+private `FirestoreMessageOutbox` now owns immutable message intents, bounded
+attempt history, one-time dispatch claiming and late-receipt reconciliation.
+Its transaction contention boundary is independent of run completion, so a
+closed workflow cannot discard a later provider receipt. The workflow will
+reference that private message state instead of treating a work-item action
+receipt as delivery proof. `EventMessageWorker` now composes the concrete SMS
+and WhatsApp authority readers and adapters through that one outbox history;
+only the selected channel can claim spending and send. Scheduling, remaining
+workflow source readers, RCS, provider failure reconciliation and Event
+Assistance's live executor remain integration work. These primitives do not
+enable Supply Intake publication.
+
 ## Adding Another Workflow
 
-Before a second admin workflow adopts this platform:
+Event Assistance is the second registered workflow. Its initial supported
+commands evaluate a frozen array of canonical late-join inputs:
+
+```sh
+node operations/src/cli/main.mjs plan --workflow event-assistance \
+  --input /absolute/path/late-join-inputs.json --now <snapshot-ISO-time>
+node operations/src/cli/main.mjs run --plan /absolute/path/saved-plan.json
+```
+
+`--input` contains a JSON array matching
+`contracts/operations/event_assistance_late_join_input.schema.json`, with the
+same event context and evaluation time in every item. `plan` emits a JSON
+envelope that `run --plan` accepts directly. The input file is bounded at 2 MB
+and each run at 10,000 distinct guest episodes. The factory uses the generated
+JavaScript version of the canonical typed policy; it has no provider port.
+Ready items are proposed effects in a completed shadow evaluation. This path
+does not claim live scheduling, dispatch or app integration. Supply Intake's
+publication ceiling remains unchanged.
+
+Before another workflow adopts this platform:
 
 1. define its authority, stages, terminal outcomes, idempotency keys, budgets,
    receipts, and human-decision seam;

@@ -1,6 +1,27468 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const eventWhatsappWithdrawalGrantDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "linkId",
+    "permissionId",
+    "context",
+    "attendeeId",
+    "attendeeGeneration",
+    "subjectUid",
+    "senderId",
+    "recipientEndpointId",
+    "guestGrantHash",
+    "permissionRevisionAtIssue",
+    "issuedAt",
+    "expiresAt",
+    "providerAccountId",
+    "providerPhoneNumberId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "permissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "eventId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "subjectUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestGrantHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionRevisionAtIssue": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    }
+  },
+  "title": "EventWhatsappWithdrawalGrantDocument",
+  "x-firestore-collection": "eventAssistanceWhatsappWithdrawalGrants",
+  "x-firestore-path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "event-service WhatsApp dispatch and withdrawal"
+};
+
+export const getEventWhatsappWithdrawalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_whatsapp_withdrawal_payload.schema.json",
+  "title": "GetEventWhatsappWithdrawalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const withdrawEventWhatsappCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_event_whatsapp_payload.schema.json",
+  "title": "WithdrawEventWhatsappCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "requestId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventWhatsappWithdrawalCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_whatsapp_withdrawal_response.schema.json",
+  "title": "EventWhatsappWithdrawalCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverTime",
+        "revision",
+        "preference",
+        "expiresAt"
+      ],
+      "properties": {
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
+export const eventWhatsappBudgetDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_whatsapp_budgets.schema.json",
+  "title": "EventWhatsappBudgetDocument",
+  "description": "Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "budgetId",
+    "revision",
+    "senderId",
+    "scope",
+    "status",
+    "approvalId",
+    "currency",
+    "limitMicros",
+    "chargedMicros",
+    "startsAt",
+    "endsAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "budgetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "event"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "day"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "senderDay"
+            },
+            "day": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused"
+      ]
+    },
+    "approvalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "limitMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "chargedMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "startsAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventAssistanceWhatsappBudgets",
+  "x-firestore-path": "eventAssistanceWhatsappBudgets/{budgetId}",
+  "x-document-id-field": "budgetId",
+  "x-owner": "trusted WhatsApp event service workers"
+};
+
+export const eventWhatsappDispatchDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_whatsapp_dispatches.schema.json",
+  "title": "EventWhatsappDispatchDocument",
+  "description": "Immutable debit and material identity committed with one outbox dispatch claim. No credentials, body, guest secret or recipient phone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "context",
+    "senderId",
+    "bindingRevision",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "senderHash",
+    "policyHash",
+    "policyRevision",
+    "permissionId",
+    "permissionRevision",
+    "permissionHash",
+    "recipientEndpointId",
+    "endpointHash",
+    "templateDocumentId",
+    "templateHash",
+    "payloadHash",
+    "quoteRevision",
+    "grantId",
+    "currency",
+    "maxCostMicros",
+    "budgetIds",
+    "replyBindingId",
+    "stopRecordHash",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "eventId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "senderHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "policyRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "permissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "permissionRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "permissionHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "templateDocumentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "templateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "quoteRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "grantId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "maxCostMicros": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "budgetIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "replyBindingId": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      ]
+    },
+    "stopRecordHash": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventAssistanceWhatsappDispatches",
+  "x-firestore-path": "eventAssistanceWhatsappDispatches/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "trusted WhatsApp event service workers"
+};
+
+export const organizerWhatsappEndpointStopDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_whatsapp_endpoint_stops.schema.json",
+  "title": "OrganizerWhatsappEndpointStopDocument",
+  "description": "Latest authenticated text STOP for an organizer and WhatsApp endpoint, independent of CRM contact resolution. No TTL until suppression and consent retention are reconciled.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "stopId",
+    "organizerId",
+    "endpointHash",
+    "connectionId",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "providerEventId",
+    "payloadHash",
+    "stoppedAt",
+    "observedAt",
+    "revision"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "stopId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "connectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerEventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "stoppedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "observedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "organizerWhatsappEndpointStops",
+  "x-firestore-path": "organizerWhatsappEndpointStops/{stopId}",
+  "x-document-id-field": "stopId",
+  "x-owner": "trusted WhatsApp event service workers"
+};
+
+export const eventWhatsappPermissionDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "permissionId",
+        "revision",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "purpose",
+        "phoneE164",
+        "recipientEndpointId",
+        "status",
+        "evidence",
+        "expiresAt",
+        "updatedAt",
+        "currentReceiptId",
+        "sender"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "organizerEventWhatsapp"
+        },
+        "purpose": {
+          "type": "string",
+          "const": "eventService"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "type": "string",
+          "const": "granted"
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "copyVersion",
+            "acceptedAt",
+            "phoneVerifiedAt",
+            "subjectUid",
+            "senderHash"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "copyVersion": {
+              "type": "string",
+              "const": "catch-event-service-whatsapp-v1"
+            },
+            "acceptedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "phoneVerifiedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "subjectUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "senderHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "currentReceiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sender": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "providerAccountId",
+            "providerPhoneNumberId",
+            "displayName",
+            "displayPhoneNumber"
+          ],
+          "properties": {
+            "providerAccountId": {
+              "type": "string",
+              "pattern": "^[0-9]{5,40}$"
+            },
+            "providerPhoneNumberId": {
+              "type": "string",
+              "pattern": "^[0-9]{5,40}$"
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "displayPhoneNumber": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 32
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "permissionId",
+        "revision",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "purpose",
+        "phoneE164",
+        "recipientEndpointId",
+        "status",
+        "evidence",
+        "expiresAt",
+        "updatedAt",
+        "currentReceiptId",
+        "sender"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "organizerEventWhatsapp"
+        },
+        "purpose": {
+          "type": "string",
+          "const": "eventService"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "type": "string",
+          "const": "revoked"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receiptId",
+                "copyVersion",
+                "acceptedAt",
+                "phoneVerifiedAt",
+                "subjectUid",
+                "senderHash"
+              ],
+              "properties": {
+                "receiptId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "copyVersion": {
+                  "type": "string",
+                  "const": "catch-event-service-whatsapp-v1"
+                },
+                "acceptedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "phoneVerifiedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "senderHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "currentReceiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sender": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "providerAccountId",
+            "providerPhoneNumberId",
+            "displayName",
+            "displayPhoneNumber"
+          ],
+          "properties": {
+            "providerAccountId": {
+              "type": "string",
+              "pattern": "^[0-9]{5,40}$"
+            },
+            "providerPhoneNumberId": {
+              "type": "string",
+              "pattern": "^[0-9]{5,40}$"
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "displayPhoneNumber": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 32
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventWhatsappPermissionDocument",
+  "x-firestore-collection": "eventAssistanceWhatsappPermissions",
+  "x-firestore-path": "eventAssistanceWhatsappPermissions/{permissionId}",
+  "x-document-id-field": "permissionId",
+  "x-owner": "verified participant event-service preferences"
+};
+
+export const eventWhatsappConsentReceiptDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId",
+        "senderHash"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "organizerEventWhatsapp"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "grant",
+            "revoke"
+          ]
+        },
+        "copyVersion": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "const": "catch-event-service-whatsapp-v1"
+            }
+          ]
+        },
+        "copyHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "verifiedParticipant"
+        },
+        "linkId": {
+          "type": "null"
+        },
+        "senderHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId",
+        "senderHash"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "organizerEventWhatsapp"
+        },
+        "actorUid": {
+          "type": "null"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "const": "revoke"
+        },
+        "copyVersion": {
+          "type": "null"
+        },
+        "copyHash": {
+          "type": "null"
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "messageLink"
+        },
+        "linkId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "senderHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  ],
+  "title": "EventWhatsappConsentReceiptDocument",
+  "x-firestore-collection": "eventAssistanceWhatsappConsentReceipts",
+  "x-firestore-path": "eventAssistanceWhatsappConsentReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "verified participant event-service preferences"
+};
+
+export const getEventWhatsappPreferenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_whatsapp_preference_payload.schema.json",
+  "title": "GetEventWhatsappPreferenceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "senderId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const setEventWhatsappPreferenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_whatsapp_preference_payload.schema.json",
+  "title": "SetEventWhatsappPreferenceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "requestId",
+    "expectedRevision",
+    "decision",
+    "senderId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      ]
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "copyVersion",
+            "senderHash",
+            "stopRecordHash"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "grant"
+            },
+            "copyVersion": {
+              "type": "string",
+              "const": "catch-event-service-whatsapp-v1"
+            },
+            "senderHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "stopRecordHash": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "revoke"
+            }
+          }
+        }
+      ]
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const eventWhatsappPreferenceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_whatsapp_preference_response.schema.json",
+  "title": "EventWhatsappPreferenceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId",
+        "serverTime",
+        "revision",
+        "preference",
+        "canEnable",
+        "availability",
+        "phoneLastFour",
+        "expiresAt",
+        "consent",
+        "senderId",
+        "sender",
+        "stopRecordHash"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "notSet",
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "canEnable": {
+          "type": "boolean"
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "senderUnavailable",
+            "eventClosed",
+            "notAdmitted",
+            "verifyPhone"
+          ]
+        },
+        "phoneLastFour": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}$"
+            }
+          ]
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "text"
+          ],
+          "properties": {
+            "version": {
+              "type": "string",
+              "const": "catch-event-service-whatsapp-v1"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sender": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "displayName",
+                "displayPhoneNumber",
+                "bindingHash"
+              ],
+              "properties": {
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "displayPhoneNumber": {
+                  "type": "string",
+                  "minLength": 7,
+                  "maxLength": 32
+                },
+                "bindingHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
+        },
+        "stopRecordHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const eventWhatsappPolicyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_whatsapp_policies.schema.json",
+  "title": "EventWhatsappPolicyDocument",
+  "description": "Reviewed event-service template and spend policy for one existing organizer-owned WhatsApp sender. This policy alone grants no guest consent or send authority.",
+  "x-firestore-collection": "eventAssistanceWhatsappPolicies",
+  "x-firestore-path": "eventAssistanceWhatsappPolicies/{senderId}",
+  "x-document-id-field": "senderId",
+  "x-owner": "trusted event-assistance dispatch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "senderId",
+    "organizerId",
+    "revision",
+    "status",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "activation",
+    "maxTemplateAgeSeconds",
+    "quote",
+    "templates"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "maxTemplateAgeSeconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 86400
+    },
+    "status": {
+      "enum": [
+        "inactive",
+        "ready",
+        "paused"
+      ],
+      "type": "string"
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,40}$"
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalId",
+        "approvedAt",
+        "validUntil"
+      ],
+      "properties": {
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "quote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "currency",
+        "recipientPrefixes",
+        "maxMicrosPerMessage",
+        "validUntil"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "recipientPrefixes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 250,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{0,3}$"
+          }
+        },
+        "maxMicrosPerMessage": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "templateDocumentId",
+          "purpose",
+          "templateHash",
+          "variables",
+          "quickReplies"
+        ],
+        "properties": {
+          "templateDocumentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "joiningUpdate",
+              "joiningInstructions",
+              "planChanged",
+              "guestRequirement",
+              "assignmentChanged",
+              "participationCheck",
+              "eventCancelled",
+              "eventFinished",
+              "followUp"
+            ]
+          },
+          "templateHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "variables": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "providerName",
+                "source",
+                "maxCharacters"
+              ],
+              "properties": {
+                "providerName": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "eventTitle",
+                    "instruction",
+                    "responseUrl",
+                    "responseUrlSuffix"
+                  ]
+                },
+                "maxCharacters": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4096
+                }
+              }
+            }
+          },
+          "quickReplies": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "buttonIndex",
+                "choiceId",
+                "label",
+                "action"
+              ],
+              "properties": {
+                "buttonIndex": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "onMyWay",
+                    "notComing",
+                    "joinLater",
+                    "helpLogistics",
+                    "helpAccessibility",
+                    "helpSafety",
+                    "helpOther",
+                    "acknowledge"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "time": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventWhatsappReplyBindingDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_whatsapp_reply_bindings.schema.json",
+  "title": "EventWhatsappReplyBindingDocument",
+  "description": "Private immutable choice mapping committed with one live outbox dispatch claim. Native IDs provide correlation, never bearer authentication. A signed queued reply must match the original sender, recipient and confirmed provider message before the shared guest-action transaction can apply its stored choice.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAssistanceWhatsappReplyBindings",
+  "x-firestore-path": "eventAssistanceWhatsappReplyBindings/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "trusted event-assistance WhatsApp dispatch and reply boundary",
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "context",
+    "guestId",
+    "attendeeId",
+    "episodeId",
+    "attendeeGeneration",
+    "guestRevision",
+    "attemptScopeHash",
+    "senderId",
+    "bindingRevision",
+    "providerAccountId",
+    "providerPhoneNumberId",
+    "recipientEndpointId",
+    "endpointHash",
+    "replyKind",
+    "choices",
+    "createdAt",
+    "expiresAt",
+    "intentHash"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "pattern": "^attempt:[a-f0-9]{64}$"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "guestId": {
+      "type": "string",
+      "pattern": "^guest:[a-f0-9]{64}$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "guestRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "attemptScopeHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "providerAccountId": {
+      "type": "string",
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": "string",
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "replyKind": {
+      "type": "string",
+      "enum": [
+        "templateQuickReply",
+        "replyButton",
+        "listReply"
+      ]
+    },
+    "choices": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nativeId",
+          "choiceId"
+        ],
+        "properties": {
+          "nativeId": {
+            "type": "string",
+            "pattern": "^ce-wa1\\.[a-f0-9]{64}\\.([0-9]|1[0-9])$"
+          },
+          "choiceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "intentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const eventAssistanceSmsWithdrawalGrantDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "linkId",
+    "permissionId",
+    "context",
+    "attendeeId",
+    "attendeeGeneration",
+    "subjectUid",
+    "senderId",
+    "recipientEndpointId",
+    "guestGrantHash",
+    "permissionRevisionAtIssue",
+    "issuedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "permissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "organizerId",
+        "eventId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "subjectUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestGrantHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionRevisionAtIssue": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceSmsWithdrawalGrantDocument",
+  "x-firestore-collection": "eventAssistanceSmsWithdrawalGrants",
+  "x-firestore-path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "event-service SMS dispatch and withdrawal"
+};
+
+export const getEventAssistanceSmsWithdrawalCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "title": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const withdrawEventAssistanceSmsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_event_assistance_sms_payload.schema.json",
+  "title": "WithdrawEventAssistanceSmsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "requestId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const eventAssistanceSmsWithdrawalCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_sms_withdrawal_response.schema.json",
+  "title": "EventAssistanceSmsWithdrawalCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serverTime",
+        "revision",
+        "preference",
+        "expiresAt"
+      ],
+      "properties": {
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
+export const eventAssistanceSmsConsentReceiptDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "grant",
+            "revoke"
+          ]
+        },
+        "copyVersion": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            }
+          ]
+        },
+        "copyHash": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "verifiedParticipant"
+        },
+        "linkId": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "receiptId",
+        "requestHash",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "actorUid",
+        "recipientEndpointId",
+        "decision",
+        "copyVersion",
+        "copyHash",
+        "appliedRevision",
+        "createdAt",
+        "permissionHash",
+        "source",
+        "linkId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "actorUid": {
+          "type": "null"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decision": {
+          "type": "string",
+          "const": "revoke"
+        },
+        "copyVersion": {
+          "type": "null"
+        },
+        "copyHash": {
+          "type": "null"
+        },
+        "appliedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permissionHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source": {
+          "type": "string",
+          "const": "messageLink"
+        },
+        "linkId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceSmsConsentReceiptDocument",
+  "x-firestore-collection": "eventAssistanceSmsConsentReceipts",
+  "x-firestore-path": "eventAssistanceSmsConsentReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "verified participant event-service preferences"
+};
+
+export const getEventAssistanceSmsPreferenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_sms_preference_payload.schema.json",
+  "title": "GetEventAssistanceSmsPreferenceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const setEventAssistanceSmsPreferenceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assistance_sms_preference_payload.schema.json",
+  "title": "SetEventAssistanceSmsPreferenceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "attendeeId",
+    "requestId",
+    "expectedRevision",
+    "decision"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "expectedRevision": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      ]
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "copyVersion"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "grant"
+            },
+            "copyVersion": {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "revoke"
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
+export const eventAssistanceSmsPreferenceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_sms_preference_response.schema.json",
+  "title": "EventAssistanceSmsPreferenceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcome",
+    "view"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "read",
+        "applied",
+        "replayed",
+        "conflict"
+      ]
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "attendeeId",
+        "serverTime",
+        "revision",
+        "preference",
+        "canEnable",
+        "availability",
+        "phoneLastFour",
+        "expiresAt",
+        "consent"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "preference": {
+          "type": "string",
+          "enum": [
+            "notSet",
+            "enabled",
+            "disabled",
+            "expired"
+          ]
+        },
+        "canEnable": {
+          "type": "boolean"
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "senderUnavailable",
+            "eventClosed",
+            "notAdmitted",
+            "verifyPhone"
+          ]
+        },
+        "phoneLastFour": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}$"
+            }
+          ]
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          ]
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "text"
+          ],
+          "properties": {
+            "version": {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const eventAssistanceSmsSenderDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "senderId",
+    "revision",
+    "provider",
+    "senderIdentity",
+    "country",
+    "status",
+    "mask",
+    "principalEntityId",
+    "credentialVersion",
+    "activation",
+    "maxSegments",
+    "quote",
+    "templates"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "provider": {
+      "type": "string",
+      "const": "gupshup"
+    },
+    "senderIdentity": {
+      "type": "string",
+      "const": "catchPlatform"
+    },
+    "country": {
+      "type": "string",
+      "const": "IN"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "inactive",
+        "ready",
+        "paused"
+      ]
+    },
+    "mask": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{6}$"
+    },
+    "principalEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30,
+      "pattern": "^[0-9]+$"
+    },
+    "credentialVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$"
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "useCaseApprovalId",
+        "senderApprovalId",
+        "approvedAt",
+        "validUntil"
+      ],
+      "properties": {
+        "useCaseApprovalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "senderApprovalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "maxSegments": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "quote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "currency",
+        "maxMicrosPerSegment",
+        "validUntil"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "currency": {
+          "type": "string",
+          "const": "INR"
+        },
+        "maxMicrosPerSegment": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "templateId",
+          "revision",
+          "purpose",
+          "dltTemplateId",
+          "status",
+          "parts"
+        ],
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "joiningUpdate",
+              "joiningInstructions",
+              "planChanged",
+              "guestRequirement",
+              "assignmentChanged",
+              "participationCheck",
+              "eventCancelled",
+              "eventFinished",
+              "followUp"
+            ]
+          },
+          "dltTemplateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[0-9]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "paused"
+            ]
+          },
+          "parts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "text"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "literal"
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1200
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "name",
+                    "maxCharacters"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "variable"
+                    },
+                    "name": {
+                      "type": "string",
+                      "enum": [
+                        "eventTitle",
+                        "instruction",
+                        "responseUrl"
+                      ]
+                    },
+                    "maxCharacters": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1200
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceSmsSenderDocument",
+  "x-firestore-collection": "eventAssistanceSmsSenders",
+  "x-firestore-path": "eventAssistanceSmsSenders/{senderId}",
+  "x-document-id-field": "senderId",
+  "x-owner": "trusted event-assistance SMS worker"
+};
+
+export const eventAssistanceSmsPermissionDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "permissionId",
+        "revision",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "purpose",
+        "phoneE164",
+        "recipientEndpointId",
+        "status",
+        "evidence",
+        "expiresAt",
+        "updatedAt",
+        "currentReceiptId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "purpose": {
+          "type": "string",
+          "const": "eventService"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^\\+91[6-9][0-9]{9}$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "type": "string",
+          "const": "granted"
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "copyVersion",
+            "acceptedAt",
+            "phoneVerifiedAt",
+            "subjectUid"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "copyVersion": {
+              "type": "string",
+              "const": "catch-event-service-sms-v1"
+            },
+            "acceptedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "phoneVerifiedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "subjectUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "currentReceiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "permissionId",
+        "revision",
+        "context",
+        "attendeeId",
+        "attendeeGeneration",
+        "senderId",
+        "routeId",
+        "purpose",
+        "phoneE164",
+        "recipientEndpointId",
+        "status",
+        "evidence",
+        "expiresAt",
+        "updatedAt",
+        "currentReceiptId"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "permissionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "organizerId",
+            "eventId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "attendeeGeneration": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "routeId": {
+          "type": "string",
+          "const": "catchEventSms"
+        },
+        "purpose": {
+          "type": "string",
+          "const": "eventService"
+        },
+        "phoneE164": {
+          "type": "string",
+          "pattern": "^\\+91[6-9][0-9]{9}$"
+        },
+        "recipientEndpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "type": "string",
+          "const": "revoked"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receiptId",
+                "copyVersion",
+                "acceptedAt",
+                "phoneVerifiedAt",
+                "subjectUid"
+              ],
+              "properties": {
+                "receiptId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "copyVersion": {
+                  "type": "string",
+                  "const": "catch-event-service-sms-v1"
+                },
+                "acceptedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "phoneVerifiedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "currentReceiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceSmsPermissionDocument",
+  "x-firestore-collection": "eventAssistanceSmsPermissions",
+  "x-firestore-path": "eventAssistanceSmsPermissions/{permissionId}",
+  "x-document-id-field": "permissionId",
+  "x-owner": "trusted event-assistance SMS worker"
+};
+
+export const eventAssistanceSmsBudgetDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "budgetId",
+    "revision",
+    "senderId",
+    "scope",
+    "status",
+    "approvalId",
+    "currency",
+    "limitMicros",
+    "chargedMicros",
+    "startsAt",
+    "endsAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "budgetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "event"
+            },
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "organizerId",
+                "eventId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "day"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "senderDay"
+            },
+            "day": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused"
+      ]
+    },
+    "approvalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "currency": {
+      "type": "string",
+      "const": "INR"
+    },
+    "limitMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "chargedMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "startsAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceSmsBudgetDocument",
+  "x-firestore-collection": "eventAssistanceSmsBudgets",
+  "x-firestore-path": "eventAssistanceSmsBudgets/{budgetId}",
+  "x-document-id-field": "budgetId",
+  "x-owner": "trusted event-assistance SMS worker"
+};
+
+export const eventAssistanceSmsDispatchDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "attemptId",
+    "messageId",
+    "senderId",
+    "bindingRevision",
+    "configHash",
+    "permissionId",
+    "permissionRevision",
+    "recipientEndpointId",
+    "payloadHash",
+    "templateId",
+    "templateRevision",
+    "quoteRevision",
+    "grantId",
+    "encoding",
+    "segments",
+    "maxCostMicros",
+    "budgetIds",
+    "createdAt",
+    "reportTokenHash",
+    "senderMask"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "bindingRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "configHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "permissionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "permissionRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "recipientEndpointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "templateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "templateRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "quoteRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "grantId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "encoding": {
+      "type": "string",
+      "enum": [
+        "gsm7",
+        "unicode"
+      ]
+    },
+    "segments": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "maxCostMicros": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "budgetIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reportTokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "senderMask": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{6}$"
+    }
+  },
+  "title": "EventAssistanceSmsDispatchDocument",
+  "x-firestore-collection": "eventAssistanceSmsDispatches",
+  "x-firestore-path": "eventAssistanceSmsDispatches/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "trusted event-assistance SMS worker"
+};
+
+export const eventAssistanceSmsConfigSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "senderId",
+    "revision",
+    "provider",
+    "senderIdentity",
+    "country",
+    "status",
+    "mask",
+    "principalEntityId",
+    "credentialVersion",
+    "activation",
+    "maxSegments",
+    "quote",
+    "templates"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "provider": {
+      "type": "string",
+      "const": "gupshup"
+    },
+    "senderIdentity": {
+      "type": "string",
+      "const": "catchPlatform"
+    },
+    "country": {
+      "type": "string",
+      "const": "IN"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "inactive",
+        "ready",
+        "paused"
+      ]
+    },
+    "mask": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{6}$"
+    },
+    "principalEntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30,
+      "pattern": "^[0-9]+$"
+    },
+    "credentialVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*$"
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "useCaseApprovalId",
+        "senderApprovalId",
+        "approvedAt",
+        "validUntil"
+      ],
+      "properties": {
+        "useCaseApprovalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "senderApprovalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "approvedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "maxSegments": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "quote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "currency",
+        "maxMicrosPerSegment",
+        "validUntil"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "currency": {
+          "type": "string",
+          "const": "INR"
+        },
+        "maxMicrosPerSegment": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000000
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "templateId",
+          "revision",
+          "purpose",
+          "dltTemplateId",
+          "status",
+          "parts"
+        ],
+        "properties": {
+          "templateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "joiningUpdate",
+              "joiningInstructions",
+              "planChanged",
+              "guestRequirement",
+              "assignmentChanged",
+              "participationCheck",
+              "eventCancelled",
+              "eventFinished",
+              "followUp"
+            ]
+          },
+          "dltTemplateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[0-9]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "paused"
+            ]
+          },
+          "parts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "text"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "literal"
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1200
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "name",
+                    "maxCharacters"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "variable"
+                    },
+                    "name": {
+                      "type": "string",
+                      "enum": [
+                        "eventTitle",
+                        "instruction",
+                        "responseUrl"
+                      ]
+                    },
+                    "maxCharacters": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1200
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "EventAssistanceSmsConfig"
+};
+
+export const eventAssistanceGuestDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "guestId",
+    "context",
+    "attendeeId",
+    "attendeeGeneration",
+    "episodeId",
+    "revision",
+    "lifecycle",
+    "intention",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lifecycle": {
+      "enum": [
+        "active",
+        "closed"
+      ]
+    },
+    "intention": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unknown"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "claimedEta"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "onMyWay"
+            },
+            "claimedEta": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "target"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "joinLater"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "stopId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "stopId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "checkpointId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "notComing"
+            }
+          }
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceGuestDocument",
+  "x-firestore-collection": "eventAssistanceGuests",
+  "x-firestore-path": "eventAssistanceGuests/{guestId}",
+  "x-document-id-field": "guestId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceThreadDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "threadId",
+    "guestId",
+    "context",
+    "attendeeId",
+    "episodeId",
+    "workflow",
+    "messageId",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "occurrenceId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "venueReadiness",
+            "routeReadiness",
+            "formatReadiness",
+            "rosterReadiness",
+            "requiredGuestData",
+            "resourceReadiness",
+            "staffingReadiness",
+            "messagingReadiness",
+            "admissionReview",
+            "financialReadiness",
+            "joiningInstructions",
+            "identityResolution",
+            "guestAdmission",
+            "guestCheckIn",
+            "lateJoin",
+            "participationChange",
+            "guestPrerequisite",
+            "allocationRepair",
+            "placementConfirmation",
+            "resourceRecovery",
+            "fairParticipation",
+            "roundPublication",
+            "unitProgress",
+            "outcomeRecording",
+            "programmeRecovery",
+            "departure",
+            "checkpoint",
+            "groupTransfer",
+            "routeRecovery",
+            "locationFreshness",
+            "accountability",
+            "planChangeCommunication",
+            "deliveryRecovery",
+            "replyOwnership",
+            "guestAssistance",
+            "comfortSafety",
+            "attendanceSync",
+            "concurrencyRecovery",
+            "operationRecovery",
+            "contextBoundary",
+            "overrideReview",
+            "eventClosure",
+            "attendanceReconciliation",
+            "financialReconciliation",
+            "postEventFollowUp",
+            "eventLearning"
+          ],
+          "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+        },
+        "occurrenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        }
+      }
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceThreadDocument",
+  "x-firestore-collection": "eventAssistanceThreads",
+  "x-firestore-path": "eventAssistanceThreads/{threadId}",
+  "x-document-id-field": "threadId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceGuestGrantDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "linkId",
+    "threadId",
+    "guestId",
+    "context",
+    "attendeeId",
+    "episodeId",
+    "tokenHash",
+    "signingKeyId",
+    "issuedAt",
+    "expiresAt",
+    "revokedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "episodeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "tokenHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "signingKeyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "title": "EventAssistanceGuestGrantDocument",
+  "x-firestore-collection": "eventAssistanceGuestGrants",
+  "x-firestore-path": "eventAssistanceGuestGrants/{linkId}",
+  "x-document-id-field": "linkId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const eventAssistanceCaseDocumentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "guestId",
+        "context",
+        "attendeeId",
+        "episodeId",
+        "responseId",
+        "messageId",
+        "status",
+        "receivedAt",
+        "category",
+        "owner"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "category": {
+          "enum": [
+            "eventLogistics",
+            "accessibility",
+            "other"
+          ]
+        },
+        "owner": {
+          "const": "eventLead"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "guestId",
+        "context",
+        "attendeeId",
+        "episodeId",
+        "responseId",
+        "messageId",
+        "status",
+        "receivedAt",
+        "category",
+        "owner"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "guestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "messageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "category": {
+          "enum": [
+            "comfortSafety"
+          ]
+        },
+        "owner": {
+          "const": "authorizedSafetyOperator"
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceCaseDocument",
+  "x-firestore-collection": "eventAssistanceCases",
+  "x-firestore-path": "eventAssistanceCases/{caseId}",
+  "x-document-id-field": "caseId",
+  "x-owner": "trusted event-assistance guest boundary"
+};
+
+export const getEventAssistanceGuestViewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_guest_view_payload.schema.json",
+  "title": "GetEventAssistanceGuestViewCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+};
+
+export const submitEventAssistanceGuestChoiceCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_assistance_guest_choice_payload.schema.json",
+  "title": "SubmitEventAssistanceGuestChoiceCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret",
+    "intentId",
+    "intentRevision",
+    "expectedGuestRevision",
+    "choiceId",
+    "requestId"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedGuestRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "choiceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+};
+
+export const eventAssistanceGuestViewCallableResponseSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "serverTime",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "const": "unavailable"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "enum": [
+            "expired",
+            "eventClosed",
+            "guestUnavailable",
+            "noInstructions",
+            "alreadyJoined"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "serverTime",
+        "eventTitle",
+        "guestRevision",
+        "intentId",
+        "intentRevision",
+        "instructionRevision",
+        "title",
+        "text",
+        "expiresAt",
+        "response",
+        "choices"
+      ],
+      "properties": {
+        "status": {
+          "const": "ready"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventTitle": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "guestRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "response": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "receivedAt"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "choices": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "choiceId",
+              "label"
+            ],
+            "properties": {
+              "choiceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceGuestViewCallableResponse"
+};
+
+export const submitEventAssistanceGuestChoiceCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+  "title": "SubmitEventAssistanceGuestChoiceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result",
+    "view"
+  ],
+  "properties": {
+    "result": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "accepted",
+                "replayed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "rejected"
+            },
+            "reason": {
+              "enum": [
+                "scopeMismatch",
+                "staleIntent",
+                "invalidChoice",
+                "expired",
+                "alreadyResponded",
+                "noLongerNeeded",
+                "factsStale",
+                "guestStateChanged"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "view": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "serverTime",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "const": "unavailable"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "enum": [
+                "expired",
+                "eventClosed",
+                "guestUnavailable",
+                "noInstructions",
+                "alreadyJoined"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "serverTime",
+            "eventTitle",
+            "guestRevision",
+            "intentId",
+            "intentRevision",
+            "instructionRevision",
+            "title",
+            "text",
+            "expiresAt",
+            "response",
+            "choices"
+          ],
+          "properties": {
+            "status": {
+              "const": "ready"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "eventTitle": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "guestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "intentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "intentRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "instructionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "response": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "receivedAt"
+                  ],
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 80
+                    },
+                    "receivedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "choices": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "choiceId",
+                  "label"
+                ],
+                "properties": {
+                  "choiceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
+export const eventAssistanceMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_messages.schema.json",
+  "title": "EventAssistanceMessageDocument",
+  "description": "Private durable event-service outbox. The immutable intent and bounded attempt history survive workflow completion and delayed callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventAssistanceMessages",
+  "x-firestore-path": "eventAssistanceMessages/{messageId}",
+  "x-document-id-field": "messageId",
+  "x-owner": "trusted event-assistance workers",
+  "required": [
+    "schemaVersion",
+    "messageId",
+    "revision",
+    "intent",
+    "lifecycle",
+    "attempts",
+    "deliveryConflict",
+    "createdAt",
+    "updatedAt",
+    "response"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "intent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "intentId",
+            "revision",
+            "context",
+            "eventId",
+            "attendeeId",
+            "episodeId",
+            "workflow",
+            "createdAt",
+            "expiresAt",
+            "permittedRoutes",
+            "deliveryPolicy",
+            "kind",
+            "guidance",
+            "choices"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1,
+              "type": "integer"
+            },
+            "intentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "context": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "rehearsalId",
+                    "virtualEventId",
+                    "clockId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "rehearsal"
+                    },
+                    "rehearsalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "virtualEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "clockId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "workflow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "occurrenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "venueReadiness",
+                    "routeReadiness",
+                    "formatReadiness",
+                    "rosterReadiness",
+                    "requiredGuestData",
+                    "resourceReadiness",
+                    "staffingReadiness",
+                    "messagingReadiness",
+                    "admissionReview",
+                    "financialReadiness",
+                    "joiningInstructions",
+                    "identityResolution",
+                    "guestAdmission",
+                    "guestCheckIn",
+                    "lateJoin",
+                    "participationChange",
+                    "guestPrerequisite",
+                    "allocationRepair",
+                    "placementConfirmation",
+                    "resourceRecovery",
+                    "fairParticipation",
+                    "roundPublication",
+                    "unitProgress",
+                    "outcomeRecording",
+                    "programmeRecovery",
+                    "departure",
+                    "checkpoint",
+                    "groupTransfer",
+                    "routeRecovery",
+                    "locationFreshness",
+                    "accountability",
+                    "planChangeCommunication",
+                    "deliveryRecovery",
+                    "replyOwnership",
+                    "guestAssistance",
+                    "comfortSafety",
+                    "attendanceSync",
+                    "concurrencyRecovery",
+                    "operationRecovery",
+                    "contextBoundary",
+                    "overrideReview",
+                    "eventClosure",
+                    "attendanceReconciliation",
+                    "financialReconciliation",
+                    "postEventFollowUp",
+                    "eventLearning"
+                  ],
+                  "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+                },
+                "occurrenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "permittedRoutes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "catchEventSms",
+                  "catchEventRcs",
+                  "organizerEventWhatsapp"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "deliveryPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "maxAttempts",
+                "maxAttemptsPerRoute",
+                "minimumRetrySeconds"
+              ],
+              "properties": {
+                "maxAttempts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "maxAttemptsPerRoute": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                },
+                "minimumRetrySeconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3600
+                }
+              }
+            },
+            "kind": {
+              "const": "joiningUpdate",
+              "type": "string"
+            },
+            "guidance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            },
+            "choices": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "choiceId",
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "choiceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "intention"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "joinIntent",
+                            "type": "string"
+                          },
+                          "intention": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "claimedEta"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "onMyWay"
+                                  },
+                                  "claimedEta": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991,
+                                        "description": "UTC milliseconds."
+                                      },
+                                      {
+                                        "type": "null",
+                                        "const": null
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "target"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "joinLater"
+                                  },
+                                  "target": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                          "kind",
+                                          "placeId",
+                                          "lateEntry"
+                                        ],
+                                        "properties": {
+                                          "kind": {
+                                            "type": "string",
+                                            "const": "fixedPlace"
+                                          },
+                                          "placeId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 160,
+                                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                          },
+                                          "lateEntry": {
+                                            "type": "string",
+                                            "enum": [
+                                              "allowed",
+                                              "hostDecision",
+                                              "closed"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                          "kind",
+                                          "itineraryId",
+                                          "stopId"
+                                        ],
+                                        "properties": {
+                                          "kind": {
+                                            "type": "string",
+                                            "const": "itineraryStop"
+                                          },
+                                          "itineraryId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "stopId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                          "kind",
+                                          "routeId",
+                                          "groupId",
+                                          "checkpointId"
+                                        ],
+                                        "properties": {
+                                          "kind": {
+                                            "type": "string",
+                                            "const": "groupCheckpoint"
+                                          },
+                                          "routeId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "groupId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 160,
+                                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                          },
+                                          "checkpointId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "notComing"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "category"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "requestHelp",
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "eventLogistics",
+                              "accessibility",
+                              "comfortSafety",
+                              "other"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "intentId",
+            "revision",
+            "context",
+            "eventId",
+            "attendeeId",
+            "episodeId",
+            "workflow",
+            "createdAt",
+            "expiresAt",
+            "permittedRoutes",
+            "deliveryPolicy",
+            "kind",
+            "noticeKind",
+            "title",
+            "body",
+            "instructionRevision",
+            "choices"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1,
+              "type": "integer"
+            },
+            "intentId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "context": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "rehearsalId",
+                    "virtualEventId",
+                    "clockId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "rehearsal"
+                    },
+                    "rehearsalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "virtualEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "clockId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "workflow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "occurrenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "venueReadiness",
+                    "routeReadiness",
+                    "formatReadiness",
+                    "rosterReadiness",
+                    "requiredGuestData",
+                    "resourceReadiness",
+                    "staffingReadiness",
+                    "messagingReadiness",
+                    "admissionReview",
+                    "financialReadiness",
+                    "joiningInstructions",
+                    "identityResolution",
+                    "guestAdmission",
+                    "guestCheckIn",
+                    "lateJoin",
+                    "participationChange",
+                    "guestPrerequisite",
+                    "allocationRepair",
+                    "placementConfirmation",
+                    "resourceRecovery",
+                    "fairParticipation",
+                    "roundPublication",
+                    "unitProgress",
+                    "outcomeRecording",
+                    "programmeRecovery",
+                    "departure",
+                    "checkpoint",
+                    "groupTransfer",
+                    "routeRecovery",
+                    "locationFreshness",
+                    "accountability",
+                    "planChangeCommunication",
+                    "deliveryRecovery",
+                    "replyOwnership",
+                    "guestAssistance",
+                    "comfortSafety",
+                    "attendanceSync",
+                    "concurrencyRecovery",
+                    "operationRecovery",
+                    "contextBoundary",
+                    "overrideReview",
+                    "eventClosure",
+                    "attendanceReconciliation",
+                    "financialReconciliation",
+                    "postEventFollowUp",
+                    "eventLearning"
+                  ],
+                  "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+                },
+                "occurrenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "permittedRoutes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "catchEventSms",
+                  "catchEventRcs",
+                  "organizerEventWhatsapp"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "deliveryPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "maxAttempts",
+                "maxAttemptsPerRoute",
+                "minimumRetrySeconds"
+              ],
+              "properties": {
+                "maxAttempts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "maxAttemptsPerRoute": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                },
+                "minimumRetrySeconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3600
+                }
+              }
+            },
+            "kind": {
+              "const": "operationalNotice",
+              "type": "string"
+            },
+            "noticeKind": {
+              "type": "string",
+              "enum": [
+                "joiningInstructions",
+                "planChanged",
+                "eventCancelled",
+                "eventFinished",
+                "guestRequirement",
+                "assignmentChanged",
+                "participationCheck",
+                "followUp"
+              ]
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "instructionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "choices": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "choiceId",
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "choiceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "instructionRevision"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "acknowledge",
+                            "type": "string"
+                          },
+                          "instructionRevision": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "category"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "requestHelp",
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "eventLogistics",
+                              "accessibility",
+                              "comfortSafety",
+                              "other"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "superseded",
+        "responded"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "attemptId",
+              "intentId",
+              "intentRevision",
+              "ordinal",
+              "createdAt",
+              "state",
+              "mode",
+              "context",
+              "binding",
+              "authorization"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": 1,
+                "type": "integer"
+              },
+              "attemptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "intentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "intentRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 6
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "state": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "reconcileAfter"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "reserved",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "reconcileAfter": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "reason",
+                      "reconcileAfter"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unknown",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "timeout",
+                          "connectionLost",
+                          "workerInterrupted"
+                        ]
+                      },
+                      "reconcileAfter": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "accepted",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "delivered",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "read",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "classification",
+                      "evidenceId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "failed",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "classification": {
+                        "type": "string",
+                        "enum": [
+                          "technical",
+                          "invalidRecipient",
+                          "policy",
+                          "suppressed"
+                        ]
+                      },
+                      "evidenceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "evidenceId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "revoked",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "evidenceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "notDispatched",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "superseded",
+                          "eventClosed",
+                          "responded",
+                          "expired",
+                          "permissionRevoked",
+                          "hostStopped",
+                          "reservationExpired",
+                          "permitExpired"
+                        ]
+                      }
+                    },
+                    "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
+                  }
+                ]
+              },
+              "mode": {
+                "const": "live",
+                "type": "string"
+              },
+              "context": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "eventId",
+                  "organizerId"
+                ],
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "const": "live"
+                  },
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "organizerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                }
+              },
+              "binding": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "transport",
+                      "senderIdentity",
+                      "provider",
+                      "senderId",
+                      "bindingRevision",
+                      "recipientEndpointId",
+                      "fallbackOwner"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "const": "catchEventSms",
+                        "type": "string"
+                      },
+                      "transport": {
+                        "const": "sms",
+                        "type": "string"
+                      },
+                      "senderIdentity": {
+                        "const": "catchPlatform",
+                        "type": "string"
+                      },
+                      "provider": {
+                        "type": "string",
+                        "enum": [
+                          "sinch",
+                          "gupshup"
+                        ]
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "bindingRevision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "recipientEndpointId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "fallbackOwner": {
+                        "type": "string",
+                        "enum": [
+                          "catch",
+                          "provider"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "transport",
+                      "senderIdentity",
+                      "provider",
+                      "senderId",
+                      "bindingRevision",
+                      "recipientEndpointId",
+                      "fallbackOwner"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "const": "catchEventRcs",
+                        "type": "string"
+                      },
+                      "transport": {
+                        "const": "rcs",
+                        "type": "string"
+                      },
+                      "senderIdentity": {
+                        "const": "catchPlatform",
+                        "type": "string"
+                      },
+                      "provider": {
+                        "type": "string",
+                        "enum": [
+                          "sinch",
+                          "gupshup"
+                        ]
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "bindingRevision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "recipientEndpointId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "fallbackOwner": {
+                        "type": "string",
+                        "enum": [
+                          "catch",
+                          "provider"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "transport",
+                      "senderIdentity",
+                      "provider",
+                      "senderId",
+                      "bindingRevision",
+                      "recipientEndpointId",
+                      "fallbackOwner"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "const": "organizerEventWhatsapp",
+                        "type": "string"
+                      },
+                      "transport": {
+                        "const": "whatsapp",
+                        "type": "string"
+                      },
+                      "senderIdentity": {
+                        "const": "organizerManaged",
+                        "type": "string"
+                      },
+                      "provider": {
+                        "type": "string",
+                        "enum": [
+                          "meta"
+                        ]
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "bindingRevision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "recipientEndpointId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      },
+                      "fallbackOwner": {
+                        "type": "string",
+                        "enum": [
+                          "catch",
+                          "provider"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "authorization": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "permissionRevision",
+                  "checkedAt",
+                  "validUntil",
+                  "instructionRevision"
+                ],
+                "properties": {
+                  "permissionRevision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  "checkedAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "validUntil": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "instructionRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "attemptId",
+              "intentId",
+              "intentRevision",
+              "ordinal",
+              "createdAt",
+              "state",
+              "mode",
+              "context",
+              "routeId",
+              "authorization"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": 1,
+                "type": "integer"
+              },
+              "attemptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "intentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "intentRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "ordinal": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 6
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "state": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "reconcileAfter"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "reserved",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "reconcileAfter": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "reason",
+                      "reconcileAfter"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unknown",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "timeout",
+                          "connectionLost",
+                          "workerInterrupted"
+                        ]
+                      },
+                      "reconcileAfter": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "accepted",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "delivered",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "read",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "classification",
+                      "evidenceId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "failed",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 512
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "classification": {
+                        "type": "string",
+                        "enum": [
+                          "technical",
+                          "invalidRecipient",
+                          "policy",
+                          "suppressed"
+                        ]
+                      },
+                      "evidenceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "providerMessageId",
+                      "evidenceId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "revoked",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "providerMessageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
+                      },
+                      "evidenceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "at",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "notDispatched",
+                        "type": "string"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "superseded",
+                          "eventClosed",
+                          "responded",
+                          "expired",
+                          "permissionRevoked",
+                          "hostStopped",
+                          "reservationExpired",
+                          "permitExpired"
+                        ]
+                      }
+                    },
+                    "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
+                  }
+                ]
+              },
+              "mode": {
+                "const": "rehearsal",
+                "type": "string"
+              },
+              "context": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "rehearsalId",
+                  "virtualEventId",
+                  "clockId"
+                ],
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "const": "rehearsal"
+                  },
+                  "rehearsalId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "virtualEventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "clockId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                }
+              },
+              "routeId": {
+                "type": "string",
+                "enum": [
+                  "catchEventSms",
+                  "catchEventRcs",
+                  "organizerEventWhatsapp"
+                ]
+              },
+              "authorization": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "permissionRevision",
+                  "checkedAt",
+                  "validUntil",
+                  "instructionRevision"
+                ],
+                "properties": {
+                  "permissionRevision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  "checkedAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "validUntil": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "instructionRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "deliveryConflict": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "response": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "linkId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestWeb",
+                      "type": "string"
+                    },
+                    "linkId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "eventId",
+                    "organizerId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "live"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "organizerId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "attemptId",
+                    "providerEventId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "provider",
+                      "type": "string"
+                    },
+                    "attemptId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    },
+                    "providerEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "responseId",
+                "intentId",
+                "intentRevision",
+                "eventId",
+                "attendeeId",
+                "episodeId",
+                "choiceId",
+                "receivedAt",
+                "value",
+                "context",
+                "source"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "intentRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "choiceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "intention"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "joinIntent",
+                          "type": "string"
+                        },
+                        "intention": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "claimedEta"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "onMyWay"
+                                },
+                                "claimedEta": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "target"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "joinLater"
+                                },
+                                "target": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "notComing"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "instructionRevision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "acknowledge",
+                          "type": "string"
+                        },
+                        "instructionRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "category"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "requestHelp",
+                          "type": "string"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": [
+                            "eventLogistics",
+                            "accessibility",
+                            "comfortSafety",
+                            "other"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "context": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "rehearsalId",
+                    "virtualEventId",
+                    "clockId"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "rehearsal"
+                    },
+                    "rehearsalId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "virtualEventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "clockId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "simulation",
+                      "type": "string"
+                    },
+                    "actionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lifecycle": {
+            "const": "responded"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "response": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const eventAssistanceMessageIntentSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "eventId",
+        "attendeeId",
+        "episodeId",
+        "workflow",
+        "createdAt",
+        "expiresAt",
+        "permittedRoutes",
+        "deliveryPolicy",
+        "kind",
+        "guidance",
+        "choices"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "occurrenceId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "venueReadiness",
+                "routeReadiness",
+                "formatReadiness",
+                "rosterReadiness",
+                "requiredGuestData",
+                "resourceReadiness",
+                "staffingReadiness",
+                "messagingReadiness",
+                "admissionReview",
+                "financialReadiness",
+                "joiningInstructions",
+                "identityResolution",
+                "guestAdmission",
+                "guestCheckIn",
+                "lateJoin",
+                "participationChange",
+                "guestPrerequisite",
+                "allocationRepair",
+                "placementConfirmation",
+                "resourceRecovery",
+                "fairParticipation",
+                "roundPublication",
+                "unitProgress",
+                "outcomeRecording",
+                "programmeRecovery",
+                "departure",
+                "checkpoint",
+                "groupTransfer",
+                "routeRecovery",
+                "locationFreshness",
+                "accountability",
+                "planChangeCommunication",
+                "deliveryRecovery",
+                "replyOwnership",
+                "guestAssistance",
+                "comfortSafety",
+                "attendanceSync",
+                "concurrencyRecovery",
+                "operationRecovery",
+                "contextBoundary",
+                "overrideReview",
+                "eventClosure",
+                "attendanceReconciliation",
+                "financialReconciliation",
+                "postEventFollowUp",
+                "eventLearning"
+              ],
+              "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+            },
+            "occurrenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "catchEventSms",
+              "catchEventRcs",
+              "organizerEventWhatsapp"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
+        "kind": {
+          "const": "joiningUpdate",
+          "type": "string"
+        },
+        "guidance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "destination",
+            "materialKey",
+            "text",
+            "validUntil"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "destination": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "stopId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "stopId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "checkpointId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            },
+            "materialKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "choiceId",
+              "label",
+              "value"
+            ],
+            "properties": {
+              "choiceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "intention"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "joinIntent",
+                        "type": "string"
+                      },
+                      "intention": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "claimedEta"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "onMyWay"
+                              },
+                              "claimedEta": {
+                                "anyOf": [
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991,
+                                    "description": "UTC milliseconds."
+                                  },
+                                  {
+                                    "type": "null",
+                                    "const": null
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "target"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "joinLater"
+                              },
+                              "target": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "placeId",
+                                      "lateEntry"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "fixedPlace"
+                                      },
+                                      "placeId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                      },
+                                      "lateEntry": {
+                                        "type": "string",
+                                        "enum": [
+                                          "allowed",
+                                          "hostDecision",
+                                          "closed"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "itineraryId",
+                                      "stopId"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "itineraryStop"
+                                      },
+                                      "itineraryId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      },
+                                      "stopId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "routeId",
+                                      "groupId",
+                                      "checkpointId"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "groupCheckpoint"
+                                      },
+                                      "routeId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      },
+                                      "groupId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                      },
+                                      "checkpointId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "notComing"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "category"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "requestHelp",
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "eventLogistics",
+                          "accessibility",
+                          "comfortSafety",
+                          "other"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "intentId",
+        "revision",
+        "context",
+        "eventId",
+        "attendeeId",
+        "episodeId",
+        "workflow",
+        "createdAt",
+        "expiresAt",
+        "permittedRoutes",
+        "deliveryPolicy",
+        "kind",
+        "noticeKind",
+        "title",
+        "body",
+        "instructionRevision",
+        "choices"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "occurrenceId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "venueReadiness",
+                "routeReadiness",
+                "formatReadiness",
+                "rosterReadiness",
+                "requiredGuestData",
+                "resourceReadiness",
+                "staffingReadiness",
+                "messagingReadiness",
+                "admissionReview",
+                "financialReadiness",
+                "joiningInstructions",
+                "identityResolution",
+                "guestAdmission",
+                "guestCheckIn",
+                "lateJoin",
+                "participationChange",
+                "guestPrerequisite",
+                "allocationRepair",
+                "placementConfirmation",
+                "resourceRecovery",
+                "fairParticipation",
+                "roundPublication",
+                "unitProgress",
+                "outcomeRecording",
+                "programmeRecovery",
+                "departure",
+                "checkpoint",
+                "groupTransfer",
+                "routeRecovery",
+                "locationFreshness",
+                "accountability",
+                "planChangeCommunication",
+                "deliveryRecovery",
+                "replyOwnership",
+                "guestAssistance",
+                "comfortSafety",
+                "attendanceSync",
+                "concurrencyRecovery",
+                "operationRecovery",
+                "contextBoundary",
+                "overrideReview",
+                "eventClosure",
+                "attendanceReconciliation",
+                "financialReconciliation",
+                "postEventFollowUp",
+                "eventLearning"
+              ],
+              "x-catch-catalog": "../catalogs/event_assistance_workflows.json"
+            },
+            "occurrenceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "permittedRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "catchEventSms",
+              "catchEventRcs",
+              "organizerEventWhatsapp"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "deliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
+        "kind": {
+          "const": "operationalNotice",
+          "type": "string"
+        },
+        "noticeKind": {
+          "type": "string",
+          "enum": [
+            "joiningInstructions",
+            "planChanged",
+            "eventCancelled",
+            "eventFinished",
+            "guestRequirement",
+            "assignmentChanged",
+            "participationCheck",
+            "followUp"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "instructionRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "choiceId",
+              "label",
+              "value"
+            ],
+            "properties": {
+              "choiceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "instructionRevision"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "acknowledge",
+                        "type": "string"
+                      },
+                      "instructionRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "category"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "requestHelp",
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "eventLogistics",
+                          "accessibility",
+                          "comfortSafety",
+                          "other"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceMessageIntent"
+};
+
+export const eventAssistanceDeliveryAttemptSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "intentId",
+        "intentRevision",
+        "ordinal",
+        "createdAt",
+        "state",
+        "mode",
+        "context",
+        "binding",
+        "authorization"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "reconcileAfter"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "reserved",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reconcileAfter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "reason",
+                "reconcileAfter"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unknown",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "timeout",
+                    "connectionLost",
+                    "workerInterrupted"
+                  ]
+                },
+                "reconcileAfter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "accepted",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "delivered",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "read",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "classification",
+                "evidenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "failed",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "classification": {
+                  "type": "string",
+                  "enum": [
+                    "technical",
+                    "invalidRecipient",
+                    "policy",
+                    "suppressed"
+                  ]
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "evidenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "revoked",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "notDispatched",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "superseded",
+                    "eventClosed",
+                    "responded",
+                    "expired",
+                    "permissionRevoked",
+                    "hostStopped",
+                    "reservationExpired",
+                    "permitExpired"
+                  ]
+                }
+              },
+              "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
+            }
+          ]
+        },
+        "mode": {
+          "const": "live",
+          "type": "string"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "binding": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "transport",
+                "senderIdentity",
+                "provider",
+                "senderId",
+                "bindingRevision",
+                "recipientEndpointId",
+                "fallbackOwner"
+              ],
+              "properties": {
+                "routeId": {
+                  "const": "catchEventSms",
+                  "type": "string"
+                },
+                "transport": {
+                  "const": "sms",
+                  "type": "string"
+                },
+                "senderIdentity": {
+                  "const": "catchPlatform",
+                  "type": "string"
+                },
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "sinch",
+                    "gupshup"
+                  ]
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "bindingRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "recipientEndpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "fallbackOwner": {
+                  "type": "string",
+                  "enum": [
+                    "catch",
+                    "provider"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "transport",
+                "senderIdentity",
+                "provider",
+                "senderId",
+                "bindingRevision",
+                "recipientEndpointId",
+                "fallbackOwner"
+              ],
+              "properties": {
+                "routeId": {
+                  "const": "catchEventRcs",
+                  "type": "string"
+                },
+                "transport": {
+                  "const": "rcs",
+                  "type": "string"
+                },
+                "senderIdentity": {
+                  "const": "catchPlatform",
+                  "type": "string"
+                },
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "sinch",
+                    "gupshup"
+                  ]
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "bindingRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "recipientEndpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "fallbackOwner": {
+                  "type": "string",
+                  "enum": [
+                    "catch",
+                    "provider"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "transport",
+                "senderIdentity",
+                "provider",
+                "senderId",
+                "bindingRevision",
+                "recipientEndpointId",
+                "fallbackOwner"
+              ],
+              "properties": {
+                "routeId": {
+                  "const": "organizerEventWhatsapp",
+                  "type": "string"
+                },
+                "transport": {
+                  "const": "whatsapp",
+                  "type": "string"
+                },
+                "senderIdentity": {
+                  "const": "organizerManaged",
+                  "type": "string"
+                },
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "meta"
+                  ]
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "bindingRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "recipientEndpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "fallbackOwner": {
+                  "type": "string",
+                  "enum": [
+                    "catch",
+                    "provider"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "authorization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "permissionRevision",
+            "checkedAt",
+            "validUntil",
+            "instructionRevision"
+          ],
+          "properties": {
+            "permissionRevision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "checkedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "instructionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "attemptId",
+        "intentId",
+        "intentRevision",
+        "ordinal",
+        "createdAt",
+        "state",
+        "mode",
+        "context",
+        "routeId",
+        "authorization"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "reconcileAfter"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "reserved",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reconcileAfter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "reason",
+                "reconcileAfter"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unknown",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "timeout",
+                    "connectionLost",
+                    "workerInterrupted"
+                  ]
+                },
+                "reconcileAfter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "accepted",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "delivered",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "read",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "classification",
+                "evidenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "failed",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "classification": {
+                  "type": "string",
+                  "enum": [
+                    "technical",
+                    "invalidRecipient",
+                    "policy",
+                    "suppressed"
+                  ]
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "providerMessageId",
+                "evidenceId"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "revoked",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "providerMessageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "notDispatched",
+                  "type": "string"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "superseded",
+                    "eventClosed",
+                    "responded",
+                    "expired",
+                    "permissionRevoked",
+                    "hostStopped",
+                    "reservationExpired",
+                    "permitExpired"
+                  ]
+                }
+              },
+              "description": "No provider request was made. Reservation or permit expiry permits a fresh bounded attempt; the other reasons stop this message."
+            }
+          ]
+        },
+        "mode": {
+          "const": "rehearsal",
+          "type": "string"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "rehearsalId",
+            "virtualEventId",
+            "clockId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "rehearsal"
+            },
+            "rehearsalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "virtualEventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "clockId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "catchEventSms",
+            "catchEventRcs",
+            "organizerEventWhatsapp"
+          ]
+        },
+        "authorization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "permissionRevision",
+            "checkedAt",
+            "validUntil",
+            "instructionRevision"
+          ],
+          "properties": {
+            "permissionRevision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "checkedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "instructionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceDeliveryAttempt"
+};
+
+export const eventAssistanceGuestResponseSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "responseId",
+        "intentId",
+        "intentRevision",
+        "eventId",
+        "attendeeId",
+        "episodeId",
+        "choiceId",
+        "receivedAt",
+        "value",
+        "context",
+        "source"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "choiceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "intention"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "joinIntent",
+                  "type": "string"
+                },
+                "intention": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "claimedEta"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "onMyWay"
+                        },
+                        "claimedEta": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991,
+                              "description": "UTC milliseconds."
+                            },
+                            {
+                              "type": "null",
+                              "const": null
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "target"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "joinLater"
+                        },
+                        "target": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "placeId",
+                                "lateEntry"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "fixedPlace"
+                                },
+                                "placeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "lateEntry": {
+                                  "type": "string",
+                                  "enum": [
+                                    "allowed",
+                                    "hostDecision",
+                                    "closed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "itineraryId",
+                                "stopId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "itineraryStop"
+                                },
+                                "itineraryId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "stopId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "routeId",
+                                "groupId",
+                                "checkpointId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "groupCheckpoint"
+                                },
+                                "routeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "groupId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "checkpointId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "notComing"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "instructionRevision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "acknowledge",
+                  "type": "string"
+                },
+                "instructionRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "category"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "requestHelp",
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "comfortSafety",
+                    "other"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "linkId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "guestWeb",
+              "type": "string"
+            },
+            "linkId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "responseId",
+        "intentId",
+        "intentRevision",
+        "eventId",
+        "attendeeId",
+        "episodeId",
+        "choiceId",
+        "receivedAt",
+        "value",
+        "context",
+        "source"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "choiceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "intention"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "joinIntent",
+                  "type": "string"
+                },
+                "intention": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "claimedEta"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "onMyWay"
+                        },
+                        "claimedEta": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991,
+                              "description": "UTC milliseconds."
+                            },
+                            {
+                              "type": "null",
+                              "const": null
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "target"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "joinLater"
+                        },
+                        "target": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "placeId",
+                                "lateEntry"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "fixedPlace"
+                                },
+                                "placeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "lateEntry": {
+                                  "type": "string",
+                                  "enum": [
+                                    "allowed",
+                                    "hostDecision",
+                                    "closed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "itineraryId",
+                                "stopId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "itineraryStop"
+                                },
+                                "itineraryId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "stopId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "routeId",
+                                "groupId",
+                                "checkpointId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "groupCheckpoint"
+                                },
+                                "routeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "groupId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "checkpointId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "notComing"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "instructionRevision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "acknowledge",
+                  "type": "string"
+                },
+                "instructionRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "category"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "requestHelp",
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "comfortSafety",
+                    "other"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attemptId",
+            "providerEventId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "provider",
+              "type": "string"
+            },
+            "attemptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "providerEventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "responseId",
+        "intentId",
+        "intentRevision",
+        "eventId",
+        "attendeeId",
+        "episodeId",
+        "choiceId",
+        "receivedAt",
+        "value",
+        "context",
+        "source"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "responseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "choiceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+        },
+        "receivedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "intention"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "joinIntent",
+                  "type": "string"
+                },
+                "intention": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "claimedEta"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "onMyWay"
+                        },
+                        "claimedEta": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991,
+                              "description": "UTC milliseconds."
+                            },
+                            {
+                              "type": "null",
+                              "const": null
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "target"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "joinLater"
+                        },
+                        "target": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "placeId",
+                                "lateEntry"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "fixedPlace"
+                                },
+                                "placeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "lateEntry": {
+                                  "type": "string",
+                                  "enum": [
+                                    "allowed",
+                                    "hostDecision",
+                                    "closed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "itineraryId",
+                                "stopId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "itineraryStop"
+                                },
+                                "itineraryId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "stopId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "routeId",
+                                "groupId",
+                                "checkpointId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "groupCheckpoint"
+                                },
+                                "routeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "groupId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "checkpointId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "notComing"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "instructionRevision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "acknowledge",
+                  "type": "string"
+                },
+                "instructionRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "category"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "requestHelp",
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "comfortSafety",
+                    "other"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "rehearsalId",
+            "virtualEventId",
+            "clockId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "rehearsal"
+            },
+            "rehearsalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "virtualEventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "clockId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actionId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "simulation",
+              "type": "string"
+            },
+            "actionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceGuestResponse"
+};
+
+export const eventAssistancePolicySchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "venueReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "meetingPlace"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "routeReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "route"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "formatReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "format"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "rosterReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "roster"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "requiredGuestData",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "guestData"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "resourceReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "resources"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "staffingReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "responsibilities"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "messagingReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "messaging"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "admissionReview",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "offerExpiryMinutes",
+            "admission",
+            "releaseCapacity"
+          ],
+          "properties": {
+            "offerExpiryMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "admission": {
+              "type": "string",
+              "const": "existingEntitlementPolicy"
+            },
+            "releaseCapacity": {
+              "type": "string",
+              "const": "confirmedOnly"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "financialReadiness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirement",
+            "dueBeforeStartMinutes",
+            "disposition"
+          ],
+          "properties": {
+            "requirement": {
+              "type": "string",
+              "const": "paymentProvider"
+            },
+            "dueBeforeStartMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "blockSelectedOperation",
+                "hostMayAcceptException"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "joiningInstructions",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "templateIntent",
+            "audience",
+            "maximumPerGuest",
+            "expiryMinutes"
+          ],
+          "properties": {
+            "templateIntent": {
+              "type": "string",
+              "const": "joining"
+            },
+            "audience": {
+              "type": "string",
+              "const": "affectedGuests"
+            },
+            "maximumPerGuest": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "expiryMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "identityResolution",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ambiguousIdentity",
+            "fallback"
+          ],
+          "properties": {
+            "ambiguousIdentity": {
+              "type": "string",
+              "const": "humanResolution"
+            },
+            "fallback": {
+              "type": "string",
+              "const": "hostAssistedOperationalOnly"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "guestAdmission",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "admission",
+            "overCapacity",
+            "exception"
+          ],
+          "properties": {
+            "admission": {
+              "type": "string",
+              "const": "existingEntitlementPolicy"
+            },
+            "overCapacity": {
+              "type": "string",
+              "const": "deny"
+            },
+            "exception": {
+              "type": "string",
+              "const": "authorizedHost"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "guestCheckIn",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operation",
+            "conflict",
+            "attendanceProof"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "const": "absolute"
+            },
+            "conflict": {
+              "type": "string",
+              "const": "revisionFence"
+            },
+            "attendanceProof": {
+              "type": "string",
+              "const": "configuredEventPolicy"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "lateJoin",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "destination",
+            "cutoff",
+            "maxMessagesPerEpisode",
+            "minimumMinutesBetweenMessages",
+            "updateOn",
+            "unanswered"
+          ],
+          "properties": {
+            "destination": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "permittedStopIds"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "permittedStopIds": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1000,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "permittedCheckpointIds"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "permittedCheckpointIds": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1000,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "uniqueItems": true
+                    }
+                  }
+                }
+              ]
+            },
+            "cutoff": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "eventEnd"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "at"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "time"
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "UTC milliseconds."
+                    }
+                  }
+                }
+              ]
+            },
+            "maxMessagesPerEpisode": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "minimumMinutesBetweenMessages": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1440
+            },
+            "updateOn": {
+              "type": "string",
+              "const": "materialGuidanceChange"
+            },
+            "unanswered": {
+              "type": "string",
+              "enum": [
+                "keepUnknownUntilCutoff",
+                "hostReviewAtDeadline"
+              ]
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "participationChange",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eligibility",
+            "reentry",
+            "guestOptOut"
+          ],
+          "properties": {
+            "eligibility": {
+              "type": "string",
+              "const": "explicitParticipation"
+            },
+            "reentry": {
+              "type": "string",
+              "const": "newEpisode"
+            },
+            "guestOptOut": {
+              "type": "string",
+              "const": "honor"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "guestPrerequisite",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requirementsFrom",
+            "fallback"
+          ],
+          "properties": {
+            "requirementsFrom": {
+              "type": "string",
+              "const": "selectedCapabilities"
+            },
+            "fallback": {
+              "type": "string",
+              "const": "explicitlySupportedOnly"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "allocationRepair",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "publication",
+            "preserveCompleted",
+            "hardConstraints"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "futureOnly"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "preserveCompleted": {
+              "type": "boolean",
+              "const": true
+            },
+            "hardConstraints": {
+              "type": "string",
+              "const": "neverRelax"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "placementConfirmation",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "observation",
+            "assignmentIsNotObservation"
+          ],
+          "properties": {
+            "observation": {
+              "type": "string",
+              "const": "explicitHost"
+            },
+            "assignmentIsNotObservation": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "resourceRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "resourceId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resource"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "resourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "publication",
+            "preserveCompleted",
+            "hardConstraints",
+            "resourceChange"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "futureOnly"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "preserveCompleted": {
+              "type": "boolean",
+              "const": true
+            },
+            "hardConstraints": {
+              "type": "string",
+              "const": "neverRelax"
+            },
+            "resourceChange": {
+              "type": "string",
+              "const": "hostConfirmed"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "fairParticipation",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "objective",
+            "hardConstraints",
+            "publication"
+          ],
+          "properties": {
+            "objective": {
+              "type": "string",
+              "const": "minimizeRepeatedExclusion"
+            },
+            "hardConstraints": {
+              "type": "string",
+              "const": "neverRelax"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roundPublication",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "futureDrafts",
+            "publication",
+            "publishedHistory"
+          ],
+          "properties": {
+            "futureDrafts": {
+              "type": "string",
+              "const": "private"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "publishedHistory": {
+              "type": "string",
+              "const": "immutableWithCorrections"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unitProgress",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "unitId",
+            "round"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unit"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "unitId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "round": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clock",
+            "progress",
+            "completedResults"
+          ],
+          "properties": {
+            "clock": {
+              "type": "string",
+              "const": "perUnit"
+            },
+            "progress": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "completedResults": {
+              "type": "string",
+              "const": "preserve"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "outcomeRecording",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "unitId",
+            "round"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unit"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "unitId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "round": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "correction",
+            "publication"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "completion",
+                "score",
+                "rank"
+              ]
+            },
+            "correction": {
+              "type": "string",
+              "const": "revisionedFullRound"
+            },
+            "publication": {
+              "type": "string",
+              "const": "existingRevealGate"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "programmeRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "publication",
+            "alreadyPublished"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "remainingProgramme"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "alreadyPublished": {
+              "type": "string",
+              "const": "correctExplicitly"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "departure",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "groupId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "confirmation",
+            "scope",
+            "plannedTimeIsNotProof"
+          ],
+          "properties": {
+            "confirmation": {
+              "type": "string",
+              "const": "responsibleOperator"
+            },
+            "scope": {
+              "type": "string",
+              "const": "perMovingGroup"
+            },
+            "plannedTimeIsNotProof": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "checkpoint",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "groupId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reportBy",
+            "scope",
+            "reportDeadlineMinutes"
+          ],
+          "properties": {
+            "reportBy": {
+              "type": "string",
+              "const": "responsibleOperator"
+            },
+            "scope": {
+              "type": "string",
+              "const": "departureRoster"
+            },
+            "reportDeadlineMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "groupTransfer",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "groupId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "group"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "handover",
+            "membership"
+          ],
+          "properties": {
+            "handover": {
+              "type": "string",
+              "const": "receivingOperatorAcknowledges"
+            },
+            "membership": {
+              "type": "string",
+              "const": "singleActiveGroup"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "routeRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "publication",
+            "alreadyPublished",
+            "alternative"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "remainingProgramme"
+            },
+            "publication": {
+              "type": "string",
+              "const": "hostConfirmed"
+            },
+            "alreadyPublished": {
+              "type": "string",
+              "const": "correctExplicitly"
+            },
+            "alternative": {
+              "type": "string",
+              "const": "hostApproved"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "locationFreshness",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "staleAfterSeconds",
+            "fallback",
+            "tracking"
+          ],
+          "properties": {
+            "staleAfterSeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "fallback": {
+              "type": "string",
+              "const": "confirmedJoiningPoint"
+            },
+            "tracking": {
+              "type": "string",
+              "const": "authorizedOperatorOnly"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "accountability",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "evidence",
+            "unknownIsNotIncident"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "rollCall",
+                "sweep"
+              ]
+            },
+            "evidence": {
+              "type": "string",
+              "const": "explicitDisposition"
+            },
+            "unknownIsNotIncident": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "planChangeCommunication",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "templateIntent",
+            "audience",
+            "maximumPerGuest",
+            "expiryMinutes"
+          ],
+          "properties": {
+            "templateIntent": {
+              "type": "string",
+              "const": "planChange"
+            },
+            "audience": {
+              "type": "string",
+              "const": "affectedGuests"
+            },
+            "maximumPerGuest": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "expiryMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "deliveryRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximumAttempts",
+            "onUnknown",
+            "expiresAfterMinutes"
+          ],
+          "properties": {
+            "maximumAttempts": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "onUnknown": {
+              "type": "string",
+              "const": "reconcileBeforeRetry"
+            },
+            "expiresAfterMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "replyOwnership",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner",
+            "visibility",
+            "dueMinutes"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "enum": [
+                "eventLead",
+                "groupLead",
+                "sweep",
+                "checkIn",
+                "specialist"
+              ]
+            },
+            "visibility": {
+              "type": "string",
+              "enum": [
+                "operational",
+                "restricted"
+              ]
+            },
+            "dueMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "guestAssistance",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner",
+            "visibility",
+            "dueMinutes"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "enum": [
+                "eventLead",
+                "groupLead",
+                "sweep",
+                "checkIn",
+                "specialist"
+              ]
+            },
+            "visibility": {
+              "type": "string",
+              "enum": [
+                "operational",
+                "restricted"
+              ]
+            },
+            "dueMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "comfortSafety",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "eventId",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "guest"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner",
+            "visibility",
+            "dueMinutes"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "enum": [
+                "eventLead",
+                "groupLead",
+                "sweep",
+                "checkIn",
+                "specialist"
+              ]
+            },
+            "visibility": {
+              "type": "string",
+              "const": "restricted"
+            },
+            "dueMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendanceSync",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximumAttempts",
+            "onUnknown",
+            "expiresAfterMinutes"
+          ],
+          "properties": {
+            "maximumAttempts": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "onUnknown": {
+              "type": "string",
+              "const": "reconcileBeforeRetry"
+            },
+            "expiresAfterMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "concurrencyRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "staleWrite",
+            "retry"
+          ],
+          "properties": {
+            "staleWrite": {
+              "type": "string",
+              "const": "reject"
+            },
+            "retry": {
+              "type": "string",
+              "const": "revalidateIntent"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "operationRecovery",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximumAttempts",
+            "onUnknown",
+            "expiresAfterMinutes"
+          ],
+          "properties": {
+            "maximumAttempts": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "onUnknown": {
+              "type": "string",
+              "const": "reconcileBeforeRetry"
+            },
+            "expiresAfterMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "contextBoundary",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "crossContext"
+          ],
+          "properties": {
+            "context": {
+              "type": "string",
+              "const": "eventAndModeBound"
+            },
+            "crossContext": {
+              "type": "string",
+              "const": "deny"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "overrideReview",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hardLimits",
+            "permittedOverride"
+          ],
+          "properties": {
+            "hardLimits": {
+              "type": "string",
+              "const": "neverOverride"
+            },
+            "permittedOverride": {
+              "type": "string",
+              "const": "scopedReasonedExpiring"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "eventClosure",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pendingLiveWork",
+            "survivingObligations",
+            "unresolvedAccountability"
+          ],
+          "properties": {
+            "pendingLiveWork": {
+              "type": "string",
+              "const": "cancel"
+            },
+            "survivingObligations": {
+              "type": "string",
+              "const": "handoff"
+            },
+            "unresolvedAccountability": {
+              "type": "string",
+              "const": "explicitPolicy"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "attendanceReconciliation",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "silence",
+            "corrections",
+            "pendingSync"
+          ],
+          "properties": {
+            "silence": {
+              "type": "string",
+              "const": "notEvidence"
+            },
+            "corrections": {
+              "type": "string",
+              "const": "revisioned"
+            },
+            "pendingSync": {
+              "type": "string",
+              "const": "retain"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "financialReconciliation",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "owner",
+            "moneyMovement"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "const": "paymentProviderWorkflow"
+            },
+            "moneyMovement": {
+              "type": "string",
+              "const": "separatelyAuthorized"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "postEventFollowUp",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "templateIntent",
+            "audience",
+            "maximumPerGuest",
+            "expiryMinutes"
+          ],
+          "properties": {
+            "templateIntent": {
+              "type": "string",
+              "const": "followUp"
+            },
+            "audience": {
+              "type": "string",
+              "const": "affectedGuests"
+            },
+            "maximumPerGuest": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            },
+            "expiryMinutes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10080
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "config",
+        "setting"
+      ],
+      "properties": {
+        "kind": {
+          "const": "eventLearning",
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "attendeeId",
+                "episodeId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "guest"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "groupId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "group"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "resourceId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "resource"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "eventId",
+                "unitId",
+                "round"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unit"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "unitId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "round": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "metrics",
+            "missingCoverage",
+            "sensitiveDetails"
+          ],
+          "properties": {
+            "metrics": {
+              "type": "string",
+              "const": "observedOutcomes"
+            },
+            "missingCoverage": {
+              "type": "string",
+              "const": "explicit"
+            },
+            "sensitiveDetails": {
+              "type": "string",
+              "const": "excluded"
+            }
+          }
+        },
+        "setting": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "authority",
+                "policyVersion"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "enabled"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "observe",
+                    "prepare",
+                    "executeWithinPolicy"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "disabled"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "hostChoice",
+                    "organizerDefault"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "title": "EventAssistancePolicy"
+};
+
+export const eventAssistanceCommandSchema = {
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "confirmDeparture"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "destination",
+            "expectedProgressRevision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "destination": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "stopId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "stopId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "checkpointId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setJoinIntent"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "intent",
+            "episodeId",
+            "expectedParticipationRevision"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "intent": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unknown"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "claimedEta"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "onMyWay"
+                    },
+                    "claimedEta": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "UTC milliseconds."
+                        },
+                        {
+                          "type": "null",
+                          "const": null
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "target"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "joinLater"
+                    },
+                    "target": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "stopId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "stopId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "checkpointId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "checkpointId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "notComing"
+                    }
+                  }
+                }
+              ]
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedParticipationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "checkInGuest"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "checkedIn",
+            "expectedAttendanceRevision"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkedIn": {
+              "type": "boolean"
+            },
+            "expectedAttendanceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "publishGuidance"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "guidance"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "guidance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "sendOperationalMessage"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "guidanceRevision",
+            "intent",
+            "expiresAt"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "guidanceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "intent": {
+              "type": "string",
+              "enum": [
+                "joining",
+                "planChange",
+                "followUp"
+              ]
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "openHostCase"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "reason",
+            "owner"
+          ],
+          "properties": {
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "unreachable",
+                "entryDecision",
+                "missingInformation",
+                "assistance",
+                "accountability"
+              ]
+            },
+            "owner": {
+              "type": "string",
+              "enum": [
+                "eventLead",
+                "groupLead",
+                "sweep"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setParticipation"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "state",
+            "resumeAtUnit"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "active",
+                "temporaryBreak",
+                "departed"
+              ]
+            },
+            "resumeAtUnit": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "proposeAllocation"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeIds",
+            "targetUnitId",
+            "expectedAllocationRevision"
+          ],
+          "properties": {
+            "attendeeIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1000,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uniqueItems": true
+            },
+            "targetUnitId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expectedAllocationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "publishAllocation"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "proposalId",
+            "decisionId"
+          ],
+          "properties": {
+            "proposalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "confirmPlacement"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "resourceId",
+            "expectedAssignmentRevision"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "resourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedAssignmentRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "changeResource"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resourceId",
+            "status",
+            "decisionId"
+          ],
+          "properties": {
+            "resourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "available",
+                "unavailable"
+              ]
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "transferGroup"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "from",
+            "to",
+            "receivingOperatorId"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "receivingOperatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "recordCheckpoint"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "checkpointId",
+            "accountedFor",
+            "expectedProgressRevision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "accountedFor": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "maxItems": 1000,
+              "uniqueItems": true
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "changeProgramme"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "changeId",
+            "action",
+            "decisionId"
+          ],
+          "properties": {
+            "changeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "pause",
+                "resume",
+                "extend",
+                "skip",
+                "reorder"
+              ]
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "recordOutcome"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "round",
+            "outcome",
+            "expectedOutcomeRevision"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "round": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "outcome": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "completed"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "completion"
+                    },
+                    "completed": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "score"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "score"
+                    },
+                    "score": {
+                      "type": "number",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "rank"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "rank"
+                    },
+                    "rank": {
+                      "type": "number",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              ]
+            },
+            "expectedOutcomeRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "changeRoute"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeRevision",
+            "alternativeId",
+            "decisionId"
+          ],
+          "properties": {
+            "routeRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "alternativeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveAccountability"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "episodeId",
+            "disposition"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "returned",
+                "departed",
+                "unresolved"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveClaim"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "claimId",
+            "outcome"
+          ],
+          "properties": {
+            "claimId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "outcome": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "attendeeId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "link"
+                    },
+                    "attendeeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "reject"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "admitGuest"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "entitlementDecisionId"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "entitlementDecisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "assignResponsibility"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operatorId",
+            "role",
+            "scope"
+          ],
+          "properties": {
+            "operatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "lead",
+                "checkIn",
+                "pacer",
+                "sweep",
+                "marshal"
+              ]
+            },
+            "scope": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "event"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "attendeeId",
+                    "episodeId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "guest"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "attendeeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "episodeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "groupId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "group"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "resourceId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "resource"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "unitId",
+                    "round"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unit"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "unitId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "round": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveAssistance"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "outcome",
+            "owner"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "resolved",
+                "declined",
+                "transferred"
+              ]
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "reconcileAttendance"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "expectedAttendanceRevision"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedAttendanceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "requestRequiredData"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "fieldIds",
+            "expiresAt"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "fieldIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1000,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "uniqueItems": true
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "reconcileRoster"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceId",
+            "sourceRevision"
+          ],
+          "properties": {
+            "sourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "sourceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "reconcileFinance"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "providerCaseId"
+          ],
+          "properties": {
+            "providerCaseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "repairDelivery"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deliveryId",
+            "action"
+          ],
+          "properties": {
+            "deliveryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "reconcile",
+                "retryDefiniteFailure",
+                "manualHandoff"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resumeOperation"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "instanceId",
+            "expectedRevision"
+          ],
+          "properties": {
+            "instanceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "completeEvent"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decisionId",
+            "disposition",
+            "unresolvedCaseIds"
+          ],
+          "properties": {
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "disposition": {
+              "type": "string",
+              "enum": [
+                "completed",
+                "aborted"
+              ]
+            },
+            "unresolvedCaseIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "maxItems": 1000,
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "controlUnitProgress"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitId",
+            "progress",
+            "expectedRevision"
+          ],
+          "properties": {
+            "unitId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progress": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "active",
+                "paused",
+                "completed"
+              ]
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "controlReveal"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action",
+            "expectedLiveRevision",
+            "decisionId"
+          ],
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "startCountdown",
+                "cancelPending",
+                "publish"
+              ]
+            },
+            "expectedLiveRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "applyOverride"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "constraintId",
+            "ruleKind",
+            "scope",
+            "reason",
+            "expiresAt",
+            "decisionId"
+          ],
+          "properties": {
+            "constraintId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "ruleKind": {
+              "type": "string",
+              "enum": [
+                "softPreference",
+                "overrideableOperatingRule"
+              ]
+            },
+            "scope": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "event"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "attendeeId",
+                    "episodeId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "guest"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "attendeeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "episodeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "groupId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "group"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "resourceId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "resource"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "unitId",
+                    "round"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unit"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "unitId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "round": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                }
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "setLocationSharing"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operatorId",
+            "enabled",
+            "scope"
+          ],
+          "properties": {
+            "operatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "scope": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "event"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "attendeeId",
+                    "episodeId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "guest"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "attendeeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "episodeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "groupId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "group"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "resourceId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "resource"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "eventId",
+                    "unitId",
+                    "round"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unit"
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "unitId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "round": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "requestCheckpointReport"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "checkpointId",
+            "dueAt"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "dueAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "recordNoShow"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "evidence",
+            "decisionId"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "evidence": {
+              "type": "string",
+              "enum": [
+                "guestDeclined",
+                "hostConfirmed"
+              ]
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "routeRestrictedCase"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "restrictedCaseId",
+            "operationalNeed"
+          ],
+          "properties": {
+            "restrictedCaseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "operationalNeed": {
+              "type": "string",
+              "enum": [
+                "separation",
+                "pause",
+                "assistance"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveRestrictedCase"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "restrictedCaseId",
+            "resolutionId"
+          ],
+          "properties": {
+            "restrictedCaseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "resolutionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceCommand"
+};
+
+export const eventAssistanceLateJoinInputSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "eventOpen",
+    "departureConfirmed",
+    "now",
+    "policy",
+    "guest",
+    "guidance",
+    "lastMessage",
+    "messagesThisEpisode",
+    "context",
+    "setting"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "eventOpen": {
+      "type": "boolean"
+    },
+    "departureConfirmed": {
+      "type": "boolean"
+    },
+    "now": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "UTC milliseconds."
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination",
+        "cutoff",
+        "maxMessagesPerEpisode",
+        "minimumMinutesBetweenMessages",
+        "updateOn",
+        "unanswered"
+      ],
+      "properties": {
+        "destination": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "placeId",
+                "lateEntry"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "fixedPlace"
+                },
+                "placeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "lateEntry": {
+                  "type": "string",
+                  "enum": [
+                    "allowed",
+                    "hostDecision",
+                    "closed"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "itineraryId",
+                "permittedStopIds"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "itineraryStop"
+                },
+                "itineraryId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "permittedStopIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "uniqueItems": true
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "routeId",
+                "groupId",
+                "permittedCheckpointIds"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "groupCheckpoint"
+                },
+                "routeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "permittedCheckpointIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          ]
+        },
+        "cutoff": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "eventEnd"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "at"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "time"
+                },
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            }
+          ]
+        },
+        "maxMessagesPerEpisode": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "minimumMinutesBetweenMessages": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        "updateOn": {
+          "type": "string",
+          "const": "materialGuidanceChange"
+        },
+        "unanswered": {
+          "type": "string",
+          "enum": [
+            "keepUnknownUntilCutoff",
+            "hostReviewAtDeadline"
+          ]
+        }
+      }
+    },
+    "guest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attendeeId",
+        "episodeId",
+        "admission",
+        "attendance",
+        "intention",
+        "deliveryEligibility"
+      ],
+      "properties": {
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "episodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "admission": {
+          "type": "string",
+          "enum": [
+            "admitted",
+            "pending",
+            "declined"
+          ]
+        },
+        "attendance": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value",
+                "revision",
+                "observedAt",
+                "source"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "known"
+                },
+                "value": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "checkedIn"
+                  ],
+                  "properties": {
+                    "checkedIn": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "observedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "host",
+                    "guest",
+                    "provider",
+                    "system"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unknown"
+                },
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "notCollected",
+                    "notConfirmed",
+                    "sourceUnavailable"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "lastValue",
+                "observedAt",
+                "staleAt"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "stale"
+                },
+                "lastValue": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "checkedIn"
+                  ],
+                  "properties": {
+                    "checkedIn": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "observedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                },
+                "staleAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            }
+          ]
+        },
+        "intention": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unknown"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "claimedEta"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "onMyWay"
+                },
+                "claimedEta": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "UTC milliseconds."
+                    },
+                    {
+                      "type": "null",
+                      "const": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "target"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "joinLater"
+                },
+                "target": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "notComing"
+                }
+              }
+            }
+          ]
+        },
+        "deliveryEligibility": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "unreachable",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "guidance": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value",
+            "revision",
+            "observedAt",
+            "source"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "known"
+            },
+            "value": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "observedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "host",
+                "guest",
+                "provider",
+                "system"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unknown"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "notCollected",
+                "notConfirmed",
+                "sourceUnavailable"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "lastValue",
+            "observedAt",
+            "staleAt"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "stale"
+            },
+            "lastValue": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            },
+            "observedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            },
+            "staleAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        }
+      ]
+    },
+    "lastMessage": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "materialKey",
+            "at"
+          ],
+          "properties": {
+            "materialKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        },
+        {
+          "type": "null",
+          "const": null
+        }
+      ]
+    },
+    "messagesThisEpisode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "responseDeadline": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "UTC milliseconds."
+    },
+    "context": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "eventId",
+            "organizerId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "live"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "rehearsalId",
+            "virtualEventId",
+            "clockId"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "rehearsal"
+            },
+            "rehearsalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "virtualEventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "clockId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      ]
+    },
+    "setting": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "authority",
+            "policyVersion"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "enabled"
+            },
+            "authority": {
+              "type": "string",
+              "enum": [
+                "observe",
+                "prepare",
+                "executeWithinPolicy"
+              ]
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "disabled"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "hostChoice",
+                "organizerDefault"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "unanswered": {
+                "const": "hostReviewAtDeadline"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "responseDeadline"
+        ]
+      }
+    }
+  ],
+  "title": "EventAssistanceLateJoinInput"
+};
+
+export const eventAssistanceLateJoinDecisionSchema = {
+  "anyOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolved"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "joined",
+            "declined"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "cancelled"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "eventClosed",
+            "notAdmitted",
+            "policyDisabled"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "expired"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "cutoff",
+            "lateEntryClosed"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "wait"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "departureUnconfirmed",
+            "attendanceUnknown",
+            "guidanceUnavailable",
+            "throttled",
+            "unchanged"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason",
+        "guidance"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "hostDecision"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "unreachable",
+            "entryDecision",
+            "missingInformation"
+          ]
+        },
+        "guidance": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            },
+            {
+              "type": "null",
+              "const": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "guidance",
+        "messageKey",
+        "shouldSend",
+        "nextEvaluationAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "update"
+        },
+        "guidance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "destination",
+            "materialKey",
+            "text",
+            "validUntil"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "destination": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "placeId",
+                    "lateEntry"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "fixedPlace"
+                    },
+                    "placeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "lateEntry": {
+                      "type": "string",
+                      "enum": [
+                        "allowed",
+                        "hostDecision",
+                        "closed"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "itineraryId",
+                    "stopId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "itineraryStop"
+                    },
+                    "itineraryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "stopId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "routeId",
+                    "groupId",
+                    "checkpointId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "groupCheckpoint"
+                    },
+                    "routeId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "checkpointId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              ]
+            },
+            "materialKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "UTC milliseconds."
+            }
+          }
+        },
+        "messageKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "shouldSend": {
+          "type": "boolean"
+        },
+        "nextEvaluationAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "title": "EventAssistanceLateJoinDecision"
+};
+
 export const mobileFormStateSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/forms/mobile_form_state.schema.json",
@@ -25135,6 +52597,42 @@ export const organizerMessageTemplateDocumentSchema = {
         ]
       }
     },
+    "buttonLabels": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "minLength": 1,
+        "maxLength": 1024
+      }
+    },
+    "parameterFormat": {
+      "type": "string",
+      "enum": [
+        "NAMED",
+        "POSITIONAL",
+        "UNKNOWN"
+      ]
+    },
+    "buttonUrls": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "providerUpdatedAt": {
       "anyOf": [
         {
@@ -26799,7 +54297,7 @@ export const organizerMessagingWebhookEventDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_messaging_webhook_events.schema.json",
   "title": "OrganizerMessagingWebhookEventDocument",
-  "description": "Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.",
+  "description": "Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerMessagingWebhookEvents",
@@ -26879,6 +54377,116 @@ export const organizerMessagingWebhookEventDocumentSchema = {
       "minLength": 1,
       "maxLength": 240
     },
+    "providerAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "providerPhoneNumberId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{1,32}$"
+    },
+    "callbackData": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "inboundReply": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "templateQuickReply"
+            },
+            "payload": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "replyButton"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "const": "listReply"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          }
+        }
+      ]
+    },
     "deliveryStatus": {
       "type": [
         "string",
@@ -26947,6 +54555,147 @@ export const organizerMessagingWebhookEventDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "assistanceProcessing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.",
+      "required": [
+        "sourceHash",
+        "attemptCount",
+        "updatedAt",
+        "outcome"
+      ],
+      "properties": {
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "outcome": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "disposition"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "delivery"
+                },
+                "disposition": {
+                  "enum": [
+                    "applied",
+                    "duplicateOrOlder",
+                    "conflictingEvidence",
+                    "unconfirmed"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "disposition"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "reply"
+                },
+                "disposition": {
+                  "enum": [
+                    "accepted",
+                    "replayed"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "waiting"
+                },
+                "reason": {
+                  "const": "deliveryUnconfirmed"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "ignored"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "rejected"
+                },
+                "reason": {
+                  "enum": [
+                    "unavailable",
+                    "deliveryScope",
+                    "scopeMismatch",
+                    "staleIntent",
+                    "invalidChoice",
+                    "expired",
+                    "alreadyResponded",
+                    "noLongerNeeded",
+                    "factsStale",
+                    "guestStateChanged"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "processingStatus": {
       "type": "string",
@@ -71998,6 +99747,14 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
             "runtimeProfile"
           ],
           "properties": {
+            "eventAttendeeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
             "accessStatus": {
               "type": "string",
               "enum": [
@@ -104080,6 +131837,565 @@ export const joinWaitlistHTTPResponseSchema = {
           "maxLength": 240
         }
       }
+    }
+  ]
+};
+
+export const eventAssistanceWorkflowCatalog = {
+  "schemaVersion": 1,
+  "kind": "eventAssistanceWorkflows",
+  "definitions": [
+    {
+      "kind": "venueReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "all",
+      "configDefinition": "venueReadinessConfig",
+      "scope": "any",
+      "trigger": "A required meeting place or arrival instruction is unconfirmed by its deadline",
+      "automatic": "Request the missing fact; keep the readiness issue current",
+      "hostDecision": "Confirm the location or an explicitly allowed alternative",
+      "resolution": "Required location and instructions are confirmed"
+    },
+    {
+      "kind": "routeReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "moving",
+      "configDefinition": "routeReadinessConfig",
+      "scope": "any",
+      "trigger": "The chosen moving format lacks a confirmed route or joining points",
+      "automatic": "Check required route facts and identify the specific gap",
+      "hostDecision": "Confirm the route, permitted joining points and contingency",
+      "resolution": "Route requirements are confirmed"
+    },
+    {
+      "kind": "formatReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "all",
+      "configDefinition": "formatReadinessConfig",
+      "scope": "any",
+      "trigger": "The selected interaction, algorithm, programme or resource combination is unsupported or incomplete",
+      "automatic": "Resolve capabilities and explain unsupported combinations",
+      "hostDecision": "Confirm the run of show and supported operating model, or explicitly choose manual operation",
+      "resolution": "Saved format passes capability validation"
+    },
+    {
+      "kind": "rosterReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "all",
+      "configDefinition": "rosterReadinessConfig",
+      "scope": "any",
+      "trigger": "A committed guest source/import is incomplete, duplicated, stale or failed",
+      "automatic": "Reconcile source batches without discarding successful rows; expose ambiguities",
+      "hostDecision": "Resolve ambiguous identities or reconnect the source",
+      "resolution": "Committed import and reconciliation finish with unresolved rows accounted for"
+    },
+    {
+      "kind": "requiredGuestData",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "requiredData",
+      "configDefinition": "requiredGuestDataConfig",
+      "scope": "any",
+      "trigger": "A selected operation needs explicit guest information that is missing",
+      "automatic": "Request only required fields and stop once supplied",
+      "hostDecision": "Review an exception or approve host-assisted participation where allowed",
+      "resolution": "Required information is present or operation uses an allowed fallback"
+    },
+    {
+      "kind": "resourceReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "resources",
+      "configDefinition": "resourceReadinessConfig",
+      "scope": "any",
+      "trigger": "A required resource count, capacity or allocation constraint is unconfirmed",
+      "automatic": "Check capacity against the selected plan; identify shortages",
+      "hostDecision": "Confirm resources or approve a viable reduced plan",
+      "resolution": "Required resources and capacity are usable"
+    },
+    {
+      "kind": "staffingReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "roles",
+      "configDefinition": "staffingReadinessConfig",
+      "scope": "any",
+      "trigger": "A required responsibility has no accepted, authorized person for its scope",
+      "automatic": "Request acceptance; track coverage and access separately",
+      "hostDecision": "Assign or replace lead, check-in operator, pacer, sweep or marshal",
+      "resolution": "Each required responsibility is accepted and executable"
+    },
+    {
+      "kind": "messagingReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "all",
+      "configDefinition": "messagingReadinessConfig",
+      "scope": "any",
+      "trigger": "A selected automatic assistance policy cannot reach some intended guests",
+      "automatic": "Resolve eligible endpoints and sender readiness; show coverage and alternatives",
+      "hostDecision": "Choose an available route or handle unreachable guests",
+      "resolution": "Delivery capability or explicit fallback covers the intended assistance"
+    },
+    {
+      "kind": "admissionReview",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "admission",
+      "configDefinition": "admissionReviewConfig",
+      "scope": "any",
+      "trigger": "A join request, waitlist vacancy or expiring offer requires a decision",
+      "automatic": "Order eligible candidates and prepare bounded offers where policy allows",
+      "hostDecision": "Approve admission policy, exceptions or contested requests",
+      "resolution": "Request/offer resolved or expired without overselling"
+    },
+    {
+      "kind": "financialReadiness",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "paid",
+      "configDefinition": "financialReadinessConfig",
+      "scope": "any",
+      "trigger": "A paid event has a confirmed payment-provider prerequisite",
+      "automatic": "Read the provider-owned requirement and route to its owner",
+      "hostDecision": "Complete provider setup",
+      "resolution": "Authoritative provider prerequisite is resolved"
+    },
+    {
+      "kind": "joiningInstructions",
+      "version": 1,
+      "family": "Preparation",
+      "applicability": "all",
+      "configDefinition": "joiningInstructionsConfig",
+      "scope": "any",
+      "trigger": "Joining instructions are due or a guest newly becomes admitted",
+      "automatic": "Publish current joining guidance and deliver through an eligible service route",
+      "hostDecision": "Confirm unusual arrival instructions or channel fallback",
+      "resolution": "Current instructions available and delivery evidence accounted for"
+    },
+    {
+      "kind": "identityResolution",
+      "version": 1,
+      "family": "Arrival",
+      "applicability": "all",
+      "configDefinition": "identityResolutionConfig",
+      "scope": "guest",
+      "trigger": "An attendee claim is ambiguous or private runtime access fails",
+      "automatic": "Offer verified recovery and retain the operational roster row",
+      "hostDecision": "Confirm the intended identity; never auto-merge ambiguous people",
+      "resolution": "Claim resolved or host-assisted path selected"
+    },
+    {
+      "kind": "guestAdmission",
+      "version": 1,
+      "family": "Arrival",
+      "applicability": "admission",
+      "configDefinition": "guestAdmissionConfig",
+      "scope": "guest",
+      "trigger": "A walk-in, waitlisted or cancelled guest requests entry",
+      "automatic": "Check entitlement/capacity and prepare an admission decision",
+      "hostDecision": "Approve an allowed exception or decline",
+      "resolution": "Admission decision persisted independently of check-in"
+    },
+    {
+      "kind": "guestCheckIn",
+      "version": 1,
+      "family": "Arrival",
+      "applicability": "all",
+      "configDefinition": "guestCheckInConfig",
+      "scope": "guest",
+      "trigger": "A guest arrives, a duplicate arrival is reported, or a mistake is identified",
+      "automatic": "Apply absolute attendance idempotently; preserve party context; acknowledge duplicates",
+      "hostDecision": "Verify arrival or correct the specific mistaken check-in",
+      "resolution": "Desired attendance revision is confirmed"
+    },
+    {
+      "kind": "lateJoin",
+      "version": 1,
+      "family": "Arrival",
+      "applicability": "all",
+      "configDefinition": "lateJoinConfig",
+      "scope": "guest",
+      "trigger": "An admitted guest has not joined when departure/start is confirmed",
+      "automatic": "Maintain current joining guidance; collect intentions; update affected guests; stop on join/decline/cutoff",
+      "hostDecision": "Confirm physical departure, restricted late entry or an unreachable guest exception",
+      "resolution": "Guest joins, declines, reaches cutoff or receives a recorded host disposition"
+    },
+    {
+      "kind": "participationChange",
+      "version": 1,
+      "family": "Live",
+      "applicability": "all",
+      "configDefinition": "participationChangeConfig",
+      "scope": "guest",
+      "trigger": "A guest leaves, returns, sits out or opts out of a module",
+      "automatic": "Stop affected future allocations/messages; prepare appropriate re-entry",
+      "hostDecision": "Confirm departure/return where required and allowed recovery",
+      "resolution": "Participation intent and affected future work agree"
+    },
+    {
+      "kind": "guestPrerequisite",
+      "version": 1,
+      "family": "Arrival",
+      "applicability": "all",
+      "configDefinition": "guestPrerequisiteConfig",
+      "scope": "guest",
+      "trigger": "An admitted checked-in guest cannot use the selected activity",
+      "automatic": "Explain the specific identity/profile/consent/assignment prerequisite",
+      "hostDecision": "Resolve it or select an eligible host-assisted alternative",
+      "resolution": "Guest can participate or an explicit allowed alternative is active"
+    },
+    {
+      "kind": "allocationRepair",
+      "version": 1,
+      "family": "Live",
+      "applicability": "groupsOrResources",
+      "configDefinition": "allocationRepairConfig",
+      "scope": "any",
+      "trigger": "A guest is unassigned or a placement/group constraint changes",
+      "automatic": "Prepare legal placements, swaps and future groups while preserving unaffected history",
+      "hostDecision": "Approve disruptive changes, hard placement pins and publication",
+      "resolution": "Approved valid assignment applied; affected guests informed"
+    },
+    {
+      "kind": "placementConfirmation",
+      "version": 1,
+      "family": "Live",
+      "applicability": "resources",
+      "configDefinition": "placementConfirmationConfig",
+      "scope": "guest",
+      "trigger": "Someone reaches an assigned physical place",
+      "automatic": "Keep assigned location separate from confirmed observed position",
+      "hostDecision": "Confirm the guest is at that place",
+      "resolution": "Observed placement is recorded for the current assignment"
+    },
+    {
+      "kind": "resourceRecovery",
+      "version": 1,
+      "family": "Live",
+      "applicability": "resources",
+      "configDefinition": "resourceRecoveryConfig",
+      "scope": "resource",
+      "trigger": "A table, court, station or piece of required equipment is unavailable",
+      "automatic": "Suspend affected future reservations and prepare a repair",
+      "hostDecision": "Close/reopen resource and approve redistribution",
+      "resolution": "Capacity and assignments reflect the usable resources"
+    },
+    {
+      "kind": "fairParticipation",
+      "version": 1,
+      "family": "Live",
+      "applicability": "groupsOrResources",
+      "configDefinition": "fairParticipationConfig",
+      "scope": "any",
+      "trigger": "A guest is waiting, repeatedly excluded or due the next opportunity",
+      "automatic": "Track waiting/byes and propose the next eligible opportunity",
+      "hostDecision": "Resolve incompatible constraints or an allowed fairness exception",
+      "resolution": "Every waiting guest has a valid next opportunity or an explicit reason"
+    },
+    {
+      "kind": "roundPublication",
+      "version": 1,
+      "family": "Live",
+      "applicability": "rounds",
+      "configDefinition": "roundPublicationConfig",
+      "scope": "any",
+      "trigger": "A next round or reveal is due, cancelled or corrected",
+      "automatic": "Prepare the next draft; validate constraints; preserve published history",
+      "hostDecision": "Publish, cancel a pending reveal, or issue an explicit correction",
+      "resolution": "Intended revision is published or cancelled; receipt visible"
+    },
+    {
+      "kind": "unitProgress",
+      "version": 1,
+      "family": "Live",
+      "applicability": "independentUnits",
+      "configDefinition": "unitProgressConfig",
+      "scope": "unit",
+      "trigger": "A court/group starts, finishes or needs a substitute independently",
+      "automatic": "Update that unit's progress, release resources and prepare next use",
+      "hostDecision": "Confirm actual start/finish and substitutions",
+      "resolution": "Unit progress and resource occupancy agree"
+    },
+    {
+      "kind": "outcomeRecording",
+      "version": 1,
+      "family": "Live",
+      "applicability": "outcomes",
+      "configDefinition": "outcomeRecordingConfig",
+      "scope": "unit",
+      "trigger": "A round result is submitted, missing, corrected or disputed",
+      "automatic": "Validate complete outcome data and recompute permitted standings",
+      "hostDecision": "Record/correct the actual result and resolve disputes",
+      "resolution": "Accepted result revision and derived standings agree"
+    },
+    {
+      "kind": "programmeRecovery",
+      "version": 1,
+      "family": "Live",
+      "applicability": "all",
+      "configDefinition": "programmeRecoveryConfig",
+      "scope": "any",
+      "trigger": "A step overruns, activity pauses, a cue is revisited or the remaining programme changes",
+      "automatic": "Prepare revised timing and affected instructions without retracting past facts",
+      "hostDecision": "Pause/resume, extend, skip or approve reordered remaining steps",
+      "resolution": "Confirmed future programme and active clocks agree"
+    },
+    {
+      "kind": "departure",
+      "version": 1,
+      "family": "Live",
+      "applicability": "moving",
+      "configDefinition": "departureConfig",
+      "scope": "group",
+      "trigger": "A group is due to depart or the host confirms it has moved",
+      "automatic": "Prepare headcount and destination; fan out consequences after confirmation",
+      "hostDecision": "Confirm depart, wait or destination change per group",
+      "resolution": "Departure revision and current destination recorded"
+    },
+    {
+      "kind": "checkpoint",
+      "version": 1,
+      "family": "Live",
+      "applicability": "moving",
+      "configDefinition": "checkpointConfig",
+      "scope": "group",
+      "trigger": "A group reaches or misses an expected checkpoint",
+      "automatic": "Request a scoped report; compare expected and accounted-for members",
+      "hostDecision": "Pacer/sweep confirms headcount and unresolved dispositions",
+      "resolution": "Checkpoint report current; discrepancies owned"
+    },
+    {
+      "kind": "groupTransfer",
+      "version": 1,
+      "family": "Live",
+      "applicability": "movingSubgroups",
+      "configDefinition": "groupTransferConfig",
+      "scope": "group",
+      "trigger": "A participant requests or requires a group change",
+      "automatic": "Prepare transfer and notify responsible operators",
+      "hostDecision": "Receiving group acknowledges handover where required",
+      "resolution": "One accepted membership and responsible operator remain"
+    },
+    {
+      "kind": "routeRecovery",
+      "version": 1,
+      "family": "Live",
+      "applicability": "moving",
+      "configDefinition": "routeRecoveryConfig",
+      "scope": "any",
+      "trigger": "A route or venue is blocked, unsuitable or changed",
+      "automatic": "Identify affected groups and joining instructions; prepare approved alternatives",
+      "hostDecision": "Confirm hold, diversion, return or replacement venue",
+      "resolution": "New route/stop revision confirmed and affected guidance updated"
+    },
+    {
+      "kind": "locationFreshness",
+      "version": 1,
+      "family": "Live",
+      "applicability": "tracking",
+      "configDefinition": "locationFreshnessConfig",
+      "scope": "any",
+      "trigger": "A tracked leader position expires, permission ends or tracking stops",
+      "automatic": "Remove live claims, fall back to confirmed guidance and request fresh information",
+      "hostDecision": "Restart permitted sharing or provide a human progress report",
+      "resolution": "Fresh location or explicitly labelled fallback available"
+    },
+    {
+      "kind": "accountability",
+      "version": 1,
+      "family": "Live",
+      "applicability": "accountability",
+      "configDefinition": "accountabilityConfig",
+      "scope": "any",
+      "trigger": "A departed participant is unresolved at a checkpoint, transfer or finish",
+      "automatic": "Reconcile against the relevant departure/participation episode; retain uncertainty",
+      "hostDecision": "Responsible operator confirms returned, departed or assistance outcome",
+      "resolution": "All required dispositions resolved or permitted completion exception recorded"
+    },
+    {
+      "kind": "planChangeCommunication",
+      "version": 1,
+      "family": "Communication",
+      "applicability": "all",
+      "configDefinition": "planChangeCommunicationConfig",
+      "scope": "any",
+      "trigger": "A confirmed event change affects particular guests",
+      "automatic": "Compute affected audience, update guidance and send bounded meaningful changes",
+      "hostDecision": "Approve the underlying change; handle exceptional recipients",
+      "resolution": "Current change is communicated or delivery exception owned"
+    },
+    {
+      "kind": "deliveryRecovery",
+      "version": 1,
+      "family": "Communication",
+      "applicability": "all",
+      "configDefinition": "deliveryRecoveryConfig",
+      "scope": "any",
+      "trigger": "A delivery is rejected, unknown, expired or no longer relevant",
+      "automatic": "Reconcile provider evidence; retry only when safe; cancel obsolete pending sends",
+      "hostDecision": "Choose an allowed fallback for unresolved delivery",
+      "resolution": "Delivery outcome known or explicit manual/unreachable disposition"
+    },
+    {
+      "kind": "replyOwnership",
+      "version": 1,
+      "family": "Communication",
+      "applicability": "all",
+      "configDefinition": "replyOwnershipConfig",
+      "scope": "any",
+      "trigger": "A guest response creates an explicit unresolved request",
+      "automatic": "Route a structured response to its workflow; assign genuine reply obligations",
+      "hostDecision": "Answer or transfer an unhandled request",
+      "resolution": "Request resolved or responsibility accepted"
+    },
+    {
+      "kind": "guestAssistance",
+      "version": 1,
+      "family": "Care",
+      "applicability": "all",
+      "configDefinition": "guestAssistanceConfig",
+      "scope": "guest",
+      "trigger": "A guest asks for practical or introduction help",
+      "automatic": "Acknowledge and route privately to an available responsible operator",
+      "hostDecision": "Provide assistance and record the operational resolution",
+      "resolution": "Request resolved, declined or explicitly transferred"
+    },
+    {
+      "kind": "comfortSafety",
+      "version": 1,
+      "family": "Care",
+      "applicability": "all",
+      "configDefinition": "comfortSafetyConfig",
+      "scope": "guest",
+      "trigger": "A comfort or safety concern is explicitly reported",
+      "automatic": "Route to authorized staff; constrain future allocations; retain a private unresolved case",
+      "hostDecision": "Assess and act; decide separation, pause, removal or outside assistance",
+      "resolution": "Authorized human records disposition; sensitive details stay restricted"
+    },
+    {
+      "kind": "attendanceSync",
+      "version": 1,
+      "family": "Recovery",
+      "applicability": "all",
+      "configDefinition": "attendanceSyncConfig",
+      "scope": "any",
+      "trigger": "An attendance action is queued offline or conflicts with a newer revision",
+      "automatic": "Retry absolute operations; preserve applied results and mark data freshness",
+      "hostDecision": "Resolve conflicting identity or attendance observations",
+      "resolution": "Outbox synchronized or conflict explicitly resolved"
+    },
+    {
+      "kind": "concurrencyRecovery",
+      "version": 1,
+      "family": "Recovery",
+      "applicability": "all",
+      "configDefinition": "concurrencyRecoveryConfig",
+      "scope": "any",
+      "trigger": "Two operators act against the same changing resource",
+      "automatic": "Reject stale intent; return new facts; preserve unrelated applied work",
+      "hostDecision": "Reconfirm only when the proposed effect has materially changed",
+      "resolution": "Action applied once against valid preconditions or abandoned"
+    },
+    {
+      "kind": "operationRecovery",
+      "version": 1,
+      "family": "Recovery",
+      "applicability": "all",
+      "configDefinition": "operationRecoveryConfig",
+      "scope": "any",
+      "trigger": "An action times out, a worker restarts or a device reconnects",
+      "automatic": "Resume durable work and reconcile unknown effects before retrying",
+      "hostDecision": "Handle genuinely unresolved external outcomes",
+      "resolution": "Work reaches a known outcome with no blind duplicate effect"
+    },
+    {
+      "kind": "contextBoundary",
+      "version": 1,
+      "family": "Recovery",
+      "applicability": "all",
+      "configDefinition": "contextBoundaryConfig",
+      "scope": "any",
+      "trigger": "An action targets the wrong event/session or mode",
+      "automatic": "Reject mismatched identity, scope or rehearsal/live destination",
+      "hostDecision": "Open the intended event context",
+      "resolution": "Only intended event/session receives the action"
+    },
+    {
+      "kind": "overrideReview",
+      "version": 1,
+      "family": "Recovery",
+      "applicability": "all",
+      "configDefinition": "overrideReviewConfig",
+      "scope": "any",
+      "trigger": "A host requests a change contrary to a suggestion or constraint",
+      "automatic": "Explain whether the rule is a preference, overrideable operating rule or hard limit",
+      "hostDecision": "Choose an allowed scoped override with reason and expiry",
+      "resolution": "Explicit override applied or non-overridable limit retained"
+    },
+    {
+      "kind": "eventClosure",
+      "version": 1,
+      "family": "Closing",
+      "applicability": "all",
+      "configDefinition": "eventClosureConfig",
+      "scope": "any",
+      "trigger": "Event finishes, ends early or is aborted",
+      "automatic": "Stop live tasks, identify unresolved obligations and prepare closure",
+      "hostDecision": "Confirm finish/abort and allowed accountability exceptions",
+      "resolution": "Live operation closed; surviving obligations handed to follow-up"
+    },
+    {
+      "kind": "attendanceReconciliation",
+      "version": 1,
+      "family": "Closing",
+      "applicability": "all",
+      "configDefinition": "attendanceReconciliationConfig",
+      "scope": "any",
+      "trigger": "Final attendance disagrees with confirmed observations or pending work",
+      "automatic": "Assemble specific discrepancies without classifying silence as absence",
+      "hostDecision": "Correct attendance and confirmed no-show dispositions",
+      "resolution": "Final attendance reconciled with coverage stated"
+    },
+    {
+      "kind": "financialReconciliation",
+      "version": 1,
+      "family": "Follow-up",
+      "applicability": "paid",
+      "configDefinition": "financialReconciliationConfig",
+      "scope": "any",
+      "trigger": "An authoritative provider reports a payment/refund discrepancy",
+      "automatic": "Link provider reconciliation work and prevent duplicate financial effects",
+      "hostDecision": "Resolve through payment owner; authorize money movement there",
+      "resolution": "Provider-owned discrepancy resolved"
+    },
+    {
+      "kind": "postEventFollowUp",
+      "version": 1,
+      "family": "Follow-up",
+      "applicability": "all",
+      "configDefinition": "postEventFollowUpConfig",
+      "scope": "any",
+      "trigger": "A selected follow-up is due or becomes inappropriate",
+      "automatic": "Prepare/deliver relevant messages through permitted routes; honor opt-outs and unresolved cases",
+      "hostDecision": "Handle sensitive exceptions or explicitly authored content",
+      "resolution": "Chosen follow-up delivered, skipped or exception owned"
+    },
+    {
+      "kind": "eventLearning",
+      "version": 1,
+      "family": "Follow-up",
+      "applicability": "all",
+      "configDefinition": "eventLearningConfig",
+      "scope": "any",
+      "trigger": "Event operations have closed with enough evidence for a recap",
+      "automatic": "Summarize interventions, waiting, unresolved work and guest outcomes with denominators",
+      "hostDecision": "Review lessons and choose changes for next time",
+      "resolution": "Report represents available evidence and explicit unknowns"
     }
   ]
 };

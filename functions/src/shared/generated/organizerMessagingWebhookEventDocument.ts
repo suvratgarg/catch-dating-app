@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.
+ * Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.
  */
 export interface OrganizerMessagingWebhookEventDocument {
   provider: "metaCloudApi";
@@ -19,6 +19,27 @@ export interface OrganizerMessagingWebhookEventDocument {
     | "unmatched";
   providerMessageId: string | null;
   contextProviderMessageId: string | null;
+  providerAccountId?: string | null;
+  providerPhoneNumberId?: string | null;
+  callbackData?: string | null;
+  inboundReply?:
+    | null
+    | {
+        kind: "templateQuickReply";
+        payload: string;
+        label: string;
+      }
+    | {
+        kind: "replyButton";
+        id: string;
+        label: string;
+      }
+    | {
+        kind: "listReply";
+        id: string;
+        label: string;
+        description: string | null;
+      };
   deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
   endpointHash: string | null;
   isStop: boolean;
@@ -29,6 +50,54 @@ export interface OrganizerMessagingWebhookEventDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.
+   */
+  assistanceProcessing?: {
+    sourceHash: string;
+    attemptCount: number;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    outcome:
+      | {
+          kind: "delivery";
+          disposition:
+            | "applied"
+            | "duplicateOrOlder"
+            | "conflictingEvidence"
+            | "unconfirmed";
+        }
+      | {
+          kind: "reply";
+          disposition: "accepted" | "replayed";
+        }
+      | {
+          kind: "waiting";
+          reason: "deliveryUnconfirmed";
+        }
+      | {
+          kind: "ignored";
+        }
+      | {
+          kind: "rejected";
+          reason:
+            | "unavailable"
+            | "deliveryScope"
+            | "scopeMismatch"
+            | "staleIntent"
+            | "invalidChoice"
+            | "expired"
+            | "alreadyResponded"
+            | "noLongerNeeded"
+            | "factsStale"
+            | "guestStateChanged";
+        };
+  };
   processingStatus: "pending" | "processed" | "unmatched" | "failed";
   attemptCount: number;
   /**

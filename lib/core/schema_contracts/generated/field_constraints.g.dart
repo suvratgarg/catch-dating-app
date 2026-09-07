@@ -11778,6 +11778,4386 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceCaseDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentCaseId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.caseId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentCategory = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.category',
+    required: true,
+    enumValues: <String>['comfortSafety'],
+  );
+
+  static const eventAssistanceCaseDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCaseDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCaseDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCaseDocumentOwner = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.owner',
+    required: true,
+  );
+
+  static const eventAssistanceCaseDocumentReceivedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCaseDocumentResponseId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.responseId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCaseDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceCaseDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceCaseDocument.status',
+    required: true,
+    enumValues: <String>['open', 'resolved'],
+  );
+
+  static const eventAssistanceCommandContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCommandPayloadResolutionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.resolutionId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCommandPayloadRestrictedCaseId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCommand.payload.restrictedCaseId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptAttemptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'provider'],
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptBindingTransport = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssistanceDeliveryAttemptMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptOrdinal = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceDeliveryAttemptRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventAssistanceDeliveryAttemptSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceDeliveryAttemptStateAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryAttemptStateClassification = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'invalidRecipient', 'policy', 'suppressed'],
+  );
+
+  static const eventAssistanceDeliveryAttemptStateEvidenceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.evidenceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryAttemptStateKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryAttemptStateReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped', 'reservationExpired', 'permitExpired'],
+  );
+
+  static const eventAssistanceDeliveryAttemptStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryAttempt.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGuestDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentIntentionClaimedEta = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.claimedEta',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestDocumentIntentionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentIntentionTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.intention.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.lifecycle',
+    required: true,
+    enumValues: <String>['active', 'closed'],
+  );
+
+  static const eventAssistanceGuestDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceGuestDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestGrantDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestGrantDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentRevokedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.revokedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceGuestGrantDocumentSigningKeyId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.signingKeyId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentThreadId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.threadId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestGrantDocumentTokenHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestGrantDocument.tokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGuestResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseChoiceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssistanceGuestResponseReceivedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestResponseResponseId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.responseId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceGuestResponseSourceActionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.source.actionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseSourceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.source.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueCategory = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.category',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLogistics', 'accessibility', 'comfortSafety', 'other'],
+  );
+
+  static const eventAssistanceGuestResponseValueInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionClaimedEta = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.claimedEta',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueIntentionTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.intention.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestResponseValueKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestResponse.value.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestViewCallableResponseChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.choices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseEventTitle = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.eventTitle',
+    maxLength: 160,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseGuestRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGuestViewCallableResponseIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.reason',
+    required: true,
+    enumValues: <String>['expired', 'eventClosed', 'guestUnavailable', 'noInstructions', 'alreadyJoined'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseResponseLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.response.label',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseResponseReceivedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.response.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.status',
+    required: true,
+  );
+
+  static const eventAssistanceGuestViewCallableResponseText = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.text',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGuestViewCallableResponseTitle = CatchContractFieldConstraints(
+    path: 'eventAssistanceGuestViewCallableResponse.title',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionMessageKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.messageKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinDecisionNextEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.nextEvaluationAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinDecisionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unreachable', 'entryDecision', 'missingInformation'],
+  );
+
+  static const eventAssistanceLateJoinDecisionShouldSend = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinDecision.shouldSend',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputDepartureConfirmed = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.departureConfirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputEventOpen = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.eventOpen',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAdmission = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.admission',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admitted', 'pending', 'declined'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceLastValueCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.lastValue.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceObservedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCollected', 'notConfirmed', 'sourceUnavailable'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'guest', 'provider', 'system'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceStaleAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.staleAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendanceValueCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendance.value.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestDeliveryEligibility = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.deliveryEligibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'unreachable', 'unknown'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionClaimedEta = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.claimedEta',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuestIntentionTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guest.intention.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceLastValueValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.lastValue.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceObservedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCollected', 'notConfirmed', 'sourceUnavailable'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'guest', 'provider', 'system'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceStaleAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.staleAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueText = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputGuidanceValueValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.guidance.value.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputLastMessageAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.lastMessage.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputLastMessageMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.lastMessage.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputMessagesThisEpisode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.messagesThisEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAssistanceLateJoinInputNow = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.now',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyCutoffAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyCutoffKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedStopIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPermittedStopIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.permittedStopIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLateJoinInputPolicyDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventAssistanceLateJoinInputPolicyUnanswered = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventAssistanceLateJoinInputPolicyUpdateOn = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.policy.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLateJoinInputSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.policyVersion',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLateJoinInputSettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceLateJoinInput.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistanceMessageDocumentAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsAttemptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsAuthorizationCheckedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.authorization.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsAuthorizationInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.authorization.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsAuthorizationPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.authorization.permissionRevision',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsAuthorizationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.authorization.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingFallbackOwner = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.fallbackOwner',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'provider'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.provider',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['meta'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsBindingTransport = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.binding.transport',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsOrdinal = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateClassification = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'invalidRecipient', 'policy', 'suppressed'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateEvidenceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.evidenceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['superseded', 'eventClosed', 'responded', 'expired', 'permissionRevoked', 'hostStopped', 'reservationExpired', 'permitExpired'],
+  );
+
+  static const eventAssistanceMessageDocumentAttemptsItemsStateReconcileAfter = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.attempts.items.state.reconcileAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentDeliveryConflict = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.deliveryConflict',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentBody = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.body',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 0,
+    maxItems: 20,
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoicesItemsValueCategory = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices.items.value.category',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLogistics', 'accessibility', 'comfortSafety', 'other'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoicesItemsValueInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices.items.value.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentChoicesItemsValueKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.choices.items.value.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventAssistanceMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventAssistanceMessageDocumentIntentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentNoticeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.noticeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceMessageDocumentIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssistanceMessageDocumentIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentTitle = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceMessageDocumentIntentWorkflowOccurrenceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.workflow.occurrenceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentLifecycle = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.lifecycle',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const eventAssistanceMessageDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceMessageDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceMessageDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentBody = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.body',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 0,
+    maxItems: 20,
+  );
+
+  static const eventAssistanceMessageIntentChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentChoicesItemsValueCategory = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices.items.value.category',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventLogistics', 'accessibility', 'comfortSafety', 'other'],
+  );
+
+  static const eventAssistanceMessageIntentChoicesItemsValueInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices.items.value.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentChoicesItemsValueKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.choices.items.value.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceMessageIntentDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventAssistanceMessageIntentDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventAssistanceMessageIntentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentInstructionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentIntentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentNoticeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.noticeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const eventAssistanceMessageIntentPermittedRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.permittedRoutes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceMessageIntentPermittedRoutesItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.permittedRoutes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventAssistanceMessageIntentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssistanceMessageIntentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceMessageIntentTitle = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.title',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMessageIntentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceMessageIntentWorkflowOccurrenceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.workflow.occurrenceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyConfigMetrics = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.metrics',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyConfigMissingCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.missingCoverage',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyConfigSensitiveDetails = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.config.sensitiveDetails',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeEventId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicyScopeResourceId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.resourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistancePolicyScopeRound = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.round',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistancePolicyScopeUnitId = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.scope.unitId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventAssistancePolicySettingKind = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingPolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.policyVersion',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistancePolicySettingReason = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventAssistancePolicyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistancePolicy.version',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentBudgetId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentChargedMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentEndsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentLimitMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeDay = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsBudgetDocumentStartsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsBudgetDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused'],
+  );
+
+  static const eventAssistanceSmsBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigActivationSenderApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.senderApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigActivationUseCaseApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.useCaseApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigCountry = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.country',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.credentialVersion',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventAssistanceSmsConfigMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.mask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
+  );
+
+  static const eventAssistanceSmsConfigMaxSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.maxSegments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsConfigPrincipalEntityId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.principalEntityId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsConfigProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigQuoteMaxMicrosPerSegment = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.maxMicrosPerSegment',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventAssistanceSmsConfigQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsConfigSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConfigSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventAssistanceSmsConfigTemplates = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsDltTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.dltTemplateId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsParts = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 16,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1200,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsName = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.name',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPartsItemsText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.parts.items.text',
+    maxLength: 1200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'paused'],
+  );
+
+  static const eventAssistanceSmsConfigTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConfig.templates.items.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsConsentReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsConsentReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBudgetIds = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.budgetIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentBudgetIdsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.budgetIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentConfigHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.configHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentEncoding = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.encoding',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['gsm7', 'unicode'],
+  );
+
+  static const eventAssistanceSmsDispatchDocumentGrantId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.permissionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.quoteRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentReportTokenHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.reportTokenHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.segments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentSenderMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.senderMask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsDispatchDocumentTemplateRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsDispatchDocument.templateRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.currentReceiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceCopyVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidencePhoneVerifiedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.phoneVerifiedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentEvidenceSubjectUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.evidence.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+91[6-9][0-9]{9}\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPermissionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPermissionDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'senderUnavailable', 'eventClosed', 'notAdmitted', 'verifyPhone'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewCanEnable = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.canEnable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewConsentText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.consent.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewConsentVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.consent.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.phoneLastFour',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationSenderApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.senderApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationUseCaseApprovalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.useCaseApprovalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentCountry = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.country',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.credentialVersion',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentMask = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.mask',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z]{6}\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentMaxSegments = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.maxSegments',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceSmsSenderDocumentPrincipalEntityId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.principalEntityId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentProvider = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteMaxMicrosPerSegment = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.maxMicrosPerSegment',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplates = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsDltTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.dltTemplateId',
+    maxLength: 30,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]+\$',
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsParts = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 16,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1200,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsName = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.name',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsText = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.parts.items.text',
+    maxLength: 1200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'approved', 'paused'],
+  );
+
+  static const eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsSenderDocument.templates.items.templateId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled', 'expired'],
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentPermissionRevisionAtIssue = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.permissionRevisionAtIssue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSmsWithdrawalGrantDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsWithdrawalGrantDocument.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceThreadDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceThreadDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceThreadDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceThreadDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceThreadDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceThreadDocumentThreadId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.threadId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceThreadDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceThreadDocumentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.workflow.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['venueReadiness', 'routeReadiness', 'formatReadiness', 'rosterReadiness', 'requiredGuestData', 'resourceReadiness', 'staffingReadiness', 'messagingReadiness', 'admissionReview', 'financialReadiness', 'joiningInstructions', 'identityResolution', 'guestAdmission', 'guestCheckIn', 'lateJoin', 'participationChange', 'guestPrerequisite', 'allocationRepair', 'placementConfirmation', 'resourceRecovery', 'fairParticipation', 'roundPublication', 'unitProgress', 'outcomeRecording', 'programmeRecovery', 'departure', 'checkpoint', 'groupTransfer', 'routeRecovery', 'locationFreshness', 'accountability', 'planChangeCommunication', 'deliveryRecovery', 'replyOwnership', 'guestAssistance', 'comfortSafety', 'attendanceSync', 'concurrencyRecovery', 'operationRecovery', 'contextBoundary', 'overrideReview', 'eventClosure', 'attendanceReconciliation', 'financialReconciliation', 'postEventFollowUp', 'eventLearning'],
+  );
+
+  static const eventAssistanceThreadDocumentWorkflowOccurrenceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceThreadDocument.workflow.occurrenceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
   static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
     required: true,
@@ -22567,6 +26947,1440 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventWhatsappBudgetDocumentApprovalId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentBudgetId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentChargedMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappBudgetDocumentEndsAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentLimitMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappBudgetDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeDay = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventWhatsappBudgetDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappBudgetDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappBudgetDocumentStartsAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappBudgetDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused'],
+  );
+
+  static const eventWhatsappBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappConsentReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappConsentReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'eventWhatsappConsentReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.attemptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentBudgetIds = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.budgetIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventWhatsappDispatchDocumentBudgetIdsItems = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.budgetIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentGrantId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.permissionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentPolicyHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.policyHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentPolicyRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.policyRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.quoteRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentReplyBindingId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.replyBindingId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappDispatchDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentStopRecordHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.stopRecordHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappDispatchDocumentTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappDispatchDocumentTemplateHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappDispatchDocument.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.currentReceiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceCopyVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentEvidencePhoneVerifiedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.phoneVerifiedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceReceiptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceSenderHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentEvidenceSubjectUid = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.evidence.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPermissionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.displayPhoneNumber',
+    maxLength: 32,
+    minLength: 7,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentSenderProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentSenderProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.sender.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPermissionDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPermissionDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentActivationApprovalId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentMaxTemplateAgeSeconds = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.maxTemplateAgeSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 60,
+    maximum: 86400,
+  );
+
+  static const eventWhatsappPolicyDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteMaxMicrosPerMessage = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.maxMicrosPerMessage',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRecipientPrefixes = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.recipientPrefixes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 250,
+    uniqueItems: true,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRecipientPrefixesItems = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.recipientPrefixes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{0,3}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPolicyDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventWhatsappPolicyDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplates = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 32,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickReplies = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsAction = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['onMyWay', 'notComing', 'joinLater', 'helpLogistics', 'helpAccessibility', 'helpSafety', 'helpOther', 'acknowledge'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsButtonIndex = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.buttonIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.quickReplies.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsTemplateDocumentId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.templateDocumentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsTemplateHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.templateHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariables = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsMaxCharacters = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.maxCharacters',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 4096,
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsProviderName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.providerName',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsSource = CatchContractFieldConstraints(
+    path: 'eventWhatsappPolicyDocument.templates.items.variables.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventTitle', 'instruction', 'responseUrl', 'responseUrlSuffix'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'senderUnavailable', 'eventClosed', 'notAdmitted', 'verifyPhone'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewCanEnable = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.canEnable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewConsentText = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.consent.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewConsentVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.consent.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.phoneLastFour',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderBindingHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.bindingHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderDisplayPhoneNumber = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.sender.displayPhoneNumber',
+    maxLength: 32,
+    minLength: 7,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappPreferenceCallableResponseViewStopRecordHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.stopRecordHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attemptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttemptScopeHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attemptScopeHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoices = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 20,
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentChoicesItemsNativeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.choices.items.nativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^ce-wa1\\.[a-f0-9]{64}\\.([0-9]|1[0-9])\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentGuestId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.guestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^guest:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentGuestRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappReplyBindingDocumentIntentHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentReplyKind = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.replyKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['templateQuickReply', 'replyButton', 'listReply'],
+  );
+
+  static const eventWhatsappReplyBindingDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventWhatsappReplyBindingDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled', 'expired'],
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentPermissionRevisionAtIssue = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.permissionRevisionAtIssue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventWhatsappWithdrawalGrantDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventWhatsappWithdrawalGrantDocument.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const exploreSearchCallablePayloadCityName = CatchContractFieldConstraints(
     path: 'exploreSearchCallablePayload.cityName',
     maxLength: 120,
@@ -23994,6 +29808,52 @@ abstract final class CatchContractConstraints {
     format: 'date-time',
   );
 
+  static const getEventAssistanceGuestViewCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGuestViewCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventAssistanceGuestViewCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGuestViewCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const getEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSmsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceSmsWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsWithdrawalCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventAssistanceSmsWithdrawalCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsWithdrawalCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
   static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'getEventInviteLinkTokenCallablePayload.eventId',
     maxLength: 180,
@@ -24833,6 +30693,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRuntimeBootstrapCallableResponseParticipantEventAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventRuntimeBootstrapCallableResponse.participant.eventAttendeeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const getEventRuntimeBootstrapCallableResponseParticipantEventId = CatchContractFieldConstraints(
     path: 'getEventRuntimeBootstrapCallableResponse.participant.eventId',
     maxLength: 180,
@@ -25224,6 +31091,47 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['round', 'rect', 'row', 'court', 'zone'],
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventWhatsappWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventWhatsappWithdrawalCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventWhatsappWithdrawalCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventWhatsappWithdrawalCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
   static const getOrganizerApplicationDetailCallablePayloadApplicationId = CatchContractFieldConstraints(
@@ -46927,6 +52835,34 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['URL', 'PHONE_NUMBER', 'QUICK_REPLY', 'COPY_CODE', 'UNKNOWN'],
   );
 
+  static const organizerMessageTemplateDocumentButtonLabels = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonLabels',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const organizerMessageTemplateDocumentButtonLabelsItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonLabels.items',
+    maxLength: 1024,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentButtonUrls = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonUrls',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const organizerMessageTemplateDocumentButtonUrlsItems = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.buttonUrls.items',
+    maxLength: 2048,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessageTemplateDocumentCategory = CatchContractFieldConstraints(
     path: 'organizerMessageTemplateDocument.category',
     required: true,
@@ -46940,6 +52876,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerMessageTemplateDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.contentHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const organizerMessageTemplateDocumentHasMediaHeader = CatchContractFieldConstraints(
@@ -47005,6 +52947,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z][A-Za-z0-9_]{0,63}\$',
+  );
+
+  static const organizerMessageTemplateDocumentParameterFormat = CatchContractFieldConstraints(
+    path: 'organizerMessageTemplateDocument.parameterFormat',
+    valueTypes: <String>['string'],
+    enumValues: <String>['NAMED', 'POSITIONAL', 'UNKNOWN'],
   );
 
   static const organizerMessageTemplateDocumentProviderTemplateId = CatchContractFieldConstraints(
@@ -47233,12 +53181,65 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingAttemptCount = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.attemptCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeDisposition = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.disposition',
+    required: true,
+    enumValues: <String>['accepted', 'replayed'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.kind',
+    required: true,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeReason = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.reason',
+    required: true,
+    enumValues: <String>['unavailable', 'deliveryScope', 'scopeMismatch', 'staleIntent', 'invalidChoice', 'expired', 'alreadyResponded', 'noLongerNeeded', 'factsStale', 'guestStateChanged'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingSourceHash = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerMessagingWebhookEventDocumentAttemptCount = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.attemptCount',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 100,
+  );
+
+  static const organizerMessagingWebhookEventDocumentCallbackData = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.callbackData',
+    maxLength: 512,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerMessagingWebhookEventDocumentConnectionId = CatchContractFieldConstraints(
@@ -47315,6 +53316,42 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMessagingWebhookEventDocumentInboundReplyDescription = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.description',
+    maxLength: 4096,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.id',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyKind = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.kind',
+    required: true,
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyLabel = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.label',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentInboundReplyPayload = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.inboundReply.payload',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerMessagingWebhookEventDocumentIsStop = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.isStop',
     required: true,
@@ -47354,6 +53391,12 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const organizerMessagingWebhookEventDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerAccountId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
+  );
+
   static const organizerMessagingWebhookEventDocumentProviderErrorCode = CatchContractFieldConstraints(
     path: 'organizerMessagingWebhookEventDocument.providerErrorCode',
     valueTypes: <String>['integer'],
@@ -47388,6 +53431,12 @@ abstract final class CatchContractConstraints {
     path: 'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerMessagingWebhookEventDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'organizerMessagingWebhookEventDocument.providerPhoneNumberId',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,32}\$',
   );
 
   static const organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged = CatchContractFieldConstraints(
@@ -49345,6 +55394,99 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerWhatsappEndpointStopDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.connectionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentObservedAt = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerWhatsappEndpointStopDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderAccountId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerAccountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerEventId',
+    maxLength: 1024,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerWhatsappEndpointStopDocumentProviderPhoneNumberId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.providerPhoneNumberId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{5,40}\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerWhatsappEndpointStopDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerWhatsappEndpointStopDocumentStopId = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.stopId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerWhatsappEndpointStopDocumentStoppedAt = CatchContractFieldConstraints(
+    path: 'organizerWhatsappEndpointStopDocument.stoppedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const organizerWhatsappMessageDocumentActorUid = CatchContractFieldConstraints(
@@ -55009,6 +61151,52 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssistanceSmsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceSmsPreferenceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAttendeeAttendanceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventAttendeeAttendanceCallablePayload.attendeeId',
     maxLength: 180,
@@ -55101,6 +61289,74 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionSenderHash = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadDecisionStopRecordHash = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.stopRecordHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventWhatsappPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const setOrganizerFormAutomationStateCallablePayloadEnabled = CatchContractFieldConstraints(
@@ -55334,6 +61590,195 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'uri',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadChoiceId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadExpectedGuestRevision = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.expectedGuestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadIntentId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadIntentRevision = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseResultKind = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.result.kind',
+    required: true,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseResultReason = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.result.reason',
+    required: true,
+    enumValues: <String>['scopeMismatch', 'staleIntent', 'invalidChoice', 'expired', 'alreadyResponded', 'noLongerNeeded', 'factsStale', 'guestStateChanged'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewChoices = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.choices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewEventTitle = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.eventTitle',
+    maxLength: 160,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewGuestRevision = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewInstructionRevision = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.instructionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewIntentId = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewIntentRevision = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.intentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewReason = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.reason',
+    required: true,
+    enumValues: <String>['expired', 'eventClosed', 'guestUnavailable', 'noInstructions', 'alreadyJoined'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewResponseLabel = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.response.label',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewResponseReceivedAt = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.response.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewStatus = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.status',
+    required: true,
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewText = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.text',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const submitEventAssistanceGuestChoiceCallableResponseViewTitle = CatchContractFieldConstraints(
+    path: 'submitEventAssistanceGuestChoiceCallableResponse.view.title',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const submitEventRehearsalGuestActionCallablePayloadAction = CatchContractFieldConstraints(
@@ -63053,6 +69498,68 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const withdrawEventAssistanceSmsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const withdrawEventAssistanceSmsCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'withdrawEventAssistanceSmsCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const withdrawEventWhatsappCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const withdrawEventWhatsappCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const withdrawEventWhatsappCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const withdrawEventWhatsappCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'withdrawEventWhatsappCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
   static const withdrawOrganizerFormResponseCallablePayloadRequestId = CatchContractFieldConstraints(
     path: 'withdrawOrganizerFormResponseCallablePayload.requestId',
     required: true,
@@ -64739,6 +71246,573 @@ abstract final class CatchContractConstraints {
     'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
     'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
     'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
+    'eventAssistanceCaseDocument.attendeeId': eventAssistanceCaseDocumentAttendeeId,
+    'eventAssistanceCaseDocument.caseId': eventAssistanceCaseDocumentCaseId,
+    'eventAssistanceCaseDocument.category': eventAssistanceCaseDocumentCategory,
+    'eventAssistanceCaseDocument.context.eventId': eventAssistanceCaseDocumentContextEventId,
+    'eventAssistanceCaseDocument.context.mode': eventAssistanceCaseDocumentContextMode,
+    'eventAssistanceCaseDocument.context.organizerId': eventAssistanceCaseDocumentContextOrganizerId,
+    'eventAssistanceCaseDocument.episodeId': eventAssistanceCaseDocumentEpisodeId,
+    'eventAssistanceCaseDocument.guestId': eventAssistanceCaseDocumentGuestId,
+    'eventAssistanceCaseDocument.messageId': eventAssistanceCaseDocumentMessageId,
+    'eventAssistanceCaseDocument.owner': eventAssistanceCaseDocumentOwner,
+    'eventAssistanceCaseDocument.receivedAt': eventAssistanceCaseDocumentReceivedAt,
+    'eventAssistanceCaseDocument.responseId': eventAssistanceCaseDocumentResponseId,
+    'eventAssistanceCaseDocument.schemaVersion': eventAssistanceCaseDocumentSchemaVersion,
+    'eventAssistanceCaseDocument.status': eventAssistanceCaseDocumentStatus,
+    'eventAssistanceCommand.context.clockId': eventAssistanceCommandContextClockId,
+    'eventAssistanceCommand.context.eventId': eventAssistanceCommandContextEventId,
+    'eventAssistanceCommand.context.mode': eventAssistanceCommandContextMode,
+    'eventAssistanceCommand.context.organizerId': eventAssistanceCommandContextOrganizerId,
+    'eventAssistanceCommand.context.rehearsalId': eventAssistanceCommandContextRehearsalId,
+    'eventAssistanceCommand.context.virtualEventId': eventAssistanceCommandContextVirtualEventId,
+    'eventAssistanceCommand.eventId': eventAssistanceCommandEventId,
+    'eventAssistanceCommand.kind': eventAssistanceCommandKind,
+    'eventAssistanceCommand.operationId': eventAssistanceCommandOperationId,
+    'eventAssistanceCommand.payload.resolutionId': eventAssistanceCommandPayloadResolutionId,
+    'eventAssistanceCommand.payload.restrictedCaseId': eventAssistanceCommandPayloadRestrictedCaseId,
+    'eventAssistanceDeliveryAttempt.attemptId': eventAssistanceDeliveryAttemptAttemptId,
+    'eventAssistanceDeliveryAttempt.authorization.checkedAt': eventAssistanceDeliveryAttemptAuthorizationCheckedAt,
+    'eventAssistanceDeliveryAttempt.authorization.instructionRevision': eventAssistanceDeliveryAttemptAuthorizationInstructionRevision,
+    'eventAssistanceDeliveryAttempt.authorization.permissionRevision': eventAssistanceDeliveryAttemptAuthorizationPermissionRevision,
+    'eventAssistanceDeliveryAttempt.authorization.validUntil': eventAssistanceDeliveryAttemptAuthorizationValidUntil,
+    'eventAssistanceDeliveryAttempt.binding.bindingRevision': eventAssistanceDeliveryAttemptBindingBindingRevision,
+    'eventAssistanceDeliveryAttempt.binding.fallbackOwner': eventAssistanceDeliveryAttemptBindingFallbackOwner,
+    'eventAssistanceDeliveryAttempt.binding.provider': eventAssistanceDeliveryAttemptBindingProvider,
+    'eventAssistanceDeliveryAttempt.binding.recipientEndpointId': eventAssistanceDeliveryAttemptBindingRecipientEndpointId,
+    'eventAssistanceDeliveryAttempt.binding.routeId': eventAssistanceDeliveryAttemptBindingRouteId,
+    'eventAssistanceDeliveryAttempt.binding.senderId': eventAssistanceDeliveryAttemptBindingSenderId,
+    'eventAssistanceDeliveryAttempt.binding.senderIdentity': eventAssistanceDeliveryAttemptBindingSenderIdentity,
+    'eventAssistanceDeliveryAttempt.binding.transport': eventAssistanceDeliveryAttemptBindingTransport,
+    'eventAssistanceDeliveryAttempt.context.clockId': eventAssistanceDeliveryAttemptContextClockId,
+    'eventAssistanceDeliveryAttempt.context.mode': eventAssistanceDeliveryAttemptContextMode,
+    'eventAssistanceDeliveryAttempt.context.rehearsalId': eventAssistanceDeliveryAttemptContextRehearsalId,
+    'eventAssistanceDeliveryAttempt.context.virtualEventId': eventAssistanceDeliveryAttemptContextVirtualEventId,
+    'eventAssistanceDeliveryAttempt.createdAt': eventAssistanceDeliveryAttemptCreatedAt,
+    'eventAssistanceDeliveryAttempt.intentId': eventAssistanceDeliveryAttemptIntentId,
+    'eventAssistanceDeliveryAttempt.intentRevision': eventAssistanceDeliveryAttemptIntentRevision,
+    'eventAssistanceDeliveryAttempt.mode': eventAssistanceDeliveryAttemptMode,
+    'eventAssistanceDeliveryAttempt.ordinal': eventAssistanceDeliveryAttemptOrdinal,
+    'eventAssistanceDeliveryAttempt.routeId': eventAssistanceDeliveryAttemptRouteId,
+    'eventAssistanceDeliveryAttempt.schemaVersion': eventAssistanceDeliveryAttemptSchemaVersion,
+    'eventAssistanceDeliveryAttempt.state.at': eventAssistanceDeliveryAttemptStateAt,
+    'eventAssistanceDeliveryAttempt.state.classification': eventAssistanceDeliveryAttemptStateClassification,
+    'eventAssistanceDeliveryAttempt.state.evidenceId': eventAssistanceDeliveryAttemptStateEvidenceId,
+    'eventAssistanceDeliveryAttempt.state.kind': eventAssistanceDeliveryAttemptStateKind,
+    'eventAssistanceDeliveryAttempt.state.providerMessageId': eventAssistanceDeliveryAttemptStateProviderMessageId,
+    'eventAssistanceDeliveryAttempt.state.reason': eventAssistanceDeliveryAttemptStateReason,
+    'eventAssistanceDeliveryAttempt.state.reconcileAfter': eventAssistanceDeliveryAttemptStateReconcileAfter,
+    'eventAssistanceGuestDocument.attendeeGeneration': eventAssistanceGuestDocumentAttendeeGeneration,
+    'eventAssistanceGuestDocument.attendeeId': eventAssistanceGuestDocumentAttendeeId,
+    'eventAssistanceGuestDocument.context.eventId': eventAssistanceGuestDocumentContextEventId,
+    'eventAssistanceGuestDocument.context.mode': eventAssistanceGuestDocumentContextMode,
+    'eventAssistanceGuestDocument.context.organizerId': eventAssistanceGuestDocumentContextOrganizerId,
+    'eventAssistanceGuestDocument.createdAt': eventAssistanceGuestDocumentCreatedAt,
+    'eventAssistanceGuestDocument.episodeId': eventAssistanceGuestDocumentEpisodeId,
+    'eventAssistanceGuestDocument.guestId': eventAssistanceGuestDocumentGuestId,
+    'eventAssistanceGuestDocument.intention.claimedEta': eventAssistanceGuestDocumentIntentionClaimedEta,
+    'eventAssistanceGuestDocument.intention.kind': eventAssistanceGuestDocumentIntentionKind,
+    'eventAssistanceGuestDocument.intention.target.checkpointId': eventAssistanceGuestDocumentIntentionTargetCheckpointId,
+    'eventAssistanceGuestDocument.intention.target.groupId': eventAssistanceGuestDocumentIntentionTargetGroupId,
+    'eventAssistanceGuestDocument.intention.target.itineraryId': eventAssistanceGuestDocumentIntentionTargetItineraryId,
+    'eventAssistanceGuestDocument.intention.target.kind': eventAssistanceGuestDocumentIntentionTargetKind,
+    'eventAssistanceGuestDocument.intention.target.lateEntry': eventAssistanceGuestDocumentIntentionTargetLateEntry,
+    'eventAssistanceGuestDocument.intention.target.placeId': eventAssistanceGuestDocumentIntentionTargetPlaceId,
+    'eventAssistanceGuestDocument.intention.target.routeId': eventAssistanceGuestDocumentIntentionTargetRouteId,
+    'eventAssistanceGuestDocument.intention.target.stopId': eventAssistanceGuestDocumentIntentionTargetStopId,
+    'eventAssistanceGuestDocument.lifecycle': eventAssistanceGuestDocumentLifecycle,
+    'eventAssistanceGuestDocument.revision': eventAssistanceGuestDocumentRevision,
+    'eventAssistanceGuestDocument.schemaVersion': eventAssistanceGuestDocumentSchemaVersion,
+    'eventAssistanceGuestDocument.updatedAt': eventAssistanceGuestDocumentUpdatedAt,
+    'eventAssistanceGuestGrantDocument.attendeeId': eventAssistanceGuestGrantDocumentAttendeeId,
+    'eventAssistanceGuestGrantDocument.context.eventId': eventAssistanceGuestGrantDocumentContextEventId,
+    'eventAssistanceGuestGrantDocument.context.mode': eventAssistanceGuestGrantDocumentContextMode,
+    'eventAssistanceGuestGrantDocument.context.organizerId': eventAssistanceGuestGrantDocumentContextOrganizerId,
+    'eventAssistanceGuestGrantDocument.episodeId': eventAssistanceGuestGrantDocumentEpisodeId,
+    'eventAssistanceGuestGrantDocument.expiresAt': eventAssistanceGuestGrantDocumentExpiresAt,
+    'eventAssistanceGuestGrantDocument.guestId': eventAssistanceGuestGrantDocumentGuestId,
+    'eventAssistanceGuestGrantDocument.issuedAt': eventAssistanceGuestGrantDocumentIssuedAt,
+    'eventAssistanceGuestGrantDocument.linkId': eventAssistanceGuestGrantDocumentLinkId,
+    'eventAssistanceGuestGrantDocument.revokedAt': eventAssistanceGuestGrantDocumentRevokedAt,
+    'eventAssistanceGuestGrantDocument.schemaVersion': eventAssistanceGuestGrantDocumentSchemaVersion,
+    'eventAssistanceGuestGrantDocument.signingKeyId': eventAssistanceGuestGrantDocumentSigningKeyId,
+    'eventAssistanceGuestGrantDocument.threadId': eventAssistanceGuestGrantDocumentThreadId,
+    'eventAssistanceGuestGrantDocument.tokenHash': eventAssistanceGuestGrantDocumentTokenHash,
+    'eventAssistanceGuestResponse.attendeeId': eventAssistanceGuestResponseAttendeeId,
+    'eventAssistanceGuestResponse.choiceId': eventAssistanceGuestResponseChoiceId,
+    'eventAssistanceGuestResponse.context.clockId': eventAssistanceGuestResponseContextClockId,
+    'eventAssistanceGuestResponse.context.mode': eventAssistanceGuestResponseContextMode,
+    'eventAssistanceGuestResponse.context.rehearsalId': eventAssistanceGuestResponseContextRehearsalId,
+    'eventAssistanceGuestResponse.context.virtualEventId': eventAssistanceGuestResponseContextVirtualEventId,
+    'eventAssistanceGuestResponse.episodeId': eventAssistanceGuestResponseEpisodeId,
+    'eventAssistanceGuestResponse.eventId': eventAssistanceGuestResponseEventId,
+    'eventAssistanceGuestResponse.intentId': eventAssistanceGuestResponseIntentId,
+    'eventAssistanceGuestResponse.intentRevision': eventAssistanceGuestResponseIntentRevision,
+    'eventAssistanceGuestResponse.receivedAt': eventAssistanceGuestResponseReceivedAt,
+    'eventAssistanceGuestResponse.responseId': eventAssistanceGuestResponseResponseId,
+    'eventAssistanceGuestResponse.schemaVersion': eventAssistanceGuestResponseSchemaVersion,
+    'eventAssistanceGuestResponse.source.actionId': eventAssistanceGuestResponseSourceActionId,
+    'eventAssistanceGuestResponse.source.kind': eventAssistanceGuestResponseSourceKind,
+    'eventAssistanceGuestResponse.value.category': eventAssistanceGuestResponseValueCategory,
+    'eventAssistanceGuestResponse.value.instructionRevision': eventAssistanceGuestResponseValueInstructionRevision,
+    'eventAssistanceGuestResponse.value.intention.claimedEta': eventAssistanceGuestResponseValueIntentionClaimedEta,
+    'eventAssistanceGuestResponse.value.intention.kind': eventAssistanceGuestResponseValueIntentionKind,
+    'eventAssistanceGuestResponse.value.intention.target.checkpointId': eventAssistanceGuestResponseValueIntentionTargetCheckpointId,
+    'eventAssistanceGuestResponse.value.intention.target.groupId': eventAssistanceGuestResponseValueIntentionTargetGroupId,
+    'eventAssistanceGuestResponse.value.intention.target.itineraryId': eventAssistanceGuestResponseValueIntentionTargetItineraryId,
+    'eventAssistanceGuestResponse.value.intention.target.kind': eventAssistanceGuestResponseValueIntentionTargetKind,
+    'eventAssistanceGuestResponse.value.intention.target.lateEntry': eventAssistanceGuestResponseValueIntentionTargetLateEntry,
+    'eventAssistanceGuestResponse.value.intention.target.placeId': eventAssistanceGuestResponseValueIntentionTargetPlaceId,
+    'eventAssistanceGuestResponse.value.intention.target.routeId': eventAssistanceGuestResponseValueIntentionTargetRouteId,
+    'eventAssistanceGuestResponse.value.intention.target.stopId': eventAssistanceGuestResponseValueIntentionTargetStopId,
+    'eventAssistanceGuestResponse.value.kind': eventAssistanceGuestResponseValueKind,
+    'eventAssistanceGuestViewCallableResponse.choices': eventAssistanceGuestViewCallableResponseChoices,
+    'eventAssistanceGuestViewCallableResponse.choices.items.choiceId': eventAssistanceGuestViewCallableResponseChoicesItemsChoiceId,
+    'eventAssistanceGuestViewCallableResponse.choices.items.label': eventAssistanceGuestViewCallableResponseChoicesItemsLabel,
+    'eventAssistanceGuestViewCallableResponse.eventTitle': eventAssistanceGuestViewCallableResponseEventTitle,
+    'eventAssistanceGuestViewCallableResponse.expiresAt': eventAssistanceGuestViewCallableResponseExpiresAt,
+    'eventAssistanceGuestViewCallableResponse.guestRevision': eventAssistanceGuestViewCallableResponseGuestRevision,
+    'eventAssistanceGuestViewCallableResponse.instructionRevision': eventAssistanceGuestViewCallableResponseInstructionRevision,
+    'eventAssistanceGuestViewCallableResponse.intentId': eventAssistanceGuestViewCallableResponseIntentId,
+    'eventAssistanceGuestViewCallableResponse.intentRevision': eventAssistanceGuestViewCallableResponseIntentRevision,
+    'eventAssistanceGuestViewCallableResponse.reason': eventAssistanceGuestViewCallableResponseReason,
+    'eventAssistanceGuestViewCallableResponse.response.label': eventAssistanceGuestViewCallableResponseResponseLabel,
+    'eventAssistanceGuestViewCallableResponse.response.receivedAt': eventAssistanceGuestViewCallableResponseResponseReceivedAt,
+    'eventAssistanceGuestViewCallableResponse.serverTime': eventAssistanceGuestViewCallableResponseServerTime,
+    'eventAssistanceGuestViewCallableResponse.status': eventAssistanceGuestViewCallableResponseStatus,
+    'eventAssistanceGuestViewCallableResponse.text': eventAssistanceGuestViewCallableResponseText,
+    'eventAssistanceGuestViewCallableResponse.title': eventAssistanceGuestViewCallableResponseTitle,
+    'eventAssistanceLateJoinDecision.guidance.destination.checkpointId': eventAssistanceLateJoinDecisionGuidanceDestinationCheckpointId,
+    'eventAssistanceLateJoinDecision.guidance.destination.groupId': eventAssistanceLateJoinDecisionGuidanceDestinationGroupId,
+    'eventAssistanceLateJoinDecision.guidance.destination.itineraryId': eventAssistanceLateJoinDecisionGuidanceDestinationItineraryId,
+    'eventAssistanceLateJoinDecision.guidance.destination.kind': eventAssistanceLateJoinDecisionGuidanceDestinationKind,
+    'eventAssistanceLateJoinDecision.guidance.destination.lateEntry': eventAssistanceLateJoinDecisionGuidanceDestinationLateEntry,
+    'eventAssistanceLateJoinDecision.guidance.destination.placeId': eventAssistanceLateJoinDecisionGuidanceDestinationPlaceId,
+    'eventAssistanceLateJoinDecision.guidance.destination.routeId': eventAssistanceLateJoinDecisionGuidanceDestinationRouteId,
+    'eventAssistanceLateJoinDecision.guidance.destination.stopId': eventAssistanceLateJoinDecisionGuidanceDestinationStopId,
+    'eventAssistanceLateJoinDecision.guidance.materialKey': eventAssistanceLateJoinDecisionGuidanceMaterialKey,
+    'eventAssistanceLateJoinDecision.guidance.revision': eventAssistanceLateJoinDecisionGuidanceRevision,
+    'eventAssistanceLateJoinDecision.guidance.text': eventAssistanceLateJoinDecisionGuidanceText,
+    'eventAssistanceLateJoinDecision.guidance.validUntil': eventAssistanceLateJoinDecisionGuidanceValidUntil,
+    'eventAssistanceLateJoinDecision.kind': eventAssistanceLateJoinDecisionKind,
+    'eventAssistanceLateJoinDecision.messageKey': eventAssistanceLateJoinDecisionMessageKey,
+    'eventAssistanceLateJoinDecision.nextEvaluationAt': eventAssistanceLateJoinDecisionNextEvaluationAt,
+    'eventAssistanceLateJoinDecision.reason': eventAssistanceLateJoinDecisionReason,
+    'eventAssistanceLateJoinDecision.shouldSend': eventAssistanceLateJoinDecisionShouldSend,
+    'eventAssistanceLateJoinInput.context.clockId': eventAssistanceLateJoinInputContextClockId,
+    'eventAssistanceLateJoinInput.context.eventId': eventAssistanceLateJoinInputContextEventId,
+    'eventAssistanceLateJoinInput.context.mode': eventAssistanceLateJoinInputContextMode,
+    'eventAssistanceLateJoinInput.context.organizerId': eventAssistanceLateJoinInputContextOrganizerId,
+    'eventAssistanceLateJoinInput.context.rehearsalId': eventAssistanceLateJoinInputContextRehearsalId,
+    'eventAssistanceLateJoinInput.context.virtualEventId': eventAssistanceLateJoinInputContextVirtualEventId,
+    'eventAssistanceLateJoinInput.departureConfirmed': eventAssistanceLateJoinInputDepartureConfirmed,
+    'eventAssistanceLateJoinInput.eventId': eventAssistanceLateJoinInputEventId,
+    'eventAssistanceLateJoinInput.eventOpen': eventAssistanceLateJoinInputEventOpen,
+    'eventAssistanceLateJoinInput.guest.admission': eventAssistanceLateJoinInputGuestAdmission,
+    'eventAssistanceLateJoinInput.guest.attendance.kind': eventAssistanceLateJoinInputGuestAttendanceKind,
+    'eventAssistanceLateJoinInput.guest.attendance.lastValue.checkedIn': eventAssistanceLateJoinInputGuestAttendanceLastValueCheckedIn,
+    'eventAssistanceLateJoinInput.guest.attendance.observedAt': eventAssistanceLateJoinInputGuestAttendanceObservedAt,
+    'eventAssistanceLateJoinInput.guest.attendance.reason': eventAssistanceLateJoinInputGuestAttendanceReason,
+    'eventAssistanceLateJoinInput.guest.attendance.revision': eventAssistanceLateJoinInputGuestAttendanceRevision,
+    'eventAssistanceLateJoinInput.guest.attendance.source': eventAssistanceLateJoinInputGuestAttendanceSource,
+    'eventAssistanceLateJoinInput.guest.attendance.staleAt': eventAssistanceLateJoinInputGuestAttendanceStaleAt,
+    'eventAssistanceLateJoinInput.guest.attendance.value.checkedIn': eventAssistanceLateJoinInputGuestAttendanceValueCheckedIn,
+    'eventAssistanceLateJoinInput.guest.attendeeId': eventAssistanceLateJoinInputGuestAttendeeId,
+    'eventAssistanceLateJoinInput.guest.deliveryEligibility': eventAssistanceLateJoinInputGuestDeliveryEligibility,
+    'eventAssistanceLateJoinInput.guest.episodeId': eventAssistanceLateJoinInputGuestEpisodeId,
+    'eventAssistanceLateJoinInput.guest.intention.claimedEta': eventAssistanceLateJoinInputGuestIntentionClaimedEta,
+    'eventAssistanceLateJoinInput.guest.intention.kind': eventAssistanceLateJoinInputGuestIntentionKind,
+    'eventAssistanceLateJoinInput.guest.intention.target.checkpointId': eventAssistanceLateJoinInputGuestIntentionTargetCheckpointId,
+    'eventAssistanceLateJoinInput.guest.intention.target.groupId': eventAssistanceLateJoinInputGuestIntentionTargetGroupId,
+    'eventAssistanceLateJoinInput.guest.intention.target.itineraryId': eventAssistanceLateJoinInputGuestIntentionTargetItineraryId,
+    'eventAssistanceLateJoinInput.guest.intention.target.kind': eventAssistanceLateJoinInputGuestIntentionTargetKind,
+    'eventAssistanceLateJoinInput.guest.intention.target.lateEntry': eventAssistanceLateJoinInputGuestIntentionTargetLateEntry,
+    'eventAssistanceLateJoinInput.guest.intention.target.placeId': eventAssistanceLateJoinInputGuestIntentionTargetPlaceId,
+    'eventAssistanceLateJoinInput.guest.intention.target.routeId': eventAssistanceLateJoinInputGuestIntentionTargetRouteId,
+    'eventAssistanceLateJoinInput.guest.intention.target.stopId': eventAssistanceLateJoinInputGuestIntentionTargetStopId,
+    'eventAssistanceLateJoinInput.guidance.kind': eventAssistanceLateJoinInputGuidanceKind,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.checkpointId': eventAssistanceLateJoinInputGuidanceLastValueDestinationCheckpointId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.groupId': eventAssistanceLateJoinInputGuidanceLastValueDestinationGroupId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.itineraryId': eventAssistanceLateJoinInputGuidanceLastValueDestinationItineraryId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.kind': eventAssistanceLateJoinInputGuidanceLastValueDestinationKind,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.lateEntry': eventAssistanceLateJoinInputGuidanceLastValueDestinationLateEntry,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.placeId': eventAssistanceLateJoinInputGuidanceLastValueDestinationPlaceId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.routeId': eventAssistanceLateJoinInputGuidanceLastValueDestinationRouteId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.destination.stopId': eventAssistanceLateJoinInputGuidanceLastValueDestinationStopId,
+    'eventAssistanceLateJoinInput.guidance.lastValue.materialKey': eventAssistanceLateJoinInputGuidanceLastValueMaterialKey,
+    'eventAssistanceLateJoinInput.guidance.lastValue.revision': eventAssistanceLateJoinInputGuidanceLastValueRevision,
+    'eventAssistanceLateJoinInput.guidance.lastValue.text': eventAssistanceLateJoinInputGuidanceLastValueText,
+    'eventAssistanceLateJoinInput.guidance.lastValue.validUntil': eventAssistanceLateJoinInputGuidanceLastValueValidUntil,
+    'eventAssistanceLateJoinInput.guidance.observedAt': eventAssistanceLateJoinInputGuidanceObservedAt,
+    'eventAssistanceLateJoinInput.guidance.reason': eventAssistanceLateJoinInputGuidanceReason,
+    'eventAssistanceLateJoinInput.guidance.revision': eventAssistanceLateJoinInputGuidanceRevision,
+    'eventAssistanceLateJoinInput.guidance.source': eventAssistanceLateJoinInputGuidanceSource,
+    'eventAssistanceLateJoinInput.guidance.staleAt': eventAssistanceLateJoinInputGuidanceStaleAt,
+    'eventAssistanceLateJoinInput.guidance.value.destination.checkpointId': eventAssistanceLateJoinInputGuidanceValueDestinationCheckpointId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.groupId': eventAssistanceLateJoinInputGuidanceValueDestinationGroupId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.itineraryId': eventAssistanceLateJoinInputGuidanceValueDestinationItineraryId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.kind': eventAssistanceLateJoinInputGuidanceValueDestinationKind,
+    'eventAssistanceLateJoinInput.guidance.value.destination.lateEntry': eventAssistanceLateJoinInputGuidanceValueDestinationLateEntry,
+    'eventAssistanceLateJoinInput.guidance.value.destination.placeId': eventAssistanceLateJoinInputGuidanceValueDestinationPlaceId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.routeId': eventAssistanceLateJoinInputGuidanceValueDestinationRouteId,
+    'eventAssistanceLateJoinInput.guidance.value.destination.stopId': eventAssistanceLateJoinInputGuidanceValueDestinationStopId,
+    'eventAssistanceLateJoinInput.guidance.value.materialKey': eventAssistanceLateJoinInputGuidanceValueMaterialKey,
+    'eventAssistanceLateJoinInput.guidance.value.revision': eventAssistanceLateJoinInputGuidanceValueRevision,
+    'eventAssistanceLateJoinInput.guidance.value.text': eventAssistanceLateJoinInputGuidanceValueText,
+    'eventAssistanceLateJoinInput.guidance.value.validUntil': eventAssistanceLateJoinInputGuidanceValueValidUntil,
+    'eventAssistanceLateJoinInput.lastMessage.at': eventAssistanceLateJoinInputLastMessageAt,
+    'eventAssistanceLateJoinInput.lastMessage.materialKey': eventAssistanceLateJoinInputLastMessageMaterialKey,
+    'eventAssistanceLateJoinInput.messagesThisEpisode': eventAssistanceLateJoinInputMessagesThisEpisode,
+    'eventAssistanceLateJoinInput.now': eventAssistanceLateJoinInputNow,
+    'eventAssistanceLateJoinInput.policy.cutoff.at': eventAssistanceLateJoinInputPolicyCutoffAt,
+    'eventAssistanceLateJoinInput.policy.cutoff.kind': eventAssistanceLateJoinInputPolicyCutoffKind,
+    'eventAssistanceLateJoinInput.policy.destination.groupId': eventAssistanceLateJoinInputPolicyDestinationGroupId,
+    'eventAssistanceLateJoinInput.policy.destination.itineraryId': eventAssistanceLateJoinInputPolicyDestinationItineraryId,
+    'eventAssistanceLateJoinInput.policy.destination.kind': eventAssistanceLateJoinInputPolicyDestinationKind,
+    'eventAssistanceLateJoinInput.policy.destination.lateEntry': eventAssistanceLateJoinInputPolicyDestinationLateEntry,
+    'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds': eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds,
+    'eventAssistanceLateJoinInput.policy.destination.permittedCheckpointIds.items': eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIdsItems,
+    'eventAssistanceLateJoinInput.policy.destination.permittedStopIds': eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds,
+    'eventAssistanceLateJoinInput.policy.destination.permittedStopIds.items': eventAssistanceLateJoinInputPolicyDestinationPermittedStopIdsItems,
+    'eventAssistanceLateJoinInput.policy.destination.placeId': eventAssistanceLateJoinInputPolicyDestinationPlaceId,
+    'eventAssistanceLateJoinInput.policy.destination.routeId': eventAssistanceLateJoinInputPolicyDestinationRouteId,
+    'eventAssistanceLateJoinInput.policy.maxMessagesPerEpisode': eventAssistanceLateJoinInputPolicyMaxMessagesPerEpisode,
+    'eventAssistanceLateJoinInput.policy.minimumMinutesBetweenMessages': eventAssistanceLateJoinInputPolicyMinimumMinutesBetweenMessages,
+    'eventAssistanceLateJoinInput.policy.unanswered': eventAssistanceLateJoinInputPolicyUnanswered,
+    'eventAssistanceLateJoinInput.policy.updateOn': eventAssistanceLateJoinInputPolicyUpdateOn,
+    'eventAssistanceLateJoinInput.responseDeadline': eventAssistanceLateJoinInputResponseDeadline,
+    'eventAssistanceLateJoinInput.setting.authority': eventAssistanceLateJoinInputSettingAuthority,
+    'eventAssistanceLateJoinInput.setting.kind': eventAssistanceLateJoinInputSettingKind,
+    'eventAssistanceLateJoinInput.setting.policyVersion': eventAssistanceLateJoinInputSettingPolicyVersion,
+    'eventAssistanceLateJoinInput.setting.reason': eventAssistanceLateJoinInputSettingReason,
+    'eventAssistanceMessageDocument.attempts': eventAssistanceMessageDocumentAttempts,
+    'eventAssistanceMessageDocument.attempts.items.attemptId': eventAssistanceMessageDocumentAttemptsItemsAttemptId,
+    'eventAssistanceMessageDocument.attempts.items.authorization.checkedAt': eventAssistanceMessageDocumentAttemptsItemsAuthorizationCheckedAt,
+    'eventAssistanceMessageDocument.attempts.items.authorization.instructionRevision': eventAssistanceMessageDocumentAttemptsItemsAuthorizationInstructionRevision,
+    'eventAssistanceMessageDocument.attempts.items.authorization.permissionRevision': eventAssistanceMessageDocumentAttemptsItemsAuthorizationPermissionRevision,
+    'eventAssistanceMessageDocument.attempts.items.authorization.validUntil': eventAssistanceMessageDocumentAttemptsItemsAuthorizationValidUntil,
+    'eventAssistanceMessageDocument.attempts.items.binding.bindingRevision': eventAssistanceMessageDocumentAttemptsItemsBindingBindingRevision,
+    'eventAssistanceMessageDocument.attempts.items.binding.fallbackOwner': eventAssistanceMessageDocumentAttemptsItemsBindingFallbackOwner,
+    'eventAssistanceMessageDocument.attempts.items.binding.provider': eventAssistanceMessageDocumentAttemptsItemsBindingProvider,
+    'eventAssistanceMessageDocument.attempts.items.binding.recipientEndpointId': eventAssistanceMessageDocumentAttemptsItemsBindingRecipientEndpointId,
+    'eventAssistanceMessageDocument.attempts.items.binding.routeId': eventAssistanceMessageDocumentAttemptsItemsBindingRouteId,
+    'eventAssistanceMessageDocument.attempts.items.binding.senderId': eventAssistanceMessageDocumentAttemptsItemsBindingSenderId,
+    'eventAssistanceMessageDocument.attempts.items.binding.senderIdentity': eventAssistanceMessageDocumentAttemptsItemsBindingSenderIdentity,
+    'eventAssistanceMessageDocument.attempts.items.binding.transport': eventAssistanceMessageDocumentAttemptsItemsBindingTransport,
+    'eventAssistanceMessageDocument.attempts.items.context.clockId': eventAssistanceMessageDocumentAttemptsItemsContextClockId,
+    'eventAssistanceMessageDocument.attempts.items.context.mode': eventAssistanceMessageDocumentAttemptsItemsContextMode,
+    'eventAssistanceMessageDocument.attempts.items.context.rehearsalId': eventAssistanceMessageDocumentAttemptsItemsContextRehearsalId,
+    'eventAssistanceMessageDocument.attempts.items.context.virtualEventId': eventAssistanceMessageDocumentAttemptsItemsContextVirtualEventId,
+    'eventAssistanceMessageDocument.attempts.items.createdAt': eventAssistanceMessageDocumentAttemptsItemsCreatedAt,
+    'eventAssistanceMessageDocument.attempts.items.intentId': eventAssistanceMessageDocumentAttemptsItemsIntentId,
+    'eventAssistanceMessageDocument.attempts.items.intentRevision': eventAssistanceMessageDocumentAttemptsItemsIntentRevision,
+    'eventAssistanceMessageDocument.attempts.items.mode': eventAssistanceMessageDocumentAttemptsItemsMode,
+    'eventAssistanceMessageDocument.attempts.items.ordinal': eventAssistanceMessageDocumentAttemptsItemsOrdinal,
+    'eventAssistanceMessageDocument.attempts.items.routeId': eventAssistanceMessageDocumentAttemptsItemsRouteId,
+    'eventAssistanceMessageDocument.attempts.items.schemaVersion': eventAssistanceMessageDocumentAttemptsItemsSchemaVersion,
+    'eventAssistanceMessageDocument.attempts.items.state.at': eventAssistanceMessageDocumentAttemptsItemsStateAt,
+    'eventAssistanceMessageDocument.attempts.items.state.classification': eventAssistanceMessageDocumentAttemptsItemsStateClassification,
+    'eventAssistanceMessageDocument.attempts.items.state.evidenceId': eventAssistanceMessageDocumentAttemptsItemsStateEvidenceId,
+    'eventAssistanceMessageDocument.attempts.items.state.kind': eventAssistanceMessageDocumentAttemptsItemsStateKind,
+    'eventAssistanceMessageDocument.attempts.items.state.providerMessageId': eventAssistanceMessageDocumentAttemptsItemsStateProviderMessageId,
+    'eventAssistanceMessageDocument.attempts.items.state.reason': eventAssistanceMessageDocumentAttemptsItemsStateReason,
+    'eventAssistanceMessageDocument.attempts.items.state.reconcileAfter': eventAssistanceMessageDocumentAttemptsItemsStateReconcileAfter,
+    'eventAssistanceMessageDocument.createdAt': eventAssistanceMessageDocumentCreatedAt,
+    'eventAssistanceMessageDocument.deliveryConflict': eventAssistanceMessageDocumentDeliveryConflict,
+    'eventAssistanceMessageDocument.intent.attendeeId': eventAssistanceMessageDocumentIntentAttendeeId,
+    'eventAssistanceMessageDocument.intent.body': eventAssistanceMessageDocumentIntentBody,
+    'eventAssistanceMessageDocument.intent.choices': eventAssistanceMessageDocumentIntentChoices,
+    'eventAssistanceMessageDocument.intent.choices.items.choiceId': eventAssistanceMessageDocumentIntentChoicesItemsChoiceId,
+    'eventAssistanceMessageDocument.intent.choices.items.label': eventAssistanceMessageDocumentIntentChoicesItemsLabel,
+    'eventAssistanceMessageDocument.intent.choices.items.value.category': eventAssistanceMessageDocumentIntentChoicesItemsValueCategory,
+    'eventAssistanceMessageDocument.intent.choices.items.value.instructionRevision': eventAssistanceMessageDocumentIntentChoicesItemsValueInstructionRevision,
+    'eventAssistanceMessageDocument.intent.choices.items.value.kind': eventAssistanceMessageDocumentIntentChoicesItemsValueKind,
+    'eventAssistanceMessageDocument.intent.context.clockId': eventAssistanceMessageDocumentIntentContextClockId,
+    'eventAssistanceMessageDocument.intent.context.eventId': eventAssistanceMessageDocumentIntentContextEventId,
+    'eventAssistanceMessageDocument.intent.context.mode': eventAssistanceMessageDocumentIntentContextMode,
+    'eventAssistanceMessageDocument.intent.context.organizerId': eventAssistanceMessageDocumentIntentContextOrganizerId,
+    'eventAssistanceMessageDocument.intent.context.rehearsalId': eventAssistanceMessageDocumentIntentContextRehearsalId,
+    'eventAssistanceMessageDocument.intent.context.virtualEventId': eventAssistanceMessageDocumentIntentContextVirtualEventId,
+    'eventAssistanceMessageDocument.intent.createdAt': eventAssistanceMessageDocumentIntentCreatedAt,
+    'eventAssistanceMessageDocument.intent.deliveryPolicy.maxAttempts': eventAssistanceMessageDocumentIntentDeliveryPolicyMaxAttempts,
+    'eventAssistanceMessageDocument.intent.deliveryPolicy.maxAttemptsPerRoute': eventAssistanceMessageDocumentIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'eventAssistanceMessageDocument.intent.deliveryPolicy.minimumRetrySeconds': eventAssistanceMessageDocumentIntentDeliveryPolicyMinimumRetrySeconds,
+    'eventAssistanceMessageDocument.intent.episodeId': eventAssistanceMessageDocumentIntentEpisodeId,
+    'eventAssistanceMessageDocument.intent.eventId': eventAssistanceMessageDocumentIntentEventId,
+    'eventAssistanceMessageDocument.intent.expiresAt': eventAssistanceMessageDocumentIntentExpiresAt,
+    'eventAssistanceMessageDocument.intent.guidance.destination.checkpointId': eventAssistanceMessageDocumentIntentGuidanceDestinationCheckpointId,
+    'eventAssistanceMessageDocument.intent.guidance.destination.groupId': eventAssistanceMessageDocumentIntentGuidanceDestinationGroupId,
+    'eventAssistanceMessageDocument.intent.guidance.destination.itineraryId': eventAssistanceMessageDocumentIntentGuidanceDestinationItineraryId,
+    'eventAssistanceMessageDocument.intent.guidance.destination.kind': eventAssistanceMessageDocumentIntentGuidanceDestinationKind,
+    'eventAssistanceMessageDocument.intent.guidance.destination.lateEntry': eventAssistanceMessageDocumentIntentGuidanceDestinationLateEntry,
+    'eventAssistanceMessageDocument.intent.guidance.destination.placeId': eventAssistanceMessageDocumentIntentGuidanceDestinationPlaceId,
+    'eventAssistanceMessageDocument.intent.guidance.destination.routeId': eventAssistanceMessageDocumentIntentGuidanceDestinationRouteId,
+    'eventAssistanceMessageDocument.intent.guidance.destination.stopId': eventAssistanceMessageDocumentIntentGuidanceDestinationStopId,
+    'eventAssistanceMessageDocument.intent.guidance.materialKey': eventAssistanceMessageDocumentIntentGuidanceMaterialKey,
+    'eventAssistanceMessageDocument.intent.guidance.revision': eventAssistanceMessageDocumentIntentGuidanceRevision,
+    'eventAssistanceMessageDocument.intent.guidance.text': eventAssistanceMessageDocumentIntentGuidanceText,
+    'eventAssistanceMessageDocument.intent.guidance.validUntil': eventAssistanceMessageDocumentIntentGuidanceValidUntil,
+    'eventAssistanceMessageDocument.intent.instructionRevision': eventAssistanceMessageDocumentIntentInstructionRevision,
+    'eventAssistanceMessageDocument.intent.intentId': eventAssistanceMessageDocumentIntentIntentId,
+    'eventAssistanceMessageDocument.intent.kind': eventAssistanceMessageDocumentIntentKind,
+    'eventAssistanceMessageDocument.intent.noticeKind': eventAssistanceMessageDocumentIntentNoticeKind,
+    'eventAssistanceMessageDocument.intent.permittedRoutes': eventAssistanceMessageDocumentIntentPermittedRoutes,
+    'eventAssistanceMessageDocument.intent.permittedRoutes.items': eventAssistanceMessageDocumentIntentPermittedRoutesItems,
+    'eventAssistanceMessageDocument.intent.revision': eventAssistanceMessageDocumentIntentRevision,
+    'eventAssistanceMessageDocument.intent.schemaVersion': eventAssistanceMessageDocumentIntentSchemaVersion,
+    'eventAssistanceMessageDocument.intent.title': eventAssistanceMessageDocumentIntentTitle,
+    'eventAssistanceMessageDocument.intent.workflow.kind': eventAssistanceMessageDocumentIntentWorkflowKind,
+    'eventAssistanceMessageDocument.intent.workflow.occurrenceId': eventAssistanceMessageDocumentIntentWorkflowOccurrenceId,
+    'eventAssistanceMessageDocument.lifecycle': eventAssistanceMessageDocumentLifecycle,
+    'eventAssistanceMessageDocument.messageId': eventAssistanceMessageDocumentMessageId,
+    'eventAssistanceMessageDocument.revision': eventAssistanceMessageDocumentRevision,
+    'eventAssistanceMessageDocument.schemaVersion': eventAssistanceMessageDocumentSchemaVersion,
+    'eventAssistanceMessageDocument.updatedAt': eventAssistanceMessageDocumentUpdatedAt,
+    'eventAssistanceMessageIntent.attendeeId': eventAssistanceMessageIntentAttendeeId,
+    'eventAssistanceMessageIntent.body': eventAssistanceMessageIntentBody,
+    'eventAssistanceMessageIntent.choices': eventAssistanceMessageIntentChoices,
+    'eventAssistanceMessageIntent.choices.items.choiceId': eventAssistanceMessageIntentChoicesItemsChoiceId,
+    'eventAssistanceMessageIntent.choices.items.label': eventAssistanceMessageIntentChoicesItemsLabel,
+    'eventAssistanceMessageIntent.choices.items.value.category': eventAssistanceMessageIntentChoicesItemsValueCategory,
+    'eventAssistanceMessageIntent.choices.items.value.instructionRevision': eventAssistanceMessageIntentChoicesItemsValueInstructionRevision,
+    'eventAssistanceMessageIntent.choices.items.value.kind': eventAssistanceMessageIntentChoicesItemsValueKind,
+    'eventAssistanceMessageIntent.context.clockId': eventAssistanceMessageIntentContextClockId,
+    'eventAssistanceMessageIntent.context.eventId': eventAssistanceMessageIntentContextEventId,
+    'eventAssistanceMessageIntent.context.mode': eventAssistanceMessageIntentContextMode,
+    'eventAssistanceMessageIntent.context.organizerId': eventAssistanceMessageIntentContextOrganizerId,
+    'eventAssistanceMessageIntent.context.rehearsalId': eventAssistanceMessageIntentContextRehearsalId,
+    'eventAssistanceMessageIntent.context.virtualEventId': eventAssistanceMessageIntentContextVirtualEventId,
+    'eventAssistanceMessageIntent.createdAt': eventAssistanceMessageIntentCreatedAt,
+    'eventAssistanceMessageIntent.deliveryPolicy.maxAttempts': eventAssistanceMessageIntentDeliveryPolicyMaxAttempts,
+    'eventAssistanceMessageIntent.deliveryPolicy.maxAttemptsPerRoute': eventAssistanceMessageIntentDeliveryPolicyMaxAttemptsPerRoute,
+    'eventAssistanceMessageIntent.deliveryPolicy.minimumRetrySeconds': eventAssistanceMessageIntentDeliveryPolicyMinimumRetrySeconds,
+    'eventAssistanceMessageIntent.episodeId': eventAssistanceMessageIntentEpisodeId,
+    'eventAssistanceMessageIntent.eventId': eventAssistanceMessageIntentEventId,
+    'eventAssistanceMessageIntent.expiresAt': eventAssistanceMessageIntentExpiresAt,
+    'eventAssistanceMessageIntent.guidance.destination.checkpointId': eventAssistanceMessageIntentGuidanceDestinationCheckpointId,
+    'eventAssistanceMessageIntent.guidance.destination.groupId': eventAssistanceMessageIntentGuidanceDestinationGroupId,
+    'eventAssistanceMessageIntent.guidance.destination.itineraryId': eventAssistanceMessageIntentGuidanceDestinationItineraryId,
+    'eventAssistanceMessageIntent.guidance.destination.kind': eventAssistanceMessageIntentGuidanceDestinationKind,
+    'eventAssistanceMessageIntent.guidance.destination.lateEntry': eventAssistanceMessageIntentGuidanceDestinationLateEntry,
+    'eventAssistanceMessageIntent.guidance.destination.placeId': eventAssistanceMessageIntentGuidanceDestinationPlaceId,
+    'eventAssistanceMessageIntent.guidance.destination.routeId': eventAssistanceMessageIntentGuidanceDestinationRouteId,
+    'eventAssistanceMessageIntent.guidance.destination.stopId': eventAssistanceMessageIntentGuidanceDestinationStopId,
+    'eventAssistanceMessageIntent.guidance.materialKey': eventAssistanceMessageIntentGuidanceMaterialKey,
+    'eventAssistanceMessageIntent.guidance.revision': eventAssistanceMessageIntentGuidanceRevision,
+    'eventAssistanceMessageIntent.guidance.text': eventAssistanceMessageIntentGuidanceText,
+    'eventAssistanceMessageIntent.guidance.validUntil': eventAssistanceMessageIntentGuidanceValidUntil,
+    'eventAssistanceMessageIntent.instructionRevision': eventAssistanceMessageIntentInstructionRevision,
+    'eventAssistanceMessageIntent.intentId': eventAssistanceMessageIntentIntentId,
+    'eventAssistanceMessageIntent.kind': eventAssistanceMessageIntentKind,
+    'eventAssistanceMessageIntent.noticeKind': eventAssistanceMessageIntentNoticeKind,
+    'eventAssistanceMessageIntent.permittedRoutes': eventAssistanceMessageIntentPermittedRoutes,
+    'eventAssistanceMessageIntent.permittedRoutes.items': eventAssistanceMessageIntentPermittedRoutesItems,
+    'eventAssistanceMessageIntent.revision': eventAssistanceMessageIntentRevision,
+    'eventAssistanceMessageIntent.schemaVersion': eventAssistanceMessageIntentSchemaVersion,
+    'eventAssistanceMessageIntent.title': eventAssistanceMessageIntentTitle,
+    'eventAssistanceMessageIntent.workflow.kind': eventAssistanceMessageIntentWorkflowKind,
+    'eventAssistanceMessageIntent.workflow.occurrenceId': eventAssistanceMessageIntentWorkflowOccurrenceId,
+    'eventAssistancePolicy.config.metrics': eventAssistancePolicyConfigMetrics,
+    'eventAssistancePolicy.config.missingCoverage': eventAssistancePolicyConfigMissingCoverage,
+    'eventAssistancePolicy.config.sensitiveDetails': eventAssistancePolicyConfigSensitiveDetails,
+    'eventAssistancePolicy.kind': eventAssistancePolicyKind,
+    'eventAssistancePolicy.scope.attendeeId': eventAssistancePolicyScopeAttendeeId,
+    'eventAssistancePolicy.scope.episodeId': eventAssistancePolicyScopeEpisodeId,
+    'eventAssistancePolicy.scope.eventId': eventAssistancePolicyScopeEventId,
+    'eventAssistancePolicy.scope.groupId': eventAssistancePolicyScopeGroupId,
+    'eventAssistancePolicy.scope.kind': eventAssistancePolicyScopeKind,
+    'eventAssistancePolicy.scope.resourceId': eventAssistancePolicyScopeResourceId,
+    'eventAssistancePolicy.scope.round': eventAssistancePolicyScopeRound,
+    'eventAssistancePolicy.scope.unitId': eventAssistancePolicyScopeUnitId,
+    'eventAssistancePolicy.setting.authority': eventAssistancePolicySettingAuthority,
+    'eventAssistancePolicy.setting.kind': eventAssistancePolicySettingKind,
+    'eventAssistancePolicy.setting.policyVersion': eventAssistancePolicySettingPolicyVersion,
+    'eventAssistancePolicy.setting.reason': eventAssistancePolicySettingReason,
+    'eventAssistancePolicy.version': eventAssistancePolicyVersion,
+    'eventAssistanceSmsBudgetDocument.approvalId': eventAssistanceSmsBudgetDocumentApprovalId,
+    'eventAssistanceSmsBudgetDocument.budgetId': eventAssistanceSmsBudgetDocumentBudgetId,
+    'eventAssistanceSmsBudgetDocument.chargedMicros': eventAssistanceSmsBudgetDocumentChargedMicros,
+    'eventAssistanceSmsBudgetDocument.currency': eventAssistanceSmsBudgetDocumentCurrency,
+    'eventAssistanceSmsBudgetDocument.endsAt': eventAssistanceSmsBudgetDocumentEndsAt,
+    'eventAssistanceSmsBudgetDocument.limitMicros': eventAssistanceSmsBudgetDocumentLimitMicros,
+    'eventAssistanceSmsBudgetDocument.revision': eventAssistanceSmsBudgetDocumentRevision,
+    'eventAssistanceSmsBudgetDocument.schemaVersion': eventAssistanceSmsBudgetDocumentSchemaVersion,
+    'eventAssistanceSmsBudgetDocument.scope.context.eventId': eventAssistanceSmsBudgetDocumentScopeContextEventId,
+    'eventAssistanceSmsBudgetDocument.scope.context.mode': eventAssistanceSmsBudgetDocumentScopeContextMode,
+    'eventAssistanceSmsBudgetDocument.scope.context.organizerId': eventAssistanceSmsBudgetDocumentScopeContextOrganizerId,
+    'eventAssistanceSmsBudgetDocument.scope.day': eventAssistanceSmsBudgetDocumentScopeDay,
+    'eventAssistanceSmsBudgetDocument.scope.kind': eventAssistanceSmsBudgetDocumentScopeKind,
+    'eventAssistanceSmsBudgetDocument.senderId': eventAssistanceSmsBudgetDocumentSenderId,
+    'eventAssistanceSmsBudgetDocument.startsAt': eventAssistanceSmsBudgetDocumentStartsAt,
+    'eventAssistanceSmsBudgetDocument.status': eventAssistanceSmsBudgetDocumentStatus,
+    'eventAssistanceSmsBudgetDocument.updatedAt': eventAssistanceSmsBudgetDocumentUpdatedAt,
+    'eventAssistanceSmsConfig.activation.approvedAt': eventAssistanceSmsConfigActivationApprovedAt,
+    'eventAssistanceSmsConfig.activation.senderApprovalId': eventAssistanceSmsConfigActivationSenderApprovalId,
+    'eventAssistanceSmsConfig.activation.useCaseApprovalId': eventAssistanceSmsConfigActivationUseCaseApprovalId,
+    'eventAssistanceSmsConfig.activation.validUntil': eventAssistanceSmsConfigActivationValidUntil,
+    'eventAssistanceSmsConfig.country': eventAssistanceSmsConfigCountry,
+    'eventAssistanceSmsConfig.credentialVersion': eventAssistanceSmsConfigCredentialVersion,
+    'eventAssistanceSmsConfig.mask': eventAssistanceSmsConfigMask,
+    'eventAssistanceSmsConfig.maxSegments': eventAssistanceSmsConfigMaxSegments,
+    'eventAssistanceSmsConfig.principalEntityId': eventAssistanceSmsConfigPrincipalEntityId,
+    'eventAssistanceSmsConfig.provider': eventAssistanceSmsConfigProvider,
+    'eventAssistanceSmsConfig.quote.currency': eventAssistanceSmsConfigQuoteCurrency,
+    'eventAssistanceSmsConfig.quote.maxMicrosPerSegment': eventAssistanceSmsConfigQuoteMaxMicrosPerSegment,
+    'eventAssistanceSmsConfig.quote.revision': eventAssistanceSmsConfigQuoteRevision,
+    'eventAssistanceSmsConfig.quote.validUntil': eventAssistanceSmsConfigQuoteValidUntil,
+    'eventAssistanceSmsConfig.revision': eventAssistanceSmsConfigRevision,
+    'eventAssistanceSmsConfig.schemaVersion': eventAssistanceSmsConfigSchemaVersion,
+    'eventAssistanceSmsConfig.senderId': eventAssistanceSmsConfigSenderId,
+    'eventAssistanceSmsConfig.senderIdentity': eventAssistanceSmsConfigSenderIdentity,
+    'eventAssistanceSmsConfig.status': eventAssistanceSmsConfigStatus,
+    'eventAssistanceSmsConfig.templates': eventAssistanceSmsConfigTemplates,
+    'eventAssistanceSmsConfig.templates.items.dltTemplateId': eventAssistanceSmsConfigTemplatesItemsDltTemplateId,
+    'eventAssistanceSmsConfig.templates.items.parts': eventAssistanceSmsConfigTemplatesItemsParts,
+    'eventAssistanceSmsConfig.templates.items.parts.items.kind': eventAssistanceSmsConfigTemplatesItemsPartsItemsKind,
+    'eventAssistanceSmsConfig.templates.items.parts.items.maxCharacters': eventAssistanceSmsConfigTemplatesItemsPartsItemsMaxCharacters,
+    'eventAssistanceSmsConfig.templates.items.parts.items.name': eventAssistanceSmsConfigTemplatesItemsPartsItemsName,
+    'eventAssistanceSmsConfig.templates.items.parts.items.text': eventAssistanceSmsConfigTemplatesItemsPartsItemsText,
+    'eventAssistanceSmsConfig.templates.items.purpose': eventAssistanceSmsConfigTemplatesItemsPurpose,
+    'eventAssistanceSmsConfig.templates.items.revision': eventAssistanceSmsConfigTemplatesItemsRevision,
+    'eventAssistanceSmsConfig.templates.items.status': eventAssistanceSmsConfigTemplatesItemsStatus,
+    'eventAssistanceSmsConfig.templates.items.templateId': eventAssistanceSmsConfigTemplatesItemsTemplateId,
+    'eventAssistanceSmsConsentReceiptDocument.appliedRevision': eventAssistanceSmsConsentReceiptDocumentAppliedRevision,
+    'eventAssistanceSmsConsentReceiptDocument.attendeeGeneration': eventAssistanceSmsConsentReceiptDocumentAttendeeGeneration,
+    'eventAssistanceSmsConsentReceiptDocument.attendeeId': eventAssistanceSmsConsentReceiptDocumentAttendeeId,
+    'eventAssistanceSmsConsentReceiptDocument.context.eventId': eventAssistanceSmsConsentReceiptDocumentContextEventId,
+    'eventAssistanceSmsConsentReceiptDocument.context.mode': eventAssistanceSmsConsentReceiptDocumentContextMode,
+    'eventAssistanceSmsConsentReceiptDocument.context.organizerId': eventAssistanceSmsConsentReceiptDocumentContextOrganizerId,
+    'eventAssistanceSmsConsentReceiptDocument.createdAt': eventAssistanceSmsConsentReceiptDocumentCreatedAt,
+    'eventAssistanceSmsConsentReceiptDocument.decision': eventAssistanceSmsConsentReceiptDocumentDecision,
+    'eventAssistanceSmsConsentReceiptDocument.linkId': eventAssistanceSmsConsentReceiptDocumentLinkId,
+    'eventAssistanceSmsConsentReceiptDocument.permissionHash': eventAssistanceSmsConsentReceiptDocumentPermissionHash,
+    'eventAssistanceSmsConsentReceiptDocument.receiptId': eventAssistanceSmsConsentReceiptDocumentReceiptId,
+    'eventAssistanceSmsConsentReceiptDocument.recipientEndpointId': eventAssistanceSmsConsentReceiptDocumentRecipientEndpointId,
+    'eventAssistanceSmsConsentReceiptDocument.requestHash': eventAssistanceSmsConsentReceiptDocumentRequestHash,
+    'eventAssistanceSmsConsentReceiptDocument.routeId': eventAssistanceSmsConsentReceiptDocumentRouteId,
+    'eventAssistanceSmsConsentReceiptDocument.schemaVersion': eventAssistanceSmsConsentReceiptDocumentSchemaVersion,
+    'eventAssistanceSmsConsentReceiptDocument.senderId': eventAssistanceSmsConsentReceiptDocumentSenderId,
+    'eventAssistanceSmsConsentReceiptDocument.source': eventAssistanceSmsConsentReceiptDocumentSource,
+    'eventAssistanceSmsDispatchDocument.attemptId': eventAssistanceSmsDispatchDocumentAttemptId,
+    'eventAssistanceSmsDispatchDocument.bindingRevision': eventAssistanceSmsDispatchDocumentBindingRevision,
+    'eventAssistanceSmsDispatchDocument.budgetIds': eventAssistanceSmsDispatchDocumentBudgetIds,
+    'eventAssistanceSmsDispatchDocument.budgetIds.items': eventAssistanceSmsDispatchDocumentBudgetIdsItems,
+    'eventAssistanceSmsDispatchDocument.configHash': eventAssistanceSmsDispatchDocumentConfigHash,
+    'eventAssistanceSmsDispatchDocument.createdAt': eventAssistanceSmsDispatchDocumentCreatedAt,
+    'eventAssistanceSmsDispatchDocument.encoding': eventAssistanceSmsDispatchDocumentEncoding,
+    'eventAssistanceSmsDispatchDocument.grantId': eventAssistanceSmsDispatchDocumentGrantId,
+    'eventAssistanceSmsDispatchDocument.maxCostMicros': eventAssistanceSmsDispatchDocumentMaxCostMicros,
+    'eventAssistanceSmsDispatchDocument.messageId': eventAssistanceSmsDispatchDocumentMessageId,
+    'eventAssistanceSmsDispatchDocument.payloadHash': eventAssistanceSmsDispatchDocumentPayloadHash,
+    'eventAssistanceSmsDispatchDocument.permissionId': eventAssistanceSmsDispatchDocumentPermissionId,
+    'eventAssistanceSmsDispatchDocument.permissionRevision': eventAssistanceSmsDispatchDocumentPermissionRevision,
+    'eventAssistanceSmsDispatchDocument.quoteRevision': eventAssistanceSmsDispatchDocumentQuoteRevision,
+    'eventAssistanceSmsDispatchDocument.recipientEndpointId': eventAssistanceSmsDispatchDocumentRecipientEndpointId,
+    'eventAssistanceSmsDispatchDocument.reportTokenHash': eventAssistanceSmsDispatchDocumentReportTokenHash,
+    'eventAssistanceSmsDispatchDocument.schemaVersion': eventAssistanceSmsDispatchDocumentSchemaVersion,
+    'eventAssistanceSmsDispatchDocument.segments': eventAssistanceSmsDispatchDocumentSegments,
+    'eventAssistanceSmsDispatchDocument.senderId': eventAssistanceSmsDispatchDocumentSenderId,
+    'eventAssistanceSmsDispatchDocument.senderMask': eventAssistanceSmsDispatchDocumentSenderMask,
+    'eventAssistanceSmsDispatchDocument.templateId': eventAssistanceSmsDispatchDocumentTemplateId,
+    'eventAssistanceSmsDispatchDocument.templateRevision': eventAssistanceSmsDispatchDocumentTemplateRevision,
+    'eventAssistanceSmsPermissionDocument.attendeeGeneration': eventAssistanceSmsPermissionDocumentAttendeeGeneration,
+    'eventAssistanceSmsPermissionDocument.attendeeId': eventAssistanceSmsPermissionDocumentAttendeeId,
+    'eventAssistanceSmsPermissionDocument.context.eventId': eventAssistanceSmsPermissionDocumentContextEventId,
+    'eventAssistanceSmsPermissionDocument.context.mode': eventAssistanceSmsPermissionDocumentContextMode,
+    'eventAssistanceSmsPermissionDocument.context.organizerId': eventAssistanceSmsPermissionDocumentContextOrganizerId,
+    'eventAssistanceSmsPermissionDocument.currentReceiptId': eventAssistanceSmsPermissionDocumentCurrentReceiptId,
+    'eventAssistanceSmsPermissionDocument.evidence.acceptedAt': eventAssistanceSmsPermissionDocumentEvidenceAcceptedAt,
+    'eventAssistanceSmsPermissionDocument.evidence.copyVersion': eventAssistanceSmsPermissionDocumentEvidenceCopyVersion,
+    'eventAssistanceSmsPermissionDocument.evidence.phoneVerifiedAt': eventAssistanceSmsPermissionDocumentEvidencePhoneVerifiedAt,
+    'eventAssistanceSmsPermissionDocument.evidence.receiptId': eventAssistanceSmsPermissionDocumentEvidenceReceiptId,
+    'eventAssistanceSmsPermissionDocument.evidence.subjectUid': eventAssistanceSmsPermissionDocumentEvidenceSubjectUid,
+    'eventAssistanceSmsPermissionDocument.expiresAt': eventAssistanceSmsPermissionDocumentExpiresAt,
+    'eventAssistanceSmsPermissionDocument.permissionId': eventAssistanceSmsPermissionDocumentPermissionId,
+    'eventAssistanceSmsPermissionDocument.phoneE164': eventAssistanceSmsPermissionDocumentPhoneE164,
+    'eventAssistanceSmsPermissionDocument.purpose': eventAssistanceSmsPermissionDocumentPurpose,
+    'eventAssistanceSmsPermissionDocument.recipientEndpointId': eventAssistanceSmsPermissionDocumentRecipientEndpointId,
+    'eventAssistanceSmsPermissionDocument.revision': eventAssistanceSmsPermissionDocumentRevision,
+    'eventAssistanceSmsPermissionDocument.routeId': eventAssistanceSmsPermissionDocumentRouteId,
+    'eventAssistanceSmsPermissionDocument.schemaVersion': eventAssistanceSmsPermissionDocumentSchemaVersion,
+    'eventAssistanceSmsPermissionDocument.senderId': eventAssistanceSmsPermissionDocumentSenderId,
+    'eventAssistanceSmsPermissionDocument.status': eventAssistanceSmsPermissionDocumentStatus,
+    'eventAssistanceSmsPermissionDocument.updatedAt': eventAssistanceSmsPermissionDocumentUpdatedAt,
+    'eventAssistanceSmsPreferenceCallableResponse.outcome': eventAssistanceSmsPreferenceCallableResponseOutcome,
+    'eventAssistanceSmsPreferenceCallableResponse.view.attendeeId': eventAssistanceSmsPreferenceCallableResponseViewAttendeeId,
+    'eventAssistanceSmsPreferenceCallableResponse.view.availability': eventAssistanceSmsPreferenceCallableResponseViewAvailability,
+    'eventAssistanceSmsPreferenceCallableResponse.view.canEnable': eventAssistanceSmsPreferenceCallableResponseViewCanEnable,
+    'eventAssistanceSmsPreferenceCallableResponse.view.consent.text': eventAssistanceSmsPreferenceCallableResponseViewConsentText,
+    'eventAssistanceSmsPreferenceCallableResponse.view.consent.version': eventAssistanceSmsPreferenceCallableResponseViewConsentVersion,
+    'eventAssistanceSmsPreferenceCallableResponse.view.eventId': eventAssistanceSmsPreferenceCallableResponseViewEventId,
+    'eventAssistanceSmsPreferenceCallableResponse.view.expiresAt': eventAssistanceSmsPreferenceCallableResponseViewExpiresAt,
+    'eventAssistanceSmsPreferenceCallableResponse.view.phoneLastFour': eventAssistanceSmsPreferenceCallableResponseViewPhoneLastFour,
+    'eventAssistanceSmsPreferenceCallableResponse.view.preference': eventAssistanceSmsPreferenceCallableResponseViewPreference,
+    'eventAssistanceSmsPreferenceCallableResponse.view.revision': eventAssistanceSmsPreferenceCallableResponseViewRevision,
+    'eventAssistanceSmsPreferenceCallableResponse.view.serverTime': eventAssistanceSmsPreferenceCallableResponseViewServerTime,
+    'eventAssistanceSmsSenderDocument.activation.approvedAt': eventAssistanceSmsSenderDocumentActivationApprovedAt,
+    'eventAssistanceSmsSenderDocument.activation.senderApprovalId': eventAssistanceSmsSenderDocumentActivationSenderApprovalId,
+    'eventAssistanceSmsSenderDocument.activation.useCaseApprovalId': eventAssistanceSmsSenderDocumentActivationUseCaseApprovalId,
+    'eventAssistanceSmsSenderDocument.activation.validUntil': eventAssistanceSmsSenderDocumentActivationValidUntil,
+    'eventAssistanceSmsSenderDocument.country': eventAssistanceSmsSenderDocumentCountry,
+    'eventAssistanceSmsSenderDocument.credentialVersion': eventAssistanceSmsSenderDocumentCredentialVersion,
+    'eventAssistanceSmsSenderDocument.mask': eventAssistanceSmsSenderDocumentMask,
+    'eventAssistanceSmsSenderDocument.maxSegments': eventAssistanceSmsSenderDocumentMaxSegments,
+    'eventAssistanceSmsSenderDocument.principalEntityId': eventAssistanceSmsSenderDocumentPrincipalEntityId,
+    'eventAssistanceSmsSenderDocument.provider': eventAssistanceSmsSenderDocumentProvider,
+    'eventAssistanceSmsSenderDocument.quote.currency': eventAssistanceSmsSenderDocumentQuoteCurrency,
+    'eventAssistanceSmsSenderDocument.quote.maxMicrosPerSegment': eventAssistanceSmsSenderDocumentQuoteMaxMicrosPerSegment,
+    'eventAssistanceSmsSenderDocument.quote.revision': eventAssistanceSmsSenderDocumentQuoteRevision,
+    'eventAssistanceSmsSenderDocument.quote.validUntil': eventAssistanceSmsSenderDocumentQuoteValidUntil,
+    'eventAssistanceSmsSenderDocument.revision': eventAssistanceSmsSenderDocumentRevision,
+    'eventAssistanceSmsSenderDocument.schemaVersion': eventAssistanceSmsSenderDocumentSchemaVersion,
+    'eventAssistanceSmsSenderDocument.senderId': eventAssistanceSmsSenderDocumentSenderId,
+    'eventAssistanceSmsSenderDocument.senderIdentity': eventAssistanceSmsSenderDocumentSenderIdentity,
+    'eventAssistanceSmsSenderDocument.status': eventAssistanceSmsSenderDocumentStatus,
+    'eventAssistanceSmsSenderDocument.templates': eventAssistanceSmsSenderDocumentTemplates,
+    'eventAssistanceSmsSenderDocument.templates.items.dltTemplateId': eventAssistanceSmsSenderDocumentTemplatesItemsDltTemplateId,
+    'eventAssistanceSmsSenderDocument.templates.items.parts': eventAssistanceSmsSenderDocumentTemplatesItemsParts,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.kind': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsKind,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.maxCharacters': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsMaxCharacters,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.name': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsName,
+    'eventAssistanceSmsSenderDocument.templates.items.parts.items.text': eventAssistanceSmsSenderDocumentTemplatesItemsPartsItemsText,
+    'eventAssistanceSmsSenderDocument.templates.items.purpose': eventAssistanceSmsSenderDocumentTemplatesItemsPurpose,
+    'eventAssistanceSmsSenderDocument.templates.items.revision': eventAssistanceSmsSenderDocumentTemplatesItemsRevision,
+    'eventAssistanceSmsSenderDocument.templates.items.status': eventAssistanceSmsSenderDocumentTemplatesItemsStatus,
+    'eventAssistanceSmsSenderDocument.templates.items.templateId': eventAssistanceSmsSenderDocumentTemplatesItemsTemplateId,
+    'eventAssistanceSmsWithdrawalCallableResponse.outcome': eventAssistanceSmsWithdrawalCallableResponseOutcome,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.expiresAt': eventAssistanceSmsWithdrawalCallableResponseViewExpiresAt,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.preference': eventAssistanceSmsWithdrawalCallableResponseViewPreference,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.revision': eventAssistanceSmsWithdrawalCallableResponseViewRevision,
+    'eventAssistanceSmsWithdrawalCallableResponse.view.serverTime': eventAssistanceSmsWithdrawalCallableResponseViewServerTime,
+    'eventAssistanceSmsWithdrawalGrantDocument.attendeeGeneration': eventAssistanceSmsWithdrawalGrantDocumentAttendeeGeneration,
+    'eventAssistanceSmsWithdrawalGrantDocument.attendeeId': eventAssistanceSmsWithdrawalGrantDocumentAttendeeId,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.eventId': eventAssistanceSmsWithdrawalGrantDocumentContextEventId,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.mode': eventAssistanceSmsWithdrawalGrantDocumentContextMode,
+    'eventAssistanceSmsWithdrawalGrantDocument.context.organizerId': eventAssistanceSmsWithdrawalGrantDocumentContextOrganizerId,
+    'eventAssistanceSmsWithdrawalGrantDocument.expiresAt': eventAssistanceSmsWithdrawalGrantDocumentExpiresAt,
+    'eventAssistanceSmsWithdrawalGrantDocument.guestGrantHash': eventAssistanceSmsWithdrawalGrantDocumentGuestGrantHash,
+    'eventAssistanceSmsWithdrawalGrantDocument.issuedAt': eventAssistanceSmsWithdrawalGrantDocumentIssuedAt,
+    'eventAssistanceSmsWithdrawalGrantDocument.linkId': eventAssistanceSmsWithdrawalGrantDocumentLinkId,
+    'eventAssistanceSmsWithdrawalGrantDocument.permissionId': eventAssistanceSmsWithdrawalGrantDocumentPermissionId,
+    'eventAssistanceSmsWithdrawalGrantDocument.permissionRevisionAtIssue': eventAssistanceSmsWithdrawalGrantDocumentPermissionRevisionAtIssue,
+    'eventAssistanceSmsWithdrawalGrantDocument.recipientEndpointId': eventAssistanceSmsWithdrawalGrantDocumentRecipientEndpointId,
+    'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion': eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion,
+    'eventAssistanceSmsWithdrawalGrantDocument.senderId': eventAssistanceSmsWithdrawalGrantDocumentSenderId,
+    'eventAssistanceSmsWithdrawalGrantDocument.subjectUid': eventAssistanceSmsWithdrawalGrantDocumentSubjectUid,
+    'eventAssistanceThreadDocument.attendeeId': eventAssistanceThreadDocumentAttendeeId,
+    'eventAssistanceThreadDocument.context.eventId': eventAssistanceThreadDocumentContextEventId,
+    'eventAssistanceThreadDocument.context.mode': eventAssistanceThreadDocumentContextMode,
+    'eventAssistanceThreadDocument.context.organizerId': eventAssistanceThreadDocumentContextOrganizerId,
+    'eventAssistanceThreadDocument.createdAt': eventAssistanceThreadDocumentCreatedAt,
+    'eventAssistanceThreadDocument.episodeId': eventAssistanceThreadDocumentEpisodeId,
+    'eventAssistanceThreadDocument.guestId': eventAssistanceThreadDocumentGuestId,
+    'eventAssistanceThreadDocument.messageId': eventAssistanceThreadDocumentMessageId,
+    'eventAssistanceThreadDocument.revision': eventAssistanceThreadDocumentRevision,
+    'eventAssistanceThreadDocument.schemaVersion': eventAssistanceThreadDocumentSchemaVersion,
+    'eventAssistanceThreadDocument.threadId': eventAssistanceThreadDocumentThreadId,
+    'eventAssistanceThreadDocument.updatedAt': eventAssistanceThreadDocumentUpdatedAt,
+    'eventAssistanceThreadDocument.workflow.kind': eventAssistanceThreadDocumentWorkflowKind,
+    'eventAssistanceThreadDocument.workflow.occurrenceId': eventAssistanceThreadDocumentWorkflowOccurrenceId,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
@@ -66223,6 +73297,192 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.uid': eventWaitlistOfferDocumentUid,
     'eventWaitlistOfferDocument.updatedAt._nanoseconds': eventWaitlistOfferDocumentUpdatedAtNanoseconds,
     'eventWaitlistOfferDocument.updatedAt._seconds': eventWaitlistOfferDocumentUpdatedAtSeconds,
+    'eventWhatsappBudgetDocument.approvalId': eventWhatsappBudgetDocumentApprovalId,
+    'eventWhatsappBudgetDocument.budgetId': eventWhatsappBudgetDocumentBudgetId,
+    'eventWhatsappBudgetDocument.chargedMicros': eventWhatsappBudgetDocumentChargedMicros,
+    'eventWhatsappBudgetDocument.currency': eventWhatsappBudgetDocumentCurrency,
+    'eventWhatsappBudgetDocument.endsAt': eventWhatsappBudgetDocumentEndsAt,
+    'eventWhatsappBudgetDocument.limitMicros': eventWhatsappBudgetDocumentLimitMicros,
+    'eventWhatsappBudgetDocument.revision': eventWhatsappBudgetDocumentRevision,
+    'eventWhatsappBudgetDocument.schemaVersion': eventWhatsappBudgetDocumentSchemaVersion,
+    'eventWhatsappBudgetDocument.scope.context.eventId': eventWhatsappBudgetDocumentScopeContextEventId,
+    'eventWhatsappBudgetDocument.scope.context.mode': eventWhatsappBudgetDocumentScopeContextMode,
+    'eventWhatsappBudgetDocument.scope.context.organizerId': eventWhatsappBudgetDocumentScopeContextOrganizerId,
+    'eventWhatsappBudgetDocument.scope.day': eventWhatsappBudgetDocumentScopeDay,
+    'eventWhatsappBudgetDocument.scope.kind': eventWhatsappBudgetDocumentScopeKind,
+    'eventWhatsappBudgetDocument.senderId': eventWhatsappBudgetDocumentSenderId,
+    'eventWhatsappBudgetDocument.startsAt': eventWhatsappBudgetDocumentStartsAt,
+    'eventWhatsappBudgetDocument.status': eventWhatsappBudgetDocumentStatus,
+    'eventWhatsappBudgetDocument.updatedAt': eventWhatsappBudgetDocumentUpdatedAt,
+    'eventWhatsappConsentReceiptDocument.appliedRevision': eventWhatsappConsentReceiptDocumentAppliedRevision,
+    'eventWhatsappConsentReceiptDocument.attendeeGeneration': eventWhatsappConsentReceiptDocumentAttendeeGeneration,
+    'eventWhatsappConsentReceiptDocument.attendeeId': eventWhatsappConsentReceiptDocumentAttendeeId,
+    'eventWhatsappConsentReceiptDocument.context.eventId': eventWhatsappConsentReceiptDocumentContextEventId,
+    'eventWhatsappConsentReceiptDocument.context.mode': eventWhatsappConsentReceiptDocumentContextMode,
+    'eventWhatsappConsentReceiptDocument.context.organizerId': eventWhatsappConsentReceiptDocumentContextOrganizerId,
+    'eventWhatsappConsentReceiptDocument.createdAt': eventWhatsappConsentReceiptDocumentCreatedAt,
+    'eventWhatsappConsentReceiptDocument.decision': eventWhatsappConsentReceiptDocumentDecision,
+    'eventWhatsappConsentReceiptDocument.linkId': eventWhatsappConsentReceiptDocumentLinkId,
+    'eventWhatsappConsentReceiptDocument.permissionHash': eventWhatsappConsentReceiptDocumentPermissionHash,
+    'eventWhatsappConsentReceiptDocument.receiptId': eventWhatsappConsentReceiptDocumentReceiptId,
+    'eventWhatsappConsentReceiptDocument.recipientEndpointId': eventWhatsappConsentReceiptDocumentRecipientEndpointId,
+    'eventWhatsappConsentReceiptDocument.requestHash': eventWhatsappConsentReceiptDocumentRequestHash,
+    'eventWhatsappConsentReceiptDocument.routeId': eventWhatsappConsentReceiptDocumentRouteId,
+    'eventWhatsappConsentReceiptDocument.schemaVersion': eventWhatsappConsentReceiptDocumentSchemaVersion,
+    'eventWhatsappConsentReceiptDocument.senderHash': eventWhatsappConsentReceiptDocumentSenderHash,
+    'eventWhatsappConsentReceiptDocument.senderId': eventWhatsappConsentReceiptDocumentSenderId,
+    'eventWhatsappConsentReceiptDocument.source': eventWhatsappConsentReceiptDocumentSource,
+    'eventWhatsappDispatchDocument.attemptId': eventWhatsappDispatchDocumentAttemptId,
+    'eventWhatsappDispatchDocument.bindingRevision': eventWhatsappDispatchDocumentBindingRevision,
+    'eventWhatsappDispatchDocument.budgetIds': eventWhatsappDispatchDocumentBudgetIds,
+    'eventWhatsappDispatchDocument.budgetIds.items': eventWhatsappDispatchDocumentBudgetIdsItems,
+    'eventWhatsappDispatchDocument.context.eventId': eventWhatsappDispatchDocumentContextEventId,
+    'eventWhatsappDispatchDocument.context.mode': eventWhatsappDispatchDocumentContextMode,
+    'eventWhatsappDispatchDocument.context.organizerId': eventWhatsappDispatchDocumentContextOrganizerId,
+    'eventWhatsappDispatchDocument.createdAt': eventWhatsappDispatchDocumentCreatedAt,
+    'eventWhatsappDispatchDocument.currency': eventWhatsappDispatchDocumentCurrency,
+    'eventWhatsappDispatchDocument.endpointHash': eventWhatsappDispatchDocumentEndpointHash,
+    'eventWhatsappDispatchDocument.grantId': eventWhatsappDispatchDocumentGrantId,
+    'eventWhatsappDispatchDocument.maxCostMicros': eventWhatsappDispatchDocumentMaxCostMicros,
+    'eventWhatsappDispatchDocument.messageId': eventWhatsappDispatchDocumentMessageId,
+    'eventWhatsappDispatchDocument.payloadHash': eventWhatsappDispatchDocumentPayloadHash,
+    'eventWhatsappDispatchDocument.permissionHash': eventWhatsappDispatchDocumentPermissionHash,
+    'eventWhatsappDispatchDocument.permissionId': eventWhatsappDispatchDocumentPermissionId,
+    'eventWhatsappDispatchDocument.permissionRevision': eventWhatsappDispatchDocumentPermissionRevision,
+    'eventWhatsappDispatchDocument.policyHash': eventWhatsappDispatchDocumentPolicyHash,
+    'eventWhatsappDispatchDocument.policyRevision': eventWhatsappDispatchDocumentPolicyRevision,
+    'eventWhatsappDispatchDocument.providerAccountId': eventWhatsappDispatchDocumentProviderAccountId,
+    'eventWhatsappDispatchDocument.providerPhoneNumberId': eventWhatsappDispatchDocumentProviderPhoneNumberId,
+    'eventWhatsappDispatchDocument.quoteRevision': eventWhatsappDispatchDocumentQuoteRevision,
+    'eventWhatsappDispatchDocument.recipientEndpointId': eventWhatsappDispatchDocumentRecipientEndpointId,
+    'eventWhatsappDispatchDocument.replyBindingId': eventWhatsappDispatchDocumentReplyBindingId,
+    'eventWhatsappDispatchDocument.schemaVersion': eventWhatsappDispatchDocumentSchemaVersion,
+    'eventWhatsappDispatchDocument.senderHash': eventWhatsappDispatchDocumentSenderHash,
+    'eventWhatsappDispatchDocument.senderId': eventWhatsappDispatchDocumentSenderId,
+    'eventWhatsappDispatchDocument.stopRecordHash': eventWhatsappDispatchDocumentStopRecordHash,
+    'eventWhatsappDispatchDocument.templateDocumentId': eventWhatsappDispatchDocumentTemplateDocumentId,
+    'eventWhatsappDispatchDocument.templateHash': eventWhatsappDispatchDocumentTemplateHash,
+    'eventWhatsappPermissionDocument.attendeeGeneration': eventWhatsappPermissionDocumentAttendeeGeneration,
+    'eventWhatsappPermissionDocument.attendeeId': eventWhatsappPermissionDocumentAttendeeId,
+    'eventWhatsappPermissionDocument.context.eventId': eventWhatsappPermissionDocumentContextEventId,
+    'eventWhatsappPermissionDocument.context.mode': eventWhatsappPermissionDocumentContextMode,
+    'eventWhatsappPermissionDocument.context.organizerId': eventWhatsappPermissionDocumentContextOrganizerId,
+    'eventWhatsappPermissionDocument.currentReceiptId': eventWhatsappPermissionDocumentCurrentReceiptId,
+    'eventWhatsappPermissionDocument.evidence.acceptedAt': eventWhatsappPermissionDocumentEvidenceAcceptedAt,
+    'eventWhatsappPermissionDocument.evidence.copyVersion': eventWhatsappPermissionDocumentEvidenceCopyVersion,
+    'eventWhatsappPermissionDocument.evidence.phoneVerifiedAt': eventWhatsappPermissionDocumentEvidencePhoneVerifiedAt,
+    'eventWhatsappPermissionDocument.evidence.receiptId': eventWhatsappPermissionDocumentEvidenceReceiptId,
+    'eventWhatsappPermissionDocument.evidence.senderHash': eventWhatsappPermissionDocumentEvidenceSenderHash,
+    'eventWhatsappPermissionDocument.evidence.subjectUid': eventWhatsappPermissionDocumentEvidenceSubjectUid,
+    'eventWhatsappPermissionDocument.expiresAt': eventWhatsappPermissionDocumentExpiresAt,
+    'eventWhatsappPermissionDocument.permissionId': eventWhatsappPermissionDocumentPermissionId,
+    'eventWhatsappPermissionDocument.phoneE164': eventWhatsappPermissionDocumentPhoneE164,
+    'eventWhatsappPermissionDocument.purpose': eventWhatsappPermissionDocumentPurpose,
+    'eventWhatsappPermissionDocument.recipientEndpointId': eventWhatsappPermissionDocumentRecipientEndpointId,
+    'eventWhatsappPermissionDocument.revision': eventWhatsappPermissionDocumentRevision,
+    'eventWhatsappPermissionDocument.routeId': eventWhatsappPermissionDocumentRouteId,
+    'eventWhatsappPermissionDocument.schemaVersion': eventWhatsappPermissionDocumentSchemaVersion,
+    'eventWhatsappPermissionDocument.sender.displayName': eventWhatsappPermissionDocumentSenderDisplayName,
+    'eventWhatsappPermissionDocument.sender.displayPhoneNumber': eventWhatsappPermissionDocumentSenderDisplayPhoneNumber,
+    'eventWhatsappPermissionDocument.sender.providerAccountId': eventWhatsappPermissionDocumentSenderProviderAccountId,
+    'eventWhatsappPermissionDocument.sender.providerPhoneNumberId': eventWhatsappPermissionDocumentSenderProviderPhoneNumberId,
+    'eventWhatsappPermissionDocument.senderId': eventWhatsappPermissionDocumentSenderId,
+    'eventWhatsappPermissionDocument.status': eventWhatsappPermissionDocumentStatus,
+    'eventWhatsappPermissionDocument.updatedAt': eventWhatsappPermissionDocumentUpdatedAt,
+    'eventWhatsappPolicyDocument.activation.approvalId': eventWhatsappPolicyDocumentActivationApprovalId,
+    'eventWhatsappPolicyDocument.activation.approvedAt': eventWhatsappPolicyDocumentActivationApprovedAt,
+    'eventWhatsappPolicyDocument.activation.validUntil': eventWhatsappPolicyDocumentActivationValidUntil,
+    'eventWhatsappPolicyDocument.maxTemplateAgeSeconds': eventWhatsappPolicyDocumentMaxTemplateAgeSeconds,
+    'eventWhatsappPolicyDocument.organizerId': eventWhatsappPolicyDocumentOrganizerId,
+    'eventWhatsappPolicyDocument.providerAccountId': eventWhatsappPolicyDocumentProviderAccountId,
+    'eventWhatsappPolicyDocument.providerPhoneNumberId': eventWhatsappPolicyDocumentProviderPhoneNumberId,
+    'eventWhatsappPolicyDocument.quote.currency': eventWhatsappPolicyDocumentQuoteCurrency,
+    'eventWhatsappPolicyDocument.quote.maxMicrosPerMessage': eventWhatsappPolicyDocumentQuoteMaxMicrosPerMessage,
+    'eventWhatsappPolicyDocument.quote.recipientPrefixes': eventWhatsappPolicyDocumentQuoteRecipientPrefixes,
+    'eventWhatsappPolicyDocument.quote.recipientPrefixes.items': eventWhatsappPolicyDocumentQuoteRecipientPrefixesItems,
+    'eventWhatsappPolicyDocument.quote.revision': eventWhatsappPolicyDocumentQuoteRevision,
+    'eventWhatsappPolicyDocument.quote.validUntil': eventWhatsappPolicyDocumentQuoteValidUntil,
+    'eventWhatsappPolicyDocument.revision': eventWhatsappPolicyDocumentRevision,
+    'eventWhatsappPolicyDocument.schemaVersion': eventWhatsappPolicyDocumentSchemaVersion,
+    'eventWhatsappPolicyDocument.senderId': eventWhatsappPolicyDocumentSenderId,
+    'eventWhatsappPolicyDocument.status': eventWhatsappPolicyDocumentStatus,
+    'eventWhatsappPolicyDocument.templates': eventWhatsappPolicyDocumentTemplates,
+    'eventWhatsappPolicyDocument.templates.items.purpose': eventWhatsappPolicyDocumentTemplatesItemsPurpose,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies': eventWhatsappPolicyDocumentTemplatesItemsQuickReplies,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.action': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsAction,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.buttonIndex': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsButtonIndex,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.choiceId': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsChoiceId,
+    'eventWhatsappPolicyDocument.templates.items.quickReplies.items.label': eventWhatsappPolicyDocumentTemplatesItemsQuickRepliesItemsLabel,
+    'eventWhatsappPolicyDocument.templates.items.templateDocumentId': eventWhatsappPolicyDocumentTemplatesItemsTemplateDocumentId,
+    'eventWhatsappPolicyDocument.templates.items.templateHash': eventWhatsappPolicyDocumentTemplatesItemsTemplateHash,
+    'eventWhatsappPolicyDocument.templates.items.variables': eventWhatsappPolicyDocumentTemplatesItemsVariables,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.maxCharacters': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsMaxCharacters,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.providerName': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsProviderName,
+    'eventWhatsappPolicyDocument.templates.items.variables.items.source': eventWhatsappPolicyDocumentTemplatesItemsVariablesItemsSource,
+    'eventWhatsappPreferenceCallableResponse.outcome': eventWhatsappPreferenceCallableResponseOutcome,
+    'eventWhatsappPreferenceCallableResponse.view.attendeeId': eventWhatsappPreferenceCallableResponseViewAttendeeId,
+    'eventWhatsappPreferenceCallableResponse.view.availability': eventWhatsappPreferenceCallableResponseViewAvailability,
+    'eventWhatsappPreferenceCallableResponse.view.canEnable': eventWhatsappPreferenceCallableResponseViewCanEnable,
+    'eventWhatsappPreferenceCallableResponse.view.consent.text': eventWhatsappPreferenceCallableResponseViewConsentText,
+    'eventWhatsappPreferenceCallableResponse.view.consent.version': eventWhatsappPreferenceCallableResponseViewConsentVersion,
+    'eventWhatsappPreferenceCallableResponse.view.eventId': eventWhatsappPreferenceCallableResponseViewEventId,
+    'eventWhatsappPreferenceCallableResponse.view.expiresAt': eventWhatsappPreferenceCallableResponseViewExpiresAt,
+    'eventWhatsappPreferenceCallableResponse.view.phoneLastFour': eventWhatsappPreferenceCallableResponseViewPhoneLastFour,
+    'eventWhatsappPreferenceCallableResponse.view.preference': eventWhatsappPreferenceCallableResponseViewPreference,
+    'eventWhatsappPreferenceCallableResponse.view.revision': eventWhatsappPreferenceCallableResponseViewRevision,
+    'eventWhatsappPreferenceCallableResponse.view.sender.bindingHash': eventWhatsappPreferenceCallableResponseViewSenderBindingHash,
+    'eventWhatsappPreferenceCallableResponse.view.sender.displayName': eventWhatsappPreferenceCallableResponseViewSenderDisplayName,
+    'eventWhatsappPreferenceCallableResponse.view.sender.displayPhoneNumber': eventWhatsappPreferenceCallableResponseViewSenderDisplayPhoneNumber,
+    'eventWhatsappPreferenceCallableResponse.view.senderId': eventWhatsappPreferenceCallableResponseViewSenderId,
+    'eventWhatsappPreferenceCallableResponse.view.serverTime': eventWhatsappPreferenceCallableResponseViewServerTime,
+    'eventWhatsappPreferenceCallableResponse.view.stopRecordHash': eventWhatsappPreferenceCallableResponseViewStopRecordHash,
+    'eventWhatsappReplyBindingDocument.attemptId': eventWhatsappReplyBindingDocumentAttemptId,
+    'eventWhatsappReplyBindingDocument.attemptScopeHash': eventWhatsappReplyBindingDocumentAttemptScopeHash,
+    'eventWhatsappReplyBindingDocument.attendeeGeneration': eventWhatsappReplyBindingDocumentAttendeeGeneration,
+    'eventWhatsappReplyBindingDocument.attendeeId': eventWhatsappReplyBindingDocumentAttendeeId,
+    'eventWhatsappReplyBindingDocument.bindingRevision': eventWhatsappReplyBindingDocumentBindingRevision,
+    'eventWhatsappReplyBindingDocument.choices': eventWhatsappReplyBindingDocumentChoices,
+    'eventWhatsappReplyBindingDocument.choices.items.choiceId': eventWhatsappReplyBindingDocumentChoicesItemsChoiceId,
+    'eventWhatsappReplyBindingDocument.choices.items.nativeId': eventWhatsappReplyBindingDocumentChoicesItemsNativeId,
+    'eventWhatsappReplyBindingDocument.context.eventId': eventWhatsappReplyBindingDocumentContextEventId,
+    'eventWhatsappReplyBindingDocument.context.mode': eventWhatsappReplyBindingDocumentContextMode,
+    'eventWhatsappReplyBindingDocument.context.organizerId': eventWhatsappReplyBindingDocumentContextOrganizerId,
+    'eventWhatsappReplyBindingDocument.createdAt': eventWhatsappReplyBindingDocumentCreatedAt,
+    'eventWhatsappReplyBindingDocument.endpointHash': eventWhatsappReplyBindingDocumentEndpointHash,
+    'eventWhatsappReplyBindingDocument.episodeId': eventWhatsappReplyBindingDocumentEpisodeId,
+    'eventWhatsappReplyBindingDocument.expiresAt': eventWhatsappReplyBindingDocumentExpiresAt,
+    'eventWhatsappReplyBindingDocument.guestId': eventWhatsappReplyBindingDocumentGuestId,
+    'eventWhatsappReplyBindingDocument.guestRevision': eventWhatsappReplyBindingDocumentGuestRevision,
+    'eventWhatsappReplyBindingDocument.intentHash': eventWhatsappReplyBindingDocumentIntentHash,
+    'eventWhatsappReplyBindingDocument.messageId': eventWhatsappReplyBindingDocumentMessageId,
+    'eventWhatsappReplyBindingDocument.providerAccountId': eventWhatsappReplyBindingDocumentProviderAccountId,
+    'eventWhatsappReplyBindingDocument.providerPhoneNumberId': eventWhatsappReplyBindingDocumentProviderPhoneNumberId,
+    'eventWhatsappReplyBindingDocument.recipientEndpointId': eventWhatsappReplyBindingDocumentRecipientEndpointId,
+    'eventWhatsappReplyBindingDocument.replyKind': eventWhatsappReplyBindingDocumentReplyKind,
+    'eventWhatsappReplyBindingDocument.schemaVersion': eventWhatsappReplyBindingDocumentSchemaVersion,
+    'eventWhatsappReplyBindingDocument.senderId': eventWhatsappReplyBindingDocumentSenderId,
+    'eventWhatsappWithdrawalCallableResponse.outcome': eventWhatsappWithdrawalCallableResponseOutcome,
+    'eventWhatsappWithdrawalCallableResponse.view.expiresAt': eventWhatsappWithdrawalCallableResponseViewExpiresAt,
+    'eventWhatsappWithdrawalCallableResponse.view.preference': eventWhatsappWithdrawalCallableResponseViewPreference,
+    'eventWhatsappWithdrawalCallableResponse.view.revision': eventWhatsappWithdrawalCallableResponseViewRevision,
+    'eventWhatsappWithdrawalCallableResponse.view.serverTime': eventWhatsappWithdrawalCallableResponseViewServerTime,
+    'eventWhatsappWithdrawalGrantDocument.attendeeGeneration': eventWhatsappWithdrawalGrantDocumentAttendeeGeneration,
+    'eventWhatsappWithdrawalGrantDocument.attendeeId': eventWhatsappWithdrawalGrantDocumentAttendeeId,
+    'eventWhatsappWithdrawalGrantDocument.context.eventId': eventWhatsappWithdrawalGrantDocumentContextEventId,
+    'eventWhatsappWithdrawalGrantDocument.context.mode': eventWhatsappWithdrawalGrantDocumentContextMode,
+    'eventWhatsappWithdrawalGrantDocument.context.organizerId': eventWhatsappWithdrawalGrantDocumentContextOrganizerId,
+    'eventWhatsappWithdrawalGrantDocument.expiresAt': eventWhatsappWithdrawalGrantDocumentExpiresAt,
+    'eventWhatsappWithdrawalGrantDocument.guestGrantHash': eventWhatsappWithdrawalGrantDocumentGuestGrantHash,
+    'eventWhatsappWithdrawalGrantDocument.issuedAt': eventWhatsappWithdrawalGrantDocumentIssuedAt,
+    'eventWhatsappWithdrawalGrantDocument.linkId': eventWhatsappWithdrawalGrantDocumentLinkId,
+    'eventWhatsappWithdrawalGrantDocument.permissionId': eventWhatsappWithdrawalGrantDocumentPermissionId,
+    'eventWhatsappWithdrawalGrantDocument.permissionRevisionAtIssue': eventWhatsappWithdrawalGrantDocumentPermissionRevisionAtIssue,
+    'eventWhatsappWithdrawalGrantDocument.providerAccountId': eventWhatsappWithdrawalGrantDocumentProviderAccountId,
+    'eventWhatsappWithdrawalGrantDocument.providerPhoneNumberId': eventWhatsappWithdrawalGrantDocumentProviderPhoneNumberId,
+    'eventWhatsappWithdrawalGrantDocument.recipientEndpointId': eventWhatsappWithdrawalGrantDocumentRecipientEndpointId,
+    'eventWhatsappWithdrawalGrantDocument.schemaVersion': eventWhatsappWithdrawalGrantDocumentSchemaVersion,
+    'eventWhatsappWithdrawalGrantDocument.senderId': eventWhatsappWithdrawalGrantDocumentSenderId,
+    'eventWhatsappWithdrawalGrantDocument.subjectUid': eventWhatsappWithdrawalGrantDocumentSubjectUid,
     'exploreSearchCallablePayload.cityName': exploreSearchCallablePayloadCityName,
     'exploreSearchCallablePayload.limit': exploreSearchCallablePayloadLimit,
     'exploreSearchCallablePayload.query': exploreSearchCallablePayloadQuery,
@@ -66421,6 +73681,12 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
+    'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
+    'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
+    'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'getEventAssistanceSmsWithdrawalCallablePayload.linkId': getEventAssistanceSmsWithdrawalCallablePayloadLinkId,
+    'getEventAssistanceSmsWithdrawalCallablePayload.secret': getEventAssistanceSmsWithdrawalCallablePayloadSecret,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
@@ -66532,6 +73798,7 @@ abstract final class CatchContractConstraints {
     'getEventRuntimeBootstrapCallableResponse.participant.clubId': getEventRuntimeBootstrapCallableResponseParticipantClubId,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIds,
     'getEventRuntimeBootstrapCallableResponse.participant.completedFieldIds.items': getEventRuntimeBootstrapCallableResponseParticipantCompletedFieldIdsItems,
+    'getEventRuntimeBootstrapCallableResponse.participant.eventAttendeeId': getEventRuntimeBootstrapCallableResponseParticipantEventAttendeeId,
     'getEventRuntimeBootstrapCallableResponse.participant.eventId': getEventRuntimeBootstrapCallableResponseParticipantEventId,
     'getEventRuntimeBootstrapCallableResponse.participant.organizerId': getEventRuntimeBootstrapCallableResponseParticipantOrganizerId,
     'getEventRuntimeBootstrapCallableResponse.participant.requiredFieldIds': getEventRuntimeBootstrapCallableResponseParticipantRequiredFieldIds,
@@ -66584,6 +73851,11 @@ abstract final class CatchContractConstraints {
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.label': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsLabel,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.order': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsOrder,
     'getEventSuccessSpatialLayoutCallableResponse.layout.units.items.shape': getEventSuccessSpatialLayoutCallableResponseLayoutUnitsItemsShape,
+    'getEventWhatsappPreferenceCallablePayload.attendeeId': getEventWhatsappPreferenceCallablePayloadAttendeeId,
+    'getEventWhatsappPreferenceCallablePayload.eventId': getEventWhatsappPreferenceCallablePayloadEventId,
+    'getEventWhatsappPreferenceCallablePayload.senderId': getEventWhatsappPreferenceCallablePayloadSenderId,
+    'getEventWhatsappWithdrawalCallablePayload.linkId': getEventWhatsappWithdrawalCallablePayloadLinkId,
+    'getEventWhatsappWithdrawalCallablePayload.secret': getEventWhatsappWithdrawalCallablePayloadSecret,
     'getOrganizerApplicationDetailCallablePayload.applicationId': getOrganizerApplicationDetailCallablePayloadApplicationId,
     'getOrganizerApplicationDetailCallablePayload.organizerId': getOrganizerApplicationDetailCallablePayloadOrganizerId,
     'getOrganizerApplicationDetailCallableResponse.answers': getOrganizerApplicationDetailCallableResponseAnswers,
@@ -69582,8 +76854,13 @@ abstract final class CatchContractConstraints {
     'organizerManualSendTaskDocument.updatedByUid': organizerManualSendTaskDocumentUpdatedByUid,
     'organizerMessageTemplateDocument.buttonKinds': organizerMessageTemplateDocumentButtonKinds,
     'organizerMessageTemplateDocument.buttonKinds.items': organizerMessageTemplateDocumentButtonKindsItems,
+    'organizerMessageTemplateDocument.buttonLabels': organizerMessageTemplateDocumentButtonLabels,
+    'organizerMessageTemplateDocument.buttonLabels.items': organizerMessageTemplateDocumentButtonLabelsItems,
+    'organizerMessageTemplateDocument.buttonUrls': organizerMessageTemplateDocumentButtonUrls,
+    'organizerMessageTemplateDocument.buttonUrls.items': organizerMessageTemplateDocumentButtonUrlsItems,
     'organizerMessageTemplateDocument.category': organizerMessageTemplateDocumentCategory,
     'organizerMessageTemplateDocument.connectionId': organizerMessageTemplateDocumentConnectionId,
+    'organizerMessageTemplateDocument.contentHash': organizerMessageTemplateDocumentContentHash,
     'organizerMessageTemplateDocument.hasMediaHeader': organizerMessageTemplateDocumentHasMediaHeader,
     'organizerMessageTemplateDocument.language': organizerMessageTemplateDocumentLanguage,
     'organizerMessageTemplateDocument.name': organizerMessageTemplateDocumentName,
@@ -69593,6 +76870,7 @@ abstract final class CatchContractConstraints {
     'organizerMessageTemplateDocument.parameterBindings.items.component': organizerMessageTemplateDocumentParameterBindingsItemsComponent,
     'organizerMessageTemplateDocument.parameterBindings.items.position': organizerMessageTemplateDocumentParameterBindingsItemsPosition,
     'organizerMessageTemplateDocument.parameterBindings.items.variableName': organizerMessageTemplateDocumentParameterBindingsItemsVariableName,
+    'organizerMessageTemplateDocument.parameterFormat': organizerMessageTemplateDocumentParameterFormat,
     'organizerMessageTemplateDocument.providerTemplateId': organizerMessageTemplateDocumentProviderTemplateId,
     'organizerMessageTemplateDocument.providerUpdatedAt._nanoseconds': organizerMessageTemplateDocumentProviderUpdatedAtNanoseconds,
     'organizerMessageTemplateDocument.providerUpdatedAt._seconds': organizerMessageTemplateDocumentProviderUpdatedAtSeconds,
@@ -69627,7 +76905,15 @@ abstract final class CatchContractConstraints {
     'organizerMessagingSetupCallableResponse.templates.items.templateId': organizerMessagingSetupCallableResponseTemplatesItemsTemplateId,
     'organizerMessagingSetupCallableResponse.templates.items.variableNames': organizerMessagingSetupCallableResponseTemplatesItemsVariableNames,
     'organizerMessagingSetupCallableResponse.templates.items.variableNames.items': organizerMessagingSetupCallableResponseTemplatesItemsVariableNamesItems,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.attemptCount': organizerMessagingWebhookEventDocumentAssistanceProcessingAttemptCount,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.disposition': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeDisposition,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.kind': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeKind,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.outcome.reason': organizerMessagingWebhookEventDocumentAssistanceProcessingOutcomeReason,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.sourceHash': organizerMessagingWebhookEventDocumentAssistanceProcessingSourceHash,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._nanoseconds': organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtNanoseconds,
+    'organizerMessagingWebhookEventDocument.assistanceProcessing.updatedAt._seconds': organizerMessagingWebhookEventDocumentAssistanceProcessingUpdatedAtSeconds,
     'organizerMessagingWebhookEventDocument.attemptCount': organizerMessagingWebhookEventDocumentAttemptCount,
+    'organizerMessagingWebhookEventDocument.callbackData': organizerMessagingWebhookEventDocumentCallbackData,
     'organizerMessagingWebhookEventDocument.connectionId': organizerMessagingWebhookEventDocumentConnectionId,
     'organizerMessagingWebhookEventDocument.contextProviderMessageId': organizerMessagingWebhookEventDocumentContextProviderMessageId,
     'organizerMessagingWebhookEventDocument.createdAt._nanoseconds': organizerMessagingWebhookEventDocumentCreatedAtNanoseconds,
@@ -69639,17 +76925,24 @@ abstract final class CatchContractConstraints {
     'organizerMessagingWebhookEventDocument.expiresAt._seconds': organizerMessagingWebhookEventDocumentExpiresAtSeconds,
     'organizerMessagingWebhookEventDocument.hasReply': organizerMessagingWebhookEventDocumentHasReply,
     'organizerMessagingWebhookEventDocument.inboundBody': organizerMessagingWebhookEventDocumentInboundBody,
+    'organizerMessagingWebhookEventDocument.inboundReply.description': organizerMessagingWebhookEventDocumentInboundReplyDescription,
+    'organizerMessagingWebhookEventDocument.inboundReply.id': organizerMessagingWebhookEventDocumentInboundReplyId,
+    'organizerMessagingWebhookEventDocument.inboundReply.kind': organizerMessagingWebhookEventDocumentInboundReplyKind,
+    'organizerMessagingWebhookEventDocument.inboundReply.label': organizerMessagingWebhookEventDocumentInboundReplyLabel,
+    'organizerMessagingWebhookEventDocument.inboundReply.payload': organizerMessagingWebhookEventDocumentInboundReplyPayload,
     'organizerMessagingWebhookEventDocument.isStop': organizerMessagingWebhookEventDocumentIsStop,
     'organizerMessagingWebhookEventDocument.organizerId': organizerMessagingWebhookEventDocumentOrganizerId,
     'organizerMessagingWebhookEventDocument.processedAt._nanoseconds': organizerMessagingWebhookEventDocumentProcessedAtNanoseconds,
     'organizerMessagingWebhookEventDocument.processedAt._seconds': organizerMessagingWebhookEventDocumentProcessedAtSeconds,
     'organizerMessagingWebhookEventDocument.processingStatus': organizerMessagingWebhookEventDocumentProcessingStatus,
     'organizerMessagingWebhookEventDocument.provider': organizerMessagingWebhookEventDocumentProvider,
+    'organizerMessagingWebhookEventDocument.providerAccountId': organizerMessagingWebhookEventDocumentProviderAccountId,
     'organizerMessagingWebhookEventDocument.providerErrorCode': organizerMessagingWebhookEventDocumentProviderErrorCode,
     'organizerMessagingWebhookEventDocument.providerEventId': organizerMessagingWebhookEventDocumentProviderEventId,
     'organizerMessagingWebhookEventDocument.providerMessageId': organizerMessagingWebhookEventDocumentProviderMessageId,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds': organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds,
+    'organizerMessagingWebhookEventDocument.providerPhoneNumberId': organizerMessagingWebhookEventDocumentProviderPhoneNumberId,
     'organizerPolicyGapReviewDecisionDocument.checklist.behaviorStillDisabledAcknowledged': organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged,
     'organizerPolicyGapReviewDecisionDocument.checklist.costAndSafetyReviewed': organizerPolicyGapReviewDecisionDocumentChecklistCostAndSafetyReviewed,
     'organizerPolicyGapReviewDecisionDocument.checklist.implementationOwnerReviewed': organizerPolicyGapReviewDecisionDocumentChecklistImplementationOwnerReviewed,
@@ -69931,6 +77224,18 @@ abstract final class CatchContractConstraints {
     'organizerTeamMembershipDocument.role': organizerTeamMembershipDocumentRole,
     'organizerTeamMembershipDocument.status': organizerTeamMembershipDocumentStatus,
     'organizerTeamMembershipDocument.uid': organizerTeamMembershipDocumentUid,
+    'organizerWhatsappEndpointStopDocument.connectionId': organizerWhatsappEndpointStopDocumentConnectionId,
+    'organizerWhatsappEndpointStopDocument.endpointHash': organizerWhatsappEndpointStopDocumentEndpointHash,
+    'organizerWhatsappEndpointStopDocument.observedAt': organizerWhatsappEndpointStopDocumentObservedAt,
+    'organizerWhatsappEndpointStopDocument.organizerId': organizerWhatsappEndpointStopDocumentOrganizerId,
+    'organizerWhatsappEndpointStopDocument.payloadHash': organizerWhatsappEndpointStopDocumentPayloadHash,
+    'organizerWhatsappEndpointStopDocument.providerAccountId': organizerWhatsappEndpointStopDocumentProviderAccountId,
+    'organizerWhatsappEndpointStopDocument.providerEventId': organizerWhatsappEndpointStopDocumentProviderEventId,
+    'organizerWhatsappEndpointStopDocument.providerPhoneNumberId': organizerWhatsappEndpointStopDocumentProviderPhoneNumberId,
+    'organizerWhatsappEndpointStopDocument.revision': organizerWhatsappEndpointStopDocumentRevision,
+    'organizerWhatsappEndpointStopDocument.schemaVersion': organizerWhatsappEndpointStopDocumentSchemaVersion,
+    'organizerWhatsappEndpointStopDocument.stopId': organizerWhatsappEndpointStopDocumentStopId,
+    'organizerWhatsappEndpointStopDocument.stoppedAt': organizerWhatsappEndpointStopDocumentStoppedAt,
     'organizerWhatsappMessageDocument.actorUid': organizerWhatsappMessageDocumentActorUid,
     'organizerWhatsappMessageDocument.body': organizerWhatsappMessageDocumentBody,
     'organizerWhatsappMessageDocument.connectionId': organizerWhatsappMessageDocumentConnectionId,
@@ -70696,6 +78001,12 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssistanceSmsPreferenceCallablePayload.attendeeId': setEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
+    'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion': setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion,
+    'setEventAssistanceSmsPreferenceCallablePayload.decision.kind': setEventAssistanceSmsPreferenceCallablePayloadDecisionKind,
+    'setEventAssistanceSmsPreferenceCallablePayload.eventId': setEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision': setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision,
+    'setEventAssistanceSmsPreferenceCallablePayload.requestId': setEventAssistanceSmsPreferenceCallablePayloadRequestId,
     'setEventAttendeeAttendanceCallablePayload.attendeeId': setEventAttendeeAttendanceCallablePayloadAttendeeId,
     'setEventAttendeeAttendanceCallablePayload.clientOperationId': setEventAttendeeAttendanceCallablePayloadClientOperationId,
     'setEventAttendeeAttendanceCallablePayload.desiredCheckedIn': setEventAttendeeAttendanceCallablePayloadDesiredCheckedIn,
@@ -70709,6 +78020,15 @@ abstract final class CatchContractConstraints {
     'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId': setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId,
     'setEventSuccessAccountabilityResolutionCallablePayload.eventId': setEventSuccessAccountabilityResolutionCallablePayloadEventId,
     'setEventSuccessAccountabilityResolutionCallablePayload.resolution': setEventSuccessAccountabilityResolutionCallablePayloadResolution,
+    'setEventWhatsappPreferenceCallablePayload.attendeeId': setEventWhatsappPreferenceCallablePayloadAttendeeId,
+    'setEventWhatsappPreferenceCallablePayload.decision.copyVersion': setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion,
+    'setEventWhatsappPreferenceCallablePayload.decision.kind': setEventWhatsappPreferenceCallablePayloadDecisionKind,
+    'setEventWhatsappPreferenceCallablePayload.decision.senderHash': setEventWhatsappPreferenceCallablePayloadDecisionSenderHash,
+    'setEventWhatsappPreferenceCallablePayload.decision.stopRecordHash': setEventWhatsappPreferenceCallablePayloadDecisionStopRecordHash,
+    'setEventWhatsappPreferenceCallablePayload.eventId': setEventWhatsappPreferenceCallablePayloadEventId,
+    'setEventWhatsappPreferenceCallablePayload.expectedRevision': setEventWhatsappPreferenceCallablePayloadExpectedRevision,
+    'setEventWhatsappPreferenceCallablePayload.requestId': setEventWhatsappPreferenceCallablePayloadRequestId,
+    'setEventWhatsappPreferenceCallablePayload.senderId': setEventWhatsappPreferenceCallablePayloadSenderId,
     'setOrganizerFormAutomationStateCallablePayload.enabled': setOrganizerFormAutomationStateCallablePayloadEnabled,
     'setOrganizerFormAutomationStateCallablePayload.expectedRevision': setOrganizerFormAutomationStateCallablePayloadExpectedRevision,
     'setOrganizerFormAutomationStateCallablePayload.organizerId': setOrganizerFormAutomationStateCallablePayloadOrganizerId,
@@ -70739,6 +78059,31 @@ abstract final class CatchContractConstraints {
     'stripeCheckoutSessionCallableResponse.sessionId': stripeCheckoutSessionCallableResponseSessionId,
     'stripeHostOnboardingLinkCallableResponse.accountId': stripeHostOnboardingLinkCallableResponseAccountId,
     'stripeHostOnboardingLinkCallableResponse.onboardingUrl': stripeHostOnboardingLinkCallableResponseOnboardingUrl,
+    'submitEventAssistanceGuestChoiceCallablePayload.choiceId': submitEventAssistanceGuestChoiceCallablePayloadChoiceId,
+    'submitEventAssistanceGuestChoiceCallablePayload.expectedGuestRevision': submitEventAssistanceGuestChoiceCallablePayloadExpectedGuestRevision,
+    'submitEventAssistanceGuestChoiceCallablePayload.intentId': submitEventAssistanceGuestChoiceCallablePayloadIntentId,
+    'submitEventAssistanceGuestChoiceCallablePayload.intentRevision': submitEventAssistanceGuestChoiceCallablePayloadIntentRevision,
+    'submitEventAssistanceGuestChoiceCallablePayload.linkId': submitEventAssistanceGuestChoiceCallablePayloadLinkId,
+    'submitEventAssistanceGuestChoiceCallablePayload.requestId': submitEventAssistanceGuestChoiceCallablePayloadRequestId,
+    'submitEventAssistanceGuestChoiceCallablePayload.secret': submitEventAssistanceGuestChoiceCallablePayloadSecret,
+    'submitEventAssistanceGuestChoiceCallableResponse.result.kind': submitEventAssistanceGuestChoiceCallableResponseResultKind,
+    'submitEventAssistanceGuestChoiceCallableResponse.result.reason': submitEventAssistanceGuestChoiceCallableResponseResultReason,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.choices': submitEventAssistanceGuestChoiceCallableResponseViewChoices,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.choices.items.choiceId': submitEventAssistanceGuestChoiceCallableResponseViewChoicesItemsChoiceId,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.choices.items.label': submitEventAssistanceGuestChoiceCallableResponseViewChoicesItemsLabel,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.eventTitle': submitEventAssistanceGuestChoiceCallableResponseViewEventTitle,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.expiresAt': submitEventAssistanceGuestChoiceCallableResponseViewExpiresAt,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.guestRevision': submitEventAssistanceGuestChoiceCallableResponseViewGuestRevision,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.instructionRevision': submitEventAssistanceGuestChoiceCallableResponseViewInstructionRevision,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.intentId': submitEventAssistanceGuestChoiceCallableResponseViewIntentId,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.intentRevision': submitEventAssistanceGuestChoiceCallableResponseViewIntentRevision,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.reason': submitEventAssistanceGuestChoiceCallableResponseViewReason,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.response.label': submitEventAssistanceGuestChoiceCallableResponseViewResponseLabel,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.response.receivedAt': submitEventAssistanceGuestChoiceCallableResponseViewResponseReceivedAt,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.serverTime': submitEventAssistanceGuestChoiceCallableResponseViewServerTime,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.status': submitEventAssistanceGuestChoiceCallableResponseViewStatus,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.text': submitEventAssistanceGuestChoiceCallableResponseViewText,
+    'submitEventAssistanceGuestChoiceCallableResponse.view.title': submitEventAssistanceGuestChoiceCallableResponseViewTitle,
     'submitEventRehearsalGuestActionCallablePayload.action': submitEventRehearsalGuestActionCallablePayloadAction,
     'submitEventRehearsalGuestActionCallablePayload.clientActionId': submitEventRehearsalGuestActionCallablePayloadClientActionId,
     'submitEventRehearsalGuestActionCallablePayload.publicRehearsalId': submitEventRehearsalGuestActionCallablePayloadPublicRehearsalId,
@@ -71822,6 +79167,14 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.sources.items.type': websiteHostListingProjectionSourcesItemsType,
     'websiteHostListingProjection.sourceSummary': websiteHostListingProjectionSourceSummary,
     'websiteHostListingProjection.status': websiteHostListingProjectionStatus,
+    'withdrawEventAssistanceSmsCallablePayload.expectedRevision': withdrawEventAssistanceSmsCallablePayloadExpectedRevision,
+    'withdrawEventAssistanceSmsCallablePayload.linkId': withdrawEventAssistanceSmsCallablePayloadLinkId,
+    'withdrawEventAssistanceSmsCallablePayload.requestId': withdrawEventAssistanceSmsCallablePayloadRequestId,
+    'withdrawEventAssistanceSmsCallablePayload.secret': withdrawEventAssistanceSmsCallablePayloadSecret,
+    'withdrawEventWhatsappCallablePayload.expectedRevision': withdrawEventWhatsappCallablePayloadExpectedRevision,
+    'withdrawEventWhatsappCallablePayload.linkId': withdrawEventWhatsappCallablePayloadLinkId,
+    'withdrawEventWhatsappCallablePayload.requestId': withdrawEventWhatsappCallablePayloadRequestId,
+    'withdrawEventWhatsappCallablePayload.secret': withdrawEventWhatsappCallablePayloadSecret,
     'withdrawOrganizerFormResponseCallablePayload.requestId': withdrawOrganizerFormResponseCallablePayloadRequestId,
     'withdrawOrganizerFormResponseCallablePayload.responseId': withdrawOrganizerFormResponseCallablePayloadResponseId,
     'withdrawOrganizerFormResponseCallablePayload.withdrawalToken': withdrawOrganizerFormResponseCallablePayloadWithdrawalToken,

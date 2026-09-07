@@ -700,6 +700,14 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
             "runtimeProfile"
           ],
           "properties": {
+            "eventAttendeeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
             "accessStatus": {
               "type": "string",
               "enum": [

@@ -1835,6 +1835,70 @@
       ]
     },
     {
+      "id": "eventAssistanceGuests",
+      "path": "eventAssistanceGuests/{guestId}",
+      "rulesMatch": "/eventAssistanceGuests/{guestId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceThreads",
+      "path": "eventAssistanceThreads/{threadId}",
+      "rulesMatch": "/eventAssistanceThreads/{threadId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceGuestGrants",
+      "path": "eventAssistanceGuestGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceGuestGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceCases",
+      "path": "eventAssistanceCases/{caseId}",
+      "rulesMatch": "/eventAssistanceCases/{caseId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance guest boundary",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGuestView",
+        "submitEventAssistanceGuestChoice"
+      ]
+    },
+    {
+      "id": "eventAssistanceMessages",
+      "path": "eventAssistanceMessages/{messageId}",
+      "rulesMatch": "/eventAssistanceMessages/{messageId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance workers",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Intent and bounded attempts are private. Provider activation and guest response endpoints are separate integration work."
+      ]
+    },
+    {
       "id": "operationRuns",
       "path": "operationRuns/{runId}",
       "rulesMatch": "/operationRuns/{runId}",
@@ -1944,6 +2008,174 @@
       "write": "server/admin only",
       "migrationNotes": [
         "Tool-owned manifest used to delete prior synthetic seed data safely."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsSenders",
+      "path": "eventAssistanceSmsSenders/{senderId}",
+      "rulesMatch": "/eventAssistanceSmsSenders/{senderId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsPermissions",
+      "path": "eventAssistanceSmsPermissions/{permissionId}",
+      "rulesMatch": "/eventAssistanceSmsPermissions/{permissionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsBudgets",
+      "path": "eventAssistanceSmsBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceSmsBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsDispatches",
+      "path": "eventAssistanceSmsDispatches/{attemptId}",
+      "rulesMatch": "/eventAssistanceSmsDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance SMS worker",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsConsentReceipts",
+      "path": "eventAssistanceSmsConsentReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceSmsConsentReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappWithdrawalGrants",
+      "path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceWhatsappWithdrawalGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service WhatsApp dispatch and withdrawal",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Issued with the atomic dispatch claim; revocation only for the original event, subject, recipient and provider sender. Retain the referenced guest grant through this independent consent lifetime."
+      ]
+    },
+    {
+      "id": "eventAssistanceSmsWithdrawalGrants",
+      "path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceSmsWithdrawalGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service SMS dispatch and withdrawal",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappReplyBindings",
+      "path": "eventAssistanceWhatsappReplyBindings/{attemptId}",
+      "rulesMatch": "/eventAssistanceWhatsappReplyBindings/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance WhatsApp dispatch and reply boundary",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable reply choices are committed with a claimed live attempt. They do not grant sending authority. Keep correlation through the outbox reconciliation window; live sender integration and retention remain activation work."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappPolicies",
+      "path": "eventAssistanceWhatsappPolicies/{senderId}",
+      "rulesMatch": "/eventAssistanceWhatsappPolicies/{senderId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Reviewed content hashes and bounded quote for one organizer sender. Does not authorize guest consent or provider I/O by itself. No automated policy provisioning or activation."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappPermissions",
+      "path": "eventAssistanceWhatsappPermissions/{permissionId}",
+      "rulesMatch": "/eventAssistanceWhatsappPermissions/{permissionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service WhatsApp preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappConsentReceipts",
+      "path": "eventAssistanceWhatsappConsentReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceWhatsappConsentReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service WhatsApp preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappBudgets",
+      "path": "eventAssistanceWhatsappBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceWhatsappBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-service WhatsApp dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations."
+      ]
+    },
+    {
+      "id": "eventAssistanceWhatsappDispatches",
+      "path": "eventAssistanceWhatsappDispatches/{attemptId}",
+      "rulesMatch": "/eventAssistanceWhatsappDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-service WhatsApp dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable reviewed material, consent and debit identity; native reply bindings share the transaction. No provider credentials, plaintext recipient or guest bearer secret. Retain through reconciliation."
+      ]
+    },
+    {
+      "id": "organizerWhatsappEndpointStops",
+      "path": "organizerWhatsappEndpointStops/{stopId}",
+      "rulesMatch": "/organizerWhatsappEndpointStops/{stopId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "authenticated WhatsApp ingress",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Latest signed text STOP, keyed by organizer and endpoint, commits with the private queue receipt and does not depend on CRM contacts. No TTL pending suppression/consent retention reconciliation."
       ]
     }
   ]
