@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -35,7 +36,10 @@ class EventDetailOverviewSection extends StatelessWidget {
       children: [
         CatchSection.divided(
           title: context.l10n.eventsEventDetailOverviewSectionTitleThePlan,
-          activityKind: event.activityKind,
+          leadAccent: ActivityPalette.resolve(
+            context,
+            event.activityKind,
+          ).accent,
           lead: true,
           first: true,
           dividerColor: style?.dividerColor,

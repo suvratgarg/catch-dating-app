@@ -3817,14 +3817,17 @@ Widget catchSectionContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'lead-accent',
         child: CatchSection.divided(
           title: 'The plan',
-          activityKind: ActivityKind.socialRun,
+          leadAccent: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).accent,
           lead: true,
           first: true,
-          child: Text('Lead sections may carry the activity accent.'),
+          child: const Text('Lead sections may carry the activity accent.'),
         ),
       ),
       const _StateCard(

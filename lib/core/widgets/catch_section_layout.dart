@@ -1,9 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart' show CatchField;
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +41,7 @@ class CatchSection extends StatelessWidget {
     String? title,
     Object? count,
     Widget? trailing,
-    ActivityKind? activityKind,
+    Color? leadAccent,
     bool lead = false,
     bool first = false,
     Color? dividerColor,
@@ -69,7 +66,7 @@ class CatchSection extends StatelessWidget {
            children: children,
            child: child,
          ),
-         activityKind: activityKind,
+         leadAccent: leadAccent,
          lead: lead,
          first: first,
          dividerColor: dividerColor,
@@ -88,7 +85,7 @@ class CatchSection extends StatelessWidget {
     String? title,
     Object? count,
     Widget? trailing,
-    ActivityKind? activityKind,
+    Color? leadAccent,
     bool lead = false,
     bool first = false,
     Widget? footer,
@@ -109,7 +106,7 @@ class CatchSection extends StatelessWidget {
            children: children,
            child: child,
          ),
-         activityKind: activityKind,
+         leadAccent: leadAccent,
          lead: lead,
          first: first,
          footer: footer,
@@ -299,8 +296,10 @@ class CatchSection extends StatelessWidget {
   List<Widget>? get children => _common.children;
   Widget? get child => _common.child;
 
-  ActivityKind? get activityKind =>
-      _dividedConfig?.activityKind ?? _fieldRowsConfig?.activityKind;
+  /// Caller-resolved accent used only for a lead divided section.
+  /// An explicit [titleColor] takes precedence.
+  Color? get leadAccent =>
+      _dividedConfig?.leadAccent ?? _fieldRowsConfig?.leadAccent;
   bool get lead => _dividedConfig?.lead ?? _fieldRowsConfig?.lead ?? false;
   bool get first => _dividedConfig?.first ?? _fieldRowsConfig?.first ?? false;
   _CatchSectionVariant get _variant =>
@@ -398,13 +397,11 @@ class CatchSection extends StatelessWidget {
 
   Widget _buildDivided(BuildContext context) {
     final t = CatchTokens.of(context);
-    final activityAccent = activityKind == null
-        ? null
-        : ActivityPalette.resolve(context, activityKind!).accent;
+    final accent = leadAccent;
     final effectiveTitleColor =
         titleColor ??
-        (lead && activityAccent != null
-            ? activityAccent
+        (lead && accent != null
+            ? accent
             : _fieldRows
             ? t.ink2
             : t.ink);
@@ -663,11 +660,7 @@ class CatchSection extends StatelessWidget {
                       ? Text(
                           count == null
                               ? displayTitle
-                              : context.l10n
-                                    .coreCatchSectionLayoutTextDisplaytitleCount(
-                                      displayTitle: displayTitle,
-                                      count: count!,
-                                    ),
+                              : '$displayTitle · $count',
                           style: CatchTextStyles.sectionTitle(
                             context,
                             color: titleColor ?? t.ink,

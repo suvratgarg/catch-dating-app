@@ -4178,14 +4178,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String coreCatchSectionLayoutTextDisplaytitleCount({
-    required Object displayTitle,
-    required Object count,
-  }) {
-    return '$displayTitle · $count';
-  }
-
-  @override
   String get coreCatchStartupLoadingScreenBodyStartupLoadingIndicator =>
       'startup-loading-indicator';
 

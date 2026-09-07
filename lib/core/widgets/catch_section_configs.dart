@@ -19,7 +19,7 @@ typedef _SectionCommonConfig = ({
 
 typedef _DividedSectionConfig = ({
   _SectionCommonConfig common,
-  ActivityKind? activityKind,
+  Color? leadAccent,
   bool lead,
   bool first,
   Color? dividerColor,
@@ -31,7 +31,7 @@ typedef _DividedSectionConfig = ({
 
 typedef _DividedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
-  ActivityKind? activityKind,
+  Color? leadAccent,
   bool lead,
   bool first,
   Widget? footer,

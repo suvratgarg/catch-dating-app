@@ -8072,17 +8072,6 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_search_field"
   },
-  "coreCatchSectionLayoutTextDisplaytitleCount": "{displayTitle} · {count}",
-  "@coreCatchSectionLayoutTextDisplaytitleCount": {
-    "description": "Product copy used by lib/core/widgets/catch_section_layout.dart (Text).",
-    "placeholders": {
-      "displayTitle": {},
-      "count": {}
-    },
-    "x-audience": "shared",
-    "x-owner": "product",
-    "x-surface": "core.widgets.catch_section_layout"
-  },
   "coreCatchStartupLoadingScreenBodyStartupLoadingIndicator": "startup-loading-indicator",
   "@coreCatchStartupLoadingScreenBodyStartupLoadingIndicator": {
     "description": "Product copy used by lib/core/widgets/catch_startup_loading_screen.dart (body).",

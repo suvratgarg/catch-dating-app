@@ -931,6 +931,11 @@ normalization, schema filtering, pending saves, explicit/on-blur confirmation,
 and typed patch factories retain their existing behavior. Shared field, section,
 and constraint dependencies still precede the pattern package move.
 
+Section callers resolve their optional lead accent from the app activity palette.
+The section owns the same lead/title-color precedence and joins caller-owned
+title/count values without importing app copy or activity types. Field geometry
+inspection remains app-side until `CatchField` moves.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

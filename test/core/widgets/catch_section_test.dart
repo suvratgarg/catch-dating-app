@@ -478,20 +478,20 @@ void main() {
               context,
               ActivityKind.socialRun,
             ).accent;
-            return const Column(
+            return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchSection.divided(
                   title: 'The plan',
-                  activityKind: ActivityKind.socialRun,
+                  leadAccent: activityAccent,
                   lead: true,
                   first: true,
-                  child: Text('Lead body'),
+                  child: const Text('Lead body'),
                 ),
                 CatchSection.divided(
                   title: 'Details',
-                  activityKind: ActivityKind.socialRun,
-                  child: Text('Neutral body'),
+                  leadAccent: activityAccent,
+                  child: const Text('Neutral body'),
                 ),
               ],
             );

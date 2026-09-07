@@ -3505,7 +3505,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled.",
+      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled. Callers resolve optional lead accents; supplied titles and counts need no app catalog dependency.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -3528,7 +3528,7 @@
             "title",
             "count",
             "trailing",
-            "activityKind",
+            "leadAccent",
             "lead",
             "first",
             "dividerColor",
@@ -3545,7 +3545,7 @@
             "title",
             "count",
             "trailing",
-            "activityKind",
+            "leadAccent",
             "lead",
             "first",
             "footer",
@@ -3656,28 +3656,11 @@
             "dartType": "bool"
           },
           {
-            "name": "activityKind",
-            "type": "object",
+            "name": "leadAccent",
+            "type": "color",
             "required": false,
-            "dartType": "ActivityKind?",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
+            "dartType": "Color?",
+            "notes": "Caller-resolved activity accent. Applied only when lead is true; an explicit titleColor takes precedence."
           },
           {
             "name": "interaction",

@@ -6997,15 +6997,6 @@ abstract class AppLocalizations {
     required Object placeholder,
   });
 
-  /// Product copy used by lib/core/widgets/catch_section_layout.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{displayTitle} · {count}'**
-  String coreCatchSectionLayoutTextDisplaytitleCount({
-    required Object displayTitle,
-    required Object count,
-  });
-
   /// Product copy used by lib/core/widgets/catch_startup_loading_screen.dart (body).
   ///
   /// In en, this message translates to:

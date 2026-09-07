@@ -81,7 +81,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
     final accent = ActivityPalette.resolve(context, widget.activityKind).accent;
     return CatchSection.fieldRows(
       title: context.l10n.hostsRouteEventPlanSectionTitle,
-      activityKind: widget.activityKind,
+      leadAccent: accent,
       children: [
         if (widget.activityKind == ActivityKind.openActivity)
           CatchField.toggle(
