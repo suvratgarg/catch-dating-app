@@ -22,9 +22,14 @@ import {processChangedAssistanceWork} from "./liveWorkTriggers";
 import {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
-import {enqueueAssistanceSourceChange} from "./sourceWorkSignals";
+import {isEventSourceScope, sourceWorkIds} from "./sourceWorkRecords";
+import {enqueueAssistanceSourceChange, AssistanceSourceChange} from
+  "./sourceWorkSignals";
 import {whatsappPermissionId, WHATSAPP_PERMISSIONS} from
   "./whatsappPermissionRecords";
+import {whatsappEndpointHash} from "./whatsappReplyProtocol";
+import {whatsappStopId, WHATSAPP_ENDPOINT_STOPS} from
+  "../../shared/organizerWhatsappStops";
 
 async function setup(db?: Firestore) {
   const h = await setupRuntimePublication(db);
@@ -130,6 +135,103 @@ test("fresh consent wakes a held delivery without creating a new message",
   async () => {
     await recoverConsent(await setup());
   });
+
+type Repair = "sender" | "template" | "policy" | "budget" | "suppression";
+async function recoverReadiness(h: Awaited<ReturnType<typeof setup>>,
+  repair: Repair) {
+  const path = repair === "sender" ? h.senderPath :
+    repair === "template" ? h.templatePath :
+      repair === "policy" ? h.policyPath :
+        repair === "budget" ? h.budgetPaths[1] :
+          "organizerContactChannelStates/repair";
+  const current = (await h.read(path)) ?? {organizerId: h.context.organizerId,
+    contactId: "repair", channel: "whatsapp", endpointHash:
+      whatsappEndpointHash(h.actor.phone), suppressionStatus: "none",
+    suppressionSource: null, adminSuppressed: false, campaignAcceptedCount: 0,
+    lastCampaignAcceptedAt: null, lastInboundAt: null, lastReplyAt: null,
+    createdAt: (await h.read(h.senderPath))!.createdAt,
+    updatedAt: (await h.read(h.senderPath))!.updatedAt};
+  const held = {...current, ...(repair === "budget" ? {limitMicros: 0} :
+    repair === "suppression" ? {adminSuppressed: true} :
+      {status: repair === "sender" ? "disconnected" :
+        repair === "template" ? "PAUSED" : "paused"})};
+  await h.write(path, held);
+  await h.store.process(h.id);
+  assert.equal((await h.store.get(h.id)).payload.checkpoint.phase, "review");
+  assert.equal(h.requests.length, 0);
+  h.clock.now += 1000;
+  await h.write(path, current);
+  const [collection, documentId] = path.split("/");
+  const change: AssistanceSourceChange = {source: {eventId: randomUUID(),
+    collection: collection as AssistanceSourceChange["source"]["collection"],
+    documentId, occurredAt: h.clock.now}, before: {generation: 1, value: held},
+  after: {generation: 1, value: current}};
+  const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+    undefined, h.store);
+  const ids = await enqueueAssistanceSourceChange(source, change);
+  assert.equal(ids.length, 1);
+  for (const id of ids) {
+    const parent = await source.get(id);
+    await source.process(id);
+    if (!isEventSourceScope(parent.payload.scope)) {
+      const child = sourceWorkIds({source: change.source, scope: {
+        context: h.context, attendeeId: parent.payload.scope.kind === "sender" ?
+          null : h.scope.attendeeId}});
+      await source.process(child.workItemId);
+    }
+  }
+  assert.equal(h.requests.length, 1);
+  const sent = await h.store.get(h.id);
+  assert.equal(sent.payload.checkpoint.phase, "receipt");
+  for (const id of await enqueueAssistanceSourceChange(source, change)) {
+    await source.process(id);
+  }
+  assert.deepEqual(await h.store.get(h.id), sent);
+}
+
+for (const repair of ["sender", "template", "policy", "budget",
+  "suppression"] as const) {
+  test(repair + " recovery wakes the same message through current authority",
+    async () => recoverReadiness(await setup(), repair));
+}
+
+test("provider STOP wakes the affected guest but does not grant consent",
+  async () => {
+    const h = await setup();
+    h.clock.now += 1000;
+    await h.stop(h.clock.now);
+    const endpointHash = whatsappEndpointHash(h.actor.phone)!;
+    const documentId = whatsappStopId(h.context.organizerId, endpointHash);
+    const after = (await h.read(WHATSAPP_ENDPOINT_STOPS + "/" + documentId))!;
+    const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now,
+      undefined, h.store);
+    const change: AssistanceSourceChange = {source: {
+      eventId: randomUUID(), collection: WHATSAPP_ENDPOINT_STOPS, documentId,
+      occurredAt: h.clock.now}, before: null,
+    after: {generation: 1, value: after}};
+    const ids = await enqueueAssistanceSourceChange(source, change);
+    assert.equal(ids.length, 1);
+    await source.process(ids[0]);
+    const child = sourceWorkIds({source: change.source, scope: {
+      context: h.context, attendeeId: h.scope.attendeeId}});
+    await source.process(child.workItemId);
+    assert.equal(h.requests.length, 0);
+    assert.equal((await h.store.get(h.id)).payload.checkpoint.phase, "review");
+  });
+
+test("Firestore sender and endpoint recovery preserve submission identity", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 120_000,
+}, async () => {
+  assert.match(process.env.FIRESTORE_EMULATOR_HOST ?? "",
+    /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/);
+  const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
+  try {
+    await recoverReadiness(await setup(getFirestore(app)), "sender");
+    await recoverReadiness(await setup(getFirestore(app)), "suppression");
+  } finally {
+    await deleteApp(app);
+  }
+});
 
 test("source wakes preserve provider receipt waits and pending review",
   async () => {

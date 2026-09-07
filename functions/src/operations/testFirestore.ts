@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {isDeepStrictEqual} from "node:util";
 
 type FakeData = Record<string, unknown>;
 
@@ -35,8 +36,9 @@ class FakeQuery {
     protected readonly firestore: FakeFirestore,
     protected readonly collectionPath: string,
     private readonly filters: Array<[string, string, unknown]> = [],
-    private readonly cursor: string | null = null,
-    private readonly pageLimit: number | null = null
+    private readonly cursor: unknown[] | null = null,
+    private readonly pageLimit: number | null = null,
+    private readonly orders: Array<[string, "asc" | "desc"]> = []
   ) {}
 
   where(field: string, operator: string, value: unknown): FakeQuery {
@@ -45,22 +47,25 @@ class FakeQuery {
       this.collectionPath,
       [...this.filters, [field, operator, value]],
       this.cursor,
-      this.pageLimit
+      this.pageLimit,
+      this.orders
     );
   }
 
-  orderBy(field: unknown): FakeQuery {
-    void field;
-    return this;
+  orderBy(field: unknown, direction: "asc" | "desc" = "asc"): FakeQuery {
+    return new FakeQuery(this.firestore, this.collectionPath, this.filters,
+      this.cursor, this.pageLimit, [...this.orders,
+        [typeof field === "string" ? field : "__name__", direction]]);
   }
 
-  startAfter(cursor: string): FakeQuery {
+  startAfter(...cursor: unknown[]): FakeQuery {
     return new FakeQuery(
       this.firestore,
       this.collectionPath,
       this.filters,
       cursor,
-      this.pageLimit
+      this.pageLimit,
+      this.orders
     );
   }
 
@@ -70,25 +75,44 @@ class FakeQuery {
       this.collectionPath,
       this.filters,
       this.cursor,
-      limit
+      limit,
+      this.orders
     );
   }
 
   async get(): Promise<{docs: FakeSnapshot[]; size: number; empty: boolean}> {
     const prefix = `${this.collectionPath}/`;
+    const orders = this.orders.length ? this.orders :
+      [["__name__", "asc"] as const];
+    const read = (snapshot: FakeSnapshot, field: string) =>
+      field === "__name__" ? snapshot.id :
+        field.split(".").reduce<unknown>((value, part) =>
+          value && typeof value === "object" ?
+            (value as FakeData)[part] : undefined, snapshot.data());
+    const compareTo = (snapshot: FakeSnapshot, values: unknown[]) => {
+      for (let i = 0; i < values.length; i++) {
+        const [field, direction] = orders[i];
+        const delta = compare(read(snapshot, field), values[i]) ?? 0;
+        if (delta) return direction === "desc" ? -delta : delta;
+      }
+      return 0;
+    };
     const docs = this.firestore.entries()
       .filter(([path]) => path.startsWith(prefix))
       .map(([path, value]) =>
         new FakeSnapshot(path.slice(prefix.length), value))
-      .filter((snapshot) => !this.cursor || snapshot.id > this.cursor)
+      .filter((snapshot) => orders.every(([field]) =>
+        read(snapshot, field) !== undefined))
+      .filter((snapshot) => !this.cursor ||
+        compareTo(snapshot, this.cursor) > 0)
       .filter((snapshot) => this.filters.every(([field, operator, value]) => {
         const stored = field.split(".").reduce<unknown>((value, part) =>
           value && typeof value === "object" ?
             (value as FakeData)[part] : undefined, snapshot.data());
         switch (operator) {
         case "array-contains": return Array.isArray(stored) &&
-          stored.includes(value);
-        case "==": return stored === value;
+          stored.some((item) => isDeepStrictEqual(item, value));
+        case "==": return isDeepStrictEqual(stored, value);
         case ">=": return (compare(stored, value) ?? -1) >= 0;
         case "<=": return (compare(stored, value) ?? 1) <= 0;
         case ">": return (compare(stored, value) ?? -1) > 0;
@@ -96,15 +120,17 @@ class FakeQuery {
           operator);
         }
       }))
-      // Match the ordinal document-id cursor comparison above.
-      .sort((left, right) => left.id < right.id ? -1 :
-        left.id > right.id ? 1 : 0);
+      .sort((left, right) => compareTo(left,
+        orders.map(([field]) => read(right, field))));
     const page = this.pageLimit === null ? docs : docs.slice(0, this.pageLimit);
     return {docs: page, size: page.length, empty: page.length === 0};
   }
 }
 
 function compare(left: unknown, right: unknown): number | null {
+  if (typeof left === "string" && typeof right === "string") {
+    return left < right ? -1 : left > right ? 1 : 0;
+  }
   if (typeof left === "number" && typeof right === "number") {
     return Math.sign(left - right);
   }

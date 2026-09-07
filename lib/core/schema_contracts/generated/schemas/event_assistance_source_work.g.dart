@@ -65,6 +65,14 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
             'eventAssistanceRuntimeConfigs',
             'eventAssistanceSmsPermissions',
             'eventAssistanceWhatsappPermissions',
+            'eventAssistanceSmsSenders',
+            'eventAssistanceSmsBudgets',
+            'organizerSenderConnections',
+            'eventAssistanceWhatsappPolicies',
+            'organizerMessageTemplates',
+            'eventAssistanceWhatsappBudgets',
+            'organizerWhatsappEndpointStops',
+            'organizerContactChannelStates',
           ],
         },
         'documentId': <String, Object?>{
@@ -81,53 +89,110 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
       },
     },
     'scope': <String, Object?>{
-      'type': 'object',
-      'additionalProperties': false,
-      'required': <Object?>[
-        'context',
-        'attendeeId',
-      ],
-      'properties': <String, Object?>{
-        'context': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
           'required': <Object?>[
-            'mode',
-            'eventId',
-            'organizerId',
+            'context',
+            'attendeeId',
           ],
           'properties': <String, Object?>{
-            'mode': <String, Object?>{
-              'type': 'string',
-              'const': 'live',
+            'context': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'eventId',
+                'organizerId',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'const': 'live',
+                },
+                'eventId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'organizerId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+              },
             },
-            'eventId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-            },
-            'organizerId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 2000,
+            'attendeeId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
             },
           },
         },
-        'attendeeId': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'routeId',
+            'senderId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'sender',
+            },
+            'routeId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'catchEventSms',
+                'organizerEventWhatsapp',
+              ],
+            },
+            'senderId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
               'maxLength': 180,
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
-            <String, Object?>{
-              'type': 'null',
-            },
-          ],
+          },
         },
-      },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'organizerId',
+            'recipientEndpointId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'whatsappEndpoint',
+            },
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'recipientEndpointId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^whatsapp:[a-f0-9]{64}\$',
+            },
+          },
+        },
+      ],
     },
     'expiresAt': <String, Object?>{
       'type': 'integer',
@@ -190,27 +255,54 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
           'type': 'array',
           'maxItems': 100,
           'items': <String, Object?>{
-            'type': 'object',
-            'additionalProperties': false,
-            'required': <Object?>[
-              'workItemId',
-              'reason',
-            ],
-            'properties': <String, Object?>{
-              'workItemId': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 180,
-                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-              },
-              'reason': <String, Object?>{
-                'type': 'string',
-                'enum': <Object?>[
-                  'busy',
-                  'unavailable',
+            'oneOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'workItemId',
+                  'reason',
                 ],
+                'properties': <String, Object?>{
+                  'workItemId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'reason': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'busy',
+                      'unavailable',
+                    ],
+                  },
+                },
               },
-            },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'targetKey',
+                  'reason',
+                ],
+                'properties': <String, Object?>{
+                  'targetKey': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'reason': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'busy',
+                      'unavailable',
+                    ],
+                  },
+                },
+              },
+            ],
           },
         },
         'retries': <String, Object?>{

@@ -1,6 +1,46 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceRuntimeConfigs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "configuration.options.routes",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "configuration.expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceWhatsappPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recipientEndpointId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceMessages",
       "queryScope": "COLLECTION",
       "fields": [

@@ -62,7 +62,15 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
             "eventAssistanceMessages",
             "eventAssistanceRuntimeConfigs",
             "eventAssistanceSmsPermissions",
-            "eventAssistanceWhatsappPermissions"
+            "eventAssistanceWhatsappPermissions",
+            "eventAssistanceSmsSenders",
+            "eventAssistanceSmsBudgets",
+            "organizerSenderConnections",
+            "eventAssistanceWhatsappPolicies",
+            "organizerMessageTemplates",
+            "eventAssistanceWhatsappBudgets",
+            "organizerWhatsappEndpointStops",
+            "organizerContactChannelStates"
           ]
         },
         "documentId": {
@@ -79,53 +87,110 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
       }
     },
     "scope": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "context",
-        "attendeeId"
-      ],
-      "properties": {
-        "context": {
+      "oneOf": [
+        {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "mode",
-            "eventId",
-            "organizerId"
+            "context",
+            "attendeeId"
           ],
           "properties": {
-            "mode": {
-              "type": "string",
-              "const": "live"
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
             },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "organizerId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
-        "attendeeId": {
-          "anyOf": [
-            {
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "routeId",
+            "senderId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sender"
+            },
+            "routeId": {
+              "type": "string",
+              "enum": [
+                "catchEventSms",
+                "organizerEventWhatsapp"
+              ]
+            },
+            "senderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "organizerId",
+            "recipientEndpointId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "whatsappEndpoint"
+            },
+            "organizerId": {
               "type": "string",
               "minLength": 1,
               "maxLength": 180,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
-            {
-              "type": "null"
+            "recipientEndpointId": {
+              "type": "string",
+              "pattern": "^whatsapp:[a-f0-9]{64}$"
             }
-          ]
+          }
         }
-      }
+      ]
     },
     "expiresAt": {
       "type": "integer",
@@ -188,27 +253,54 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
           "type": "array",
           "maxItems": 100,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "workItemId",
-              "reason"
-            ],
-            "properties": {
-              "workItemId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 180,
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "workItemId",
+                  "reason"
+                ],
+                "properties": {
+                  "workItemId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  }
+                }
               },
-              "reason": {
-                "type": "string",
-                "enum": [
-                  "busy",
-                  "unavailable"
-                ]
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "targetKey",
+                  "reason"
+                ],
+                "properties": {
+                  "targetKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  }
+                }
               }
-            }
+            ]
           }
         },
         "retries": {

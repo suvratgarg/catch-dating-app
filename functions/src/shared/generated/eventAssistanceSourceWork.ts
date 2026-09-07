@@ -22,18 +22,37 @@ export interface EventAssistanceSourceWork {
       | "eventAssistanceMessages"
       | "eventAssistanceRuntimeConfigs"
       | "eventAssistanceSmsPermissions"
-      | "eventAssistanceWhatsappPermissions";
+      | "eventAssistanceWhatsappPermissions"
+      | "eventAssistanceSmsSenders"
+      | "eventAssistanceSmsBudgets"
+      | "organizerSenderConnections"
+      | "eventAssistanceWhatsappPolicies"
+      | "organizerMessageTemplates"
+      | "eventAssistanceWhatsappBudgets"
+      | "organizerWhatsappEndpointStops"
+      | "organizerContactChannelStates";
     documentId: string;
     occurredAt: number;
   };
-  scope: {
-    context: {
-      mode: "live";
-      eventId: string;
-      organizerId: string;
-    };
-    attendeeId: string | null;
-  };
+  scope:
+    | {
+        context: {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        };
+        attendeeId: string | null;
+      }
+    | {
+        kind: "sender";
+        routeId: "catchEventSms" | "organizerEventWhatsapp";
+        senderId: string;
+      }
+    | {
+        kind: "whatsappEndpoint";
+        organizerId: string;
+        recipientEndpointId: string;
+      };
   expiresAt: number;
   checkpoint: {
     phase: "scan" | "retry" | "complete" | "review" | "expired";
@@ -43,10 +62,16 @@ export interface EventAssistanceSourceWork {
     /**
      * @maxItems 100
      */
-    failures: {
-      workItemId: string;
-      reason: "busy" | "unavailable";
-    }[];
+    failures: (
+      | {
+          workItemId: string;
+          reason: "busy" | "unavailable";
+        }
+      | {
+          targetKey: string;
+          reason: "busy" | "unavailable";
+        }
+    )[];
     retries: number;
   };
 }

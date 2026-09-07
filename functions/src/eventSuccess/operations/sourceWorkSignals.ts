@@ -1,6 +1,9 @@
 import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity} from "./guestRecords";
-import type {SourceWork, SourceWorkInput} from "./sourceWorkRecords";
+import {SourceWork, SourceWorkInput, EventSourceScope, isEventSourceScope} from
+  "./sourceWorkRecords";
+import {readinessScope, readinessFields, spendingReleased} from
+  "./sourceReadinessSignals";
 import type {AssistanceSourceWorkStore} from "./sourceWorkStore";
 import type {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import type {RosterWorkInput} from "./rosterWorkRecords";
@@ -18,7 +21,9 @@ export interface AssistanceSourceChange {
 export function sourceWakeScopes(change: AssistanceSourceChange): Scope[] {
   const before = projection(change.source.collection, change.before);
   const after = projection(change.source.collection, change.after);
-  if (operationContentHash(before) === operationContentHash(after)) return [];
+  if (operationContentHash(before) === operationContentHash(after) &&
+      !spendingReleased(change.source.collection, change.before?.value,
+        change.after?.value)) return [];
   const scopes = new Map<string, Scope>();
   for (const snapshot of [change.before, change.after]) {
     if (!snapshot) continue;
@@ -43,7 +48,7 @@ export async function enqueueAssistanceSourceChange(
   for (const scope of sourceWakeScopes(change)) {
     // A newly enrolled work item evaluates current facts on its first run,
     // including facts changed after this no-target check.
-    if (!await store.hasTargets(scope)) continue;
+    if (!await store.hasTargets(scope, change.source.occurredAt)) continue;
     const work = await store.enqueue({scope, source: change.source});
     queued.push(work.item.workItemId);
   }
@@ -70,8 +75,9 @@ export function rosterEnrollmentRequests(change: AssistanceSourceChange):
       fields.map((key) => snapshot.value[key] ?? null)]));
   if (operationContentHash(selected(change.before)) ===
       operationContentHash(selected(change.after))) return [];
-  return sourceWakeScopes(change).map((scope) => ({scope,
-    source: {...change.source, collection}}));
+  return sourceWakeScopes(change).filter(isEventSourceScope)
+    .map((scope) => ({scope,
+      source: {...change.source, collection}}));
 }
 
 function scopeFor(collection: Collection, documentId: string,
@@ -79,6 +85,24 @@ function scopeFor(collection: Collection, documentId: string,
   let context: unknown = value.context;
   let attendeeId: unknown = value.attendeeId ?? null;
   switch (collection) {
+  case "eventAssistanceSmsBudgets":
+  case "eventAssistanceWhatsappBudgets": {
+    const budgetScope = object(value.scope);
+    if (budgetScope.kind === "senderDay") {
+      return readinessScope(collection, documentId, value);
+    }
+    if (budgetScope.kind !== "event") return null;
+    context = budgetScope.context;
+    attendeeId = null;
+    break;
+  }
+  case "eventAssistanceSmsSenders":
+  case "organizerSenderConnections":
+  case "eventAssistanceWhatsappPolicies":
+  case "organizerMessageTemplates":
+  case "organizerWhatsappEndpointStops":
+  case "organizerContactChannelStates":
+    return readinessScope(collection, documentId, value);
   case "events":
     context = {mode: "live", eventId: documentId,
       organizerId: value.organizerId ?? value.clubId};
@@ -113,7 +137,7 @@ function scopeFor(collection: Collection, documentId: string,
   if (c.mode !== "live" || typeof c.eventId !== "string" ||
       typeof c.organizerId !== "string" ||
       (attendeeId !== null && typeof attendeeId !== "string")) return null;
-  const scope: Scope = {context: {mode: "live", eventId: c.eventId,
+  const scope: EventSourceScope = {context: {mode: "live", eventId: c.eventId,
     organizerId: c.organizerId}, attendeeId};
   // Malformed identity cannot become a query against an unrelated scope.
   guestIdentity(scope.context, scope.attendeeId ?? "scope");
@@ -125,6 +149,15 @@ function projection(collection: Collection, snapshot: Snapshot) {
   const value = snapshot.value;
   let fields: string[];
   switch (collection) {
+  case "eventAssistanceSmsSenders":
+  case "organizerSenderConnections":
+  case "organizerMessageTemplates":
+  case "organizerWhatsappEndpointStops":
+  case "eventAssistanceWhatsappPolicies": fields = Object.keys(value); break;
+  case "eventAssistanceSmsBudgets":
+  case "eventAssistanceWhatsappBudgets":
+  case "organizerContactChannelStates": fields = readinessFields(collection)!;
+    break;
   case "events": fields = ["organizerId", "clubId", "status", "eventFormat",
     "startTime", "endTime", "meetingLocation", "itinerary", "eventPolicy",
     "constraints", "capacityLimit", "priceInPaise", "currency",

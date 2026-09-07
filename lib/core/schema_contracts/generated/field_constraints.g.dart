@@ -19345,6 +19345,15 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['busy', 'unavailable'],
   );
 
+  static const eventAssistanceSourceWorkCheckpointFailuresItemsTargetKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.failures.items.targetKey',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceSourceWorkCheckpointFailuresItemsWorkItemId = CatchContractFieldConstraints(
     path: 'eventAssistanceSourceWork.checkpoint.failures.items.workItemId',
     maxLength: 180,
@@ -19428,6 +19437,44 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceSourceWorkScopeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSourceWorkScopeOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkScopeRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.recipientEndpointId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^whatsapp:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceSourceWorkScopeRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'organizerEventWhatsapp'],
+  );
+
+  static const eventAssistanceSourceWorkScopeSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceSourceWorkSignalId = CatchContractFieldConstraints(
     path: 'eventAssistanceSourceWork.signalId',
     maxLength: 180,
@@ -19441,7 +19488,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.source.collection',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions', 'eventAssistanceSmsSenders', 'eventAssistanceSmsBudgets', 'organizerSenderConnections', 'eventAssistanceWhatsappPolicies', 'organizerMessageTemplates', 'eventAssistanceWhatsappBudgets', 'organizerWhatsappEndpointStops', 'organizerContactChannelStates'],
   );
 
   static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(
@@ -76657,6 +76704,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSourceWork.checkpoint.dueAt': eventAssistanceSourceWorkCheckpointDueAt,
     'eventAssistanceSourceWork.checkpoint.failures': eventAssistanceSourceWorkCheckpointFailures,
     'eventAssistanceSourceWork.checkpoint.failures.items.reason': eventAssistanceSourceWorkCheckpointFailuresItemsReason,
+    'eventAssistanceSourceWork.checkpoint.failures.items.targetKey': eventAssistanceSourceWorkCheckpointFailuresItemsTargetKey,
     'eventAssistanceSourceWork.checkpoint.failures.items.workItemId': eventAssistanceSourceWorkCheckpointFailuresItemsWorkItemId,
     'eventAssistanceSourceWork.checkpoint.phase': eventAssistanceSourceWorkCheckpointPhase,
     'eventAssistanceSourceWork.checkpoint.retries': eventAssistanceSourceWorkCheckpointRetries,
@@ -76668,6 +76716,11 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSourceWork.scope.context.eventId': eventAssistanceSourceWorkScopeContextEventId,
     'eventAssistanceSourceWork.scope.context.mode': eventAssistanceSourceWorkScopeContextMode,
     'eventAssistanceSourceWork.scope.context.organizerId': eventAssistanceSourceWorkScopeContextOrganizerId,
+    'eventAssistanceSourceWork.scope.kind': eventAssistanceSourceWorkScopeKind,
+    'eventAssistanceSourceWork.scope.organizerId': eventAssistanceSourceWorkScopeOrganizerId,
+    'eventAssistanceSourceWork.scope.recipientEndpointId': eventAssistanceSourceWorkScopeRecipientEndpointId,
+    'eventAssistanceSourceWork.scope.routeId': eventAssistanceSourceWorkScopeRouteId,
+    'eventAssistanceSourceWork.scope.senderId': eventAssistanceSourceWorkScopeSenderId,
     'eventAssistanceSourceWork.signalId': eventAssistanceSourceWorkSignalId,
     'eventAssistanceSourceWork.source.collection': eventAssistanceSourceWorkSourceCollection,
     'eventAssistanceSourceWork.source.documentId': eventAssistanceSourceWorkSourceDocumentId,

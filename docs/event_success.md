@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.34.0
+version: 1.35.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -320,9 +320,8 @@ transaction. Its worker uses current leases and durable wake receipts. Source
 changes enqueue bounded resumable fanout; work-item and scheduled handlers
 advance saved due work. These handlers remain dormant in deployment policy.
 See [Operations runtime](operations_platform.md#durable-live-assistance-work)
-for execution limits and the source-change lifecycle. Sender-wide readiness
-signals and
-the broader Host/rehearsal workflow remain separate integration work. A
+for execution limits and the source-change lifecycle. The broader Host/rehearsal
+workflow remains separate integration work. A
 publication result does not assert provider submission or delivery.
 
 ### Event automation permission
@@ -670,9 +669,14 @@ signal identity. Immutable delivery wake receipts prevent a replayed source
 page from repeating an evaluation. A source wake preserves an unchanged
 provider receipt deadline and pending-review state; it does not manufacture
 nondelivery evidence or reset a recovery cap.
-Provider lookup/finality, sender/template/budget and sender-wide suppression
-wakes, retention and financial
-reconciliation remain separate work.
+Sender, template, budget and sender-wide suppression changes now discover
+affected saved runtime/permission scopes and enqueue the same event/guest wakes.
+These lookups exclude expired records, retain bounded cursors and revalidate
+their targets; they do not enroll guests or grant sender permission. Budget
+debits and inbox counters are filtered to avoid repeated fanout during ordinary
+delivery. See the [source lifecycle](operations_platform.md#source-changes-and-due-work-recovery).
+Provider lookup/finality, retention and financial reconciliation remain separate
+work.
 
 The worker reads a pinned numbered Secret Manager version named by
 `EVENT_ASSISTANCE_GUEST_KEY_VERSION`, under the

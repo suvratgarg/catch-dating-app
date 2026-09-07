@@ -9,14 +9,31 @@ import {validateEventAssistanceSourceWork} from
 import {guestIdentity, requireDocumentId} from "./guestRecords";
 import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
+import {parseReadinessTargetKey} from "./sourceReadinessTargets";
 
 export type {SourceWork};
 export const SOURCE_WORK_RUNTIME = "event-assistance-source/v1";
 export const SOURCE_WORK_LIFETIME = 86_400_000;
 export type SourceWorkInput = Pick<SourceWork, "scope" | "source">;
+export type EventSourceScope = Extract<SourceWork["scope"], {context: unknown}>;
+export type ReadinessSourceScope =
+  Exclude<SourceWork["scope"], EventSourceScope>;
+export const isEventSourceScope = (scope: SourceWork["scope"]):
+  scope is EventSourceScope => "context" in scope;
+export const sourceFailureId =
+  (f: SourceWork["checkpoint"]["failures"][number]) =>
+    "workItemId" in f ? f.workItemId : f.targetKey;
 
 export function sourceWorkIds(input: SourceWorkInput) {
-  guestIdentity(input.scope.context, input.scope.attendeeId ?? "scope");
+  const scope = input.scope;
+  if (isEventSourceScope(scope)) {
+    guestIdentity(scope.context, scope.attendeeId ?? "scope");
+  } else if (scope.kind === "sender") {
+    requireDocumentId(scope.senderId);
+  } else {
+    requireDocumentId(scope.organizerId);
+    requireDocumentId(scope.recipientEndpointId);
+  }
   requireDocumentId(input.source.eventId);
   requireDocumentId(input.source.documentId);
   const key = operationContentHash({scope: input.scope, source: input.source});
@@ -59,12 +76,21 @@ export function parseSourceWork(value: unknown, now: number): SourceWork {
       (c.phase === "scan" && c.retries !== 0) ||
       c.failures.length > c.visited ||
       (c.visited === 0 && c.cursor !== null) ||
-      new Set(c.failures.map((f) => f.workItemId)).size !== c.failures.length ||
-      c.failures.some((f) => !/^work:(assistance|delivery):[a-f0-9]{64}$/.test(
-        f.workItemId)) ||
-      (c.cursor !== null &&
-        !/^work:(assistance|delivery):[a-f0-9]{64}$/.test(c.cursor))) {
+      new Set(c.failures.map(sourceFailureId)).size !== c.failures.length ||
+      c.failures.some((f) => isEventSourceScope(value.scope) !==
+        ("workItemId" in f))) {
     throw invalidWork();
+  }
+  for (const key of [...c.failures.map(sourceFailureId),
+    ...(c.cursor === null ? [] : [c.cursor])]) {
+    if (isEventSourceScope(value.scope)) {
+      if (!/^work:(assistance|delivery):[a-f0-9]{64}$/.test(key)) {
+        throw invalidWork();
+      }
+    } else {
+      const [expiry] = parseReadinessTargetKey(key, value.scope);
+      if (expiry <= value.source.occurredAt) throw invalidWork();
+    }
   }
   return value;
 }

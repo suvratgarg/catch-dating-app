@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.51.0
+version: 1.52.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -266,6 +266,16 @@ remain mandatory before each wake. Source payloads retain identifiers rather
 than consent contents or recipient endpoints. Delivery wake action receipts bind
 the signal hash and target, deduplicate source replay, and preserve terminal
 work, recovery caps and unresolved provider submissions.
+
+Source scopes also distinguish sender discovery and organizer/WhatsApp endpoint
+discovery from event fanout. Readiness failures use `targetKey`, a stable
+expiry/document-id query tuple; event fanout keeps `workItemId`. Runtime parsing
+rejects a failure or cursor from the wrong scope kind. The two private query
+indexes bind runtime route selections to configuration expiry, and organizer/
+endpoint permissions to permission expiry. Lookup snapshots only locate child
+event/guest wake jobs; current runtime, consent and delivery records remain the
+authority. Existing event-source work records remain valid under the additive
+schema. No new collection or client access rule is introduced.
 
 ### Event Assistance Group Progress Contract
 

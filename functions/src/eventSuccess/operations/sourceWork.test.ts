@@ -254,7 +254,8 @@ test("all source collections derive their event or guest scope on deletion",
   async () => {
     const h = await harness();
     const cases: Record<SourceWorkInput["source"]["collection"], {
-      value: Record<string, unknown>; attendeeId: string | null;
+      value: Record<string, unknown>; attendeeId?: string | null;
+      scope?: SourceWorkInput["scope"];
     }> = {
       events: {value: {clubId: h.context.organizerId}, attendeeId: null},
       eventAttendees: {value: {eventId: h.context.eventId,
@@ -278,6 +279,29 @@ test("all source collections derive their event or guest scope on deletion",
       eventAssistanceMessages: {value: {intent: {context: h.context,
         attendeeId: "guest", workflow: {kind: "lateJoin"}}},
       attendeeId: "guest"},
+      eventAssistanceSmsSenders: {value: {}, scope: {kind: "sender",
+        routeId: "catchEventSms", senderId: h.context.eventId}},
+      eventAssistanceSmsBudgets: {value: {scope: {kind: "event",
+        context: h.context}}, attendeeId: null},
+      organizerSenderConnections: {value: {channel: "whatsapp"},
+        scope: {kind: "sender", routeId: "organizerEventWhatsapp",
+          senderId: h.context.eventId}},
+      eventAssistanceWhatsappPolicies: {value: {}, scope: {kind: "sender",
+        routeId: "organizerEventWhatsapp", senderId: h.context.eventId}},
+      organizerMessageTemplates: {value: {connectionId: "sender"},
+        scope: {kind: "sender", routeId: "organizerEventWhatsapp",
+          senderId: "sender"}},
+      eventAssistanceWhatsappBudgets: {value: {scope: {kind: "senderDay"},
+        senderId: "sender"}, scope: {kind: "sender",
+        routeId: "organizerEventWhatsapp", senderId: "sender"}},
+      organizerWhatsappEndpointStops: {value: {
+        organizerId: h.context.organizerId, endpointHash: "a".repeat(64)},
+      scope: {kind: "whatsappEndpoint", organizerId: h.context.organizerId,
+        recipientEndpointId: "whatsapp:" + "a".repeat(64)}},
+      organizerContactChannelStates: {value: {channel: "whatsapp",
+        organizerId: h.context.organizerId, endpointHash: "a".repeat(64)},
+      scope: {kind: "whatsappEndpoint", organizerId: h.context.organizerId,
+        recipientEndpointId: "whatsapp:" + "a".repeat(64)}},
     };
     for (const [collection, c] of Object.entries(cases)) {
       const change: AssistanceSourceChange = {
@@ -285,7 +309,8 @@ test("all source collections derive their event or guest scope on deletion",
           collection: collection as SourceWorkInput["source"]["collection"]},
         before: {generation: 1, value: c.value}, after: null};
       assert.deepEqual(sourceWakeScopes(change),
-        [{context: h.context, attendeeId: c.attendeeId}], collection);
+        [c.scope ?? {context: h.context, attendeeId: c.attendeeId}],
+        collection);
       assert.deepEqual(sourceWakeScopes({...change,
         before: null, after: change.before}), sourceWakeScopes(change));
     }

@@ -123,6 +123,23 @@ export const onAssistanceSmsPermissionChanged = sourceTrigger(
 export const onAssistanceWhatsappPermissionChanged = sourceTrigger(
   "eventAssistanceWhatsappPermissions");
 
+export const onAssistanceSmsSenderChanged = sourceTrigger(
+  "eventAssistanceSmsSenders");
+export const onAssistanceSmsBudgetChanged = sourceTrigger(
+  "eventAssistanceSmsBudgets");
+export const onAssistanceWhatsappSenderChanged = sourceTrigger(
+  "organizerSenderConnections");
+export const onAssistanceWhatsappPolicyChanged = sourceTrigger(
+  "eventAssistanceWhatsappPolicies");
+export const onAssistanceWhatsappTemplateChanged = sourceTrigger(
+  "organizerMessageTemplates");
+export const onAssistanceWhatsappBudgetChanged = sourceTrigger(
+  "eventAssistanceWhatsappBudgets");
+export const onAssistanceWhatsappStopChanged = sourceTrigger(
+  "organizerWhatsappEndpointStops");
+export const onAssistanceWhatsappSuppressionChanged = sourceTrigger(
+  "organizerContactChannelStates");
+
 export const onAssistanceWorkChanged = onDocumentWritten({
   document: "operationWorkItems/{workItemId}", retry: true,
   timeoutSeconds: 120, maxInstances: 5,

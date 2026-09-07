@@ -17499,7 +17499,15 @@ const model = {
                 "eventAssistanceMessages",
                 "eventAssistanceRuntimeConfigs",
                 "eventAssistanceSmsPermissions",
-                "eventAssistanceWhatsappPermissions"
+                "eventAssistanceWhatsappPermissions",
+                "eventAssistanceSmsSenders",
+                "eventAssistanceSmsBudgets",
+                "organizerSenderConnections",
+                "eventAssistanceWhatsappPolicies",
+                "organizerMessageTemplates",
+                "eventAssistanceWhatsappBudgets",
+                "organizerWhatsappEndpointStops",
+                "organizerContactChannelStates"
               ]
             },
             "documentId": {
@@ -17513,27 +17521,78 @@ const model = {
           }
         },
         "scope": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "context",
-            "attendeeId"
-          ],
-          "properties": {
-            "context": {
-              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "context",
+                "attendeeId"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+                },
+                "attendeeId": {
+                  "anyOf": [
+                    {
+                      "$ref": "common.schema.json#/definitions/id"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
             },
-            "attendeeId": {
-              "anyOf": [
-                {
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "routeId",
+                "senderId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "sender"
+                },
+                "routeId": {
+                  "type": "string",
+                  "enum": [
+                    "catchEventSms",
+                    "organizerEventWhatsapp"
+                  ]
+                },
+                "senderId": {
+                  "$ref": "common.schema.json#/definitions/id"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "organizerId",
+                "recipientEndpointId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "whatsappEndpoint"
+                },
+                "organizerId": {
                   "$ref": "common.schema.json#/definitions/id"
                 },
-                {
-                  "type": "null"
+                "recipientEndpointId": {
+                  "type": "string",
+                  "pattern": "^whatsapp:[a-f0-9]{64}$"
                 }
-              ]
+              }
             }
-          }
+          ]
         },
         "expiresAt": {
           "type": "integer",
@@ -17593,24 +17652,48 @@ const model = {
               "type": "array",
               "maxItems": 100,
               "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "workItemId",
-                  "reason"
-                ],
-                "properties": {
-                  "workItemId": {
-                    "$ref": "common.schema.json#/definitions/id"
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "workItemId",
+                      "reason"
+                    ],
+                    "properties": {
+                      "workItemId": {
+                        "$ref": "common.schema.json#/definitions/id"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "busy",
+                          "unavailable"
+                        ]
+                      }
+                    }
                   },
-                  "reason": {
-                    "type": "string",
-                    "enum": [
-                      "busy",
-                      "unavailable"
-                    ]
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "targetKey",
+                      "reason"
+                    ],
+                    "properties": {
+                      "targetKey": {
+                        "$ref": "common.schema.json#/definitions/id"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "busy",
+                          "unavailable"
+                        ]
+                      }
+                    }
                   }
-                }
+                ]
               }
             },
             "retries": {

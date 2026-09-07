@@ -93,6 +93,14 @@ export {
   onAssistanceRuntimeConfigChanged,
   onAssistanceMembershipChanged, onAssistanceMessageChanged,
   onAssistanceSmsPermissionChanged, onAssistanceWhatsappPermissionChanged,
+  onAssistanceSmsSenderChanged,
+  onAssistanceSmsBudgetChanged,
+  onAssistanceWhatsappSenderChanged,
+  onAssistanceWhatsappPolicyChanged,
+  onAssistanceWhatsappTemplateChanged,
+  onAssistanceWhatsappBudgetChanged,
+  onAssistanceWhatsappStopChanged,
+  onAssistanceWhatsappSuppressionChanged,
   onAssistanceWorkChanged, evaluateDueEventAssistanceWork,
 } from "./eventSuccess/operations/liveWorkTriggers";
 export {getEventAssistanceRuntimeConfig, setEventAssistanceRuntimeConfig} from

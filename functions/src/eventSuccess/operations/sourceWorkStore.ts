@@ -15,9 +15,11 @@ import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner, errorCode, releaseAssistanceWorkLease} from
   "./liveWorkRunner";
-import {SOURCE_WORK_RUNTIME, SourceWork, SourceWorkInput,
+import {SOURCE_WORK_RUNTIME, SourceWork, SourceWorkInput, EventSourceScope,
+  isEventSourceScope, sourceFailureId,
   newSourceWorkRecords, readSourceWorkRecords, sourceWorkProjection} from
   "./sourceWorkRecords";
+import {SourceReadinessTargets} from "./sourceReadinessTargets";
 
 type Records = ReturnType<typeof readSourceWorkRecords>;
 type Failure = SourceWork["checkpoint"]["failures"][number];
@@ -61,8 +63,8 @@ export class AssistanceSourceWorkStore {
     return this.db.runTransaction((tx) => this.read(tx, workItemId));
   }
 
-  async hasTargets(scope: SourceWork["scope"]) {
-    return (await this.targetIds(scope, null, 1)).length > 0;
+  async hasTargets(scope: SourceWork["scope"], occurredAt = this.clock()) {
+    return (await this.targetIds(scope, null, 1, occurredAt)).length > 0;
   }
 
   async listDue(limit: number) {
@@ -109,19 +111,30 @@ export class AssistanceSourceWorkStore {
         list: (cursor, limit) => this.targets({...payload,
           checkpoint: {...payload.checkpoint, cursor}}, limit),
         visit: (id) => this.wake(id, payload, lease),
-        failureId: (failure) => failure.workItemId,
+        failureId: sourceFailureId,
       });
     return {...payload, checkpoint};
   }
 
-  private async wake(workItemId: string, payload: SourceWork,
+  private async wake(targetId: string, payload: SourceWork,
     lease: OperationLease): Promise<Failure | null> {
     if (this.clock() >= Math.min(Date.parse(lease.expiresAt),
       payload.expiresAt)) {
       throw new Error("Source work execution window expired");
     }
     try {
+      if (!isEventSourceScope(payload.scope)) {
+        const scope = await new SourceReadinessTargets(this.db, this.clock)
+          .resolve(payload.scope, targetId, payload.source.occurredAt);
+        if (scope && await this.hasTargets(scope)) {
+          // The child is deterministic across lost parent checkpoints. It
+          // only wakes existing work and never configures or enrolls guests.
+          await this.enqueue({scope, source: payload.source});
+        }
+        return null;
+      }
       // Re-read the work's scope before invoking the generic target port.
+      const workItemId = targetId;
       const isDelivery = workItemId.startsWith("work:delivery:");
       const target = isDelivery ?
         await new AssistanceDeliveryWorkStore(this.db, this.clock)
@@ -143,16 +156,23 @@ export class AssistanceSourceWorkStore {
     } catch {
       // Keep the exact target for bounded retry and eventual human review;
       // other guests in this page still receive their wake signal.
-      return {workItemId, reason: "unavailable"};
+      return isEventSourceScope(payload.scope) ?
+        {workItemId: targetId, reason: "unavailable"} :
+        {targetKey: targetId, reason: "unavailable"};
     }
   }
 
   private async targets(payload: SourceWork, limit: number) {
-    return this.targetIds(payload.scope, payload.checkpoint.cursor, limit);
+    return this.targetIds(payload.scope, payload.checkpoint.cursor, limit,
+      payload.source.occurredAt);
   }
 
   private async targetIds(scope: SourceWork["scope"], cursor: string | null,
-    limit: number) {
+    limit: number, occurredAt: number) {
+    if (!isEventSourceScope(scope)) {
+      return new SourceReadinessTargets(this.db, this.clock)
+        .list(scope, occurredAt, cursor, limit);
+    }
     // Reuse the two equality-query indexes; merge their bounded pages using
     // the same ordinal ordering as Firestore document-id cursors.
     const kinds = ["liveLateJoin", "liveMessageDelivery"] as const;
@@ -163,7 +183,7 @@ export class AssistanceSourceWorkStore {
       .sort().slice(0, limit);
   }
 
-  private targetQuery(scope: SourceWork["scope"], cursor: string | null,
+  private targetQuery(scope: EventSourceScope, cursor: string | null,
     kind: "liveLateJoin" | "liveMessageDelivery") {
     let query = this.db.collection(operationCollections.workItems)
       .where("workflowId", "==", ASSISTANCE_WORKFLOW)
