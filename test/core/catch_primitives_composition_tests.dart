@@ -687,7 +687,7 @@ void _registerCatchPrimitivesCompositionTests() {
       _wrap(
         CatchPersonAvatarStack(
           countLabelBuilder: catchAvatarCountLabelBuilder(AppLocalizationsEn()),
-          items: [CatchPersonAvatarItem(name: 'Asha Shah')],
+          items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
           totalCount: 4,
           size: 42,
           limit: 3,
