@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.46.0
+version: 1.47.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -1145,12 +1145,33 @@ audited sender/budget provisioning, activation of the dormant coordination,
 verified callback activation and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
-fixture permission or quote can satisfy live onboarding. RCS routing and
-Host/rehearsal projections remain later delivery slices.
+fixture permission or quote can satisfy live onboarding. Host/rehearsal
+projections remain the next delivery slice; RCS is deferred to the backlog.
 
-The implementation sequence is shared contracts and durable execution, an
-SMS/webpage response journey, WhatsApp and RCS adapters, the remaining workflow
-families, then verified provider activation. Catalog membership describes an
+With the shared execution and SMS/WhatsApp boundaries in source, the next
+implementation sequence is:
+
+1. Complete one Host journey from Today attention through live assistance,
+   guest response and rehearsal, using the existing Event Success runtime.
+   Surface actionable state, current authority and configuration gaps; reuse
+   typed commands and simulate external effects during rehearsal.
+2. Extend the remaining workflow families with their applicable commands,
+   overrides and Host projections. A catalog definition alone is not executable
+   coverage.
+3. Complete consent and sender/budget onboarding, verify SMS and WhatsApp
+   activation, integrate and deploy, and verify the journey on device.
+
+RCS must not block these items. Its unfinished contracts and rendering source
+are preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
+at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`; they are unvalidated and
+excluded from this implementation branch. The RCS backlog includes provider
+send/expiry/revocation transport, authenticated delivery and native-reply
+ingress, independent consent and withdrawal, audited sender/budget onboarding,
+capability/readiness checks, shared outbox/worker wiring, and end-to-end
+verification. Resume only after these higher-priority journeys; the parked
+prototype does not establish provider selection or readiness.
+
+Catalog membership describes an
 outcome contract; it does not assert a registered executor or provider readiness.
 Applicability, implementation availability, missing facts and host settings must
 remain separate. Existing format, attendance, assignment, safety and payment
