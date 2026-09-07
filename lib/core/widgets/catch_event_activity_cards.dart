@@ -52,8 +52,7 @@ class CatchEventCard extends StatelessWidget {
           final mediaHeight = constraints.hasBoundedWidth
               ? constraints.maxWidth * 10 / 16
               : 136.0; // fallback when unconstrained (should not happen)
-          final notchCenterY =
-              mediaHeight + CatchLayout.eventTicketDividerHeight / 2;
+          final notchCenterY = CatchLayout.eventTicketNotchCenterY(mediaHeight);
           return PhysicalShape(
             clipper: CatchTicketShapeClipper(
               cornerRadius: CatchRadius.lg,
