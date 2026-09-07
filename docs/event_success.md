@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.42.0
+version: 1.43.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -618,7 +618,7 @@ retention remain implementation work. Group duties alone do not grant the existi
 
 `getEventAssistanceAccountability` and
 `resolveEventAssistanceAccountability` bind the typed
-`resolveAccountability` command to the existing attendee sweep result.
+`resolveAccountability` command to the existing attendee visit result.
 Both this command and `setEventSuccessAccountabilityResolution` use the same
 writer fields and monotonic `accountabilityRevision`; clearing advances that
 revision too. Current resolution requires the exact check-in timestamp,
@@ -642,10 +642,37 @@ messaging. Assistance need not be enabled or initialized to resolve a checked-in
 guest. Scheduled end, completion and cancellation do not erase an outstanding
 sweep; current staff authority is still required.
 
-The read distinguishes an available sweep from a non-sweep format or a guest
-who is not currently checked in. Both callables require Auth/App Check and rate
-limits. Host controls, checkpoint workflows and rehearsal adapters remain
-separate integration work.
+Without a checkpoint scope, the read distinguishes an available sweep from a
+non-sweep format or a guest who is not currently checked in. Both callables
+require Auth/App Check and rate limits. Host controls and rehearsal adapters
+remain separate integration work.
+
+An explicit optional `checkpoint` scope names a recorded departure revision
+and its actual checkpoint destination. It permits the same observed `returned`,
+`departed` or `unresolved` visit result for that departure member, including a
+bar crawl whose event-wide accountability setting is `none`. It never changes
+that setting or enables sweep completion gates. `departed` means the person
+has left the event; it does not mean the group left its last stop. `returned`
+is the event-visit disposition and never means arrival at this checkpoint.
+
+This scope requires an immutable roster, the named original destination,
+unchanged source setup and the exact original registration/check-in. Absent
+rosters, nonmembers, changed visits and changed setup have distinct typed
+unavailability. The receipt pins checkpoint scope and full roster hash in
+addition to the existing visit identity. Scoped permission is checked before
+attendee/roster reads and expiry again after all reads. After an accepted group
+transfer, former group staff cannot change the global visit result; a manager
+can review the original departure using event-wide authority. Existing retry
+receipts remain valid only under their original context and current authority.
+
+Checkpoint member projections now include separate disposition evidence. A
+usable result identifies the disposition, actor, revision and time, with a
+hash preserving precise timestamp evidence. Results from before departure,
+malformed/future facts and changed visits cannot prove a new closeout. Clearing
+or correcting the canonical result changes that evidence. It never adds the
+guest to the checkpoint's accounted-for set or changes the arrival-report
+review hash. These facts prepare explicit closeout; they do not close a request,
+remove overdue work, send a message or create a second accountability record.
 
 ### Guest group membership and handovers
 

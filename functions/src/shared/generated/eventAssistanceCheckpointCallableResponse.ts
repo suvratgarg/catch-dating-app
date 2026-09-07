@@ -64,6 +64,30 @@ export interface EventAssistanceCheckpointCallableResponse {
                     | "notCheckedIn"
                     | "invalidSource";
                 };
+            /**
+             * Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.
+             */
+            disposition?:
+              | {
+                  kind: "unresolved";
+                }
+              | {
+                  kind: "resolved";
+                  disposition: "returned" | "departed";
+                  revision: number;
+                  resolvedAt: number;
+                  resolvedBy: string;
+                  sourceHash: string;
+                }
+              | {
+                  kind: "unavailable";
+                  reason:
+                    | "registrationMissing"
+                    | "visitChanged"
+                    | "notCheckedIn"
+                    | "invalidSource"
+                    | "beforeDeparture";
+                };
           }[];
         }
       | {

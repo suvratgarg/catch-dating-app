@@ -327,6 +327,87 @@ const schemaEventAssistanceCheckpointCallableResponseSchema = <String, Object?>{
                           },
                         ],
                       },
+                      'disposition': <String, Object?>{
+                        'description': 'Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.',
+                        'oneOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'unresolved',
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'disposition',
+                              'revision',
+                              'resolvedAt',
+                              'resolvedBy',
+                              'sourceHash',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'resolved',
+                              },
+                              'disposition': <String, Object?>{
+                                'enum': <Object?>[
+                                  'returned',
+                                  'departed',
+                                ],
+                              },
+                              'revision': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 1,
+                                'maximum': 9007199254740991,
+                              },
+                              'resolvedAt': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 9007199254740991,
+                              },
+                              'resolvedBy': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              'sourceHash': <String, Object?>{
+                                'type': 'string',
+                                'pattern': '^[a-f0-9]{64}\$',
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'reason',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'unavailable',
+                              },
+                              'reason': <String, Object?>{
+                                'enum': <Object?>[
+                                  'registrationMissing',
+                                  'visitChanged',
+                                  'notCheckedIn',
+                                  'invalidSource',
+                                  'beforeDeparture',
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
                     },
                   },
                 },

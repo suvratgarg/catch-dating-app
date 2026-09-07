@@ -24,7 +24,23 @@ export interface EventAssistanceAccountabilityCallableResponse {
         }
       | {
           kind: "unavailable";
-          reason: "notApplicable" | "notCheckedIn";
+          reason:
+            | "notApplicable"
+            | "notCheckedIn"
+            | "departureNotRecorded"
+            | "notOnDeparture"
+            | "visitChanged"
+            | "setupChanged"
+            | "differentCheckpoint"
+            | "destinationNotRecorded"
+            | "notCheckpoint";
         };
+    /**
+     * An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.
+     */
+    checkpoint?: {
+      checkpointId: string;
+      progressRevision: number;
+    };
   };
 }

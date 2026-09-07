@@ -735,6 +735,87 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
                             }
                           }
                         ]
+                      },
+                      "disposition": {
+                        "description": "Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.",
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unresolved"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "disposition",
+                              "revision",
+                              "resolvedAt",
+                              "resolvedBy",
+                              "sourceHash"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "resolved"
+                              },
+                              "disposition": {
+                                "enum": [
+                                  "returned",
+                                  "departed"
+                                ]
+                              },
+                              "revision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "resolvedAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "resolvedBy": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "sourceHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "enum": [
+                                  "registrationMissing",
+                                  "visitChanged",
+                                  "notCheckedIn",
+                                  "invalidSource",
+                                  "beforeDeparture"
+                                ]
+                              }
+                            }
+                          }
+                        ]
                       }
                     }
                   }
@@ -1426,6 +1507,36 @@ export const eventAssistanceAccountabilityReceiptDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "progressRevision",
+        "rosterId",
+        "rosterHash"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "rosterId": {
+          "type": "string",
+          "pattern": "^departure-roster:[a-f0-9]{64}$"
+        },
+        "rosterHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
   },
   "title": "EventAssistanceAccountabilityReceiptDocument",
@@ -1481,6 +1592,27 @@ export const getEventAssistanceAccountabilityCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "checkpoint": {
+      "description": "An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "progressRevision"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "title": "GetEventAssistanceAccountabilityCallablePayload"
@@ -1634,6 +1766,27 @@ export const resolveEventAssistanceAccountabilityCallablePayloadSchema = {
     "expectedSourceHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "checkpoint": {
+      "description": "An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "progressRevision"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "allOf": [
@@ -1799,12 +1952,40 @@ export const eventAssistanceAccountabilityCallableResponseSchema = {
                 "reason": {
                   "enum": [
                     "notApplicable",
-                    "notCheckedIn"
+                    "notCheckedIn",
+                    "departureNotRecorded",
+                    "notOnDeparture",
+                    "visitChanged",
+                    "setupChanged",
+                    "differentCheckpoint",
+                    "destinationNotRecorded",
+                    "notCheckpoint"
                   ]
                 }
               }
             }
           ]
+        },
+        "checkpoint": {
+          "description": "An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "checkpointId",
+            "progressRevision"
+          ],
+          "properties": {
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
         }
       }
     }

@@ -153,6 +153,27 @@ const schemaResolveEventAssistanceAccountabilityCallablePayloadSchema = <String,
       'type': 'string',
       'pattern': '^[a-f0-9]{64}\$',
     },
+    'checkpoint': <String, Object?>{
+      'description': 'An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'checkpointId',
+        'progressRevision',
+      ],
+      'properties': <String, Object?>{
+        'checkpointId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 2000,
+        },
+        'progressRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{

@@ -39,4 +39,11 @@ export type ResolveEventAssistanceAccountabilityCallablePayload = {
     };
   };
   expectedSourceHash: string;
+  /**
+   * An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.
+   */
+  checkpoint?: {
+    checkpointId: string;
+    progressRevision: number;
+  };
 };

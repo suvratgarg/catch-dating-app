@@ -73,6 +73,36 @@ export const eventAssistanceAccountabilityReceiptDocumentSchema: Record<string, 
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "progressRevision",
+        "rosterId",
+        "rosterHash"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "rosterId": {
+          "type": "string",
+          "pattern": "^departure-roster:[a-f0-9]{64}$"
+        },
+        "rosterHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
   },
   "title": "EventAssistanceAccountabilityReceiptDocument",

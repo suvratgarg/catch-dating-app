@@ -18,6 +18,7 @@ import type {readGroupProgressState} from "./groupProgressReader";
 import {progressIdentity, invalidSource} from "./groupProgressSource";
 import {departureRosterIdentity} from "./departureRosterSource";
 import {assertSavedCheckpointRequest} from "./checkpointRequest";
+import type {CheckpointDisposition} from "./checkpointDisposition";
 import type {CheckpointWorkRecords} from "./checkpointWorkRecords";
 
 export type {Scope, Report, Roster, Response};
@@ -32,6 +33,7 @@ export interface CheckpointState {
   roster: Roster | null;
   report: Report | null;
   visits: {attendeeId: string; visit: Visit}[];
+  dispositions?: {attendeeId: string; disposition: CheckpointDisposition}[];
   ownerValidUntil: number;
   requestWork?: CheckpointWorkRecords | null;
   now: number;
@@ -106,6 +108,8 @@ export function checkpointAvailability(s: CheckpointState):
     reportStatus: !s.report ? "unreported" :
       accounted.size === roster.members.length ? "complete" : "partial",
     members: s.visits.map(({attendeeId, visit}) => ({attendeeId, visit,
+      ...(s.dispositions ? {disposition: s.dispositions.find((d) =>
+        d.attendeeId === attendeeId)!.disposition} : {}),
       observation: accounted.has(attendeeId) ?
         "accountedFor" : "unconfirmed"}))};
 }

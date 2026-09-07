@@ -150,6 +150,27 @@ export const resolveEventAssistanceAccountabilityCallablePayloadSchema: Record<s
     "expectedSourceHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "checkpoint": {
+      "description": "An explicitly recorded departure at a named checkpoint; it never infers a roster or changes event-wide sweep configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "progressRevision"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "allOf": [

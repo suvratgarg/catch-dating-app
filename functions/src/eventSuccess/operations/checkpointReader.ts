@@ -7,6 +7,7 @@ import {readGroupProgressState} from "./groupProgressReader";
 import {DEPARTURE_ROSTERS, departureRosterIdentity,
   departureVisitHash} from "./departureRosterSource";
 import {invalidSource} from "./groupProgressSource";
+import {checkpointDisposition} from "./checkpointDisposition";
 import {readCheckpointOwnerValidity} from "./checkpointRequest";
 import {readCheckpointWorkSnapshot} from "./checkpointWorkAccess";
 import {effectiveCheckpointRequest} from "./checkpointWorkRecords";
@@ -29,15 +30,18 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
   const roster = parseDepartureRoster(rosterSnap.data(), scope, now);
   const report = parseCheckpointReport(reportSnap.data(), scope, roster, now);
   const state: CheckpointState = {scope, progress, roster, report, now,
-    visits: [], ownerValidUntil: 0, requestWork: null};
+    visits: [], dispositions: [], ownerValidUntil: 0, requestWork: null};
   if (roster && checkpointAvailability(state).kind === "ready") {
     for (let offset = 0; offset < roster.members.length; offset += 100) {
       const members = roster.members.slice(offset, offset + 100);
       const snapshots = await tx.getAll(...members.map((m) =>
         db.collection("eventAttendees").doc(m.attendeeId)));
       for (const [i, member] of members.entries()) {
-        state.visits.push({attendeeId: member.attendeeId,
-          visit: checkpointVisit(member, snapshots[i], progress)});
+        const visit = checkpointVisit(member, snapshots[i], progress);
+        state.visits.push({attendeeId: member.attendeeId, visit});
+        state.dispositions!.push({attendeeId: member.attendeeId,
+          disposition: checkpointDisposition(roster, member, visit,
+            snapshots[i].data(), clock())});
       }
     }
   }

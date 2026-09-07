@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.59.0
+version: 1.60.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -2596,10 +2596,34 @@ including clearing. Legacy missing revisions read as zero; overflow fails.
 actor/request hash, source/attendee generations, visit hash, episode or absence,
 applied revision and disposition. It commits with the attendee write. Exact
 replay returns the applied operation revision and current view; it never
-reapplies an old disposition. Current group authority and accepted membership
-remain necessary on replay. Completion/cancellation do not imply a person
+reapplies an old disposition. Current scoped authority remains necessary on
+replay; staff also require current accepted membership for a subgroup. Completion/cancellation do not imply a person
 returned. No messaging or participation state is created by this command.
 Receipt retention and Host/rehearsal adapters remain subsequent work.
+
+The optional `checkpoint` on read/write scope and response supplies an exact
+checkpoint ID and positive departure revision. The receipt additionally freezes
+the original roster ID/hash. This branch resolves an original departure member
+without requiring event-wide sweep configuration. The absence of this scope
+retains existing sweep applicability. Source/read hashes include the frozen
+checkpoint evidence; missing or changed receipt scope cannot replay as an event
+sweep or another departure. Current registration generations and the departure's
+exact check-in/attendance revision must match. The server distinguishes missing
+roster, nonmembership, wrong destination, changed visit and changed setup.
+Managers retain original-departure review after accepted group transfers; former
+group staff do not retain authority over the transferred guest's global result.
+All reads now establish scoped permission before fetching attendee or departure
+evidence, and writes recheck expiry after the final receipt read. The callback
+uses the existing bounded Firestore SDK transaction adapter.
+
+Checkpoint members expose an optional closed `disposition` union: unresolved,
+resolved evidence, or unavailable evidence with a reason. Current servers emit
+it for every roster member. A resolved value binds the canonical disposition,
+positive accountability revision, actor and exact timestamp in a source hash;
+the display timestamp is milliseconds. Evidence before departure, after server
+time, or from another visit is unavailable. Reported intentions are never used.
+Accountability evidence is separate from arrival observations and their review
+hash. Request closeout and wake handling for these facts remain subsequent work.
 
 ### Event Assistance Channel Selection Contract
 

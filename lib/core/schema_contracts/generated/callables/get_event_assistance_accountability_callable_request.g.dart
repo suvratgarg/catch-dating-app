@@ -10,15 +10,18 @@ final class GetEventAssistanceAccountabilityCallableRequest {
     required this.context,
     required this.groupId,
     required this.attendeeId,
+    this.checkpoint,
   });
 
   final Map<String, Object?> context;
   final String groupId;
   final String attendeeId;
+  final Map<String, Object?>? checkpoint;
 
   Map<String, Object?> toJson() => {
     'context': context,
     'groupId': groupId,
     'attendeeId': attendeeId,
+    'checkpoint': ?checkpoint,
   };
 }

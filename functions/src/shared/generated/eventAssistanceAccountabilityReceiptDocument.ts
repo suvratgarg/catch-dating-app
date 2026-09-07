@@ -13,4 +13,10 @@ export interface EventAssistanceAccountabilityReceiptDocument {
   revision: number;
   disposition: "returned" | "departed" | "unresolved";
   createdAt: number;
+  checkpoint?: {
+    checkpointId: string;
+    progressRevision: number;
+    rosterId: string;
+    rosterHash: string;
+  };
 }

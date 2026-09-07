@@ -10,15 +10,18 @@ final class ResolveEventAssistanceAccountabilityCallableRequest {
     required this.groupId,
     required this.command,
     required this.expectedSourceHash,
+    this.checkpoint,
   });
 
   final String groupId;
   final Map<String, Object?> command;
   final String expectedSourceHash;
+  final Map<String, Object?>? checkpoint;
 
   Map<String, Object?> toJson() => {
     'groupId': groupId,
     'command': command,
     'expectedSourceHash': expectedSourceHash,
+    'checkpoint': ?checkpoint,
   };
 }

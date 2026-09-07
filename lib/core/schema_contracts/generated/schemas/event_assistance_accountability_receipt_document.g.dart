@@ -76,6 +76,36 @@ const schemaEventAssistanceAccountabilityReceiptDocumentSchema = <String, Object
       'minimum': 0,
       'maximum': 9007199254740991,
     },
+    'checkpoint': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'checkpointId',
+        'progressRevision',
+        'rosterId',
+        'rosterHash',
+      ],
+      'properties': <String, Object?>{
+        'checkpointId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 2000,
+        },
+        'progressRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
+        },
+        'rosterId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^departure-roster:[a-f0-9]{64}\$',
+        },
+        'rosterHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+      },
+    },
   },
   'title': 'EventAssistanceAccountabilityReceiptDocument',
   'x-firestore-collection': 'eventAssistanceAccountabilityReceipts',

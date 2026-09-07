@@ -324,6 +324,87 @@ export const eventAssistanceCheckpointCallableResponseSchema: Record<string, unk
                             }
                           }
                         ]
+                      },
+                      "disposition": {
+                        "description": "Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.",
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unresolved"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "disposition",
+                              "revision",
+                              "resolvedAt",
+                              "resolvedBy",
+                              "sourceHash"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "resolved"
+                              },
+                              "disposition": {
+                                "enum": [
+                                  "returned",
+                                  "departed"
+                                ]
+                              },
+                              "revision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "resolvedAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "resolvedBy": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "sourceHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "enum": [
+                                  "registrationMissing",
+                                  "visitChanged",
+                                  "notCheckedIn",
+                                  "invalidSource",
+                                  "beforeDeparture"
+                                ]
+                              }
+                            }
+                          }
+                        ]
                       }
                     }
                   }

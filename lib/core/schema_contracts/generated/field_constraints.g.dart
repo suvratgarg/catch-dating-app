@@ -12009,7 +12009,23 @@ abstract final class CatchContractConstraints {
   static const eventAssistanceAccountabilityCallableResponseViewAvailabilityReason = CatchContractFieldConstraints(
     path: 'eventAssistanceAccountabilityCallableResponse.view.availability.reason',
     required: true,
-    enumValues: <String>['notApplicable', 'notCheckedIn'],
+    enumValues: <String>['notApplicable', 'notCheckedIn', 'departureNotRecorded', 'notOnDeparture', 'visitChanged', 'setupChanged', 'differentCheckpoint', 'destinationNotRecorded', 'notCheckpoint'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewCheckpointCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.checkpoint.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceAccountabilityCallableResponseViewCheckpointProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityCallableResponse.view.checkpoint.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventAssistanceAccountabilityCallableResponseViewContextEventId = CatchContractFieldConstraints(
@@ -12093,6 +12109,36 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCheckpointCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.checkpoint.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCheckpointProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.checkpoint.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCheckpointRosterHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.checkpoint.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceAccountabilityReceiptDocumentCheckpointRosterId = CatchContractFieldConstraints(
+    path: 'eventAssistanceAccountabilityReceiptDocument.checkpoint.rosterId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^departure-roster:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceAccountabilityReceiptDocumentCreatedAt = CatchContractFieldConstraints(
@@ -12375,6 +12421,54 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionDisposition = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.kind',
+    required: true,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.reason',
+    required: true,
+    enumValues: <String>['registrationMissing', 'visitChanged', 'notCheckedIn', 'invalidSource', 'beforeDeparture'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionResolvedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionResolvedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.resolvedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsObservation = CatchContractFieldConstraints(
@@ -34891,6 +34985,22 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.checkpoint.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceAccountabilityCallablePayloadCheckpointProgressRevision = CatchContractFieldConstraints(
+    path: 'getEventAssistanceAccountabilityCallablePayload.checkpoint.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const getEventAssistanceAccountabilityCallablePayloadContextEventId = CatchContractFieldConstraints(
@@ -65385,6 +65495,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const resolveEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const resolveEventAssistanceAccountabilityCallablePayloadCheckpointProgressRevision = CatchContractFieldConstraints(
+    path: 'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const resolveEventAssistanceAccountabilityCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'resolveEventAssistanceAccountabilityCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -77780,6 +77906,8 @@ abstract final class CatchContractConstraints {
     'eventAssistanceAccountabilityCallableResponse.view.attendeeId': eventAssistanceAccountabilityCallableResponseViewAttendeeId,
     'eventAssistanceAccountabilityCallableResponse.view.availability.kind': eventAssistanceAccountabilityCallableResponseViewAvailabilityKind,
     'eventAssistanceAccountabilityCallableResponse.view.availability.reason': eventAssistanceAccountabilityCallableResponseViewAvailabilityReason,
+    'eventAssistanceAccountabilityCallableResponse.view.checkpoint.checkpointId': eventAssistanceAccountabilityCallableResponseViewCheckpointCheckpointId,
+    'eventAssistanceAccountabilityCallableResponse.view.checkpoint.progressRevision': eventAssistanceAccountabilityCallableResponseViewCheckpointProgressRevision,
     'eventAssistanceAccountabilityCallableResponse.view.context.eventId': eventAssistanceAccountabilityCallableResponseViewContextEventId,
     'eventAssistanceAccountabilityCallableResponse.view.context.mode': eventAssistanceAccountabilityCallableResponseViewContextMode,
     'eventAssistanceAccountabilityCallableResponse.view.context.organizerId': eventAssistanceAccountabilityCallableResponseViewContextOrganizerId,
@@ -77791,6 +77919,10 @@ abstract final class CatchContractConstraints {
     'eventAssistanceAccountabilityCallableResponse.view.sourceHash': eventAssistanceAccountabilityCallableResponseViewSourceHash,
     'eventAssistanceAccountabilityReceiptDocument.attendeeGeneration': eventAssistanceAccountabilityReceiptDocumentAttendeeGeneration,
     'eventAssistanceAccountabilityReceiptDocument.checkInHash': eventAssistanceAccountabilityReceiptDocumentCheckInHash,
+    'eventAssistanceAccountabilityReceiptDocument.checkpoint.checkpointId': eventAssistanceAccountabilityReceiptDocumentCheckpointCheckpointId,
+    'eventAssistanceAccountabilityReceiptDocument.checkpoint.progressRevision': eventAssistanceAccountabilityReceiptDocumentCheckpointProgressRevision,
+    'eventAssistanceAccountabilityReceiptDocument.checkpoint.rosterHash': eventAssistanceAccountabilityReceiptDocumentCheckpointRosterHash,
+    'eventAssistanceAccountabilityReceiptDocument.checkpoint.rosterId': eventAssistanceAccountabilityReceiptDocumentCheckpointRosterId,
     'eventAssistanceAccountabilityReceiptDocument.createdAt': eventAssistanceAccountabilityReceiptDocumentCreatedAt,
     'eventAssistanceAccountabilityReceiptDocument.disposition': eventAssistanceAccountabilityReceiptDocumentDisposition,
     'eventAssistanceAccountabilityReceiptDocument.episodeId': eventAssistanceAccountabilityReceiptDocumentEpisodeId,
@@ -77828,6 +77960,13 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointCallableResponse.view.availability.label': eventAssistanceCheckpointCallableResponseViewAvailabilityLabel,
     'eventAssistanceCheckpointCallableResponse.view.availability.members': eventAssistanceCheckpointCallableResponseViewAvailabilityMembers,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.attendeeId': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsAttendeeId,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.disposition': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionDisposition,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionKind,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.reason': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionReason,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.resolvedAt': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionResolvedAt,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.resolvedBy': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionResolvedBy,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.revision': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionRevision,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.sourceHash': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionSourceHash,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.observation': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsObservation,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitKind,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.visit.reason': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsVisitReason,
@@ -80852,6 +80991,8 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
     'getEventAssistanceAccountabilityCallablePayload.attendeeId': getEventAssistanceAccountabilityCallablePayloadAttendeeId,
+    'getEventAssistanceAccountabilityCallablePayload.checkpoint.checkpointId': getEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId,
+    'getEventAssistanceAccountabilityCallablePayload.checkpoint.progressRevision': getEventAssistanceAccountabilityCallablePayloadCheckpointProgressRevision,
     'getEventAssistanceAccountabilityCallablePayload.context.eventId': getEventAssistanceAccountabilityCallablePayloadContextEventId,
     'getEventAssistanceAccountabilityCallablePayload.context.mode': getEventAssistanceAccountabilityCallablePayloadContextMode,
     'getEventAssistanceAccountabilityCallablePayload.context.organizerId': getEventAssistanceAccountabilityCallablePayloadContextOrganizerId,
@@ -85050,6 +85191,8 @@ abstract final class CatchContractConstraints {
     'resetEventRehearsalCallablePayload.sessionId': resetEventRehearsalCallablePayloadSessionId,
     'resetMatchUnreadCountClientWrite.data.unreadCounts': resetMatchUnreadCountClientWriteDataUnreadCounts,
     'resetMatchUnreadCountClientWrite.path.matchId': resetMatchUnreadCountClientWritePathMatchId,
+    'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.checkpointId': resolveEventAssistanceAccountabilityCallablePayloadCheckpointCheckpointId,
+    'resolveEventAssistanceAccountabilityCallablePayload.checkpoint.progressRevision': resolveEventAssistanceAccountabilityCallablePayloadCheckpointProgressRevision,
     'resolveEventAssistanceAccountabilityCallablePayload.command.context.clockId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextClockId,
     'resolveEventAssistanceAccountabilityCallablePayload.command.context.eventId': resolveEventAssistanceAccountabilityCallablePayloadCommandContextEventId,
     'resolveEventAssistanceAccountabilityCallablePayload.command.context.mode': resolveEventAssistanceAccountabilityCallablePayloadCommandContextMode,

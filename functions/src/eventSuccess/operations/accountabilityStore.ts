@@ -25,10 +25,12 @@ import {currentGuest, guestIdentity} from "./guestRecords";
 import {invalidSource, timestampEvidence} from "./groupProgressSource";
 import {requireGroupPermission, denied} from "./groupStaffAuthority";
 import {readMembership, currentMembership} from "./membershipReader";
+import {readAccountabilityCheckpoint} from "./accountabilityCheckpoint";
+import {runAssistanceTransaction} from "./transactionCallback";
 
 export const ACCOUNTABILITY_RECEIPTS = "eventAssistanceAccountabilityReceipts";
 
-/** Records an observed sweep result, never attendance or reported intent. */
+/** Records a visit disposition for a sweep or an explicit departure. */
 export class EventAccountabilityStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
@@ -37,7 +39,7 @@ export class EventAccountabilityStore {
     if (!validateGetEventAssistanceAccountabilityCallablePayload(input)) {
       throw new HttpsError("invalid-argument", "Invalid accountability scope.");
     }
-    return this.db.runTransaction(async (tx) =>
+    return runAssistanceTransaction(this.db, async (tx) =>
       response("read", await this.read(tx, actorUid, input)));
   }
 
@@ -57,12 +59,13 @@ export class EventAccountabilityStore {
         "Accountability context mismatch.");
     }
     const scope: Scope = {context, groupId: input.groupId,
-      attendeeId: payload.attendeeId};
+      attendeeId: payload.attendeeId,
+      ...(input.checkpoint ? {checkpoint: input.checkpoint} : {})};
     const guestId = guestIdentity(context, payload.attendeeId);
     const requestHash = operationContentHash([actorUid, input]);
     const receiptId = "accountability-action:" + operationContentHash([
       context, payload.attendeeId, command.operationId]);
-    return this.db.runTransaction(async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, scope);
       assertCommandRole(command, [state.access.role]);
       const ref = this.db.collection(ACCOUNTABILITY_RECEIPTS).doc(receiptId);
@@ -83,6 +86,8 @@ export class EventAccountabilityStore {
               state.member.source.attendeeGeneration ||
             receipt.checkInHash !== checkInHash(state) ||
             receipt.episodeId !== episodeId(state) ||
+            operationContentHash(receipt.checkpoint ?? null) !==
+              operationContentHash(state.checkpoint?.proof ?? null) ||
             receipt.disposition !== payload.disposition ||
             receipt.revision > revision || receipt.createdAt > now) {
           throw conflict();
@@ -104,7 +109,9 @@ export class EventAccountabilityStore {
         attendeeGeneration: state.member.source.attendeeGeneration,
         checkInHash: checkInHash(state), episodeId: episodeId(state),
         revision: fields.accountabilityRevision,
-        disposition: payload.disposition, createdAt: now};
+        disposition: payload.disposition, createdAt: now,
+        ...(state.checkpoint?.proof ?
+          {checkpoint: state.checkpoint.proof} : {})};
       if (!validateEventAssistanceAccountabilityReceiptDocument(saved)) {
         throw invalidSource();
       }
@@ -118,20 +125,24 @@ export class EventAccountabilityStore {
   }
 
   private async read(tx: Transaction, actorUid: string, scope: Scope) {
+    const access = await requireGroupPermission(this.db, tx, scope.context,
+      scope.groupId, actorUid, "resolveAccountability", this.clock);
     const member = await readMembership(this.db, tx,
       {context: scope.context, attendeeId: scope.attendeeId}, actorUid,
       this.clock);
-    const access = await requireGroupPermission(this.db, tx, scope.context,
-      scope.groupId, actorUid, "resolveAccountability", this.clock);
+    // A former group duty cannot change the visit result after transfer.
+    // Managers can review the original departure using their event authority.
+    if (scope.groupId !== "event:whole" && (!currentMembership(member) ||
+        member.membership?.accepted?.groupId !== scope.groupId) &&
+        (!scope.checkpoint || access.role !== "eventLead")) throw denied();
+    const checkpoint = await readAccountabilityCheckpoint(this.db, tx, scope,
+      member, this.clock);
     const now = this.clock();
-    if (!Number.isSafeInteger(now) || now < member.now) throw invalidSource();
+    if (!Number.isSafeInteger(now) ||
+        now < Math.max(member.now, checkpoint?.now ?? 0)) throw invalidSource();
     if (now >= access.validUntil) throw denied();
     member.now = now;
-    // A receiving duty cannot resolve a guest before the handover is accepted.
-    // The whole-event duty is explicitly event-wide; it needs no subgroup.
-    if (scope.groupId !== "event:whole" && (!currentMembership(member) ||
-        member.membership?.accepted?.groupId !== scope.groupId)) throw denied();
-    return {scope, member, access};
+    return {scope, member, access, checkpoint};
   }
 }
 
@@ -139,6 +150,7 @@ type State = {
     scope: Scope;
     member: Awaited<ReturnType<typeof readMembership>>;
     access: Awaited<ReturnType<typeof requireGroupPermission>>;
+    checkpoint: Awaited<ReturnType<typeof readAccountabilityCheckpoint>>;
 };
 function checkInHash(s: State) {
   const a = s.member.attendee;
@@ -148,7 +160,7 @@ function checkInHash(s: State) {
 function sourceHash(s: State) {
   const a = s.member.attendee;
   const membership = s.member.membership;
-  return operationContentHash([s.scope, s.member.sourceHash,
+  const facts = [s.scope, s.member.sourceHash,
     s.member.event.eventFormat, episodeId(s),
     s.scope.groupId === "event:whole" || !membership ? null :
       [membership.episodeId, membership.sourceGeneration,
@@ -159,9 +171,13 @@ function sourceHash(s: State) {
       timestampEvidence(a.accountabilityResolvedForCheckInAt) : null,
     a.accountabilityResolvedAt ?
       timestampEvidence(a.accountabilityResolvedAt) : null,
-    a.accountabilityResolvedBy ?? null]);
+    a.accountabilityResolvedBy ?? null];
+  return operationContentHash(s.checkpoint ? [...facts, {
+    proof: s.checkpoint.proof,
+    availability: s.checkpoint.availability}] : facts);
 }
 function availability(s: State): Response["view"]["availability"] {
+  if (s.checkpoint) return s.checkpoint.availability;
   const m = s.member;
   const reason = eventSuccessPrimitivesFor(m.event.eventFormat)
     .accountability !== "sweep" ? "notApplicable" :
