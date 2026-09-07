@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_runtime_config.schema.json",
+  "title": "EventAssistanceRuntimeConfigContracts",
+  "description": "Manager-owned event execution permission. Configuration is not enrollment, sender approval, consent, or delivery.",
+  "definitions": {
+    "Configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "options",
+        "expiresAt",
+        "maxEvaluations"
+      ],
+      "properties": {
+        "options": {
+          "$ref": "../operations/event_assistance_live_work.schema.json#/properties/options"
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "maxEvaluations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      }
+    },
+    "Record": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "runtimeId",
+            "context",
+            "workflowKind",
+            "revision",
+            "status",
+            "configuration",
+            "sourceHash",
+            "sourceGeneration",
+            "updatedBy",
+            "createdAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "runtimeId": {
+              "type": "string",
+              "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "workflowKind": {
+              "type": "string",
+              "const": "lateJoin"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "type": "string",
+              "const": "enabled"
+            },
+            "configuration": {
+              "$ref": "#/definitions/Configuration"
+            },
+            "sourceHash": {
+              "$ref": "../operations/common.schema.json#/definitions/sha256"
+            },
+            "sourceGeneration": {
+              "$ref": "../operations/common.schema.json#/definitions/sha256"
+            },
+            "updatedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "runtimeId",
+            "context",
+            "workflowKind",
+            "revision",
+            "status",
+            "configuration",
+            "sourceHash",
+            "sourceGeneration",
+            "updatedBy",
+            "createdAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "runtimeId": {
+              "type": "string",
+              "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "workflowKind": {
+              "type": "string",
+              "const": "lateJoin"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "type": "string",
+              "const": "paused"
+            },
+            "configuration": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Configuration"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceHash": {
+              "$ref": "../operations/common.schema.json#/definitions/sha256"
+            },
+            "sourceGeneration": {
+              "$ref": "../operations/common.schema.json#/definitions/sha256"
+            },
+            "updatedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "Receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receiptId",
+        "runtimeId",
+        "requestHash",
+        "sourceGeneration",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "receiptId": {
+          "type": "string",
+          "pattern": "^runtime-action:[a-f0-9]{64}$"
+        },
+        "runtimeId": {
+          "type": "string",
+          "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+        },
+        "requestHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "sourceGeneration": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "ReadInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        }
+      }
+    },
+    "WriteInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "requestId",
+        "expectedRevision",
+        "expectedSourceHash",
+        "command"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "requestId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "command": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "configuration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "configure"
+                },
+                "configuration": {
+                  "$ref": "#/definitions/Configuration"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "pause"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "View": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "serverTime",
+        "sourceHash",
+        "revision",
+        "runtime",
+        "status",
+        "canConfigure",
+        "eventEnd"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "runtime": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Record"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "unconfigured",
+            "paused",
+            "sourceChanged",
+            "expired",
+            "eventClosed",
+            "configured"
+          ]
+        },
+        "canConfigure": {
+          "type": "boolean"
+        },
+        "eventEnd": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "Response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "operationRevision",
+        "view"
+      ],
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "read",
+            "applied",
+            "replayed"
+          ]
+        },
+        "operationRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "view": {
+          "$ref": "#/definitions/View"
+        }
+      }
+    }
+  }
+}

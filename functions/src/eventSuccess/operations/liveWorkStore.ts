@@ -10,6 +10,7 @@ import {validateOperationActionReceipt} from "../../operations/validation";
 import {currentGuest, guestCollections, guestIdentity, parseGuest,
   readGuestSourceFacts, requireDocumentId} from "./guestRecords";
 import {prepareLiveLateJoinPublication} from "./liveLateJoinPublication";
+import {readRuntimeConfigAuthority} from "./runtimeConfigRecords";
 import {ASSISTANCE_WORKFLOW, LIVE_WORK_RUNTIME, LiveWork, Observation,
   invalidWork, liveWorkBasis, liveWorkIds, liveWorkProjection,
   newLiveWorkRecords, parseLiveWork, readLiveWorkRecords} from
@@ -35,7 +36,7 @@ export class LiveAssistanceWorkStore {
 
   /** Never creates guest participation or silently replaces frozen options. */
   async start(input: Pick<LiveWork,
-    "scope" | "options" | "expiresAt" | "maxEvaluations">) {
+    "scope" | "options" | "expiresAt" | "maxEvaluations" | "runtimeBinding">) {
     const frozen = structuredClone(input);
     return this.db.runTransaction(async (tx) => {
       const now = this.clock();
@@ -65,6 +66,15 @@ export class LiveAssistanceWorkStore {
           guest.episodeId !== payload.scope.episodeId ||
           source.eventStatus !== "active" || payload.expiresAt <= now ||
           payload.expiresAt > source.eventEnd) throw invalidWork();
+      if (payload.runtimeBinding) {
+        const authority = await readRuntimeConfigAuthority(this.db, tx,
+          payload.scope.context, payload.runtimeBinding, now);
+        if (authority.kind !== "ready" || operationContentHash(
+          authority.configuration) !== operationContentHash({
+          options: payload.options, expiresAt: payload.expiresAt,
+          maxEvaluations: payload.maxEvaluations,
+        })) throw conflict("work_configuration_conflict");
+      }
       const records = newLiveWorkRecords(payload, now);
       const committedAt = this.clock();
       if (committedAt < now || committedAt >= payload.expiresAt) {
@@ -170,7 +180,9 @@ export class LiveAssistanceWorkStore {
           observation = {kind: "evaluationLimit"};
         } else {
           const prepared = await prepareLiveLateJoinPublication(this.db, tx,
-            payload.scope, payload.options, this.clock);
+            payload.scope, {...payload.options,
+              ...(payload.runtimeBinding ?
+                {runtimeBinding: payload.runtimeBinding} : {})}, this.clock);
           observation = observationFor(prepared);
           next.checkpoint.evaluations += 1;
           if (prepared.kind === "prepared" || prepared.kind === "evaluated") {
@@ -248,6 +260,7 @@ function observationFor(prepared: Prepared): Observation {
     const e = prepared.evaluation;
     switch (e.kind) {
     case "sourceNotReady": return {kind: e.kind, reason: e.source.reason};
+    case "runtimeUnavailable": return {kind: e.kind, reason: e.reason};
     case "historyUnavailable": return {kind: e.kind, reason: e.reason};
     case "responseDeadlineMissing": return {kind: e.kind};
     default: return unhandled(e);

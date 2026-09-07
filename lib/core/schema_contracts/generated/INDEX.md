@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceRuntimeConfigDocument | `firestore/event_assistance_runtime_configs.schema.json` | `functions/src/shared/generated/eventAssistanceRuntimeConfigDocument.ts` |
+| EventAssistanceRuntimeConfigReceiptDocument | `firestore/event_assistance_runtime_config_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceRuntimeConfigReceiptDocument.ts` |
+| GetEventAssistanceRuntimeConfigCallablePayload | `callables/get_event_assistance_runtime_config_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceRuntimeConfigCallablePayload.ts` |
+| SetEventAssistanceRuntimeConfigCallablePayload | `callables/set_event_assistance_runtime_config_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceRuntimeConfigCallablePayload.ts` |
+| EventAssistanceRuntimeConfigCallableResponse | `callable_responses/event_assistance_runtime_config_response.schema.json` | `functions/src/shared/generated/eventAssistanceRuntimeConfigCallableResponse.ts` |
 | GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceMembershipCallablePayload.ts` |
 | TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `functions/src/shared/generated/transferEventAssistanceGroupCallablePayload.ts` |
 | EventAssistanceMembershipCallableResponse | `callable_responses/event_assistance_membership_response.schema.json` | `functions/src/shared/generated/eventAssistanceMembershipCallableResponse.ts` |
@@ -613,6 +618,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceRuntimeConfigDocumentSchema` | EventAssistanceRuntimeConfigDocument | `firestore/event_assistance_runtime_configs.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_runtime_config_document.g.dart` |
+| `schemaEventAssistanceRuntimeConfigReceiptDocumentSchema` | EventAssistanceRuntimeConfigReceiptDocument | `firestore/event_assistance_runtime_config_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_runtime_config_receipt_document.g.dart` |
+| `schemaGetEventAssistanceRuntimeConfigCallablePayloadSchema` | GetEventAssistanceRuntimeConfigCallablePayload | `callables/get_event_assistance_runtime_config_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_runtime_config_callable_payload.g.dart` |
+| `schemaSetEventAssistanceRuntimeConfigCallablePayloadSchema` | SetEventAssistanceRuntimeConfigCallablePayload | `callables/set_event_assistance_runtime_config_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_runtime_config_callable_payload.g.dart` |
+| `schemaEventAssistanceRuntimeConfigCallableResponseSchema` | EventAssistanceRuntimeConfigCallableResponse | `callable_responses/event_assistance_runtime_config_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_runtime_config_callable_response.g.dart` |
 | `schemaGetEventAssistanceMembershipCallablePayloadSchema` | GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_membership_callable_payload.g.dart` |
 | `schemaTransferEventAssistanceGroupCallablePayloadSchema` | TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/transfer_event_assistance_group_callable_payload.g.dart` |
 | `schemaEventAssistanceMembershipCallableResponseSchema` | EventAssistanceMembershipCallableResponse | `callable_responses/event_assistance_membership_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_membership_callable_response.g.dart` |
@@ -1214,6 +1224,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceRuntimeConfigCallableRequest | GetEventAssistanceRuntimeConfigCallablePayload | `callables/get_event_assistance_runtime_config_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_runtime_config_callable_request.g.dart` |
 | GetEventAssistanceMembershipCallableRequest | GetEventAssistanceMembershipCallablePayload | `callables/get_event_assistance_membership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_membership_callable_request.g.dart` |
 | TransferEventAssistanceGroupCallableRequest | TransferEventAssistanceGroupCallablePayload | `callables/transfer_event_assistance_group_payload.schema.json` | `lib/core/schema_contracts/generated/callables/transfer_event_assistance_group_callable_request.g.dart` |
 | GetEventAssistanceGroupStaffCallableRequest | GetEventAssistanceGroupStaffCallablePayload | `callables/get_event_assistance_group_staff_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_staff_callable_request.g.dart` |
@@ -1449,6 +1460,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventAssistanceRuntimeConfigCallablePayload | cannot map field "command" (no type) |
 | SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSettingCallablePayload | cannot map field "preference" (no type) |
 | SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |

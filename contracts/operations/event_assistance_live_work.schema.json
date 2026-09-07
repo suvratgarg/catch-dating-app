@@ -284,6 +284,31 @@
                       "const": "evaluationLimit"
                     }
                   }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "runtimeUnavailable"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "missing",
+                        "paused",
+                        "configurationChanged",
+                        "sourceChanged",
+                        "expired",
+                        "eventClosed"
+                      ]
+                    }
+                  }
                 }
               ]
             },
@@ -318,6 +343,9 @@
           ]
         }
       }
+    },
+    "runtimeBinding": {
+      "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
     }
   }
 }

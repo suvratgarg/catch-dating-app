@@ -15,6 +15,12 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name": "EventAssistanceRuntimeConfigDocument", "source": "firestore/event_assistance_runtime_configs.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigDocument.ts"},
+  {"name": "EventAssistanceRuntimeConfigReceiptDocument", "source": "firestore/event_assistance_runtime_config_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigReceiptDocument.ts"},
+  {"name": "GetEventAssistanceRuntimeConfigCallablePayload", "source": "callables/get_event_assistance_runtime_config_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceRuntimeConfigCallablePayload.ts"},
+  {"name": "SetEventAssistanceRuntimeConfigCallablePayload", "source": "callables/set_event_assistance_runtime_config_payload.schema.json", "typeOutput": "functions/src/shared/generated/setEventAssistanceRuntimeConfigCallablePayload.ts"},
+  {"name": "EventAssistanceRuntimeConfigCallableResponse", "source": "callable_responses/event_assistance_runtime_config_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigCallableResponse.ts"},
+
   {
     "name": "GetEventAssistanceMembershipCallablePayload",
     "source": "callables/get_event_assistance_membership_payload.schema.json",

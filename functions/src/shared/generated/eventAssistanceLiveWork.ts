@@ -112,11 +112,25 @@ export interface EventAssistanceLiveWork {
           | {
               kind: "evaluationLimit";
             }
+          | {
+              kind: "runtimeUnavailable";
+              reason:
+                | "missing"
+                | "paused"
+                | "configurationChanged"
+                | "sourceChanged"
+                | "expired"
+                | "eventClosed";
+            }
         )
       | null;
     publication: {
       messageId: string;
       threadId: string;
     } | null;
+  };
+  runtimeBinding?: {
+    runtimeId: string;
+    revision: number;
   };
 }

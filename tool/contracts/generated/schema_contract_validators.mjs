@@ -3,6 +3,11 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceRuntimeConfigDocumentSchema,
+  eventAssistanceRuntimeConfigReceiptDocumentSchema,
+  getEventAssistanceRuntimeConfigCallablePayloadSchema,
+  setEventAssistanceRuntimeConfigCallablePayloadSchema,
+  eventAssistanceRuntimeConfigCallableResponseSchema,
   getEventAssistanceMembershipCallablePayloadSchema,
   transferEventAssistanceGroupCallablePayloadSchema,
   eventAssistanceMembershipCallableResponseSchema,
@@ -623,6 +628,11 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceRuntimeConfigDocument = ajv.compile(eventAssistanceRuntimeConfigDocumentSchema);
+export const validateEventAssistanceRuntimeConfigReceiptDocument = ajv.compile(eventAssistanceRuntimeConfigReceiptDocumentSchema);
+export const validateGetEventAssistanceRuntimeConfigCallablePayload = ajv.compile(getEventAssistanceRuntimeConfigCallablePayloadSchema);
+export const validateSetEventAssistanceRuntimeConfigCallablePayload = ajv.compile(setEventAssistanceRuntimeConfigCallablePayloadSchema);
+export const validateEventAssistanceRuntimeConfigCallableResponse = ajv.compile(eventAssistanceRuntimeConfigCallableResponseSchema);
 export const validateGetEventAssistanceMembershipCallablePayload = ajv.compile(getEventAssistanceMembershipCallablePayloadSchema);
 export const validateTransferEventAssistanceGroupCallablePayload = ajv.compile(transferEventAssistanceGroupCallablePayloadSchema);
 export const validateEventAssistanceMembershipCallableResponse = ajv.compile(eventAssistanceMembershipCallableResponseSchema);

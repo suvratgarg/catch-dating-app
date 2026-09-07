@@ -14806,6 +14806,21 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceLiveWorkRuntimeBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.runtimeBinding.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLiveWorkRuntimeBindingRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.runtimeBinding.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceLiveWorkSchemaVersion = CatchContractFieldConstraints(
     path: 'eventAssistanceLiveWork.schemaVersion',
     required: true,
@@ -15700,6 +15715,21 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.runtimeBinding.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.runtimeBinding.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceMessageDocumentIntentAutomationSettingId = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.intent.automation.settingId',
     maxLength: 160,
@@ -16156,6 +16186,21 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationRuntimeBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.runtimeBinding.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentAutomationRuntimeBindingRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.runtimeBinding.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceMessageIntentAutomationSettingId = CatchContractFieldConstraints(
@@ -16851,6 +16896,375 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewCanConfigure = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.canConfigure',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewEventEnd = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.eventEnd',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unconfigured', 'paused', 'sourceChanged', 'expired', 'eventClosed', 'configured'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationMaxEvaluations = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.maxEvaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutesItemsSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.configuration.options.routes.items.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentUpdatedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.updatedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigDocumentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigDocument.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigReceiptDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigReceiptDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceSettingCallableResponseOperationRevision = CatchContractFieldConstraints(
@@ -18706,7 +19120,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.source.collection',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs'],
   );
 
   static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(
@@ -32753,6 +33167,29 @@ abstract final class CatchContractConstraints {
 
   static const getEventAssistanceParticipationCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
     path: 'getEventAssistanceParticipationCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.context.organizerId',
     maxLength: 2000,
     minLength: 1,
     required: true,
@@ -64327,6 +64764,209 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationExpiresAt = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationMaxEvaluations = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.maxEvaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10000,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoices = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsResponseDeadline = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutes = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsSenderId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAssistanceSettingCallablePayloadContextEventId = CatchContractFieldConstraints(
     path: 'setEventAssistanceSettingCallablePayload.context.eventId',
     maxLength: 160,
@@ -75103,6 +75743,8 @@ abstract final class CatchContractConstraints {
     'eventAssistanceLiveWork.options.routes': eventAssistanceLiveWorkOptionsRoutes,
     'eventAssistanceLiveWork.options.routes.items.routeId': eventAssistanceLiveWorkOptionsRoutesItemsRouteId,
     'eventAssistanceLiveWork.options.routes.items.senderId': eventAssistanceLiveWorkOptionsRoutesItemsSenderId,
+    'eventAssistanceLiveWork.runtimeBinding.revision': eventAssistanceLiveWorkRuntimeBindingRevision,
+    'eventAssistanceLiveWork.runtimeBinding.runtimeId': eventAssistanceLiveWorkRuntimeBindingRuntimeId,
     'eventAssistanceLiveWork.schemaVersion': eventAssistanceLiveWorkSchemaVersion,
     'eventAssistanceLiveWork.scope.attendeeId': eventAssistanceLiveWorkScopeAttendeeId,
     'eventAssistanceLiveWork.scope.context.eventId': eventAssistanceLiveWorkScopeContextEventId,
@@ -75218,6 +75860,8 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.intent.automation.routes': eventAssistanceMessageDocumentIntentAutomationRoutes,
     'eventAssistanceMessageDocument.intent.automation.routes.items.routeId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsRouteId,
     'eventAssistanceMessageDocument.intent.automation.routes.items.senderId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsSenderId,
+    'eventAssistanceMessageDocument.intent.automation.runtimeBinding.revision': eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRevision,
+    'eventAssistanceMessageDocument.intent.automation.runtimeBinding.runtimeId': eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRuntimeId,
     'eventAssistanceMessageDocument.intent.automation.settingId': eventAssistanceMessageDocumentIntentAutomationSettingId,
     'eventAssistanceMessageDocument.intent.automation.settingRevision': eventAssistanceMessageDocumentIntentAutomationSettingRevision,
     'eventAssistanceMessageDocument.intent.body': eventAssistanceMessageDocumentIntentBody,
@@ -75276,6 +75920,8 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageIntent.automation.routes': eventAssistanceMessageIntentAutomationRoutes,
     'eventAssistanceMessageIntent.automation.routes.items.routeId': eventAssistanceMessageIntentAutomationRoutesItemsRouteId,
     'eventAssistanceMessageIntent.automation.routes.items.senderId': eventAssistanceMessageIntentAutomationRoutesItemsSenderId,
+    'eventAssistanceMessageIntent.automation.runtimeBinding.revision': eventAssistanceMessageIntentAutomationRuntimeBindingRevision,
+    'eventAssistanceMessageIntent.automation.runtimeBinding.runtimeId': eventAssistanceMessageIntentAutomationRuntimeBindingRuntimeId,
     'eventAssistanceMessageIntent.automation.settingId': eventAssistanceMessageIntentAutomationSettingId,
     'eventAssistanceMessageIntent.automation.settingRevision': eventAssistanceMessageIntentAutomationSettingRevision,
     'eventAssistanceMessageIntent.body': eventAssistanceMessageIntentBody,
@@ -75366,6 +76012,55 @@ abstract final class CatchContractConstraints {
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
     'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
+    'eventAssistanceRuntimeConfigCallableResponse.operationRevision': eventAssistanceRuntimeConfigCallableResponseOperationRevision,
+    'eventAssistanceRuntimeConfigCallableResponse.outcome': eventAssistanceRuntimeConfigCallableResponseOutcome,
+    'eventAssistanceRuntimeConfigCallableResponse.view.canConfigure': eventAssistanceRuntimeConfigCallableResponseViewCanConfigure,
+    'eventAssistanceRuntimeConfigCallableResponse.view.context.eventId': eventAssistanceRuntimeConfigCallableResponseViewContextEventId,
+    'eventAssistanceRuntimeConfigCallableResponse.view.context.mode': eventAssistanceRuntimeConfigCallableResponseViewContextMode,
+    'eventAssistanceRuntimeConfigCallableResponse.view.context.organizerId': eventAssistanceRuntimeConfigCallableResponseViewContextOrganizerId,
+    'eventAssistanceRuntimeConfigCallableResponse.view.eventEnd': eventAssistanceRuntimeConfigCallableResponseViewEventEnd,
+    'eventAssistanceRuntimeConfigCallableResponse.view.revision': eventAssistanceRuntimeConfigCallableResponseViewRevision,
+    'eventAssistanceRuntimeConfigCallableResponse.view.serverTime': eventAssistanceRuntimeConfigCallableResponseViewServerTime,
+    'eventAssistanceRuntimeConfigCallableResponse.view.sourceHash': eventAssistanceRuntimeConfigCallableResponseViewSourceHash,
+    'eventAssistanceRuntimeConfigCallableResponse.view.status': eventAssistanceRuntimeConfigCallableResponseViewStatus,
+    'eventAssistanceRuntimeConfigDocument.configuration.expiresAt': eventAssistanceRuntimeConfigDocumentConfigurationExpiresAt,
+    'eventAssistanceRuntimeConfigDocument.configuration.maxEvaluations': eventAssistanceRuntimeConfigDocumentConfigurationMaxEvaluations,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.maxAttempts': eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMaxAttempts,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.maxAttemptsPerRoute': eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMaxAttemptsPerRoute,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.deliveryPolicy.minimumRetrySeconds': eventAssistanceRuntimeConfigDocumentConfigurationOptionsDeliveryPolicyMinimumRetrySeconds,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoices,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.label': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsLabel,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.checkpointId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetCheckpointId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.groupId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetGroupId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.itineraryId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetItineraryId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.kind': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetKind,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.lateEntry': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetLateEntry,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.placeId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetPlaceId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.routeId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetRouteId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.laterChoices.items.target.stopId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsLaterChoicesItemsTargetStopId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.responseDeadline': eventAssistanceRuntimeConfigDocumentConfigurationOptionsResponseDeadline,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.routes': eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutes,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.routes.items.routeId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutesItemsRouteId,
+    'eventAssistanceRuntimeConfigDocument.configuration.options.routes.items.senderId': eventAssistanceRuntimeConfigDocumentConfigurationOptionsRoutesItemsSenderId,
+    'eventAssistanceRuntimeConfigDocument.context.eventId': eventAssistanceRuntimeConfigDocumentContextEventId,
+    'eventAssistanceRuntimeConfigDocument.context.mode': eventAssistanceRuntimeConfigDocumentContextMode,
+    'eventAssistanceRuntimeConfigDocument.context.organizerId': eventAssistanceRuntimeConfigDocumentContextOrganizerId,
+    'eventAssistanceRuntimeConfigDocument.createdAt': eventAssistanceRuntimeConfigDocumentCreatedAt,
+    'eventAssistanceRuntimeConfigDocument.revision': eventAssistanceRuntimeConfigDocumentRevision,
+    'eventAssistanceRuntimeConfigDocument.runtimeId': eventAssistanceRuntimeConfigDocumentRuntimeId,
+    'eventAssistanceRuntimeConfigDocument.schemaVersion': eventAssistanceRuntimeConfigDocumentSchemaVersion,
+    'eventAssistanceRuntimeConfigDocument.sourceGeneration': eventAssistanceRuntimeConfigDocumentSourceGeneration,
+    'eventAssistanceRuntimeConfigDocument.sourceHash': eventAssistanceRuntimeConfigDocumentSourceHash,
+    'eventAssistanceRuntimeConfigDocument.status': eventAssistanceRuntimeConfigDocumentStatus,
+    'eventAssistanceRuntimeConfigDocument.updatedAt': eventAssistanceRuntimeConfigDocumentUpdatedAt,
+    'eventAssistanceRuntimeConfigDocument.updatedBy': eventAssistanceRuntimeConfigDocumentUpdatedBy,
+    'eventAssistanceRuntimeConfigDocument.workflowKind': eventAssistanceRuntimeConfigDocumentWorkflowKind,
+    'eventAssistanceRuntimeConfigReceiptDocument.createdAt': eventAssistanceRuntimeConfigReceiptDocumentCreatedAt,
+    'eventAssistanceRuntimeConfigReceiptDocument.receiptId': eventAssistanceRuntimeConfigReceiptDocumentReceiptId,
+    'eventAssistanceRuntimeConfigReceiptDocument.requestHash': eventAssistanceRuntimeConfigReceiptDocumentRequestHash,
+    'eventAssistanceRuntimeConfigReceiptDocument.revision': eventAssistanceRuntimeConfigReceiptDocumentRevision,
+    'eventAssistanceRuntimeConfigReceiptDocument.runtimeId': eventAssistanceRuntimeConfigReceiptDocumentRuntimeId,
+    'eventAssistanceRuntimeConfigReceiptDocument.sourceGeneration': eventAssistanceRuntimeConfigReceiptDocumentSourceGeneration,
     'eventAssistanceSettingCallableResponse.operationRevision': eventAssistanceSettingCallableResponseOperationRevision,
     'eventAssistanceSettingCallableResponse.outcome': eventAssistanceSettingCallableResponseOutcome,
     'eventAssistanceSettingCallableResponse.view.context.eventId': eventAssistanceSettingCallableResponseViewContextEventId,
@@ -77531,6 +78226,9 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceParticipationCallablePayload.context.eventId': getEventAssistanceParticipationCallablePayloadContextEventId,
     'getEventAssistanceParticipationCallablePayload.context.mode': getEventAssistanceParticipationCallablePayloadContextMode,
     'getEventAssistanceParticipationCallablePayload.context.organizerId': getEventAssistanceParticipationCallablePayloadContextOrganizerId,
+    'getEventAssistanceRuntimeConfigCallablePayload.context.eventId': getEventAssistanceRuntimeConfigCallablePayloadContextEventId,
+    'getEventAssistanceRuntimeConfigCallablePayload.context.mode': getEventAssistanceRuntimeConfigCallablePayloadContextMode,
+    'getEventAssistanceRuntimeConfigCallablePayload.context.organizerId': getEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId,
     'getEventAssistanceSettingCallablePayload.context.eventId': getEventAssistanceSettingCallablePayloadContextEventId,
     'getEventAssistanceSettingCallablePayload.context.mode': getEventAssistanceSettingCallablePayloadContextMode,
     'getEventAssistanceSettingCallablePayload.context.organizerId': getEventAssistanceSettingCallablePayloadContextOrganizerId,
@@ -81880,6 +82578,32 @@ abstract final class CatchContractConstraints {
     'setEventAssistanceParticipationCallablePayload.command.payload.expectedParticipationRevision': setEventAssistanceParticipationCallablePayloadCommandPayloadExpectedParticipationRevision,
     'setEventAssistanceParticipationCallablePayload.command.payload.state': setEventAssistanceParticipationCallablePayloadCommandPayloadState,
     'setEventAssistanceParticipationCallablePayload.expectedSourceHash': setEventAssistanceParticipationCallablePayloadExpectedSourceHash,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.expiresAt': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationExpiresAt,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.maxEvaluations': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationMaxEvaluations,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.maxAttempts': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMaxAttempts,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.maxAttemptsPerRoute': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMaxAttemptsPerRoute,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.deliveryPolicy.minimumRetrySeconds': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsDeliveryPolicyMinimumRetrySeconds,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoices,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.label': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsLabel,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.checkpointId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetCheckpointId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.groupId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetGroupId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.itineraryId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetItineraryId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.kind': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetKind,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.lateEntry': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetLateEntry,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.placeId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetPlaceId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.routeId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetRouteId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.laterChoices.items.target.stopId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsLaterChoicesItemsTargetStopId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.responseDeadline': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsResponseDeadline,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutes,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.routeId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsRouteId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.senderId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsSenderId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.kind': setEventAssistanceRuntimeConfigCallablePayloadCommandKind,
+    'setEventAssistanceRuntimeConfigCallablePayload.context.eventId': setEventAssistanceRuntimeConfigCallablePayloadContextEventId,
+    'setEventAssistanceRuntimeConfigCallablePayload.context.mode': setEventAssistanceRuntimeConfigCallablePayloadContextMode,
+    'setEventAssistanceRuntimeConfigCallablePayload.context.organizerId': setEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId,
+    'setEventAssistanceRuntimeConfigCallablePayload.expectedRevision': setEventAssistanceRuntimeConfigCallablePayloadExpectedRevision,
+    'setEventAssistanceRuntimeConfigCallablePayload.expectedSourceHash': setEventAssistanceRuntimeConfigCallablePayloadExpectedSourceHash,
+    'setEventAssistanceRuntimeConfigCallablePayload.requestId': setEventAssistanceRuntimeConfigCallablePayloadRequestId,
     'setEventAssistanceSettingCallablePayload.context.eventId': setEventAssistanceSettingCallablePayloadContextEventId,
     'setEventAssistanceSettingCallablePayload.context.mode': setEventAssistanceSettingCallablePayloadContextMode,
     'setEventAssistanceSettingCallablePayload.context.organizerId': setEventAssistanceSettingCallablePayloadContextOrganizerId,

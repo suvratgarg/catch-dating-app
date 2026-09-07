@@ -702,6 +702,25 @@ const schemaEventAssistanceMessageIntentSchema = <String, Object?>{
                 },
               ],
             },
+            'runtimeBinding': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'runtimeId',
+                'revision',
+              ],
+              'properties': <String, Object?>{
+                'runtimeId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^runtime:lateJoin:[a-f0-9]{64}\$',
+                },
+                'revision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
           },
         },
       },

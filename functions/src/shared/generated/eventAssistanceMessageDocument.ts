@@ -202,6 +202,10 @@ export type EventAssistanceMessageDocument = {
               }
           )[];
           responseDeadline: number | null;
+          runtimeBinding?: {
+            runtimeId: string;
+            revision: number;
+          };
         };
       }
     | {

@@ -89,6 +89,8 @@ export const onAssistanceRuntimeChanged = sourceTrigger("eventSuccessPlans");
 export const onAssistanceGuestChanged = sourceTrigger("eventAssistanceGuests");
 export const onAssistanceSettingChanged = sourceTrigger(
   "eventAssistanceSettings");
+export const onAssistanceRuntimeConfigChanged = sourceTrigger(
+  "eventAssistanceRuntimeConfigs");
 export const onAssistanceProgressChanged = sourceTrigger(
   "eventAssistanceGroupProgress");
 export const onAssistanceMembershipChanged = sourceTrigger(

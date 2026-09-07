@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.13.0
+version: 1.14.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -594,6 +594,11 @@ counts entries into host review; neither counter measures provider delivery.
 evaluation or wake and releases it afterward. Its runtime marker rejects the
 frozen shadow CLI projection; the registered CLI manifest remains shadow-only.
 There is no public enrollment callable or provider invocation in this worker.
+Scheduled evaluation requires the manager-owned runtime id/revision binding
+described in [Event Success](event_success.md#event-automation-permission).
+Bound initialization verifies the complete configuration; pausing or replacing
+it withholds publication and queued provider claims. The binding does not
+reset the participation episode, messaging history or delivery budgets.
 
 ### Source changes and due-work recovery
 
@@ -604,9 +609,10 @@ CloudEvent delivery identity; the domain event id lives in `scope.context`.
 Repeated delivery reuses the same work. Source payloads only request a fresh
 evaluation and cannot supply authoritative domain facts or sender permission.
 
-The eight source triggers cover relevant event configuration/lifecycle,
+The nine source triggers cover relevant event configuration/lifecycle,
 roster/check-in, live plan status, participation/replies, late-join settings,
-confirmed group progress, membership and message evidence. Owner or scope
+confirmed group progress, membership, runtime permission and message evidence.
+Owner or scope
 changes wake both previous and current enrolled scopes. Unrelated event
 counters and rehearsal state create no work. No-target checks avoid creating
 source runs when no live guest episodes have been enrolled; a newly enrolled
@@ -626,12 +632,13 @@ explicit review items with failed ids retained; expiry closes unfinished work.
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
 `evaluateDueEventAssistanceWork` scheduler recovers at most 10 source items and
 30 guest items per invocation; one failure does not skip the other selected
-items. Future due times remain saved until reached. All eight source triggers,
+items. Future due times remain saved until reached. All nine source triggers,
 the work-item trigger and the scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.
 
-Manager-authorized enrollment/reconfiguration, readiness-change signals for
+Manager-owned configuration and pause are implemented separately from guest
+enrollment. Durable roster enrollment/rebinding, readiness-change signals for
 consent/sender/template/budget changes, provider dispatch coordination and Host
 queue projections remain integration work. Activating the dormant functions
 also requires the corresponding operating-budget and delivery configuration.

@@ -7,11 +7,17 @@ import {EventMessageRouteSelection, readEventMessageContactability} from
   "./messageContactability";
 import {evaluateLateJoin} from "./lateJoin";
 import type {MessageRecord} from "./messageOutbox";
+import type {LateJoinMessageOptions} from "./messageProtocol";
+import {RuntimeBinding, RuntimeConfiguration, readRuntimeConfigAuthority} from
+  "./runtimeConfigRecords";
 
-/** Runtime choices; never accept channel or deadline authority from clients. */
+/** Runtime choices; sender eligibility still comes from authoritative facts. */
 export interface LateJoinEvaluationOptions {
   routes: readonly EventMessageRouteSelection[];
   responseDeadline: number | null;
+  runtimeBinding?: RuntimeBinding;
+  deliveryPolicy?: LateJoinMessageOptions["deliveryPolicy"];
+  laterChoices?: LateJoinMessageOptions["laterChoices"];
 }
 
 /**
@@ -21,6 +27,28 @@ export interface LateJoinEvaluationOptions {
 export async function readLiveLateJoinEvaluation(db: Firestore, tx: Transaction,
   scope: LateJoinSourceScope, options: LateJoinEvaluationOptions, now: number,
   currentIntent?: MessageRecord["intent"]) {
+  let runtimeConfiguration: RuntimeConfiguration | null = null;
+  if (options.runtimeBinding) {
+    const authority = await readRuntimeConfigAuthority(db, tx, scope.context,
+      options.runtimeBinding, now);
+    if (authority.kind === "unavailable") {
+      return {kind: "runtimeUnavailable" as const, reason: authority.reason};
+    }
+    runtimeConfiguration = authority.configuration;
+    // Final dispatch uses an immutable already-published intent. Its runtime
+    // revision binds the custom choice configuration; publication compares
+    // those choices to the reviewed configuration before creating the intent.
+    const laterChoices = currentIntent ?
+      runtimeConfiguration.options.laterChoices : options.laterChoices;
+    if (!options.deliveryPolicy || operationContentHash({
+      routes: options.routes, responseDeadline: options.responseDeadline,
+      deliveryPolicy: options.deliveryPolicy,
+      ...(laterChoices ? {laterChoices} : {}),
+    }) !== operationContentHash(runtimeConfiguration.options)) {
+      return {kind: "runtimeUnavailable" as const,
+        reason: "configurationChanged" as const};
+    }
+  }
   const source = await readLateJoinSource(db, tx, scope, now);
   if (source.kind === "notReady") {
     return {kind: "sourceNotReady" as const, source};
@@ -43,6 +71,8 @@ export async function readLiveLateJoinEvaluation(db: Firestore, tx: Transaction,
   return {kind: "evaluated" as const, input, decision: evaluateLateJoin(input),
     binding: {groupId: source.groupId, settingId: source.settingId,
       settingRevision: source.settingRevision},
-    routes, sourceHash: operationContentHash([source.sourceHash,
-      history.evidenceHash, routes, options.responseDeadline])};
+    routes, runtimeConfiguration,
+    sourceHash: operationContentHash([source.sourceHash,
+      history.evidenceHash, routes, options.responseDeadline,
+      options.runtimeBinding ?? null])};
 }

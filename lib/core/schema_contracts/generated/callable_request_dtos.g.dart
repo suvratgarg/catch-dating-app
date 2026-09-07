@@ -107,6 +107,7 @@ export 'callables/get_event_assistance_group_staff_callable_request.g.dart';
 export 'callables/get_event_assistance_guest_view_callable_request.g.dart';
 export 'callables/get_event_assistance_membership_callable_request.g.dart';
 export 'callables/get_event_assistance_participation_callable_request.g.dart';
+export 'callables/get_event_assistance_runtime_config_callable_request.g.dart';
 export 'callables/get_event_assistance_setting_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_preference_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_withdrawal_callable_request.g.dart';

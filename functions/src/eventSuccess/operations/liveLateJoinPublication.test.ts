@@ -12,7 +12,7 @@ import {messageAllowsSender} from "./lateJoinDispatchPolicy";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {guestCollections, parseGuest, guestIdentity} from "./guestRecords";
 import {readLateJoinMessageHistory} from "./lateJoinMessageHistory";
-import {setup} from "./liveLateJoinTestHarness";
+import {setupRuntimePublication as setup} from "./runtimeConfigTestHarness";
 
 test("automatic publication reuses immutable content after clock advance",
   async () => {

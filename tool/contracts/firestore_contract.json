@@ -459,7 +459,9 @@
       "typescriptInterface": "EventRehearsalDocument",
       "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
       "owner": "event rehearsal callables and hourly expiry",
       "read": "server only; organizer managers and public guest slots receive bounded callable projections",
       "write": "server only",
@@ -489,7 +491,9 @@
       "typescriptInterface": "EventRehearsalActorDocument",
       "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
       "owner": "event rehearsal callables",
       "read": "server only; bounded callable projections only",
       "write": "server only",
@@ -515,7 +519,9 @@
       "typescriptInterface": "EventRehearsalActionDocument",
       "dartModel": "lib/event_rehearsal/domain/event_rehearsal.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
       "owner": "event rehearsal callables",
       "read": "server only; Host bootstrap and reproduction export return bounded history",
       "write": "server only with deterministic client-action deduplication",
@@ -535,7 +541,9 @@
       "typescriptInterface": "EventRehearsalGuestViewDocument",
       "dartModel": null,
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "rulesTestNames": ["keeps all dress rehearsal collections callable-only"],
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
       "owner": "public event rehearsal guest callables",
       "read": "server only",
       "write": "server only; hashed slot tokens bind one browser instance to one synthetic actor",
@@ -581,7 +589,9 @@
       "owner": "setEventAttendeeAttendance callable",
       "read": "server only; replay result is returned by the callable",
       "write": "server only",
-      "exportedFunctions": ["setEventAttendeeAttendance"],
+      "exportedFunctions": [
+        "setEventAttendeeAttendance"
+      ],
       "migrationNotes": [
         "Thirty-day TTL receipts make absolute Host attendance retries idempotent without retaining a second roster."
       ]
@@ -1039,8 +1049,16 @@
       "owner": "organizer booking-provider connection callables",
       "read": "server only; manager setup projection is callable-owned",
       "write": "server only; credentials remain in Secret Manager",
-      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "listOrganizerLumaEvents", "syncOrganizerProviderEvent"],
-      "migrationNotes": ["Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."]
+      "exportedFunctions": [
+        "connectOrganizerLumaProvider",
+        "disconnectOrganizerProvider",
+        "getOrganizerProviderSetup",
+        "listOrganizerLumaEvents",
+        "syncOrganizerProviderEvent"
+      ],
+      "migrationNotes": [
+        "Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."
+      ]
     },
     {
       "id": "externalEventMappings",
@@ -1052,8 +1070,15 @@
       "owner": "external event provider mapping and reconciliation callables",
       "read": "server only; manager setup projection is callable-owned",
       "write": "server only",
-      "exportedFunctions": ["connectOrganizerLumaProvider", "disconnectOrganizerProvider", "getOrganizerProviderSetup", "syncOrganizerProviderEvent"],
-      "migrationNotes": ["One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."]
+      "exportedFunctions": [
+        "connectOrganizerLumaProvider",
+        "disconnectOrganizerProvider",
+        "getOrganizerProviderSetup",
+        "syncOrganizerProviderEvent"
+      ],
+      "migrationNotes": [
+        "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation."
+      ]
     },
     {
       "id": "providerSyncRuns",
@@ -1065,8 +1090,12 @@
       "owner": "external provider roster reconciliation callable",
       "read": "server only; sanitized result is callable-owned",
       "write": "server only",
-      "exportedFunctions": ["syncOrganizerProviderEvent"],
-      "migrationNotes": ["Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."]
+      "exportedFunctions": [
+        "syncOrganizerProviderEvent"
+      ],
+      "migrationNotes": [
+        "Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."
+      ]
     },
     {
       "id": "eventVenueSessions",
@@ -1078,7 +1107,9 @@
       "owner": "createEventVenueSession callable",
       "read": "server only; signed token is returned by the callable",
       "write": "server only",
-      "exportedFunctions": ["createEventVenueSession"],
+      "exportedFunctions": [
+        "createEventVenueSession"
+      ],
       "migrationNotes": [
         "Short TTL documents back the live Host QR and cannot be used as printable attendance authority."
       ]
@@ -1168,7 +1199,9 @@
       "owner": "Event Success Host late-arrival callable",
       "read": "attendee own deterministic eventId_uid document or authorized event Host; no list",
       "write": "server only",
-      "exportedFunctions": ["resolveEventSuccessLateArrival"],
+      "exportedFunctions": [
+        "resolveEventSuccessLateArrival"
+      ],
       "migrationNotes": [
         "The resolution may patch only a Host-only unpublished draft; published assignments are immutable."
       ]
@@ -1200,7 +1233,9 @@
       "owner": "importEventAttendees callable",
       "read": "authorized event host only",
       "write": "server only",
-      "exportedFunctions": ["importEventAttendees"],
+      "exportedFunctions": [
+        "importEventAttendees"
+      ],
       "migrationNotes": [
         "Stores bounded idempotency and audit metadata, never the uploaded file."
       ]
@@ -1453,7 +1488,9 @@
       "owner": "recordEventInviteLinkOpen",
       "read": "server only; Hosts receive aggregate link counts",
       "write": "server only",
-      "exportedFunctions": ["recordEventInviteLinkOpen"],
+      "exportedFunctions": [
+        "recordEventInviteLinkOpen"
+      ],
       "migrationNotes": [
         "Short-lived deduplication evidence expires by TTL; no recipient identity is inferred from an open."
       ]
@@ -1468,7 +1505,9 @@
       "owner": "recordEventShareIntent",
       "read": "server only; Hosts receive aggregate link counts",
       "write": "server only",
-      "exportedFunctions": ["recordEventShareIntent"],
+      "exportedFunctions": [
+        "recordEventShareIntent"
+      ],
       "migrationNotes": [
         "A share intent records only a Catch-owned share action and expires by TTL; it does not assert delivery or recipient identity."
       ]
@@ -1483,7 +1522,9 @@
       "owner": "verified event fact attribution projection",
       "read": "server only; Hosts receive authorized aggregates and traits",
       "write": "server only",
-      "exportedFunctions": ["onOrganizerContactEventEdgeInviteAttributed"],
+      "exportedFunctions": [
+        "onOrganizerContactEventEdgeInviteAttributed"
+      ],
       "migrationNotes": [
         "Immutable deterministic credit and reversal facts use one primary invite link per attendee fact; self-use never creates referral credit.",
         "High-impact advocate status requires three referred verified check-ins during the trailing 365 days."
@@ -1880,7 +1921,9 @@
       "owner": "event staff group duties",
       "read": "server only",
       "write": "server only",
-      "exportedFunctions": ["setEventAssistanceGroupStaff"]
+      "exportedFunctions": [
+        "setEventAssistanceGroupStaff"
+      ]
     },
     {
       "id": "eventStaffGrants",
@@ -1890,7 +1933,14 @@
       "owner": "event staff access callables",
       "read": "server only",
       "write": "server only",
-      "exportedFunctions": ["getEventOperatorAccess", "listEventStaff", "grantEventStaff", "revokeEventStaff", "getEventAssistanceGroupStaff", "setEventAssistanceGroupStaff"]
+      "exportedFunctions": [
+        "getEventOperatorAccess",
+        "listEventStaff",
+        "grantEventStaff",
+        "revokeEventStaff",
+        "getEventAssistanceGroupStaff",
+        "setEventAssistanceGroupStaff"
+      ]
     },
     {
       "id": "eventAssistanceParticipationReceipts",
@@ -1900,7 +1950,9 @@
       "owner": "event-assistance participation command",
       "read": "server only",
       "write": "server only",
-      "exportedFunctions": ["setEventAssistanceParticipation"]
+      "exportedFunctions": [
+        "setEventAssistanceParticipation"
+      ]
     },
     {
       "id": "eventAssistanceSettingReceipts",
@@ -1912,6 +1964,32 @@
       "write": "server only",
       "exportedFunctions": [
         "setEventAssistanceSetting"
+      ]
+    },
+    {
+      "id": "eventAssistanceRuntimeConfigs",
+      "path": "eventAssistanceRuntimeConfigs/{runtimeId}",
+      "rulesMatch": "/eventAssistanceRuntimeConfigs/{runtimeId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance runtime configuration",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceRuntimeConfig",
+        "setEventAssistanceRuntimeConfig"
+      ]
+    },
+    {
+      "id": "eventAssistanceRuntimeConfigReceipts",
+      "path": "eventAssistanceRuntimeConfigReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceRuntimeConfigReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance runtime configuration",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceRuntimeConfig",
+        "setEventAssistanceRuntimeConfig"
       ]
     },
     {

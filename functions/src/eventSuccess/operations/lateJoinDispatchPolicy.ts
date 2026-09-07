@@ -22,9 +22,11 @@ export async function readLateJoinDispatchPolicy(db: Firestore, tx: Transaction,
   const binding = intent.automation;
   const stop = (): DispatchGate => ({kind: "stop", reason: "hostStopped"});
   if (intent.context.mode !== "live" ||
+      !binding.runtimeBinding ||
       binding.policyVersion !== ASSISTANCE_POLICY_VERSION) return stop();
   const evaluation = await readLiveLateJoinEvaluation(db, tx,
-    {context: intent.context, attendeeId: intent.attendeeId}, binding, now,
+    {context: intent.context, attendeeId: intent.attendeeId},
+    {...binding, deliveryPolicy: intent.deliveryPolicy}, now,
     intent);
   if (evaluation.kind !== "evaluated" ||
       operationContentHash(evaluation.binding) !== operationContentHash({
@@ -37,6 +39,7 @@ export async function readLateJoinDispatchPolicy(db: Firestore, tx: Transaction,
         operationContentHash(intent.guidance)) return stop();
   const {input} = evaluation;
   const validUntil = Math.min(now + 30_000, intent.expiresAt,
+    evaluation.runtimeConfiguration?.expiresAt ?? intent.expiresAt,
     input.policy.cutoff.kind === "time" ? input.policy.cutoff.at :
       intent.expiresAt,
     input.policy.unanswered === "hostReviewAtDeadline" &&

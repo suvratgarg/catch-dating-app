@@ -58,6 +58,7 @@ function scopeFor(collection: Collection, documentId: string,
     attendeeId = collection === "eventAttendees" ? documentId : null;
     break;
   case "eventAssistanceSettings":
+  case "eventAssistanceRuntimeConfigs":
     if (value.workflowKind !== "lateJoin") return null;
     attendeeId = null;
     break;
@@ -103,6 +104,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventAssistanceGroupProgress":
   case "eventAssistanceMemberships":
   case "eventAssistanceMessages": fields = Object.keys(value); break;
+  case "eventAssistanceRuntimeConfigs": fields = Object.keys(value); break;
   default: return unhandled(collection);
   }
   // SDK timestamps are data here, normalized for comparison only. The source

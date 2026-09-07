@@ -901,6 +901,31 @@ const schemaEventAssistanceLiveWorkSchema = <String, Object?>{
                     },
                   },
                 },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'reason',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'runtimeUnavailable',
+                    },
+                    'reason': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'missing',
+                        'paused',
+                        'configurationChanged',
+                        'sourceChanged',
+                        'expired',
+                        'eventClosed',
+                      ],
+                    },
+                  },
+                },
               ],
             },
             <String, Object?>{
@@ -938,6 +963,25 @@ const schemaEventAssistanceLiveWorkSchema = <String, Object?>{
               'const': null,
             },
           ],
+        },
+      },
+    },
+    'runtimeBinding': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'runtimeId',
+        'revision',
+      ],
+      'properties': <String, Object?>{
+        'runtimeId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^runtime:lateJoin:[a-f0-9]{64}\$',
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 9007199254740991,
         },
       },
     },

@@ -95,6 +95,15 @@ export function liveWorkProjection(observation: Observation | null) {
     }
   case "historyUnavailable":
     return state("host_review", "waiting", observation.reason);
+  case "runtimeUnavailable":
+    if (observation.reason === "paused") {
+      return state("waiting", "waiting", "runtimePaused");
+    }
+    if (observation.reason === "expired" ||
+        observation.reason === "eventClosed") {
+      return state("finished", "terminal", observation.reason, "expired");
+    }
+    return state("host_review", "waiting", observation.reason);
   case "responseDeadlineMissing":
   case "evaluationLimit":
     return state("host_review", "waiting", observation.kind);

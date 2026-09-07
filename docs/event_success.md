@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.29.0
+version: 1.30.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -321,9 +321,46 @@ changes enqueue bounded resumable fanout; work-item and scheduled handlers
 advance saved due work. These handlers remain dormant in deployment policy.
 See [Operations runtime](operations_platform.md#durable-live-assistance-work)
 for execution limits and the source-change lifecycle. Manager-authorized
-enrollment, remaining readiness signals, provider dispatch coordination and
+enrollment/rebinding, remaining readiness signals, provider dispatch coordination and
 the broader Host/rehearsal workflow remain separate integration work. A
 publication result does not assert provider submission or delivery.
+
+### Event automation permission
+
+`getEventAssistanceRuntimeConfig` and `setEventAssistanceRuntimeConfig` give
+organizer managers a single event-scoped late-join execution configuration.
+This complements the 46 typed policy settings: policy defines the allowed
+behavior, while runtime configuration selects ordered sender routes, explicit
+response deadline, retry policy, optional later joining choices, work expiry
+and evaluation limit. A ready provider, consent or enabled policy is not implied
+by saving the configuration. Other workflow executors remain unimplemented.
+
+The command is a strict configure/pause union. Both operations re-read manager
+authority and the reviewed event source, check the runtime revision and commit
+the record with an immutable request receipt. Configuration must expire within
+the open event; a paused record can retain its prior configuration. Exact
+authorized retries return the original operation revision and current state,
+so replaying an old configure cannot undo a later pause. Event replacement,
+schedule or format changes require fresh review. Plan completion, cancellation
+or expiry withholds execution without manufacturing guest attendance.
+
+The private `eventAssistanceRuntimeConfigs` and
+`eventAssistanceRuntimeConfigReceipts` collections allow no client reads/writes;
+callables expose the manager projection. A configured response means permission
+was saved, not that guests were enrolled or messages sent. The per-event roster
+enrollment/rebinding job and Host controls remain the next integration step.
+
+Scheduled guest evaluation requires a runtime id/revision binding. Bound work
+initialization verifies the complete configuration. Publication copies that
+binding to the immutable message; reservation and final dispatch re-read the
+current runtime in the same transaction. Pause, replacement, wrong event,
+changed source or expiry withholds new publication/claims, and permits cannot
+outlive configuration expiry. Automatic messages without a runtime binding
+cannot claim provider dispatch; trusted store/publisher fixtures without a
+binding also cannot become scheduler authority; expiry cleanup remains allowed.
+A dormant configuration-change trigger wakes
+existing enrolled work; saving setup does not create a participation episode,
+reset guest history, grant consent or invoke a provider.
 
 ### Confirmed group progress
 

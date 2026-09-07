@@ -779,6 +779,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRuntimeConfigs/{runtimeId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRuntimeConfigReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceSettingReceipts/{receiptId} {
       allow read, write: if false;
     }

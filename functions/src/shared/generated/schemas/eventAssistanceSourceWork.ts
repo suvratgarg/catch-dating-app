@@ -59,7 +59,8 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
             "eventAssistanceSettings",
             "eventAssistanceGroupProgress",
             "eventAssistanceMemberships",
-            "eventAssistanceMessages"
+            "eventAssistanceMessages",
+            "eventAssistanceRuntimeConfigs"
           ]
         },
         "documentId": {

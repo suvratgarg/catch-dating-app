@@ -7280,7 +7280,8 @@ const model = {
                 "eventAssistanceSettings",
                 "eventAssistanceGroupProgress",
                 "eventAssistanceMemberships",
-                "eventAssistanceMessages"
+                "eventAssistanceMessages",
+                "eventAssistanceRuntimeConfigs"
               ]
             },
             "documentId": {
@@ -15496,6 +15497,31 @@ const model = {
                           "const": "evaluationLimit"
                         }
                       }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "runtimeUnavailable"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "missing",
+                            "paused",
+                            "configurationChanged",
+                            "sourceChanged",
+                            "expired",
+                            "eventClosed"
+                          ]
+                        }
+                      }
                     }
                   ]
                 },
@@ -15530,6 +15556,9 @@ const model = {
               ]
             }
           }
+        },
+        "runtimeBinding": {
+          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
         }
       }
     },
@@ -17336,6 +17365,28 @@ const model = {
                   "const": null
                 }
               ]
+            },
+            "runtimeBinding": {
+              "$ref": "#/definitions/AssistanceRuntimeBinding"
+            }
+          }
+        },
+        "AssistanceRuntimeBinding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "runtimeId",
+            "revision"
+          ],
+          "properties": {
+            "runtimeId": {
+              "type": "string",
+              "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
             }
           }
         }

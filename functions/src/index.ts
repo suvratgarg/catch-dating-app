@@ -90,9 +90,12 @@ export {
   onAssistanceEventChanged, onAssistanceRosterChanged,
   onAssistanceRuntimeChanged, onAssistanceGuestChanged,
   onAssistanceSettingChanged, onAssistanceProgressChanged,
+  onAssistanceRuntimeConfigChanged,
   onAssistanceMembershipChanged, onAssistanceMessageChanged,
   onAssistanceWorkChanged, evaluateDueEventAssistanceWork,
 } from "./eventSuccess/operations/liveWorkTriggers";
+export {getEventAssistanceRuntimeConfig, setEventAssistanceRuntimeConfig} from
+  "./eventSuccess/operations/runtimeConfigHandlers";
 export {getEventWhatsappPreference, setEventWhatsappPreference} from
   "./eventSuccess/operations/whatsappPreferenceHandlers";
 export {

@@ -699,6 +699,25 @@ export const eventAssistanceMessageIntentSchema: Record<string, unknown> = {
                   "const": null
                 }
               ]
+            },
+            "runtimeBinding": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "runtimeId",
+                "revision"
+              ],
+              "properties": {
+                "runtimeId": {
+                  "type": "string",
+                  "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
             }
           }
         }

@@ -898,6 +898,31 @@ export const eventAssistanceLiveWorkSchema: Record<string, unknown> = {
                       "const": "evaluationLimit"
                     }
                   }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "runtimeUnavailable"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "missing",
+                        "paused",
+                        "configurationChanged",
+                        "sourceChanged",
+                        "expired",
+                        "eventClosed"
+                      ]
+                    }
+                  }
                 }
               ]
             },
@@ -936,6 +961,25 @@ export const eventAssistanceLiveWorkSchema: Record<string, unknown> = {
               "const": null
             }
           ]
+        }
+      }
+    },
+    "runtimeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimeId",
+        "revision"
+      ],
+      "properties": {
+        "runtimeId": {
+          "type": "string",
+          "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         }
       }
     }

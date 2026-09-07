@@ -13,6 +13,7 @@ import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {guestCollections, guestIdentity} from "./guestRecords";
 import {setup} from "./liveLateJoinTestHarness";
 import {start} from "./whatsappTestHarness";
+import {configureRuntime} from "./runtimeConfigTestHarness";
 
 async function workHarness(db?: Firestore) {
   const h = await setup(db);
@@ -145,11 +146,14 @@ test("cooldown and unanswered deadlines persist exact future evaluation times",
       unanswered: "hostReviewAtDeadline"}});
     const input = {...h.input, options: {...h.options,
       responseDeadline: start + 900_000}};
-    await h.work.start(input);
+    const runtime = await configureRuntime(h, {options: input.options,
+      expiresAt: input.expiresAt, maxEvaluations: input.maxEvaluations});
+    await h.work.start({...input, runtimeBinding: runtime.binding});
     const lease = await h.acquire();
     const first = await h.work.evaluate(h.ids.workItemId, 0, lease);
     assert.equal(first.payload.checkpoint.dueAt, start + 900_000);
-    const published = await h.publisher.publish(h.scope, input.options);
+    const published = await h.publisher.publish(h.scope,
+      {...input.options, runtimeBinding: runtime.binding});
     assert.ok(published.kind === "published");
     const delivery = await h.delivery(published);
     assert.equal((await delivery.claim()).kind, "claimed");

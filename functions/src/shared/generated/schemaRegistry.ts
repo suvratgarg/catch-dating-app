@@ -5,6 +5,11 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventAssistanceRuntimeConfigDocumentSchema} from "./schemas/eventAssistanceRuntimeConfigDocument";
+export {eventAssistanceRuntimeConfigReceiptDocumentSchema} from "./schemas/eventAssistanceRuntimeConfigReceiptDocument";
+export {getEventAssistanceRuntimeConfigCallablePayloadSchema} from "./schemas/getEventAssistanceRuntimeConfigInput";
+export {setEventAssistanceRuntimeConfigCallablePayloadSchema} from "./schemas/setEventAssistanceRuntimeConfigInput";
+export {eventAssistanceRuntimeConfigCallableResponseSchema} from "./schemas/eventAssistanceRuntimeConfigOutput";
 export {getEventAssistanceMembershipCallablePayloadSchema} from "./schemas/getEventAssistanceMembershipInput";
 export {transferEventAssistanceGroupCallablePayloadSchema} from "./schemas/transferEventAssistanceGroupInput";
 export {eventAssistanceMembershipCallableResponseSchema} from "./schemas/eventAssistanceMembershipOutput";

@@ -41,7 +41,9 @@ export async function prepareLiveLateJoinPublication(db: Firestore,
     ...(options.laterChoices ? {laterChoices: options.laterChoices} : {}),
   }, {...evaluation.binding, kind: "lateJoin",
     policyVersion: ASSISTANCE_POLICY_VERSION,
-    routes: [...options.routes], responseDeadline: options.responseDeadline});
+    routes: [...options.routes], responseDeadline: options.responseDeadline,
+    ...(options.runtimeBinding ?
+      {runtimeBinding: options.runtimeBinding} : {})});
   if (!candidate) return {kind: "evaluated" as const, evaluation};
   const messageId = assistanceMessageId(candidate);
   const threadId = threadIdentity(candidate);
@@ -64,6 +66,7 @@ export async function prepareLiveLateJoinPublication(db: Firestore,
   const publication = await prepareGuestMessagePublication(db, tx, intent,
     currentThread?.revision ?? null, clock);
   const validUntil = Math.min(now + 30_000, intent.expiresAt,
+    evaluation.runtimeConfiguration?.expiresAt ?? intent.expiresAt,
     evaluation.input.policy.unanswered === "hostReviewAtDeadline" &&
       evaluation.input.guest.intention.kind === "unknown" ?
       options.responseDeadline ?? now : intent.expiresAt);

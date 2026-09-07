@@ -49,7 +49,8 @@
             "eventAssistanceSettings",
             "eventAssistanceGroupProgress",
             "eventAssistanceMemberships",
-            "eventAssistanceMessages"
+            "eventAssistanceMessages",
+            "eventAssistanceRuntimeConfigs"
           ]
         },
         "documentId": {

@@ -193,6 +193,10 @@ export type EventAssistanceMessageIntent =
             }
         )[];
         responseDeadline: number | null;
+        runtimeBinding?: {
+          runtimeId: string;
+          revision: number;
+        };
       };
     }
   | {

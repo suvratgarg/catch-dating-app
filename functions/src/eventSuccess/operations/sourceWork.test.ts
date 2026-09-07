@@ -15,6 +15,7 @@ import {evaluateDueAssistanceWork, processChangedAssistanceWork} from
   "./liveWorkTriggers";
 import {setup} from "./liveLateJoinTestHarness";
 import {start} from "./whatsappTestHarness";
+import {configureRuntime} from "./runtimeConfigTestHarness";
 
 const now = Date.parse("2026-09-07T12:00:00Z");
 async function harness(count = 1, realDb?: Firestore) {
@@ -262,6 +263,8 @@ test("all source collections derive their event or guest scope on deletion",
         attendeeId: "guest"}, attendeeId: "guest"},
       eventAssistanceSettings: {value: {context: h.context,
         workflowKind: "lateJoin"}, attendeeId: null},
+      eventAssistanceRuntimeConfigs: {value: {context: h.context,
+        workflowKind: "lateJoin"}, attendeeId: null},
       eventAssistanceGroupProgress: {value: {context: h.context},
         attendeeId: null},
       eventAssistanceMemberships: {value: {context: h.context,
@@ -335,10 +338,11 @@ test("due orchestration selects saved work and ignores unrelated writes",
 test("roster change wakes the real evaluator and check-in resolves its work",
   async () => {
     const h = await setup();
+    const runtime = await configureRuntime(h);
     const guest = new LiveAssistanceWorkRunner(h.db, () => h.clock.now);
     const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now);
-    const item = await guest.store.start({scope: h.scope, options: h.options,
-      expiresAt: start + 3_600_000, maxEvaluations: 100});
+    const item = await guest.store.start({scope: h.scope,
+      ...runtime.configuration, runtimeBinding: runtime.binding});
     const ports = {guest, source};
     await processChangedAssistanceWork(item.item.workItemId,
       item.item, ports, h.clock.now);

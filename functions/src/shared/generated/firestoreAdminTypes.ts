@@ -537,6 +537,19 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceRuntimeConfigDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceRuntimeConfigReceiptDocument {
+  receiptId: string;
+  runtimeId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  revision: number;
+  createdAt: number;
+}
+
 export interface EventAssistanceMembershipDocument {
   schemaVersion: 1;
   membershipId: string;
@@ -2429,6 +2442,10 @@ export interface EventAssistanceMessageDocument {
               }
           )[];
           responseDeadline: number | null;
+          runtimeBinding?: {
+            runtimeId: string;
+            revision: number;
+          };
         };
       }
     | {

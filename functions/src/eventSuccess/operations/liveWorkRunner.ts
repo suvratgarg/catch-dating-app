@@ -6,6 +6,7 @@ import type {OperationLease} from "../../operations/models";
 import type {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
 import {LiveAssistanceWorkStore} from "./liveWorkStore";
+import {invalidWork} from "./liveWorkRecords";
 
 export type LiveWorkAction = {kind: "evaluate"} |
   {kind: "wake"; signalId: string};
@@ -24,6 +25,13 @@ export class LiveAssistanceWorkRunner {
     Promise<LiveWorkRunResult> {
     // Validate a real live record before creating any lease for its id.
     const initial = await this.store.get(workItemId);
+    // Scheduled execution must carry the manager's saved runtime permission.
+    // Trusted tests and imported old records do not grant that permission.
+    if (action.kind === "evaluate" && !initial.payload.runtimeBinding &&
+        initial.run.status !== "completed" &&
+        this.clock() < initial.payload.expiresAt) {
+      throw invalidWork();
+    }
     if (initial.run.status === "completed" ||
         (action.kind === "evaluate" &&
           initial.payload.checkpoint.dueAt! > this.clock())) {

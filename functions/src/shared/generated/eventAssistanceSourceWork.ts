@@ -19,7 +19,8 @@ export interface EventAssistanceSourceWork {
       | "eventAssistanceSettings"
       | "eventAssistanceGroupProgress"
       | "eventAssistanceMemberships"
-      | "eventAssistanceMessages";
+      | "eventAssistanceMessages"
+      | "eventAssistanceRuntimeConfigs";
     documentId: string;
     occurredAt: number;
   };
