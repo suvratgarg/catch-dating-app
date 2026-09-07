@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.55.0
-updated: 2026-09-07
+version: 1.56.0
+updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -117,6 +117,21 @@ An explicit arrival action restores that physical fact. Host and guest callable
 projections carry connection state separately, with native attention counts and
 the guest connection notice retaining that distinction. The new assistance
 policy/command rehearsal adapter remains separate integration work.
+
+`eventRehearsal/assistanceMessages.ts` now provides pure transitions over the
+existing typed message record for practice outreach, delivery outcomes and
+guest choices. It reuses the live late-join evaluator, message/choice protocol,
+route selection and delivery-evidence ordering. Simulated WhatsApp uncertainty
+holds fallback; confirmed technical non-delivery permits SMS under the same
+backoff and attempt limits. Duplicate replies and receipts retain their prior
+result; conflicting delivery evidence requires Host review. Practice messages,
+attempts and responses require the same rehearsal, virtual event and clock,
+and reject live sender bindings and response sources. An intention response
+does not check anyone in. The caller owns the virtual clock and must commit
+the returned message and its guest effect atomically in rehearsal storage.
+These transitions have no persistence, provider or credential port. Session
+fact assembly, transaction wiring, coach controls and Host/guest presentation
+remain unfinished; this module does not enable them or any real delivery.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,

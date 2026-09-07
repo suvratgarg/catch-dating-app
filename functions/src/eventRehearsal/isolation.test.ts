@@ -17,9 +17,10 @@ const forbiddenLiveCollections = [
 ] as const;
 
 test("rehearsal backend contains no live-domain collection seam", () => {
-  const source = ["engine.ts", "handlers.ts"].map((file) =>
-    readFileSync(resolve(process.cwd(), "src/eventRehearsal", file), "utf8")
-  ).join("\n");
+  const source = ["engine.ts", "handlers.ts", "assistanceMessages.ts"]
+    .map((file) =>
+      readFileSync(resolve(process.cwd(), "src/eventRehearsal", file), "utf8")
+    ).join("\n");
   for (const collection of forbiddenLiveCollections) {
     assert.equal(
       source.includes(`"${collection}"`),
