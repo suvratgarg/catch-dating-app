@@ -3851,6 +3851,29 @@
             }
           },
           {
+            "id": "catch.section.kicker",
+            "symbol": "CatchSectionKicker",
+            "file": "packages/catch_ui/lib/src/components/catch_section_kicker.dart",
+            "summary": "Section-owned heading, count and trailing-action anatomy. Retains header semantics, baseline alignment and the separate trailing lane at large text scales.",
+            "states": [
+              "title-only",
+              "title-count",
+              "title-trailing",
+              "title-count-trailing",
+              "count-only",
+              "trailing-only",
+              "field-section",
+              "large-text"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.section"
+            }
+          },
+          {
             "id": "catch.section.label",
             "symbol": "CatchSectionLabel",
             "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",

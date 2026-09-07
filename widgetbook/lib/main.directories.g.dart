@@ -85,6 +85,8 @@ import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dar
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
     as _widgetbook_workspace_primitives_rail_use_cases;
+import 'package:widgetbook_workspace/primitives/section_anatomy_use_cases.dart'
+    as _widgetbook_workspace_primitives_section_anatomy_use_cases;
 import 'package:widgetbook_workspace/primitives/section_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_section_layout_use_cases;
 import 'package:widgetbook_workspace/primitives/selection_menu_use_cases.dart'
@@ -3930,6 +3932,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSectionFocusSurfaceContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSectionKicker',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Heading count and trailing states',
+                builder:
+                    _widgetbook_workspace_primitives_section_anatomy_use_cases
+                        .sectionKickerStates,
               ),
             ],
           ),

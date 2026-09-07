@@ -165,6 +165,7 @@ export 'src/components/catch_section_field_group.dart';
 export 'src/components/catch_section_focus_surface.dart';
 export 'src/components/catch_section_header.dart';
 export 'src/components/catch_section_header_placement.dart';
+export 'src/components/catch_section_kicker.dart';
 export 'src/components/catch_selection_menu.dart';
 export 'src/components/catch_selection_menu_item.dart';
 export 'src/components/catch_selection_sheet.dart';

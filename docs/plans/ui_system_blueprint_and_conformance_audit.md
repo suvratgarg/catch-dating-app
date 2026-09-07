@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.6
+version: 1.9.7
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1056,6 +1056,13 @@ semantics, motion, and clear-target geometry are unchanged. The obsolete app
 lanes part is deleted; the field control part retains only the disclosure-aware
 controls until the complete field state protocol moves. Existing direct previews
 and goldens continue to cover all three members.
+
+The section kicker becomes a cataloged shared member. All six section heading
+placements use the same extracted renderer, preserving title/count semantics,
+baseline alignment, and the existing separate trailing-action lane at large
+text scales. Its direct preview covers the previously private heading anatomy;
+the section's old helper is deleted. Section body and field-row orchestration
+remain app-side until their dependent field geometry protocol moves.
 
 ### Phase 4 — One registry, binding grammar
 

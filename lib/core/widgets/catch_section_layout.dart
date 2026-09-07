@@ -393,8 +393,7 @@ class CatchSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (hasHeader) ...[
-            _buildCatchSectionKicker(
-              context,
+            CatchSectionKicker(
               text: hasTitle ? displayTitle : null,
               count: hasCount ? displayCount : null,
               trailing: trailing,
@@ -435,8 +434,7 @@ class CatchSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (hasHeader) ...[
-          _buildCatchSectionKicker(
-            context,
+          CatchSectionKicker(
             text: hasTitle ? displayTitle : null,
             count: hasCount ? displayCount : null,
             trailing: trailing,
@@ -504,8 +502,7 @@ class CatchSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildCatchSectionKicker(
-                        context,
+                      CatchSectionKicker(
                         text: hasTitle ? displayTitle : null,
                         count: hasCount ? displayCount : null,
                         trailing: sectionTrailing,
@@ -570,8 +567,7 @@ class CatchSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: CatchFieldTokens.rowHorizontalPadding,
           ),
-          child: _buildCatchSectionKicker(
-            context,
+          child: CatchSectionKicker(
             text: hasTitle ? displayTitle : null,
             count: hasCount ? displayCount : null,
             trailing: sectionTrailing,
@@ -644,8 +640,7 @@ class CatchSection extends StatelessWidget {
                             color: titleColor ?? t.ink,
                           ),
                         )
-                      : _buildCatchSectionKicker(
-                          context,
+                      : CatchSectionKicker(
                           text: displayTitle,
                           count: count,
                           color: titleColor ?? t.ink,
@@ -728,8 +723,7 @@ class CatchSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildCatchSectionKicker(
-                  context,
+                CatchSectionKicker(
                   text: group.title.trim(),
                   count: group.count?.toString().trim(),
                   trailing: group.trailing,
@@ -803,106 +797,4 @@ class CatchSection extends StatelessWidget {
             ? CatchFieldTokens.textLaneInset
             : leadingTextLaneInset);
   }
-}
-
-Widget _buildCatchSectionKicker(
-  BuildContext context, {
-  required String? text,
-  required Color color,
-  Object? count,
-  Widget? trailing,
-  CatchKickerSize size = CatchKickerSize.md,
-}) {
-  final t = CatchTokens.of(context);
-  final displayText = text?.trim();
-  final hasText = displayText != null && displayText.isNotEmpty;
-  final displayCount = count?.toString().trim();
-  final hasCount = displayCount != null && displayCount.isNotEmpty;
-  if (hasText && !hasCount && trailing == null) {
-    return Semantics(
-      header: true,
-      child: CatchKicker(label: displayText, color: color, size: size),
-    );
-  }
-  final header = Row(
-    crossAxisAlignment: CrossAxisAlignment.baseline,
-    textBaseline: TextBaseline.alphabetic,
-    children: [
-      if (hasText)
-        Expanded(
-          child: CatchKicker(label: displayText, color: color, size: size),
-        )
-      else
-        const Spacer(),
-      if (hasCount) ...[
-        if (hasText) const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
-        Text(
-          displayCount,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.end,
-          style: CatchTextStyles.sectionCount(context, color: t.ink3),
-        ),
-      ],
-      if (trailing != null) ...[
-        if (hasText || hasCount)
-          const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
-        DefaultTextStyle.merge(
-          style: CatchTextStyles.sectionCount(context, color: t.ink3),
-          child: trailing,
-        ),
-      ],
-    ],
-  );
-  final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-  final responsiveHeader = largeText && trailing != null
-      ? Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                if (hasText)
-                  Expanded(
-                    child: CatchKicker(
-                      label: displayText,
-                      color: color,
-                      size: size,
-                    ),
-                  )
-                else
-                  const Spacer(),
-                if (hasCount) ...[
-                  if (hasText)
-                    const SizedBox(width: CatchFieldTokens.sectionHeaderGap),
-                  Flexible(
-                    child: Text(
-                      displayCount,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
-                      style: CatchTextStyles.sectionCount(
-                        context,
-                        color: t.ink3,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: CatchSpacing.s2),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: DefaultTextStyle.merge(
-                style: CatchTextStyles.sectionCount(context, color: t.ink3),
-                child: trailing,
-              ),
-            ),
-          ],
-        )
-      : header;
-  return hasText
-      ? Semantics(header: true, child: responsiveHeader)
-      : responsiveHeader;
 }
