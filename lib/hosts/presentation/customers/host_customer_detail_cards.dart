@@ -145,6 +145,10 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                     gapH12,
                   ],
                   CatchFieldActionBar(
+                    cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+                    doneLabel: context.l10n.coreCatchFieldLabelDone,
+                    savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
                     loading: _saving,
                     onCancel: _cancelEditing,
                     onSubmit: () => unawaited(_saveDetails()),

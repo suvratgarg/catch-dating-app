@@ -281,3 +281,37 @@ class _ObstructedDisclosureState extends State<_ObstructedDisclosure> {
     ),
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Single, custom and divided rows',
+  type: CatchFieldLanes,
+  path: '[Core primitives]/Field protocols',
+)
+Widget fieldLaneStates(BuildContext context) => WidgetbookCatalogFrame(
+  title: 'Field composition lanes',
+  catalogId: 'catch.field.lanes',
+  children: [
+    CatchFieldLanes.single(
+      child: CatchField.read(title: 'Single lane', body: 'One independent row'),
+    ),
+    CatchFieldLanes.custom(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchField.read(title: 'Custom lane', body: 'Specialized layout'),
+          SizedBox(height: CatchSpacing.s4),
+          CatchFieldSupportRow(
+            text: 'Caller-owned spacing between controls',
+            color: CatchTokens.of(context).ink2,
+          ),
+        ],
+      ),
+    ),
+    CatchFieldLanes.divided(
+      children: [
+        CatchField.read(title: 'Divided group', body: 'First row'),
+        CatchField.read(title: 'Shared separators', body: 'Second row'),
+      ],
+    ),
+  ],
+);

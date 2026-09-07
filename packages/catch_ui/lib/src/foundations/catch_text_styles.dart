@@ -273,6 +273,17 @@ abstract final class CatchTextStyles {
   static TextStyle titleS(BuildContext context, {Color? color}) =>
       _functionStrong14(context, color: color);
 
+  /// Canonical field value lane, including its line-height contract.
+  static TextStyle fieldRowValue(
+    BuildContext context, {
+    required Color color,
+    FontWeight? fontWeight,
+  }) => CatchTextStyles.fieldRowTitle(context, color: color).copyWith(
+    fontSize: CatchFieldTokens.valueFontSize,
+    fontWeight: fontWeight,
+    height: CatchFieldTokens.valueLineHeight,
+  );
+
   /// CatchField primary text (`.t-title-s` in the design handoff).
   static TextStyle fieldRowTitle(BuildContext context, {Color? color}) =>
       _functionProfile(

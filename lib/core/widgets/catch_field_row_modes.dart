@@ -11,7 +11,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       ),
       content: Text(
         _title ?? '',
-        style: _fieldValueTextStyle(
+        style: CatchTextStyles.fieldRowValue(
           context,
           color: _toneColor(t, primaryFallback: t.primary),
           fontWeight: FontWeight.w600,
@@ -282,6 +282,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final actionBar = widget._onSubmit == null
         ? null
         : CatchFieldActionBar(
+            cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+            doneLabel: context.l10n.coreCatchFieldLabelDone,
+            savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
             revealTargetKey: _actionBarRevealTargetKey,
             loading: _isSaving,
             onCancel: _handleCancel,
@@ -303,7 +307,10 @@ extension _CatchFieldRowModes on _CatchFieldState {
             endPadding: rowPadding.right,
             bottomPadding: rowPadding.bottom,
             revealDuration: _expansionMotionDuration(context),
-            opacityDuration: _fieldDuration(context, CatchMotion.base),
+            opacityDuration: catchFieldMotionDuration(
+              context,
+              CatchMotion.base,
+            ),
             onRevealEnd: _handleExpansionAnimationEnd,
           ),
         if (rootError?.isNotEmpty == true)
@@ -336,7 +343,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
               children: [
                 AnimatedContainer(
                   key: CatchField.pressOverlayKey,
-                  duration: _fieldDuration(
+                  duration: catchFieldMotionDuration(
                     context,
                     _pressed
                         ? CatchFieldTokens.pressIn
@@ -347,7 +354,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
                 ),
                 AnimatedContainer(
                   key: const ValueKey('catch-field-active-overlay'),
-                  duration: _fieldDuration(
+                  duration: catchFieldMotionDuration(
                     context,
                     _active
                         ? CatchFieldTokens.standard
@@ -584,7 +591,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       children: [
         TextSpan(
           text: addText,
-          style: _fieldValueTextStyle(
+          style: CatchTextStyles.fieldRowValue(
             context,
             color: t.primary,
             fontWeight: FontWeight.w600,
@@ -593,7 +600,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         if (optionalSuffix != null)
           TextSpan(
             text: optionalSuffix,
-            style: _fieldValueTextStyle(
+            style: CatchTextStyles.fieldRowValue(
               context,
               color: t.ink3,
               fontWeight: FontWeight.w500,
@@ -611,7 +618,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         excludeSemantics: true,
         child: Text.rich(
           _inlineAddTextSpan(t),
-          style: _fieldValueTextStyle(
+          style: CatchTextStyles.fieldRowValue(
             context,
             color: t.ink3,
             fontWeight: FontWeight.w500,
@@ -643,7 +650,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
           inputHintWidgetOverride: inlineAddAtRest
               ? Text.rich(
                   _inlineAddTextSpan(t),
-                  style: _fieldValueTextStyle(
+                  style: CatchTextStyles.fieldRowValue(
                     context,
                     color: t.ink3,
                     fontWeight: FontWeight.w500,
@@ -702,6 +709,8 @@ extension _CatchFieldRowModes on _CatchFieldState {
     if (widget._contentRow) {
       final hasError = _displayError?.trim().isNotEmpty == true;
       return CatchFieldContentRow(
+        labelCopy: catchFormFieldLabelCopy(context.l10n),
+
         title: _title?.trim() ?? '',
         body: _body?.trim() ?? '',
         titleMaxLines: widget.titleMaxLines,
@@ -788,7 +797,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final baseLabelStyle =
         labelStyle ??
         (labelEmphasized
-            ? _fieldValueTextStyle(
+            ? CatchTextStyles.fieldRowValue(
                 context,
                 color: hasError
                     ? t.danger
@@ -809,7 +818,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         valueStyle ??
         (labelEmphasized
             ? _fieldCaptionTextStyle(context, color: t.ink2)
-            : _fieldValueTextStyle(
+            : CatchTextStyles.fieldRowValue(
                 context,
                 color: valueIsPlaceholder
                     ? t.ink2

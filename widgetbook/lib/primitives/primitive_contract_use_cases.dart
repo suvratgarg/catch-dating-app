@@ -2681,10 +2681,12 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
     title: 'CatchFieldContentRow',
     contractId: 'catch.field.content_row',
     states: const ['title-body', 'optional', 'empty-body', 'two-three-clamp'],
-    children: const [
+    children: [
       _StateCard(
         label: 'title-body',
         child: CatchFieldContentRow(
+          labelCopy: catchFormFieldLabelCopy(context.l10n),
+
           title: 'Weekend route update',
           body: 'The start point moved closer to the east gate.',
         ),
@@ -2692,6 +2694,8 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
       _StateCard(
         label: 'optional',
         child: CatchFieldContentRow(
+          labelCopy: catchFormFieldLabelCopy(context.l10n),
+
           title: 'Race notes',
           body: 'Shared with runners before the event.',
           isOptional: true,
@@ -2699,13 +2703,19 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'empty-body',
-        child: CatchFieldContentRow(title: 'Registration confirmed', body: ''),
+        child: CatchFieldContentRow(
+          labelCopy: catchFormFieldLabelCopy(context.l10n),
+          title: 'Registration confirmed',
+          body: '',
+        ),
       ),
       _StateCard(
         label: 'two-three-clamp',
         child: SizedBox(
           width: WidgetbookPreviewLayout.fieldContentClampWidth,
           child: CatchFieldContentRow(
+            labelCopy: catchFormFieldLabelCopy(context.l10n),
+
             title: 'A deliberately long title that reaches the second line',
             body:
                 'Supporting copy may use three complete lines before the field truncates the remainder.',
@@ -2802,11 +2812,21 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'ready',
-        child: CatchFieldActionBar(onCancel: _noop, onSubmit: _noop),
+        child: CatchFieldActionBar(
+          cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+          doneLabel: context.l10n.coreCatchFieldLabelDone,
+          savingLabel: context.l10n.coreCatchFieldLabelSaving,
+          onCancel: _noop,
+          onSubmit: _noop,
+        ),
       ),
       _StateCard(
         label: 'saving',
         child: CatchFieldActionBar(
+          cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+          doneLabel: context.l10n.coreCatchFieldLabelDone,
+          savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
           loading: true,
           onCancel: _noop,
           onSubmit: _noop,
@@ -2815,6 +2835,10 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
       _StateCard(
         label: 'leading',
         child: CatchFieldActionBar(
+          cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+          doneLabel: context.l10n.coreCatchFieldLabelDone,
+          savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
           actionLeading: const Text('19 / 300'),
           onCancel: _noop,
           onSubmit: _noop,
@@ -2827,6 +2851,10 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
               ? WidgetbookPreviewLayout.standardContractWidth
               : WidgetbookPreviewLayout.fieldActionBarWrapWidth,
           child: CatchFieldActionBar(
+            cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+            doneLabel: context.l10n.coreCatchFieldLabelDone,
+            savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
             actionLeading: const Text('19 / 300'),
             onCancel: _noop,
             onSubmit: _noop,

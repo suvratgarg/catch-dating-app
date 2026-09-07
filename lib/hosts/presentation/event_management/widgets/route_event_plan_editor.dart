@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -228,6 +229,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CatchFieldContentRow(
+                        labelCopy: catchFormFieldLabelCopy(context.l10n),
+
                         title: context.l10n.hostsRouteEventPlanPathTitle,
                         body: plan.path.length >= 2
                             ? context.l10n.hostsRouteEventPlanPathCount(

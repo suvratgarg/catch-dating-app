@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,13 @@ Widget catchFieldStatusIndicatorContract(BuildContext context) {
       disableAnimations: disableAnimations,
     ),
     child: Scaffold(
-      body: Center(child: CatchFieldStatusIndicator(status: status)),
+      body: Center(
+        child: CatchFieldStatusIndicator(
+          savingSemanticLabel: context.l10n.coreCatchFieldSemanticSaving,
+          savedSemanticLabel: context.l10n.coreCatchFieldSemanticSaved,
+          status: status,
+        ),
+      ),
     ),
   );
 }

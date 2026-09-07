@@ -34,9 +34,6 @@ enum CatchFieldSize { floating, compact, md }
 
 enum CatchFieldSupportTone { neutral, brand, success }
 
-/// Save status rendered in the canonical trailing or explicit-commit lane.
-enum CatchFieldStatus { idle, saving, saved }
-
 /// Design-system `Field`: the unified field primitive for row, text-entry,
 /// navigation, toggle, disclosure-control, add, validation, and helper states.
 /// Stack fields in a CatchSection when the surrounding section owns box or

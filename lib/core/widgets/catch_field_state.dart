@@ -418,7 +418,7 @@ class _CatchFieldState extends State<CatchField>
 
   void _scheduleStatusLaneDismiss() {
     _statusLaneDismissTimer?.cancel();
-    final duration = _fieldDuration(context, CatchMotion.base);
+    final duration = catchFieldMotionDuration(context, CatchMotion.base);
     if (duration == Duration.zero) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _handleStatusLaneDismissed();

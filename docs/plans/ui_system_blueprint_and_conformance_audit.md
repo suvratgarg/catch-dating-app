@@ -864,6 +864,15 @@ status publication and constructor vocabulary are preserved. Composition checks
 resolve the extracted canonical source identities and retain their negative
 constructor probe; direct previews mount the route and typed page protocols.
 
+Field lanes, row/content/support anatomy, focus outlines, bounded steppers,
+repeat targets, save controls, disclosure drawers and status rendering have
+individual shared component owners. Their private state and painters stay with
+the owning widgets. Callers supply the existing localized optional-field copy,
+action labels and saving/saved accessibility labels; the status enum and reduced-
+motion duration helper are shared, and field value typography belongs to
+`CatchTextStyles`. Schema-bound field configuration, choices, toggles and
+validation remain with the app field until their constraint boundary moves.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

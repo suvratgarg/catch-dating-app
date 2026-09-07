@@ -2599,6 +2599,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldLanes',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Single, custom and divided rows',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .fieldLaneStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldVisibilityScope',
             useCases: [
               _widgetbook.WidgetbookUseCase(

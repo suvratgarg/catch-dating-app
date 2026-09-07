@@ -8,6 +8,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('field action labels follow caller copy and saving state', (
+    tester,
+  ) async {
+    for (final loading in [false, true]) {
+      await tester.pumpWidget(
+        _wrap(
+          CatchFieldActionBar(
+            cancelLabel: 'Annuler',
+            doneLabel: 'Terminer',
+            savingLabel: 'Enregistrement',
+            loading: loading,
+            onCancel: () {},
+            onSubmit: () {},
+          ),
+        ),
+      );
+      expect(find.text('Annuler'), findsOneWidget);
+      expect(
+        find.text(loading ? 'Enregistrement' : 'Terminer'),
+        findsOneWidget,
+      );
+      expect(find.text(loading ? 'Terminer' : 'Enregistrement'), findsNothing);
+    }
+  });
+
+  testWidgets('field status semantics follow caller copy after state changes', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    for (final status in [CatchFieldStatus.saving, CatchFieldStatus.saved]) {
+      await tester.pumpWidget(
+        _wrap(
+          CatchFieldStatusIndicator(
+            status: status,
+            savingSemanticLabel: 'En cours',
+            savedSemanticLabel: 'Enregistre',
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(CatchMotion.base);
+      expect(
+        find.bySemanticsLabel(
+          status == CatchFieldStatus.saving ? 'En cours' : 'Enregistre',
+        ),
+        findsOneWidget,
+      );
+    }
+    semantics.dispose();
+  });
+
+  testWidgets('field content uses supplied optional copy at large text scale', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      _wrap(
+        CatchFieldContentRow(
+          title: 'Notes',
+          body: 'Details',
+          isOptional: true,
+          labelCopy: CatchFormFieldLabelCopy(
+            optionalLabel: 'Facultatif',
+            optionalSuffix: ' (facultatif)',
+            optionalSemantics: (label) => '$label, facultatif',
+          ),
+        ),
+        textScale: 2,
+      ),
+    );
+    expect(find.text(' (facultatif)'), findsOneWidget);
+    expect(find.bySemanticsLabel('Notes, facultatif'), findsOneWidget);
+    semantics.dispose();
+  });
+
   testWidgets('CatchField valueText occupies a right-aligned value lane', (
     tester,
   ) async {
@@ -258,7 +333,13 @@ void main() {
         SizedBox(
           key: const ValueKey('compact-action-bar'),
           width: 220,
-          child: CatchFieldActionBar(onCancel: () {}, onSubmit: () {}),
+          child: CatchFieldActionBar(
+            cancelLabel: 'Cancel',
+            doneLabel: 'Done',
+            savingLabel: 'Saving',
+            onCancel: () {},
+            onSubmit: () {},
+          ),
         ),
       ),
     );

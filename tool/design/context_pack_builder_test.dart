@@ -945,6 +945,14 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.fieldRowTitle,
     aliasOf: 'titleS',
   ),
+  _StyleEntry.single(
+    'fieldRowValue',
+    'function',
+    (context) => CatchTextStyles.fieldRowValue(
+      context,
+      color: CatchTokens.of(context).ink,
+    ),
+  ),
   _StyleEntry.single('bodyLead', 'function', CatchTextStyles.bodyLead),
   _StyleEntry.single('bodyL', 'function', CatchTextStyles.bodyL),
   _StyleEntry.single('bodyM', 'function', CatchTextStyles.bodyM),

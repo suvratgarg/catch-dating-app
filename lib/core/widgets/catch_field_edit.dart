@@ -67,7 +67,10 @@ extension _CatchFieldEdit on _CatchFieldState {
                 if (!inlineAddAtRest && widget.leadingUnit != null) ...[
                   Text(
                     widget.leadingUnit!,
-                    style: _fieldValueTextStyle(context, color: t.ink2),
+                    style: CatchTextStyles.fieldRowValue(
+                      context,
+                      color: t.ink2,
+                    ),
                   ),
                   const SizedBox(width: CatchSpacing.s1),
                 ],
@@ -90,7 +93,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                     inputHintWidgetOverride: inlineAddAtRest
                         ? Text.rich(
                             _inlineAddTextSpan(t),
-                            style: _fieldValueTextStyle(
+                            style: CatchTextStyles.fieldRowValue(
                               context,
                               color: t.ink3,
                               fontWeight: FontWeight.w500,
@@ -194,18 +197,18 @@ extension _CatchFieldEdit on _CatchFieldState {
         !inlineAddHint &&
         !widget.obscureText &&
         (widget.maxLines != 1 || (widget.minLines ?? 1) > 1);
-    final multilineValueStyle = _fieldValueTextStyle(
+    final multilineValueStyle = CatchTextStyles.fieldRowValue(
       context,
       color: widget.enabled ? t.ink : t.ink3,
     ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
-    final multilineHintStyle = _fieldValueTextStyle(
+    final multilineHintStyle = CatchTextStyles.fieldRowValue(
       context,
       color: t.ink2,
     ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
     final inputStyle = valueEmphasis
         ? multiline
               ? multilineValueStyle
-              : _fieldValueTextStyle(
+              : CatchTextStyles.fieldRowValue(
                   context,
                   color: widget.enabled ? t.ink : t.ink3,
                 )
@@ -213,7 +216,7 @@ extension _CatchFieldEdit on _CatchFieldState {
     final hintStyle = valueEmphasis
         ? multiline
               ? multilineHintStyle
-              : _fieldValueTextStyle(context, color: t.ink2)
+              : CatchTextStyles.fieldRowValue(context, color: t.ink2)
         : widget.size == CatchFieldSize.floating
         ? CatchTextStyles.bodyL(context, color: t.ink2)
         : _textStyle(context, color: t.ink2);
@@ -456,7 +459,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                   context,
                   color: hasError ? tokens.danger : tokens.ink2,
                 ),
-                valueStyle: _fieldValueTextStyle(
+                valueStyle: CatchTextStyles.fieldRowValue(
                   context,
                   color: label == null || !widget.enabled
                       ? tokens.ink3
@@ -535,7 +538,10 @@ extension _CatchFieldEdit on _CatchFieldState {
             child: LayoutBuilder(
               builder: (context, constraints) => TweenAnimationBuilder<double>(
                 key: const ValueKey('catch-field-underline-sweep'),
-                duration: _fieldDuration(context, CatchFieldTokens.reveal),
+                duration: catchFieldMotionDuration(
+                  context,
+                  CatchFieldTokens.reveal,
+                ),
                 curve: CatchFieldTokens.curve,
                 tween: Tween<double>(end: active ? 1 : 0),
                 builder: (context, progress, _) => Align(
@@ -773,27 +779,12 @@ String _selectPlaceholder(AppLocalizations l10n, String? title) {
 }
 
 Duration _catchFieldMotionDuration(BuildContext context) {
-  return _fieldDuration(context, CatchMotion.base);
+  return catchFieldMotionDuration(context, CatchMotion.base);
 }
 
 Duration _expansionMotionDuration(BuildContext context) {
-  return _fieldDuration(context, CatchMotion.base);
+  return catchFieldMotionDuration(context, CatchMotion.base);
 }
-
-Duration _fieldDuration(BuildContext context, Duration duration) {
-  final disableAnimations = MediaQuery.maybeOf(context)?.disableAnimations;
-  return disableAnimations == true ? Duration.zero : duration;
-}
-
-TextStyle _fieldValueTextStyle(
-  BuildContext context, {
-  required Color color,
-  FontWeight? fontWeight,
-}) => CatchTextStyles.fieldRowTitle(context, color: color).copyWith(
-  fontSize: CatchFieldTokens.valueFontSize,
-  fontWeight: fontWeight,
-  height: CatchFieldTokens.valueLineHeight,
-);
 
 TextStyle _fieldCaptionTextStyle(
   BuildContext context, {

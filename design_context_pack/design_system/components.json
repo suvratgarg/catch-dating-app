@@ -2953,7 +2953,7 @@
               "add",
               "tappable"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -2988,14 +2988,14 @@
           {
             "id": "catch.field.status_indicator",
             "symbol": "CatchFieldStatusIndicator",
-            "summary": "Animated field-family saving and saved feedback with a plain reduced-motion swap.",
+            "summary": "Animated field-family saving and saved feedback with a plain reduced-motion swap. Saving and saved accessibility labels are resolved by callers.",
             "states": [
               "idle",
               "saving",
               "saved",
               "reduced-motion"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_status_indicator.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3007,14 +3007,14 @@
           {
             "id": "catch.field.content_row",
             "symbol": "CatchFieldContentRow",
-            "summary": "Natural-height content lane with exact 14/600 title, 13/400 supporting copy, 3 px gap, and 2/3-line defaults.",
+            "summary": "Natural-height content lane with exact 14/600 title, 13/400 supporting copy, 3 px gap, and 2/3-line defaults. Optional-label copy is resolved by callers.",
             "states": [
               "title-body",
               "optional",
               "empty-body",
               "two-three-clamp"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_content_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3032,7 +3032,7 @@
               "counter",
               "error"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_support_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3050,7 +3050,7 @@
               "feedback",
               "secondary-action"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_explicit_save_control.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3062,14 +3062,14 @@
           {
             "id": "catch.field.action_bar",
             "symbol": "CatchFieldActionBar",
-            "summary": "Full-width, non-wrapping trailing Cancel/Done group with optional leading content. While visible during an explicit save, Done owns the field's sole progress indicator.",
+            "summary": "Full-width, non-wrapping trailing Cancel/Done group with optional leading content. While visible during an explicit save, Done owns the field's sole progress indicator. Cancel, Done and Saving copy is resolved by callers.",
             "states": [
               "ready",
               "saving",
               "leading",
               "wrapped"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_action_bar.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3086,7 +3086,7 @@
               "closed",
               "open"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_disclosure_drawer.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3103,7 +3103,7 @@
               "field",
               "commit"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_spinner.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3120,7 +3120,7 @@
               "hidden",
               "visible"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_focus_outline.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3198,7 +3198,7 @@
               "repeating",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_stepper.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3218,7 +3218,7 @@
               "disabled",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_commit_button.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3258,7 +3258,7 @@
               "repeating",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_repeat_button.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -3377,6 +3377,24 @@
             "states": [
               "page-plane",
               "nested-plane"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.lanes",
+            "symbol": "CatchFieldLanes",
+            "file": "packages/catch_ui/lib/src/components/catch_field_lanes.dart",
+            "summary": "Single, custom or divided field composition boundary; divided lanes own sibling separators and inherit the existing geometry policy.",
+            "states": [
+              "single",
+              "custom",
+              "divided"
             ],
             "governance": {
               "conceptRole": "member",
