@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:22fb63dcbe36a19dd1fdb7bbba1a266378f48dabdfaa9a0a2574ead1cdc9d07c",
+  "resolvedDigest": "sha256:a3aac368cc868621dd8a8b523bdd074c44892135c83552155fb04662f0243c02",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4796,7 +4796,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchPersonRow",
-              "file": "lib/core/widgets/catch_person_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
               "constructors": [
                 "CatchPersonRow",
                 "CatchPersonRow.directory"

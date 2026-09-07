@@ -3414,7 +3414,7 @@
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-            "lib/core/widgets/catch_person_row.dart"
+            "packages/catch_ui/lib/src/components/catch_person_row.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -8739,7 +8739,7 @@
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
-            "lib/core/widgets/catch_person_row.dart",
+            "packages/catch_ui/lib/src/components/catch_person_row.dart",
             "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",

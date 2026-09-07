@@ -282,6 +282,7 @@ class WingmanRequestHostRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchPersonRow(
+          copy: catchPersonRowCopy(context.l10n),
           data: CatchPersonRowData(
             name:
                 requester?.name ??

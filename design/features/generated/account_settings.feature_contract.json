@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:e5678527a5cb47d7dd89d27b3214cb20636e50f29b3704b14cd715fc33fce355",
+  "resolvedDigest": "sha256:56047a9c786be7e502a9112fde6d95bde8ee2f89a7783c876921da437dac1618",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2108,7 +2108,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchPersonRow",
-              "file": "lib/core/widgets/catch_person_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
               "constructors": [
                 "CatchPersonRow",
                 "CatchPersonRow.directory"

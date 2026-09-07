@@ -3,12 +3,12 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
@@ -458,6 +458,7 @@ class _EventSuccessAttendeeSpatialRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final row = CatchPersonRow(
+      copy: catchPersonRowCopy(context.l10n),
       data: CatchPersonRowData(
         name: profile?.name ?? assignment.displayTitle,
         imageUrl: profile?.primaryPhotoThumbnailUrl,

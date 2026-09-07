@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class ChatConversationsList extends StatelessWidget {
           final unreadCount = preview.unreadCount;
           final isNew = !preview.hasConversation;
           final row = CatchPersonRow(
+            copy: catchPersonRowCopy(context.l10n),
             data: CatchPersonRowData(
               name: preview.displayName,
               imageUrl: preview.photoUrl,

@@ -3,8 +3,6 @@ import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart'
     show ClubHostRoleBadge;
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart'
-    show CatchPersonNewMatchDot, CatchPersonUnreadCountPill;
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart'
@@ -318,7 +316,12 @@ class _BadgeStatusFamily extends StatelessWidget {
                 count: 124,
                 child: Icon(CatchIcons.notificationsOutlined),
               ),
-              CatchPersonUnreadCountPill(count: 12),
+              CatchPersonUnreadCountPill(
+                semanticsLabel: catchPersonRowCopy(
+                  context.l10n,
+                ).unreadCountLabel(12),
+                count: 12,
+              ),
             ],
           ),
         ),
@@ -332,7 +335,9 @@ class _BadgeStatusFamily extends StatelessWidget {
             children: [
               const CatchStatusDot(),
               CatchStatusDot(color: tokens.warning),
-              const CatchPersonNewMatchDot(),
+              CatchPersonNewMatchDot(
+                semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
+              ),
             ],
           ),
         ),

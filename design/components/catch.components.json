@@ -12282,7 +12282,7 @@
       "summary": "Identity rows for chat, rosters, and natural-height directories with rich metadata and adaptive status.",
       "dart": {
         "symbol": "CatchPersonRow",
-        "file": "lib/core/widgets/catch_person_row.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
         "constructors": [
           "CatchPersonRow",
           "CatchPersonRow.directory"
@@ -12306,6 +12306,12 @@
       },
       "contract": {
         "props": [
+          {
+            "name": "copy",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchPersonRowCopy"
+          },
           {
             "name": "data",
             "type": "object",
@@ -12374,6 +12380,7 @@
         ],
         "dartRoles": [
           "CatchPersonRowData",
+          "CatchPersonRowCopy",
           "CatchPersonAvatar",
           "CatchBadge",
           "CatchPersonAvatarShape",
@@ -12387,7 +12394,7 @@
           {
             "id": "catch.person_row.chat_layout",
             "symbol": "CatchPersonChatLayout",
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_chat_layout.dart",
             "summary": "Direct chat-row layout renderer used by CatchPersonRow chat variants.",
             "states": [
               "default",
@@ -12407,7 +12414,7 @@
           {
             "id": "catch.person_row.chat_trailing",
             "symbol": "CatchPersonChatTrailing",
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_chat_trailing.dart",
             "summary": "Direct chat-row trailing metadata renderer.",
             "states": [
               "timestamp",
@@ -12425,7 +12432,7 @@
           {
             "id": "catch.person_row.unread_count_pill",
             "symbol": "CatchPersonUnreadCountPill",
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_unread_count_pill.dart",
             "summary": "Direct unread-count pill renderer used by chat rows.",
             "states": [
               "single",
@@ -12443,7 +12450,7 @@
           {
             "id": "catch.person_row.new_match_dot",
             "symbol": "CatchPersonNewMatchDot",
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_new_match_dot.dart",
             "summary": "Direct new-match dot renderer used by chat rows.",
             "states": [
               "default"
@@ -12459,7 +12466,7 @@
           {
             "id": "catch.person_row.roster_layout",
             "symbol": "CatchPersonRosterLayout",
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_roster_layout.dart",
             "summary": "Direct roster-row layout renderer used by CatchPersonRow roster variants.",
             "states": [
               "meta",
@@ -12495,6 +12502,7 @@
           "catch.badge"
         ],
         "notes": [
+          "The default row constructor requires resolved chat and accessibility copy; directory rows have no fixed copy. Direct chat renderers receive the same copy bundle, and count/dot leaves receive resolved semantics labels.",
           "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters."
         ]
       },

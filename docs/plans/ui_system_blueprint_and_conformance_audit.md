@@ -778,6 +778,11 @@ Callers supply retry labels to shared renderers; locale changes, explicit
 recovery callbacks, secondary actions and placement behavior are preserved.
 The existing action-required lint also covers the app adapters, with seeded
 negative probes verified in CI.
+Person-row identity, chat/trailing, unread/new indicators and roster anatomy
+also have individual shared owners. App callers resolve typing and accessible
+unread/new labels through the existing copy adapter; directory rows retain their
+slot-only API. Count capping, unread emphasis, avatar shape, large-text stacking
+and press surfaces are preserved.
 
 ### Phase 4 — One registry, binding grammar
 

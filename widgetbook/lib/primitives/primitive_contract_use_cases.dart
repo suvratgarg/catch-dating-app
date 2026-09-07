@@ -24,7 +24,6 @@ import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
@@ -8811,6 +8810,7 @@ Widget catchInitialsAvatarPlaceholderContractStates(BuildContext context) {
   path: '[Core primitives]/Product composites',
 )
 Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
+  final CatchPersonRowCopy copy = catchPersonRowCopy(context.l10n);
   return _ContractScreen(
     title: 'CatchPersonRow states',
     contractId: 'catch.person_row',
@@ -8866,6 +8866,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'roster',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Aanya Rao',
               metaLine: '5:20 /km · 29',
@@ -8879,6 +8880,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'roster-trailing',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Dev Malhotra',
               metaLine: 'Checked in',
@@ -8896,6 +8898,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'chat-preview',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'You: See you by the host stand.',
@@ -8909,6 +8912,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'chat-preview-new',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'You matched!',
@@ -8925,6 +8929,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'chat-preview-unread',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'I just joined the event.',
@@ -8941,6 +8946,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'chat-preview-square-avatar',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Catch Hosts',
               lastMessage: 'Can I bring a friend?',
@@ -8958,6 +8964,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'divider',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'You: See you there.',
@@ -8972,6 +8979,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         label: 'long-copy',
         child: _ChatTileFrame(
           child: CatchPersonRow(
+            copy: copy,
             data: const CatchPersonRowData(
               name: 'A very long display name that should ellipsize',
               lastMessage:
@@ -8996,13 +9004,14 @@ Widget catchPersonChatLayoutContractStates(BuildContext context) {
     title: 'CatchPersonChatLayout',
     contractId: 'catch.person_row.chat_layout',
     states: const ['default', 'context', 'typing', 'unread', 'long-copy'],
-    children: const [
+    children: [
       _StateCard(
         label: 'default',
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: CatchPersonChatLayout(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(context.l10n),
+            data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'See you by the host stand.',
             ),
@@ -9014,7 +9023,8 @@ Widget catchPersonChatLayoutContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: CatchPersonChatLayout(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(context.l10n),
+            data: const CatchPersonRowData(
               name: 'Isha Mehta',
               contextLine: 'Sundowner 5K',
               lastMessage: 'See you by the host stand.',
@@ -9027,7 +9037,8 @@ Widget catchPersonChatLayoutContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: CatchPersonChatLayout(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(context.l10n),
+            data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'Draft message',
               isTyping: true,
@@ -9040,7 +9051,8 @@ Widget catchPersonChatLayoutContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: CatchPersonChatLayout(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(context.l10n),
+            data: const CatchPersonRowData(
               name: 'Isha Mehta',
               lastMessage: 'I just joined the event.',
               unreadCount: 2,
@@ -9054,7 +9066,8 @@ Widget catchPersonChatLayoutContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
           child: CatchPersonChatLayout(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(context.l10n),
+            data: const CatchPersonRowData(
               name: 'A very long display name that should ellipsize',
               lastMessage:
                   'This is a very long latest message preview that should truncate cleanly inside the inbox row.',
@@ -9076,11 +9089,12 @@ Widget catchPersonChatTrailingContractStates(BuildContext context) {
     title: 'CatchPersonChatTrailing',
     contractId: 'catch.person_row.chat_trailing',
     states: const ['timestamp', 'unread', 'new-dot'],
-    children: const [
+    children: [
       _StateCard(
         label: 'timestamp',
         child: CatchPersonChatTrailing(
-          data: CatchPersonRowData(
+          copy: catchPersonRowCopy(context.l10n),
+          data: const CatchPersonRowData(
             name: 'Isha Mehta',
             lastMessage: 'See you there.',
             timestamp: '9m',
@@ -9090,7 +9104,8 @@ Widget catchPersonChatTrailingContractStates(BuildContext context) {
       _StateCard(
         label: 'unread',
         child: CatchPersonChatTrailing(
-          data: CatchPersonRowData(
+          copy: catchPersonRowCopy(context.l10n),
+          data: const CatchPersonRowData(
             name: 'Isha Mehta',
             lastMessage: 'I just joined the event.',
             timestamp: '1h',
@@ -9102,7 +9117,8 @@ Widget catchPersonChatTrailingContractStates(BuildContext context) {
       _StateCard(
         label: 'new-dot',
         child: CatchPersonChatTrailing(
-          data: CatchPersonRowData(
+          copy: catchPersonRowCopy(context.l10n),
+          data: const CatchPersonRowData(
             name: 'Isha Mehta',
             lastMessage: 'You matched!',
             timestamp: '2m',
@@ -9124,12 +9140,29 @@ Widget catchPersonUnreadCountPillContractStates(BuildContext context) {
     title: 'CatchPersonUnreadCountPill',
     contractId: 'catch.person_row.unread_count_pill',
     states: const ['single', 'many', 'capped'],
-    children: const [
-      _StateCard(label: 'single', child: CatchPersonUnreadCountPill(count: 1)),
-      _StateCard(label: 'many', child: CatchPersonUnreadCountPill(count: 12)),
+    children: [
+      _StateCard(
+        label: 'single',
+        child: CatchPersonUnreadCountPill(
+          semanticsLabel: catchPersonRowCopy(context.l10n).unreadCountLabel(1),
+          count: 1,
+        ),
+      ),
+      _StateCard(
+        label: 'many',
+        child: CatchPersonUnreadCountPill(
+          semanticsLabel: catchPersonRowCopy(context.l10n).unreadCountLabel(12),
+          count: 12,
+        ),
+      ),
       _StateCard(
         label: 'capped',
-        child: CatchPersonUnreadCountPill(count: 118),
+        child: CatchPersonUnreadCountPill(
+          semanticsLabel: catchPersonRowCopy(
+            context.l10n,
+          ).unreadCountLabel(118),
+          count: 118,
+        ),
       ),
     ],
   );
@@ -9141,16 +9174,18 @@ Widget catchPersonUnreadCountPillContractStates(BuildContext context) {
   path: '[Core primitives]/Product composites',
 )
 Widget catchPersonNewMatchDotContractStates(BuildContext context) {
-  return const _ContractScreen(
+  return _ContractScreen(
     title: 'CatchPersonNewMatchDot',
     contractId: 'catch.person_row.new_match_dot',
-    states: ['default'],
+    states: const ['default'],
     children: [
       _StateCard(
         label: 'default',
         child: Padding(
-          padding: EdgeInsets.all(CatchSpacing.s6),
-          child: CatchPersonNewMatchDot(),
+          padding: const EdgeInsets.all(CatchSpacing.s6),
+          child: CatchPersonNewMatchDot(
+            semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
+          ),
         ),
       ),
     ],

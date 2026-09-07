@@ -892,19 +892,19 @@ abstract class AppLocalizations {
   /// **'Developer details'**
   String get coreCatchFrameworkErrorViewTextDeveloperDetails;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (Text).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Typing...'**
   String get coreCatchPersonRowTextTyping;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Unread chat'**
   String get coreCatchPersonRowLabelUnreadChat;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'New match'**
@@ -6983,7 +6983,7 @@ abstract class AppLocalizations {
   /// **'+{count}'**
   String coreCatchPersonAvatarTextCount({required Object count});
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label} unread chats'**

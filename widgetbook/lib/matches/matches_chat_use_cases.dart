@@ -23,14 +23,15 @@ import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.da
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
@@ -2000,6 +2001,7 @@ class _ThreadTileVariants extends StatelessWidget {
           children: [
             for (final (index, preview) in previews.indexed)
               _chatPersonRowForPreview(
+                context,
                 preview,
                 divider: index > 0,
                 onTap: () {},
@@ -2012,6 +2014,7 @@ class _ThreadTileVariants extends StatelessWidget {
 }
 
 CatchPersonRow _chatPersonRowForPreview(
+  BuildContext context,
   ChatThreadPreview preview, {
   bool divider = false,
   VoidCallback? onTap,
@@ -2019,6 +2022,7 @@ CatchPersonRow _chatPersonRowForPreview(
   final unreadCount = preview.unreadCount;
   final isNew = !preview.hasConversation;
   return CatchPersonRow(
+    copy: catchPersonRowCopy(context.l10n),
     data: CatchPersonRowData(
       name: preview.displayName,
       imageUrl: preview.photoUrl,
@@ -2343,7 +2347,9 @@ class _CatchPersonRowChatPreviewFrame extends StatelessWidget {
             body: SafeArea(
               child: ListView(
                 padding: CatchInsets.chatListGutter,
-                children: [_chatPersonRowForPreview(preview, onTap: () {})],
+                children: [
+                  _chatPersonRowForPreview(context, preview, onTap: () {}),
+                ],
               ),
             ),
           );

@@ -6562,7 +6562,7 @@
               "NewMatchMarker"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_person_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
               "symbol": "CatchPersonRow"
             },
             "currentOwner": "ChatConversationsList",
@@ -15795,7 +15795,7 @@
             "symbol": "ChatConversationsList"
           },
           {
-            "file": "lib/core/widgets/catch_person_row.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
             "symbol": "CatchPersonRow"
           },
           {
@@ -16727,7 +16727,7 @@
               "ChatThreadPreview"
             ],
             "flutter": {
-              "file": "lib/core/widgets/catch_person_row.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
               "symbol": "CatchPersonRow"
             },
             "currentOwner": "CatchPersonRow",

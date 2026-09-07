@@ -29,3 +29,15 @@ CatchPrivacyBadgeCopy catchPrivacyBadgeCopy(AppLocalizations l10n) =>
 /// Formats avatar overflow counts at the app's localization boundary.
 String Function(int) catchAvatarCountLabelBuilder(AppLocalizations l10n) =>
     (count) => l10n.coreCatchPersonAvatarTextCount(count: count);
+
+/// Resolves person-row text and count semantics without app imports in the UI package.
+CatchPersonRowCopy catchPersonRowCopy(AppLocalizations l10n) =>
+    CatchPersonRowCopy(
+      typingLabel: l10n.coreCatchPersonRowTextTyping,
+      newMatchLabel: l10n.coreCatchPersonRowLabelNewMatch,
+      unreadCountLabel: (count) => count == 1
+          ? l10n.coreCatchPersonRowLabelUnreadChat
+          : l10n.coreCatchPersonRowLabelLabelUnreadChats(
+              label: catchCountLabel(count),
+            ),
+    );

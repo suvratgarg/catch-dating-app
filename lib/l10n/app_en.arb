@@ -1027,21 +1027,21 @@
   },
   "coreCatchPersonRowTextTyping": "Typing...",
   "@coreCatchPersonRowTextTyping": {
-    "description": "Product copy used by lib/core/widgets/catch_person_row.dart (Text).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
   },
   "coreCatchPersonRowLabelUnreadChat": "Unread chat",
   "@coreCatchPersonRowLabelUnreadChat": {
-    "description": "Product copy used by lib/core/widgets/catch_person_row.dart (label).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
   },
   "coreCatchPersonRowLabelNewMatch": "New match",
   "@coreCatchPersonRowLabelNewMatch": {
-    "description": "Product copy used by lib/core/widgets/catch_person_row.dart (label).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
@@ -8054,7 +8054,7 @@
   },
   "coreCatchPersonRowLabelLabelUnreadChats": "{label} unread chats",
   "@coreCatchPersonRowLabelLabelUnreadChats": {
-    "description": "Product copy used by lib/core/widgets/catch_person_row.dart (label).",
+    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
     "placeholders": {
       "label": {}
     },

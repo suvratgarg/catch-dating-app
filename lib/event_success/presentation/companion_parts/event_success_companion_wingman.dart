@@ -148,6 +148,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               Padding(
                 padding: _wingmanCandidateRowGap,
                 child: CatchPersonRow(
+                  copy: catchPersonRowCopy(context.l10n),
                   data: CatchPersonRowData(
                     name: candidate.name,
                     imageUrl: candidate.primaryPhotoThumbnailUrl,

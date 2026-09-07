@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -13,7 +14,6 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
@@ -953,6 +953,7 @@ class _HostOperationalAttendeeRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchPersonRow(
+          copy: catchPersonRowCopy(context.l10n),
           data: CatchPersonRowData(
             name: attendee.displayName,
             seed: attendee.id,
@@ -1630,6 +1631,7 @@ class _HostRuntimeClaimQueue extends StatelessWidget {
         gapH8,
         for (final indexed in claims.indexed)
           CatchPersonRow(
+            copy: catchPersonRowCopy(context.l10n),
             key: ValueKey('runtime-claim-${indexed.$2.uid}'),
             data: CatchPersonRowData(
               name: indexed.$2.displayName,
@@ -1988,6 +1990,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
               gapH12,
               for (final row in mapped.rows.take(3).indexed)
                 CatchPersonRow(
+                  copy: catchPersonRowCopy(context.l10n),
                   data: CatchPersonRowData(
                     name: row.$2.displayName,
                     metaLine: [
