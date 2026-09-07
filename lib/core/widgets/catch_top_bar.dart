@@ -4,7 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints, CatchContractFieldConstraints;
+    show CatchContractConstraints;
 export 'package:catch_ui/catch_ui.dart'
     show CatchActionMenu, CatchActionMenuItem;
 export 'package:catch_ui/catch_ui.dart' show CatchIconAction;

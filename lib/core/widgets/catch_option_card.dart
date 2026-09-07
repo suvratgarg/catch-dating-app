@@ -1,10 +1,9 @@
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints, CatchContractFieldConstraints;
+    show CatchContractConstraints;
 
 /// Design-system `OptionCard` (`components/core/OptionCard`): a selectable choice
 /// card with a leading check/circle, a [title], and a one-line [description].

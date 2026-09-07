@@ -4,7 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints, CatchContractFieldConstraints;
+    show CatchContractConstraints;
 
 /// A chip selector that works for both single-select and multi-select use cases.
 ///

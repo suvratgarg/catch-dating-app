@@ -12,7 +12,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
-    show CatchContractConstraints, CatchContractFieldConstraints;
+    show CatchContractConstraints;
 
 part 'catch_field_control.dart';
 part 'catch_field_configs.dart';
