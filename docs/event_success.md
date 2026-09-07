@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.26.0
+version: 1.27.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -189,8 +189,9 @@ version. The late-join selector resolves only from supplied current confirmed
 group progress and its saved destination choices; absent guidance remains
 unresolved. It does not infer pace-group membership from seating or social pods.
 The source reader below now joins live participant, group, settings and progress
-facts. The policy-aware workflow publisher/scheduler, communication fact reader,
-complete runtime readiness checks, Host settings controls and rehearsal adapter
+facts. Late-join communication facts now join them through the evaluator below.
+The policy-aware workflow publisher/scheduler, complete runtime readiness checks,
+Host settings controls and rehearsal adapter
 remain integration work. Configured preferences do not claim that an executor
 is implemented or activated. Terminal setting/receipt retention remains to be
 defined before activation.
@@ -222,10 +223,55 @@ no default zero message counts or assumed eligible channels. Source errors
 propagate rather than producing a safe-looking empty state.
 
 The source hash is evidence for a single snapshot, not a lasting execution
-permit. Durable worker integration, authoritative communication/history readers,
-policy-aware publication, scheduling and final transactional rechecks remain
-required before automatic assistance can execute. This slice adds no network
-submission, provider activation, Host UI or rehearsal runtime integration.
+permit. The communication/history join below completes live late-join evaluation.
+Durable worker integration, policy-aware publication, scheduling and final
+transactional rechecks remain required before automatic assistance can execute.
+This slice adds no network submission, provider activation, Host UI or rehearsal
+runtime integration.
+
+### Live communication facts and evaluation
+
+`readLiveLateJoinEvaluation` joins the domain reader, episode message history and
+per-route contactability in one read-only transaction, then runs the existing
+canonical late-join evaluator. Its sender choices and optional response deadline
+are supplied by the trusted workflow configuration, never a client request or an
+inferred consent record. A policy requiring a response deadline stays unresolved
+until that scoped value is available. No source read publishes, schedules, debits,
+loads credentials or submits a provider message.
+
+`readSmsMessagePermission` and `readWhatsappMessagePermission` are shared by
+pre-publication contactability and the final channel dispatch readers. They bind
+current event/attendee source, phone and linked identity to exact immutable consent
+receipts, sender identity and expiry. WhatsApp also checks endpoint STOP and a
+bounded set of CRM/provider/admin suppression records. Regranting event consent
+does not bypass an independent pause. Each selected channel needs its own proof;
+WhatsApp suppression does not revoke a separately granted SMS preference. RCS
+continues to return notProvisioned.
+
+Contactability permits preparation only. It checks sender activation, quote window,
+purpose mapping and consent without a secret or guest bearer token. Exact message
+rendering, current template material, credentials, spending ceilings and the
+reservation/claim boundary remain mandatory at dispatch. No reachable or delivered
+claim is inferred from an eligible preparation result.
+
+`readLateJoinMessageHistory` reads at most 201 rows for the exact live organizer,
+event, attendee, episode and lateJoin workflow. It includes every occurrence and
+lifecycle, supported by an explicit Firestore composite index. More than 200 rows
+returns historyLimit rather than evaluating a partial page. Reserved and possibly
+submitted messages count once per intent, including superseded/cancelled records
+and uncertain outcomes. Channel retries/fallback attempts do not multiply this
+logical message count. A queued intent without attempts, or attempts all proven
+notDispatched, consumes no outreach allowance. Conflicting delivery evidence and
+ambiguous latest material stop evaluation for review.
+
+The latest logically created attempted intent determines the previous material;
+the latest observed attempt-state time across the episode conservatively bounds
+cooldown. A delayed older receipt cannot replace newer guidance or shorten the
+interval. Complete empty history can yield zero; unavailable, malformed, foreign
+or truncated history cannot. These records must remain retained while an episode
+can execute. The evaluator result is a proposal, not an execution permit. Durable
+publication/scheduling, UI case handling and other workflow fact adapters remain
+integration work.
 
 ### Confirmed group progress
 
@@ -362,8 +408,8 @@ removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
 Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment, communication/history facts, policy-aware publication and
-rehearsal adapters remain integration work.
+reassignment, policy-aware publication, scheduling and rehearsal adapters remain
+integration work.
 
 ### Shared message delivery
 

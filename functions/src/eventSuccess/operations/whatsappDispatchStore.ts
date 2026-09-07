@@ -3,26 +3,20 @@ import type {OrganizerSenderConnectionDocument as Connection} from
   "../../shared/generated/organizerSenderConnectionDocument";
 import {validateOrganizerSenderConnectionDocument} from
   "../../shared/generated/validators/organizerSenderConnectionDocument";
-import {validateOrganizerContactChannelStateDocument} from
-  "../../shared/generated/validators/organizerContactChannelStateDocument";
 import {validateEventWhatsappDispatchDocument} from
   "../../shared/generated/validators/eventWhatsappDispatchDocument";
 import {operationContentHash} from "../../operations/durableActions";
-import {parseWhatsappStop, WHATSAPP_ENDPOINT_STOPS, whatsappStopId} from
-  "../../shared/organizerWhatsappStops";
 import {FirestoreMessageOutbox, PrepareDispatchResource} from
   "./firestoreMessageOutbox";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import type {GuestLinkSigningKeys} from "./guestLinkTokens";
-import {Grant, guestCollections, parseGrant, readGuestSourceFacts,
+import {Grant, guestCollections, parseGrant,
   requireDocumentId} from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
 import type {RouteReadiness} from "./messagingPolicy";
-import {parseWhatsappConsentReceipt, WHATSAPP_CONSENT_RECEIPTS,
-  whatsappPermissionHasReceipt} from "./whatsappConsent";
+import {readWhatsappMessagePermission} from "./messagePermissionReader";
 import {whatsappConsentSender} from "./whatsappConsentSender";
-import {Permission, parseWhatsappPermission, WHATSAPP_PERMISSIONS,
-  whatsappPermissionId} from "./whatsappPermissionRecords";
+import type {Permission} from "./whatsappPermissionRecords";
 import {whatsappEndpointHash} from "./whatsappReplyProtocol";
 import {newWhatsappWithdrawalGrant, parseWhatsappWithdrawalGrant,
   whatsappWithdrawalMatchesPermission, WHATSAPP_WITHDRAWAL_GRANTS} from
@@ -191,78 +185,32 @@ export class WhatsappDispatchStore {
       return blocked("policyBlocked");
     }
     const context = intent.context;
-    const permissionId = whatsappPermissionId(context, intent.attendeeId,
-      this.senderId);
-    const [connectionSnap, policySnap, permissionSnap,
-      grantSnap, attendeeSnap] =
+    const [connectionSnap, policySnap, grantSnap] =
       await tx.getAll(
         this.db.collection("organizerSenderConnections").doc(this.senderId),
         this.db.collection(WHATSAPP_POLICIES).doc(this.senderId),
-        this.db.collection(WHATSAPP_PERMISSIONS).doc(permissionId),
-        this.db.collection(guestCollections.grants).doc(linkId),
-        this.db.collection("eventAttendees").doc(intent.attendeeId));
+        this.db.collection(guestCollections.grants).doc(linkId));
     const config = this.config(connectionSnap.data(), policySnap.data());
     if (!config || config.connection.organizerId !== context.organizerId) {
       return blocked("notProvisioned");
     }
     const {connection, policy} = config;
-    if (!permissionSnap.exists) return blocked("missingPermission");
-    const permission = parseWhatsappPermission(permissionSnap.data());
-    if (permission.status !== "granted") return blocked("suppressed");
-    const source = await readGuestSourceFacts(this.db, tx, context,
-      intent.attendeeId);
-    const attendee = attendeeSnap.data();
-    if (permission.permissionId !== permissionId ||
-        permission.attendeeGeneration !== source.attendeeGeneration ||
-        permission.phoneE164 !== attendee?.phoneE164 ||
-        permission.evidence.subjectUid !== attendee?.linkedUid ||
-        permission.sender.providerAccountId !== connection.wabaId ||
-        permission.sender.providerPhoneNumberId !== connection.phoneNumberId ||
-        permission.updatedAt > now || permission.expiresAt <= now) {
-      return blocked("missingPermission");
-    }
-    const endpointHash = whatsappEndpointHash(permission.phoneE164)!;
-    const stopId = whatsappStopId(context.organizerId, endpointHash);
+    const consent = await readWhatsappMessagePermission(this.db, tx,
+      {context, attendeeId: intent.attendeeId, senderId: this.senderId},
+      connection, now);
+    if (consent.kind === "blocked") return blocked(consent.reason);
+    const {permission, source, stop} = consent;
     const scopes = whatsappBudgetScopes(context, now);
     const purpose = intent.kind === "joiningUpdate" ?
       "joiningUpdate" : intent.noticeKind;
     const approved = policy.templates.find((t) => t.purpose === purpose);
     if (!approved || !grantSnap.exists) return blocked("templateUnavailable");
-    const [consentSnap, stopSnap, templateSnap, ...budgetSnaps] =
+    const [templateSnap, ...budgetSnaps] =
       await tx.getAll(
-        this.db.collection(WHATSAPP_CONSENT_RECEIPTS)
-          .doc(permission.currentReceiptId),
-        this.db.collection(WHATSAPP_ENDPOINT_STOPS).doc(stopId),
         this.db.collection("organizerMessageTemplates")
           .doc(approved.templateDocumentId),
         ...scopes.map((scope) => this.db.collection(WHATSAPP_BUDGETS)
           .doc(whatsappBudgetId(this.senderId, policy.quote.currency, scope))));
-    const consent = consentSnap.exists ?
-      parseWhatsappConsentReceipt(consentSnap.data()) : null;
-    if (!whatsappPermissionHasReceipt(permission, consent)) {
-      return blocked("missingPermission");
-    }
-    const stop = stopSnap.exists ? parseWhatsappStop(stopSnap.data()) : null;
-    if (stop && (stop.stopId !== stopId || stop.observedAt > now ||
-        stop.stoppedAt >= permission.evidence.acceptedAt)) {
-      return blocked("suppressed");
-    }
-    // CRM pauses/provider suppression remain independent from participant
-    // consent. A legacy STOP without endpoint evidence needs reconciliation.
-    const states = await tx.get(this.db
-      .collection("organizerContactChannelStates")
-      .where("organizerId", "==", context.organizerId)
-      .where("endpointHash", "==", endpointHash).limit(11));
-    if (states.docs.length > 10 || states.docs.some((snap) => {
-      const state = snap.data();
-      return !validateOrganizerContactChannelStateDocument(state) ||
-        state.adminSuppressed === true ||
-        (state.suppressionStatus !== "none" &&
-          !(state.suppressionStatus === "optedOut" &&
-            (state.suppressionSource === "preference" ||
-              (state.suppressionSource === "inboundStop" && stop &&
-                stop.stoppedAt < permission.evidence.acceptedAt))));
-    })) return blocked("suppressed");
     const grant = parseGrant(grantSnap.data());
     if (grant.linkId !== linkId) return blocked("templateUnavailable");
     let rendered: RenderedWhatsapp;

@@ -14,7 +14,7 @@ import {
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import type {GuestLinkSigningKeys} from "./guestLinkTokens";
 import {
-  Grant, guestCollections, parseGrant, readGuestSourceFacts,
+  Grant, guestCollections, parseGrant,
   requireDocumentId,
 } from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
@@ -26,15 +26,12 @@ import {
 export {smsEndpointId} from "./smsProtocol";
 export {smsCollections, smsPermissionId, parseSmsPermission} from
   "./smsPermissionRecords";
-import {smsCollections, smsPermissionId, parseSmsPermission} from
-  "./smsPermissionRecords";
+import {smsCollections} from "./smsPermissionRecords";
 import {newSmsWithdrawalGrant, parseSmsWithdrawalGrant,
   smsWithdrawalMatchesPermission, SMS_WITHDRAWAL_GRANTS} from
   "./smsWithdrawalRecords";
 
-import {
-  parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS, smsPermissionHasReceipt,
-} from "./smsConsent";
+import {readSmsMessagePermission} from "./messagePermissionReader";
 
 export type {Permission, Budget};
 type Intent = MessageRecord["intent"];
@@ -202,16 +199,12 @@ export class SmsDispatchStore {
       return blocked("policyBlocked");
     }
     const context = intent.context;
-    const permissionId = smsPermissionId(context, intent.attendeeId,
-      this.senderId);
     const scopes = smsBudgetScopes(context, now);
-    const [senderSnap, permissionSnap, grantSnap, attendeeSnap,
+    const [senderSnap, grantSnap,
       ...budgetSnaps] =
       await tx.getAll(
         this.db.collection(smsCollections.senders).doc(this.senderId),
-        this.db.collection(smsCollections.permissions).doc(permissionId),
         this.db.collection(guestCollections.grants).doc(linkId),
-        this.db.collection("eventAttendees").doc(intent.attendeeId),
         ...scopes.map((scope) => this.db.collection(smsCollections.budgets)
           .doc(smsBudgetId(this.senderId, scope))));
     if (!senderSnap.exists) return blocked("notProvisioned");
@@ -221,27 +214,10 @@ export class SmsDispatchStore {
         now >= config.activation.validUntil) {
       return blocked("notProvisioned");
     }
-    if (!permissionSnap.exists) return blocked("missingPermission");
-    const permission = parseSmsPermission(permissionSnap.data());
-    if (permission.status !== "granted") return blocked("suppressed");
-    const consentSnap = await tx.get(this.db.collection(SMS_CONSENT_RECEIPTS)
-      .doc(permission.currentReceiptId));
-    const consent = consentSnap.exists ?
-      parseSmsConsentReceipt(consentSnap.data()) : null;
-    if (!smsPermissionHasReceipt(permission, consent)) {
-      return blocked("missingPermission");
-    }
-    const source = await readGuestSourceFacts(this.db, tx, context,
-      intent.attendeeId);
-    const attendee = attendeeSnap.data();
-    if (permission.permissionId !== permissionId ||
-        permission.senderId !== this.senderId ||
-        permission.attendeeGeneration !== source.attendeeGeneration ||
-        permission.phoneE164 !== attendee?.phoneE164 ||
-        permission.evidence.subjectUid !== attendee?.linkedUid ||
-        permission.updatedAt > now || permission.expiresAt <= now) {
-      return blocked("missingPermission");
-    }
+    const consent = await readSmsMessagePermission(this.db, tx,
+      {context, attendeeId: intent.attendeeId, senderId: this.senderId}, now);
+    if (consent.kind === "blocked") return blocked(consent.reason);
+    const {permission, source} = consent;
     if (!grantSnap.exists) return blocked("templateUnavailable");
     const grant = parseGrant(grantSnap.data());
     if (grant.linkId !== linkId) return blocked("templateUnavailable");

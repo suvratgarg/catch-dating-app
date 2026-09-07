@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.46.0
+version: 1.47.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -192,8 +192,22 @@ parallel projection collection. Its partial typed result excludes delivery
 eligibility and message history. Those facts must be supplied explicitly from
 the same scoped snapshot before canonical evaluation; the reader alone cannot
 produce send authority. It is not exposed to clients and adds no new Firestore
-access rules. The durable publisher and communication/history readers remain
-integration work.
+access rules. The live evaluator now obtains those remaining facts through
+shared consent/suppression readers and a bounded query of the existing private
+outbox. Sender choices and policy-required response deadlines remain trusted
+workflow inputs; they are not inferred from an arbitrary connected account.
+
+The episode-history query includes all lateJoin occurrences and lifecycle states
+for the exact live organizer/event/attendee/episode. Its six-field composite index
+is declared in `firestore.indexes.json`. A maximum of 201 reads detects overflow
+beyond the supported complete 200-row history. Reserved or potentially submitted
+intents count once even across channel fallback, cancellation or supersession;
+queued-only and proven-unsent records do not count. Conflicting evidence, ambiguous
+latest material and overflow withhold evaluation. No new projection collection,
+client access or cleanup policy is introduced. Active episode history must remain
+available for policy caps and cooldowns. Final dispatch rechecks exact message
+material, credentials and spending separately from preparation eligibility.
+The durable publisher, scheduler and terminal retention remain integration work.
 
 ### Event Assistance Group Progress Contract
 

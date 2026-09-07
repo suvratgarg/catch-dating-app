@@ -1,6 +1,18 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "intent.context.mode", "mode": "ASCENDING"},
+        {"fieldPath": "intent.context.organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.eventId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.attendeeId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.episodeId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.workflow.kind", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "crossPathsPairHolds",
       "queryScope": "COLLECTION",
       "fields": [
