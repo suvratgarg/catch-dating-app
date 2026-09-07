@@ -10295,7 +10295,7 @@
             "required": false,
             "default": null,
             "dartType": "String?",
-            "notes": "Null resolves the localized search placeholder."
+            "notes": "Null resolves the caller-provided localized search placeholder."
           },
           {
             "name": "onChanged",
@@ -10370,6 +10370,7 @@
         "dartRoles": [
           "CatchControlShell",
           "CatchSearchFieldMode",
+          "CatchSearchFieldCopy",
           "CatchTextStyles.bodyM",
           "CatchLayout.searchFieldClearSize",
           "CatchSearchField.heightFor",
@@ -10395,6 +10396,7 @@
         "allowedChildren": [],
         "notes": [
           "Do not register a separate ExpandingSearch contract; expanding and expanded modes live here.",
+          "Flutter callers supply CatchSearchFieldCopy; clear tooltips use the resolved placeholder and close labels belong only to transient search actions.",
           "Named constructors determine mode. Fixed browse fields clear only non-empty input; .expanding owns opening and empty-query closing. Clear/close targets use CatchIconButton, header height shares the scaled line box, and reduced motion skips the morph animation."
         ]
       },

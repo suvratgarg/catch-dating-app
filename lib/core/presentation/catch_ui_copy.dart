@@ -104,3 +104,14 @@ String Function(int step, int total) catchStepHeaderCompactLabelBuilder(
           clampedStep: step,
           total: total,
         );
+
+/// Resolves search defaults and action tooltips without app imports in shared UI.
+CatchSearchFieldCopy catchSearchFieldCopy(AppLocalizations l10n) =>
+    CatchSearchFieldCopy(
+      searchLabel: l10n.sharedSearchLabel,
+      clearTooltip: (placeholder) =>
+          l10n.coreCatchSearchFieldTooltipClearPlaceholder(
+            placeholder: placeholder,
+          ),
+      closeSearchLabel: l10n.coreCatchSearchFieldVisiblecopyCloseSearch,
+    );

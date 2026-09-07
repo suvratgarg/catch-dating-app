@@ -3791,6 +3791,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Search copy',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSearchFieldCopy',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default and overridden search copy',
+                builder:
+                    _widgetbook_workspace_primitives_field_protocol_use_cases
+                        .searchCopyDefaultAndOverriddenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(

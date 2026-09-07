@@ -5034,6 +5034,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Clubs',
             allowContentHeightExpansion: true,
             search: CatchTopBarSearch(
+              copy: catchSearchFieldCopy(context.l10n),
               value: 'run',
               placeholder: 'Search clubs',
               tooltip: 'Search clubs',
@@ -6724,30 +6725,53 @@ Widget catchSearchFieldContractStates(BuildContext context) {
       'expanding-expanded',
     ],
     children: [
-      const _StateCard(
+      _StateCard(
         label: 'field-empty',
-        child: _FieldWidth(child: CatchSearchField()),
+        child: _FieldWidth(
+          child: CatchSearchField(copy: catchSearchFieldCopy(context.l10n)),
+        ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'field-filled',
-        child: _FieldWidth(child: CatchSearchField(value: 'pickleball')),
+        child: _FieldWidth(
+          child: CatchSearchField(
+            copy: catchSearchFieldCopy(context.l10n),
+            value: 'pickleball',
+          ),
+        ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'focused',
-        child: _FieldWidth(child: CatchSearchField(autofocus: true)),
+        child: _FieldWidth(
+          child: CatchSearchField(
+            copy: catchSearchFieldCopy(context.l10n),
+            autofocus: true,
+          ),
+        ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'disabled',
-        child: _FieldWidth(child: CatchSearchField(enabled: false)),
+        child: _FieldWidth(
+          child: CatchSearchField(
+            copy: catchSearchFieldCopy(context.l10n),
+            enabled: false,
+          ),
+        ),
       ),
-      const _StateCard(
+      _StateCard(
         label: 'clearable',
-        child: _FieldWidth(child: CatchSearchField(value: 'dinner')),
+        child: _FieldWidth(
+          child: CatchSearchField(
+            copy: catchSearchFieldCopy(context.l10n),
+            value: 'dinner',
+          ),
+        ),
       ),
       _StateCard(
         label: 'expanding-collapsed',
         child: _FieldWidth(
           child: CatchSearchField.expanding(
+            copy: catchSearchFieldCopy(context.l10n),
             expanded: false,
             maxWidth: 420,
             onOpenSearch: _noop,
@@ -6758,6 +6782,7 @@ Widget catchSearchFieldContractStates(BuildContext context) {
         label: 'expanding-expanded',
         child: _FieldWidth(
           child: CatchSearchField.expanded(
+            copy: catchSearchFieldCopy(context.l10n),
             value: 'run club',
             onChanged: _ignoreString,
           ),

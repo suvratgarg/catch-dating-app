@@ -996,6 +996,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
           title: 'Explore',
           subtitle: 'Tonight near you',
           search: CatchTopBarSearch(
+            copy: catchSearchFieldCopy(context.l10n),
             placeholder: 'Search events',
             tooltip: 'Search events',
             onChanged: _ignoreString,
@@ -1258,14 +1259,17 @@ Widget catchSliverHeaderCatalogStates(BuildContext context) {
       ),
     ),
     bottomHeight: CatchSliverHeader.compactSearchBottomHeight,
-    bottom: const Padding(
-      padding: EdgeInsets.fromLTRB(
+    bottom: Padding(
+      padding: const EdgeInsets.fromLTRB(
         CatchSpacing.screenPx,
         CatchSliverHeader.searchControlTopPadding,
         CatchSpacing.screenPx,
         CatchSpacing.s2,
       ),
-      child: CatchSearchField(value: 'Dinner'),
+      child: CatchSearchField(
+        copy: catchSearchFieldCopy(context.l10n),
+        value: 'Dinner',
+      ),
     ),
   );
   return WidgetbookCatalogFrame(
@@ -3214,7 +3218,12 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
             CatchBottomDock(
               child: Row(
                 children: [
-                  const Expanded(child: CatchSearchField(value: '')),
+                  Expanded(
+                    child: CatchSearchField(
+                      copy: catchSearchFieldCopy(context.l10n),
+                      value: '',
+                    ),
+                  ),
                   gapW12,
                   CatchIconButton(
                     onTap: _noop,
@@ -4403,18 +4412,21 @@ class _SearchFieldDemoState extends State<_SearchFieldDemo> {
     return Column(
       children: [
         CatchSearchField(
+          copy: catchSearchFieldCopy(context.l10n),
           value: _value,
           placeholder: 'Search events',
           onChanged: (value) => setState(() => _value = value),
         ),
         gapH12,
         CatchSearchField(
+          copy: catchSearchFieldCopy(context.l10n),
           value: 'Dinner',
           placeholder: 'Search hosts',
           onChanged: (_) {},
         ),
         gapH12,
-        const CatchSearchField(
+        CatchSearchField(
+          copy: catchSearchFieldCopy(context.l10n),
           value: 'Disabled',
           placeholder: 'Search',
           enabled: false,
@@ -4441,6 +4453,7 @@ class _SearchFieldExpansionDemoState extends State<_SearchFieldExpansionDemo> {
     return SizedBox(
       height: WidgetbookPreviewLayout.navigationBarHeight,
       child: CatchSearchField.expanding(
+        copy: catchSearchFieldCopy(context.l10n),
         progress: _open ? 1 : 0,
         maxWidth: 420,
         value: _value,

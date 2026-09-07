@@ -909,6 +909,12 @@ retain their progress clamping, large-text switch, and interaction semantics
 without importing the app localization catalog. Their package move still follows
 the shared search-field dependency.
 
+Search fields and top-bar search configurations receive `CatchSearchFieldCopy`
+from their callers. The package owns the pure copy protocol; the app supplies
+its existing search, clear, and close translations. Explicit placeholders and
+trigger tooltips retain their precedence. The field and top-bar widgets remain
+app-side until the shared schema constraints and validation policy move.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

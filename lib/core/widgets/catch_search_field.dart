@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +28,7 @@ class CatchSearchField extends StatefulWidget {
 
   const CatchSearchField({
     super.key,
+    required this.copy,
     this.value = '',
     this.contract,
     this.contractExemption,
@@ -59,6 +59,7 @@ class CatchSearchField extends StatefulWidget {
   /// nothing to clear and cannot be closed because it is not transient chrome.
   const CatchSearchField.expanded({
     super.key,
+    required this.copy,
     this.value = '',
     this.contract,
     this.contractExemption,
@@ -89,6 +90,7 @@ class CatchSearchField extends StatefulWidget {
   /// fields cannot accidentally render a close icon while empty.
   const CatchSearchField.expanding({
     super.key,
+    required this.copy,
     this.value = '',
     this.contract,
     this.contractExemption,
@@ -113,6 +115,7 @@ class CatchSearchField extends StatefulWidget {
     this.mutedForegroundColor,
   }) : mode = CatchSearchFieldMode.expanding;
 
+  final CatchSearchFieldCopy copy;
   final String value;
   final CatchContractFieldConstraints? contract;
   final String? contractExemption;
@@ -198,7 +201,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
     }
 
     final t = CatchTokens.of(context);
-    final placeholder = widget.placeholder ?? context.l10n.sharedSearchLabel;
+    final placeholder = widget.placeholder ?? widget.copy.searchLabel;
     final foreground = widget.foregroundColor ?? t.ink;
     final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
 
@@ -274,10 +277,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 return CatchIconButton(
                   size: CatchLayout.searchFieldClearSize,
                   variant: CatchIconButtonVariant.plain,
-                  tooltip: context.l10n
-                      .coreCatchSearchFieldTooltipClearPlaceholder(
-                        placeholder: placeholder,
-                      ),
+                  tooltip: widget.copy.clearTooltip(placeholder),
                   onTap: widget.enabled ? _clear : null,
                   child: Icon(
                     CatchIcons.clearCircle,
@@ -328,8 +328,8 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
     double maxWidth,
   ) {
     final t = CatchTokens.of(context);
-    final placeholder = widget.placeholder ?? context.l10n.sharedSearchLabel;
-    final tooltip = widget.tooltip ?? context.l10n.sharedSearchLabel;
+    final placeholder = widget.placeholder ?? widget.copy.searchLabel;
+    final tooltip = widget.tooltip ?? widget.copy.searchLabel;
     final foreground = widget.foregroundColor ?? t.ink;
     final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
     final clampedProgress = progress.clamp(0.0, 1.0);
@@ -447,9 +447,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                               controller: _controller,
                               enabled: widget.enabled,
                               placeholder: placeholder,
-                              emptyTrailingTooltip: context
-                                  .l10n
-                                  .coreCatchSearchFieldVisiblecopyCloseSearch,
+                              emptyTrailingTooltip:
+                                  widget.copy.closeSearchLabel,
+                              clearTooltipBuilder: widget.copy.clearTooltip,
                               foregroundColor: mutedForeground,
                               onClear: _clear,
                               onEmptyPressed: widget.onCloseSearch,
@@ -502,6 +502,7 @@ class _ExpandingSearchTrailing extends StatelessWidget {
     required this.enabled,
     required this.placeholder,
     required this.emptyTrailingTooltip,
+    required this.clearTooltipBuilder,
     required this.foregroundColor,
     required this.onClear,
     required this.onEmptyPressed,
@@ -511,6 +512,7 @@ class _ExpandingSearchTrailing extends StatelessWidget {
   final bool enabled;
   final String placeholder;
   final String emptyTrailingTooltip;
+  final String Function(String placeholder) clearTooltipBuilder;
   final Color foregroundColor;
   final VoidCallback onClear;
   final VoidCallback? onEmptyPressed;
@@ -524,9 +526,7 @@ class _ExpandingSearchTrailing extends StatelessWidget {
         final icon = isEmpty ? CatchIcons.close : CatchIcons.clearCircle;
         final tooltip = isEmpty
             ? emptyTrailingTooltip
-            : context.l10n.coreCatchSearchFieldTooltipClearPlaceholder(
-                placeholder: placeholder,
-              );
+            : clearTooltipBuilder(placeholder);
         final onPressed = isEmpty ? onEmptyPressed : onClear;
         if (isEmpty && onPressed == null) {
           return SizedBox(

@@ -12,6 +12,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchSearchField(
+            copy: catchSearchFieldCopy(AppLocalizationsEn()),
             value: query,
             placeholder: 'Search clubs',
             semanticLabel: 'Search clubs',
@@ -62,6 +63,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchSearchField.expanded(
+            copy: catchSearchFieldCopy(AppLocalizationsEn()),
             value: query,
             placeholder: 'Search forms',
             onChanged: (value) => setState(() => query = value),
@@ -98,6 +100,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField.expanding(
+                copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 key: searchFieldKey,
                 progress: 0,
                 maxWidth: 280,
@@ -126,6 +129,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField.expanding(
+                copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 key: searchFieldKey,
                 progress: 0.5,
                 maxWidth: 280,
@@ -150,6 +154,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
             builder: (context, setState) => SizedBox(
               width: 280,
               child: CatchSearchField.expanding(
+                copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 key: searchFieldKey,
                 progress: 1,
                 maxWidth: 280,

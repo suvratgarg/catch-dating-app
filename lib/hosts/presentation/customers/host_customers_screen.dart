@@ -325,6 +325,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
               ]
             : const [],
         search: CatchTopBarSearch(
+          copy: catchSearchFieldCopy(context.l10n),
           backgroundColor: Colors.transparent,
           borderColor: Colors.transparent,
           fieldKey: ValueKey(

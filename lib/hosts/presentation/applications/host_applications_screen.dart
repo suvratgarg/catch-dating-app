@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -147,6 +148,7 @@ class _HostApplicationsScreenState
             ),
             gapH16,
             CatchSearchField.expanded(
+              copy: catchSearchFieldCopy(context.l10n),
               key: const ValueKey('host-applications-search'),
               value: _query ?? '',
               contract: CatchContractConstraints

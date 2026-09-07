@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
@@ -1190,6 +1191,7 @@ class HostRosterSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSearchField(
+      copy: catchSearchFieldCopy(context.l10n),
       key: ValueKey('hostRosterSearch-$label'),
       contract: CatchContractConstraints.mobileFormStateHostRosterSearchQuery,
       value: value,

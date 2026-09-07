@@ -24,6 +24,7 @@ enum CatchTopBarTitleRole { route, identity }
 @immutable
 class CatchTopBarSearch {
   const CatchTopBarSearch({
+    required this.copy,
     this.fieldKey,
     required this.placeholder,
     required this.tooltip,
@@ -45,6 +46,8 @@ class CatchTopBarSearch {
     this.foregroundColor,
     this.mutedForegroundColor,
   });
+
+  final CatchSearchFieldCopy copy;
 
   /// Stable identity for the rendered [CatchSearchField].
   final Key? fieldKey;
@@ -691,6 +694,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
     if (!_searchEnabled) return null;
     final search = widget.search!;
     return CatchSearchField.expanding(
+      copy: search.copy,
       key: search.fieldKey,
       expanded: _searchOpenEffective,
       maxWidth: maxWidth,

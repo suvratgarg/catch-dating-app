@@ -136,6 +136,7 @@ export 'src/components/catch_progress_cue.dart';
 export 'src/components/catch_record_row.dart';
 export 'src/components/catch_responsive_field_interaction_policy.dart';
 export 'src/components/catch_screen_header_title.dart';
+export 'src/components/catch_search_field_copy.dart';
 export 'src/components/catch_section_focus_surface.dart';
 export 'src/components/catch_section_header.dart';
 export 'src/components/catch_selection_menu.dart';

@@ -218,6 +218,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               ]
             : const [],
         search: CatchTopBarSearch(
+          copy: catchSearchFieldCopy(context.l10n),
           value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
           contract: activeSearchIsForms
               ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery

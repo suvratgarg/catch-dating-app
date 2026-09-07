@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -320,6 +322,7 @@ void main() {
         await _pump(
           tester,
           CatchSearchField.expanding(
+            copy: catchSearchFieldCopy(AppLocalizationsEn()),
             key: _controlKey,
             tooltip: 'Search',
             expanded: false,
@@ -341,9 +344,13 @@ void main() {
         expect(opened, isTrue);
         await _pump(
           tester,
-          const SizedBox(
+          SizedBox(
             width: 300,
-            child: CatchSearchField(value: 'Old query', placeholder: 'Search'),
+            child: CatchSearchField(
+              copy: catchSearchFieldCopy(AppLocalizationsEn()),
+              value: 'Old query',
+              placeholder: 'Search',
+            ),
           ),
           scale: scale,
         );
@@ -609,7 +616,11 @@ void main() {
                 CatchOption(value: 1, label: 'Later'),
               ],
             ),
-            CatchSearchField.expanding(expanded: false, onOpenSearch: () {}),
+            CatchSearchField.expanding(
+              copy: catchSearchFieldCopy(AppLocalizationsEn()),
+              expanded: false,
+              onOpenSearch: () {},
+            ),
           ],
         ),
       ),

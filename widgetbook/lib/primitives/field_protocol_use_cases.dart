@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -351,3 +352,30 @@ Widget fieldLaneStates(BuildContext context) => WidgetbookCatalogFrame(
     ),
   ],
 );
+
+@widgetbook.UseCase(
+  name: 'Default and overridden search copy',
+  type: CatchSearchFieldCopy,
+  path: '[Core primitives]/Search copy',
+)
+Widget searchCopyDefaultAndOverriddenStates(BuildContext context) {
+  final copy = catchSearchFieldCopy(context.l10n);
+  return WidgetbookCatalogFrame(
+    title: 'Search copy',
+    catalogId: 'catch.search_field',
+    children: [
+      CatchSearchField(copy: copy),
+      CatchSearchField(
+        copy: copy,
+        placeholder: 'Find a person',
+        value: 'Taylor',
+      ),
+      CatchSearchField.expanding(copy: copy, onCloseSearch: () {}),
+      CatchSearchField.expanding(
+        copy: copy,
+        expanded: false,
+        onOpenSearch: () {},
+      ),
+    ],
+  );
+}

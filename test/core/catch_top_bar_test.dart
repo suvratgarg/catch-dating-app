@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +203,8 @@ void main() {
             onPressed: () {},
           ),
         ],
-        search: const CatchTopBarSearch(
+        search: CatchTopBarSearch(
+          copy: catchSearchFieldCopy(AppLocalizationsEn()),
           placeholder: 'Search customers',
           tooltip: 'Search customers',
         ),
@@ -228,7 +231,8 @@ void main() {
           subtitle:
               'Guest conversations, event announcements, and campaign work',
           textScale: 1.5,
-          search: const CatchTopBarSearch(
+          search: CatchTopBarSearch(
+            copy: catchSearchFieldCopy(AppLocalizationsEn()),
             placeholder: 'Search conversations',
             tooltip: 'Search conversations',
           ),
@@ -651,6 +655,7 @@ void main() {
             appBar: CatchTopBar(
               title: 'Clubs',
               search: CatchTopBarSearch(
+                copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 value: query,
                 onChanged: (value) => setState(() => query = value),
                 placeholder: 'Search clubs',

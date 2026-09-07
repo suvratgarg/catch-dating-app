@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
@@ -64,6 +65,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
       search: CatchTopBarSearch(
+        copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         value: chrome.searchValue,
         onChanged: onQueryChanged,
@@ -211,6 +213,7 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
       search: CatchTopBarSearch(
+        copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         expanded: chrome.searchExpanded,
         value: chrome.searchValue,
