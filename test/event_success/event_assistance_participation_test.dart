@@ -66,6 +66,50 @@ void main() {
   });
 
   test(
+    'automatically enrolled revision-zero guests retain reviewed commands',
+    () {
+      for (final freshness in ['current', 'sourceChanged']) {
+        final raw = participationResponse(
+          revision: 0,
+          freshness: freshness,
+          participation: freshness == 'current'
+              ? const {'state': 'active', 'resumeAtUnit': null}
+              : null,
+        );
+        expect(
+          JsonSchema.create(
+            schemaEventAssistanceParticipationCallableResponseSchema,
+          ).validate(raw).isValid,
+          isTrue,
+        );
+        final view = EventAssistanceParticipationResult.fromCallableData(
+          raw,
+          expectedScope: participationScope(),
+        ).view;
+        expect(view.revision, 0);
+        expect(view.episodeId, 'episode:one');
+        final change = view.prepareChange(
+          operationId: 'first-host-change',
+          participation: const EventAssistanceParticipation.departed(),
+        );
+        expect(
+          change.command['payload'],
+          containsPair('expectedParticipationRevision', 0),
+        );
+        expect(
+          JsonSchema.create(
+            schemaSetEventAssistanceParticipationCallablePayloadSchema,
+          ).validate({
+            'command': change.command,
+            'expectedSourceHash': view.sourceHash,
+          }).isValid,
+          isTrue,
+        );
+      }
+    },
+  );
+
+  test(
     'unknown and changed source remain distinct from active participation',
     () {
       final view = EventAssistanceParticipationResult.fromCallableData(

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.50.0
+version: 1.51.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -162,6 +162,9 @@ parsing rejects another event/organizer/attendee, rehearsal mode, malformed
 revisions and inconsistent state. Replayed receipt revisions stay separate
 from the current view. Missing deployment is a visible unavailable error,
 never an empty or active guest.
+Automatic enrollment's first saved guest revision is zero. The client
+distinguishes that current (or source-changed) record from uninitialized state
+by its episode, and retains revision zero in the first reviewed host command.
 
 The account-scoped participation provider and action controller refresh reads
 after successful commands and reject pending actions after a sign-in change.
@@ -208,9 +211,29 @@ policy, publish, schedule or send.
 
 Coverage is explicitly `selectedAttendees` for `lateJoin`; a selection cannot
 claim an event-wide all-clear or execution coverage for the other 45 workflows.
-The Flutter read adapter, Host attention/roster presentation, rehearsal projection
-and activation remain integration work. The existing runtime and participation
-commands retain their own reviewed mutation boundaries.
+The Flutter `EventAssistanceHostGuestsRepository` consumes this callable using
+the generated request DTO. Its ordered value-equality selection is immutable and
+bounded to 50 guests. Strict parsing rejects missing, duplicate, reordered or
+foreign rows, unknown states, extra fields, unsafe numbers, future observation
+times and inconsistent terminal work. Sealed guest, participation, intention,
+destination, decision and observation types retain the backend distinctions.
+Contract-driven tests enumerate every current live-work observation and
+late-join reason; adding a server variant requires a client parsing decision.
+No production JSON-schema interpreter or direct Firestore reader is added.
+
+`EventAssistanceHostGuests` owns the presentation read state and explicit reload
+action. Screens must consume this outer provider: it hides previous guest data
+immediately during sign-out, authentication failure or account changes. Its
+internal async family separates caches by account and ordered selection and
+checks the account again after I/O. Late completions cannot replace a newer
+account or reload. Successful participation commands invalidate assistance read
+queries as well as the individual participation view; no optimistic check-in or
+automation result is synthesized. Missing deployment, permission and malformed
+responses remain visible read errors.
+
+Host attention/roster presentation, rehearsal projection and activation remain
+integration work. The existing runtime and participation commands retain their
+own reviewed mutation boundaries.
 
 ### Saved assistance settings
 

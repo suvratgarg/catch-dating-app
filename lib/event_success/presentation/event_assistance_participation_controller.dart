@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_participation_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -92,6 +93,7 @@ class EventAssistanceParticipationController
       ref.invalidate(
         eventAssistanceParticipationProvider(action.change.snapshot.scope),
       );
+      ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
     }
     return result;
   }

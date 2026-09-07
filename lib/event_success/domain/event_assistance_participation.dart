@@ -36,6 +36,10 @@ final class EventAssistanceGuestScope {
 sealed class EventAssistanceParticipation {
   const EventAssistanceParticipation();
 
+  factory EventAssistanceParticipation.fromJson(Object? value) =>
+      _participation(value) ??
+      (throw const FormatException('Missing participation state.'));
+
   const factory EventAssistanceParticipation.active() =
       EventParticipationActive;
   const factory EventAssistanceParticipation.onBreak({String? resumeAtUnit}) =
@@ -186,13 +190,15 @@ final class EventAssistanceParticipationResult {
       view['freshness'],
     );
     final participation = _participation(view['participation']);
+    // Automatic enrollment starts at revision zero. Episode presence, rather
+    // than a positive revision, distinguishes that record from no guest.
     final consistent = switch (freshness) {
       EventParticipationFreshness.uninitialized =>
         revision == 0 && episodeId == null && participation == null,
       EventParticipationFreshness.current =>
-        revision > 0 && episodeId != null && participation != null,
+        episodeId != null && participation != null,
       EventParticipationFreshness.sourceChanged =>
-        revision > 0 && episodeId != null && participation == null,
+        episodeId != null && participation == null,
     };
     final operationRevision = result['operationRevision'] == null
         ? null

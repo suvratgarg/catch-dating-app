@@ -129,7 +129,7 @@ final class EventAssistanceParticipationControllerProvider
 }
 
 String _$eventAssistanceParticipationControllerHash() =>
-    r'06b8146344eacd773e85c957df467cc27a7c323b';
+    r'067d12b4657cf53c0e6cf13d212096cb9478996d';
 
 abstract class _$EventAssistanceParticipationController
     extends $Notifier<void> {
