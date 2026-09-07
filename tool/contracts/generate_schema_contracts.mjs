@@ -389,6 +389,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceSourceWork.ts",
   },
   {
+    name: "EventAssistanceRosterWork",
+    source: "operations/event_assistance_roster_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRosterWork.ts",
+  },
+  {
     name: "EventAssistanceLiveWork",
     source: "operations/event_assistance_live_work.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceLiveWork.ts",

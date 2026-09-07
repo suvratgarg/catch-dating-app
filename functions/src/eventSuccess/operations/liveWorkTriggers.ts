@@ -3,12 +3,14 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {logger} from "firebase-functions";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
+import {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {enqueueAssistanceSourceChange} from "./sourceWorkSignals";
 import type {SourceWork} from "./sourceWorkRecords";
 
 type Collection = SourceWork["source"]["collection"];
 type WorkPorts = {
+  roster: Pick<AssistanceRosterWorkStore, "process" | "listDue">;
   source: Pick<AssistanceSourceWorkStore, "process" | "listDue">;
   guest: Pick<LiveAssistanceWorkRunner, "process"> & {
     store: Pick<LiveAssistanceWorkRunner["store"], "listDue">;
@@ -16,7 +18,8 @@ type WorkPorts = {
 };
 
 function ports(db: Firestore, clock: () => number): WorkPorts {
-  return {source: new AssistanceSourceWorkStore(db, clock),
+  return {roster: new AssistanceRosterWorkStore(db, clock),
+    source: new AssistanceSourceWorkStore(db, clock),
     guest: new LiveAssistanceWorkRunner(db, clock)};
 }
 
@@ -30,7 +33,9 @@ export async function processChangedAssistanceWork(workItemId: string,
   if (typeof dueAt !== "number" || !Number.isSafeInteger(dueAt) ||
       dueAt < 0 || dueAt > now) return;
   let busy: boolean;
-  if (payload?.kind === "liveSourceWake") {
+  if (payload?.kind === "liveRosterEnrollment") {
+    busy = (await worker.roster.process(workItemId)).kind === "busy";
+  } else if (payload?.kind === "liveSourceWake") {
     busy = (await worker.source.process(workItemId)).kind === "busy";
   } else if (payload?.kind === "liveLateJoin") {
     busy = (await worker.guest.process(workItemId,
@@ -41,17 +46,20 @@ export async function processChangedAssistanceWork(workItemId: string,
 
 /** Scheduled recovery evaluates saved due work, never an inferred event. */
 export async function evaluateDueAssistanceWork(worker: WorkPorts) {
-  const [sources, guests] = await Promise.all([
-    worker.source.listDue(10), worker.guest.store.listDue(30)]);
+  const [rosters, sources, guests] = await Promise.all([
+    worker.roster.listDue(5), worker.source.listDue(10),
+    worker.guest.store.listDue(30)]);
   const failed: string[] = [];
   let busy = 0;
   for (const [kind, id] of [
+    ...rosters.map((id) => ["roster", id] as const),
     ...sources.map((id) => ["source", id] as const),
     ...guests.map((item) => ["guest", item.workItemId] as const),
   ]) {
     try {
-      const result = kind === "source" ? await worker.source.process(id) :
-        await worker.guest.process(id, {kind: "evaluate"});
+      const result = kind === "roster" ? await worker.roster.process(id) :
+        kind === "source" ? await worker.source.process(id) :
+          await worker.guest.process(id, {kind: "evaluate"});
       if (result.kind === "busy") busy += 1;
     } catch {
       failed.push(id);
@@ -62,7 +70,8 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
       {workItemIds: failed});
     throw new Error("Some event assistance work could not advance");
   }
-  return {sourceItems: sources.length, guestItems: guests.length, busy};
+  return {rosterItems: rosters.length, sourceItems: sources.length,
+    guestItems: guests.length, busy};
 }
 
 function sourceTrigger(collection: Collection) {
@@ -79,7 +88,7 @@ function sourceTrigger(collection: Collection) {
           documentId: event.params.documentId,
           occurredAt: Date.parse(event.time)},
         before: snapshot("before"), after: snapshot("after"),
-      });
+      }, new AssistanceRosterWorkStore(getFirestore()));
   });
 }
 

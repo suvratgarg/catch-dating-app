@@ -8,6 +8,7 @@ import {FakeFirestore} from "../../operations/testFirestore";
 import {newLiveWorkRecords} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {AssistanceSourceWorkStore} from "./sourceWorkStore";
+import {AssistanceRosterWorkStore} from "./rosterWorkStore";
 import {SourceWorkInput, readSourceWorkRecords} from "./sourceWorkRecords";
 import {AssistanceSourceChange, enqueueAssistanceSourceChange,
   sourceWakeScopes} from "./sourceWorkSignals";
@@ -310,7 +311,8 @@ test("due orchestration selects saved work and ignores unrelated writes",
   async () => {
     const h = await harness();
     const source = await h.work.enqueue(h.input);
-    const ports = {source: h.work, guest: h.guests};
+    const ports = {source: h.work, guest: h.guests,
+      roster: new AssistanceRosterWorkStore(h.db, () => h.clock.now)};
     await processChangedAssistanceWork(source.item.workItemId,
       source.item, ports, now);
     assert.equal((await h.work.get(source.item.workItemId)).run.status,
@@ -321,10 +323,11 @@ test("due orchestration selects saved work and ignores unrelated writes",
       return {kind: "busy" as const};
     };
     const fakePorts = {source: {listDue: async () => ["source"], process: busy},
+      roster: {listDue: async () => [], process: busy},
       guest: {store: {listDue: async () =>
         [{workItemId: "guest", revision: 1}]}, process: busy}};
     assert.deepEqual(await evaluateDueAssistanceWork(fakePorts),
-      {sourceItems: 1, guestItems: 1, busy: 2});
+      {rosterItems: 0, sourceItems: 1, guestItems: 1, busy: 2});
     assert.deepEqual(calls, ["source", "guest"]);
     calls.length = 0;
     await processChangedAssistanceWork("unrelated", {normalizedPayload:
@@ -343,7 +346,8 @@ test("roster change wakes the real evaluator and check-in resolves its work",
     const source = new AssistanceSourceWorkStore(h.db, () => h.clock.now);
     const item = await guest.store.start({scope: h.scope,
       ...runtime.configuration, runtimeBinding: runtime.binding});
-    const ports = {guest, source};
+    const ports = {guest, source,
+      roster: new AssistanceRosterWorkStore(h.db, () => h.clock.now)};
     await processChangedAssistanceWork(item.item.workItemId,
       item.item, ports, h.clock.now);
     const first = await guest.store.get(item.item.workItemId);

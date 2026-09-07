@@ -16898,6 +16898,182 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceRosterWorkCheckpointCursor = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.cursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRosterWorkCheckpointFailures = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.failures',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventAssistanceRosterWorkCheckpointFailuresItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.failures.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkCheckpointFailuresItemsReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.failures.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['busy', 'unavailable'],
+  );
+
+  static const eventAssistanceRosterWorkCheckpointPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.phase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scan', 'retry', 'complete', 'review', 'expired', 'stopped'],
+  );
+
+  static const eventAssistanceRosterWorkCheckpointRetries = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.retries',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventAssistanceRosterWorkCheckpointStopReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.stopReason',
+    required: true,
+    enumValues: <String>['missing', 'paused', 'configurationChanged', 'sourceChanged', 'expired', 'eventClosed'],
+  );
+
+  static const eventAssistanceRosterWorkCheckpointVisited = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.checkpoint.visited',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceRosterWorkExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRosterWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRosterWorkRuntimeBindingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.runtimeBinding.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRosterWorkRuntimeBindingRuntimeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.runtimeBinding.runtimeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRosterWorkSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceRosterWorkScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.scope.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRosterWorkScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRosterWorkSignalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.signalId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkSourceCollection = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.source.collection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eventAttendees', 'eventAssistanceGuests', 'eventAssistanceRuntimeConfigs'],
+  );
+
+  static const eventAssistanceRosterWorkSourceDocumentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.source.documentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkSourceEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.source.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRosterWorkSourceOccurredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRosterWork.source.occurredAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceRuntimeConfigCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceRuntimeConfigCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -76012,6 +76188,29 @@ abstract final class CatchContractConstraints {
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
     'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
+    'eventAssistanceRosterWork.checkpoint.cursor': eventAssistanceRosterWorkCheckpointCursor,
+    'eventAssistanceRosterWork.checkpoint.dueAt': eventAssistanceRosterWorkCheckpointDueAt,
+    'eventAssistanceRosterWork.checkpoint.failures': eventAssistanceRosterWorkCheckpointFailures,
+    'eventAssistanceRosterWork.checkpoint.failures.items.attendeeId': eventAssistanceRosterWorkCheckpointFailuresItemsAttendeeId,
+    'eventAssistanceRosterWork.checkpoint.failures.items.reason': eventAssistanceRosterWorkCheckpointFailuresItemsReason,
+    'eventAssistanceRosterWork.checkpoint.phase': eventAssistanceRosterWorkCheckpointPhase,
+    'eventAssistanceRosterWork.checkpoint.retries': eventAssistanceRosterWorkCheckpointRetries,
+    'eventAssistanceRosterWork.checkpoint.stopReason': eventAssistanceRosterWorkCheckpointStopReason,
+    'eventAssistanceRosterWork.checkpoint.visited': eventAssistanceRosterWorkCheckpointVisited,
+    'eventAssistanceRosterWork.expiresAt': eventAssistanceRosterWorkExpiresAt,
+    'eventAssistanceRosterWork.kind': eventAssistanceRosterWorkKind,
+    'eventAssistanceRosterWork.runtimeBinding.revision': eventAssistanceRosterWorkRuntimeBindingRevision,
+    'eventAssistanceRosterWork.runtimeBinding.runtimeId': eventAssistanceRosterWorkRuntimeBindingRuntimeId,
+    'eventAssistanceRosterWork.schemaVersion': eventAssistanceRosterWorkSchemaVersion,
+    'eventAssistanceRosterWork.scope.attendeeId': eventAssistanceRosterWorkScopeAttendeeId,
+    'eventAssistanceRosterWork.scope.context.eventId': eventAssistanceRosterWorkScopeContextEventId,
+    'eventAssistanceRosterWork.scope.context.mode': eventAssistanceRosterWorkScopeContextMode,
+    'eventAssistanceRosterWork.scope.context.organizerId': eventAssistanceRosterWorkScopeContextOrganizerId,
+    'eventAssistanceRosterWork.signalId': eventAssistanceRosterWorkSignalId,
+    'eventAssistanceRosterWork.source.collection': eventAssistanceRosterWorkSourceCollection,
+    'eventAssistanceRosterWork.source.documentId': eventAssistanceRosterWorkSourceDocumentId,
+    'eventAssistanceRosterWork.source.eventId': eventAssistanceRosterWorkSourceEventId,
+    'eventAssistanceRosterWork.source.occurredAt': eventAssistanceRosterWorkSourceOccurredAt,
     'eventAssistanceRuntimeConfigCallableResponse.operationRevision': eventAssistanceRuntimeConfigCallableResponseOperationRevision,
     'eventAssistanceRuntimeConfigCallableResponse.outcome': eventAssistanceRuntimeConfigCallableResponseOutcome,
     'eventAssistanceRuntimeConfigCallableResponse.view.canConfigure': eventAssistanceRuntimeConfigCallableResponseViewCanConfigure,

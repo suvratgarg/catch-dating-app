@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.48.0
+version: 1.49.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -207,8 +207,9 @@ latest material and overflow withhold evaluation. No new projection collection,
 client access or cleanup policy is introduced. Active episode history must remain
 available for policy caps and cooldowns. Final dispatch rechecks exact message
 material, credentials and spending separately from preparation eligibility.
-The atomic publisher below now consumes these facts. Durable worker scheduling and
-terminal retention remain integration work.
+The atomic publisher below now consumes these facts. Durable worker scheduling
+is wired in source and remains dormant; terminal retention remains integration
+work.
 
 Automatic lateJoin message intents now include an optional strict `automation`
 binding in the canonical messaging schema: policy version, setting identity and
@@ -229,6 +230,20 @@ the complete query. This prevents a reservation from consuming its own logical s
 twice and preserves the shared cap across replaced instructions. Instruction refresh
 and permission to send remain separate. No new collection, client rule, credential
 read or provider submission is introduced by publication.
+
+The strict `event_assistance_roster_work.schema.json` payload adds resumable
+roster enrollment to the existing Operations collections. It binds the source
+identity, organizer/event scope and saved runtime revision, with a bounded
+cursor, retry list and explicit stop reason. `work_item.schema.json` binds this
+payload to the Event Assistance workflow and `runtime_roster` entity kind.
+Current runtime permission and each canonical registration are re-read before
+guest enrollment or rebinding; payload snapshots never grant authority. No new
+collection or client access rule is introduced. The authoritative execution
+limits and lifecycle are documented in
+[Operations](operations_platform.md#resumable-roster-enrollment).
+Runtime configuration commits its roster run/item with the configuration and
+request receipt. Configuration triggers reuse that revision's logical source
+identity, while registration/re-entry sources retain their CloudEvent identity.
 
 ### Event Assistance Group Progress Contract
 

@@ -10,20 +10,25 @@ import {FirestoreOperationsRepository} from
 import type {OperationActionReceipt, OperationLease} from
   "../../operations/models";
 import {requireDocumentId} from "./guestRecords";
+import {LiveAssistanceEnrollmentStore} from "./liveEnrollmentStore";
+import {parseRuntimeConfig, readRuntimeConfigAuthority, runtimeConfigId,
+  RUNTIME_CONFIGS} from "./runtimeConfigRecords";
 import {advanceFanoutPage} from "./boundedFanout";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {LiveAssistanceWorkRunner, errorCode, releaseAssistanceWorkLease} from
   "./liveWorkRunner";
-import {SOURCE_WORK_RUNTIME, SourceWork, SourceWorkInput,
-  newSourceWorkRecords, readSourceWorkRecords, sourceWorkProjection} from
-  "./sourceWorkRecords";
+import {ROSTER_WORK_RUNTIME, RosterWork, RosterWorkInput,
+  readRosterWorkRecords, rosterWorkProjection} from
+  "./rosterWorkRecords";
+import {prepareRosterWorkEnqueue, runtimeRosterInput} from
+  "./rosterWorkEnqueue";
 
-type Records = ReturnType<typeof readSourceWorkRecords>;
-type Failure = SourceWork["checkpoint"]["failures"][number];
+type Records = ReturnType<typeof readRosterWorkRecords>;
+type Failure = RosterWork["checkpoint"]["failures"][number];
 
 
 /** Durable bounded fanout, sharing Operations persistence and lease fencing. */
-export class AssistanceSourceWorkStore {
+export class AssistanceRosterWorkStore {
   readonly operations: FirestoreOperationsRepository;
   private readonly target: Pick<LiveAssistanceWorkRunner, "process">;
   constructor(private readonly db: Firestore,
@@ -33,32 +38,47 @@ export class AssistanceSourceWorkStore {
     this.target = target ?? new LiveAssistanceWorkRunner(db, clock);
   }
 
-  async enqueue(input: SourceWorkInput) {
+  /** Binds a source delivery to the current saved manager configuration. */
+  async enqueueCurrent(input: Omit<RosterWorkInput, "runtimeBinding">) {
     const frozen = structuredClone(input);
     return this.db.runTransaction(async (tx) => {
-      const proposed = newSourceWorkRecords(frozen, this.clock());
-      const runRef = this.db.collection(operationCollections.runs)
-        .doc(proposed.run.runId);
-      const itemRef = this.db.collection(operationCollections.workItems)
-        .doc(proposed.item.workItemId);
-      const [run, item] = await tx.getAll(runRef, itemRef);
-      if (run.exists || item.exists) {
-        const existing = readSourceWorkRecords(run.data(), item.data(),
-          itemRef.id, this.clock());
-        return {...existing, replayed: true};
+      const now = this.clock();
+      const id = runtimeConfigId(frozen.scope.context);
+      if (frozen.source.collection === "eventAssistanceRuntimeConfigs" &&
+          (frozen.scope.attendeeId !== null ||
+            frozen.source.documentId !== id)) throw invalidWork();
+      const snapshot = await tx.get(this.db.collection(RUNTIME_CONFIGS)
+        .doc(id));
+      if (!snapshot.exists) return {kind: "held" as const, reason: "missing"};
+      const runtime = parseRuntimeConfig(snapshot.data(), frozen.scope.context,
+        now);
+      const binding = {runtimeId: id, revision: runtime.revision};
+      const authority = await readRuntimeConfigAuthority(this.db, tx,
+        frozen.scope.context, binding, now);
+      if (authority.kind !== "ready") {
+        return {kind: "held" as const, reason: authority.reason};
       }
-      tx.create(runRef, proposed.run);
-      tx.create(itemRef, proposed.item);
-      return {...proposed, replayed: false};
+      const requested = frozen.source.collection ===
+        "eventAssistanceRuntimeConfigs" ? runtimeRosterInput(runtime) :
+        {...frozen, runtimeBinding: binding};
+      const prepared = await prepareRosterWorkEnqueue(this.db, tx, requested,
+        now);
+      if (prepared.replayed) {
+        return {...prepared.records, kind: "queued" as const, replayed: true};
+      }
+      const committedAt = this.clock();
+      if (committedAt < now) throw invalidWork();
+      if (committedAt >= Math.min(prepared.records.payload.expiresAt,
+        authority.configuration.expiresAt)) {
+        return {kind: "held" as const, reason: "expired"};
+      }
+      prepared.commit();
+      return {...prepared.records, kind: "queued" as const, replayed: false};
     });
   }
 
   get(workItemId: string) {
     return this.db.runTransaction((tx) => this.read(tx, workItemId));
-  }
-
-  async hasTargets(scope: SourceWork["scope"]) {
-    return !(await this.targetQuery(scope, null).limit(1).get()).empty;
   }
 
   async listDue(limit: number) {
@@ -69,7 +89,7 @@ export class AssistanceSourceWorkStore {
     if (!Number.isSafeInteger(now) || now < 0) throw invalidWork();
     const result = await this.db.collection(operationCollections.workItems)
       .where("workflowId", "==", ASSISTANCE_WORKFLOW)
-      .where("normalizedPayload.kind", "==", "liveSourceWake")
+      .where("normalizedPayload.kind", "==", "liveRosterEnrollment")
       .where("normalizedPayload.checkpoint.dueAt", ">=", 0)
       .where("normalizedPayload.checkpoint.dueAt", "<=", now)
       .orderBy("normalizedPayload.checkpoint.dueAt")
@@ -99,82 +119,89 @@ export class AssistanceSourceWorkStore {
     }
   }
 
-  private async nextPage(payload: SourceWork, lease: OperationLease) {
-    const checkpoint = await advanceFanoutPage(payload.checkpoint,
+  private async nextPage(payload: RosterWork, lease: OperationLease) {
+    if (this.clock() >= payload.expiresAt) {
+      return {...payload, checkpoint: {...payload.checkpoint,
+        phase: "expired" as const, dueAt: null, stopReason: null}};
+    }
+    const authority = await this.db.runTransaction((tx) =>
+      readRuntimeConfigAuthority(this.db, tx, payload.scope.context,
+        payload.runtimeBinding, this.clock()));
+    if (authority.kind !== "ready") return stopped(payload, authority.reason);
+    const phase = payload.checkpoint.phase;
+    if (phase !== "scan" && phase !== "retry") throw invalidWork();
+    const checkpoint = await advanceFanoutPage({...payload.checkpoint, phase},
       payload.expiresAt, this.clock, {
-        list: (cursor, limit) => this.targets({...payload,
-          checkpoint: {...payload.checkpoint, cursor}}, limit),
-        visit: (id) => this.wake(id, payload, lease),
-        failureId: (failure) => failure.workItemId,
+        list: (cursor, limit) => this.targets(payload, cursor, limit),
+        visit: (id) => this.enroll(id, payload, lease),
+        failureId: (failure) => failure.attendeeId,
       });
-    return {...payload, checkpoint};
+    return {...payload, checkpoint: {...checkpoint, stopReason: null}};
   }
 
-  private async wake(workItemId: string, payload: SourceWork,
+  private async enroll(attendeeId: string, payload: RosterWork,
     lease: OperationLease): Promise<Failure | null> {
     if (this.clock() >= Math.min(Date.parse(lease.expiresAt),
       payload.expiresAt)) {
-      throw new Error("Source work execution window expired");
+      throw new Error("Roster work execution window expired");
     }
     try {
-      // Re-read the work's scope before invoking the generic target port.
-      const target = await new LiveAssistanceWorkRunner(this.db, this.clock)
-        .store.get(workItemId);
-      if (operationContentHash(target.payload.scope.context) !==
-          operationContentHash(payload.scope.context) ||
-          (payload.scope.attendeeId !== null &&
-            target.payload.scope.attendeeId !== payload.scope.attendeeId)) {
-        throw invalidWork();
+      requireDocumentId(attendeeId);
+      if (payload.scope.attendeeId !== null &&
+          payload.scope.attendeeId !== attendeeId) throw invalidWork();
+      const result = await new LiveAssistanceEnrollmentStore(this.db,
+        this.clock).ensure(payload.scope.context, attendeeId,
+        payload.runtimeBinding);
+      if (result.kind === "rebindRequired") {
+        const rebound = await this.target.process(result.workItemId,
+          {kind: "rebind", binding: payload.runtimeBinding});
+        if (rebound.kind === "busy") return {attendeeId, reason: "busy"};
       }
-      const result = await this.target.process(workItemId,
-        {kind: "wake", signalId: payload.signalId});
-      return result.kind === "busy" ? {workItemId, reason: "busy"} : null;
+      return null;
     } catch {
-      // Keep the exact target for bounded retry and eventual human review;
-      // other guests in this page still receive their wake signal.
-      return {workItemId, reason: "unavailable"};
+      return {attendeeId, reason: "unavailable"};
     }
   }
 
-  private async targets(payload: SourceWork, limit: number) {
-    return (await this.targetQuery(payload.scope, payload.checkpoint.cursor)
-      .limit(limit).get()).docs.map((doc) => doc.id);
+  private async targets(payload: RosterWork, cursor: string | null,
+    limit: number) {
+    const {context, attendeeId} = payload.scope;
+    if (attendeeId !== null) {
+      if (cursor !== null && cursor >= attendeeId) return [];
+      const snapshot = await this.db.collection("eventAttendees")
+        .doc(attendeeId).get();
+      return snapshot.data()?.eventId === context.eventId ? [attendeeId] : [];
+    }
+    // The canonical event owner is rechecked above and for every target.
+    // A single event-id index supports legacy and current organizer fields.
+    let query = this.db.collection("eventAttendees")
+      .where("eventId", "==", context.eventId).orderBy(FieldPath.documentId());
+    if (cursor !== null) query = query.startAfter(cursor);
+    return (await query.limit(limit).get()).docs.map((doc) => doc.id);
   }
 
-  private targetQuery(scope: SourceWork["scope"], cursor: string | null) {
-    let query = this.db.collection(operationCollections.workItems)
-      .where("workflowId", "==", ASSISTANCE_WORKFLOW)
-      .where("normalizedPayload.kind", "==", "liveLateJoin")
-      .where("normalizedPayload.scope.context.organizerId", "==",
-        scope.context.organizerId)
-      .where("normalizedPayload.scope.context.eventId", "==",
-        scope.context.eventId);
-    if (scope.attendeeId !== null) {
-      query = query.where("normalizedPayload.scope.attendeeId", "==",
-        scope.attendeeId);
-    }
-    query = query.orderBy(FieldPath.documentId());
-    if (cursor !== null) {
-      query = query.startAfter(cursor);
-    }
-    return query;
-  }
-
-  private async checkpoint(previous: Records, payload: SourceWork,
+  private async checkpoint(previous: Records, payload: RosterWork,
     lease: OperationLease) {
     return this.db.runTransaction(async (tx) => {
       const current = await this.read(tx, previous.item.workItemId);
       if (current.item.revision !== previous.item.revision ||
           operationContentHash(current) !== operationContentHash(previous)) {
-        throw new Error("Source work checkpoint changed");
+        throw new Error("Roster work checkpoint changed");
       }
       const now = this.clock();
       if (now >= payload.expiresAt) {
         payload = {...payload, checkpoint: {...payload.checkpoint,
-          phase: "expired", dueAt: null}};
+          phase: "expired", dueAt: null, stopReason: null}};
+      }
+      if (now < payload.expiresAt) {
+        const authority = await readRuntimeConfigAuthority(this.db, tx,
+          payload.scope.context, payload.runtimeBinding, now);
+        if (authority.kind !== "ready") {
+          payload = stopped(payload, authority.reason);
+        }
       }
       const at = new Date(now).toISOString();
-      const p = sourceWorkProjection(payload);
+      const p = rosterWorkProjection(payload);
       const revision = current.item.revision + 1;
       const item = {...current.item, ...p, revision, attemptCount: revision,
         normalizedPayload: {...payload}, updatedAt: at};
@@ -188,20 +215,20 @@ export class AssistanceSourceWorkStore {
         counters: {...current.run.counters, processed: 1,
           failed: payload.checkpoint.failures.length,
           escalated: Number(p.primaryStage === "host_review")}};
-      const next = readSourceWorkRecords(run, item, item.workItemId, now);
+      const next = readRosterWorkRecords(run, item, item.workItemId, now);
       const key = "page:" + current.item.revision;
       const receipt: OperationActionReceipt = {schemaVersion: 1,
         actionId: operationActionId(run.runId, item.workItemId, key),
         runId: run.runId, workItemId: item.workItemId, sequence: revision,
-        operation: "source_wake_page", status: "succeeded",
+        operation: "roster_enrollment_page", status: "succeeded",
         fromRevision: current.item.revision, toRevision: revision,
-        actor: {actorType: "system", actorId: "event-assistance-source-worker"},
+        actor: {actorType: "system", actorId: "event-assistance-roster-worker"},
         idempotencyKey: key, inputHash: operationContentHash(current.item),
         outputHash: operationContentHash(item),
-        rulesetVersion: SOURCE_WORK_RUNTIME,
+        rulesetVersion: ROSTER_WORK_RUNTIME,
         modelVersion: null,
         reasonCodes: p.blockerCodes.length ? p.blockerCodes :
-          ["source_wake_" + payload.checkpoint.phase],
+          ["roster_" + payload.checkpoint.phase],
         occurredAt: at, completedAt: at, failure: null};
       const prepared = await this.operations.prepareWorkItemAction(tx,
         {workItem: item, receipt, lease});
@@ -219,7 +246,7 @@ export class AssistanceSourceWorkStore {
     requireDocumentId(item.runId);
     const run = (await tx.get(this.db.collection(operationCollections.runs)
       .doc(item.runId))).data();
-    return readSourceWorkRecords(run, item, workItemId, this.clock());
+    return readRosterWorkRecords(run, item, workItemId, this.clock());
   }
 
   private async acquire(workItemId: string): Promise<OperationLease | null> {
@@ -228,7 +255,7 @@ export class AssistanceSourceWorkStore {
       return await this.operations.acquireLease({
         leaseId: operationResourceLeaseId("work_item", workItemId),
         resourceId: workItemId, resourceType: "work_item",
-        ownerId: "source-worker:" + randomUUID(), idempotencyKey: randomUUID(),
+        ownerId: "roster-worker:" + randomUUID(), idempotencyKey: randomUUID(),
         acquiredAt: new Date(now).toISOString(),
         expiresAt: new Date(now + 60_000).toISOString()});
     } catch (error) {
@@ -236,4 +263,10 @@ export class AssistanceSourceWorkStore {
       throw error;
     }
   }
+}
+
+function stopped(payload: RosterWork,
+  reason: NonNullable<RosterWork["checkpoint"]["stopReason"]>): RosterWork {
+  return {...payload, checkpoint: {...payload.checkpoint,
+    phase: "stopped", stopReason: reason, dueAt: null}};
 }

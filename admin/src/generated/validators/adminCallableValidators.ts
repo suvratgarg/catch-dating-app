@@ -5820,6 +5820,36 @@ const model = {
                 ],
                 "properties": {
                   "kind": {
+                    "const": "liveRosterEnrollment"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "runtime_roster"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_roster_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
                     "const": "liveSourceWake"
                   }
                 }
@@ -7231,9 +7261,9 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/event_assistance_source_work.schema.json",
-      "title": "EventAssistanceSourceWork",
-      "description": "Private bounded source-change fanout using Operations work items. Waking work grants no domain or provider authority.",
+      "$id": "https://catch.app/contracts/operations/event_assistance_roster_work.schema.json",
+      "title": "EventAssistanceRosterWork",
+      "description": "Private resumable roster enrollment bound to current manager runtime permission. Enrollment never infers attendance or sends messages.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -7243,7 +7273,8 @@ const model = {
         "source",
         "scope",
         "expiresAt",
-        "checkpoint"
+        "checkpoint",
+        "runtimeBinding"
       ],
       "properties": {
         "schemaVersion": {
@@ -7251,7 +7282,7 @@ const model = {
           "type": "integer"
         },
         "kind": {
-          "const": "liveSourceWake",
+          "const": "liveRosterEnrollment",
           "type": "string"
         },
         "signalId": {
@@ -7273,14 +7304,8 @@ const model = {
             "collection": {
               "type": "string",
               "enum": [
-                "events",
                 "eventAttendees",
-                "eventSuccessPlans",
                 "eventAssistanceGuests",
-                "eventAssistanceSettings",
-                "eventAssistanceGroupProgress",
-                "eventAssistanceMemberships",
-                "eventAssistanceMessages",
                 "eventAssistanceRuntimeConfigs"
               ]
             },
@@ -7331,7 +7356,8 @@ const model = {
             "visited",
             "dueAt",
             "failures",
-            "retries"
+            "retries",
+            "stopReason"
           ],
           "properties": {
             "phase": {
@@ -7341,7 +7367,8 @@ const model = {
                 "retry",
                 "complete",
                 "review",
-                "expired"
+                "expired",
+                "stopped"
               ]
             },
             "cursor": {
@@ -7378,19 +7405,19 @@ const model = {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
-                  "workItemId",
+                  "attendeeId",
                   "reason"
                 ],
                 "properties": {
-                  "workItemId": {
-                    "$ref": "common.schema.json#/definitions/id"
-                  },
                   "reason": {
                     "type": "string",
                     "enum": [
                       "busy",
                       "unavailable"
                     ]
+                  },
+                  "attendeeId": {
+                    "$ref": "common.schema.json#/definitions/id"
                   }
                 }
               }
@@ -7399,8 +7426,22 @@ const model = {
               "type": "integer",
               "minimum": 0,
               "maximum": 5
+            },
+            "stopReason": {
+              "enum": [
+                null,
+                "missing",
+                "paused",
+                "configurationChanged",
+                "sourceChanged",
+                "expired",
+                "eventClosed"
+              ]
             }
           }
+        },
+        "runtimeBinding": {
+          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
         }
       }
     },
@@ -15213,357 +15254,6 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/event_assistance_live_work.schema.json",
-      "title": "EventAssistanceLiveWork",
-      "description": "Private normalized payload for one durable live guest episode. Due times and evaluation state are explicit; publication is not provider delivery.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "kind",
-        "scope",
-        "options",
-        "expiresAt",
-        "maxEvaluations",
-        "checkpoint"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "type": "integer",
-          "const": 1
-        },
-        "kind": {
-          "type": "string",
-          "const": "liveLateJoin"
-        },
-        "scope": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "context",
-            "attendeeId",
-            "episodeId"
-          ],
-          "properties": {
-            "context": {
-              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
-            },
-            "attendeeId": {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            "episodeId": {
-              "$ref": "common.schema.json#/definitions/id"
-            }
-          }
-        },
-        "options": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "routes",
-            "responseDeadline",
-            "deliveryPolicy"
-          ],
-          "properties": {
-            "routes": {
-              "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/LateJoinAutomation/properties/routes"
-            },
-            "responseDeadline": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            },
-            "deliveryPolicy": {
-              "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/MessageIntent/oneOf/0/properties/deliveryPolicy"
-            },
-            "laterChoices": {
-              "type": "array",
-              "maxItems": 17,
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "label",
-                  "target"
-                ],
-                "properties": {
-                  "label": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 80
-                  },
-                  "target": {
-                    "$ref": "../shared/event_assistance_common.schema.json#/definitions/JoiningTarget"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "expiresAt": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
-        "maxEvaluations": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 10000
-        },
-        "checkpoint": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "dueAt",
-            "evaluatedAt",
-            "evaluations",
-            "sourceHash",
-            "observation",
-            "publication"
-          ],
-          "properties": {
-            "dueAt": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            },
-            "evaluatedAt": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            },
-            "evaluations": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 10000
-            },
-            "sourceHash": {
-              "anyOf": [
-                {
-                  "$ref": "common.schema.json#/definitions/sha256"
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            },
-            "observation": {
-              "anyOf": [
-                {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "decision"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "decision"
-                        },
-                        "decision": {
-                          "$ref": "event_assistance_late_join_decision.schema.json"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "reason"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "sourceNotReady"
-                        },
-                        "reason": {
-                          "type": "string",
-                          "enum": [
-                            "episodeMissing",
-                            "guestSourceChanged",
-                            "membershipMissing",
-                            "membershipSourceChanged",
-                            "unconfigured",
-                            "disabled",
-                            "settingSourceChanged",
-                            "eventClosed",
-                            "runtimeNotLive",
-                            "progressUnconfirmed",
-                            "progressSourceChanged",
-                            "destinationUnavailable"
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "reason"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "historyUnavailable"
-                        },
-                        "reason": {
-                          "type": "string",
-                          "enum": [
-                            "historyLimit",
-                            "deliveryConflict",
-                            "ambiguousHistory"
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "responseDeadlineMissing"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "episodeChanged"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "workExpired"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "evaluationLimit"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "reason"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "type": "string",
-                          "const": "runtimeUnavailable"
-                        },
-                        "reason": {
-                          "type": "string",
-                          "enum": [
-                            "missing",
-                            "paused",
-                            "configurationChanged",
-                            "sourceChanged",
-                            "expired",
-                            "eventClosed"
-                          ]
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            },
-            "publication": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "messageId",
-                    "threadId"
-                  ],
-                  "properties": {
-                    "messageId": {
-                      "$ref": "common.schema.json#/definitions/id"
-                    },
-                    "threadId": {
-                      "$ref": "common.schema.json#/definitions/id"
-                    }
-                  }
-                },
-                {
-                  "type": "null",
-                  "const": null
-                }
-              ]
-            }
-          }
-        },
-        "runtimeBinding": {
-          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/shared/event_assistance_messaging.schema.json",
       "title": "EventAssistanceMessaging",
       "description": "Logical event-service messages, channel attempts and scoped self-reports. Provider acceptance is not delivery, and a guest response never proves physical attendance.",
@@ -17389,6 +17079,532 @@ const model = {
               "maximum": 9007199254740991
             }
           }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_source_work.schema.json",
+      "title": "EventAssistanceSourceWork",
+      "description": "Private bounded source-change fanout using Operations work items. Waking work grants no domain or provider authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "signalId",
+        "source",
+        "scope",
+        "expiresAt",
+        "checkpoint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "liveSourceWake",
+          "type": "string"
+        },
+        "signalId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "collection",
+            "documentId",
+            "occurredAt"
+          ],
+          "properties": {
+            "eventId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "collection": {
+              "type": "string",
+              "enum": [
+                "events",
+                "eventAttendees",
+                "eventSuccessPlans",
+                "eventAssistanceGuests",
+                "eventAssistanceSettings",
+                "eventAssistanceGroupProgress",
+                "eventAssistanceMemberships",
+                "eventAssistanceMessages",
+                "eventAssistanceRuntimeConfigs"
+              ]
+            },
+            "documentId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "occurredAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "cursor",
+            "visited",
+            "dueAt",
+            "failures",
+            "retries"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "scan",
+                "retry",
+                "complete",
+                "review",
+                "expired"
+              ]
+            },
+            "cursor": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visited": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "failures": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "workItemId",
+                  "reason"
+                ],
+                "properties": {
+                  "workItemId": {
+                    "$ref": "common.schema.json#/definitions/id"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  }
+                }
+              }
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_live_work.schema.json",
+      "title": "EventAssistanceLiveWork",
+      "description": "Private normalized payload for one durable live guest episode. Due times and evaluation state are explicit; publication is not provider delivery.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "scope",
+        "options",
+        "expiresAt",
+        "maxEvaluations",
+        "checkpoint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "const": "liveLateJoin"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId",
+            "episodeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "episodeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            }
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routes",
+            "responseDeadline",
+            "deliveryPolicy"
+          ],
+          "properties": {
+            "routes": {
+              "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/LateJoinAutomation/properties/routes"
+            },
+            "responseDeadline": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "deliveryPolicy": {
+              "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/MessageIntent/oneOf/0/properties/deliveryPolicy"
+            },
+            "laterChoices": {
+              "type": "array",
+              "maxItems": 17,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "target"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "target": {
+                    "$ref": "../shared/event_assistance_common.schema.json#/definitions/JoiningTarget"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "maxEvaluations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dueAt",
+            "evaluatedAt",
+            "evaluations",
+            "sourceHash",
+            "observation",
+            "publication"
+          ],
+          "properties": {
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "evaluatedAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "evaluations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "sourceHash": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/sha256"
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "observation": {
+              "anyOf": [
+                {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "decision"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "decision"
+                        },
+                        "decision": {
+                          "$ref": "event_assistance_late_join_decision.schema.json"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "sourceNotReady"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "episodeMissing",
+                            "guestSourceChanged",
+                            "membershipMissing",
+                            "membershipSourceChanged",
+                            "unconfigured",
+                            "disabled",
+                            "settingSourceChanged",
+                            "eventClosed",
+                            "runtimeNotLive",
+                            "progressUnconfirmed",
+                            "progressSourceChanged",
+                            "destinationUnavailable"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "historyUnavailable"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "historyLimit",
+                            "deliveryConflict",
+                            "ambiguousHistory"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "responseDeadlineMissing"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "episodeChanged"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "workExpired"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "evaluationLimit"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "runtimeUnavailable"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "missing",
+                            "paused",
+                            "configurationChanged",
+                            "sourceChanged",
+                            "expired",
+                            "eventClosed"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            },
+            "publication": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "messageId",
+                    "threadId"
+                  ],
+                  "properties": {
+                    "messageId": {
+                      "$ref": "common.schema.json#/definitions/id"
+                    },
+                    "threadId": {
+                      "$ref": "common.schema.json#/definitions/id"
+                    }
+                  }
+                },
+                {
+                  "type": "null",
+                  "const": null
+                }
+              ]
+            }
+          }
+        },
+        "runtimeBinding": {
+          "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/AssistanceRuntimeBinding"
         }
       }
     },

@@ -96,7 +96,9 @@ class FakeQuery {
           operator);
         }
       }))
-      .sort((left, right) => left.id.localeCompare(right.id));
+      // Match the ordinal document-id cursor comparison above.
+      .sort((left, right) => left.id < right.id ? -1 :
+        left.id > right.id ? 1 : 0);
     const page = this.pageLimit === null ? docs : docs.slice(0, this.pageLimit);
     return {docs: page, size: page.length, empty: page.length === 0};
   }

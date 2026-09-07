@@ -34,8 +34,11 @@ test("runtime setup reads without enrollment and only managers can write",
     assert.equal(configured.saved.view.status, "configured");
     const changed = h.fake.entries().filter(([p]) =>
       !before.some(([old]) => p === old));
-    assert.equal(changed.length, 2, "only runtime and receipt are created");
-    assert.ok(changed.every(([p]) => p.startsWith("eventAssistanceRuntime")));
+    assert.equal(changed.length, 4,
+      "runtime, request receipt and roster run/item commit together");
+    assert.deepEqual(changed.map(([p]) => p.split("/")[0]).sort(),
+      ["eventAssistanceRuntimeConfigReceipts", "eventAssistanceRuntimeConfigs",
+        "operationRuns", "operationWorkItems"]);
   });
 
 test("configuration commits atomically and old retries retain current pause",

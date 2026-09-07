@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.15.0
+version: 1.16.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -609,7 +609,40 @@ publication counters. The configured evaluation ceiling can be lowered below
 prior consumption; this exhausts further work instead of discarding evidence.
 Raising that ceiling does not zero the counter. Rebind receipts are idempotent
 per runtime revision, and completed/expired episodes cannot re-enter execution.
-Enrollment discovery and bounded roster fanout are not wired yet.
+The resumable roster worker below now owns enrollment discovery and fanout.
+
+### Resumable roster enrollment
+
+`event_assistance_roster_work.schema.json` defines a separate
+`liveRosterEnrollment` payload inside the existing Operations run/item/receipt
+collections. Its immutable basis binds source identity, exact scope
+and the current manager runtime revision. Configuration saves its roster run/item
+atomically with the runtime and command receipt; its logical source identity is
+the saved runtime revision. Configuration-trigger deliveries reuse that job.
+Registration and participation sources use their CloudEvent delivery identity.
+It contains no caller-authored guest
+state, roster snapshot or sender options. Configuration changes request an
+event-wide scan; registration and explicit participation-episode changes request
+a single-guest scan. Replies, unrelated counters and deletion events do not
+request enrollment. A new registration behind a saved cursor is covered by
+its own source delivery rather than requiring a scan restart.
+
+`AssistanceRosterWorkStore` rechecks current permission before discovery, for
+each guest through the atomic enrollment/rebind adapters, and when committing
+the roster checkpoint. Paused, replaced, expired or source-invalidated runtime
+permission stops unfinished scans with an explicit reason. The scan reads the
+selected event's canonical roster and validates each guest's organizer/event
+scope; missing or ineligible registrations produce no enrollment. Malformed
+records retain their attendee IDs for bounded retry and review.
+
+Roster scans share `advanceFanoutPage` with source wakes: at most 20 targets per
+page, 10,000 visited targets, 100 retained failures, five retry rounds and a
+24-hour source lifetime. Cursors and retries use consistent ordinal document-id
+ordering. An Operations lease fences each saved page; per-guest transactions
+and rebind receipts make repeated visits safe if the page checkpoint is lost.
+The visited count measures discovery, never successful enrollment or delivery.
+No provider is invoked, and no new Firestore collection or client permission is
+introduced. Complete, stopped, expired and review outcomes remain distinct.
 
 ### Source changes and due-work recovery
 
@@ -641,16 +674,15 @@ a 24-hour source-work lifetime. Exhausted target/failure/retry limits become
 explicit review items with failed ids retained; expiry closes unfinished work.
 
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
-`evaluateDueEventAssistanceWork` scheduler recovers at most 10 source items and
-30 guest items per invocation; one failure does not skip the other selected
-items. Future due times remain saved until reached. All nine source triggers,
+`evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,
+10 source items and 30 guest items per invocation; one failure does not skip
+the other selected items. Future due times remain saved until reached. All nine source triggers,
 the work-item trigger and the scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.
 
-Manager-owned configuration and pause are implemented separately from the
-trusted guest enrollment/rebind adapters. Durable roster discovery and fanout,
-readiness-change signals for
+Manager-owned configuration, guest enrollment/rebinding and durable roster
+discovery are wired in source. Readiness-change signals for
 consent/sender/template/budget changes, provider dispatch coordination and Host
 queue projections remain integration work. Activating the dormant functions
 also requires the corresponding operating-budget and delivery configuration.

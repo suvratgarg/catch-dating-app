@@ -75,6 +75,7 @@ export {validateEventAssistanceGuestResponse} from "./validators/eventAssistance
 export {validateEventAssistancePolicy} from "./validators/eventAssistancePolicy";
 export {validateEventAssistanceCommand} from "./validators/eventAssistanceCommand";
 export {validateEventAssistanceSourceWork} from "./validators/eventAssistanceSourceWork";
+export {validateEventAssistanceRosterWork} from "./validators/eventAssistanceRosterWork";
 export {validateEventAssistanceLiveWork} from "./validators/eventAssistanceLiveWork";
 export {validateEventAssistanceLateJoinInput} from "./validators/eventAssistanceLateJoinInput";
 export {validateEventAssistanceLateJoinDecision} from "./validators/eventAssistanceLateJoinDecision";

@@ -18,11 +18,13 @@ import {validateEventAssistanceRuntimeConfigReceiptDocument} from
 import type {EventAssistanceRuntimeConfigCallableResponse as Response} from
   "../../shared/generated/eventAssistanceRuntimeConfigCallableResponse";
 import {invalidSource} from "./groupProgressSource";
+import {prepareRosterWorkEnqueue, runtimeRosterInput} from
+  "./rosterWorkEnqueue";
 import {RuntimeContext, RUNTIME_CONFIGS, RUNTIME_CONFIG_RECEIPTS,
   parseRuntimeConfig, runtimeConfigId, runtimeConfigSource,
   runtimeConfigStatus} from "./runtimeConfigRecords";
 
-/** Saves event execution permission; does not infer participation or send. */
+/** Saves permission and its roster job; never infers participation or sends. */
 export class EventAssistanceRuntimeConfigStore {
   constructor(private readonly db: Firestore,
     private readonly clock: () => number = Date.now) {}
@@ -86,8 +88,15 @@ export class EventAssistanceRuntimeConfigStore {
         throw invalidSource();
       }
       const result = response("applied", {...state, record}, record.revision);
+      const roster = input.command.kind === "configure" ?
+        await prepareRosterWorkEnqueue(this.db, tx, runtimeRosterInput(record),
+          now) : null;
+      const committedAt = this.clock();
+      if (committedAt < now || (roster &&
+          committedAt >= record.configuration!.expiresAt)) throw conflict();
       tx.set(this.db.collection(RUNTIME_CONFIGS).doc(record.runtimeId), record);
       tx.create(receiptRef, savedReceipt);
+      roster?.commit();
       return result;
     });
   }

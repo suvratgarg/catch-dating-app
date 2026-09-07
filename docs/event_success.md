@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.31.0
+version: 1.32.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -320,8 +320,8 @@ transaction. Its worker uses current leases and durable wake receipts. Source
 changes enqueue bounded resumable fanout; work-item and scheduled handlers
 advance saved due work. These handlers remain dormant in deployment policy.
 See [Operations runtime](operations_platform.md#durable-live-assistance-work)
-for execution limits and the source-change lifecycle. Durable roster scan
-integration, remaining readiness signals, provider dispatch coordination and
+for execution limits and the source-change lifecycle. Remaining readiness
+signals, provider dispatch coordination and
 the broader Host/rehearsal workflow remain separate integration work. A
 publication result does not assert provider submission or delivery.
 
@@ -337,7 +337,9 @@ by saving the configuration. Other workflow executors remain unimplemented.
 
 The command is a strict configure/pause union. Both operations re-read manager
 authority and the reviewed event source, check the runtime revision and commit
-the record with an immutable request receipt. Configuration must expire within
+the record with an immutable request receipt. Configuration saves its roster
+run/item in that same transaction, so activation or trigger delay cannot lose
+the enrollment request. Configuration must expire within
 the open event; a paused record can retain its prior configuration. Exact
 authorized retries return the original operation revision and current state,
 so replaying an old configure cannot undo a later pause. Event replacement,
@@ -347,8 +349,9 @@ or expiry withholds execution without manufacturing guest attendance.
 The private `eventAssistanceRuntimeConfigs` and
 `eventAssistanceRuntimeConfigReceipts` collections allow no client reads/writes;
 callables expose the manager projection. A configured response means permission
-was saved, not that guests were enrolled or messages sent. The per-event roster
-scan and Host controls remain integration work.
+was saved, not that guests were enrolled or messages sent. The configuration
+transaction saves a durable roster scan; the background
+handlers remain dormant and Host controls remain integration work.
 
 The trusted `LiveAssistanceEnrollmentStore.ensure` boundary verifies the current
 saved configuration and canonical registration in one transaction. For an eligible
@@ -358,8 +361,9 @@ breaks, departures, not-coming responses and closed participation are preserved;
 enrollment does not check anyone in. Replaced registration identities receive a new
 episode; explicit re-entry uses its already assigned episode. Erased participation
 cannot be reconstructed over existing work. Current, completed, expired, held and
-rebind-required results stay distinct. No automatic roster scan calls this boundary
-yet.
+rebind-required results stay distinct. The resumable roster worker calls this
+boundary for each discovered registration and uses the leased rebind action
+when existing work needs the current saved configuration.
 
 `LiveAssistanceWorkStore.rebind` adopts a current manager configuration under the
 existing work-item lease and an immutable action receipt. It keeps the guest
@@ -380,9 +384,13 @@ changed source or expiry withholds new publication/claims, and permits cannot
 outlive configuration expiry. Automatic messages without a runtime binding
 cannot claim provider dispatch; trusted store/publisher fixtures without a
 binding also cannot become scheduler authority; expiry cleanup remains allowed.
-A dormant configuration-change trigger wakes
-existing enrolled work; saving setup does not create a participation episode,
-reset guest history, grant consent or invoke a provider.
+A dormant configuration-change trigger wakes existing enrolled work and reuses
+the saved enrollment/rebind scan for the current runtime revision. Registration changes
+and explicit re-entry request guest-scoped scans, including registrations added
+behind an existing scan cursor. Replies do not repeatedly request enrollment.
+The setup callable queues work without creating participation, resetting guest
+history, granting consent or invoking a provider. See
+[resumable roster enrollment](operations_platform.md#resumable-roster-enrollment).
 
 ### Confirmed group progress
 

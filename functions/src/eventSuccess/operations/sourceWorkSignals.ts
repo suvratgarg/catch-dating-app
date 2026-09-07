@@ -2,6 +2,8 @@ import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity} from "./guestRecords";
 import type {SourceWork, SourceWorkInput} from "./sourceWorkRecords";
 import type {AssistanceSourceWorkStore} from "./sourceWorkStore";
+import type {AssistanceRosterWorkStore} from "./rosterWorkStore";
+import type {RosterWorkInput} from "./rosterWorkRecords";
 
 type Collection = SourceWork["source"]["collection"];
 type Scope = SourceWork["scope"];
@@ -29,8 +31,15 @@ export function sourceWakeScopes(change: AssistanceSourceChange): Scope[] {
 
 export async function enqueueAssistanceSourceChange(
   store: Pick<AssistanceSourceWorkStore, "hasTargets" | "enqueue">,
-  change: AssistanceSourceChange) {
+  change: AssistanceSourceChange,
+  roster?: Pick<AssistanceRosterWorkStore, "enqueueCurrent">) {
   const queued: string[] = [];
+  if (roster) {
+    for (const input of rosterEnrollmentRequests(change)) {
+      const work = await roster.enqueueCurrent(input);
+      if (work.kind === "queued") queued.push(work.item.workItemId);
+    }
+  }
   for (const scope of sourceWakeScopes(change)) {
     // A newly enrolled work item evaluates current facts on its first run,
     // including facts changed after this no-target check.
@@ -39,6 +48,30 @@ export async function enqueueAssistanceSourceChange(
     queued.push(work.item.workItemId);
   }
   return queued;
+}
+
+/** Enrollment follows registration/episode identity, not each guest reply. */
+export function rosterEnrollmentRequests(change: AssistanceSourceChange):
+  Array<Omit<RosterWorkInput, "runtimeBinding">> {
+  if (!change.after) return [];
+  const collection = change.source.collection;
+  let fields: string[];
+  switch (collection) {
+  case "eventAttendees": fields = ["eventId", "organizerId", "clubId",
+    "status", "createdAt"]; break;
+  case "eventAssistanceGuests": fields = ["context", "attendeeId",
+    "episodeId", "sourceGeneration", "attendeeGeneration"]; break;
+  case "eventAssistanceRuntimeConfigs": fields = ["context", "workflowKind",
+    "revision", "status", "sourceGeneration", "sourceHash"]; break;
+  default: return [];
+  }
+  const selected = (snapshot: Snapshot) => snapshot === null ? null :
+    JSON.parse(JSON.stringify([snapshot.generation,
+      fields.map((key) => snapshot.value[key] ?? null)]));
+  if (operationContentHash(selected(change.before)) ===
+      operationContentHash(selected(change.after))) return [];
+  return sourceWakeScopes(change).map((scope) => ({scope,
+    source: {...change.source, collection}}));
 }
 
 function scopeFor(collection: Collection, documentId: string,

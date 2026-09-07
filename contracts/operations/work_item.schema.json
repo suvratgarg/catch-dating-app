@@ -11,6 +11,25 @@
         "properties": {
           "normalizedPayload": {
             "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "liveRosterEnrollment"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "runtime_roster"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_roster_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object", "required": ["kind"],
             "properties": {"kind": {"const": "liveSourceWake"}}
           }
         }

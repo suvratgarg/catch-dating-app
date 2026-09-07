@@ -73,6 +73,7 @@ import {
   eventAssistancePolicySchema,
   eventAssistanceCommandSchema,
   eventAssistanceSourceWorkSchema,
+  eventAssistanceRosterWorkSchema,
   eventAssistanceLiveWorkSchema,
   eventAssistanceLateJoinInputSchema,
   eventAssistanceLateJoinDecisionSchema,
@@ -698,6 +699,7 @@ export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceG
 export const validateEventAssistancePolicy = ajv.compile(eventAssistancePolicySchema);
 export const validateEventAssistanceCommand = ajv.compile(eventAssistanceCommandSchema);
 export const validateEventAssistanceSourceWork = ajv.compile(eventAssistanceSourceWorkSchema);
+export const validateEventAssistanceRosterWork = ajv.compile(eventAssistanceRosterWorkSchema);
 export const validateEventAssistanceLiveWork = ajv.compile(eventAssistanceLiveWorkSchema);
 export const validateEventAssistanceLateJoinInput = ajv.compile(eventAssistanceLateJoinInputSchema);
 export const validateEventAssistanceLateJoinDecision = ajv.compile(eventAssistanceLateJoinDecisionSchema);
