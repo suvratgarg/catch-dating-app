@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -372,6 +371,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
           child: CatchAnalyticsMetricGrid(
             metrics: [
               CatchMetricCardData(
+                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.checkCircleOutlineRounded,
                 value: _eventSuccessFeaturePercent(scorecard.checkInRate),
                 label: context
@@ -379,6 +380,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
               ),
               CatchMetricCardData(
+                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.groups2Outlined,
                 value: _eventSuccessFeaturePercent(scorecard.introCoverageRate),
                 label: context
@@ -386,6 +389,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
               ),
               CatchMetricCardData(
+                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.favoriteOutlineRounded,
                 value: _eventSuccessFeaturePercent(scorecard.caughtSomeoneRate),
                 label: context
@@ -393,6 +398,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
               ),
               CatchMetricCardData(
+                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.volunteerActivismOutlined,
                 value: _eventSuccessFeaturePercent(
                   scorecard.wingmanRequestRate,
@@ -402,6 +409,8 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
               ),
               CatchMetricCardData(
+                partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+                missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.chatBubbleOutlineRounded,
                 value: _eventSuccessFeaturePercent(scorecard.chatStartRate),
                 label: context

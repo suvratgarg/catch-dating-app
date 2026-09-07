@@ -4478,6 +4478,81 @@ Widget catchMiniBarChartContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
+  type: CatchAnalyticsMetricTile,
+  path: '[Core primitives]/Analytics kit',
+)
+Widget catchAnalyticsMetricContractStates(BuildContext context) =>
+    _ContractScreen(
+      title: 'Analytics metric',
+      contractId: 'catch.analytics_metric',
+      states: const [
+        'ready',
+        'partial',
+        'missing',
+        'with-caption',
+        'without-caption',
+        'large-text',
+      ],
+      children: [
+        for (final status in CatchMetricStatus.values)
+          _StateCard(
+            label: status.name,
+            child: CatchAnalyticsMetricTile(
+              data: CatchMetricCardData(
+                icon: CatchIcons.confirmationNumberOutlined,
+                value: status == CatchMetricStatus.missing ? '--' : '126',
+                label: 'Bookings',
+                caption: status == CatchMetricStatus.ready
+                    ? 'Confirmed seats'
+                    : null,
+                status: status,
+                partialBadgeLabel: 'Partial',
+                missingBadgeLabel: 'Missing',
+              ),
+            ),
+          ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchAnalyticsDataQualityList,
+  path: '[Core primitives]/Analytics kit',
+)
+Widget catchAnalyticsDataQualityContractStates(
+  BuildContext context,
+) => _ContractScreen(
+  title: 'Analytics data quality',
+  contractId: 'catch.analytics_data_quality',
+  states: const ['ready', 'partial', 'missing', 'empty', 'large-text'],
+  children: [
+    _StateCard(
+      label: 'Source readiness',
+      child: CatchAnalyticsDataQualityList(
+        rows: [
+          for (final status in CatchMetricStatus.values)
+            CatchDataQualityRowData(
+              status: status,
+              detail: switch (status) {
+                CatchMetricStatus.ready => 'Attendance data is ready.',
+                CatchMetricStatus.partial =>
+                  'Recent bookings are still being counted.',
+                CatchMetricStatus.missing =>
+                  'Revenue is unavailable until a payment account is connected.',
+              },
+            ),
+        ],
+      ),
+    ),
+    const _StateCard(
+      label: 'No data-quality rows',
+      child: CatchAnalyticsDataQualityList(rows: []),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Contract states',
   type: CatchMetricStrip,
   path: '[Core primitives]/Data display',
 )

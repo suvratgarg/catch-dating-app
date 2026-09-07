@@ -1,7 +1,7 @@
 # Host Club Insights Tab Audit & Restructure Spec (for Codex)
 
 Status: ready for implementation · 2026-07-17
-Scope: `lib/hosts/presentation/host_operations/` (analytics + insights files), `lib/hosts/data/host_analytics_repository.dart`, `lib/core/widgets/catch_analytics_kit.dart`, `lib/l10n/`, `lib/routing/`, `functions/src/analytics/`, `contracts/`, `design/screens/`, `widgetbook/`, `test/`
+Scope: `lib/hosts/presentation/host_operations/` (analytics + insights files), `lib/hosts/data/host_analytics_repository.dart`, `packages/catch_ui/lib/src/components/catch_analytics_*.dart`, `lib/l10n/`, `lib/routing/`, `functions/src/analytics/`, `contracts/`, `design/screens/`, `widgetbook/`, `test/`
 Companion: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md)
 (the "edit spec") — its Phase 0 §4.1 width-constraint item covers the
 Insights pane too; do not duplicate that work here.

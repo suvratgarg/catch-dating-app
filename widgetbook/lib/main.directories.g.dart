@@ -2059,6 +2059,23 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Analytics kit',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAnalyticsDataQualityList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchAnalyticsDataQualityContractStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Ready, partial and missing data',
+                builder:
+                    _widgetbook_workspace_primitives_analytics_kit_use_cases
+                        .catchAnalyticsDataQualityStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchAnalyticsMetricGrid',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2072,6 +2089,12 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookComponent(
             name: 'CatchAnalyticsMetricTile',
             useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchAnalyticsMetricContractStates,
+              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Tile states',
                 builder:

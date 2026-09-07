@@ -191,6 +191,8 @@ class HostReportSignalGrid extends StatelessWidget {
       child: CatchAnalyticsMetricGrid(
         metrics: [
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.rateReviewOutlined,
             value: _eventSuccessPercent(scorecard.feedbackResponseRate),
             label: context.l10n.eventSuccessEventSuccessHostReportLabelFeedback,
@@ -201,6 +203,8 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.groups2Outlined,
             value: '${scorecard.conversationExcludedAttendeeCount}',
             label: context
@@ -214,6 +218,8 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.favoriteOutlineRounded,
             value: _eventSuccessPercent(scorecard.caughtSomeoneRate),
             label: context
@@ -226,12 +232,16 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.favoriteRounded,
             value: '${scorecard.catchSentCount}',
             label:
                 context.l10n.eventSuccessEventSuccessHostReportLabelCatchesSent,
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.groups2Outlined,
             value: _eventSuccessPercent(scorecard.assignmentCoverageRate),
             label: context
@@ -244,6 +254,8 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.visibilityOffOutlined,
             value: _eventSuccessPercent(scorecard.assignmentOptOutRate),
             label: context.l10n.eventSuccessEventSuccessHostReportLabelOptedOut,
@@ -253,6 +265,8 @@ class HostReportSignalGrid extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.volunteerActivismOutlined,
             value: _eventSuccessPercent(scorecard.wingmanRequestRate),
             label:
@@ -282,6 +296,8 @@ class HostFunnelSummary extends StatelessWidget {
       child: CatchAnalyticsMetricGrid(
         metrics: [
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.personAddAlt1Rounded,
             value: _eventSuccessPercent(funnel.demandConversionRate),
             label: context
@@ -293,6 +309,8 @@ class HostFunnelSummary extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.checkCircleOutlineRounded,
             value: _eventSuccessPercent(funnel.requestApprovalRate),
             label: context
@@ -300,6 +318,8 @@ class HostFunnelSummary extends StatelessWidget {
                 .eventSuccessEventSuccessHostReportLabelRequestsApproved,
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.hourglassEmptyRounded,
             value: _eventSuccessPercent(funnel.waitlistOfferAcceptanceRate),
             label: context
@@ -311,6 +331,8 @@ class HostFunnelSummary extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.paymentsOutlined,
             value: _eventSuccessPercent(funnel.paymentCompletionRate),
             label: context
@@ -322,6 +344,8 @@ class HostFunnelSummary extends StatelessWidget {
                 ),
           ),
           CatchMetricCardData(
+            partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
+            missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
             icon: CatchIcons.chatBubbleOutlineRounded,
             value: _eventSuccessPercent(funnel.repeatAttendeeRate),
             label: context

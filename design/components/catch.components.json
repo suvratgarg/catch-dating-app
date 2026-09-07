@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-06",
+  "updated": "2026-09-07",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -15722,6 +15722,247 @@
       },
       "surfaces": {
         "flutter": "CatchTimestampedMessageText"
+      }
+    },
+    {
+      "id": "catch.analytics_metric",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchAnalyticsMetricTile",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Caller-formatted analytics summary tile with explicit ready, partial and missing-data presentation.",
+      "dart": {
+        "symbol": "CatchAnalyticsMetricTile",
+        "file": "packages/catch_ui/lib/src/components/catch_analytics_metric_tile.dart",
+        "constructors": [
+          "CatchAnalyticsMetricTile"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/AnalyticsMetricTile",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "AnalyticsMetricTile",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "data",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchMetricCardData"
+          }
+        ],
+        "states": [
+          "ready",
+          "partial",
+          "missing",
+          "with-caption",
+          "without-caption",
+          "large-text"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s1",
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "theme.light.color.surface",
+          "theme.light.color.line",
+          "theme.light.color.warning",
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3"
+        ],
+        "dartRoles": [
+          "CatchMetricCardData",
+          "CatchMetricStatus",
+          "CatchAnalyticsMetricGrid",
+          "CatchSurface",
+          "CatchBadge",
+          "CatchTextStyles.numericLarge",
+          "CatchTextStyles.labelM",
+          "CatchTextStyles.supporting"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.analytics_metric.grid",
+            "symbol": "CatchAnalyticsMetricGrid",
+            "file": "packages/catch_ui/lib/src/components/catch_analytics_metric_grid.dart",
+            "summary": "Two-column arrangement of the same metric tiles with an optional visible-item limit.",
+            "states": [
+              "empty",
+              "two-column",
+              "limited-items",
+              "large-text"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.analytics_metric",
+              "parentConceptId": "catch.analytics_metric",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.analytics_metric"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Preserve the existing natural-height layout at text scale 2.0; callers supply concise metric values and labels and full explanatory row text."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Callers own metric identity, formatted values and all visible copy, including partial and missing status labels.",
+          "Use CatchAnalyticsMetricGrid to arrange the same metric payloads in two columns; maxItems limits the visible prefix without changing order.",
+          "Data fetching, source readiness and range selection belong to feature adapters."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.analytics_metric",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.analytics_metric"
+      },
+      "surfaces": {
+        "flutter": "CatchAnalyticsMetricTile"
+      }
+    },
+    {
+      "id": "catch.analytics_data_quality",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchAnalyticsDataQualityList",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Stacked source-readiness rows with caller-resolved explanations and ready, partial or missing status icons.",
+      "dart": {
+        "symbol": "CatchAnalyticsDataQualityList",
+        "file": "packages/catch_ui/lib/src/components/catch_analytics_data_quality_list.dart",
+        "constructors": [
+          "CatchAnalyticsDataQualityList"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/AnalyticsDataQualityList",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "AnalyticsDataQualityList",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "rows",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchDataQualityRowData>"
+          }
+        ],
+        "states": [
+          "ready",
+          "partial",
+          "missing",
+          "empty",
+          "large-text"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "theme.light.color.surface",
+          "theme.light.color.line",
+          "theme.light.color.success",
+          "theme.light.color.warning",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchDataQualityRowData",
+          "CatchMetricStatus",
+          "CatchSurface",
+          "CatchIcons",
+          "CatchTextStyles.supporting"
+        ],
+        "goldens": [],
+        "members": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Preserve the existing natural-height layout at text scale 2.0; callers supply concise metric values and labels and full explanatory row text."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Callers resolve source status and explanatory copy before rendering.",
+          "Use for per-source readiness explanations; quantitative summaries belong to the analytics metric concept.",
+          "A status icon supplements explanatory text and does not replace it."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.analytics_data_quality",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.analytics_data_quality"
+      },
+      "surfaces": {
+        "flutter": "CatchAnalyticsDataQualityList"
       }
     }
   ]

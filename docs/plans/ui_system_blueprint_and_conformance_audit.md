@@ -801,6 +801,12 @@ selection menus, sheets and adaptive triggers then move into individual shared
 component files. Callers keep their items, selected values, callbacks and
 trigger builders; direct previews cover the sheet and both adaptive triggers.
 
+Analytics metric tiles, their two-column grid and data-quality rows move with
+unchanged rendering into individual shared files. Typed display data requires
+caller-resolved partial/missing labels; app adapters use the existing translated
+copy. Separate metric and source-readiness concepts register their responsibilities,
+and a direct data-quality preview adds both-theme and large-text coverage.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
