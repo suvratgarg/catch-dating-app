@@ -4,10 +4,6 @@ import {operationContentHash} from "../../operations/durableActions";
 import {isOrganizerManager} from "../../shared/organizerHosts";
 import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
-import {validateEventDocument} from
-  "../../shared/generated/validators/eventDocument";
-import {validateEventSuccessPlanDocument} from
-  "../../shared/generated/validators/eventSuccessPlanDocument";
 import {validateEventAssistanceGroupProgressDocument} from
   "../../shared/generated/validators/eventAssistanceGroupProgressDocument";
 import {validateEventAssistanceProgressReceiptDocument} from
@@ -27,11 +23,12 @@ import type {OrganizerDocument} from
 import {assertCommandContext, assertCommandRole} from "./commands";
 import {requireDocumentId} from "./guestRecords";
 import {
-  groupProgressSource, invalidSource, ProgressContext, progressIdentity,
+  invalidSource, ProgressContext, progressIdentity,
   projectGroupProgress,
 } from "./groupProgressSource";
 
-export const GROUP_PROGRESS = "eventAssistanceGroupProgress";
+import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
+export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
 
 /** Physical progress is independent of messaging policy and execution. */
@@ -131,41 +128,15 @@ export class EventGroupProgressStore {
     requireDocumentId(context.organizerId);
     requireDocumentId(context.eventId);
     requireDocumentId(groupId);
-    const progressId = progressIdentity(context, groupId);
-    const [eventSnap, organizerSnap, planSnap, progressSnap] = await tx.getAll(
-      this.db.collection("events").doc(context.eventId),
-      this.db.collection("organizers").doc(context.organizerId),
-      this.db.collection("eventSuccessPlans").doc(context.eventId),
-      this.db.collection(GROUP_PROGRESS).doc(progressId));
-    const event = eventSnap.data();
-    const organizer = organizerSnap.data();
-    const plan = planSnap.data() ?? null;
-    if (!validateEventDocument(event) ||
-        event.organizerId !== context.organizerId ||
-        !validateOrganizerDocument(organizer)) throw invalidSource();
+    const organizer = (await tx.get(this.db.collection("organizers")
+      .doc(context.organizerId))).data();
+    if (!validateOrganizerDocument(organizer)) throw invalidSource();
     if (!isOrganizerManager(organizer as unknown as OrganizerDocument,
       actorUid)) {
       throw new HttpsError("permission-denied",
         "Only organizer managers can control group progress.");
     }
-    if (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
-        plan.eventId !== context.eventId ||
-        (plan.organizerId ?? plan.clubId) !== context.organizerId)) {
-      throw invalidSource();
-    }
-    const progress = progressSnap.data() ?? null;
-    const now = this.clock();
-    if (!Number.isSafeInteger(now) || now < 0 || (progress !== null &&
-        (!validateEventAssistanceGroupProgressDocument(progress) ||
-          progress.progressId !== progressId || progress.groupId !== groupId ||
-          progressIdentity(progress.context, progress.groupId) !== progressId ||
-          progress.confirmedAt > now || progress.updatedAt > now ||
-          progress.createdAt > progress.confirmedAt ||
-          progress.confirmedAt !== progress.updatedAt))) throw invalidSource();
-    const source = groupProgressSource({context, groupId, event, plan,
-      eventGeneration: eventSnap.createTime,
-      planGeneration: planSnap.createTime, now});
-    return {source, progress, now};
+    return readGroupProgressState(this.db, tx, context, groupId, this.clock);
   }
 }
 

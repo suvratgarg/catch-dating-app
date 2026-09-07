@@ -3,7 +3,8 @@ import test from "node:test";
 import {createHash, createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore, seedJoiningProgress} from
+  "./groupProgressTestFixtures";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
 import type {EventAssistanceMessageIntent as Intent} from
@@ -27,7 +28,7 @@ const appSecret = "fixture-wa-action-secret";
 async function fixture(options: {db?: Firestore; claim?: boolean;
   accept?: boolean; replyKind?: ReplyBinding["replyKind"];
   notice?: "safety" | "ack"} = {}) {
-  const fake = new FakeFirestore();
+  const fake = new ProgressFirestore();
   const db = options.db ?? fake as unknown as Firestore;
   const id = randomUUID();
   const clock = {now: 1_000_000};
@@ -49,8 +50,8 @@ async function fixture(options: {db?: Firestore; claim?: boolean;
   const eventPath = "events/" + context.eventId;
   const attendeePath = "eventAttendees/" + attendeeId;
   const senderPath = "organizerSenderConnections/" + senderId;
-  await put(eventPath, {organizerId: context.organizerId, status: "active",
-    name: "Friday social", endTime: Timestamp.fromMillis(3_000_000)});
+  const progress = await seedJoiningProgress(db, context, clock.now,
+    3_000_000);
   await put(attendeePath, {organizerId: context.organizerId,
     eventId: context.eventId, status: "registered", phoneE164: phone,
     createdAt: Timestamp.fromMillis(900_000), attendanceRevision: 7});
@@ -83,10 +84,7 @@ async function fixture(options: {db?: Firestore; claim?: boolean;
         value: {kind: "requestHelp", category: "comfortSafety"}}] :
       [{choiceId: "ack", label: "Understood",
         value: {kind: "acknowledge", instructionRevision: 1}}]} :
-    {...base, kind: "joiningUpdate", guidance: {
-      revision: 1, materialKey: "stop-1", text: "Meet us at stop one.",
-      validUntil: 2_000_000, destination: {kind: "itineraryStop",
-        itineraryId: "route-1", stopId: "stop-1"}}, choices: [
+    {...base, kind: "joiningUpdate", guidance: progress.guidance, choices: [
       {choiceId: "on-my-way", label: "I'm on my way",
         value: {kind: "joinIntent", intention: {kind: "onMyWay",
           claimedEta: null}}},
@@ -185,7 +183,8 @@ async function fixture(options: {db?: Firestore; claim?: boolean;
   };
   return {db, fake, clock, context, guest, intent, thread, link, guestStore,
     outbox, replies, attempt, claim, accept, receive, submitWeb, put, read,
-    eventPath, guestPath, attendeePath, senderPath, messagePath, bindingPath,
+    progress, eventPath, guestPath, attendeePath, senderPath, messagePath,
+    bindingPath,
     cleanup};
 }
 
@@ -263,11 +262,15 @@ test("sender, recipient, original message and native kind must all match",
 
 test("changed source identity, attendance and expiry prevent native effects",
   async () => {
-    for (const change of ["phone", "generation", "checkIn", "cancel",
+    for (const change of ["progress", "phone", "generation", "checkIn",
+      "cancel",
       "senderOwner", "episode", "expiry"]) {
       const h = await fixture();
       const eventId = await h.receive();
       const attendee = (await h.read(h.attendeePath))!;
+      if (change === "progress") {
+        await h.progress.confirm("two");
+      }
       if (change === "phone") {
         await h.put(h.attendeePath,
           {...attendee, phoneE164: "+918888888888"});
@@ -405,18 +408,19 @@ test("expiry is rechecked after source reads and missing events close replies",
       {kind: "rejected", reason: "unavailable"});
   });
 
-test("event end fences an otherwise unexpired native reply", async () => {
-  const h = await fixture();
-  const eventId = await h.receive();
-  await h.put(h.eventPath, {...(await h.read(h.eventPath)),
-    endTime: Timestamp.fromMillis(h.clock.now + 1)});
-  let reads = 0;
-  const replies = new WhatsappReplyStore(h.db, () =>
-    reads++ === 0 ? h.clock.now : h.clock.now + 1);
-  assert.deepEqual(await replies.consumeQueued(eventId),
-    {kind: "rejected", reason: "factsStale"});
-  assert.equal(parseGuest(await h.read(h.guestPath)).revision, 0);
-});
+test("shortened schedule invalidates an otherwise unexpired native reply",
+  async () => {
+    const h = await fixture();
+    const eventId = await h.receive();
+    await h.put(h.eventPath, {...(await h.read(h.eventPath)),
+      endTime: Timestamp.fromMillis(h.clock.now + 1)});
+    let reads = 0;
+    const replies = new WhatsappReplyStore(h.db, () =>
+      reads++ === 0 ? h.clock.now : h.clock.now + 1);
+    assert.deepEqual(await replies.consumeQueued(eventId),
+      {kind: "rejected", reason: "noLongerNeeded"});
+    assert.equal(parseGuest(await h.read(h.guestPath)).revision, 0);
+  });
 
 test("Firestore arbitrates competing native and web replies to one effect", {
   skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,

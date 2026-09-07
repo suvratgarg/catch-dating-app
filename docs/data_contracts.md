@@ -133,6 +133,19 @@ progress revisions, a current destination, an open event and a live runtime.
 The collections deny all direct client reads and writes. This boundary records
 a physical fact and does not authorize provider I/O or guest attendance changes.
 
+Live joining updates must match the canonical guidance derived from current
+confirmed progress. Publication, guest-link issuance, guest views/actions and
+both channel dispatch paths read that source within their owning transaction.
+The destination determines the group scope; guest group-membership authority
+is a separate pending fact-reader concern. Material, source identity and
+validity must still match, and the message cannot invent a future progress
+revision. An identical reconfirmation may advance progress without invalidating
+unchanged instructions. A stale source returns no current guest instructions
+and stops a pending send; a transient database error remains retryable. The
+publisher must supply fresh source-derived guidance before an existing link
+can show a changed destination. No additional guidance collection or schema
+was introduced.
+
 ### Event Service Outbox Contract
 
 `eventAssistanceMessages/{messageId}` is server-only delivery state owned by

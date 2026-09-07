@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import {createHash, createHmac} from "node:crypto";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore, seedJoiningProgress} from
+  "./groupProgressTestFixtures";
 import {operationContentHash} from "../../operations/durableActions";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
@@ -27,7 +28,7 @@ export const appSecret = "fixture-stop-secret";
 export async function harness(realDb?: Firestore, id = "test",
   permittedRoutes: MessageRecord["intent"]["permittedRoutes"] =
   ["organizerEventWhatsapp"]) {
-  const fake = new FakeFirestore();
+  const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
   const clock = {now: start};
   const write = async (path: string, value: object) => {
@@ -47,9 +48,8 @@ export async function harness(realDb?: Firestore, id = "test",
   const policyPath = WHATSAPP_POLICIES + "/" + scope.senderId;
   const attendeePath = "eventAttendees/" + scope.attendeeId;
   const stamp = {_seconds: start / 1000, _nanoseconds: 0};
-  await write("events/" + context.eventId, {organizerId: context.organizerId,
-    status: "active", name: "Fixture event",
-    endTime: {_seconds: start / 1000 + 3600, _nanoseconds: 0}});
+  const progress = await seedJoiningProgress(db, context, start,
+    start + 3_600_000);
   await write(attendeePath, {organizerId: context.organizerId,
     eventId: context.eventId, status: "registered", linkedUid: actor.uid,
     phoneE164: actor.phone, createdAt: stamp});
@@ -107,9 +107,7 @@ export async function harness(realDb?: Firestore, id = "test",
     permittedRoutes,
     deliveryPolicy: {maxAttempts: 2,
       maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}, kind: "joiningUpdate",
-    guidance: {revision: 1, materialKey: "s1", text: "Join us at stop one.",
-      validUntil: start + 1_800_000, destination: {kind: "itineraryStop",
-        itineraryId: "route", stopId: "s1"}}, choices: [{choiceId: "on-way",
+    guidance: progress.guidance, choices: [{choiceId: "on-way",
       label: "On my way", value: {kind: "joinIntent",
         intention: {kind: "onMyWay", claimedEta: null}}}]};
   const thread = await guests.publishMessage(intent, null);
@@ -156,7 +154,8 @@ export async function harness(realDb?: Firestore, id = "test",
       now: Timestamp.fromMillis(clock.now), signatureHeader: "sha256=" +
         createHmac("sha256", appSecret).update(rawBody).digest("hex")});
   };
-  return {fake, db, clock, context, scope, actor, expected, outbox, messageId,
+  return {progress, fake, db, clock, context, scope, actor, expected, outbox,
+    messageId,
     intent, guests,
     link, store, claim, reserve, stop, preferences, grant, budgetPaths,
     senderPath, policyPath, attendeePath, templatePath, read, write};

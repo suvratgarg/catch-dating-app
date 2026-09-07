@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore, seedJoiningProgress} from
+  "./groupProgressTestFixtures";
 import {MetaWhatsappProvider} from "../../organizers/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {guestCollections, parseGrant} from "./guestRecords";
@@ -19,11 +20,10 @@ const keys: GuestLinkSigningKeys = {currentKeyId: "test-wa-key",
   keyFor: () => Buffer.alloc(32, 3)};
 
 async function fixture() {
-  const db = new FakeFirestore();
+  const db = new ProgressFirestore();
   const context = {mode: "live" as const, eventId: "e1", organizerId: "o1"};
-  db.write("events/e1", {organizerId: "o1", name: "Evening crawl",
-    status: "active", endTime: {seconds: (now + 3_600_000) / 1000,
-      nanoseconds: 0}});
+  const progress = await seedJoiningProgress(db as unknown as Firestore,
+    context, now, now + 3_600_000);
   db.write("eventAttendees/a1", {organizerId: "o1", eventId: "e1",
     status: "registered", linkedUid: "u1", phoneE164: "+919999999999",
     createdAt: {seconds: (now - 60_000) / 1000, nanoseconds: 0}});
@@ -37,10 +37,7 @@ async function fixture() {
     createdAt: now, expiresAt: now + 1_800_000,
     permittedRoutes: ["organizerEventWhatsapp"], deliveryPolicy: {
       maxAttempts: 2, maxAttemptsPerRoute: 1, minimumRetrySeconds: 1,
-    }, kind: "joiningUpdate", guidance: {revision: 1, materialKey: "s1",
-      text: "Meet at the first venue.", validUntil: now + 1_800_000,
-      destination: {kind: "itineraryStop", itineraryId: "itinerary",
-        stopId: "s1"}},
+    }, kind: "joiningUpdate", guidance: progress.guidance,
     choices: [
       {choiceId: "on-my-way", label: "I'm on my way", value: {
         kind: "joinIntent",

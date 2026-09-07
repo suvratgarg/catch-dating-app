@@ -9,6 +9,7 @@ import type {
 } from
   "../../shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
 import {operationContentHash} from "../../operations/durableActions";
+import {joiningGuidanceIsCurrent} from "./groupProgressReader";
 import {applyGuestChoice} from "./guestChoiceActions";
 import {
   assistanceMessageId, MessageRecord, newMessageRecord, parseMessageRecord,
@@ -32,6 +33,7 @@ interface ResolvedGuestView {
   thread: Thread;
   message: MessageRecord;
   source: GuestSourceFacts;
+  guidanceCurrent: boolean;
 }
 
 /** Trusted publisher plus the least-authority bearer response boundary. */
@@ -102,6 +104,9 @@ export class GuestAssistanceStore {
           guest.episodeId !== intent.episodeId) {
         throw unavailable();
       }
+      if (!await joiningGuidanceIsCurrent(this.db, tx, intent, this.now())) {
+        throw unavailable();
+      }
       const previous = threadSnap.exists ?
         parseThread(threadSnap.data()) : null;
       if (previous && previous.threadId !== threadId) throw unavailable();
@@ -162,7 +167,7 @@ export class GuestAssistanceStore {
         thread.attendeeId);
       const message = parseMessageRecord((await tx.get(this.db
         .collection(EVENT_ASSISTANCE_MESSAGES).doc(thread.messageId))).data());
-      const now = this.now();
+      let now = this.now();
       if (!guestCanReceiveMessage(guest, source, message.intent) ||
           guest.episodeId !== thread.episodeId ||
           message.messageId !== thread.messageId ||
@@ -170,6 +175,12 @@ export class GuestAssistanceStore {
           (message.lifecycle !== "active" &&
             message.lifecycle !== "responded") ||
           message.intent.expiresAt <= now ||
+          !messageWindowOpen(message.intent, source, now)) throw unavailable();
+      if (!await joiningGuidanceIsCurrent(this.db, tx, message.intent, now)) {
+        throw unavailable();
+      }
+      now = this.now();
+      if (message.intent.expiresAt <= now ||
           !messageWindowOpen(message.intent, source, now)) throw unavailable();
       let grant: Grant;
       if (grantSnap.exists) {
@@ -277,7 +288,9 @@ export class GuestAssistanceStore {
     }
     const source = await readGuestSourceFacts(this.db, tx, guest.context,
       guest.attendeeId);
-    return {grant, guest, thread, message, source};
+    const guidanceCurrent = await joiningGuidanceIsCurrent(this.db, tx,
+      message.intent, this.now());
+    return {grant, guest, thread, message, source, guidanceCurrent};
   }
 
   private project(resolved: ResolvedGuestView, now: number): GuestView {
@@ -295,6 +308,7 @@ export class GuestAssistanceStore {
     if (intent.kind === "joiningUpdate" &&
         source.attendeeStatus === "checkedIn") return closed("alreadyJoined");
     if (intent.expiresAt <= now) return closed("expired");
+    if (!resolved.guidanceCurrent) return closed("noInstructions");
     if (message.lifecycle === "cancelled" ||
         message.lifecycle === "superseded") return closed("noInstructions");
     const response = message.response ? {

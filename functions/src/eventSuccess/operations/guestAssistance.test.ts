@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
@@ -10,7 +10,8 @@ import type {SubmitEventAssistanceGuestChoiceCallablePayload as Submission} from
   "../../shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore, seedJoiningProgress} from
+  "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {Guest, guestCollections, parseGuest} from "./guestRecords";
 import {GuestLinkSigningKeys} from "./guestLinkTokens";
@@ -39,7 +40,9 @@ function sourceAttendee() {
     attendanceRevision: 7};
 }
 
-function message(guest: Guest, id = "message:1"): Intent {
+function message(guest: Guest,
+  guidance: Extract<Intent, {kind: "joiningUpdate"}>["guidance"],
+  id = "message:1"): Extract<Intent, {kind: "joiningUpdate"}> {
   return {schemaVersion: 1, intentId: id, revision: 1, context,
     eventId: context.eventId, attendeeId: guest.attendeeId,
     episodeId: guest.episodeId,
@@ -48,9 +51,7 @@ function message(guest: Guest, id = "message:1"): Intent {
     permittedRoutes: ["catchEventSms"],
     deliveryPolicy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
       minimumRetrySeconds: 1}, kind: "joiningUpdate",
-    guidance: {revision: 1, materialKey: "stop-1", text: "Meet us at stop one.",
-      validUntil: 2000000, destination: {kind: "itineraryStop",
-        itineraryId: "itinerary-1", stopId: "stop-1"}},
+    guidance: structuredClone(guidance),
     choices: [
       {choiceId: "on-my-way", label: "I'm on my way",
         value: {kind: "joinIntent", intention: {kind: "onMyWay",
@@ -63,15 +64,16 @@ function message(guest: Guest, id = "message:1"): Intent {
 }
 
 async function harness() {
-  const db = new FakeFirestore();
-  db.write("events/event-1", sourceEvent());
+  const db = new ProgressFirestore();
+  const progress = await seedJoiningProgress(db as unknown as Firestore,
+    context, 1_000_000, 3_000_000);
   db.write("eventAttendees/attendee-1", sourceAttendee());
   const clock = {now: 1000000};
   const store = new GuestAssistanceStore(db as unknown as Firestore,
     () => clock.now);
   const guest = await store.startEpisode(context, "attendee-1",
     "start-1", null);
-  const intent = message(guest);
+  const intent = message(guest, progress.guidance);
   const thread = await store.publishMessage(intent, null);
   const link = await store.issueLink(thread.threadId, "send-1", keys);
   const view = await store.getView(link.linkId, link.secret);
@@ -80,7 +82,8 @@ async function harness() {
     intentId: view.intentId, intentRevision: view.intentRevision,
     expectedGuestRevision: view.guestRevision, choiceId: "on-my-way",
     requestId: "reply-1"};
-  return {db, store, clock, guest, intent, thread, link, view, submission};
+  return {progress, db, store, clock, guest, intent, thread, link, view,
+    submission};
 }
 
 test("guest grants are scoped, secret-free and replayable", async () => {
@@ -108,28 +111,27 @@ test("guest grants are scoped, secret-free and replayable", async () => {
 test("old links follow updates; old buttons cannot act", async () => {
   const h = await harness();
   h.clock.now++;
-  const next = message(h.guest, "message:2");
+  const next = message(h.guest, h.intent.guidance, "message:2");
   assert.ok(next.kind === "joiningUpdate");
-  next.guidance.revision = 2;
-  next.guidance.text = "Meet us at stop two.";
-  next.guidance.materialKey = "stop-2";
+  next.guidance = await h.progress.confirm("two");
   const thread = await h.store.publishMessage(next, h.thread.revision);
   assert.equal(thread.revision, h.thread.revision + 1);
   const view = await h.store.getView(h.link.linkId, h.link.secret);
   assert.ok(view.status === "ready");
-  assert.equal(view.text, "Meet us at stop two.");
+  assert.equal(view.text, "Join us at stop two.");
   const result = await h.store.submit(h.submission);
   assert.deepEqual(result.result, {kind: "rejected", reason: "staleIntent"});
   const old = parseMessageRecord(h.db.read(EVENT_ASSISTANCE_MESSAGES + "/" +
     assistanceMessageId(h.intent)));
   assert.equal(old.lifecycle, "superseded");
-  await assert.rejects(h.store.publishMessage(message(h.guest, "message:3"),
+  await assert.rejects(h.store.publishMessage(
+    message(h.guest, next.guidance, "message:3"),
     h.thread.revision), /changed/);
 });
 
 test("workflow conversations retain independent instructions", async () => {
   const h = await harness();
-  const second = message(h.guest, "another-workflow");
+  const second = message(h.guest, h.intent.guidance, "another-workflow");
   second.workflow = {kind: "joiningInstructions", occurrenceId: "welcome-1"};
   const thread = await h.store.publishMessage(second, null);
   assert.notEqual(thread.threadId, h.thread.threadId);
@@ -227,7 +229,7 @@ test("joining replies require the latest guest-state revision", async () => {
 test("help replies create one case with the correct owner", async () => {
   for (const category of ["eventLogistics", "comfortSafety"] as const) {
     const h = await harness();
-    const next = message(h.guest, "help-message");
+    const next = message(h.guest, h.intent.guidance, "help-message");
     next.choices = [{choiceId: "help", label: "I need help",
       value: {kind: "requestHelp", category}}];
     await h.store.publishMessage(next, h.thread.revision);
@@ -272,7 +274,7 @@ test("cancellation instructions remain readable after roster cancellation",
     h.db.write("events/event-1", {...sourceEvent(), status: "cancelled"});
     h.db.write("eventAttendees/attendee-1", {...sourceAttendee(),
       status: "cancelled"});
-    const base = message(h.guest);
+    const base = message(h.guest, h.intent.guidance);
     const intent: Intent = {schemaVersion: 1, intentId: "cancellation:1",
       revision: 1, context, eventId: context.eventId,
       attendeeId: h.guest.attendeeId, episodeId: h.guest.episodeId,
@@ -291,6 +293,79 @@ test("cancellation instructions remain readable after roster cancellation",
     assert.equal(view.title, "Event cancelled");
     assert.equal((await h.store.getView(h.link.linkId, h.link.secret)).status,
       "unavailable");
+  });
+
+test("changed progress withholds publication, links and guest effects",
+  async () => {
+    for (const change of ["destination", "location", "missing", "generation",
+      "complete"]) {
+      const h = await harness();
+      if (change === "destination") await h.progress.confirm("two");
+      if (change === "location") {
+        const event = structuredClone(h.progress.event);
+        event.itinerary[0].location.name = "Different entrance";
+        h.db.write("events/event-1", event);
+      }
+      if (change === "missing") {
+        h.db.remove("eventAssistanceGroupProgress/" +
+          h.progress.view.progress!.progressId);
+      }
+      if (change === "generation") {
+        h.db.generation = Timestamp.fromMillis(2);
+      }
+      if (change === "complete") {
+        h.db.write("eventSuccessPlans/event-1",
+          {...h.progress.plan, status: "complete"});
+      }
+      const before = h.db.entries();
+      assert.deepEqual(await h.store.getView(h.link.linkId, h.link.secret),
+        {status: "unavailable", serverTime: h.clock.now,
+          reason: "noInstructions"});
+      assert.equal((await h.store.submit(h.submission)).result.kind,
+        "rejected");
+      await assert.rejects(h.store.publishMessage(h.intent, null),
+        /unavailable/);
+      await assert.rejects(h.store.issueLink(h.thread.threadId,
+        "fresh-link", keys), /unavailable/);
+      const db = h.db as unknown as Firestore;
+      const gate = await db.runTransaction((tx) =>
+        readEventAssistanceMessageGate(db, tx, h.intent, h.clock.now));
+      assert.deepEqual(gate, {kind: "stop", reason: "superseded"});
+      assert.deepEqual(h.db.entries(), before);
+    }
+  });
+
+test("identical reconfirmation preserves links; invented guidance is rejected",
+  async () => {
+    const h = await harness();
+    await h.progress.confirm("one");
+    assert.deepEqual(await h.store.getView(h.link.linkId, h.link.secret),
+      h.view);
+    for (const guidance of [
+      {...h.intent.guidance, revision: 3},
+      {...h.intent.guidance, text: "Unconfirmed directions"},
+      {...h.intent.guidance, validUntil: 3_000_001},
+      {...h.intent.guidance, materialKey: "invented"},
+    ]) {
+      await assert.rejects(h.store.publishMessage({...h.intent,
+        intentId: "changed", guidance}, h.thread.revision), /unavailable/);
+    }
+    assert.equal((await h.store.submit(h.submission)).result.kind, "accepted");
+  });
+
+test("source read failure stays retryable and cannot produce a guest effect",
+  async () => {
+    const h = await harness();
+    const before = h.db.entries();
+    h.db.beforeRead = (path) => {
+      if (path.startsWith("eventAssistanceGroupProgress/")) {
+        throw new Error("temporary Firestore read failure");
+      }
+    };
+    await assert.rejects(h.store.submit(h.submission), /temporary Firestore/);
+    assert.deepEqual(h.db.entries(), before);
+    h.db.beforeRead = undefined;
+    assert.equal((await h.store.submit(h.submission)).result.kind, "accepted");
   });
 
 test("guest callables validate, rate-limit and expose only scoped output",
@@ -327,13 +402,14 @@ test("Firestore commits one reply and one guest effect under contention", {
   const app = initializeApp({projectId: "demo-catch-rules"}, randomUUID());
   const db = getFirestore(app);
   try {
-    await db.collection("events").doc("event-1").set(sourceEvent());
+    const progress = await seedJoiningProgress(db, context, 1_000_000,
+      3_000_000);
     await db.collection("eventAttendees").doc("attendee-1")
       .set(sourceAttendee());
     const store = new GuestAssistanceStore(db, () => 1000000);
     const guest = await store.startEpisode(context, "attendee-1",
       "start-1", null);
-    const intent = message(guest);
+    const intent = message(guest, progress.guidance);
     const thread = await store.publishMessage(intent, null);
     const link = await store.issueLink(thread.threadId, "send-1", keys);
     const input: Submission = {linkId: link.linkId, secret: link.secret,
@@ -350,6 +426,17 @@ test("Firestore commits one reply and one guest effect under contention", {
     assert.equal(saved?.intention.kind, "onMyWay");
     assert.equal((await db.collection("eventAttendees").doc("attendee-1").get())
       .data()?.status, "registered");
+    const updatedGuidance = await progress.confirm("two");
+    assert.equal((await store.getView(link.linkId, link.secret)).status,
+      "unavailable");
+    assert.equal((await store.submit(input)).result.kind, "rejected");
+    const updated = message(guest, updatedGuidance, "new-destination");
+    await store.publishMessage(updated, thread.revision);
+    const view = await store.getView(link.linkId, link.secret);
+    assert.ok(view.status === "ready");
+    assert.equal(view.text, "Join us at stop two.");
+    assert.deepEqual((await store.submit(input)).result,
+      {kind: "rejected", reason: "staleIntent"});
   } finally {
     await deleteApp(app);
   }

@@ -11,7 +11,8 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore} from "firebase-admin/firestore";
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore, seedJoiningProgress} from
+  "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {guestCollections, parseGrant} from "./guestRecords";
 import {GuestLinkSigningKeys} from "./guestLinkTokens";
@@ -57,7 +58,7 @@ function config(senderId = "sms-sender-1"): SmsConfig {
 }
 
 async function harness(realDb?: Firestore, id = "test") {
-  const fake = new FakeFirestore();
+  const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
   const clock = {now: start};
   const paths = new Set<string>();
@@ -72,10 +73,8 @@ async function harness(realDb?: Firestore, id = "test") {
     organizerId: "organizer-" + id};
   const attendeeId = "attendee-" + id;
   const sender = config("sender-" + id);
-  await write("events/" + context.eventId, {organizerId: context.organizerId,
-    name: "Friday social", status: "active", endTime: {
-      seconds: (start + 3_600_000) / 1000, nanoseconds: 0,
-    }});
+  const progress = await seedJoiningProgress(db, context, start,
+    start + 3_600_000);
   const attendeePath = "eventAttendees/" + attendeeId;
   await write(attendeePath, {organizerId: context.organizerId,
     eventId: context.eventId, status: "registered", linkedUid: "guest-uid",
@@ -91,9 +90,7 @@ async function harness(realDb?: Firestore, id = "test") {
     createdAt: start, expiresAt: start + 1_800_000,
     permittedRoutes: ["catchEventSms"], deliveryPolicy: {maxAttempts: 2,
       maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}, kind: "joiningUpdate",
-    guidance: {revision: 1, materialKey: "stop-1", text: "Meet at stop one.",
-      validUntil: start + 1_800_000, destination: {kind: "itineraryStop",
-        itineraryId: "itinerary-1", stopId: "stop-1"}},
+    guidance: progress.guidance,
     choices: [{choiceId: "on-my-way", label: "I'm on my way", value: {
       kind: "joinIntent", intention: {kind: "onMyWay", claimedEta: null},
     }}]};
@@ -149,7 +146,8 @@ async function harness(realDb?: Firestore, id = "test") {
     sender, senderPath, guest, guests, thread, link,
     permission, permissionPath, preferences, budgetPaths, store,
     credentials, requests,
-    transport, provider, worker, write, read, intent, messageId, paths};
+    transport, provider, worker, write, read, intent, messageId, paths,
+    progress};
 }
 
 test("SMS segmentation counts GSM extensions and Unicode pairs at boundaries",
@@ -178,7 +176,7 @@ test("SMS renders exact approved parts with a scoped response link",
     const input = {config: h.sender, intent: h.intent, grant, keys,
       eventTitle: "Friday social", now: h.clock.now};
     const rendered = renderEventSms(input);
-    assert.equal(rendered.text, "Catch: Meet at stop one. Reply: " +
+    assert.equal(rendered.text, "Catch: Join us at stop one. Reply: " +
     "https://catchdates.com/event-update/" + h.link.linkId + "#" + h.link.secret);
     assert.equal(rendered.maxCostMicros, rendered.segments * 500_000);
     assert.throws(() => renderEventSms({...input,
@@ -888,3 +886,44 @@ test("Firestore deduplicates competing SMS delivery reports", {
     await deleteApp(app);
   }
 });
+
+test("changed destination between reservation and SMS claim prevents sending",
+  async () => {
+    const h = await harness();
+    const outbox = h.store.outbox(h.link.linkId);
+    const reserved = await outbox.reserve(h.messageId);
+    assert.equal(reserved.decision.kind, "dispatch");
+    await h.progress.confirm("two");
+    const claim = await outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.sender));
+    assert.equal(claim.kind, "withheld");
+    const result = await h.worker.dispatch(h.messageId, h.link.linkId);
+    assert.notEqual(result.kind, "submitted");
+    assert.equal(h.requests.length, 0);
+    for (const path of h.budgetPaths) {
+      assert.equal(parseSmsBudget(await h.read(path)).chargedMicros, 0);
+    }
+  });
+
+test("temporary progress read failure leaves an SMS reservation retryable",
+  async () => {
+    const h = await harness();
+    const outbox = h.store.outbox(h.link.linkId);
+    const reserved = await outbox.reserve(h.messageId);
+    assert.equal(reserved.decision.kind, "dispatch");
+    h.fake.beforeRead = (path) => {
+      if (path.startsWith("eventAssistanceGroupProgress/")) {
+        throw new Error("temporary progress read failure");
+      }
+    };
+    await assert.rejects(outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.sender)), /temporary progress/);
+    assert.deepEqual(await outbox.get(h.messageId), reserved.record);
+    assert.equal(h.requests.length, 0);
+    h.fake.beforeRead = undefined;
+    assert.equal((await h.worker.dispatch(h.messageId, h.link.linkId)).kind,
+      "submitted");
+    assert.equal(h.requests.length, 1);
+  });

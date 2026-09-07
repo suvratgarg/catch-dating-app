@@ -5,6 +5,7 @@ import {
   guestCanReceiveMessage, guestCollections, guestIdentity, messageWindowOpen,
   parseGuest, parseThread, readGuestSourceFacts, threadIdentity,
 } from "./guestRecords";
+import {joiningGuidanceIsCurrent} from "./groupProgressReader";
 import {assistanceMessageId} from "./messageOutbox";
 
 /** Event/roster authority shared by all live channel fact readers. */
@@ -48,6 +49,9 @@ export async function readEventAssistanceMessageGate(
     if (guest.intention.kind === "notComing") {
       return {kind: "stop", reason: "guestDeclined"};
     }
+  }
+  if (!await joiningGuidanceIsCurrent(db, tx, intent, now)) {
+    return {kind: "stop", reason: "superseded"};
   }
   return {kind: "allow", checkedAt: now,
     validUntil: Math.min(now + 30_000, intent.expiresAt,

@@ -158,7 +158,24 @@ resolve organizer-manager authority. The existing check-in staff grant does
 not imply group-lead authority. Policy configuration, scoped group-lead grants,
 workflow scheduling, Host controls and the rehearsal adapter remain separate
 integration work. The shared late-join evaluator accepts guidance derived from
-this record; the full live fact reader is not yet connected.
+this record. The transaction reader is also shared by message publication,
+link issuance, guest view/reply resolution and the live channel dispatch gate.
+It binds joining guidance to the confirmed group's current source, destination,
+content and validity window. A newer confirmation of identical material keeps
+an older valid link usable; a future instruction revision, longer validity or
+altered content is rejected. Changes of destination/setup, replaced event/plan
+source, missing progress or a closed runtime withhold current instructions.
+Temporary database read errors propagate for retry instead of terminating a
+message as superseded.
+
+An existing link follows the workflow thread once a fresh instruction is
+published. Until then it returns `noInstructions`, and neither web nor native
+buttons can act on the stale destination. The dispatch check applies to SMS
+and WhatsApp, including reservation-to-claim changes, without charging a send.
+Operational notices retain their separate event-window rules. This binding
+proves the destination's currency, not a guest's pace-group membership; the
+complete policy/participation fact reader and workflow publisher remain
+integration work.
 
 ### Shared message delivery
 

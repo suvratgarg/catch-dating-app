@@ -5,7 +5,7 @@ import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
 import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
-import {FakeFirestore} from "../../operations/testFirestore";
+import {ProgressFirestore} from "./groupProgressTestFixtures";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {validateOrganizerDocument} from
@@ -27,26 +27,9 @@ const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
   _nanoseconds: at % 1000 * 1_000_000});
 const fixture = (name: string) => JSON.parse(readFileSync(
   "../contracts/fixtures/valid/" + name + ".json", "utf8"));
-class SourceFirestore extends FakeFirestore {
-  generation = Timestamp.fromMillis(now - 86_400_000);
-  beforeRead: ((path: string) => void) | undefined;
-  collection(path: string) {
-    const collection = super.collection(path);
-    const doc = collection.doc.bind(collection);
-    collection.doc = (id: string) => {
-      const ref = doc(id);
-      const get = ref.get.bind(ref);
-      ref.get = async () => {
-        this.beforeRead?.(path + "/" + id);
-        return Object.assign(await get(), {createTime: this.generation});
-      };
-      return ref;
-    };
-    return collection;
-  }
-}
 async function harness(realDb?: Firestore, id = "fixture") {
-  const fake = new SourceFirestore();
+  const fake = new ProgressFirestore();
+  fake.generation = Timestamp.fromMillis(now - 86_400_000);
   const db = realDb ?? fake as unknown as Firestore;
   const context = {mode: "live" as const, organizerId: "o-" + id,
     eventId: "e-" + id};

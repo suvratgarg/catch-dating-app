@@ -741,3 +741,26 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
     await deleteApp(app);
   }
 });
+
+test("changed destination between reservation and WhatsApp claim stops send",
+  async () => {
+    const h = await harness();
+    const reserved = await h.reserve();
+    assert.equal(reserved.decision.kind, "dispatch");
+    await h.progress.confirm("two");
+    const claim = await h.outbox.claimLiveDispatch(h.messageId,
+      reserved.record.attempts[0].attemptId,
+      h.store.prepare(h.link.linkId, h.expected));
+    assert.equal(claim.kind, "withheld");
+    let requests = 0;
+    const w = worker(h, async () => {
+      requests++;
+      return new Response(JSON.stringify({messages: [{id: "wamid.test"}]}));
+    });
+    const result = await w.dispatch(h.messageId, h.link.linkId);
+    assert.notEqual(result.kind, "submitted");
+    assert.equal(requests, 0);
+    for (const path of h.budgetPaths) {
+      assert.equal((await h.read(path))?.chargedMicros, 0);
+    }
+  });
