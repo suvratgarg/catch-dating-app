@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.56.0
+version: 1.57.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1289,7 +1289,8 @@ verified callback activation and lookup/reconciliation, provider freshness/expir
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
 fixture permission or quote can satisfy live onboarding. Host/rehearsal
-projections remain the next delivery slice; RCS is deferred to the backlog.
+projections remain the next delivery slice; independent RCS work has resumed
+while their shared schema/UI files are being migrated.
 
 With the shared execution and SMS/WhatsApp boundaries in source, the next
 implementation sequence is:
@@ -1311,8 +1312,10 @@ excluded from this implementation branch. The RCS backlog includes provider
 send/expiry/revocation transport, authenticated delivery and native-reply
 ingress, independent consent and withdrawal, audited sender/budget onboarding,
 capability/readiness checks, shared outbox/worker wiring, and end-to-end
-verification. Resume only after these higher-priority journeys; the parked
-prototype does not establish provider selection or readiness.
+verification. On 2026-09-08 the user resumed independent RCS work while the
+Host/schema handoff is pending. The parked prototype does not establish
+provider selection or readiness and remains excluded until its canonical
+schema changes can be integrated and regenerated safely.
 
 Catalog membership describes an
 outcome contract; it does not assert a registered executor or provider readiness.
@@ -1326,6 +1329,55 @@ mode isolation and live/rehearsal parity. Production sends, provider activation,
 full layout redesign, autonomous emergency judgement, new payment/tournament
 engines and continuous background interception require their own implemented
 adapters and acceptance; they are not conferred by these type definitions.
+
+### RCS authenticated callback boundary
+
+The current independent slice supplies a bounded Google RBM callback parser
+and an injected HTTP ingress. Acceptance is verified signature/agent isolation,
+separate delivery/revocation/reply/subscription observations, retry identity,
+private-data minimization and acknowledgement only after durable acceptance.
+Queue persistence, provider send/revoke, permission updates, native-reply domain
+effects, deployment and activation remain subsequent integration work.
+
+`rcsWebhookProtocol.ts` authenticates the base64-decoded `message.data` bytes
+with the configured client token's SHA512 HMAC. It requires the signed agent ID
+to match trusted endpoint configuration. Pub/Sub IDs, attributes, publish times
+and HTTP callback-type headers do not supply authority. Wrapper additions are
+tolerated. Payloads and signatures are byte bounded, canonical base64 and valid
+UTF-8; malformed supported variants fail closed. The initial challenge echoes
+a bounded secret only after its client token matches. These boundaries follow
+Google's [webhook verification protocol](https://developers.google.com/business-communications/rcs-business-messaging/guides/integrate/webhooks).
+
+The transient typed observations distinguish delivered/read, confirmed TTL
+revocation and inconclusive revocation, native suggestions, subscription
+requests and unstructured messages. [Google's event definitions](https://developers.google.com/business-communications/rcs-business-messaging/guides/build/events/receive-events)
+and [message definitions](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/UserMessage)
+own the provider shapes. Missing provider time stays unknown; it is never
+replaced with unsigned Pub/Sub time. Provider event identity is scoped by agent,
+endpoint and message/event family; retries keep the same receipt key, while
+changed signed content retains a different hash for conflict handling.
+
+Normalized evidence contains an endpoint hash, no raw phone, free text, file URL,
+location, displayed button label, signature or client token. Location messages
+cannot establish physical attendance. Native choice/page correlations do not
+authenticate a guest; the future consumer must validate the immutable attempt,
+recipient, choice, current episode and expiry before applying a typed command.
+UNSUBSCRIBE/SUBSCRIBE and documented country-specific STOP/START equivalents
+remain requests to the RCS permission owner, not automatic consent grants or
+changes to SMS/WhatsApp permission. Inconclusive revocation never becomes proof
+of non-delivery or a fallback permit.
+
+`rcsWebhookIngress.ts` exposes a dependency-injected POST handler with no Firebase
+export, credentials, live queue default or activation. Disabled/malformed requests
+do not open the queue. Verified callbacks are acknowledged after an injected
+queue reports stored, duplicate or durably preserved conflict. Queue/credential
+failure returns an opaque 503; logging receives no private payload or error.
+Only authenticated unsupported traffic may be ignored without persistence.
+This tests the HTTP/queue boundary, not a durable RCS queue: that queue still
+needs canonical records, conflict handling, retention and asynchronous consumers
+before deployment. Local tests do not prove a registered agent or actual callback
+delivery. Restoring the draft Google RBM sender binding also needs the shared
+generator and a current review of the parked configuration/rendering contracts.
 
 ## Format Mapping And Wiring
 
