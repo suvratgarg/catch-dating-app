@@ -1021,7 +1021,7 @@
             "id": "catch.chip.field",
             "symbol": "CatchChipField",
             "file": "lib/core/widgets/catch_chip_field.dart",
-            "summary": "Form-field wrapper for single- and multi-select chip groups.",
+            "summary": "Form-field wrapper for single- and multi-select chip groups with caller-resolved item labels and optional-field copy.",
             "states": [
               "single-select",
               "multi-select",

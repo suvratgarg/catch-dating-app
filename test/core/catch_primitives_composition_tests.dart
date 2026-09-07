@@ -400,6 +400,8 @@ void _registerCatchPrimitivesCompositionTests() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchChipField<CityOption>(
+            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            itemLabel: (value) => value.label,
             label: 'City',
             values: defaultCityOptions,
             selected: selected,
@@ -425,6 +427,8 @@ void _registerCatchPrimitivesCompositionTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchChipField<CityOption>(
+              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              itemLabel: (value) => value.label,
               label: 'City',
               values: defaultCityOptions,
               selected: selected,
@@ -450,6 +454,8 @@ void _registerCatchPrimitivesCompositionTests() {
       await tester.pumpWidget(
         _wrap(
           CatchChipField<CityOption>(
+            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            itemLabel: (value) => value.label,
             label: 'City',
             values: defaultCityOptions,
             selected: const {},
@@ -473,6 +479,8 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         CatchChipField<CityOption>(
+          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+          itemLabel: (value) => value.label,
           label: 'Cities',
           values: defaultCityOptions.take(2).toList(),
           selected: {cityOptionByName('mumbai')!},
@@ -513,6 +521,8 @@ void _registerCatchPrimitivesCompositionTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchChipField<CityOption>(
+              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              itemLabel: (value) => value.label,
               label: 'Cities',
               values: defaultCityOptions.take(2).toList(),
               selected: selected,

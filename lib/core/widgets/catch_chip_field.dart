@@ -1,8 +1,5 @@
-import 'package:catch_dating_app/core/labelled.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +12,12 @@ export 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 /// Wraps [FormField] so it participates in [Form] validation.
 /// The [selected] set is driven by the parent — update it via [onChanged] and
 /// call [setState] to reflect changes.
-class CatchChipField<T extends Labelled> extends StatelessWidget {
+class CatchChipField<T> extends StatelessWidget {
   const CatchChipField({
     super.key,
     required this.label,
+    required this.copy,
+    required this.itemLabel,
     required this.values,
     required this.selected,
     required this.multiSelect,
@@ -34,6 +33,10 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
   });
 
   final String label;
+  final CatchFormFieldLabelCopy copy;
+
+  /// Resolves display copy without requiring an app-domain interface.
+  final String Function(T value) itemLabel;
   final List<T> values;
   final CatchContractFieldConstraints? contract;
   final String Function(T value)? contractValue;
@@ -76,7 +79,7 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
         children: [
           if (showLabel) ...[
             CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+              copy: copy,
               label: label,
               isOptional: isOptional,
               hasError: field.hasError,
@@ -90,7 +93,7 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
               final isSelected = supportedSelection.contains(v);
               return CatchChip.selectable(
                 key: chipKeyBuilder?.call(v),
-                label: v.label,
+                label: itemLabel(v),
                 selected: isSelected,
                 leading: multiSelect && isSelected
                     ? Icon(CatchIcons.checkRounded)

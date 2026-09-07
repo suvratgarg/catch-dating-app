@@ -1790,7 +1790,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Selection',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchChipField<Labelled>',
+            name: 'CatchChipField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',

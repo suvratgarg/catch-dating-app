@@ -915,6 +915,11 @@ its existing search, clear, and close translations. Explicit placeholders and
 trigger tooltips retain their precedence. The field and top-bar widgets remain
 app-side until the shared schema constraints and validation policy move.
 
+Chip-field callers supply the existing optional-field copy and a typed item-label
+formatter. The selector no longer imports the app catalog or requires the app
+`Labelled` interface; schema values, selected sets, callbacks, and rendering are
+preserved. Its package move still follows the schema policy and chip renderer.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip_field.dart';
@@ -285,6 +286,8 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessRole>(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
@@ -302,6 +305,8 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessEventType>(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
@@ -323,6 +328,8 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChipField<LaunchAccessAvailabilityWindow>(
+              copy: catchFormFieldLabelCopy(context.l10n),
+              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelBestTimes,

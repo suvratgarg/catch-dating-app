@@ -4581,6 +4581,8 @@ class _ChipFieldDemoState extends State<_ChipFieldDemo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchChipField<_Choice>(
+          copy: catchFormFieldLabelCopy(context.l10n),
+          itemLabel: (value) => value.label,
           label: 'Activities',
           values: _choices,
           selected: _multi,
@@ -4589,6 +4591,8 @@ class _ChipFieldDemoState extends State<_ChipFieldDemo> {
         ),
         gapH16,
         CatchChipField<_Choice>(
+          copy: catchFormFieldLabelCopy(context.l10n),
+          itemLabel: (value) => value.label,
           label: 'One vibe',
           values: _choices,
           selected: _single,
