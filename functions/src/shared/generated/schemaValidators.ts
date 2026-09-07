@@ -69,6 +69,7 @@ export {validateEventAssistanceDeliveryAttempt} from "./validators/eventAssistan
 export {validateEventAssistanceGuestResponse} from "./validators/eventAssistanceGuestResponse";
 export {validateEventAssistancePolicy} from "./validators/eventAssistancePolicy";
 export {validateEventAssistanceCommand} from "./validators/eventAssistanceCommand";
+export {validateEventAssistanceLiveWork} from "./validators/eventAssistanceLiveWork";
 export {validateEventAssistanceLateJoinInput} from "./validators/eventAssistanceLateJoinInput";
 export {validateEventAssistanceLateJoinDecision} from "./validators/eventAssistanceLateJoinDecision";
 export {validateMobileFormState} from "./validators/mobileFormState";

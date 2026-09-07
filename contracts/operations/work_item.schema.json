@@ -8,6 +8,25 @@
   "allOf": [
     {
       "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "liveLateJoin"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "guest_episode"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_live_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
         "properties": {"lifecycleStatus": {"const": "terminal"}}
       },
       "then": {

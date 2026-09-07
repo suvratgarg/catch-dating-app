@@ -76,6 +76,7 @@ Do not edit it by hand.
 | EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `functions/src/shared/generated/eventAssistanceGuestResponse.ts` |
 | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `functions/src/shared/generated/eventAssistancePolicy.ts` |
 | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `functions/src/shared/generated/eventAssistanceCommand.ts` |
+| EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `functions/src/shared/generated/eventAssistanceLiveWork.ts` |
 | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinInput.ts` |
 | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinDecision.ts` |
 | MobileFormState | `forms/mobile_form_state.schema.json` | `functions/src/shared/generated/mobileFormState.ts` |
@@ -675,6 +676,7 @@ Do not edit it by hand.
 | `schemaEventAssistanceGuestResponseSchema` | EventAssistanceGuestResponse | `operations/event_assistance_guest_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_response.g.dart` |
 | `schemaEventAssistancePolicySchema` | EventAssistancePolicy | `operations/event_assistance_policy.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_policy.g.dart` |
 | `schemaEventAssistanceCommandSchema` | EventAssistanceCommand | `operations/event_assistance_command.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_command.g.dart` |
+| `schemaEventAssistanceLiveWorkSchema` | EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_live_work.g.dart` |
 | `schemaEventAssistanceLateJoinInputSchema` | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_input.g.dart` |
 | `schemaEventAssistanceLateJoinDecisionSchema` | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_decision.g.dart` |
 | `schemaMobileFormStateSchema` | MobileFormState | `forms/mobile_form_state.schema.json` | `lib/core/schema_contracts/generated/schemas/mobile_form_state.g.dart` |

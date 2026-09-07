@@ -4,6 +4,7 @@ import {
   FieldPath,
   Firestore,
   Query,
+  Transaction,
 } from "firebase-admin/firestore";
 import {isDeepStrictEqual} from "node:util";
 import {operationCollections} from "./collections";
@@ -88,7 +89,18 @@ export class FirestoreOperationsRepository extends
    */
   async commitWorkItemAction(input: CommitWorkItemAction):
     Promise<CommittedWorkItemAction> {
-    const {workItem, receipt, lease: proof} = input;
+    return this.db.runTransaction(async (transaction) => {
+      const prepared = await this.prepareWorkItemAction(transaction, input);
+      prepared.commit();
+      return prepared.result;
+    });
+  }
+
+  /** Join domain writes to the checkpoint without nesting transactions. */
+  async prepareWorkItemAction(transaction: Transaction,
+    input: CommitWorkItemAction): Promise<{result: CommittedWorkItemAction;
+      commit: () => void}> {
+    const {workItem, receipt, lease: proof} = clone(input);
     validated(validateOperationWorkItem(workItem), "work item");
     validated(validateOperationActionReceipt(receipt), "action receipt");
     if (receipt.actionId !== operationActionId(
@@ -116,73 +128,80 @@ export class FirestoreOperationsRepository extends
       .doc(proof.leaseId);
     const runRef = this.db.collection(operationCollections.runs)
       .doc(workItem.runId);
-    return this.db.runTransaction(async (transaction) => {
-      const [itemSnapshot, receiptSnapshot, leaseSnapshot, runSnapshot] =
-        await Promise.all([
-          transaction.get(itemRef), transaction.get(receiptRef),
-          transaction.get(leaseRef), transaction.get(runRef),
-        ]);
-      if (!itemSnapshot.exists || !runSnapshot.exists) {
-        throw new OperationNotFoundError("operation", workItem.workItemId);
+    const [itemSnapshot, receiptSnapshot, leaseSnapshot, runSnapshot] =
+      await Promise.all([
+        transaction.get(itemRef), transaction.get(receiptRef),
+        transaction.get(leaseRef), transaction.get(runRef),
+      ]);
+    if (!itemSnapshot.exists || !runSnapshot.exists) {
+      throw new OperationNotFoundError("operation", workItem.workItemId);
+    }
+    const current = validated(
+      validateOperationWorkItem(itemSnapshot.data()), "stored work item"
+    );
+    const run = validated(
+      validateOperationRun(runSnapshot.data()), "stored run"
+    );
+    if (current.workItemId !== workItem.workItemId ||
+        current.runId !== run.runId || run.runId !== workItem.runId ||
+        current.workflowId !== workItem.workflowId ||
+        run.workflowId !== workItem.workflowId ||
+        current.entityKind !== workItem.entityKind) {
+      throw new OperationDomainError("action_scope_mismatch",
+        "Action cannot change the owning run, workflow or entity");
+    }
+    if (receiptSnapshot.exists) {
+      const existing = validated(validateOperationActionReceipt(
+        receiptSnapshot.data()
+      ), "stored action receipt");
+      if (!isDeepStrictEqual(existing, receipt)) {
+        throw new OperationConflictError("idempotency_conflict",
+          "Action key has already been committed with different evidence");
       }
-      const current = validated(
-        validateOperationWorkItem(itemSnapshot.data()), "stored work item"
-      );
-      const run = validated(
-        validateOperationRun(runSnapshot.data()), "stored run"
-      );
-      if (current.workItemId !== workItem.workItemId ||
-          current.runId !== run.runId || run.runId !== workItem.runId ||
-          current.workflowId !== workItem.workflowId ||
-          run.workflowId !== workItem.workflowId ||
-          current.entityKind !== workItem.entityKind) {
-        throw new OperationDomainError("action_scope_mismatch",
-          "Action cannot change the owning run, workflow or entity");
+      if (current.revision < existing.toRevision ||
+          (current.revision === existing.toRevision &&
+           operationContentHash(current) !== existing.outputHash)) {
+        throw new OperationConflictError("action_checkpoint_drift",
+          "Work item no longer contains the committed checkpoint");
       }
-      if (receiptSnapshot.exists) {
-        const existing = validated(validateOperationActionReceipt(
-          receiptSnapshot.data()
-        ), "stored action receipt");
-        if (!isDeepStrictEqual(existing, receipt)) {
-          throw new OperationConflictError("idempotency_conflict",
-            "Action key has already been committed with different evidence");
-        }
-        if (current.revision < existing.toRevision ||
-            (current.revision === existing.toRevision &&
-             operationContentHash(current) !== existing.outputHash)) {
-          throw new OperationConflictError("action_checkpoint_drift",
-            "Work item no longer contains the committed checkpoint");
-        }
-        return {workItem: clone(current), receipt: clone(existing),
-          replayed: true};
-      }
-      if (!leaseSnapshot.exists) {
-        throw new OperationNotFoundError("lease", proof.leaseId);
-      }
-      const now = this.leaseClock();
-      assertCurrentOperationLease(
-        validatedLease(leaseSnapshot.data()), proof, now
-      );
-      if (run.status !== "running" ||
-          (run.budgets.deadlineAt !== null &&
-           Date.parse(run.budgets.deadlineAt) <= now)) {
+      return {result: {workItem: clone(current), receipt: clone(existing),
+        replayed: true}, commit: () => undefined};
+    }
+    if (!leaseSnapshot.exists) {
+      throw new OperationNotFoundError("lease", proof.leaseId);
+    }
+    const now = this.leaseClock();
+    assertCurrentOperationLease(
+      validatedLease(leaseSnapshot.data()), proof, now
+    );
+    if (run.status !== "running" ||
+        (run.budgets.deadlineAt !== null &&
+         Date.parse(run.budgets.deadlineAt) <= now)) {
+      throw new OperationConflictError("run_not_executable",
+        "Work can advance only within an active run's deadline");
+    }
+    if (current.lifecycleStatus === "terminal" ||
+        current.lifecycleStatus === "published") {
+      throw new OperationConflictError("terminal_work_item",
+        "Completed work cannot re-enter execution");
+    }
+    if (current.revision !== receipt.fromRevision) {
+      throw new OperationConflictError("revision_conflict",
+        "Work item advanced after this action was prepared");
+    }
+    const lease = validatedLease(leaseSnapshot.data());
+    return {result: {workItem: clone(workItem), receipt: clone(receipt),
+      replayed: false}, commit: () => {
+      const committedAt = this.leaseClock();
+      assertCurrentOperationLease(lease, proof, committedAt);
+      if (run.budgets.deadlineAt !== null &&
+          Date.parse(run.budgets.deadlineAt) <= committedAt) {
         throw new OperationConflictError("run_not_executable",
-          "Work can advance only within an active run's deadline");
-      }
-      if (current.lifecycleStatus === "terminal" ||
-          current.lifecycleStatus === "published") {
-        throw new OperationConflictError("terminal_work_item",
-          "Completed work cannot re-enter execution");
-      }
-      if (current.revision !== receipt.fromRevision) {
-        throw new OperationConflictError("revision_conflict",
-          "Work item advanced after this action was prepared");
+          "Run deadline passed during preparation");
       }
       transaction.set(itemRef, workItem);
       transaction.create(receiptRef, receipt);
-      return {workItem: clone(workItem), receipt: clone(receipt),
-        replayed: false};
-    });
+    }};
   }
 
   async getActionReceipt(actionId: string):

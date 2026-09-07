@@ -1,4 +1,3 @@
-import fs from "node:fs/promises";
 import path from "node:path";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
@@ -9,6 +8,7 @@ import {
   uniqueSorted,
 } from "./contracts.mjs";
 import {OperationsError} from "./errors.mjs";
+import {collectSchema} from "./schema-dependencies.mjs";
 
 export function summarizeRun(run, items, actions = [], checkpoints = []) {
   const contract = workflowContract(run, items);
@@ -233,15 +233,12 @@ export function toCanonicalWorkItemRecord(item, {
 
 export async function validateCanonicalProjection({repoRoot, projection, requireContracts = false}) {
   const contractRoot = path.join(repoRoot, "contracts", "operations");
-  let common;
-  let runSchema;
-  let itemSchema;
+  const schemas = new Map();
+  const runPath = path.join(contractRoot, "run.schema.json");
+  const itemPath = path.join(contractRoot, "work_item.schema.json");
   try {
-    [common, runSchema, itemSchema] = await Promise.all([
-      readJson(path.join(contractRoot, "common.schema.json")),
-      readJson(path.join(contractRoot, "run.schema.json")),
-      readJson(path.join(contractRoot, "work_item.schema.json")),
-    ]);
+    await collectSchema(runPath, schemas);
+    await collectSchema(itemPath, schemas);
   } catch (error) {
     if (error?.code === "ENOENT" && !requireContracts) {
       return {status: "contracts_missing", valid: null, contractRoot};
@@ -253,9 +250,9 @@ export async function validateCanonicalProjection({repoRoot, projection, require
   }
   const ajv = new Ajv({allErrors: true, strict: false});
   addFormats(ajv);
-  ajv.addSchema(common);
-  const validateRun = ajv.compile(runSchema);
-  const validateItem = ajv.compile(itemSchema);
+  for (const schema of schemas.values()) ajv.addSchema(schema);
+  const validateRun = ajv.getSchema(schemas.get(path.resolve(runPath)).$id);
+  const validateItem = ajv.getSchema(schemas.get(path.resolve(itemPath)).$id);
   validateRun(projection.run);
   const runErrors = schemaErrors(validateRun.errors);
   const hasItemInventory = Array.isArray(projection.items);
@@ -561,8 +558,4 @@ function dynamicCounts(values, select) {
     map.set(key, (map.get(key) ?? 0) + 1);
     return map;
   }, new Map()).entries()].sort(([left], [right]) => left.localeCompare(right)));
-}
-
-async function readJson(file) {
-  return JSON.parse(await fs.readFile(file, "utf8"));
 }

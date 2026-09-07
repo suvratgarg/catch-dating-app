@@ -67,6 +67,7 @@ import {
   eventAssistanceGuestResponseSchema,
   eventAssistancePolicySchema,
   eventAssistanceCommandSchema,
+  eventAssistanceLiveWorkSchema,
   eventAssistanceLateJoinInputSchema,
   eventAssistanceLateJoinDecisionSchema,
   mobileFormStateSchema,
@@ -685,6 +686,7 @@ export const validateEventAssistanceDeliveryAttempt = ajv.compile(eventAssistanc
 export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceGuestResponseSchema);
 export const validateEventAssistancePolicy = ajv.compile(eventAssistancePolicySchema);
 export const validateEventAssistanceCommand = ajv.compile(eventAssistanceCommandSchema);
+export const validateEventAssistanceLiveWork = ajv.compile(eventAssistanceLiveWorkSchema);
 export const validateEventAssistanceLateJoinInput = ajv.compile(eventAssistanceLateJoinInputSchema);
 export const validateEventAssistanceLateJoinDecision = ajv.compile(eventAssistanceLateJoinDecisionSchema);
 export const validateMobileFormState = ajv.compile(mobileFormStateSchema);

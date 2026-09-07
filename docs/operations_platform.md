@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.11.0
-updated: 2026-09-06
+version: 1.12.0
+updated: 2026-09-07
 owner: operations_platform
 status: active
 ---
@@ -553,10 +553,48 @@ closed workflow cannot discard a later provider receipt. The workflow will
 reference that private message state instead of treating a work-item action
 receipt as delivery proof. `EventMessageWorker` now composes the concrete SMS
 and WhatsApp authority readers and adapters through that one outbox history;
-only the selected channel can claim spending and send. Scheduling, remaining
-workflow source readers, RCS, provider failure reconciliation and Event
-Assistance's live executor remain integration work. These primitives do not
-enable Supply Intake publication.
+only the selected channel can claim spending and send. Scheduler activation,
+remaining workflow source readers, RCS and provider failure reconciliation
+remain integration work. These primitives do not enable Supply Intake
+publication.
+
+### Durable live assistance work
+
+The trusted Functions `LiveAssistanceWorkStore` uses those same collections for
+one live late-join guest episode per run. Its strict `liveLateJoin` normalized
+payload is defined by `event_assistance_live_work.schema.json` and enforced by
+the generic work-item contract. Run and item ids bind the event, organizer,
+attendee and episode. Initialization requires existing current participation;
+it cannot create an episode or replace the saved sender choices, response
+deadline, expiry or evaluation budget on retry.
+
+The payload owns `checkpoint.dueAt`; generic item `staleAt` is not a scheduling
+field. Bounded discovery selects due items using the declared composite index.
+Every policy evaluation re-reads the live source, host policy and messaging
+evidence.
+The run, item revision, immutable action receipt, message intent and guest
+thread commit in one transaction under the current Operations lease. A lost
+response replays the receipt before any publication, including after the lease
+has expired or a later checkpoint has advanced. Wake signals have durable
+idempotency keys and can advance a waiting item's due time without changing
+its previous outcome or resetting its evaluation budget.
+
+Future evaluations honor the earliest pending cooldown, guidance expiry,
+explicit response deadline, policy cutoff or work expiry. Event facts can wake
+work sooner; elapsed time never proves departure or attendance. Missing facts
+can require host review; exhausted evaluation budgets always do. At work
+expiry, terminal housekeeping can still commit even if no evaluation ran.
+The run therefore has no generic execution deadline: the domain expiry bounds
+publication while the finite evaluation budget bounds policy work. Provider
+attempts and spending remain separately bounded in the message outbox. For
+this adapter, `published` counts newly created message intents and `escalated`
+counts entries into host review; neither counter measures provider delivery.
+
+This adapter has no public callable, deployed scheduler, source-event trigger
+or provider invocation. Its runtime marker rejects the frozen shadow CLI
+projection; the registered CLI manifest remains shadow-only. Connecting
+authorized source signals, scheduler execution, provider work and host queue
+projections remains a separate integration step.
 
 ## Adding Another Workflow
 

@@ -14604,6 +14604,255 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hostChoice', 'organizerDefault'],
   );
 
+  static const eventAssistanceLiveWorkCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLiveWorkCheckpointEvaluatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.evaluatedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLiveWorkCheckpointEvaluations = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.evaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceLiveWorkCheckpointPublicationMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.publication.messageId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkCheckpointPublicationThreadId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.publication.threadId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkCheckpointSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.checkpoint.sourceHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceLiveWorkExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLiveWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkMaxEvaluations = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.maxEvaluations',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceLiveWorkOptionsDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventAssistanceLiveWorkOptionsDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventAssistanceLiveWorkOptionsDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceLiveWorkOptionsRoutes = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventAssistanceLiveWorkOptionsRoutesItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.routes.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkOptionsRoutesItemsSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.options.routes.items.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceLiveWorkScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.scope.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceLiveWorkScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceLiveWorkScopeEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceLiveWork.scope.episodeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceMembershipCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceMembershipCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -74673,6 +74922,38 @@ abstract final class CatchContractConstraints {
     'eventAssistanceLateJoinInput.setting.kind': eventAssistanceLateJoinInputSettingKind,
     'eventAssistanceLateJoinInput.setting.policyVersion': eventAssistanceLateJoinInputSettingPolicyVersion,
     'eventAssistanceLateJoinInput.setting.reason': eventAssistanceLateJoinInputSettingReason,
+    'eventAssistanceLiveWork.checkpoint.dueAt': eventAssistanceLiveWorkCheckpointDueAt,
+    'eventAssistanceLiveWork.checkpoint.evaluatedAt': eventAssistanceLiveWorkCheckpointEvaluatedAt,
+    'eventAssistanceLiveWork.checkpoint.evaluations': eventAssistanceLiveWorkCheckpointEvaluations,
+    'eventAssistanceLiveWork.checkpoint.publication.messageId': eventAssistanceLiveWorkCheckpointPublicationMessageId,
+    'eventAssistanceLiveWork.checkpoint.publication.threadId': eventAssistanceLiveWorkCheckpointPublicationThreadId,
+    'eventAssistanceLiveWork.checkpoint.sourceHash': eventAssistanceLiveWorkCheckpointSourceHash,
+    'eventAssistanceLiveWork.expiresAt': eventAssistanceLiveWorkExpiresAt,
+    'eventAssistanceLiveWork.kind': eventAssistanceLiveWorkKind,
+    'eventAssistanceLiveWork.maxEvaluations': eventAssistanceLiveWorkMaxEvaluations,
+    'eventAssistanceLiveWork.options.deliveryPolicy.maxAttempts': eventAssistanceLiveWorkOptionsDeliveryPolicyMaxAttempts,
+    'eventAssistanceLiveWork.options.deliveryPolicy.maxAttemptsPerRoute': eventAssistanceLiveWorkOptionsDeliveryPolicyMaxAttemptsPerRoute,
+    'eventAssistanceLiveWork.options.deliveryPolicy.minimumRetrySeconds': eventAssistanceLiveWorkOptionsDeliveryPolicyMinimumRetrySeconds,
+    'eventAssistanceLiveWork.options.laterChoices': eventAssistanceLiveWorkOptionsLaterChoices,
+    'eventAssistanceLiveWork.options.laterChoices.items.label': eventAssistanceLiveWorkOptionsLaterChoicesItemsLabel,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.checkpointId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetCheckpointId,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.groupId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetGroupId,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.itineraryId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetItineraryId,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.kind': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetKind,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.lateEntry': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetLateEntry,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.placeId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetPlaceId,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.routeId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetRouteId,
+    'eventAssistanceLiveWork.options.laterChoices.items.target.stopId': eventAssistanceLiveWorkOptionsLaterChoicesItemsTargetStopId,
+    'eventAssistanceLiveWork.options.responseDeadline': eventAssistanceLiveWorkOptionsResponseDeadline,
+    'eventAssistanceLiveWork.options.routes': eventAssistanceLiveWorkOptionsRoutes,
+    'eventAssistanceLiveWork.options.routes.items.routeId': eventAssistanceLiveWorkOptionsRoutesItemsRouteId,
+    'eventAssistanceLiveWork.options.routes.items.senderId': eventAssistanceLiveWorkOptionsRoutesItemsSenderId,
+    'eventAssistanceLiveWork.schemaVersion': eventAssistanceLiveWorkSchemaVersion,
+    'eventAssistanceLiveWork.scope.attendeeId': eventAssistanceLiveWorkScopeAttendeeId,
+    'eventAssistanceLiveWork.scope.context.eventId': eventAssistanceLiveWorkScopeContextEventId,
+    'eventAssistanceLiveWork.scope.context.mode': eventAssistanceLiveWorkScopeContextMode,
+    'eventAssistanceLiveWork.scope.context.organizerId': eventAssistanceLiveWorkScopeContextOrganizerId,
+    'eventAssistanceLiveWork.scope.episodeId': eventAssistanceLiveWorkScopeEpisodeId,
     'eventAssistanceMembershipCallableResponse.operationRevision': eventAssistanceMembershipCallableResponseOperationRevision,
     'eventAssistanceMembershipCallableResponse.outcome': eventAssistanceMembershipCallableResponseOutcome,
     'eventAssistanceMembershipCallableResponse.view.accepted.acceptedAt': eventAssistanceMembershipCallableResponseViewAcceptedAcceptedAt,

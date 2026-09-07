@@ -197,6 +197,60 @@ test("competing actions for one revision cannot both commit", async () => {
   assert.equal(rejected?.reason.code, "revision_conflict");
 });
 
+test("prepared checkpoint joins domain writes and rolls back as one commit",
+  async () => {
+    const {repository, firestore, action} = await actionHarness();
+    const execute = () => firestore.runTransaction(async (tx) => {
+      const prepared = await repository.prepareWorkItemAction(
+        tx as unknown as import("firebase-admin/firestore").Transaction,
+        action);
+      tx.create(firestore.collection("domain").doc("effect"), {done: true});
+      prepared.commit();
+    });
+    const before = firestore.entries();
+    firestore.failNextCommit = true;
+    await assert.rejects(execute(), /interruption/);
+    assert.deepEqual(firestore.entries(), before);
+    await execute();
+    assert.equal(firestore.read("domain/effect")?.done, true);
+    assert.equal((await repository.getWorkItem("work:event:1"))?.revision, 1);
+    assert.ok(await repository.getActionReceipt(action.receipt.actionId));
+  });
+
+test("prepared checkpoint freezes caller input and rechecks the commit clock",
+  async () => {
+    for (const boundary of ["lease", "deadline", "input"] as const) {
+      const {repository, firestore, clock, action} = await actionHarness();
+      if (boundary === "deadline") {
+        const run = (await repository.getRun(action.workItem.runId))!;
+        firestore.write(operationCollections.runs + "/" + run.runId,
+          {...run, budgets: {...run.budgets,
+            deadlineAt: new Date(clock.now + 1000).toISOString()}});
+      }
+      const before = firestore.entries();
+      const execute = () => firestore.runTransaction(async (tx) => {
+        const prepared = await repository.prepareWorkItemAction(
+          tx as unknown as import("firebase-admin/firestore").Transaction,
+          action);
+        if (boundary === "input") {
+          action.workItem.normalizedPayload = {tampered: true};
+          action.receipt.outputHash = "a".repeat(64);
+        } else clock.now += boundary === "deadline" ? 1000 : 60_000;
+        tx.create(firestore.collection("domain").doc("effect"), {done: true});
+        prepared.commit();
+      });
+      if (boundary === "input") {
+        await execute();
+        assert.notDeepEqual((await repository.getWorkItem("work:event:1"))
+          ?.normalizedPayload, {tampered: true});
+      } else {
+        await assert.rejects(execute(), {code: boundary === "lease" ?
+          "lease_expired" : "run_not_executable"});
+        assert.deepEqual(firestore.entries(), before);
+      }
+    }
+  });
+
 test("committed keys reject changed input and checkpoint drift", async () => {
   const {repository, firestore, action} = await actionHarness();
   await repository.commitWorkItemAction(action);

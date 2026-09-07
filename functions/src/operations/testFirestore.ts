@@ -74,7 +74,7 @@ class FakeQuery {
     );
   }
 
-  async get(): Promise<{docs: FakeSnapshot[]}> {
+  async get(): Promise<{docs: FakeSnapshot[]; size: number; empty: boolean}> {
     const prefix = `${this.collectionPath}/`;
     const docs = this.firestore.entries()
       .filter(([path]) => path.startsWith(prefix))
@@ -85,15 +85,38 @@ class FakeQuery {
         const stored = field.split(".").reduce<unknown>((value, part) =>
           value && typeof value === "object" ?
             (value as FakeData)[part] : undefined, snapshot.data());
-        return operator === "array-contains" ?
-          Array.isArray(stored) && stored.includes(value) :
-          stored === value;
+        switch (operator) {
+        case "array-contains": return Array.isArray(stored) &&
+          stored.includes(value);
+        case "==": return stored === value;
+        case ">=": return (compare(stored, value) ?? -1) >= 0;
+        case "<=": return (compare(stored, value) ?? 1) <= 0;
+        case ">": return (compare(stored, value) ?? -1) > 0;
+        default: throw new Error("Unsupported fake query operator: " +
+          operator);
+        }
       }))
       .sort((left, right) => left.id.localeCompare(right.id));
-    return {
-      docs: this.pageLimit === null ? docs : docs.slice(0, this.pageLimit),
-    };
+    const page = this.pageLimit === null ? docs : docs.slice(0, this.pageLimit);
+    return {docs: page, size: page.length, empty: page.length === 0};
   }
+}
+
+function compare(left: unknown, right: unknown): number | null {
+  if (typeof left === "number" && typeof right === "number") {
+    return Math.sign(left - right);
+  }
+  const stamp = (value: unknown): bigint | null => {
+    if (!value || typeof value !== "object") return null;
+    const v = value as {_seconds?: number; _nanoseconds?: number};
+    if (!Number.isSafeInteger(v._seconds) ||
+        !Number.isSafeInteger(v._nanoseconds)) return null;
+    return BigInt(v._seconds!) * 1_000_000_000n + BigInt(v._nanoseconds!);
+  };
+  const a = stamp(left);
+  const b = stamp(right);
+  if (a === null || b === null) return null;
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 class FakeCollection extends FakeQuery {

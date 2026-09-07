@@ -1381,6 +1381,16 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.kind", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.checkpoint.dueAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
         {"fieldPath": "runId", "mode": "ASCENDING"},
         {"fieldPath": "taskFlags", "arrayConfig": "CONTAINS"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}

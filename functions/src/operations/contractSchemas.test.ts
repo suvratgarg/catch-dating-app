@@ -35,15 +35,34 @@ function readJson(filePath: string): unknown {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
-test("draft-07 operation schemas accept their canonical fixtures", () => {
-  const directory = contractsDirectory();
+function contractValidator(directory: string): Ajv {
+  const schemas = new Map<string, AnySchema>();
+  const load = (file: string) => {
+    if (schemas.has(file)) return;
+    const schema = readJson(file) as AnySchema;
+    schemas.set(file, schema);
+    const visit = (value: unknown) => {
+      if (!value || typeof value !== "object") return;
+      const ref = (value as {$ref?: string}).$ref;
+      if (ref && !ref.startsWith("#")) {
+        load(path.resolve(path.dirname(file), ref.split("#")[0]));
+      }
+      Object.values(value).forEach(visit);
+    };
+    visit(schema);
+  };
+  for (const name of schemaNames) {
+    load(path.join(directory, `${name}.schema.json`));
+  }
   const ajv = new Ajv({allErrors: true, strict: false});
   addFormats(ajv);
-  for (const name of schemaNames) {
-    ajv.addSchema(
-      readJson(path.join(directory, `${name}.schema.json`)) as AnySchema
-    );
-  }
+  for (const schema of schemas.values()) ajv.addSchema(schema);
+  return ajv;
+}
+
+test("draft-07 operation schemas accept their canonical fixtures", () => {
+  const directory = contractsDirectory();
+  const ajv = contractValidator(directory);
   for (const name of schemaNames.filter((name) => name !== "common")) {
     const schemaId = `https://catch.app/contracts/operations/${name}.schema.json`;
     const fixture = readJson(path.join(
@@ -64,13 +83,7 @@ test("draft-07 operation schemas accept their canonical fixtures", () => {
 
 test("draft-07 operation schemas reject unsafe lifecycle fixtures", () => {
   const directory = contractsDirectory();
-  const ajv = new Ajv({allErrors: true, strict: false});
-  addFormats(ajv);
-  for (const name of schemaNames) {
-    ajv.addSchema(
-      readJson(path.join(directory, `${name}.schema.json`)) as AnySchema
-    );
-  }
+  const ajv = contractValidator(directory);
   const fixtures = [
     ["work_item", "work_item_terminal_without_outcome"],
     ["work_item", "work_item_terminal_human_review"],

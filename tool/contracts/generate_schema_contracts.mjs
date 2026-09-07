@@ -378,6 +378,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceCommand.ts"
   },
   {
+    name: "EventAssistanceLiveWork",
+    source: "operations/event_assistance_live_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLiveWork.ts",
+  },
+  {
     name: "EventAssistanceLateJoinInput",
     source: "operations/event_assistance_late_join_input.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinInput.ts"

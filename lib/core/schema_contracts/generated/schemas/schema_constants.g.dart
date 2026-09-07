@@ -154,6 +154,7 @@ export 'event_assistance_guest_response.g.dart';
 export 'event_assistance_guest_view_callable_response.g.dart';
 export 'event_assistance_late_join_decision.g.dart';
 export 'event_assistance_late_join_input.g.dart';
+export 'event_assistance_live_work.g.dart';
 export 'event_assistance_membership_callable_response.g.dart';
 export 'event_assistance_membership_document.g.dart';
 export 'event_assistance_membership_receipt_document.g.dart';
