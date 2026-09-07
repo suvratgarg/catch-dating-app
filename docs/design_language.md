@@ -291,7 +291,7 @@ form for long lists and date-grouped rails (DateTicket rows, index rows).
 More tiers are allowed when a surface justifies them; a surface never mixes
 tiers within one list.
 
-- **Ticket → events: keep & refine.** `event_ticket_surface.dart` (real `CustomClipper`
+- **Ticket → events: keep & refine.** `catch_ticket_shape_clipper.dart` (real `CustomClipper`
   notches, perforation, Hero card→detail) is strong, award-adjacent craft. Refine: the
   fixed `eventTicketMediaHeight = 136` → aspect-ratio/constraint (Dynamic Type); push
   the ticket-stub typography (serial/time treatment).

@@ -12793,7 +12793,7 @@
           "EventActivityBackdrop",
           "EventClockMark",
           "EventStatusPill",
-          "EventTicketPerforatedDivider",
+          "CatchTicketPerforatedDivider",
           "CatchSurface"
         ],
         "goldens": [],
@@ -12851,22 +12851,6 @@
               "conceptId": "catch.event_card",
               "parentConceptId": "catch.event_card",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.event_card"
-            }
-          },
-          {
-            "id": "catch.event_card.perforated_divider",
-            "symbol": "EventTicketPerforatedDivider",
-            "file": "lib/core/widgets/event_ticket_surface.dart",
-            "summary": "Ticket-card divider member for the event ticket metaphor.",
-            "states": [
-              "default"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.event_card",
-              "parentConceptId": "catch.event_card",
-              "qualifier": "variant",
               "decisionRef": "contract-family:catch.event_card"
             }
           },
@@ -16025,6 +16009,179 @@
       },
       "surfaces": {
         "flutter": "CatchAnalyticsDataQualityList"
+      }
+    },
+    {
+      "id": "catch.ticket",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchTicketHeroLayout",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Presentation-neutral ticket geometry: adaptive hero slots, perforation and a notched outline.",
+      "dart": {
+        "symbol": "CatchTicketHeroLayout",
+        "file": "packages/catch_ui/lib/src/components/catch_ticket_hero_layout.dart",
+        "constructors": [
+          "CatchTicketHeroLayout"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Ticket",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Ticket",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "visualBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "CatchTicketHeroSectionBuilder"
+          },
+          {
+            "name": "divider",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget"
+          },
+          {
+            "name": "bodyBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "CatchTicketHeroSectionBuilder"
+          }
+        ],
+        "states": [
+          "compact",
+          "expanded",
+          "large-text"
+        ],
+        "slots": [
+          "visualBuilder",
+          "divider",
+          "bodyBuilder"
+        ],
+        "tokens": [
+          "space.s2",
+          "space.s3",
+          "space.s4",
+          "space.s5",
+          "theme.light.color.line2"
+        ],
+        "dartRoles": [
+          "CatchTicketHeroSectionBuilder",
+          "CatchTicketPerforatedDivider",
+          "CatchTicketShapeClipper",
+          "CatchTicketPerforationPainter",
+          "CatchLayout",
+          "CatchInsets.pageBody"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.ticket.perforated_divider",
+            "symbol": "CatchTicketPerforatedDivider",
+            "file": "packages/catch_ui/lib/src/components/catch_ticket_perforated_divider.dart",
+            "summary": "Horizontal ticket perforation with caller-selected height, notch radius and line color.",
+            "states": [
+              "default",
+              "custom-color",
+              "custom-geometry"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ticket",
+              "parentConceptId": "catch.ticket",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ticket"
+            }
+          },
+          {
+            "id": "catch.ticket.shape_clipper",
+            "symbol": "CatchTicketShapeClipper",
+            "file": "packages/catch_ui/lib/src/components/catch_ticket_shape_clipper.dart",
+            "summary": "Notched ticket outline from caller-owned corner radius, notch geometry and notch center.",
+            "states": [
+              "notched-outline"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ticket",
+              "parentConceptId": "catch.ticket",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ticket"
+            }
+          },
+          {
+            "id": "catch.ticket.perforation_painter",
+            "symbol": "CatchTicketPerforationPainter",
+            "file": "packages/catch_ui/lib/src/components/catch_ticket_perforation_painter.dart",
+            "summary": "Direct dashed perforation painter shared by ticket dividers.",
+            "states": [
+              "default",
+              "custom-color",
+              "custom-notch-radius"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ticket",
+              "parentConceptId": "catch.ticket",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ticket"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Preserve the existing fitted-body layout at text scale 2.0; the caller owns concise content and semantics for both compact and expanded slots."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Ticket geometry is independent of event, organizer or booking models; callers own their visual and body content.",
+          "The hero layout supplies the same compact flag to both builders and retains the existing visual-height clamp and fitted body.",
+          "Use the notched outline and perforated divider as shape material inside feature-owned cards."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.ticket",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.ticket"
+      },
+      "surfaces": {
+        "flutter": "CatchTicketHeroLayout"
       }
     }
   ]

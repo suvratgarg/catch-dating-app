@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
@@ -275,8 +274,8 @@ class EventDetailTicketSurface extends StatelessWidget {
 
     return ColoredBox(
       color: bodyColor,
-      child: EventTicketHeroLayout(
-        divider: EventTicketPerforatedDivider(lineColor: lineColor),
+      child: CatchTicketHeroLayout(
+        divider: CatchTicketPerforatedDivider(lineColor: lineColor),
         visualBuilder: (context, compact) => Stack(
           fit: StackFit.expand,
           children: [

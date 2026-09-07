@@ -16,7 +16,6 @@ const thinSectionWrapperPattern =
 const allowedRawDividerFiles = new Set([
   "packages/catch_ui/lib/src/primitives/catch_divider.dart",
   "lib/core/widgets/catch_section_layout.dart",
-  "lib/core/widgets/event_ticket_surface.dart",
 ]);
 const wrapperAllowedPathPrefixes = ["lib/core/widgets/"];
 

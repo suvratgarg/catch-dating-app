@@ -807,6 +807,12 @@ caller-resolved partial/missing labels; app adapters use the existing translated
 copy. Separate metric and source-readiness concepts register their responsibilities,
 and a direct data-quality preview adds both-theme and large-text coverage.
 
+Ticket hero geometry, the notched outline and perforation are classified as L3
+entity material. They move into individual package files with presentation-neutral
+`CatchTicket*` names; callers use the existing geometry tokens directly and the
+feature barrel no longer exports the retired app owner. The ticket contract
+separates this material from domain-aware event cards and retains their rendering.
+
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains

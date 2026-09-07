@@ -266,10 +266,10 @@ clean; tests green.
    genuinely fixed art. Re-run until it exits `0`.
    Also run the focused `catch_no_local_design_constant` report; a zero sizing count is not clean if raw
    dimensions/colors/durations were hidden in private constants.
-3. **Flagship fix — the ticket:** in `event_ticket_surface.dart` the consts
+3. **Flagship fix — the ticket:** in `catch_ticket_shape_clipper.dart` the consts
    `eventTicketMediaHeight = 136`, `eventTicketDividerHeight`, `eventTicketNotchRadius`,
    `eventTicketNotchDepth` drive both the media `SizedBox` **and**
-   `EventTicketShapeClipper.notchCenterY` (`= eventTicketMediaHeight + eventTicketDividerHeight/2`,
+   `CatchTicketShapeClipper.notchCenterY` (`= eventTicketMediaHeight + eventTicketDividerHeight/2`,
    used in `catch_event_activity_cards.dart`). Convert media to `AspectRatio` (≈16/10) and compute
    the notch center from the **laid-out** media height via `LayoutBuilder` so the perforation stays
    aligned. Verify the notch visually in light + dark.

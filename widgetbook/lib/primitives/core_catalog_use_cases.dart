@@ -42,7 +42,6 @@ import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -2506,7 +2505,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: EventTicketPerforatedDivider,
+  type: CatchTicketPerforatedDivider,
   path: '[Core catalog]/Event cards',
 )
 Widget eventTicketSurfaceCatalogStates(BuildContext context) {
@@ -2519,13 +2518,13 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
         label: 'perforated divider / clipped shape',
         child: Column(
           children: [
-            const EventTicketPerforatedDivider(),
+            const CatchTicketPerforatedDivider(),
             gapH16,
             PhysicalShape(
-              clipper: const EventTicketShapeClipper(
+              clipper: const CatchTicketShapeClipper(
                 cornerRadius: CatchRadius.lg,
-                notchRadius: eventTicketNotchRadius,
-                notchDepth: eventTicketNotchDepth,
+                notchRadius: CatchLayout.eventTicketNotchRadius,
+                notchDepth: CatchLayout.eventTicketNotchDepth,
                 notchCenterY: 86,
               ),
               color: t.surface,
@@ -2543,7 +2542,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
                         dense: true,
                       ),
                     ),
-                    const EventTicketPerforatedDivider(),
+                    const CatchTicketPerforatedDivider(),
                     const Padding(
                       padding: EdgeInsets.all(CatchSpacing.s4),
                       child: Text('Ticket body surface'),

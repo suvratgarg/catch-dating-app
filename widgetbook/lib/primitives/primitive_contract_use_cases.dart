@@ -47,6 +47,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 import '../preview_layout_contracts.dart';
 
@@ -4550,6 +4551,76 @@ Widget catchAnalyticsDataQualityContractStates(
     ),
   ],
 );
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchTicketHeroLayout,
+  path: '[Core primitives]/Entity material',
+)
+Widget catchTicketContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'Ticket material',
+    contractId: 'catch.ticket',
+    states: const ['compact', 'expanded', 'large-text'],
+    children: [
+      for (final height in [359.0, 360.0])
+        _StateCard(
+          label: '${height.toInt()} px hero',
+          child: WidgetbookViewportFrame.device(
+            size: Size(340, height),
+            child: CatchTicketHeroLayout(
+              visualBuilder: (context, compact) => ColoredBox(
+                color: t.bg,
+                child: Center(
+                  child: Text(
+                    compact ? 'Compact visual' : 'Expanded visual',
+                    style: CatchTextStyles.labelM(context, color: t.ink),
+                  ),
+                ),
+              ),
+              divider: const CatchTicketPerforatedDivider(),
+              bodyBuilder: (context, compact) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    compact ? 'Compact body' : 'Expanded body',
+                    style: CatchTextStyles.labelM(context, color: t.ink),
+                  ),
+                  gapH8,
+                  Text(
+                    'Admission confirmed',
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      _StateCard(
+        label: 'Perforation geometry and color',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchTicketPerforatedDivider(
+              height: 32,
+              notchRadius: 14,
+              lineColor: t.primary,
+            ),
+            for (final radius in [4.0, 10.0, 14.0])
+              CustomPaint(
+                size: const Size(320, 20),
+                painter: CatchTicketPerforationPainter(
+                  lineColor: t.line2,
+                  notchRadius: radius,
+                ),
+              ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Contract states',

@@ -419,7 +419,7 @@ Event cards:
 - `CatchEventTicketCard`
 - `EventActivityBackdrop`
 - `EventActivityStamp`
-- `EventTicketPerforatedDivider`
+- `CatchTicketPerforatedDivider`
 
 Feedback:
 
@@ -799,7 +799,7 @@ model as separate primitives.
 - `CatchVerticalSection`
 - `EventActivityBackdrop`
 - `EventActivityStamp`
-- `EventTicketPerforatedDivider`
+- `CatchTicketPerforatedDivider`
 - `ProfileInfoTile`
 - `ResponsiveBuilder`
 
