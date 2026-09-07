@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceProgressReceiptDocument | `firestore/event_assistance_progress_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts` |
+| EventAssistanceGroupProgressDocument | `firestore/event_assistance_group_progress.schema.json` | `functions/src/shared/generated/eventAssistanceGroupProgressDocument.ts` |
+| GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceGroupProgressCallablePayload.ts` |
+| ConfirmEventAssistanceDepartureCallablePayload | `callables/confirm_event_assistance_departure_payload.schema.json` | `functions/src/shared/generated/confirmEventAssistanceDepartureCallablePayload.ts` |
+| EventAssistanceGroupProgressCallableResponse | `callable_responses/event_assistance_group_progress_response.schema.json` | `functions/src/shared/generated/eventAssistanceGroupProgressCallableResponse.ts` |
 | EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts` |
 | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts` |
 | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts` |
@@ -588,6 +593,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceProgressReceiptDocumentSchema` | EventAssistanceProgressReceiptDocument | `firestore/event_assistance_progress_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_progress_receipt_document.g.dart` |
+| `schemaEventAssistanceGroupProgressDocumentSchema` | EventAssistanceGroupProgressDocument | `firestore/event_assistance_group_progress.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_group_progress_document.g.dart` |
+| `schemaGetEventAssistanceGroupProgressCallablePayloadSchema` | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_group_progress_callable_payload.g.dart` |
+| `schemaConfirmEventAssistanceDepartureCallablePayloadSchema` | ConfirmEventAssistanceDepartureCallablePayload | `callables/confirm_event_assistance_departure_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/confirm_event_assistance_departure_callable_payload.g.dart` |
+| `schemaEventAssistanceGroupProgressCallableResponseSchema` | EventAssistanceGroupProgressCallableResponse | `callable_responses/event_assistance_group_progress_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_group_progress_callable_response.g.dart` |
 | `schemaEventWhatsappWithdrawalGrantDocumentSchema` | EventWhatsappWithdrawalGrantDocument | `firestore/event_assistance_whatsapp_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_whatsapp_withdrawal_grant_document.g.dart` |
 | `schemaGetEventWhatsappWithdrawalCallablePayloadSchema` | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_whatsapp_withdrawal_callable_payload.g.dart` |
 | `schemaWithdrawEventWhatsappCallablePayloadSchema` | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_whatsapp_callable_payload.g.dart` |
@@ -1164,6 +1174,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventAssistanceGroupProgressCallableRequest | GetEventAssistanceGroupProgressCallablePayload | `callables/get_event_assistance_group_progress_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_group_progress_callable_request.g.dart` |
+| ConfirmEventAssistanceDepartureCallableRequest | ConfirmEventAssistanceDepartureCallablePayload | `callables/confirm_event_assistance_departure_payload.schema.json` | `lib/core/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart` |
 | GetEventWhatsappWithdrawalCallableRequest | GetEventWhatsappWithdrawalCallablePayload | `callables/get_event_whatsapp_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_withdrawal_callable_request.g.dart` |
 | WithdrawEventWhatsappCallableRequest | WithdrawEventWhatsappCallablePayload | `callables/withdraw_event_whatsapp_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_whatsapp_callable_request.g.dart` |
 | GetEventWhatsappPreferenceCallableRequest | GetEventWhatsappPreferenceCallablePayload | `callables/get_event_whatsapp_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart` |

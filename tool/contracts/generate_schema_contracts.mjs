@@ -16,6 +16,31 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "EventAssistanceProgressReceiptDocument",
+    source: "firestore/event_assistance_progress_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts",
+  },
+  {
+    "name": "EventAssistanceGroupProgressDocument",
+    "source": "firestore/event_assistance_group_progress.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupProgressDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGroupProgressCallablePayload",
+    "source": "callables/get_event_assistance_group_progress_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGroupProgressCallablePayload.ts"
+  },
+  {
+    "name": "ConfirmEventAssistanceDepartureCallablePayload",
+    "source": "callables/confirm_event_assistance_departure_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/confirmEventAssistanceDepartureCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceGroupProgressCallableResponse",
+    "source": "callable_responses/event_assistance_group_progress_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupProgressCallableResponse.ts"
+  },
+  {
     "name": "EventWhatsappWithdrawalGrantDocument",
     "source": "firestore/event_assistance_whatsapp_withdrawal_grants.schema.json",
     "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts"
@@ -4120,7 +4145,10 @@ async function main() {
     "shared/event_assistance_common.schema.json"
   );
   const workflowKinds = assistanceCommon.definitions.workflowKind.enum;
-  const commandKinds = assistanceCommon.definitions.Command.oneOf.map(
+  const commandSchema = resolveRefs(assistanceCommon.definitions.Command,
+    path.join(contractRoot, "shared/event_assistance_common.schema.json"),
+    false);
+  const commandKinds = commandSchema.oneOf.map(
     (variant) => variant.properties.kind.const
   );
   addTextOutput(

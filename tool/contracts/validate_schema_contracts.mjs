@@ -113,7 +113,15 @@ function checkEventAssistanceContracts(parsed) {
         fail("Missing workflow " + field + ": " + row.kind);
     }
   }
-  const commands = common.definitions?.Command?.oneOf ?? [];
+  const commands = (common.definitions?.Command?.oneOf ?? []).map((entry) => {
+    if (!entry.$ref) return entry;
+    const match = /^#\/definitions\/([^/]+)$/.exec(entry.$ref);
+    if (!match || Object.keys(entry).length !== 1) {
+      fail("Assistance command references must name one local definition.");
+      return {};
+    }
+    return common.definitions[match[1]] ?? {};
+  });
   const commandKinds = commands.map(
     (command) => command.properties?.kind?.const
   );

@@ -537,6 +537,50 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceProgressReceiptDocument {
+  receiptId: string;
+  progressId: string;
+  requestHash: string;
+  revision: number;
+  createdAt: number;
+}
+
+export interface EventAssistanceGroupProgressDocument {
+  schemaVersion: 1;
+  progressId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  revision: number;
+  destination:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
+  sourceHash: string;
+  confirmedBy: string;
+  confirmedAt: number;
+  operationId: string;
+  requestHash: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface EventWhatsappWithdrawalGrantDocument {
   schemaVersion: 1;
   linkId: string;

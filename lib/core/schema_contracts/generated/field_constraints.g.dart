@@ -6684,6 +6684,165 @@ abstract final class CatchContractConstraints {
     minimum: 2,
   );
 
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationGroupId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationKind = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationRouteId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationStopId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadExpectedProgressRevision = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.expectedProgressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.command.payload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const confirmEventAssistanceDepartureCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'confirmEventAssistanceDepartureCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const connectOrganizerLumaProviderCallablePayloadApiKey = CatchContractFieldConstraints(
     path: 'connectOrganizerLumaProviderCallablePayload.apiKey',
     maxLength: 512,
@@ -12206,6 +12365,649 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceGroupProgressCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinations = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 41,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewEventOpen = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.eventOpen',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewFreshness = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.freshness',
+    required: true,
+    enumValues: <String>['unconfirmed', 'current', 'sourceChanged'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceText = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressConfirmedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.confirmedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressProgressId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.progressId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^progress:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewProgressUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewRuntimeLive = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.runtimeLive',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressDocumentConfirmedBy = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.confirmedBy',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceGroupProgressDocumentGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentProgressId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.progressId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^progress:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.schemaVersion',
+    required: true,
+  );
+
+  static const eventAssistanceGroupProgressDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceGroupProgressDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceGuestDocumentAttendeeGeneration = CatchContractFieldConstraints(
     path: 'eventAssistanceGuestDocument.attendeeGeneration',
     required: true,
@@ -14730,6 +15532,43 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistancePolicy.version',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceProgressReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceProgressReceiptDocumentProgressId = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.progressId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^progress:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceProgressReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^progress-action:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceProgressReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceProgressReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventAssistanceSmsBudgetDocumentApprovalId = CatchContractFieldConstraints(
@@ -29806,6 +30645,38 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const getEventAssistanceGroupProgressCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupProgressCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceGroupProgressCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupProgressCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceGroupProgressCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupProgressCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceGroupProgressCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceGroupProgressCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getEventAssistanceGuestViewCallablePayloadLinkId = CatchContractFieldConstraints(
@@ -70540,6 +71411,26 @@ abstract final class CatchContractConstraints {
     'configCitiesDocument.markets.items.slug': configCitiesDocumentMarketsItemsSlug,
     'configCitiesDocument.markets.items.timeZone': configCitiesDocumentMarketsItemsTimeZone,
     'configCitiesDocument.version': configCitiesDocumentVersion,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.clockId': confirmEventAssistanceDepartureCallablePayloadCommandContextClockId,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.eventId': confirmEventAssistanceDepartureCallablePayloadCommandContextEventId,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.mode': confirmEventAssistanceDepartureCallablePayloadCommandContextMode,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.organizerId': confirmEventAssistanceDepartureCallablePayloadCommandContextOrganizerId,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.rehearsalId': confirmEventAssistanceDepartureCallablePayloadCommandContextRehearsalId,
+    'confirmEventAssistanceDepartureCallablePayload.command.context.virtualEventId': confirmEventAssistanceDepartureCallablePayloadCommandContextVirtualEventId,
+    'confirmEventAssistanceDepartureCallablePayload.command.eventId': confirmEventAssistanceDepartureCallablePayloadCommandEventId,
+    'confirmEventAssistanceDepartureCallablePayload.command.kind': confirmEventAssistanceDepartureCallablePayloadCommandKind,
+    'confirmEventAssistanceDepartureCallablePayload.command.operationId': confirmEventAssistanceDepartureCallablePayloadCommandOperationId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.checkpointId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationCheckpointId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.groupId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationGroupId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.itineraryId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationItineraryId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.kind': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationKind,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.lateEntry': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationLateEntry,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.placeId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationPlaceId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.routeId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationRouteId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.destination.stopId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadDestinationStopId,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.expectedProgressRevision': confirmEventAssistanceDepartureCallablePayloadCommandPayloadExpectedProgressRevision,
+    'confirmEventAssistanceDepartureCallablePayload.command.payload.groupId': confirmEventAssistanceDepartureCallablePayloadCommandPayloadGroupId,
+    'confirmEventAssistanceDepartureCallablePayload.expectedSourceHash': confirmEventAssistanceDepartureCallablePayloadExpectedSourceHash,
     'connectOrganizerLumaProviderCallablePayload.apiKey': connectOrganizerLumaProviderCallablePayloadApiKey,
     'connectOrganizerLumaProviderCallablePayload.eventId': connectOrganizerLumaProviderCallablePayloadEventId,
     'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
@@ -71302,6 +72193,90 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDeliveryAttempt.state.providerMessageId': eventAssistanceDeliveryAttemptStateProviderMessageId,
     'eventAssistanceDeliveryAttempt.state.reason': eventAssistanceDeliveryAttemptStateReason,
     'eventAssistanceDeliveryAttempt.state.reconcileAfter': eventAssistanceDeliveryAttemptStateReconcileAfter,
+    'eventAssistanceGroupProgressCallableResponse.operationRevision': eventAssistanceGroupProgressCallableResponseOperationRevision,
+    'eventAssistanceGroupProgressCallableResponse.outcome': eventAssistanceGroupProgressCallableResponseOutcome,
+    'eventAssistanceGroupProgressCallableResponse.view.context.eventId': eventAssistanceGroupProgressCallableResponseViewContextEventId,
+    'eventAssistanceGroupProgressCallableResponse.view.context.mode': eventAssistanceGroupProgressCallableResponseViewContextMode,
+    'eventAssistanceGroupProgressCallableResponse.view.context.organizerId': eventAssistanceGroupProgressCallableResponseViewContextOrganizerId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations': eventAssistanceGroupProgressCallableResponseViewDestinations,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.label': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLabel,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.address': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationAddress,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.latitude': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationLatitude,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.longitude': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationLongitude,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.name': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationName,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.notes': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationNotes,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.placeId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationPlaceId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.checkpointId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetCheckpointId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.groupId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetGroupId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.itineraryId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetItineraryId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.kind': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetKind,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.lateEntry': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetLateEntry,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.placeId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetPlaceId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.routeId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetRouteId,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.target.stopId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsTargetStopId,
+    'eventAssistanceGroupProgressCallableResponse.view.eventOpen': eventAssistanceGroupProgressCallableResponseViewEventOpen,
+    'eventAssistanceGroupProgressCallableResponse.view.freshness': eventAssistanceGroupProgressCallableResponseViewFreshness,
+    'eventAssistanceGroupProgressCallableResponse.view.groupId': eventAssistanceGroupProgressCallableResponseViewGroupId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.checkpointId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationCheckpointId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.groupId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationGroupId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.itineraryId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationItineraryId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.kind': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationKind,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.lateEntry': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationLateEntry,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.placeId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationPlaceId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.routeId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationRouteId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.destination.stopId': eventAssistanceGroupProgressCallableResponseViewGuidanceDestinationStopId,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.materialKey': eventAssistanceGroupProgressCallableResponseViewGuidanceMaterialKey,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.revision': eventAssistanceGroupProgressCallableResponseViewGuidanceRevision,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.text': eventAssistanceGroupProgressCallableResponseViewGuidanceText,
+    'eventAssistanceGroupProgressCallableResponse.view.guidance.validUntil': eventAssistanceGroupProgressCallableResponseViewGuidanceValidUntil,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.confirmedAt': eventAssistanceGroupProgressCallableResponseViewProgressConfirmedAt,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.confirmedBy': eventAssistanceGroupProgressCallableResponseViewProgressConfirmedBy,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.context.eventId': eventAssistanceGroupProgressCallableResponseViewProgressContextEventId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.context.mode': eventAssistanceGroupProgressCallableResponseViewProgressContextMode,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.context.organizerId': eventAssistanceGroupProgressCallableResponseViewProgressContextOrganizerId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.createdAt': eventAssistanceGroupProgressCallableResponseViewProgressCreatedAt,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.checkpointId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationCheckpointId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.groupId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationGroupId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.itineraryId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationItineraryId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.kind': eventAssistanceGroupProgressCallableResponseViewProgressDestinationKind,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.lateEntry': eventAssistanceGroupProgressCallableResponseViewProgressDestinationLateEntry,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.placeId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationPlaceId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.routeId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationRouteId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.destination.stopId': eventAssistanceGroupProgressCallableResponseViewProgressDestinationStopId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.groupId': eventAssistanceGroupProgressCallableResponseViewProgressGroupId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.operationId': eventAssistanceGroupProgressCallableResponseViewProgressOperationId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.progressId': eventAssistanceGroupProgressCallableResponseViewProgressProgressId,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.requestHash': eventAssistanceGroupProgressCallableResponseViewProgressRequestHash,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.revision': eventAssistanceGroupProgressCallableResponseViewProgressRevision,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.schemaVersion': eventAssistanceGroupProgressCallableResponseViewProgressSchemaVersion,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.sourceHash': eventAssistanceGroupProgressCallableResponseViewProgressSourceHash,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.updatedAt': eventAssistanceGroupProgressCallableResponseViewProgressUpdatedAt,
+    'eventAssistanceGroupProgressCallableResponse.view.revision': eventAssistanceGroupProgressCallableResponseViewRevision,
+    'eventAssistanceGroupProgressCallableResponse.view.runtimeLive': eventAssistanceGroupProgressCallableResponseViewRuntimeLive,
+    'eventAssistanceGroupProgressCallableResponse.view.serverTime': eventAssistanceGroupProgressCallableResponseViewServerTime,
+    'eventAssistanceGroupProgressCallableResponse.view.sourceHash': eventAssistanceGroupProgressCallableResponseViewSourceHash,
+    'eventAssistanceGroupProgressDocument.confirmedAt': eventAssistanceGroupProgressDocumentConfirmedAt,
+    'eventAssistanceGroupProgressDocument.confirmedBy': eventAssistanceGroupProgressDocumentConfirmedBy,
+    'eventAssistanceGroupProgressDocument.context.eventId': eventAssistanceGroupProgressDocumentContextEventId,
+    'eventAssistanceGroupProgressDocument.context.mode': eventAssistanceGroupProgressDocumentContextMode,
+    'eventAssistanceGroupProgressDocument.context.organizerId': eventAssistanceGroupProgressDocumentContextOrganizerId,
+    'eventAssistanceGroupProgressDocument.createdAt': eventAssistanceGroupProgressDocumentCreatedAt,
+    'eventAssistanceGroupProgressDocument.destination.checkpointId': eventAssistanceGroupProgressDocumentDestinationCheckpointId,
+    'eventAssistanceGroupProgressDocument.destination.groupId': eventAssistanceGroupProgressDocumentDestinationGroupId,
+    'eventAssistanceGroupProgressDocument.destination.itineraryId': eventAssistanceGroupProgressDocumentDestinationItineraryId,
+    'eventAssistanceGroupProgressDocument.destination.kind': eventAssistanceGroupProgressDocumentDestinationKind,
+    'eventAssistanceGroupProgressDocument.destination.lateEntry': eventAssistanceGroupProgressDocumentDestinationLateEntry,
+    'eventAssistanceGroupProgressDocument.destination.placeId': eventAssistanceGroupProgressDocumentDestinationPlaceId,
+    'eventAssistanceGroupProgressDocument.destination.routeId': eventAssistanceGroupProgressDocumentDestinationRouteId,
+    'eventAssistanceGroupProgressDocument.destination.stopId': eventAssistanceGroupProgressDocumentDestinationStopId,
+    'eventAssistanceGroupProgressDocument.groupId': eventAssistanceGroupProgressDocumentGroupId,
+    'eventAssistanceGroupProgressDocument.operationId': eventAssistanceGroupProgressDocumentOperationId,
+    'eventAssistanceGroupProgressDocument.progressId': eventAssistanceGroupProgressDocumentProgressId,
+    'eventAssistanceGroupProgressDocument.requestHash': eventAssistanceGroupProgressDocumentRequestHash,
+    'eventAssistanceGroupProgressDocument.revision': eventAssistanceGroupProgressDocumentRevision,
+    'eventAssistanceGroupProgressDocument.schemaVersion': eventAssistanceGroupProgressDocumentSchemaVersion,
+    'eventAssistanceGroupProgressDocument.sourceHash': eventAssistanceGroupProgressDocumentSourceHash,
+    'eventAssistanceGroupProgressDocument.updatedAt': eventAssistanceGroupProgressDocumentUpdatedAt,
     'eventAssistanceGuestDocument.attendeeGeneration': eventAssistanceGuestDocumentAttendeeGeneration,
     'eventAssistanceGuestDocument.attendeeId': eventAssistanceGuestDocumentAttendeeId,
     'eventAssistanceGuestDocument.context.eventId': eventAssistanceGuestDocumentContextEventId,
@@ -71629,6 +72604,11 @@ abstract final class CatchContractConstraints {
     'eventAssistancePolicy.setting.policyVersion': eventAssistancePolicySettingPolicyVersion,
     'eventAssistancePolicy.setting.reason': eventAssistancePolicySettingReason,
     'eventAssistancePolicy.version': eventAssistancePolicyVersion,
+    'eventAssistanceProgressReceiptDocument.createdAt': eventAssistanceProgressReceiptDocumentCreatedAt,
+    'eventAssistanceProgressReceiptDocument.progressId': eventAssistanceProgressReceiptDocumentProgressId,
+    'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
+    'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
+    'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
     'eventAssistanceSmsBudgetDocument.approvalId': eventAssistanceSmsBudgetDocumentApprovalId,
     'eventAssistanceSmsBudgetDocument.budgetId': eventAssistanceSmsBudgetDocumentBudgetId,
     'eventAssistanceSmsBudgetDocument.chargedMicros': eventAssistanceSmsBudgetDocumentChargedMicros,
@@ -73681,6 +74661,10 @@ abstract final class CatchContractConstraints {
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.reasonCodes.items': getCrossPathsSuggestionsCallableResponseSuggestionsItemsReasonCodesItems,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.suggestionToken': getCrossPathsSuggestionsCallableResponseSuggestionsItemsSuggestionToken,
     'getCrossPathsSuggestionsCallableResponse.suggestions.items.tokenExpiresAt': getCrossPathsSuggestionsCallableResponseSuggestionsItemsTokenExpiresAt,
+    'getEventAssistanceGroupProgressCallablePayload.context.eventId': getEventAssistanceGroupProgressCallablePayloadContextEventId,
+    'getEventAssistanceGroupProgressCallablePayload.context.mode': getEventAssistanceGroupProgressCallablePayloadContextMode,
+    'getEventAssistanceGroupProgressCallablePayload.context.organizerId': getEventAssistanceGroupProgressCallablePayloadContextOrganizerId,
+    'getEventAssistanceGroupProgressCallablePayload.groupId': getEventAssistanceGroupProgressCallablePayloadGroupId,
     'getEventAssistanceGuestViewCallablePayload.linkId': getEventAssistanceGuestViewCallablePayloadLinkId,
     'getEventAssistanceGuestViewCallablePayload.secret': getEventAssistanceGuestViewCallablePayloadSecret,
     'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,

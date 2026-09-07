@@ -1,0 +1,304 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_progress.schema.json",
+  "title": "EventAssistanceProgressContracts",
+  "definitions": {
+    "Progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "progressId",
+        "context",
+        "groupId",
+        "revision",
+        "destination",
+        "sourceHash",
+        "confirmedBy",
+        "confirmedAt",
+        "operationId",
+        "requestHash",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "progressId": {
+          "type": "string",
+          "pattern": "^progress:[a-f0-9]{64}$"
+        },
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "destination": {
+          "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirmedBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "confirmedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "View": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId",
+        "serverTime",
+        "revision",
+        "sourceHash",
+        "eventOpen",
+        "runtimeLive",
+        "freshness",
+        "progress",
+        "guidance",
+        "destinations"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "eventOpen": {
+          "type": "boolean"
+        },
+        "runtimeLive": {
+          "type": "boolean"
+        },
+        "freshness": {
+          "enum": [
+            "unconfirmed",
+            "current",
+            "sourceChanged"
+          ]
+        },
+        "progress": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Progress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "guidance": {
+          "anyOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/JoiningGuidance"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destinations": {
+          "type": "array",
+          "maxItems": 41,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "target",
+              "label",
+              "location"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "location": {
+                "$ref": "event_common.schema.json#/definitions/eventMeetingLocation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ReadInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "ConfirmInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "command": {
+          "$ref": "event_assistance_common.schema.json#/definitions/ConfirmDepartureCommand"
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "command": {
+              "properties": {
+                "context": {
+                  "properties": {
+                    "mode": {
+                      "const": "live"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "view",
+        "operationRevision"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "read",
+            "applied",
+            "replayed"
+          ]
+        },
+        "view": {
+          "$ref": "#/definitions/View"
+        },
+        "operationRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "Receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receiptId",
+        "progressId",
+        "requestHash",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "receiptId": {
+          "type": "string",
+          "pattern": "^progress-action:[a-f0-9]{64}$"
+        },
+        "progressId": {
+          "type": "string",
+          "pattern": "^progress:[a-f0-9]{64}$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

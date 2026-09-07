@@ -125,6 +125,43 @@ The local shadow factory does not load live event facts or send messages.
 Trusted worker scheduling, complete live policy fact readers, provider adapters,
 and the Host/rehearsal application adapters remain integration work.
 
+### Confirmed group progress
+
+`getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` provide
+the first live command boundary for the typed workflow. The read projects
+destinations from canonical meeting location, itinerary stops with locations,
+and configured pace groups with a saved route path. `event:whole` is the
+whole-event scope; saved pace-group IDs cannot collide with that namespace.
+Itinerary and route references use the event-local `:itinerary` and `:route`
+identities. Scheduled offsets never prove that a group has moved.
+
+Confirmation consumes the existing typed `confirmDeparture` command and the
+source hash the Host reviewed. In one transaction it re-reads the event,
+organizer management authority, live plan, group progress and command receipt.
+The destination must still be one of the current saved choices, the event must
+be open and its runtime live, and both source and progress revisions must match.
+The source hash includes Firestore event/plan creation generations, so a
+replacement document cannot inherit an old confirmation. Clock time does not
+confirm movement. The selected destination and actual confirmation time are
+persisted separately from assistance policy, message state and attendance.
+
+`eventAssistanceGroupProgress` holds the current result per event/group;
+`eventAssistanceProgressReceipts` keeps immutable command deduplication evidence.
+An exact older retry returns its original operation revision and the latest
+view without repeating movement. Reusing its ID with changed content fails.
+Source changes preserve the old fact but withhold current joining guidance
+until the Host confirms the current setup. Each pace group has independent
+progress. No new command sends messages, checks guests in or changes assignments.
+
+Both callables require Auth and App Check, apply rate limits and currently
+resolve organizer-manager authority. The existing check-in staff grant does
+not imply group-lead authority. Policy configuration, scoped group-lead grants,
+workflow scheduling, Host controls and the rehearsal adapter remain separate
+integration work. The shared late-join evaluator accepts guidance derived from
+this record; the full live fact reader is not yet connected.
+
+### Shared message delivery
+
 `contracts/shared/event_assistance_messaging.schema.json` separates immutable
 message intent, a channel attempt and a guest response. Joining updates carry
 only approved joining choices; operational notices carry scoped acknowledgements

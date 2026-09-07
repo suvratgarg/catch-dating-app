@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceProgressReceiptDocument',
+    source: 'firestore/event_assistance_progress_receipts.schema.json',
+    schema: schemaEventAssistanceProgressReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGroupProgressDocument',
+    source: 'firestore/event_assistance_group_progress.schema.json',
+    schema: schemaEventAssistanceGroupProgressDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventAssistanceGroupProgressCallablePayload',
+    source: 'callables/get_event_assistance_group_progress_payload.schema.json',
+    schema: schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ConfirmEventAssistanceDepartureCallablePayload',
+    source: 'callables/confirm_event_assistance_departure_payload.schema.json',
+    schema: schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceGroupProgressCallableResponse',
+    source: 'callable_responses/event_assistance_group_progress_response.schema.json',
+    schema: schemaEventAssistanceGroupProgressCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventWhatsappWithdrawalGrantDocument',
     source: 'firestore/event_assistance_whatsapp_withdrawal_grants.schema.json',
     schema: schemaEventWhatsappWithdrawalGrantDocumentSchema,
@@ -2874,6 +2899,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceProgressReceiptDocument': schemaEventAssistanceProgressReceiptDocumentSchema,
+  'EventAssistanceGroupProgressDocument': schemaEventAssistanceGroupProgressDocumentSchema,
+  'GetEventAssistanceGroupProgressCallablePayload': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
+  'ConfirmEventAssistanceDepartureCallablePayload': schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+  'EventAssistanceGroupProgressCallableResponse': schemaEventAssistanceGroupProgressCallableResponseSchema,
   'EventWhatsappWithdrawalGrantDocument': schemaEventWhatsappWithdrawalGrantDocumentSchema,
   'GetEventWhatsappWithdrawalCallablePayload': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
   'WithdrawEventWhatsappCallablePayload': schemaWithdrawEventWhatsappCallablePayloadSchema,
@@ -3448,6 +3478,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_progress_receipts.schema.json': schemaEventAssistanceProgressReceiptDocumentSchema,
+  'firestore/event_assistance_group_progress.schema.json': schemaEventAssistanceGroupProgressDocumentSchema,
+  'callables/get_event_assistance_group_progress_payload.schema.json': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
+  'callables/confirm_event_assistance_departure_payload.schema.json': schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+  'callable_responses/event_assistance_group_progress_response.schema.json': schemaEventAssistanceGroupProgressCallableResponseSchema,
   'firestore/event_assistance_whatsapp_withdrawal_grants.schema.json': schemaEventWhatsappWithdrawalGrantDocumentSchema,
   'callables/get_event_whatsapp_withdrawal_payload.schema.json': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
   'callables/withdraw_event_whatsapp_payload.schema.json': schemaWithdrawEventWhatsappCallablePayloadSchema,

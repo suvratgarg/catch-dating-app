@@ -759,6 +759,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceProgressReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGroupProgress/{progressId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceGuests/{guestId} {
       allow read, write: if false;
     }

@@ -104,6 +104,35 @@ domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
 
+### Event Assistance Group Progress Contract
+
+`eventAssistanceGroupProgress/{progressId}` is the current explicitly confirmed
+destination for one live event/group. Its ID hashes the canonical execution
+context and group. The whole-event scope is `event:whole`; saved pace-group IDs
+use the source route's IDs. The document pins a monotonic revision, destination,
+source hash, confirming manager, command identity and server confirmation time.
+The source hash binds the event and plan creation generations, schedule,
+meeting place, itinerary and route configuration. It excludes routine live
+step changes and attendance counters. A setup change marks the projection
+`sourceChanged` and withholds derived current guidance without rewriting history.
+
+`eventAssistanceProgressReceipts/{receiptId}` records the request hash, original
+committed revision and time. Its ID binds context, group and operation ID;
+actor identity is included in the request hash. Progress and receipt commit
+together. Exact replay returns the original operation revision plus the latest
+view, including after a later departure; changed reuse fails. These records
+have no TTL: command deduplication must survive the executable event lifetime,
+and terminal retention/cleanup must be defined before activation.
+
+`getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` are
+Auth/App-Check-protected and rate-limited. Canonical organizer management is
+checked inside the transaction that reads event/plan/source state and writes
+the result. The read response exposes only saved destination choices and
+progress, without roster data. Confirmation requires matching source and
+progress revisions, a current destination, an open event and a live runtime.
+The collections deny all direct client reads and writes. This boundary records
+a physical fact and does not authorize provider I/O or guest attendance changes.
+
 ### Event Service Outbox Contract
 
 `eventAssistanceMessages/{messageId}` is server-only delivery state owned by

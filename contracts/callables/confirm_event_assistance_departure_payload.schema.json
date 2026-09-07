@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/confirm_event_assistance_departure_payload.schema.json",
+  "title": "ConfirmEventAssistanceDepartureCallablePayload",
+  "$ref": "../shared/event_assistance_progress.schema.json#/definitions/ConfirmInput"
+}

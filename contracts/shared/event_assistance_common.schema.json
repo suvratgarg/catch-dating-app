@@ -4209,62 +4209,7 @@
     "Command": {
       "oneOf": [
         {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "context",
-            "eventId",
-            "operationId",
-            "payload"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "confirmDeparture"
-            },
-            "context": {
-              "$ref": "#/definitions/ExecutionContext"
-            },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "operationId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "payload": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "groupId",
-                "destination",
-                "expectedProgressRevision"
-              ],
-              "properties": {
-                "groupId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "destination": {
-                  "$ref": "#/definitions/JoiningTarget"
-                },
-                "expectedProgressRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991,
-                  "description": "Nonnegative safe integer revision."
-                }
-              }
-            }
-          }
+          "$ref": "#/definitions/ConfirmDepartureCommand"
         },
         {
           "type": "object",
@@ -6866,6 +6811,64 @@
           }
         }
       ]
+    },
+    "ConfirmDepartureCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "confirmDeparture"
+        },
+        "context": {
+          "$ref": "#/definitions/ExecutionContext"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "destination",
+            "expectedProgressRevision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "destination": {
+              "$ref": "#/definitions/JoiningTarget"
+            },
+            "expectedProgressRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            }
+          }
+        }
+      }
     }
   }
 }

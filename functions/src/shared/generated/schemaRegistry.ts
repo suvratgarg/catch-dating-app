@@ -5,6 +5,11 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventAssistanceProgressReceiptDocumentSchema} from "./schemas/eventAssistanceProgressReceiptDocument";
+export {eventAssistanceGroupProgressDocumentSchema} from "./schemas/eventAssistanceGroupProgressDocument";
+export {getEventAssistanceGroupProgressCallablePayloadSchema} from "./schemas/getEventAssistanceGroupProgressInput";
+export {confirmEventAssistanceDepartureCallablePayloadSchema} from "./schemas/confirmEventAssistanceDepartureInput";
+export {eventAssistanceGroupProgressCallableResponseSchema} from "./schemas/eventAssistanceGroupProgressOutput";
 export {eventWhatsappWithdrawalGrantDocumentSchema} from "./schemas/eventWhatsappWithdrawalGrantDocument";
 export {getEventWhatsappWithdrawalCallablePayloadSchema} from "./schemas/getEventWhatsappWithdrawalInput";
 export {withdrawEventWhatsappCallablePayloadSchema} from "./schemas/withdrawEventWhatsappInput";

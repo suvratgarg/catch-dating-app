@@ -1835,6 +1835,31 @@
       ]
     },
     {
+      "id": "eventAssistanceProgressReceipts",
+      "path": "eventAssistanceProgressReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceProgressReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance departure command",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "confirmEventAssistanceDeparture"
+      ]
+    },
+    {
+      "id": "eventAssistanceGroupProgress",
+      "path": "eventAssistanceGroupProgress/{progressId}",
+      "rulesMatch": "/eventAssistanceGroupProgress/{progressId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance departure command",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceGroupProgress",
+        "confirmEventAssistanceDeparture"
+      ]
+    },
+    {
       "id": "eventAssistanceGuests",
       "path": "eventAssistanceGuests/{guestId}",
       "rulesMatch": "/eventAssistanceGuests/{guestId}",
