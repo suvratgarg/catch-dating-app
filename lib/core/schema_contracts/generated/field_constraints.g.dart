@@ -18580,6 +18580,161 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceSourceWorkCheckpointCursor = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.cursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSourceWorkCheckpointFailures = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.failures',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventAssistanceSourceWorkCheckpointFailuresItemsReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.failures.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['busy', 'unavailable'],
+  );
+
+  static const eventAssistanceSourceWorkCheckpointFailuresItemsWorkItemId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.failures.items.workItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkCheckpointPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.phase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scan', 'retry', 'complete', 'review', 'expired'],
+  );
+
+  static const eventAssistanceSourceWorkCheckpointRetries = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.retries',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventAssistanceSourceWorkCheckpointVisited = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.checkpoint.visited',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceSourceWorkExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceSourceWorkKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSourceWorkSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceSourceWorkScopeAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSourceWorkScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSourceWorkSignalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.signalId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkSourceCollection = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.source.collection',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages'],
+  );
+
+  static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.source.documentId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkSourceEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.source.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkSourceOccurredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.source.occurredAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceStaffReceiptDocumentCreatedAt = CatchContractFieldConstraints(
     path: 'eventAssistanceStaffReceiptDocument.createdAt',
     required: true,
@@ -75440,6 +75595,26 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsWithdrawalGrantDocument.schemaVersion': eventAssistanceSmsWithdrawalGrantDocumentSchemaVersion,
     'eventAssistanceSmsWithdrawalGrantDocument.senderId': eventAssistanceSmsWithdrawalGrantDocumentSenderId,
     'eventAssistanceSmsWithdrawalGrantDocument.subjectUid': eventAssistanceSmsWithdrawalGrantDocumentSubjectUid,
+    'eventAssistanceSourceWork.checkpoint.cursor': eventAssistanceSourceWorkCheckpointCursor,
+    'eventAssistanceSourceWork.checkpoint.dueAt': eventAssistanceSourceWorkCheckpointDueAt,
+    'eventAssistanceSourceWork.checkpoint.failures': eventAssistanceSourceWorkCheckpointFailures,
+    'eventAssistanceSourceWork.checkpoint.failures.items.reason': eventAssistanceSourceWorkCheckpointFailuresItemsReason,
+    'eventAssistanceSourceWork.checkpoint.failures.items.workItemId': eventAssistanceSourceWorkCheckpointFailuresItemsWorkItemId,
+    'eventAssistanceSourceWork.checkpoint.phase': eventAssistanceSourceWorkCheckpointPhase,
+    'eventAssistanceSourceWork.checkpoint.retries': eventAssistanceSourceWorkCheckpointRetries,
+    'eventAssistanceSourceWork.checkpoint.visited': eventAssistanceSourceWorkCheckpointVisited,
+    'eventAssistanceSourceWork.expiresAt': eventAssistanceSourceWorkExpiresAt,
+    'eventAssistanceSourceWork.kind': eventAssistanceSourceWorkKind,
+    'eventAssistanceSourceWork.schemaVersion': eventAssistanceSourceWorkSchemaVersion,
+    'eventAssistanceSourceWork.scope.attendeeId': eventAssistanceSourceWorkScopeAttendeeId,
+    'eventAssistanceSourceWork.scope.context.eventId': eventAssistanceSourceWorkScopeContextEventId,
+    'eventAssistanceSourceWork.scope.context.mode': eventAssistanceSourceWorkScopeContextMode,
+    'eventAssistanceSourceWork.scope.context.organizerId': eventAssistanceSourceWorkScopeContextOrganizerId,
+    'eventAssistanceSourceWork.signalId': eventAssistanceSourceWorkSignalId,
+    'eventAssistanceSourceWork.source.collection': eventAssistanceSourceWorkSourceCollection,
+    'eventAssistanceSourceWork.source.documentId': eventAssistanceSourceWorkSourceDocumentId,
+    'eventAssistanceSourceWork.source.eventId': eventAssistanceSourceWorkSourceEventId,
+    'eventAssistanceSourceWork.source.occurredAt': eventAssistanceSourceWorkSourceOccurredAt,
     'eventAssistanceStaffReceiptDocument.createdAt': eventAssistanceStaffReceiptDocumentCreatedAt,
     'eventAssistanceStaffReceiptDocument.receiptId': eventAssistanceStaffReceiptDocumentReceiptId,
     'eventAssistanceStaffReceiptDocument.requestHash': eventAssistanceStaffReceiptDocumentRequestHash,

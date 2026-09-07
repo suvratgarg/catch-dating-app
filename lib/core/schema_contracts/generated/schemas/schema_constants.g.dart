@@ -176,6 +176,7 @@ export 'event_assistance_sms_preference_callable_response.g.dart';
 export 'event_assistance_sms_sender_document.g.dart';
 export 'event_assistance_sms_withdrawal_callable_response.g.dart';
 export 'event_assistance_sms_withdrawal_grant_document.g.dart';
+export 'event_assistance_source_work.g.dart';
 export 'event_assistance_staff_receipt_document.g.dart';
 export 'event_assistance_thread_document.g.dart';
 export 'event_attendee_attendance_receipt_document.g.dart';

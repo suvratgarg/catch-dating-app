@@ -96,12 +96,12 @@ test("logical functions expands all enabled source exports", () => {
   assert.equal(plan.deployOnly.split(",").length, 3);
 });
 
-test("dormant scheduled Functions cannot enter logical or exact deploy plans", () => {
+test("dormant Functions cannot enter logical or exact deploy plans", () => {
   const sourceExports = new Set(listFirebaseFunctionExports());
   const enabledTargets = listFirebaseFunctionTargets();
   const enabledTargetSet = new Set(enabledTargets);
 
-  assert.equal(dormantFirebaseFunctionTargets.length, 8);
+  assert.equal(dormantFirebaseFunctionTargets.length, 18);
   for (const target of dormantFirebaseFunctionTargets) {
     assert.equal(
       sourceExports.has(target), true, `${target} must remain implemented`,

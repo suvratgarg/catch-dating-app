@@ -69,6 +69,7 @@ export {eventAssistanceDeliveryAttemptSchema} from "./schemas/eventAssistanceDel
 export {eventAssistanceGuestResponseSchema} from "./schemas/eventAssistanceGuestResponse";
 export {eventAssistancePolicySchema} from "./schemas/eventAssistancePolicy";
 export {eventAssistanceCommandSchema} from "./schemas/eventAssistanceCommand";
+export {eventAssistanceSourceWorkSchema} from "./schemas/eventAssistanceSourceWork";
 export {eventAssistanceLiveWorkSchema} from "./schemas/eventAssistanceLiveWork";
 export {eventAssistanceLateJoinInputSchema} from "./schemas/eventAssistanceLateJoinInput";
 export {eventAssistanceLateJoinDecisionSchema} from "./schemas/eventAssistanceLateJoinDecision";

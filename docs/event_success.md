@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.28.0
+version: 1.29.0
 updated: 2026-09-07
 owner: recursive_audit_loop
 status: active
@@ -122,8 +122,10 @@ Operations;
 the Functions adapter validates the same schemas before invoking it. Changing
 the policy therefore requires both generated-output parity and runtime tests.
 The local shadow factory does not load live event facts or send messages.
-Trusted worker scheduling, complete live policy fact readers, provider adapters,
-and the Host/rehearsal application adapters remain integration work.
+The live late-join reader, publisher, durable worker and dormant source/scheduler
+handlers are described below. Other workflow fact readers/executors, deployed
+provider coordination and the Host/rehearsal application adapters remain
+integration work.
 
 ### Participation commands
 
@@ -309,15 +311,19 @@ Disabling, replacing or reducing the authority of a setting withholds queued sen
 A different ready sender cannot substitute for the frozen sender selection.
 
 `prepareGuestMessagePublication` and `prepareLiveLateJoinPublication` complete all
-reads before returning their write-staging closures, allowing a future fenced
+reads before returning their write-staging closures, allowing a fenced
 Operations checkpoint to share the commit. The automatic preparation expires after
 at most 30 seconds and never crosses the intent or unanswered-response deadline.
-This is a trusted transaction seam, not a new scheduler or a public callable. The
-live Operations worker still needs to persist due times, decisions, checkpoints and
-message references, invoke these primitives under its lease, and handle terminal
-and human-review outcomes. A publication result does not assert provider submission
-or delivery; provider activation and the broader Host/rehearsal workflow remain
-separate integration work.
+`LiveAssistanceWorkStore` now persists due times, decisions, message references,
+terminal/review outcomes and its Operations checkpoint in the publication
+transaction. Its worker uses current leases and durable wake receipts. Source
+changes enqueue bounded resumable fanout; work-item and scheduled handlers
+advance saved due work. These handlers remain dormant in deployment policy.
+See [Operations runtime](operations_platform.md#durable-live-assistance-work)
+for execution limits and the source-change lifecycle. Manager-authorized
+enrollment, remaining readiness signals, provider dispatch coordination and
+the broader Host/rehearsal workflow remain separate integration work. A
+publication result does not assert provider submission or delivery.
 
 ### Confirmed group progress
 
@@ -454,8 +460,9 @@ removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
 Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment, durable worker scheduling and rehearsal adapters remain integration
-work.
+reassignment and rehearsal adapters remain integration work. The dormant live
+late-join worker now consumes membership-change signals; it does not execute
+automatic reassignment or other membership workflows.
 
 ### Shared message delivery
 

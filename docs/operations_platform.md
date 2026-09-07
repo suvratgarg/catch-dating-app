@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.12.0
+version: 1.13.0
 updated: 2026-09-07
 owner: operations_platform
 status: active
@@ -590,11 +590,51 @@ attempts and spending remain separately bounded in the message outbox. For
 this adapter, `published` counts newly created message intents and `escalated`
 counts entries into host review; neither counter measures provider delivery.
 
-This adapter has no public callable, deployed scheduler, source-event trigger
-or provider invocation. Its runtime marker rejects the frozen shadow CLI
-projection; the registered CLI manifest remains shadow-only. Connecting
-authorized source signals, scheduler execution, provider work and host queue
-projections remains a separate integration step.
+`LiveAssistanceWorkRunner` acquires an Operations work-item lease before each
+evaluation or wake and releases it afterward. Its runtime marker rejects the
+frozen shadow CLI projection; the registered CLI manifest remains shadow-only.
+There is no public enrollment callable or provider invocation in this worker.
+
+### Source changes and due-work recovery
+
+`AssistanceSourceWorkStore` persists each source delivery and target scope as
+one `liveSourceWake` Operations run/item, enforced by
+`event_assistance_source_work.schema.json`. The source `eventId` is the
+CloudEvent delivery identity; the domain event id lives in `scope.context`.
+Repeated delivery reuses the same work. Source payloads only request a fresh
+evaluation and cannot supply authoritative domain facts or sender permission.
+
+The eight source triggers cover relevant event configuration/lifecycle,
+roster/check-in, live plan status, participation/replies, late-join settings,
+confirmed group progress, membership and message evidence. Owner or scope
+changes wake both previous and current enrolled scopes. Unrelated event
+counters and rehearsal state create no work. No-target checks avoid creating
+source runs when no live guest episodes have been enrolled; a newly enrolled
+episode evaluates current facts on its first execution.
+
+Fanout scans only work for the exact organizer/event and optional attendee,
+then revalidates each target before waking it. Both scan and retry pages
+process at most 20 targets under a 60-second lease. The checkpoint cursor is
+the last scanned work id during discovery and the last attempted failed work
+id within a retry round. Successful retries are removed; unfinished rounds
+resume immediately, completed unsuccessful rounds back off. Target wake
+receipts survive a lost fanout checkpoint without duplicating guest effects.
+Limits are 10,000 visited targets, 100 retained failures, five retry rounds and
+a 24-hour source-work lifetime. Exhausted target/failure/retry limits become
+explicit review items with failed ids retained; expiry closes unfinished work.
+
+`onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
+`evaluateDueEventAssistanceWork` scheduler recovers at most 10 source items and
+30 guest items per invocation; one failure does not skip the other selected
+items. Future due times remain saved until reached. All eight source triggers,
+the work-item trigger and the scheduler are in the dormant target policy and
+cannot enter current logical or exact deployment plans. Source wiring and
+local emulator verification do not claim deployed execution or message delivery.
+
+Manager-authorized enrollment/reconfiguration, readiness-change signals for
+consent/sender/template/budget changes, provider dispatch coordination and Host
+queue projections remain integration work. Activating the dormant functions
+also requires the corresponding operating-budget and delivery configuration.
 
 ## Adding Another Workflow
 

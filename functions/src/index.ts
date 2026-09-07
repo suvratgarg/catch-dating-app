@@ -86,6 +86,13 @@ export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
 export {onEventAssistanceWhatsappEventCreated} from
   "./eventSuccess/operations/whatsappWebhookProcessing";
+export {
+  onAssistanceEventChanged, onAssistanceRosterChanged,
+  onAssistanceRuntimeChanged, onAssistanceGuestChanged,
+  onAssistanceSettingChanged, onAssistanceProgressChanged,
+  onAssistanceMembershipChanged, onAssistanceMessageChanged,
+  onAssistanceWorkChanged, evaluateDueEventAssistanceWork,
+} from "./eventSuccess/operations/liveWorkTriggers";
 export {getEventWhatsappPreference, setEventWhatsappPreference} from
   "./eventSuccess/operations/whatsappPreferenceHandlers";
 export {

@@ -169,6 +169,15 @@ options when specific functions need higher or lower limits.
 | `onOrganizerFormResponseAutomated` | `src/organizers/organizerFormAutomations.ts` | Evaluates enabled versioned form rules once for each submitted or withdrawn response transition and records sanitized action results |
 | `onOrganizerFormExportRequested` | `src/organizers/organizerFormExports.ts` | Materializes an authorized asynchronous form export and stores a time-bounded download receipt |
 | `onEventAssistanceWhatsappEventCreated` | `src/eventSuccess/operations/whatsappWebhookProcessing.ts` | Retry-enabled consumer of authenticated delivery and native reply evidence, with independent durable checkpoints and idempotent guest effects |
+| `onAssistanceEventChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Relevant event configuration and lifecycle changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceRosterChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Canonical roster and check-in changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceRuntimeChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Live plan status changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceGuestChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Participation episode and guest reply changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceSettingChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Late-join policy changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceProgressChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Explicitly confirmed group movement enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceMembershipChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Accepted group and handover changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceMessageChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Late-join delivery and response evidence enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due source fanout or guest work under Operations leases; dormant pending activation |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
@@ -183,6 +192,7 @@ options when specific functions need higher or lower limits.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
+| `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of persisted due source and guest work; dormant pending operating-budget approval |
 
 ### Storage-triggered
 

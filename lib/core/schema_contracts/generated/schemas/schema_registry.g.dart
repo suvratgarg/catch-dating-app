@@ -337,6 +337,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventAssistanceCommandSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventAssistanceSourceWork',
+    source: 'operations/event_assistance_source_work.schema.json',
+    schema: schemaEventAssistanceSourceWorkSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceLiveWork',
     source: 'operations/event_assistance_live_work.schema.json',
     schema: schemaEventAssistanceLiveWorkSchema,
@@ -3058,6 +3063,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventAssistanceGuestResponse': schemaEventAssistanceGuestResponseSchema,
   'EventAssistancePolicy': schemaEventAssistancePolicySchema,
   'EventAssistanceCommand': schemaEventAssistanceCommandSchema,
+  'EventAssistanceSourceWork': schemaEventAssistanceSourceWorkSchema,
   'EventAssistanceLiveWork': schemaEventAssistanceLiveWorkSchema,
   'EventAssistanceLateJoinInput': schemaEventAssistanceLateJoinInputSchema,
   'EventAssistanceLateJoinDecision': schemaEventAssistanceLateJoinDecisionSchema,
@@ -3656,6 +3662,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'operations/event_assistance_guest_response.schema.json': schemaEventAssistanceGuestResponseSchema,
   'operations/event_assistance_policy.schema.json': schemaEventAssistancePolicySchema,
   'operations/event_assistance_command.schema.json': schemaEventAssistanceCommandSchema,
+  'operations/event_assistance_source_work.schema.json': schemaEventAssistanceSourceWorkSchema,
   'operations/event_assistance_live_work.schema.json': schemaEventAssistanceLiveWorkSchema,
   'operations/event_assistance_late_join_input.schema.json': schemaEventAssistanceLateJoinInputSchema,
   'operations/event_assistance_late_join_decision.schema.json': schemaEventAssistanceLateJoinDecisionSchema,
