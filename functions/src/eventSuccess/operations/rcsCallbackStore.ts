@@ -1,6 +1,7 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {VerifiedRcsCallback} from "./rcsWebhookProtocol";
+import {prepareRcsSubscription} from "./rcsSubscriptions";
 import {
   parseRcsCallback,
   parseRcsCallbackIdentity,
@@ -17,7 +18,7 @@ export type RcsCallbackRead =
   | { kind: "missing" }
   | { kind: "conflicted" };
 
-/** Private evidence inbox; no sends, consent updates or guest effects. */
+/** Private evidence inbox; subscription stops share its acceptance commit. */
 export class RcsCallbackStore {
   constructor(
     private readonly db: Firestore,
@@ -63,8 +64,11 @@ export class RcsCallbackStore {
           },
           evidence.receiptKey,
         );
+        const subscription = await prepareRcsSubscription(this.db, tx,
+          candidate, now);
         tx.create(callbackRef, candidate);
         tx.create(identityRef, identity);
+        subscription();
         return "stored";
       }
       const identity = parseRcsCallbackIdentity(
@@ -88,15 +92,21 @@ export class RcsCallbackStore {
         ) {
           throw inconsistent();
         }
+        const subscription = await prepareRcsSubscription(this.db, tx,
+          existing, now);
+        subscription();
         return identity.conflictedAt === null ? "duplicate" : "conflict";
       }
       // A different signed payload with the same provider identity remains
       // immutable evidence. Marking its identity conflicts with any consumer
       // transaction that read that identity as usable.
+      const subscription = await prepareRcsSubscription(this.db, tx,
+        candidate, now);
       tx.create(callbackRef, candidate);
       if (identity.conflictedAt === null) {
         tx.set(identityRef, {...identity, conflictedAt: now});
       }
+      subscription();
       return "conflict";
     });
   }

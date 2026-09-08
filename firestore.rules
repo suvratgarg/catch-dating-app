@@ -835,6 +835,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRcsSubscriptions/{subscriptionId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceRcsCallbackIdentities/{receiptKey} {
       allow read, write: if false;
     }

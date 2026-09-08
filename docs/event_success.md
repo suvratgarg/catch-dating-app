@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.63.0
+version: 1.64.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1431,9 +1431,10 @@ location, displayed button label, signature or client token. Location messages
 cannot establish physical attendance. Native choice/page correlations do not
 authenticate a guest; the future consumer must validate the immutable attempt,
 recipient, choice, current episode and expiry before applying a typed command.
-UNSUBSCRIBE/SUBSCRIBE and documented country-specific STOP/START equivalents
-remain requests to the RCS permission owner, not automatic consent grants or
-changes to SMS/WhatsApp permission. Inconclusive revocation never becomes proof
+UNSUBSCRIBE and documented country-specific STOP equivalents now preserve a
+conversation restriction during inbox acceptance. SUBSCRIBE/START preserve a
+request to re-enable messaging; they never grant event consent or change
+SMS/WhatsApp permission. Inconclusive revocation never becomes proof
 of non-delivery or a fallback permit.
 
 `rcsWebhookIngress.ts` exposes a dependency-injected POST handler with no Firebase
@@ -1457,12 +1458,43 @@ Future consumers must call `readForConsumption` in the same transaction as
 their receipt and domain effect. It revalidates persisted evidence and withholds
 conflicted identities, participating in Firestore contention with concurrent
 conflict writes. A conflict received after an effect committed cannot undo that
-effect; it blocks later consumption. Acceptance itself changes no delivery,
-permission, guest-response or attendance state. No automatic cleanup is enabled:
+effect; it blocks later consumption. Subscription restrictions commit with inbox
+acceptance as described below. Acceptance changes no event consent, delivery,
+guest-response or attendance state. No automatic cleanup is enabled:
 retention must preserve identities and evidence needed by pending consumers and
 retries before this boundary can be activated. Emulator tests cover concurrent
 duplicates and a consumer racing a conflict. Local tests do not prove a
 registered agent, deployed worker or actual callback delivery.
+
+### RCS conversation subscription restrictions
+
+`rcsSubscriptions.ts` stores separate latest stop and subscribe-request
+observations in `eventAssistanceRcsSubscriptions`. The key binds the Google RBM
+agent and hashed phone endpoint across events and survives credential rotation.
+It does not require a current roster entry, event, or CRM contact to record a
+restriction. Both the callback and this projection commit before HTTP success;
+a failed commit rolls both back. Direct client access is denied.
+
+This product treats an authenticated unsubscribe as a restriction on Catch event
+service messages from that agent. Google's [subscription events](https://developers.google.com/business-communications/rcs-business-messaging/guides/build/events/receive-events)
+distinguish conversation subscription from consent to a specific service.
+A subscribe event therefore remains an explicit request, retaining any stop
+until the event permission owner obtains fresh scoped consent. It does not
+silently restore an old permission, create a guest grant, or enable SMS fallback.
+
+First durable storage time orders each observation independently; callback ID
+breaks equal-time ties. Provider time never clears a stop, and exact retries do
+not move its time forward. Replaying an older inbox entry can repair a missing
+projection without overwriting a newer observation. Conflicting signed payloads
+still preserve a stop restriction while ordinary callback consumers remain
+withheld. This restriction cannot undo a send that committed before it arrived.
+
+`readRcsSubscription` revalidates the snapshot and its immutable callback
+provenance inside the caller's transaction. Missing, corrupt or cross-recipient
+provenance fails closed. The record's absence is not consent. Event-specific
+permission APIs, fresh-consent review of this restriction, the actual dispatch
+reader, withdrawal links and retention cleanup remain implementation work.
+No provider sender or network worker is activated by this projection.
 
 ### RCS sender configuration and message rendering
 
@@ -1529,8 +1561,10 @@ The future outbox consumer must reconcile authenticated receipts and revalidate
 current route authority before deciding on SMS. Errors contain no provider body,
 phone, token or guest link. Tests inject transport; this adds no default network
 client, credential loader, Firebase export or activated sender. Canonical RCS
-sender configuration and validated rendering are now present. RCS permission,
-queue persistence and dispatch integration remain required before activation.
+sender configuration, rendering, callback persistence and conversation
+subscription observations are now present. Event-scoped RCS permission,
+callback domain consumers and dispatch integration remain required before
+activation.
 
 ## Format Mapping And Wiring
 

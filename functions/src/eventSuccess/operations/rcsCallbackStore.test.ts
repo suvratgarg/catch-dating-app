@@ -8,6 +8,7 @@ import {FakeFirestore} from "../../operations/testFirestore";
 import {createRcsWebhookIngress} from "./rcsWebhookIngress";
 import {VerifiedRcsCallback} from "./rcsWebhookProtocol";
 import {RcsCallbackStore} from "./rcsCallbackStore";
+import {RCS_SUBSCRIPTIONS} from "./rcsSubscriptions";
 import {
   parseRcsCallback,
   parseRcsCallbackIdentity,
@@ -245,9 +246,10 @@ test("canonical observations cannot invent guest effects", async () => {
     h.fake
       .entries()
       .every(([path]) =>
-        Object.values(rcsCallbackCollections).some((prefix) =>
-          path.startsWith(prefix + "/"),
-        ),
+        [...Object.values(rcsCallbackCollections), RCS_SUBSCRIPTIONS]
+          .some((prefix) =>
+            path.startsWith(prefix + "/"),
+          ),
       ),
   );
   const stored = JSON.stringify(h.fake.entries());

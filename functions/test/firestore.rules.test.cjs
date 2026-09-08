@@ -4350,6 +4350,7 @@ describe("firestore.rules", () => {
         "eventAssistanceGuestGrants", "eventAssistanceCases",
         "eventAssistanceCaseReceipts",
         "eventAssistanceRcsCallbacks", "eventAssistanceRcsCallbackIdentities",
+        "eventAssistanceRcsSubscriptions",
         "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
         "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
         "eventAssistanceSmsConsentReceipts",

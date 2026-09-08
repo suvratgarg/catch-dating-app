@@ -219,6 +219,7 @@ export 'event_operator_access_callable_response.g.dart';
 export 'event_origin.g.dart';
 export 'event_participation_document.g.dart';
 export 'event_private_access_document.g.dart';
+export 'event_rcs_subscription_document.g.dart';
 export 'event_rehearsal_action_document.g.dart';
 export 'event_rehearsal_actor_document.g.dart';
 export 'event_rehearsal_bootstrap_callable_response.g.dart';

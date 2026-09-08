@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventRcsSubscriptionDocument | `firestore/event_assistance_rcs_subscriptions.schema.json` | `functions/src/shared/generated/eventRcsSubscriptionDocument.ts` |
 | EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackDocument.ts` |
 | EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackIdentity.ts` |
 | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts` |
@@ -645,6 +646,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventRcsSubscriptionDocumentSchema` | EventRcsSubscriptionDocument | `firestore/event_assistance_rcs_subscriptions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_subscription_document.g.dart` |
 | `schemaEventAssistanceRcsCallbackDocumentSchema` | EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_document.g.dart` |
 | `schemaEventAssistanceRcsCallbackIdentityDocumentSchema` | EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_identity_document.g.dart` |
 | `schemaListEventAssistanceCasesCallablePayloadSchema` | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_assistance_cases_callable_payload.g.dart` |

@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventRcsSubscriptionDocument',
+    source: 'firestore/event_assistance_rcs_subscriptions.schema.json',
+    schema: schemaEventRcsSubscriptionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceRcsCallbackDocument',
     source: 'firestore/event_assistance_rcs_callbacks.schema.json',
     schema: schemaEventAssistanceRcsCallbackDocumentSchema,
@@ -3159,6 +3164,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventRcsSubscriptionDocument': schemaEventRcsSubscriptionDocumentSchema,
   'EventAssistanceRcsCallbackDocument': schemaEventAssistanceRcsCallbackDocumentSchema,
   'EventAssistanceRcsCallbackIdentityDocument': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
   'ListEventAssistanceCasesCallablePayload': schemaListEventAssistanceCasesCallablePayloadSchema,
@@ -3790,6 +3796,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_rcs_subscriptions.schema.json': schemaEventRcsSubscriptionDocumentSchema,
   'firestore/event_assistance_rcs_callbacks.schema.json': schemaEventAssistanceRcsCallbackDocumentSchema,
   'firestore/event_assistance_rcs_callback_identities.schema.json': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
   'callables/list_event_assistance_cases_payload.schema.json': schemaListEventAssistanceCasesCallablePayloadSchema,

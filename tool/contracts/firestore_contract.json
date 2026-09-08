@@ -2094,6 +2094,18 @@
       ]
     },
     {
+      "id": "eventAssistanceRcsSubscriptions",
+      "path": "eventAssistanceRcsSubscriptions/{subscriptionId}",
+      "rulesMatch": "/eventAssistanceRcsSubscriptions/{subscriptionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance authenticated RCS ingress",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Agent and endpoint subscription observations commit with authenticated callbacks. Subscribe does not grant event consent. No direct client access or automatic retention deletion."
+      ]
+    },
+    {
       "id": "eventAssistanceRcsCallbacks",
       "path": "eventAssistanceRcsCallbacks/{callbackId}",
       "rulesMatch": "/eventAssistanceRcsCallbacks/{callbackId}",

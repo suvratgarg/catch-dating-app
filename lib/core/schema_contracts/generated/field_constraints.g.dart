@@ -26828,6 +26828,87 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRcsSubscriptionDocumentAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsSubscriptionDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsSubscriptionDocumentLastStopCallbackId = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.lastStop.callbackId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-event:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsSubscriptionDocumentLastStopObservedAt = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.lastStop.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSubscriptionDocumentLastSubscribeRequestCallbackId = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.lastSubscribeRequest.callbackId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-event:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsSubscriptionDocumentLastSubscribeRequestObservedAt = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.lastSubscribeRequest.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSubscriptionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSubscriptionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsSubscriptionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsSubscriptionDocumentSubscriptionId = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.subscriptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-subscription:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsSubscriptionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventRcsSubscriptionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalActionDocumentActorId = CatchContractFieldConstraints(
     path: 'eventRehearsalActionDocument.actorId',
     maxLength: 180,
@@ -82094,6 +82175,17 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventRcsSubscriptionDocument.agentId': eventRcsSubscriptionDocumentAgentId,
+    'eventRcsSubscriptionDocument.endpointHash': eventRcsSubscriptionDocumentEndpointHash,
+    'eventRcsSubscriptionDocument.lastStop.callbackId': eventRcsSubscriptionDocumentLastStopCallbackId,
+    'eventRcsSubscriptionDocument.lastStop.observedAt': eventRcsSubscriptionDocumentLastStopObservedAt,
+    'eventRcsSubscriptionDocument.lastSubscribeRequest.callbackId': eventRcsSubscriptionDocumentLastSubscribeRequestCallbackId,
+    'eventRcsSubscriptionDocument.lastSubscribeRequest.observedAt': eventRcsSubscriptionDocumentLastSubscribeRequestObservedAt,
+    'eventRcsSubscriptionDocument.revision': eventRcsSubscriptionDocumentRevision,
+    'eventRcsSubscriptionDocument.routeId': eventRcsSubscriptionDocumentRouteId,
+    'eventRcsSubscriptionDocument.schemaVersion': eventRcsSubscriptionDocumentSchemaVersion,
+    'eventRcsSubscriptionDocument.subscriptionId': eventRcsSubscriptionDocumentSubscriptionId,
+    'eventRcsSubscriptionDocument.updatedAt': eventRcsSubscriptionDocumentUpdatedAt,
     'eventRehearsalActionDocument.actorId': eventRehearsalActionDocumentActorId,
     'eventRehearsalActionDocument.actorUid': eventRehearsalActionDocumentActorUid,
     'eventRehearsalActionDocument.clientActionId': eventRehearsalActionDocumentClientActionId,

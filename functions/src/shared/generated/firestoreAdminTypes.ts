@@ -537,6 +537,27 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+/**
+ * Authenticated RCS subscription observations scoped to a provider agent and recipient endpoint, across events. Stop observations restrict event-service messages; subscribe requests never grant event consent. No automatic retention deletion.
+ */
+export interface EventRcsSubscriptionDocument {
+  schemaVersion: 1;
+  subscriptionId: string;
+  routeId: "catchEventRcs";
+  agentId: string;
+  endpointHash: string;
+  revision: number;
+  lastStop: null | {
+    callbackId: string;
+    observedAt: number;
+  };
+  lastSubscribeRequest: null | {
+    callbackId: string;
+    observedAt: number;
+  };
+  updatedAt: number;
+}
+
 export interface EventAssistanceRcsCallbackDocument {
   schemaVersion: 1;
   callbackId: string;

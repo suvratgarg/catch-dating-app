@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.69.0
+version: 1.70.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -101,6 +101,18 @@ phone numbers, message text, file URLs, locations, signatures and tokens. Missin
 provider time remains null. No automatic retention deletion is configured until
 pending-consumer and retry requirements have an implemented lifecycle. See
 `docs/event_success.md` for the remaining consumer and activation work.
+
+`event_assistance_rcs_subscriptions.schema.json` adds the server-only
+`eventAssistanceRcsSubscriptions/{subscriptionId}` projection, keyed by agent
+and hashed endpoint across events. It retains independent latest stop and
+subscribe-request callback references and their first storage times. At least
+one observation is required; neither state grants event consent. The inbox
+commits the projection with its callback and identity, including a restriction
+from a conflicting signed STOP. Exact retries can repair missing older
+projections without moving observation times or overwriting newer evidence.
+Readers verify both shape and original callback binding transactionally.
+No direct client access or automatic retention deletion is enabled. Event
+permission, dispatch, SMS and WhatsApp records are not mutated by this owner.
 
 ### Host Today Attention Contract
 
