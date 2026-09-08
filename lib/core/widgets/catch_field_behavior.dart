@@ -578,12 +578,6 @@ extension _CatchFieldBehavior on _CatchFieldState {
       _active ||
       _hasError ||
       widget.autofocus;
-  bool _textEntryExpandedWith({required bool hasError}) =>
-      !_textEntryCanCollapse ||
-      _hasInputValue ||
-      _active ||
-      hasError ||
-      widget.autofocus;
   bool _inlineTextAddAtRestWith({required bool hasError}) =>
       _isEdit &&
       !widget.readOnly &&
