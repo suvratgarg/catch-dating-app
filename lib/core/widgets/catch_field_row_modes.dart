@@ -452,62 +452,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final action = rowAction;
     final canInteract = action != null;
     if (!canInteract && !_active && !_hasControl) return row;
-    final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
-      context,
-    );
-    final interactionBorderRadius = switch (interactionShape) {
-      CatchFieldInteractionShape.roundedTile => BorderRadius.circular(
-        CatchFieldTokens.tileRadius,
-      ),
-      CatchFieldInteractionShape.sectionClipped ||
-      CatchFieldInteractionShape.fullBleedBand => BorderRadius.zero,
-    };
-    final interactionBorder = CatchBorder.resolve(
-      t,
-      CatchBorderRole.boundary,
-    ).all;
-    final fullBleedFocusBorder = CatchBorder.resolve(
-      t,
-      CatchBorderRole.focus,
-    ).all;
-    final fullBleedFocused =
-        interactionShape == CatchFieldInteractionShape.fullBleedBand &&
-        _rowFocused &&
-        !_pressed;
-    final activeDecoration = BoxDecoration(
-      color: _active && !_pressed
-          ? CatchFieldTokens.activeSurface(t)
-          : Colors.transparent,
-      borderRadius: interactionBorderRadius,
-      // The active and pressed layers hand one stroke between them. This
-      // prevents their animated decorations from ever stacking two outlines.
-      border: fullBleedFocused
-          ? fullBleedFocusBorder
-          : _active &&
-                !_pressed &&
-                interactionShape != CatchFieldInteractionShape.fullBleedBand
-          ? interactionBorder
-          : null,
-      boxShadow:
-          _active && interactionShape == CatchFieldInteractionShape.roundedTile
-          ? CatchElevation.fieldActive(Theme.of(context).brightness)
-          : CatchElevation.none,
-    );
-    final pressDecoration = BoxDecoration(
-      color: _pressed ? CatchFieldTokens.pressedSurface(t) : Colors.transparent,
-      borderRadius: interactionBorderRadius,
-      // A divided or standalone row owns its complete pressed silhouette.
-      // A contained row inherits the section perimeter and stays a tint-only
-      // internal band. A rounded row temporarily owns the one shared stroke
-      // while pressed, whether or not it was already active.
-      border:
-          _pressed && interactionShape == CatchFieldInteractionShape.roundedTile
-          ? interactionBorder
-          : null,
-    );
-    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
-      context,
-    );
     final mouseCursor = canInteract
         ? _isEdit
               ? SystemMouseCursors.text
@@ -616,48 +560,14 @@ extension _CatchFieldRowModes on _CatchFieldState {
           ),
       ],
     );
-    final stack = Stack(
-      fit: StackFit.passthrough,
-      clipBehavior: Clip.none,
-      children: [
-        Positioned(
-          left: -overlayOutsets.left,
-          right: -overlayOutsets.right,
-          top: -CatchStroke.hairline,
-          bottom: -CatchStroke.hairline,
-          child: IgnorePointer(
-            child: Stack(
-              fit: StackFit.expand,
-              clipBehavior: Clip.none,
-              children: [
-                AnimatedContainer(
-                  key: CatchField.pressOverlayKey,
-                  duration: catchFieldMotionDuration(
-                    context,
-                    _pressed
-                        ? CatchFieldTokens.pressIn
-                        : CatchFieldTokens.pressOut,
-                  ),
-                  curve: CatchFieldTokens.curve,
-                  decoration: pressDecoration,
-                ),
-                AnimatedContainer(
-                  key: const ValueKey('catch-field-active-overlay'),
-                  duration: catchFieldMotionDuration(
-                    context,
-                    _active
-                        ? CatchFieldTokens.standard
-                        : CatchFieldTokens.pressOut,
-                  ),
-                  curve: CatchFieldTokens.curve,
-                  decoration: activeDecoration,
-                ),
-              ],
-            ),
-          ),
-        ),
-        content,
-      ],
+    final stack = CatchFieldSurface(
+      pressedOverlayKey: CatchField.pressOverlayKey,
+      states: {
+        if (_active) WidgetState.selected,
+        if (_rowFocused) WidgetState.focused,
+        if (_pressed) WidgetState.pressed,
+      },
+      child: content,
     );
     return Semantics(
       container: isToggle,

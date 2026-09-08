@@ -3117,6 +3117,27 @@
             }
           },
           {
+            "id": "catch.field.surface",
+            "symbol": "CatchFieldSurface",
+            "file": "packages/catch_ui/lib/src/components/catch_field_surface.dart",
+            "summary": "Field active and pressed painting with one shared stroke, section-owned shape, and inherited horizontal outsets; the field retains input behavior.",
+            "states": [
+              "idle",
+              "active",
+              "pressed",
+              "active-pressed",
+              "focused",
+              "focused-pressed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.select_control",
             "symbol": "CatchFieldSelectControl",
             "file": "packages/catch_ui/lib/src/components/catch_field_select_control.dart",

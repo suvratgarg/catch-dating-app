@@ -71,6 +71,8 @@ import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_field_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/field_select_control_use_cases.dart'
     as _widgetbook_workspace_primitives_field_select_control_use_cases;
+import 'package:widgetbook_workspace/primitives/field_surface_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_surface_use_cases;
 import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
     as _widgetbook_workspace_primitives_field_value_content_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
@@ -2726,6 +2728,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Saving and saved',
                 builder: _widgetbook_workspace_primitives_field_motion_use_cases
                     .catchFieldStatusIndicatorContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Interaction shapes and paint states',
+                builder:
+                    _widgetbook_workspace_primitives_field_surface_use_cases
+                        .fieldSurfaceStates,
               ),
             ],
           ),

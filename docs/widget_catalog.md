@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.17.0
+version: 3.18.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -177,6 +177,7 @@ Widgetbook callers.
 | `CatchField.inputActions` | `lib/core/widgets/catch_field.dart:548` | Controlled explicit-save text-entry constructor. Keeps the label and bare value editor in one stable lane while supporting metadata, feedback, a secondary action, and Cancel/Done disclose in that order; validation renders afterward as the handoff's root support sibling. Opening requests native text focus immediately, while the persistent control subtree reveals through `CatchMotion.base` (220 ms with `standardCurve`, or immediately under reduced motion), so one tap both opens the field and places the cursor without remounting draft state. `onBlur` receives the latest controller text once when focus leaves. |
 | `CatchField.control` | `lib/core/widgets/catch_field.dart:265` | Canonical row-owned disclosure constructor for steppers, chip groups, option controls, and other non-text editors. Supports caller-owned `open` state or local `initiallyOpen` state, optional Cancel/Done actions, loading/disabled behavior, and a persistent clipped reveal whose child identity survives close/reopen. Save, validation, and domain state remain caller-owned. |
 | `CatchFieldSelectControl` | `packages/catch_ui/lib/src/components/catch_field_select_control.dart` | Field-owned selection menu and validation row. It synchronizes the selected form value when choices change; the enclosing field retains focus and dismissal controllers. Product callers use `CatchField.select`. |
+| `CatchFieldSurface` | `packages/catch_ui/lib/src/components/catch_field_surface.dart` | Field-owned active and pressed painting using the containing section’s geometry. The field retains pointer, focus, and save behavior. |
 | `CatchFieldChoiceControl` | `packages/catch_ui/lib/src/components/catch_field_choice_control.dart` | Field-owned wrapping choice grid. Selection callbacks precede the shared `CatchFieldChoicePickedNotification`; the nearest field retains disclosure timing and saving guards. Product callers use the named `CatchField` constructors. |
 | `CatchFieldOptionCardControl` | `packages/catch_ui/lib/src/components/catch_field_option_card_control.dart` | Field-owned explanatory option cards using the same choice notification and disclosure protocol. |
 | `CatchFieldToggle` | `packages/catch_ui/lib/src/components/catch_field_toggle.dart` | Field-semantic adapter over `CatchToggle.field`, preserving the 44×26 visual switch, platform target, caller constraints and semantics. Product callers use `CatchField.toggle`. |

@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.13
+version: 1.9.14
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1099,6 +1099,14 @@ keeps its typed caller API and supplies copy, choices, focus and menu controller
 The former select renderer and app-side form-state synchronization are deleted;
 the direct preview mounts production fields in empty, selected, compact,
 disabled and validation-error states.
+
+`CatchFieldSurface` owns active and pressed painting using the existing field
+geometry scope. The field retains pointer and keyboard handling, disclosure,
+semantics, and save orchestration. Rounded, section-clipped and full-bleed
+states share the original border, shadow, outset and animation behavior. Native
+text input now renders once inside its form owner; the duplicate private input
+helper is deleted. Selection updates normalize the live form value so deferred
+cleanup cannot erase a newly supplied selection.
 
 ### Phase 4 — One registry, binding grammar
 
