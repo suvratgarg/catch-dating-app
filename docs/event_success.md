@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.60.0
+version: 1.61.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -301,6 +301,22 @@ Every command requires the reviewed source hash and case revision. Immutable
 `eventAssistanceCaseReceipts` make exact retries return their original operation
 revision with the latest case view; reused operation IDs with changed content
 fail. Concurrent resolutions cannot overwrite one another.
+
+The Dart client represents current open, current settled, source-changed and
+legacy requests as separate sealed types. Only an open request from a reviewed
+page can enter the action editor. The callable repository uses generated request
+DTOs and validates response scope, pagination, revision, assignment and resolution
+before publishing a result. A replay keeps its original operation revision
+separate from the latest request state.
+
+The account-scoped page provider and action editor share the departure flow's
+uninterrupted sign-in identity. Loading, sign-out and account changes remove
+private page/form state; returning to the same UID cannot revive an old decision.
+The editor starts without a selected action, freezes one command while submitting,
+deduplicates pending submissions, and allows an uncertain retry only with that
+exact command. Conflicts or lost authority require a new review. Success refreshes
+the queue without retaining the old actionable page while it loads. Reads retry
+only on explicit reload; neither the page nor the editor fabricates settlement.
 
 Handling never changes attendance, participation, allocations, guest intention,
 message delivery, consent or the restricted safety queue. Check-in, a new guest
@@ -1055,8 +1071,10 @@ roster gate for all channel adapters. It rejects a replaced episode or thread
 head, expired event phase, declined guest or confirmed arrival. Channel-specific
 consent, suppression and sender authority must still be read in the same outbox
 transaction. The guest webpage at `/event-update/:linkId` uses the public
-read/reply boundary and the existing web runtime primitives. Key provisioning, Host case projection/resolution and the rehearsal
-response adapter remain separate integration steps; recording a help case does not yet notify a Host.
+read/reply boundary and the existing web runtime primitives. Practical Host case
+reads and resolution now have typed backend and Dart client boundaries described
+above. Key provisioning, Host UI integration and the rehearsal response adapter
+remain separate steps; recording a help case does not yet notify a Host.
 
 ### Durable message delivery coordination
 

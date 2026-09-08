@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,10 +8,7 @@ part 'event_assistance_departure_provider.g.dart';
 
 /// Identity of one continuous authenticated review period, not just a UID.
 /// Signing out and back in as the same person cannot revive an old decision.
-final class EventDepartureAccount {
-  EventDepartureAccount._(this.uid);
-  final String uid;
-}
+typedef EventDepartureAccount = EventAssistanceAccount;
 
 final class EventDepartureSession {
   EventDepartureSession._({required this.account, required this.view}) {
@@ -32,19 +29,8 @@ const departureSessionChanged = BackendOperationException(
 );
 
 @riverpod
-AsyncValue<EventDepartureAccount> eventAssistanceDepartureAccount(Ref ref) {
-  final auth = ref.watch(uidProvider);
-  if (auth.isLoading) return const AsyncLoading();
-  if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
-  final uid = auth.asData?.value;
-  if (uid == null || uid.isEmpty) {
-    return AsyncError(
-      const SignInRequiredException('review group departure'),
-      StackTrace.current,
-    );
-  }
-  return AsyncData(EventDepartureAccount._(uid));
-}
+AsyncValue<EventDepartureAccount> eventAssistanceDepartureAccount(Ref ref) =>
+    ref.watch(eventAssistanceAccountProvider);
 
 void requireDepartureAccount(Ref ref, EventDepartureAccount expected) {
   if (!ref.mounted) throw departureSessionChanged;

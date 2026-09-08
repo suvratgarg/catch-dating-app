@@ -58,7 +58,7 @@ final class EventAssistanceDepartureAccountProvider
 }
 
 String _$eventAssistanceDepartureAccountHash() =>
-    r'62ad321d9d95f8870f9912fb7fc2cc69cc55bcb5';
+    r'b418529a30e4906b38363e12587c52e6297cfff3';
 
 @ProviderFor(EventAssistanceDeparture)
 final eventAssistanceDepartureProvider = EventAssistanceDepartureFamily._();
@@ -117,7 +117,7 @@ final class EventAssistanceDepartureProvider
 }
 
 String _$eventAssistanceDepartureHash() =>
-    r'45cde63be1000b702e74e8ad47adda1804539955';
+    r'2884cfcbb098cb0562b9608022eb11dd06cbbfdf';
 
 final class EventAssistanceDepartureFamily extends $Family
     with

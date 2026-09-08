@@ -65,7 +65,7 @@ final class EventAssistanceDepartureEditorProvider
 }
 
 String _$eventAssistanceDepartureEditorHash() =>
-    r'3f1b29b7629facc31c58795b045e0547bab9a791';
+    r'f5c713d9aaa809c975688d73467eac16d2adbf8b';
 
 final class EventAssistanceDepartureEditorFamily extends $Family
     with
