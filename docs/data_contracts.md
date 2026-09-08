@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.82.0
+version: 1.83.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -47,6 +47,17 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Rehearsal Assistance Generation
+
+`controlEventRehearsal` requires `expectedSetupRevision` for assistance commands,
+alongside the runtime revision and immutable client action id. Reset increments
+the setup revision and reuses runtime revisions from zero. The handler checks
+the reviewed generation before replaying a receipt and again inside the
+transaction, preventing an old pending instruction from publishing into the
+new run. Other existing lifecycle controls retain their previous payload;
+this additional required field applies to assistance only. Native typed
+commands serialize the reviewed generation and also verify it in the result.
 
 ### Event Assistance Transaction Boundary
 

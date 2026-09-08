@@ -142,6 +142,7 @@ final class RehearsalAssistanceChange {
   Map<String, Object?> toJson() => {
     'sessionId': session.id,
     'expectedRevision': session.runtimeRevision,
+    'expectedSetupRevision': session.setupRevision,
     'clientActionId': clientActionId,
     'action': 'assistance',
     'assistance': command.toJson(),

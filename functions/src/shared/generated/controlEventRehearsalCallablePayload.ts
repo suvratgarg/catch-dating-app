@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Revision-fenced Host lifecycle or virtual-clock control.
+ * Host lifecycle or virtual-clock control. Assistance additionally requires the reviewed setup generation so a reset cannot reuse an old runtime revision.
  */
 export interface ControlEventRehearsalCallablePayload {
   sessionId: string;
@@ -176,4 +176,5 @@ export interface ControlEventRehearsalCallablePayload {
                 | "invalidRecipient";
             };
       };
+  expectedSetupRevision?: number;
 }

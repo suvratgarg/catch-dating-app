@@ -267,6 +267,7 @@ export async function controlEventRehearsalHandler(
     ));
   const requestHash = operationContentHash([uid, data]);
   const previous = await actionRef.get();
+  requireAssistanceGeneration(authorized, data);
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
       data.action === "assistance");
@@ -279,12 +280,13 @@ export async function controlEventRehearsalHandler(
       tx.get(actorQuery),
       tx.get(actionRef),
     ]);
+    const session = requireSession(sessionSnap);
+    requireAssistanceGeneration(session, data);
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
         data.action === "assistance");
       return;
     }
-    const session = requireSession(sessionSnap);
     assertActionCapacity(session);
     assertCurrentRevision(session, data.expectedRevision);
     if (actorSnaps.size > 50) {
@@ -1590,6 +1592,16 @@ function actionDocument(
   value: EventRehearsalActionDocument
 ): EventRehearsalActionDocument {
   return value;
+}
+
+/** A reset reuses runtime revisions but always advances setup revision. */
+function requireAssistanceGeneration(session: EventRehearsalDocument,
+  data: ControlEventRehearsalCallablePayload): void {
+  if (data.action === "assistance" &&
+      data.expectedSetupRevision !== session.setupRevision) {
+    throw new HttpsError("aborted",
+      "This rehearsal was reset. Review the current run before continuing.");
+  }
 }
 
 function assertCurrentRevision(

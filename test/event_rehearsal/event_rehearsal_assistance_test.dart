@@ -140,6 +140,20 @@ void main() {
     },
   );
 
+  test('a frozen command carries its reviewed reset generation', () {
+    final change = practiceChange();
+    expect(
+      change.toJson()['expectedSetupRevision'],
+      change.session.setupRevision,
+    );
+    final schema = JsonSchema.create(
+      schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+    );
+    final withoutGeneration = {...change.toJson()}
+      ..remove('expectedSetupRevision');
+    expect(schema.validate(withoutGeneration).isValid, isFalse);
+  });
+
   test(
     'Host retains intention, instruction and evidence without checking in',
     () {

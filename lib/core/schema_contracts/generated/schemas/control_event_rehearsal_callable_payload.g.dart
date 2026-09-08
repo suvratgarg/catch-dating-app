@@ -8,7 +8,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/control_event_rehearsal_payload.schema.json',
   'title': 'ControlEventRehearsalCallablePayload',
-  'description': 'Revision-fenced Host lifecycle or virtual-clock control.',
+  'description': 'Host lifecycle or virtual-clock control. Assistance additionally requires the reviewed setup generation so a reset cannot reuse an old runtime revision.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -733,6 +733,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
       ],
       'type': 'object',
     },
+    'expectedSetupRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+    },
   },
   'if': <String, Object?>{
     'properties': <String, Object?>{
@@ -744,6 +749,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
   'then': <String, Object?>{
     'required': <Object?>[
       'assistance',
+      'expectedSetupRevision',
     ],
     'not': <String, Object?>{
       'required': <Object?>[
@@ -753,8 +759,17 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
   },
   'else': <String, Object?>{
     'not': <String, Object?>{
-      'required': <Object?>[
-        'assistance',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'required': <Object?>[
+            'assistance',
+          ],
+        },
+        <String, Object?>{
+          'required': <Object?>[
+            'expectedSetupRevision',
+          ],
+        },
       ],
     },
   },

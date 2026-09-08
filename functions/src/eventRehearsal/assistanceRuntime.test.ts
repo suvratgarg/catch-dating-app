@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
+import {validateControlEventRehearsalCallablePayload} from
+  "../shared/generated/validators/controlEventRehearsalInput";
 import type {EventRehearsalDocument as Session} from
   "../shared/generated/firestoreAdminTypes";
 import {FakeFirestore} from "../operations/testFirestore";
@@ -38,6 +40,28 @@ export function practicePlan(now: number): PracticePlan {
   deliveryPolicy: {maxAttempts: 3, maxAttemptsPerRoute: 2,
     minimumRetrySeconds: 1}};
 }
+test("Host assistance requires a bounded setup generation", () => {
+  const data = {sessionId: "practice-1", expectedRevision: 1,
+    expectedSetupRevision: 0, clientActionId: "practice-request-1",
+    action: "assistance", assistance: {kind: "publish", actorId: "actor-1",
+      plan: practicePlan(Date.now())}};
+  assert.equal(validateControlEventRehearsalCallablePayload(data), true);
+  const {expectedSetupRevision: omitted, ...withoutGeneration} = data;
+  assert.equal(omitted, 0);
+  assert.equal(validateControlEventRehearsalCallablePayload(withoutGeneration),
+    false);
+  for (const generation of [-1, 0.5, null, "0", 2147483648]) {
+    assert.equal(validateControlEventRehearsalCallablePayload({...data,
+      expectedSetupRevision: generation}), false);
+  }
+  const legacyControl = {sessionId: "practice-1", expectedRevision: 1,
+    clientActionId: "practice-request-1", action: "advanceClock", minutes: 1};
+  assert.equal(validateControlEventRehearsalCallablePayload(legacyControl),
+    true);
+  assert.equal(validateControlEventRehearsalCallablePayload({...legacyControl,
+    expectedSetupRevision: 0}), false);
+});
+
 type WithoutActor<T> = T extends {actorId: string} ? Omit<T, "actorId"> : never;
 function setup() {
   const fake = new FakeFirestore();
@@ -318,7 +342,7 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const request = (data: unknown, uid = "host-1") => ({data,
     auth: {uid,
       token: {}}}) as Parameters<typeof controlEventRehearsalHandler>[0];
-  const publish = {sessionId: id, expectedRevision: 1,
+  const publish = {sessionId: id, expectedRevision: 1, expectedSetupRevision: 0,
     clientActionId: randomUUID(),
     action: "assistance", assistance: {kind: "publish",
       actorId: actors[0].actorId,
@@ -326,6 +350,9 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   await assert.rejects(controlEventRehearsalHandler(request(publish,
     "stranger")),
   {code: "permission-denied"});
+  await assert.rejects(controlEventRehearsalHandler(request({...publish,
+    expectedSetupRevision: 1})), {code: "aborted"});
+  assert.equal((await sessionRef.get()).data()!.actionCount, 0);
   const first = await controlEventRehearsalHandler(request(publish));
   const message = first.actors.find((a) =>
     a.actorId === actors[0].actorId)?.assistanceMessage;
@@ -333,6 +360,8 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const replay = await controlEventRehearsalHandler(request(publish));
   assert.equal(replay.session.runtimeRevision, first.session.runtimeRevision);
   assert.equal(replay.session.actionCount, 1);
+  await assert.rejects(controlEventRehearsalHandler(request({...publish,
+    expectedSetupRevision: 1})), {code: "aborted"});
   await assert.rejects(controlEventRehearsalHandler(request({...publish,
     assistance: {...publish.assistance, plan: {...publish.assistance.plan,
       departureConfirmed: false}}})), {code: "aborted"});
@@ -378,4 +407,20 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
     .where("sessionId", "==", id).get()).empty, true);
   await assert.rejects(submitEventRehearsalGuestActionHandler(request(
     replies[winner])));
+  // Reset reuses runtime revisions. A delayed command from the old run must
+  // fail before it can publish into this run, even with the same actor IDs.
+  await sessionRef.update({status: "running", runtimeRevision: 1});
+  const afterReset = (await sessionRef.get()).data()!;
+  assert.equal(afterReset.setupRevision, publish.expectedSetupRevision + 1);
+  await assert.rejects(controlEventRehearsalHandler(request(publish)),
+    {code: "aborted"});
+  assert.equal((await db.collection(rehearsalMessages)
+    .where("sessionId", "==", id).get()).empty, true);
+  assert.equal((await sessionRef.get()).data()!.actionCount, 0);
+  const newRun = await controlEventRehearsalHandler(request({...publish,
+    expectedSetupRevision: afterReset.setupRevision,
+    clientActionId: randomUUID()}));
+  assert.equal(newRun.session.runtimeRevision, 2);
+  assert.equal(newRun.session.actionCount, 1);
+  assert.ok(newRun.actors[0].assistanceMessage);
 });

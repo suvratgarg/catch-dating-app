@@ -6909,6 +6909,13 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const controlEventRehearsalCallablePayloadExpectedSetupRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.expectedSetupRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const controlEventRehearsalCallablePayloadMinutes = CatchContractFieldConstraints(
     path: 'controlEventRehearsalCallablePayload.minutes',
     valueTypes: <String>['integer'],
@@ -82890,6 +82897,7 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.assistance': controlEventRehearsalCallablePayloadAssistance,
     'controlEventRehearsalCallablePayload.clientActionId': controlEventRehearsalCallablePayloadClientActionId,
     'controlEventRehearsalCallablePayload.expectedRevision': controlEventRehearsalCallablePayloadExpectedRevision,
+    'controlEventRehearsalCallablePayload.expectedSetupRevision': controlEventRehearsalCallablePayloadExpectedSetupRevision,
     'controlEventRehearsalCallablePayload.minutes': controlEventRehearsalCallablePayloadMinutes,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
     'controlEventRehearsalSpatialCallablePayload.action': controlEventRehearsalSpatialCallablePayloadAction,

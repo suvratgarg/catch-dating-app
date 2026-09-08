@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.80.0
+version: 1.81.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -188,7 +188,10 @@ departure confirmation and channel choices that contain no live sender binding.
 Closed command types distinguish publish, dispatch and confirmed receipt; an
 unknown dispatch outcome cannot be used as a receipt. The existing rehearsal
 repository and action controller accept a frozen command tied to the reviewed
-session, setup revision, runtime revision and client action id. Exact retries
+session, setup revision, runtime revision and client action id. The assistance
+callable requires `expectedSetupRevision` and checks it before receipt replay
+and inside the mutation transaction. A reset can therefore reuse a runtime
+revision without accepting an old run's pending assistance command. Exact retries
 preserve that request; a result must include its matching action receipt before
 being returned as confirmation. This confirms command handling, not message
 delivery. Native review UI, account-bound review lifecycle and automatic retry

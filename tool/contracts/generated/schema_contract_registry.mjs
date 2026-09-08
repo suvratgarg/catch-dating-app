@@ -145550,7 +145550,7 @@ export const controlEventRehearsalCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/control_event_rehearsal_payload.schema.json",
   "title": "ControlEventRehearsalCallablePayload",
-  "description": "Revision-fenced Host lifecycle or virtual-clock control.",
+  "description": "Host lifecycle or virtual-clock control. Assistance additionally requires the reviewed setup generation so a reset cannot reuse an old runtime revision.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -146274,6 +146274,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
         }
       ],
       "type": "object"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
     }
   },
   "if": {
@@ -146285,7 +146290,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
   },
   "then": {
     "required": [
-      "assistance"
+      "assistance",
+      "expectedSetupRevision"
     ],
     "not": {
       "required": [
@@ -146295,8 +146301,17 @@ export const controlEventRehearsalCallablePayloadSchema = {
   },
   "else": {
     "not": {
-      "required": [
-        "assistance"
+      "anyOf": [
+        {
+          "required": [
+            "assistance"
+          ]
+        },
+        {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        }
       ]
     }
   }
