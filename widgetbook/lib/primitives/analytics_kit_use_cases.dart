@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 const _tilePreviewWidth = CatchLayout.analyticsMetricPreviewWidth;
 const _gridPreviewWidth = CatchLayout.confirmDialogMaxWidth;
 
-final _readyAnalyticsMetric = CatchMetricCardData(
+final _readyAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
   icon: CatchIcons.visibilityOutlined,
@@ -16,24 +16,24 @@ final _readyAnalyticsMetric = CatchMetricCardData(
   caption: 'Last 30 days',
 );
 
-final _partialAnalyticsMetric = CatchMetricCardData(
+final _partialAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
   icon: CatchIcons.confirmationNumberOutlined,
   value: '126',
   label: 'Bookings',
   caption: 'Confirmed seats',
-  status: CatchMetricStatus.partial,
+  status: CatchMetricDataStatus.partial,
 );
 
-final _missingAnalyticsMetric = CatchMetricCardData(
+final _missingAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
   icon: CatchIcons.accountBalanceWalletOutlined,
   value: '--',
   label: 'Revenue',
   caption: 'Connect payments to report revenue.',
-  status: CatchMetricStatus.missing,
+  status: CatchMetricDataStatus.missing,
 );
 
 final _analyticsMetrics = [
@@ -44,32 +44,32 @@ final _analyticsMetrics = [
 
 @widgetbook.UseCase(
   name: 'Tile states',
-  type: CatchAnalyticsMetricTile,
+  type: CatchDataQualityMetricTile,
   path: '[Core primitives]/Analytics kit',
 )
 Widget catchAnalyticsMetricTileStates(BuildContext context) {
   return _AnalyticsKitCatalog(
-    title: 'CatchAnalyticsMetricTile',
+    title: 'CatchDataQualityMetricTile',
     children: [
       _StateCard(
         label: 'ready',
         child: SizedBox(
           width: _tilePreviewWidth,
-          child: CatchAnalyticsMetricTile(data: _readyAnalyticsMetric),
+          child: CatchDataQualityMetricTile(data: _readyAnalyticsMetric),
         ),
       ),
       _StateCard(
         label: 'partial',
         child: SizedBox(
           width: _tilePreviewWidth,
-          child: CatchAnalyticsMetricTile(data: _partialAnalyticsMetric),
+          child: CatchDataQualityMetricTile(data: _partialAnalyticsMetric),
         ),
       ),
       _StateCard(
         label: 'missing',
         child: SizedBox(
           width: _tilePreviewWidth,
-          child: CatchAnalyticsMetricTile(data: _missingAnalyticsMetric),
+          child: CatchDataQualityMetricTile(data: _missingAnalyticsMetric),
         ),
       ),
     ],
@@ -78,18 +78,18 @@ Widget catchAnalyticsMetricTileStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Grid states',
-  type: CatchAnalyticsMetricGrid,
+  type: CatchMetricSection,
   path: '[Core primitives]/Analytics kit',
 )
 Widget catchAnalyticsMetricGridStates(BuildContext context) {
   return _AnalyticsKitCatalog(
-    title: 'CatchAnalyticsMetricGrid',
+    title: 'CatchMetricSection',
     children: [
       _StateCard(
         label: 'two-column metrics',
         child: SizedBox(
           width: _gridPreviewWidth,
-          child: CatchAnalyticsMetricGrid(metrics: _analyticsMetrics),
+          child: CatchMetricSection.dataQuality(metrics: _analyticsMetrics),
         ),
       ),
     ],
@@ -110,15 +110,15 @@ Widget catchAnalyticsDataQualityStates(
     CatchAnalyticsDataQualityList(
       rows: [
         CatchDataQualityRowData(
-          status: CatchMetricStatus.ready,
+          status: CatchMetricDataStatus.ready,
           detail: 'Attendance data is ready.',
         ),
         CatchDataQualityRowData(
-          status: CatchMetricStatus.partial,
+          status: CatchMetricDataStatus.partial,
           detail: 'Recent bookings are still being counted.',
         ),
         CatchDataQualityRowData(
-          status: CatchMetricStatus.missing,
+          status: CatchMetricDataStatus.missing,
           detail:
               'Revenue is unavailable until a payment account is connected.',
         ),
@@ -143,7 +143,7 @@ Widget catchAnalyticsSectionComposition(BuildContext context) {
           child: CatchSection.divided(
             title: 'Funnel',
             first: true,
-            child: CatchAnalyticsMetricGrid(metrics: _analyticsMetrics),
+            child: CatchMetricSection.dataQuality(metrics: _analyticsMetrics),
           ),
         ),
       ),

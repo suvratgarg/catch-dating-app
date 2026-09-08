@@ -1674,7 +1674,7 @@ function buildCandidates() {
       recommended: "catch.metric_grid",
       tags: ["metrics", "analytics"],
       names: [
-        "CatchMetricStrip",
+        "CatchMetricSection",
         "EventStatsGrid",
         "HostAnalyticsMetricGrid",
         "HostOrganizerMetricGrid",
@@ -1689,7 +1689,7 @@ function buildCandidates() {
       recommended: "catch.metric_tile",
       tags: ["metrics", "analytics"],
       names: [
-        "CatchStatColumn",
+        "CatchMetricTile",
         "HostAnalyticsMetricTile",
         "HostOrganizerMetricTile",
         "HostTodayHeroMetric",

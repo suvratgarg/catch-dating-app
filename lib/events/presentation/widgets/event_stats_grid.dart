@@ -15,7 +15,7 @@ class EventStatsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = surfaceStyle;
-    return CatchMetricStrip(
+    return CatchMetricSection(
       items: _statsFor(event, context.l10n),
       backgroundColor: style?.surfaceBackground,
       borderColor: style?.borderColor,
@@ -27,24 +27,24 @@ class EventStatsGrid extends StatelessWidget {
   }
 }
 
-List<CatchMetricStripItem> _statsFor(Event event, AppLocalizations l10n) {
+List<CatchMetricValue> _statsFor(Event event, AppLocalizations l10n) {
   return [
     if (event.eventFormat.isDistanceBased)
-      CatchMetricStripItem(
+      CatchMetricValue(
         value: event.distanceValueLabel,
         unit: l10n.eventsEventStatsGridVisiblecopyKm,
         label: l10n.eventsEventStatsGridLabelDistance,
       )
     else
-      CatchMetricStripItem(
+      CatchMetricValue(
         value: event.eventFormat.label,
         label: l10n.eventsEventStatsGridLabelActivity,
       ),
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: event.pace.label,
       label: _levelLabelFor(event.activityKind, l10n),
     ),
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: event.spotsLabel,
       label: l10n.eventsEventStatsGridLabelSpotsTaken,
     ),

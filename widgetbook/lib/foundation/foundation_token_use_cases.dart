@@ -1640,20 +1640,20 @@ class _DataPairExamples extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchMetricStrip(
+        CatchMetricSection(
           items: const [
-            CatchMetricStripItem(value: '24', label: 'spots'),
-            CatchMetricStripItem(value: '8:30', label: 'starts'),
-            CatchMetricStripItem(value: '6', unit: 'km', label: 'away'),
+            CatchMetricValue(value: '24', label: 'spots'),
+            CatchMetricValue(value: '8:30', label: 'starts'),
+            CatchMetricValue(value: '6', unit: 'km', label: 'away'),
           ],
         ),
         gapH16,
-        CatchMetricStrip(
+        CatchMetricSection(
           items: const [
-            CatchMetricStripItem(value: '4.8', label: 'rating'),
-            CatchMetricStripItem(value: '126', label: 'guests'),
-            CatchMetricStripItem(value: '12', label: 'hosts'),
-            CatchMetricStripItem(value: '3', label: 'rooms'),
+            CatchMetricValue(value: '4.8', label: 'rating'),
+            CatchMetricValue(value: '126', label: 'guests'),
+            CatchMetricValue(value: '12', label: 'hosts'),
+            CatchMetricValue(value: '3', label: 'rooms'),
           ],
         ),
       ],

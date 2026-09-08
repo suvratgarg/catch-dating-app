@@ -143,7 +143,14 @@ void _registerEventSuccessHostSetupTests() {
     await tester.tap(find.text('Report'));
     await pumpFeatureUi(tester);
     expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
-    expect(find.byType(CatchAnalyticsMetricGrid), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMetricSection &&
+            widget.variant == CatchMetricSectionVariant.dataQuality,
+      ),
+      findsWidgets,
+    );
   });
 
   testWidgets('host setup collapses to a read-only plan after bookings start', (

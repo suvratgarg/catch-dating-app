@@ -1232,10 +1232,10 @@ class HostRosterFilterHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchMetricStrip(
+          CatchMetricSection(
             items: [
               for (final spec in filters)
-                CatchMetricStripItem(
+                CatchMetricValue(
                   value: context.l10n
                       .hostsHostEventAttendancePanelVisiblecopyValue(
                         value: spec.value,

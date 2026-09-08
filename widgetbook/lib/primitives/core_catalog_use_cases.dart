@@ -3058,38 +3058,38 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchStatColumn,
+  type: CatchMetricTile,
   path: '[Core catalog]/Data display',
 )
 Widget catchStatColumnCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStatColumn',
+    title: 'CatchMetricTile',
     catalogId: 'core.widgets.catch_stat_column',
     children: [
       _StateCard(
         label: 'plain / highlighted / centered / surfaced',
         child: _InlineWrap(
           children: [
-            CatchStatColumn(value: '12', label: 'Going'),
-            CatchStatColumn(
+            CatchMetricTile(value: '12', label: 'Going'),
+            CatchMetricTile(
               value: '4',
               label: 'Left',
               highlight: true,
-              monoValue: true,
+              variant: CatchMetricTileVariant.mono,
             ),
-            CatchStatColumn(
+            CatchMetricTile(
               icon: CatchIcons.group,
               value: '86%',
               label: 'Return rate',
               center: true,
             ),
-            CatchStatColumn(
+            CatchMetricTile(
               icon: CatchIcons.confirmationNumberOutlined,
               value: 'Rs 1,200',
               label: 'Base',
               center: true,
-              monoValue: true,
-              surface: true,
+              variant: CatchMetricTileVariant.mono,
+              mode: CatchMetricTileMode.surface,
             ),
           ],
         ),

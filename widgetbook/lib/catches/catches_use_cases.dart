@@ -998,17 +998,17 @@ Widget profileRunningStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Running stat states',
-  type: CatchStatColumn,
+  type: CatchMetricTile,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget runningStatStates(BuildContext context) {
   return const _CatchesCatalog(
-    title: 'CatchStatColumn',
+    title: 'CatchMetricTile',
     contractId: 'screen.catches.profile.running_stat',
     children: [
       _StateCard(
         label: 'pace',
-        child: CatchStatColumn(label: 'Pace', value: '5:30/km'),
+        child: CatchMetricTile(label: 'Pace', value: '5:30/km'),
       ),
     ],
   );

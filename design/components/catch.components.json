@@ -4619,6 +4619,11 @@
       },
       "surfaces": {
         "flutter": "CatchSection"
+      },
+      "level": "L3",
+      "roleNoun": "Section",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -5607,21 +5612,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchMetricStrip",
+      "name": "CatchMetricSection",
       "status": "active",
-      "kind": "primitive",
-      "summary": "Canonical compact value-over-label metric rail for detail stats and summary data pairs.",
+      "kind": "composite",
+      "summary": "Caller-formatted metric groups with a compact rail and a data-quality tile-grid recipe.",
       "dart": {
-        "symbol": "CatchMetricStrip",
-        "file": "packages/catch_ui/lib/src/components/catch_metric_strip.dart",
+        "symbol": "CatchMetricSection",
+        "file": "packages/catch_ui/lib/src/components/catch_metric_section.dart",
         "constructors": [
-          "CatchMetricStrip"
+          "CatchMetricSection",
+          "CatchMetricSection.dataQuality"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/MetricStrip",
+          "componentName": "Catch/MetricSection",
           "componentUrl": null
         },
         "codeConnect": {
@@ -5630,7 +5636,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "MetricStrip",
+          "handoffName": "MetricSection",
           "allowed": true
         }
       },
@@ -5639,8 +5645,9 @@
           {
             "name": "items",
             "type": "list",
-            "required": true,
-            "dartType": "List<CatchMetricStripItem>"
+            "required": false,
+            "dartType": "List<CatchMetricValue>",
+            "notes": "Required by the default rail constructor."
           },
           {
             "name": "padding",
@@ -5684,6 +5691,20 @@
             "type": "object",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "metrics",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchMetricData>",
+            "notes": "Required by dataQuality; ordered caller-formatted metric payloads."
+          },
+          {
+            "name": "maxItems",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "notes": "Optional visible prefix in the dataQuality recipe."
           }
         ],
         "states": [
@@ -5692,7 +5713,11 @@
           "four-items",
           "long-copy",
           "surface-overrides",
-          "large-text-reflow"
+          "large-text-reflow",
+          "empty-grid",
+          "two-column",
+          "limited-items",
+          "large-text-grid"
         ],
         "slots": [],
         "tokens": [
@@ -5707,46 +5732,28 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchSurface",
-          "CatchTextStyles.mono",
-          "CatchTextStyles.supporting",
-          "CatchStroke.hairline",
-          "CatchMetricStripItem",
-          "CatchStatColumn",
-          "CatchMetaDotRow",
-          "CatchMetaEntryFlow",
-          "CatchMetaEntryView",
-          "CatchMetaEntry"
+          "CatchMetricValue",
+          "CatchMetricData",
+          "CatchMetricSectionVariant",
+          "CatchMetricTile",
+          "CatchDataQualityMetricTile",
+          "CatchDivider",
+          "CatchSurface"
         ],
         "goldens": [],
         "members": [
           {
             "id": "catch.metric_strip.stat_column",
-            "symbol": "CatchStatColumn",
-            "file": "packages/catch_ui/lib/src/components/catch_stat_column.dart",
-            "summary": "Vertical value-over-label metric member using the platform metric role and readable supporting label, with natural-height wrapping, optional icons, centered alignment, and surfaced single-stat blocks.",
+            "symbol": "CatchMetricTile",
+            "file": "packages/catch_ui/lib/src/components/catch_metric_tile.dart",
+            "summary": "One value and supporting label, with natural-height display and bounded compact value/unit recipes.",
             "states": [
               "plain",
               "highlighted",
               "centered",
               "with-icon",
               "mono-value",
-              "surfaced"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.metric_strip",
-              "parentConceptId": "catch.metric_strip",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.metric_strip"
-            }
-          },
-          {
-            "id": "catch.metric_strip.cell",
-            "symbol": "CatchMetricStripCell",
-            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_cell.dart",
-            "summary": "Direct metric-strip value/label cell renderer.",
-            "states": [
+              "surfaced",
               "default",
               "with-unit",
               "long-label",
@@ -5756,8 +5763,17 @@
               "conceptRole": "member",
               "conceptId": "catch.metric_strip",
               "parentConceptId": "catch.metric_strip",
-              "qualifier": "variant",
+              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.metric_strip"
+            },
+            "level": "L3",
+            "roleNoun": "Tile",
+            "naming": {
+              "useCase": "Metric",
+              "comparedWith": [
+                "catch.analytics_metric"
+              ],
+              "reason": "Displays one scalar value and its label, with an optional icon, unit, emphasis or surface. DataQualityMetricTile adds an explicit completeness status, status badge, warning chrome and explanatory caption; simple values do not claim that data-quality contract."
             }
           }
         ],
@@ -5773,19 +5789,34 @@
             "light",
             "dark"
           ]
+        },
+        "constructorProps": {
+          "CatchMetricSection": [
+            "items",
+            "padding",
+            "backgroundColor",
+            "borderColor",
+            "dividerColor",
+            "valueColor",
+            "unitColor",
+            "labelColor"
+          ],
+          "CatchMetricSection.dataQuality": [
+            "metrics",
+            "maxItems"
+          ]
         }
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for compact quantitative or short factual data pairs on detail surfaces.",
-          "Keep labels short and sentence/lowercase unless product copy explicitly requires an acronym.",
-          "Use CatchMetricStripItem.unit for a short unit such as km instead of embedding it in the value.",
-          "Use CatchStatColumn for single or wrapped vertical stats; keep it in the metric family rather than creating bespoke value-label columns."
+          "Use the default rail for compact quantitative or short factual data pairs. Keep labels concise and supply a separate unit through CatchMetricValue.unit.",
+          "Use dataQuality for a two-column arrangement of status-aware CatchMetricData records. maxItems preserves the input order while limiting the visible prefix.",
+          "CatchMetricTile owns standalone value/label rendering, with a compact recipe for rail cells. Data-quality warnings, status badges and captions remain CatchDataQualityMetricTile."
         ]
       },
       "governance": {
-        "role": "atom",
+        "role": "composition",
         "canonicalFamily": "catch.metric_strip",
         "publicApi": true,
         "stateOwnership": "local-ui-only",
@@ -5798,7 +5829,16 @@
         "conceptId": "catch.metric_strip"
       },
       "surfaces": {
-        "flutter": "CatchMetricStrip"
+        "flutter": "CatchMetricSection"
+      },
+      "level": "L3",
+      "roleNoun": "Section",
+      "naming": {
+        "useCase": "Metric",
+        "comparedWith": [
+          "catch.section"
+        ],
+        "reason": "Arranges typed metric values in a shared rail that reflows at large text, or independently surfaced data-quality tiles in two columns. Generic Section owns titled content and field-group structure; it does not interpret metric payloads or choose metric layout."
       }
     },
     {
@@ -16916,21 +16956,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchAnalyticsMetricTile",
+      "name": "CatchDataQualityMetricTile",
       "status": "active",
       "kind": "composite",
-      "summary": "Caller-formatted analytics summary tile with explicit ready, partial and missing-data presentation.",
+      "summary": "Caller-formatted metric tile with explicit ready, partial and missing-data presentation.",
       "dart": {
-        "symbol": "CatchAnalyticsMetricTile",
-        "file": "packages/catch_ui/lib/src/components/catch_analytics_metric_tile.dart",
+        "symbol": "CatchDataQualityMetricTile",
+        "file": "packages/catch_ui/lib/src/components/catch_data_quality_metric_tile.dart",
         "constructors": [
-          "CatchAnalyticsMetricTile"
+          "CatchDataQualityMetricTile"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/AnalyticsMetricTile",
+          "componentName": "Catch/DataQualityMetricTile",
           "componentUrl": null
         },
         "codeConnect": {
@@ -16939,7 +16979,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "AnalyticsMetricTile",
+          "handoffName": "DataQualityMetricTile",
           "allowed": true
         }
       },
@@ -16949,7 +16989,7 @@
             "name": "data",
             "type": "object",
             "required": true,
-            "dartType": "CatchMetricCardData"
+            "dartType": "CatchMetricData"
           }
         ],
         "states": [
@@ -16974,9 +17014,9 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchMetricCardData",
-          "CatchMetricStatus",
-          "CatchAnalyticsMetricGrid",
+          "CatchMetricData",
+          "CatchMetricDataStatus",
+          "CatchMetricSection.dataQuality",
           "CatchSurface",
           "CatchBadge",
           "CatchTextStyles.numericLarge",
@@ -16984,27 +17024,6 @@
           "CatchTextStyles.supporting"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.analytics_metric.grid",
-            "symbol": "CatchAnalyticsMetricGrid",
-            "file": "packages/catch_ui/lib/src/components/catch_analytics_metric_grid.dart",
-            "summary": "Two-column arrangement of the same metric tiles with an optional visible-item limit.",
-            "states": [
-              "empty",
-              "two-column",
-              "limited-items",
-              "large-text"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.analytics_metric",
-              "parentConceptId": "catch.analytics_metric",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.analytics_metric"
-            }
-          }
-        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -17023,7 +17042,7 @@
         "allowedChildren": [],
         "notes": [
           "Callers own metric identity, formatted values and all visible copy, including partial and missing status labels.",
-          "Use CatchAnalyticsMetricGrid to arrange the same metric payloads in two columns; maxItems limits the visible prefix without changing order.",
+          "Use CatchMetricSection.dataQuality to arrange the same metric payloads in two columns; maxItems limits the visible prefix without changing order.",
           "Data fetching, source readiness and range selection belong to feature adapters."
         ]
       },
@@ -17041,16 +17060,16 @@
         "conceptId": "catch.analytics_metric"
       },
       "surfaces": {
-        "flutter": "CatchAnalyticsMetricTile"
+        "flutter": "CatchDataQualityMetricTile"
       },
       "level": "L3",
       "roleNoun": "Tile",
       "naming": {
-        "useCase": "AnalyticsMetric",
+        "useCase": "DataQualityMetric",
         "comparedWith": [
-          "catch.icon_tile"
+          "catch.metric_strip.stat_column"
         ],
-        "reason": "Renders a caller-formatted metric value, label, optional caption and explicit data-quality status. The decorative icon tile has no metric data or status contract; the metric tile retains the shared CatchSurface containment."
+        "reason": "Owns an explicit data-completeness contract: ready, partial and missing states, badge copy, warning border/fill and an optional explanation. MetricTile displays a scalar and label without asserting source completeness. The qualifier names that responsibility rather than the feature that consumes it."
       }
     },
     {
@@ -17114,7 +17133,7 @@
         ],
         "dartRoles": [
           "CatchDataQualityRowData",
-          "CatchMetricStatus",
+          "CatchMetricDataStatus",
           "CatchSurface",
           "CatchIcons",
           "CatchTextStyles.supporting"

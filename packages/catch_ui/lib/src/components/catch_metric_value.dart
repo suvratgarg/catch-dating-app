@@ -1,5 +1,5 @@
-class CatchMetricStripItem {
-  const CatchMetricStripItem({
+class CatchMetricValue {
+  const CatchMetricValue({
     required this.value,
     required this.label,
     this.unit = '',

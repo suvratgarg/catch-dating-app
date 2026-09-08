@@ -336,7 +336,12 @@ void main() {
         find.byKey(const ValueKey('host-form-builder-tabs')),
         findsOneWidget,
       );
-      expect(find.byType(CatchStatColumn), findsNWidgets(2));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchMetricTile && widget.item == null,
+        ),
+        findsNWidgets(2),
+      );
       final questions = find.descendant(
         of: find.byKey(const ValueKey('host-form-builder-tabs')),
         matching: find.text('Questions'),
@@ -381,7 +386,9 @@ void main() {
       find.byKey(const ValueKey('host_form_metrics.reflow')),
       findsOneWidget,
     );
-    final metricCells = find.byType(CatchStatColumn);
+    final metricCells = find.byWidgetPredicate(
+      (widget) => widget is CatchMetricTile && widget.item == null,
+    );
     expect(metricCells, findsNWidgets(2));
     expect(
       tester.getCenter(metricCells.at(0)).dy,

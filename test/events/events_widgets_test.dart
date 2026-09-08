@@ -189,7 +189,7 @@ void main() {
         expect(find.text('AGE 21–35'), findsOneWidget);
         expect(find.text('MAX 8 MEN'), findsOneWidget);
         expect(find.text('MAX 10 WOMEN'), findsOneWidget);
-        expect(find.byType(CatchMetricStrip), findsOneWidget);
+        expect(find.byType(CatchMetricSection), findsOneWidget);
         expect(find.text('5.5'), findsOneWidget);
         expect(find.text('Pace level'), findsOneWidget);
         expect(find.text('3/20'), findsOneWidget);

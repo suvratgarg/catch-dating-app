@@ -62,8 +62,13 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchMetricStrip), findsOneWidget);
-    expect(find.byType(CatchStatColumn), findsNothing);
+    expect(find.byType(CatchMetricSection), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMetricTile && widget.item == null,
+      ),
+      findsNothing,
+    );
     expect(find.text('PACE'), findsOneWidget);
     expect(find.text('DISTANCE'), findsOneWidget);
     expect(

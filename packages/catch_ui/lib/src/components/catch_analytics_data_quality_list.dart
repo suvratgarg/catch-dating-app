@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_data_quality_row_data.dart';
-import 'package:catch_ui/src/components/catch_metric_status.dart';
+import 'package:catch_ui/src/components/catch_metric_data_status.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -23,7 +23,7 @@ class CatchAnalyticsDataQualityList extends StatelessWidget {
           CatchSurface(
             padding: CatchInsets.contentDense,
             borderColor: t.line,
-            backgroundColor: indexedRow.$2.status == CatchMetricStatus.ready
+            backgroundColor: indexedRow.$2.status == CatchMetricDataStatus.ready
                 ? t.surface
                 : t.warning.withValues(alpha: CatchOpacity.warningFill),
             child: Row(
@@ -32,7 +32,7 @@ class CatchAnalyticsDataQualityList extends StatelessWidget {
                 Icon(
                   _dataQualityIcon(indexedRow.$2.status),
                   size: CatchIcon.md,
-                  color: indexedRow.$2.status == CatchMetricStatus.ready
+                  color: indexedRow.$2.status == CatchMetricDataStatus.ready
                       ? t.success
                       : t.warning,
                 ),
@@ -52,10 +52,10 @@ class CatchAnalyticsDataQualityList extends StatelessWidget {
   }
 }
 
-IconData _dataQualityIcon(CatchMetricStatus status) {
+IconData _dataQualityIcon(CatchMetricDataStatus status) {
   return switch (status) {
-    CatchMetricStatus.ready => CatchIcons.checkCircleOutlineRounded,
-    CatchMetricStatus.partial => CatchIcons.warningAmberRounded,
-    CatchMetricStatus.missing => CatchIcons.errorOutlineRounded,
+    CatchMetricDataStatus.ready => CatchIcons.checkCircleOutlineRounded,
+    CatchMetricDataStatus.partial => CatchIcons.warningAmberRounded,
+    CatchMetricDataStatus.missing => CatchIcons.errorOutlineRounded,
   };
 }

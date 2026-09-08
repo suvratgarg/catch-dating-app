@@ -568,7 +568,7 @@ class CalendarStatsHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.planned'),
                     label: context.l10n.eventsCalendarScreenLabelPlanned,
                     value: context.l10n.eventsCalendarScreenVisiblecopyLength(
@@ -578,7 +578,7 @@ class CalendarStatsHeader extends StatelessWidget {
                 ),
                 const CalendarStatDivider(),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.distance'),
                     label: context.l10n.eventsCalendarScreenLabelDistance,
                     value: context.l10n.eventsCalendarScreenVisiblecopyRoundKm(
@@ -588,7 +588,7 @@ class CalendarStatsHeader extends StatelessWidget {
                 ),
                 const CalendarStatDivider(),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.next'),
                     label: context.l10n.eventsCalendarScreenLabelNext,
                     value: summary.nextEvent == null

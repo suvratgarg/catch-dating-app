@@ -424,7 +424,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
                 children: [
                   for (final (index, item) in metrics.indexed) ...[
                     if (index > 0) ...[gapH12, const CatchDivider(), gapH12],
-                    CatchStatColumn(
+                    CatchMetricTile(
                       value: item.value,
                       label: item.label,
                       center: true,
@@ -442,7 +442,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
                         child: ColoredBox(color: CatchTokens.of(context).line),
                       ),
                     Expanded(
-                      child: CatchStatColumn(
+                      child: CatchMetricTile(
                         value: item.value,
                         label: item.label,
                         center: true,

@@ -103,7 +103,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchMetricStrip), findsOneWidget);
+      expect(find.byType(CatchMetricSection), findsOneWidget);
       expect(find.byType(CatchSearchField), findsOneWidget);
     },
   );

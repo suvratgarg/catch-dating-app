@@ -18,41 +18,37 @@ void main() {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 20,
             children: [
-              const CatchStatColumn(value: '24', label: 'Guests'),
-              const CatchStatColumn(
+              const CatchMetricTile(value: '24', label: 'Guests'),
+              const CatchMetricTile(
                 value: '12',
                 label: 'Events',
                 icon: Icons.event,
                 highlight: true,
                 center: true,
               ),
-              const CatchStatColumn(
+              const CatchMetricTile(
                 value: '42',
                 label: 'Kilometres this month',
-                monoValue: true,
-                surface: true,
+                variant: CatchMetricTileVariant.mono,
+                mode: CatchMetricTileMode.surface,
               ),
-              const CatchMetricStripCell(
-                item: CatchMetricStripItem(
+              const CatchMetricTile.compact(
+                item: CatchMetricValue(
                   value: '8.4',
                   unit: 'km',
                   label: 'Distance',
                 ),
               ),
-              const CatchMetricStrip(
+              const CatchMetricSection(
                 items: [
-                  CatchMetricStripItem(value: '12', label: 'Guests'),
-                  CatchMetricStripItem(
-                    value: '8.4',
-                    unit: 'km',
-                    label: 'Distance',
-                  ),
-                  CatchMetricStripItem(value: '3', label: 'Events'),
+                  CatchMetricValue(value: '12', label: 'Guests'),
+                  CatchMetricValue(value: '8.4', unit: 'km', label: 'Distance'),
+                  CatchMetricValue(value: '3', label: 'Events'),
                 ],
               ),
-              for (final status in CatchMetricStatus.values)
-                CatchAnalyticsMetricTile(
-                  data: CatchMetricCardData(
+              for (final status in CatchMetricDataStatus.values)
+                CatchDataQualityMetricTile(
+                  data: CatchMetricData(
                     icon: Icons.people,
                     value: '24',
                     label: 'Confirmed guests',
@@ -62,20 +58,20 @@ void main() {
                     missingBadgeLabel: 'Missing',
                   ),
                 ),
-              const CatchAnalyticsMetricGrid(
+              const CatchMetricSection.dataQuality(
                 metrics: [
-                  CatchMetricCardData(
+                  CatchMetricData(
                     icon: Icons.people,
                     value: '24',
                     label: 'Guests',
                     partialBadgeLabel: 'Partial',
                     missingBadgeLabel: 'Missing',
                   ),
-                  CatchMetricCardData(
+                  CatchMetricData(
                     icon: Icons.event,
                     value: '3',
                     label: 'Events',
-                    status: CatchMetricStatus.partial,
+                    status: CatchMetricDataStatus.partial,
                     partialBadgeLabel: 'Partial',
                     missingBadgeLabel: 'Missing',
                   ),

@@ -1739,7 +1739,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "CatchMetricStrip"
+              "symbol": "CatchMetricSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "screen-local section.club.stats until another product screen proves reuse",
@@ -1753,7 +1753,7 @@
               "empty_rating"
             ],
             "previewIds": [
-              "CatchMetricStrip/Contract states"
+              "CatchMetricSection/Contract states"
             ],
             "migration": "Keep screen-local for now; promote only if host club detail or another product screen reuses the same club metrics contract."
           },
@@ -11430,7 +11430,7 @@
           },
           {
             "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-            "symbol": "CatchMetricStrip"
+            "symbol": "CatchMetricSection"
           },
           {
             "file": "lib/reviews/shared/reviews_section.dart",
@@ -11929,11 +11929,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchMetricStrip"
+              "CatchMetricSection"
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "CatchMetricStrip"
+              "symbol": "CatchMetricSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "shared club stats section if host references match consumer detail",
@@ -15620,7 +15620,7 @@
             "targetOwner": "hosts.presentation.customers",
             "dependencies": ["catch.button", "catch.chip", "catch.search_field", "catch.surface", "catch.top_bar"],
             "states": ["customers_loading", "customers_empty", "customers_populated", "customers_filtered_empty"],
-            "migration": "The shell-selected organizer is the single scope input. The screen reuses CatchStatColumn, CatchSearchField, CatchChip and CatchButton instead of introducing Customers-only primitive families."
+            "migration": "The shell-selected organizer is the single scope input. The screen reuses CatchMetricTile, CatchSearchField, CatchChip and CatchButton instead of introducing Customers-only primitive families."
           },
           {
             "id": "section.host.customers.directory",

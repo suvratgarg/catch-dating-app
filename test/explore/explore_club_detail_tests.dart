@@ -299,12 +299,12 @@ void _registerExploreClubDetailTests() {
             onEditClub: () {},
             onCreateEvent: () {},
           ),
-          const CatchMetricStrip(
+          const CatchMetricSection(
             items: [
-              CatchMetricStripItem(value: '24', label: 'followers'),
-              CatchMetricStripItem(value: '4.7', label: 'rating'),
-              CatchMetricStripItem(value: '12', label: 'reviews'),
-              CatchMetricStripItem(value: 'JAN 2025', label: 'est.'),
+              CatchMetricValue(value: '24', label: 'followers'),
+              CatchMetricValue(value: '4.7', label: 'rating'),
+              CatchMetricValue(value: '12', label: 'reviews'),
+              CatchMetricValue(value: 'JAN 2025', label: 'est.'),
             ],
           ),
         ],
@@ -315,7 +315,7 @@ void _registerExploreClubDetailTests() {
     expect(find.text('3'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('₹30'), findsOneWidget);
-    expect(find.byType(CatchMetricStrip), findsOneWidget);
+    expect(find.byType(CatchMetricSection), findsOneWidget);
     expect(find.text('followers'), findsOneWidget);
     expect(find.text('reviews'), findsOneWidget);
     expect(find.text('est.'), findsOneWidget);
@@ -517,7 +517,7 @@ void _registerExploreClubDetailTests() {
 
     expect(heroFrame, findsOneWidget);
     expect(heroLocation, findsOneWidget);
-    final metricTop = tester.getTopLeft(find.byType(CatchMetricStrip)).dy;
+    final metricTop = tester.getTopLeft(find.byType(CatchMetricSection)).dy;
     final locationBottom = tester.getBottomLeft(heroLocation).dy;
     expect(metricTop, greaterThan(locationBottom));
   });

@@ -388,13 +388,13 @@ class ProfileRunning extends StatelessWidget {
           color: activity?.accent,
         ),
         gapH10,
-        CatchMetricStrip(
+        CatchMetricSection(
           items: [
-            CatchMetricStripItem(
+            CatchMetricValue(
               value: section.pace,
               label: context.l10n.swipesCatchProfileViewLabelPace,
             ),
-            CatchMetricStripItem(
+            CatchMetricValue(
               value: section.distance,
               label: context.l10n.swipesCatchProfileViewLabelDistance,
             ),

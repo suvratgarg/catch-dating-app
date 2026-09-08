@@ -1439,6 +1439,74 @@
           "rationale": "Record heading, narrative context and navigation differ from passive metadata."
         }
       ]
+    },
+    {
+      "id": "metric-canonical-recipes",
+      "title": "Metric values, arrangements and data-quality presentation",
+      "intent": "Consolidate scalar metric rendering and metric group layouts; retain a concrete completeness-aware tile contract.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.metric_strip + catch.analytics_metric",
+      "qualityReference": "CatchMetricTile",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve metric/mono typography, value-unit baseline, compact label policy, surface ownership, rail reflow, two-column sizing and data-quality warnings."
+      ],
+      "members": [
+        {
+          "symbol": "CatchStatColumn",
+          "disposition": "unify",
+          "target": "CatchMetricTile",
+          "preview": "not-applicable",
+          "rationale": "Route the existing recipe to its reviewed semantic responsibility and remove the former public Widget."
+        },
+        {
+          "symbol": "CatchMetricStripCell",
+          "disposition": "unify",
+          "target": "CatchMetricTile.compact",
+          "preview": "not-applicable",
+          "rationale": "Route the existing recipe to its reviewed semantic responsibility and remove the former public Widget."
+        },
+        {
+          "symbol": "CatchMetricStrip",
+          "disposition": "unify",
+          "target": "CatchMetricSection",
+          "preview": "not-applicable",
+          "rationale": "Route the existing recipe to its reviewed semantic responsibility and remove the former public Widget."
+        },
+        {
+          "symbol": "CatchAnalyticsMetricGrid",
+          "disposition": "unify",
+          "target": "CatchMetricSection.dataQuality",
+          "preview": "not-applicable",
+          "rationale": "Route the existing recipe to its reviewed semantic responsibility and remove the former public Widget."
+        },
+        {
+          "symbol": "CatchAnalyticsMetricTile",
+          "disposition": "unify",
+          "target": "CatchDataQualityMetricTile",
+          "preview": "not-applicable",
+          "rationale": "Route the existing recipe to its reviewed semantic responsibility and remove the former public Widget."
+        },
+        {
+          "symbol": "CatchMetricTile",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One scalar display with natural-height and compact recipes."
+        },
+        {
+          "symbol": "CatchMetricSection",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Typed metric arrangements with rail and data-quality grid recipes."
+        },
+        {
+          "symbol": "CatchDataQualityMetricTile",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Distinct completeness status, warning badge/chrome and explanatory caption."
+        }
+      ]
     }
   ]
 }

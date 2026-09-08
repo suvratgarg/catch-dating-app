@@ -366,9 +366,9 @@ class EventSuccessPostEventReport extends StatelessWidget {
             ),
             tone: CatchBadgeTone.brand,
           ),
-          child: CatchAnalyticsMetricGrid(
+          child: CatchMetricSection.dataQuality(
             metrics: [
-              CatchMetricCardData(
+              CatchMetricData(
                 partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
                 missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.checkCircleOutlineRounded,
@@ -377,7 +377,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelCheckIn16e104,
               ),
-              CatchMetricCardData(
+              CatchMetricData(
                 partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
                 missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.groups2Outlined,
@@ -386,7 +386,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelIntroCoverage,
               ),
-              CatchMetricCardData(
+              CatchMetricData(
                 partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
                 missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.favoriteOutlineRounded,
@@ -395,7 +395,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelCaughtSomeone,
               ),
-              CatchMetricCardData(
+              CatchMetricData(
                 partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
                 missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.volunteerActivismOutlined,
@@ -406,7 +406,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessFeatureBlocksLabelHostHelp,
               ),
-              CatchMetricCardData(
+              CatchMetricData(
                 partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
                 missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
                 icon: CatchIcons.chatBubbleOutlineRounded,

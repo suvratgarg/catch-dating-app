@@ -38,7 +38,7 @@ void main() {
     expect(find.text('RECENT EVENTS'), findsOneWidget);
     expect(find.text('REVIEWS'), findsOneWidget);
 
-    final primary = tester.widget<CatchAnalyticsMetricGrid>(
+    final primary = tester.widget<CatchMetricSection>(
       find.byKey(const ValueKey('host-analytics-primary-grid')),
     );
     expect(primary.metrics, hasLength(6));
@@ -48,7 +48,7 @@ void main() {
 
     await tester.tap(find.text('More metrics'));
     await pumpFeatureUi(tester);
-    final secondary = tester.widget<CatchAnalyticsMetricGrid>(
+    final secondary = tester.widget<CatchMetricSection>(
       find.byKey(const ValueKey('host-analytics-secondary-grid')),
     );
     expect(secondary.metrics, hasLength(4));

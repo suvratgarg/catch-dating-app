@@ -372,7 +372,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           title: context.l10n.hostsHostAnalyticsLabelPerformance,
           child: Column(
             children: [
-              CatchAnalyticsMetricGrid(
+              CatchMetricSection.dataQuality(
                 key: const ValueKey('host-analytics-primary-grid'),
                 metrics: [
                   for (final metric in primaryMetrics)
@@ -399,7 +399,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                 onOpenChanged: (open) {
                   setState(() => _moreMetricsOpen = open);
                 },
-                control: CatchAnalyticsMetricGrid(
+                control: CatchMetricSection.dataQuality(
                   key: const ValueKey('host-analytics-secondary-grid'),
                   metrics: [
                     for (final metric in secondaryMetrics)
@@ -825,13 +825,13 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelNewReviews,
                     value: _compactCount(report.reviewSummary.newReviews),
                   ),
                 ),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelAverageRating,
                     value: report.reviewSummary.averageRating <= 0
                         ? '—'
@@ -844,13 +844,13 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelPublishedReviews,
                     value: _compactCount(report.reviewSummary.publishedReviews),
                   ),
                 ),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelResponses,
                     value: _compactCount(
                       report.reviewSummary.ownerResponseCount,
@@ -981,13 +981,13 @@ IconData _metricIcon(String metricId) {
   };
 }
 
-CatchMetricCardData _hostMetricCardData(
+CatchMetricData _hostMetricCardData(
   BuildContext context,
   HostAnalyticsMetricCard metric, {
   required HostClubInsightsRangePreset rangePreset,
   required String currencyCode,
 }) {
-  return CatchMetricCardData(
+  return CatchMetricData(
     icon: _metricIcon(metric.id),
     value: _formatMetricValue(metric, currencyCode: currencyCode),
     label: _metricLabel(context, metric),
@@ -995,9 +995,9 @@ CatchMetricCardData _hostMetricCardData(
     partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
     missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
     status: switch (metric.status) {
-      HostAnalyticsMetricStatus.ready => CatchMetricStatus.ready,
-      HostAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
-      HostAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
+      HostAnalyticsMetricStatus.ready => CatchMetricDataStatus.ready,
+      HostAnalyticsMetricStatus.partial => CatchMetricDataStatus.partial,
+      HostAnalyticsMetricStatus.missing => CatchMetricDataStatus.missing,
     },
   );
 }

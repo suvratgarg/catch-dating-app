@@ -1,22 +1,22 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
-import 'package:catch_ui/src/components/catch_metric_card_data.dart';
-import 'package:catch_ui/src/components/catch_metric_status.dart';
+import 'package:catch_ui/src/components/catch_metric_data.dart';
+import 'package:catch_ui/src/components/catch_metric_data_status.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Summary surface for a caller-formatted metric and its data-quality status.
-class CatchAnalyticsMetricTile extends StatelessWidget {
-  const CatchAnalyticsMetricTile({super.key, required this.data});
+class CatchDataQualityMetricTile extends StatelessWidget {
+  const CatchDataQualityMetricTile({super.key, required this.data});
 
-  final CatchMetricCardData data;
+  final CatchMetricData data;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final muted = data.status == CatchMetricStatus.missing;
+    final muted = data.status == CatchMetricDataStatus.missing;
     return CatchSurface(
       padding: CatchInsets.content,
       borderColor: muted
@@ -32,12 +32,12 @@ class CatchAnalyticsMetricTile extends StatelessWidget {
             children: [
               Icon(data.icon, size: CatchIcon.sm, color: t.ink2),
               const Spacer(),
-              if (data.status != CatchMetricStatus.ready)
+              if (data.status != CatchMetricDataStatus.ready)
                 CatchBadge(
-                  label: data.status == CatchMetricStatus.partial
+                  label: data.status == CatchMetricDataStatus.partial
                       ? data.partialBadgeLabel
                       : data.missingBadgeLabel,
-                  tone: data.status == CatchMetricStatus.partial
+                  tone: data.status == CatchMetricDataStatus.partial
                       ? CatchBadgeTone.warning
                       : CatchBadgeTone.neutral,
                 ),

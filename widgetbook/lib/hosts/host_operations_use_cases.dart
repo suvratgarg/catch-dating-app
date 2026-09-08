@@ -2228,11 +2228,11 @@ Widget _hostAnalyticsPreviewFor(String focus) {
         for (final row in report.dataQuality)
           CatchDataQualityRowData(
             status: switch (row.state) {
-              HostAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
+              HostAnalyticsDataQualityState.ok => CatchMetricDataStatus.ready,
               HostAnalyticsDataQualityState.partial =>
-                CatchMetricStatus.partial,
+                CatchMetricDataStatus.partial,
               HostAnalyticsDataQualityState.missing =>
-                CatchMetricStatus.missing,
+                CatchMetricDataStatus.missing,
             },
             detail: row.detail,
           ),

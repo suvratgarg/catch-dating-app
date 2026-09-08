@@ -34,10 +34,10 @@ void main() {
                   CatchDivider.vertical(color: CatchTokens.of(context).primary),
                 ],
               ),
-              const CatchMetricStrip(
+              const CatchMetricSection(
                 items: [
-                  CatchMetricStripItem(value: '12', label: 'Guests'),
-                  CatchMetricStripItem(value: '3', label: 'Events'),
+                  CatchMetricValue(value: '12', label: 'Guests'),
+                  CatchMetricValue(value: '3', label: 'Events'),
                 ],
               ),
               const CatchTicketDivider(),

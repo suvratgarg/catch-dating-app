@@ -249,17 +249,17 @@ Widget userAnalyticsDataQualityPanelStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Inline stat states',
-  type: CatchStatColumn,
+  type: CatchMetricTile,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsInlineStatStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'CatchStatColumn',
+    title: 'CatchMetricTile',
     contractId: 'component.profile.user_analytics.inline_stat',
     children: [
       _StateCard(
         label: 'count',
-        child: CatchStatColumn(label: 'Mutual catches', value: '9'),
+        child: CatchMetricTile(label: 'Mutual catches', value: '9'),
       ),
     ],
   );

@@ -6858,6 +6858,43 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:metric-canonical-recipes",
+      "patternFamilyId": "metric-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMetricTile",
+      "members": [
+        {
+          "name": "CatchStatColumn",
+          "action": "absorb",
+          "target": "CatchMetricTile"
+        },
+        {
+          "name": "CatchMetricStripCell",
+          "action": "absorb",
+          "target": "CatchMetricTile.compact"
+        },
+        {
+          "name": "CatchMetricStrip",
+          "action": "absorb",
+          "target": "CatchMetricSection"
+        },
+        {
+          "name": "CatchAnalyticsMetricGrid",
+          "action": "absorb",
+          "target": "CatchMetricSection.dataQuality"
+        },
+        {
+          "name": "CatchAnalyticsMetricTile",
+          "action": "absorb",
+          "target": "CatchDataQualityMetricTile"
+        }
+      ],
+      "rationale": "Simple value/label columns and compact value/unit cells now share CatchMetricTile, retaining natural-height display and bounded compact recipes. Metric rail and grid arrangements become CatchMetricSection and its dataQuality constructor. Keep CatchDataQualityMetricTile as a concrete use case: explicit completeness status, badge copy, warning border/fill and optional explanation are distinct from scalar display. This supersedes the earlier feature-qualified analytics metric name and separate cell/grid member registrations. Rename the data value objects to CatchMetricValue and CatchMetricData, with CatchMetricDataStatus naming its actual owner. Typed Tile Variant/Mode axes replace monoValue/surface booleans; the default constructor has two booleans. Five former Widgets become three canonical Widgets without aliases or new private renderers. Original normal/scaled light/dark metric images pass unchanged; application consumers preserve their payload mapping, item limits, keys and large-text behavior.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

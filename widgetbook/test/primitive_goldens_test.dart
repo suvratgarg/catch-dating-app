@@ -25,7 +25,7 @@ const _referenceCases = <String, String>{
   'Core catalog/Inputs/CatchControlSurface/Catalog states': 'control_shell',
   'Core catalog/Navigation/CatchStepProgress/Catalog states': 'step_progress',
   'Core catalog/Navigation/CatchPageIndicator/Catalog states': 'page_dots',
-  'Core catalog/Data display/CatchStatColumn/Catalog states': 'stat_column',
+  'Core catalog/Data display/CatchMetricTile/Catalog states': 'stat_column',
   'Core catalog/Data display/CatchMetaRow/Group states': 'meta_dot_row',
   'Core catalog/Sheets and footers/CatchSheetDragIndicator/Catalog states':
       'bottom_sheet_grabber',

@@ -817,7 +817,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchStatColumn',
+            name: 'CatchMetricTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -2348,18 +2348,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsMetricGrid',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Grid states',
-                builder:
-                    _widgetbook_workspace_primitives_analytics_kit_use_cases
-                        .catchAnalyticsMetricGridStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsMetricTile',
+            name: 'CatchDataQualityMetricTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -2372,6 +2361,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_analytics_kit_use_cases
                         .catchAnalyticsMetricTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchMetricSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Grid states',
+                builder:
+                    _widgetbook_workspace_primitives_analytics_kit_use_cases
+                        .catchAnalyticsMetricGridStates,
               ),
             ],
           ),
@@ -2419,7 +2419,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMetricStrip',
+            name: 'CatchMetricSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -2430,7 +2430,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMetricStripCell',
+            name: 'CatchMetricTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -5771,6 +5771,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'CatchMetricTile',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Running stat states',
+                    builder: _widgetbook_workspace_catches_catches_use_cases
+                        .runningStatStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'CatchPersonPolaroid',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -5787,16 +5797,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Raw profile view states',
                     builder: _widgetbook_workspace_catches_catches_use_cases
                         .catchProfileViewStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchStatColumn',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Running stat states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .runningStatStates,
                   ),
                 ],
               ),
@@ -10859,7 +10859,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchStatColumn',
+            name: 'CatchMetricTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Inline stat states',

@@ -705,18 +705,18 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
     final t = CatchTokens.of(context);
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final metrics = [
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$placedCount',
         label: context.l10n.eventSuccessRoomWorkspacePlaced,
         center: !largeText,
       ),
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$unconfirmedCount',
         label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
         center: !largeText,
         highlight: unconfirmedCount > 0,
       ),
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$attentionCount',
         label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
         center: !largeText,

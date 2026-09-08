@@ -137,18 +137,18 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 
-  testWidgets('CatchMetricStrip renders compact labeled data pairs', (
+  testWidgets('CatchMetricSection renders compact labeled data pairs', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
         const SizedBox(
           width: 320,
-          child: CatchMetricStrip(
+          child: CatchMetricSection(
             items: [
-              CatchMetricStripItem(value: '124', label: 'members'),
-              CatchMetricStripItem(value: '3', label: 'upcoming'),
-              CatchMetricStripItem(value: '4.7', label: 'rating'),
+              CatchMetricValue(value: '124', label: 'members'),
+              CatchMetricValue(value: '3', label: 'upcoming'),
+              CatchMetricValue(value: '4.7', label: 'rating'),
             ],
           ),
         ),
@@ -159,7 +159,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('members'), findsOneWidget);
     expect(find.text('upcoming'), findsOneWidget);
     expect(find.text('rating'), findsOneWidget);
-    expect(find.byType(CatchMetricStripCell), findsNWidgets(3));
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMetricTile && widget.item != null,
+      ),
+      findsNWidgets(3),
+    );
     expect(
       find.byWidgetPredicate(
         (widget) => widget is CatchDivider && widget.axis == Axis.vertical,
@@ -168,18 +173,18 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
   });
 
-  testWidgets('CatchMetricStrip stacks data pairs at large text', (
+  testWidgets('CatchMetricSection stacks data pairs at large text', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
         const SizedBox(
           width: 320,
-          child: CatchMetricStrip(
+          child: CatchMetricSection(
             items: [
-              CatchMetricStripItem(value: '12', label: 'responses'),
-              CatchMetricStripItem(value: '6', label: 'questions'),
-              CatchMetricStripItem(value: '1', label: 'published version'),
+              CatchMetricValue(value: '12', label: 'responses'),
+              CatchMetricValue(value: '6', label: 'questions'),
+              CatchMetricValue(value: '1', label: 'published version'),
             ],
           ),
         ),
@@ -512,7 +517,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
                 body: 'pay_123',
               ),
               gapH12,
-              const CatchStatColumn(
+              const CatchMetricTile(
                 value: '24',
                 label: 'members',
                 center: true,

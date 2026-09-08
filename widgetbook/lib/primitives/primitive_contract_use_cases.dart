@@ -4583,7 +4583,7 @@ Widget catchMiniBarChartContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchAnalyticsMetricTile,
+  type: CatchDataQualityMetricTile,
   path: '[Core primitives]/Analytics kit',
 )
 Widget catchAnalyticsMetricContractStates(BuildContext context) =>
@@ -4599,15 +4599,15 @@ Widget catchAnalyticsMetricContractStates(BuildContext context) =>
         'large-text',
       ],
       children: [
-        for (final status in CatchMetricStatus.values)
+        for (final status in CatchMetricDataStatus.values)
           _StateCard(
             label: status.name,
-            child: CatchAnalyticsMetricTile(
-              data: CatchMetricCardData(
+            child: CatchDataQualityMetricTile(
+              data: CatchMetricData(
                 icon: CatchIcons.confirmationNumberOutlined,
-                value: status == CatchMetricStatus.missing ? '--' : '126',
+                value: status == CatchMetricDataStatus.missing ? '--' : '126',
                 label: 'Bookings',
-                caption: status == CatchMetricStatus.ready
+                caption: status == CatchMetricDataStatus.ready
                     ? 'Confirmed seats'
                     : null,
                 status: status,
@@ -4635,14 +4635,14 @@ Widget catchAnalyticsDataQualityContractStates(
       label: 'Source readiness',
       child: CatchAnalyticsDataQualityList(
         rows: [
-          for (final status in CatchMetricStatus.values)
+          for (final status in CatchMetricDataStatus.values)
             CatchDataQualityRowData(
               status: status,
               detail: switch (status) {
-                CatchMetricStatus.ready => 'Attendance data is ready.',
-                CatchMetricStatus.partial =>
+                CatchMetricDataStatus.ready => 'Attendance data is ready.',
+                CatchMetricDataStatus.partial =>
                   'Recent bookings are still being counted.',
-                CatchMetricStatus.missing =>
+                CatchMetricDataStatus.missing =>
                   'Revenue is unavailable until a payment account is connected.',
               },
             ),
@@ -4806,14 +4806,14 @@ Widget catchViewportContractStates(BuildContext context) => _ContractScreen(
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchMetricStrip,
+  type: CatchMetricSection,
   path: '[Core primitives]/Data display',
 )
 Widget catchMetricStripContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchMetricStrip',
+    title: 'CatchMetricSection',
     contractId: 'catch.metric_strip',
     states: const [
       'default',
@@ -4822,36 +4822,40 @@ Widget catchMetricStripContractStates(BuildContext context) {
       'long-copy',
       'surface-overrides',
       'large-text-reflow',
+      'empty-grid',
+      'two-column',
+      'limited-items',
+      'large-text-grid',
     ],
     children: [
       _StateCard(
         label: 'default',
-        child: CatchMetricStrip(
+        child: CatchMetricSection(
           items: [
-            CatchMetricStripItem(value: '24', label: 'going'),
-            CatchMetricStripItem(value: '4', label: 'left'),
-            CatchMetricStripItem(value: '8:30', label: 'starts'),
+            CatchMetricValue(value: '24', label: 'going'),
+            CatchMetricValue(value: '4', label: 'left'),
+            CatchMetricValue(value: '8:30', label: 'starts'),
           ],
         ),
       ),
       _StateCard(
         label: 'with-unit',
-        child: CatchMetricStrip(
+        child: CatchMetricSection(
           items: [
-            CatchMetricStripItem(value: '2.4', unit: 'km', label: 'away'),
-            CatchMetricStripItem(value: '12', unit: 'min', label: 'walk'),
-            CatchMetricStripItem(value: '6', unit: 'pm', label: 'meet'),
+            CatchMetricValue(value: '2.4', unit: 'km', label: 'away'),
+            CatchMetricValue(value: '12', unit: 'min', label: 'walk'),
+            CatchMetricValue(value: '6', unit: 'pm', label: 'meet'),
           ],
         ),
       ),
       _StateCard(
         label: 'four-items',
-        child: CatchMetricStrip(
+        child: CatchMetricSection(
           items: [
-            CatchMetricStripItem(value: '126', label: 'members'),
-            CatchMetricStripItem(value: '4.8', label: 'rating'),
-            CatchMetricStripItem(value: '12', label: 'reviews'),
-            CatchMetricStripItem(value: 'JAN 25', label: 'est.'),
+            CatchMetricValue(value: '126', label: 'members'),
+            CatchMetricValue(value: '4.8', label: 'rating'),
+            CatchMetricValue(value: '12', label: 'reviews'),
+            CatchMetricValue(value: 'JAN 25', label: 'est.'),
           ],
         ),
       ),
@@ -4859,24 +4863,21 @@ Widget catchMetricStripContractStates(BuildContext context) {
         label: 'long-copy',
         child: SizedBox(
           width: WidgetbookPreviewLayout.metricStripLongCopyWidth,
-          child: CatchMetricStrip(
+          child: CatchMetricSection(
             items: const [
-              CatchMetricStripItem(
+              CatchMetricValue(
                 value: '128',
                 label: 'confirmed members attending',
               ),
-              CatchMetricStripItem(value: '98%', label: 'historical show rate'),
-              CatchMetricStripItem(
-                value: '12',
-                label: 'waitlist seats remaining',
-              ),
+              CatchMetricValue(value: '98%', label: 'historical show rate'),
+              CatchMetricValue(value: '12', label: 'waitlist seats remaining'),
             ],
           ),
         ),
       ),
       _StateCard(
         label: 'surface-overrides',
-        child: CatchMetricStrip(
+        child: CatchMetricSection(
           backgroundColor: t.primary,
           borderColor: t.primary,
           dividerColor: t.primaryInk.withValues(alpha: 0.32),
@@ -4884,9 +4885,9 @@ Widget catchMetricStripContractStates(BuildContext context) {
           unitColor: t.primaryInk.withValues(alpha: 0.78),
           labelColor: t.primaryInk.withValues(alpha: 0.72),
           items: [
-            CatchMetricStripItem(value: '8', label: 'matched'),
-            CatchMetricStripItem(value: '2', label: 'pending'),
-            CatchMetricStripItem(value: '1', label: 'open'),
+            CatchMetricValue(value: '8', label: 'matched'),
+            CatchMetricValue(value: '2', label: 'pending'),
+            CatchMetricValue(value: '1', label: 'open'),
           ],
         ),
       ),
@@ -4896,11 +4897,52 @@ Widget catchMetricStripContractStates(BuildContext context) {
           data: MediaQuery.of(
             context,
           ).copyWith(textScaler: const TextScaler.linear(2)),
-          child: CatchMetricStrip(
+          child: CatchMetricSection(
             items: const [
-              CatchMetricStripItem(value: '12', label: 'responses'),
-              CatchMetricStripItem(value: '6', label: 'questions'),
-              CatchMetricStripItem(value: '1', label: 'published version'),
+              CatchMetricValue(value: '12', label: 'responses'),
+              CatchMetricValue(value: '6', label: 'questions'),
+              CatchMetricValue(value: '1', label: 'published version'),
+            ],
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'empty-grid',
+        child: CatchMetricSection.dataQuality(metrics: []),
+      ),
+      for (final limited in [false, true])
+        _StateCard(
+          label: limited ? 'limited-items' : 'two-column',
+          child: CatchMetricSection.dataQuality(
+            maxItems: limited ? 1 : null,
+            metrics: [
+              for (final status in CatchMetricDataStatus.values)
+                CatchMetricData(
+                  icon: CatchIcons.group,
+                  value: '24',
+                  label: 'Guests',
+                  status: status,
+                  partialBadgeLabel: 'Partial',
+                  missingBadgeLabel: 'Missing',
+                ),
+            ],
+          ),
+        ),
+      _StateCard(
+        label: 'large-text-grid',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: CatchMetricSection.dataQuality(
+            metrics: [
+              CatchMetricData(
+                icon: CatchIcons.group,
+                value: '24',
+                label: 'Guests',
+                partialBadgeLabel: 'Partial',
+                missingBadgeLabel: 'Missing',
+              ),
             ],
           ),
         ),
@@ -4911,23 +4953,70 @@ Widget catchMetricStripContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchMetricStripCell,
+  type: CatchMetricTile,
   path: '[Core primitives]/Data display',
 )
 Widget catchMetricStripCellContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchMetricStripCell',
-    contractId: 'catch.metric_strip.cell',
-    states: const ['default', 'with-unit', 'long-label', 'color-overrides'],
+    title: 'CatchMetricTile',
+    contractId: 'catch.metric_strip.stat_column',
+    states: const [
+      'plain',
+      'highlighted',
+      'centered',
+      'with-icon',
+      'mono-value',
+      'surfaced',
+      'default',
+      'with-unit',
+      'long-label',
+      'color-overrides',
+    ],
     children: [
+      const _StateCard(
+        label: 'plain',
+        child: CatchMetricTile(value: '24', label: 'Guests'),
+      ),
+      const _StateCard(
+        label: 'highlighted',
+        child: CatchMetricTile(value: '24', label: 'Guests', highlight: true),
+      ),
+      const _StateCard(
+        label: 'centered',
+        child: CatchMetricTile(value: '24', label: 'Guests', center: true),
+      ),
+      _StateCard(
+        label: 'with-icon',
+        child: CatchMetricTile(
+          value: '24',
+          label: 'Guests',
+          icon: CatchIcons.group,
+        ),
+      ),
+      const _StateCard(
+        label: 'mono-value',
+        child: CatchMetricTile(
+          value: '24',
+          label: 'Guests',
+          variant: CatchMetricTileVariant.mono,
+        ),
+      ),
+      const _StateCard(
+        label: 'surfaced',
+        child: CatchMetricTile(
+          value: '24',
+          label: 'Guests',
+          mode: CatchMetricTileMode.surface,
+        ),
+      ),
       const _StateCard(
         label: 'default',
         child: SizedBox(
           width: WidgetbookPreviewLayout.metricStripCellWidth,
-          child: CatchMetricStripCell(
-            item: CatchMetricStripItem(value: '24', label: 'going'),
+          child: CatchMetricTile.compact(
+            item: CatchMetricValue(value: '24', label: 'going'),
           ),
         ),
       ),
@@ -4935,8 +5024,8 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
         label: 'with-unit',
         child: SizedBox(
           width: WidgetbookPreviewLayout.metricStripCellWidth,
-          child: CatchMetricStripCell(
-            item: CatchMetricStripItem(value: '2.4', unit: 'km', label: 'away'),
+          child: CatchMetricTile.compact(
+            item: CatchMetricValue(value: '2.4', unit: 'km', label: 'away'),
           ),
         ),
       ),
@@ -4944,11 +5033,8 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
         label: 'long-label',
         child: SizedBox(
           width: WidgetbookPreviewLayout.metricStripCellWidth,
-          child: CatchMetricStripCell(
-            item: CatchMetricStripItem(
-              value: '98%',
-              label: 'historical show rate',
-            ),
+          child: CatchMetricTile.compact(
+            item: CatchMetricValue(value: '98%', label: 'historical show rate'),
           ),
         ),
       ),
@@ -4956,11 +5042,11 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
         label: 'color-overrides',
         child: SizedBox(
           width: WidgetbookPreviewLayout.metricStripCellWidth,
-          child: CatchMetricStripCell(
+          child: CatchMetricTile.compact(
             valueColor: t.primary,
             unitColor: t.accent,
             labelColor: t.ink2,
-            item: const CatchMetricStripItem(
+            item: const CatchMetricValue(
               value: '12',
               unit: 'min',
               label: 'walk',
