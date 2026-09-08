@@ -72,6 +72,20 @@ export function sharedWidgetNamingProblems({components, declarations}) {
       problems.push(`${entry.id}: missing or unknown roleNoun '${entry.roleNoun ?? ""}'`);
       continue;
     }
+    const inherited = isInheritedScope(declaration);
+    if (inherited && entry.roleNoun !== "Scope") {
+      problems.push(`${entry.id}: inherited context publication must use the Scope role`);
+    }
+    if (entry.roleNoun === "Scope") {
+      if (!inherited) {
+        problems.push(`${entry.id}: Scope requires an inherited context Widget`);
+      }
+      const parent = entry.governance?.parentConceptId;
+      if (entry.governance?.conceptRole !== "member" || !byId.has(parent) ||
+        !entry.naming?.useCase || !entry.naming?.comparedWith?.includes(parent)) {
+        problems.push(`${entry.id}: Scope must name its published contract and compare with its owning parent concept`);
+      }
+    }
     if (!entry.naming || typeof entry.naming.useCase !== "string") {
       problems.push(`${entry.id}: explicit naming.useCase is required (empty for the base role)`);
       continue;
@@ -124,6 +138,15 @@ export function sharedWidgetNamingProblems({components, declarations}) {
     }
   }
   return [...new Set(problems)].sort();
+
+  function isInheritedScope(declaration, visited = new Set()) {
+    const base = declaration.baseClass?.split("<")[0].split(".").at(-1);
+    if (!base || visited.has(base)) return false;
+    if (["InheritedWidget", "InheritedNotifier", "InheritedModel"].includes(base)) return true;
+    visited.add(base);
+    const parents = bySourceSymbol.get(base) ?? [];
+    return parents.length === 1 && isInheritedScope(parents[0], visited);
+  }
 
   function validateComparison(entry) {
     const {comparedWith, reason} = entry.naming;

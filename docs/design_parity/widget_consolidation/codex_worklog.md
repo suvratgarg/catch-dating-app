@@ -70,6 +70,25 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Inherited context roles
+
+Source review of all six shared inherited publishers distinguishes geometry,
+visibility, interaction-plane extents, responsive divided-field policy,
+status-strip publication and active-tab/bottom-clearance context.
+
+- [x] Register their existing source identities as Scope members of their
+  data-owning concepts, with explicit use-case and parent comparisons.
+- [x] Add Scope to the closed schema and durable naming owner; bump architecture
+  to 1.34.0 and the delivery spec to 1.12.0 in the same source change.
+- [x] Enforce the distinction in both directions: inherited publishers use Scope;
+  Scope requires inherited context and an owning parent. Seeded probes reject
+  visual Widgets posing as scopes, inherited publishers posing as surfaces and
+  ownerless/unqualified scopes. Thirty-six focused Node tests pass.
+- [x] All 35 reviewed naming entries pass. Production rendering is unchanged.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved registry/enforcement checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Media readability overlay
 
 Owner-delegated source and rendered review: `media-readability-canonical-overlay`

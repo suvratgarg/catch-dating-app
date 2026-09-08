@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.33.0
+version: 1.34.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -2275,13 +2275,19 @@ or implementation technique cannot justify a second shared implementation.
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
-  Overlay, Viewport, Menu, Surface, Input, Text, Image.
+  Overlay, Viewport, Menu, Surface, Input, Text, Image, Scope.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only
   typography/layout; Image owns loading or image treatment. Prefer an existing
   specific role: a Field still owns labeling/validation around an Input, an
   Avatar still presents identity, and a HeaderTitle still owns heading semantics.
+  Scope publishes UI configuration or geometry through inherited context. It
+  must derive from Flutter's inherited Widget family, be a registered member
+  of the concept that owns its published data, and compare against that parent.
+  Its use-case names the published contract. The owning components retain
+  drawing, gestures and layout. This distinction is checked in both directions:
+  an inherited publisher uses Scope, and a Scope requires inherited context.
   Banner owns persistent inline feedback, with error/retry as named recipes.
   Notice owns transient notification delivery with dismissal/open behavior;
   sharing an icon and message does not make those delivery contracts identical.

@@ -2225,6 +2225,15 @@
               "parentConceptId": "catch.status_strip",
               "qualifier": "adapter",
               "decisionRef": "pattern-family:persistent-header-context"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "StatusStrip",
+              "comparedWith": [
+                "catch.status_strip"
+              ],
+              "reason": "Publishes the status-strip payload for the canonical screen owner to render once; nested content can clear publication without duplicating the status-strip renderer."
             }
           }
         ],
@@ -2964,6 +2973,15 @@
               "parentConceptId": "catch.field",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "FieldGeometry",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Publishes gutter ownership, local interaction shape and explicit horizontal outsets. Page-plane outsets and responsive section policy are separate inherited inputs consumed when resolving this geometry."
             }
           },
           {
@@ -3672,7 +3690,16 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
             },
-            "file": "packages/catch_ui/lib/src/components/catch_field_visibility_scope.dart"
+            "file": "packages/catch_ui/lib/src/components/catch_field_visibility_scope.dart",
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "FieldVisibility",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Publishes bottom obstruction and reveal clearance for disclosure commit controls. Horizontal field geometry does not own scrolling visibility or bottom clearance."
+            }
           },
           {
             "id": "catch.field.interaction_plane_scope",
@@ -3689,7 +3716,16 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
             },
-            "file": "packages/catch_ui/lib/src/components/catch_field_interaction_plane_scope.dart"
+            "file": "packages/catch_ui/lib/src/components/catch_field_interaction_plane_scope.dart",
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "FieldInteractionPlane",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Publishes accumulated horizontal page/lane paint outsets. FieldGeometryScope can override or consume those outsets locally; it also owns distinct gutter and clip policy."
+            }
           },
           {
             "id": "catch.field.divided_interaction_scope",
@@ -3706,7 +3742,16 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
             },
-            "file": "packages/catch_ui/lib/src/components/catch_divided_field_interaction_scope.dart"
+            "file": "packages/catch_ui/lib/src/components/catch_divided_field_interaction_scope.dart",
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "DividedFieldInteraction",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Publishes responsive divided-section policy before per-field geometry resolves its tile or band shape. It does not own gutter dimensions, obstruction or rendering."
+            }
           },
           {
             "id": "catch.field.responsive_interaction_policy",
@@ -8767,6 +8812,15 @@
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "TabViewport",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Publishes the active page index and shell bottom-chrome placement/inset for shared body layouts. Field visibility consumes obstruction for disclosure reveal; it does not select the active page or shell safe-area policy."
             }
           },
           {

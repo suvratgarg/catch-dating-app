@@ -123,7 +123,7 @@
         "Header", "HeaderTitle", "Scaffold", "PageBody", "ScrollView", "TabBar",
         "TabScaffold", "Poster", "Polaroid", "Ticket", "Gap", "Inset", "Divider",
         "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
-        "Overlay", "Viewport", "Menu", "Surface", "Input", "Text", "Image"
+        "Overlay", "Viewport", "Menu", "Surface", "Input", "Text", "Image", "Scope"
       ]
     },
     "widgetNaming": {

@@ -68,6 +68,54 @@ test("the durable naming vocabulary matches the schema exactly", () => {
   assert.deepEqual(roles[1].split(/,\s*/u).map((word) => word.trim()), roleNouns);
 });
 
+function scopeFamily() {
+  const field = component("CatchField", "Field");
+  field.contract = {members: [{
+    id: "catch.field.geometry", symbol: "CatchFieldGeometryScope",
+    file: `${home}catch_field_geometry_scope.dart`, level: "L3", roleNoun: "Scope",
+    naming: {useCase: "FieldGeometry", comparedWith: [field.id],
+      reason: "Publishes field gutter and paint geometry; the field owns rendering."},
+    governance: {conceptRole: "member", conceptId: field.id, parentConceptId: field.id},
+  }]};
+  const source = declarations([field]);
+  source[1].baseClass = "InheritedWidget";
+  return {components: [field], source};
+}
+
+test("an inherited context member names its published contract and owning concept", () => {
+  const {components, source} = scopeFamily();
+  assert.ok(roleNouns.includes("Scope"));
+  assert.deepEqual(problems(components, source), []);
+  components[0].contract.members[0].naming.comparedWith = [];
+  assert.match(problems(components, source).join("\n"), /Scope must name its published contract/u);
+});
+
+test("a visual widget cannot use Scope to evade its component role", () => {
+  const {components, source} = scopeFamily();
+  for (const baseClass of ["StatelessWidget", "StatefulWidget", "SingleChildRenderObjectWidget"]) {
+    source[1].baseClass = baseClass;
+    assert.match(problems(components, source).join("\n"), /Scope requires an inherited context Widget/u);
+  }
+});
+
+test("an inherited publisher cannot be registered as a visual Surface", () => {
+  const {components, source} = scopeFamily();
+  const member = components[0].contract.members[0];
+  member.symbol = source[1].name = "CatchFieldGeometrySurface";
+  member.roleNoun = "Surface";
+  member.file = source[1].file = `${home}catch_field_geometry_surface.dart`;
+  assert.match(problems(components, source).join("\n"), /inherited context publication must use the Scope role/u);
+});
+
+test("Scope ownership remains required for a bare inherited publisher", () => {
+  const scope = component("CatchScope", "Scope");
+  const source = declarations([scope]);
+  source[0].baseClass = "InheritedModel<String>";
+  const result = problems([scope], source).join("\n");
+  assert.match(result, /Scope must name its published contract/u);
+  assert.doesNotMatch(result, /Scope requires an inherited context Widget/u);
+});
+
 test("schema rejects invented roles, levels, and unreviewed qualified names", () => {
   const schema = JSON.parse(fs.readFileSync(new URL(
     "../../design/components/catch.components.schema.json", import.meta.url), "utf8"));

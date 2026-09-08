@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.11.0
+version: 1.12.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -474,6 +474,11 @@ contract. A different registry ID or implementation technique is insufficient.
 The durable Naming Grammar in `docs/app_architecture.md` owns the spelling,
 comparison metadata, and role-selection boundaries. Menu, Surface, Input, Text,
 and Image join the closed vocabulary for their existing responsibilities.
+The same source review identifies six inherited context publishers. Scope is
+reserved for that job: a member of its data-owning concept, with a use-case
+naming the published contract and an executable inheritance/ownership check.
+Geometry, visibility, interaction policy, active-tab clearance and status
+publication retain their independently consumed contracts.
 Public anatomy remains a registered member of its primary concept; this does
 not permit private shared Widgets or multiple unrelated primaries in one file.
 
