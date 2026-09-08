@@ -747,7 +747,8 @@
       "acceptedVisualDelta": [
         "Preserve all five production message tones and both error recipes at light/dark and text scales 1.0/2.0, pinned before edits by banner_family goldens.",
         "Messages now honor their existing duration parameter through CatchSurface, including reduced-motion zero duration; no production caller supplies a nondefault duration.",
-        "Widgetbook moves message states under the Banner contract and replaces the obsolete raw-style-only demo with the canonical semantic recipes. Surface previews retain only low-level paint and interaction."
+        "Widgetbook moves message states under the Banner contract and replaces the obsolete raw-style-only demo with the canonical semantic recipes. Surface previews retain only low-level paint and interaction.",
+        "Unused analytics source-readiness previews now use the canonical Banner success/warning pigment and geometry. There are no production callers, so no app output changes."
       ],
       "members": [
         {
@@ -781,6 +782,12 @@
           "disposition": "register",
           "preview": "required",
           "rationale": "Keep transient notification delivery distinct: live announcements, dismissal/open callbacks, person payload and delivery-host lifecycle are not persistent page feedback."
+        },
+        {
+          "symbol": "CatchAnalyticsDataQualityList",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Whole-workspace source inventory finds only three Widgetbook builders and one negative type assertion. The app already renders data coverage with current feature UI. Delete the unused row renderer and its unreferenced payload type; retain ready, partial and missing message examples under Banner instead of manufacturing a new shared Section identity."
         }
       ]
     },

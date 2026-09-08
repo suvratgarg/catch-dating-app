@@ -98,34 +98,32 @@ Widget catchAnalyticsMetricGridStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Ready, partial and missing data',
-  type: CatchAnalyticsDataQualityList,
+  type: CatchBanner,
   path: '[Core primitives]/Analytics kit',
 )
-Widget catchAnalyticsDataQualityStates(
-  BuildContext context,
-) => const WidgetbookCatalogFrame(
-  title: 'Analytics data quality',
-  catalogId: 'catch.analytics_data_quality',
-  children: [
-    CatchAnalyticsDataQualityList(
-      rows: [
-        CatchDataQualityRowData(
-          status: CatchMetricDataStatus.ready,
-          detail: 'Attendance data is ready.',
+Widget catchBannerSourceReadinessStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Source readiness messages',
+      catalogId: 'catch.banner',
+      children: [
+        CatchBanner(
+          tone: CatchBannerTone.success,
+          icon: CatchIcons.checkCircleOutlineRounded,
+          message: 'Attendance data is ready.',
         ),
-        CatchDataQualityRowData(
-          status: CatchMetricDataStatus.partial,
-          detail: 'Recent bookings are still being counted.',
+        CatchBanner(
+          tone: CatchBannerTone.warning,
+          icon: CatchIcons.warningAmberRounded,
+          message: 'Recent bookings are still being counted.',
         ),
-        CatchDataQualityRowData(
-          status: CatchMetricDataStatus.missing,
-          detail:
+        CatchBanner(
+          tone: CatchBannerTone.warning,
+          icon: CatchIcons.errorOutlineRounded,
+          message:
               'Revenue is unavailable until a payment account is connected.',
         ),
       ],
-    ),
-  ],
-);
+    );
 
 @widgetbook.UseCase(
   name: 'Analytics composition',

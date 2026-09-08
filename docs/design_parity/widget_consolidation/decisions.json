@@ -7140,6 +7140,27 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:inline-feedback-canonical-banner",
+      "patternFamilyId": "inline-feedback-canonical-banner",
+      "decision": "discard-unused-renderer",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchAnalyticsDataQualityList",
+          "action": "discard",
+          "target": "CatchBanner"
+        },
+        {
+          "name": "CatchDataQualityRowData",
+          "action": "discard"
+        }
+      ],
+      "rationale": "Source review finds zero app callers for either the status-list widget or its payload. Existing light/dark and scaled previews show another persistent icon-and-message surface, already owned by Banner. Delete the unused public API, registry concept, strict Host preview and redundant contract preview. Keep the three readiness messages using Banner success/warning tones; no production screen or Banner renderer changes. Historical work orders remain historical.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

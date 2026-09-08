@@ -68,7 +68,6 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchField), findsNWidgets(3));
-      expect(find.byType(CatchAnalyticsDataQualityList), findsNothing);
     },
   );
 

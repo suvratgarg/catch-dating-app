@@ -2326,19 +2326,13 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Analytics kit',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsDataQualityList',
+            name: 'CatchBanner',
             useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchAnalyticsDataQualityContractStates,
-              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Ready, partial and missing data',
                 builder:
                     _widgetbook_workspace_primitives_analytics_kit_use_cases
-                        .catchAnalyticsDataQualityStates,
+                        .catchBannerSourceReadinessStates,
               ),
             ],
           ),
@@ -9429,16 +9423,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Strict coverage',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchAnalyticsDataQualityList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictCatchAnalyticsDataQualityListCatalogStates,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'CatchBarIndicator',
                 useCases: [

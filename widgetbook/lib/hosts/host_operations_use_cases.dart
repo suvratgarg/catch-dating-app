@@ -2223,21 +2223,6 @@ Widget _hostAnalyticsPreviewFor(String focus) {
         ],
       ),
     ),
-    'CatchAnalyticsDataQualityList' => CatchAnalyticsDataQualityList(
-      rows: [
-        for (final row in report.dataQuality)
-          CatchDataQualityRowData(
-            status: switch (row.state) {
-              HostAnalyticsDataQualityState.ok => CatchMetricDataStatus.ready,
-              HostAnalyticsDataQualityState.partial =>
-                CatchMetricDataStatus.partial,
-              HostAnalyticsDataQualityState.missing =>
-                CatchMetricDataStatus.missing,
-            },
-            detail: row.detail,
-          ),
-      ],
-    ),
     'HostAnalyticsEventList' => HostAnalyticsEventList(
       events: report.topEvents,
       onOpenEventReport: (_) {},
@@ -5658,15 +5643,6 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 )
 Widget hostStrictCatchBarIndicatorCatalogStates(BuildContext context) =>
     _hostAnalyticsExactCatalog(context, 'CatchBarIndicator');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: CatchAnalyticsDataQualityList,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictCatchAnalyticsDataQualityListCatalogStates(
-  BuildContext context,
-) => _hostAnalyticsExactCatalog(context, 'CatchAnalyticsDataQualityList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.35.0
+version: 3.36.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -230,7 +230,6 @@ Widgetbook callers.
 | `CatchMetricSection` | `packages/catch_ui/lib/src/components/catch_metric_section.dart` | Typed metric arrangement: a shared compact rail that reflows at large text, or the `dataQuality` two-column recipe of independently surfaced tiles with an optional item limit. Registered as `catch.metric_strip`. |
 | `CatchMetricTile` | `packages/catch_ui/lib/src/components/catch_metric_tile.dart` | Canonical value-over-label display with optional icon, emphasis, alignment and surface. The `compact` recipe preserves the rail value/unit baseline, bounded label and optional expansion. Data-completeness warnings belong to `CatchDataQualityMetricTile`. |
 | `CatchBarIndicator` | `packages/catch_ui/lib/src/components/catch_bar_indicator.dart:8` | Bottom-anchored fractional fill bar for dense host and user analytics mini charts. Normalizes `value / maxValue`, keeps zero values visible with a faint stub, and owns the shared `CatchSurface` fill treatment so analytics trend panels do not duplicate chart bars. |
-| `CatchAnalyticsDataQualityList` | `packages/catch_ui/lib/src/components/catch_analytics_data_quality_list.dart:11` | Shared display-data analytics list. Renders display-ready `CatchDataQualityRowData` rows as content-dense `CatchSurface` rows with ready/partial/missing status icons and warning fill for incomplete data. Host analytics uses this compact operational presentation; Profile Insights uses canonical `CatchField.content` rows so profile section formatting stays aligned with Edit Profile. |
 | `CatchDataQualityMetricTile` | `packages/catch_ui/lib/src/components/catch_data_quality_metric_tile.dart:11` | Shared display-data analytics summary card. Renders caller-supplied icon, value, label, optional caption, and ready/partial/missing badge state without owning feature metric IDs, value formatting, or copy tables. |
 | `CatchBarSeriesIndicator` | `packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart:5` | Compact mini bar-chart primitive for trend summaries inside dense metric panels. Owns the surface, border, content padding, bar spacing, zero-value treatment, tokenized fill/empty colors, and semantic label wrapper so insights and dashboard panels do not hand-roll tiny chart chrome. Registered as formal component contract `catch.mini_bar_chart`; Widgetbook contract states cover default, empty, zero-value, color-override, and semantic-label states. |
 | `CatchTextInput` | `packages/catch_ui/lib/src/primitives/catch_text_input.dart:9` | Shared low-level platform text-entry seam. `CatchFieldTextEntry`, `CatchSearchField` and `CatchOtpCodeField` use it so raw `TextField` construction stays centralized in one package primitive; feature forms should continue to use the named `CatchField` constructors. |
