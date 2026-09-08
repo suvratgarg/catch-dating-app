@@ -13261,7 +13261,7 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(int)?",
-            "notes": "Required by CatchAvatar.count and CatchPersonAvatarStack; formats the actual overflow count using caller-owned copy."
+            "notes": "Required by CatchAvatar.count and CatchAvatarRow; formats the actual overflow count using caller-owned copy."
           },
           {
             "name": "count",
@@ -13300,7 +13300,7 @@
           "CatchAvatarColors",
           "CatchTextStyles.avatarCount",
           "CatchLayout.avatarStatusDotExtent",
-          "CatchPersonAvatarStack"
+          "CatchAvatarRow"
         ],
         "goldens": [],
         "members": [
@@ -13322,21 +13322,33 @@
           },
           {
             "id": "catch.person_avatar.stack",
-            "symbol": "CatchPersonAvatarStack",
-            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_stack.dart",
-            "summary": "Stacked person-avatar composition with overlap, border, and overflow-count handling.",
+            "symbol": "CatchAvatarRow",
+            "file": "packages/catch_ui/lib/src/components/catch_avatar_row.dart",
+            "summary": "Overlapping avatar row with bounded identity slots, veiled identities and caller-formatted overflow.",
             "states": [
               "two-avatars",
               "overflow-count",
+              "veiled",
               "empty",
-              "square"
+              "count-only",
+              "overflow-hidden"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.person_avatar",
               "parentConceptId": "catch.person_avatar",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_avatar"
+              "decisionRef": "pattern-family:avatar-row-layout"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Avatar",
+              "comparedWith": [
+                "catch.person_avatar",
+                "catch.meta_row"
+              ],
+              "reason": "Avatar owns one identity frame. This layout member arranges several of those frames with overlap, a bounded identity count and optional overflow. MetaRow arranges factual text and icons with separators; it does not own an identity-slot limit or avatar overlap."
             }
           },
           {

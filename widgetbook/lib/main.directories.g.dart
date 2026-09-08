@@ -1698,21 +1698,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'People',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonAvatarStack',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchPersonAvatarStackCatalogStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -3617,6 +3602,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchAvatarInitialsSurfaceContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchAvatarRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Collection states',
+                builder: _widgetbook_workspace_primitives_avatar_use_cases
+                    .avatarRowStates,
               ),
             ],
           ),

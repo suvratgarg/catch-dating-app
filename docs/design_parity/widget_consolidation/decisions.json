@@ -7210,6 +7210,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-row-layout",
+      "patternFamilyId": "avatar-row-layout",
+      "decision": "rename-layout-member",
+      "canonicalSymbol": "CatchAvatarRow",
+      "members": [
+        {
+          "name": "CatchPersonAvatarStack",
+          "action": "rename",
+          "target": "CatchAvatarRow"
+        }
+      ],
+      "rationale": "The row already delegates every visible identity, veil and count to Avatar. It owns collection geometry rather than another identity renderer or factual metadata row. Keep the stable parent/member ids and all production behavior, migrate both event callers and tests, replace the stale square-row claim with supported edge states, and remove the unregistered unused duplicate Avatar catalog helper.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

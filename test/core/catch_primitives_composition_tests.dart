@@ -698,12 +698,12 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchPersonAvatarStack renders initials, veils, and overflow', (
+  testWidgets('CatchAvatarRow renders initials, veils, and overflow', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchPersonAvatarStack(
+        CatchAvatarRow(
           countLabelBuilder: catchAvatarCountLabelBuilder(AppLocalizationsEn()),
           items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
           totalCount: 4,

@@ -10,6 +10,67 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('avatar row preserves empty, count-only and bounded collections', (
+    tester,
+  ) async {
+    String countLabel(int count) => '+$count';
+    for (final sample in [
+      (const <CatchPersonAvatarItem>[], 0, 4, true, 0, 0.0, null),
+      (const <CatchPersonAvatarItem>[], 8, 4, true, 1, 32.0, '+8'),
+      (const <CatchPersonAvatarItem>[], 8, 4, false, 0, 0.0, null),
+      (
+        const [
+          CatchPersonAvatarItem(name: 'Asha Shah'),
+          CatchPersonAvatarItem(name: 'Riya Shah'),
+          CatchPersonAvatarItem(name: 'Maya Patel'),
+        ],
+        8,
+        2,
+        true,
+        3,
+        78.0,
+        '+6',
+      ),
+    ]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CatchTheme.light,
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: CatchAvatarRow(
+                items: sample.$1,
+                totalCount: sample.$2,
+                limit: sample.$3,
+                showOverflowCount: sample.$4,
+                countLabelBuilder: countLabel,
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(CatchAvatar), findsNWidgets(sample.$5));
+      expect(
+        tester.getSize(find.byType(CatchAvatarRow)),
+        Size(sample.$6, sample.$5 == 0 ? 0 : 32),
+      );
+      if (sample.$7 case final label?) {
+        expect(find.text(label), findsOneWidget);
+      }
+      // The limit controls visible identities; the overflow is a separate slot.
+      expect(find.text('MP'), findsNothing);
+      final avatars = find.byType(CatchAvatar).evaluate().toList();
+      if (avatars.length > 1) {
+        expect(
+          tester.getTopLeft(find.byType(CatchAvatar).at(1)).dx -
+              tester.getTopLeft(find.byType(CatchAvatar).first).dx,
+          23,
+        );
+      }
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets(
     'shared avatar stack uses caller colors and translated overflow',
     (tester) async {
@@ -22,7 +83,7 @@ void main() {
         MaterialApp(
           theme: CatchTheme.light,
           home: Scaffold(
-            body: CatchPersonAvatarStack(
+            body: CatchAvatarRow(
               items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
               totalCount: 5,
               size: 96,

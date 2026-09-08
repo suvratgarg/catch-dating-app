@@ -1127,7 +1127,7 @@ function buildCandidates() {
     previewNames: [
       "CatchPersonRow",
       "CatchAvatar",
-      "CatchPersonAvatarStack",
+      "CatchAvatarRow",
     ],
     priority: "P0",
     tags: ["people", "rows", "avatar"],
@@ -1415,7 +1415,7 @@ function buildCandidates() {
       "The stack composes person avatars with veiling and overflow rules. Decide whether it belongs under one avatar contract or stays a separate people-list primitive.",
     recommended: "catch.person_avatar",
     left: findFirst(byName, "CatchAvatar"),
-    right: findFirst(byName, "CatchPersonAvatarStack"),
+    right: findFirst(byName, "CatchAvatarRow"),
     priority: "P1",
     tags: ["avatar", "people"],
   });
@@ -1646,7 +1646,7 @@ function buildCandidates() {
       recommended: "catch.person_avatar_stack",
       tags: ["avatar", "people"],
       names: [
-        "CatchPersonAvatarStack",
+        "CatchAvatarRow",
         "EventHypeAvatarStack",
         "HostTodayAvatarStack",
         "ClubAvatarRail",

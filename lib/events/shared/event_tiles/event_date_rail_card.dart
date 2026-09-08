@@ -153,7 +153,7 @@ class EventDateRailCard extends StatelessWidget {
                     ],
                     if (showAttendeeSignal && event.signedUpCount > 0) ...[
                       gapH8,
-                      CatchPersonAvatarStack(
+                      CatchAvatarRow(
                         countLabelBuilder: catchAvatarCountLabelBuilder(
                           context.l10n,
                         ),

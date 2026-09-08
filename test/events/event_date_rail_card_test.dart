@@ -129,14 +129,12 @@ void main() {
       ),
     );
 
-    final stack = tester.widget<CatchPersonAvatarStack>(
-      find.byType(CatchPersonAvatarStack),
-    );
+    final stack = tester.widget<CatchAvatarRow>(find.byType(CatchAvatarRow));
     expect(stack.items, isEmpty);
     expect(stack.totalCount, 5);
     expect(stack.veiledCount, 5);
     final avatars = find.descendant(
-      of: find.byType(CatchPersonAvatarStack),
+      of: find.byType(CatchAvatarRow),
       matching: find.byType(CatchAvatar),
     );
     expect(avatars, findsNWidgets(5));

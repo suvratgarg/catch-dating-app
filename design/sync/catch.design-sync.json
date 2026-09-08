@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83",
+  "sourceDigest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83",
-    "contractDigest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83"
+    "digest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855",
+    "contractDigest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "83a081263241e74d67ae5ac81ce0017d7e3a398f0d21227d444a9d06897e8266",
+    "handoffRequestDigest": "3f0e7eab6c7c2a4c656c4f8072a6d9f31e7ed9db3c0d39b883390fa9dca81e57",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -332,9 +332,9 @@
           "CatchAvatar",
           "CatchAvatarColors",
           "CatchAvatarInitialsSurface",
+          "CatchAvatarRow",
           "CatchAvatarViewport",
-          "CatchObscuredAvatarContent",
-          "CatchPersonAvatarStack"
+          "CatchObscuredAvatarContent"
         ]
       },
       {
@@ -2302,7 +2302,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Avatar",
       "claudeAllowed": true,
-      "contractDigest": "ab0094ac5ab1fe4d90b6496bd3aa93e70d53e64f72345fb7e396d40b136560a7"
+      "contractDigest": "9b1196197ebe5b6aeb2db3cab2fb98fff436f5a20e2a7201bcca92a6728c6072"
     },
     {
       "contractId": "catch.record_row",

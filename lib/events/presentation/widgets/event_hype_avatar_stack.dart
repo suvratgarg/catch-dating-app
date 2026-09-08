@@ -73,7 +73,7 @@ class EventHypeAvatarStack extends StatelessWidget {
   Widget build(BuildContext context) {
     if (totalCount <= 0) return const SizedBox.shrink();
     if (obscured) {
-      return CatchPersonAvatarStack(
+      return CatchAvatarRow(
         countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
         items: const [],
         totalCount: totalCount,
@@ -93,7 +93,7 @@ class EventHypeAvatarStack extends StatelessWidget {
         ? _fallbackItems(eventId, totalCount, limit)
         : items;
 
-    return CatchPersonAvatarStack(
+    return CatchAvatarRow(
       countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
       items: visibleItems,
       totalCount: totalCount,

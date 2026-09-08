@@ -4,8 +4,12 @@ import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_person_avatar_item.dart';
 import 'package:flutter/material.dart';
 
-class CatchPersonAvatarStack extends StatelessWidget {
-  const CatchPersonAvatarStack({
+/// An overlapping row of avatars, anonymous slots and caller-formatted overflow.
+///
+/// [limit] caps the identity slots; an enabled overflow count adds one final
+/// avatar. Clipping and identity rendering belong to [CatchAvatar].
+class CatchAvatarRow extends StatelessWidget {
+  const CatchAvatarRow({
     super.key,
     required this.items,
     required this.countLabelBuilder,
