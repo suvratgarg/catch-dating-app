@@ -80,6 +80,7 @@ export {eventAssistanceSmsSenderDocumentSchema} from "./schemas/eventAssistanceS
 export {eventAssistanceSmsPermissionDocumentSchema} from "./schemas/eventAssistanceSmsPermissionDocument";
 export {eventAssistanceSmsBudgetDocumentSchema} from "./schemas/eventAssistanceSmsBudgetDocument";
 export {eventAssistanceSmsDispatchDocumentSchema} from "./schemas/eventAssistanceSmsDispatchDocument";
+export {eventAssistanceRcsConfigSchema} from "./schemas/eventAssistanceRcsConfig";
 export {eventAssistanceSmsConfigSchema} from "./schemas/eventAssistanceSmsConfig";
 export {eventAssistanceGuestDocumentSchema} from "./schemas/eventAssistanceGuestDocument";
 export {eventAssistanceThreadDocumentSchema} from "./schemas/eventAssistanceThreadDocument";

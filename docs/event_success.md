@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.61.0
+version: 1.62.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1372,17 +1372,18 @@ implementation sequence is:
 3. Complete consent and sender/budget onboarding, verify SMS and WhatsApp
    activation, integrate and deploy, and verify the journey on device.
 
-RCS must not block these items. Its unfinished contracts and rendering source
-are preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
-at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`; they are unvalidated and
-excluded from this implementation branch. The RCS backlog includes provider
+RCS must not block these items. The initial contracts and rendering draft is
+preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
+at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`. Its reviewed replacement
+now supplies the canonical Google RBM sender configuration and rendering
+boundary described below; generated outputs come from the current generator.
+The remaining RCS backlog includes provider
 send/expiry/revocation integration, authenticated delivery and native-reply
 ingress, independent consent and withdrawal, audited sender/budget onboarding,
 capability/readiness checks, shared outbox/worker wiring, and end-to-end
 verification. On 2026-09-08 the user resumed independent RCS work while the
-Host/schema handoff is pending. The parked prototype does not establish
-provider selection or readiness and remains excluded until its canonical
-schema changes can be integrated and regenerated safely.
+Host UI handoff is pending. Neither the parked prototype nor the restored
+source establishes live provider selection, provisioning or readiness.
 
 Catalog membership describes an
 outcome contract; it does not assert a registered executor or provider readiness.
@@ -1443,8 +1444,40 @@ Only authenticated unsupported traffic may be ignored without persistence.
 This tests the HTTP/queue boundary, not a durable RCS queue: that queue still
 needs canonical records, conflict handling, retention and asynchronous consumers
 before deployment. Local tests do not prove a registered agent or actual callback
-delivery. Restoring the draft Google RBM sender binding also needs the shared
-generator and a current review of the parked configuration/rendering contracts.
+delivery. The Google RBM sender binding and reviewed rendering contract are now
+present in source; callback persistence and its consumers remain separate work.
+
+### RCS sender configuration and message rendering
+
+`event_assistance_rcs_config.schema.json` owns the reviewed Google RBM sender
+shape: agent and region, pinned credential version, recipient prefixes, allowed
+event-service purposes, approval window, price ceiling and maximum queue time.
+Google RBM is a canonical RCS binding only; it is not an SMS or WhatsApp provider.
+Agent IDs retain the provider's `@rbm.goog` form. This operational configuration
+schema does not provision a sender, grant recipient consent or debit a budget.
+
+`prepareEventRcs` validates current live intent/grant scope, sender purpose and
+validity, signing-key material, Unicode and provider text limits. It prepares
+content before route selection with an authority hash that stays stable across
+observation clocks. `renderEventRcs` takes an outbox attempt ID and prepares the
+material for a future dispatch claim. It derives a deterministic UUID and
+freezes an absolute expiry bounded by the queue limit, intent, grant, approval
+and quote deadlines,
+and hashes the exact serialized provider body. Transport retries must retain
+this material; rendering again at a later clock is a new preparation, not a
+retry. The renderer itself cannot create a dispatch permit.
+
+Operational notices retain their title and full body. Native replies keep the
+original immutable choice indices and reuse the authenticated callback parser's
+correlation format. Labels that exceed a chip's limit and options beyond the
+first ten remain on the scoped guest page without truncation or renumbering.
+One of the eleven suggestion slots is reserved for the page action. When
+open-URL actions are unavailable, the response link remains in the text. RCS content uses the
+same [Google message contract](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages)
+as the injected provider adapter. Rehearsal and stale/mismatched grants cannot
+produce live RCS material. Permission reads, capability freshness, audited
+sender/budget provisioning, a transactional dispatch store and the shared worker
+connection remain required before this source can send messages.
 
 ### RCS provider transport boundary
 
@@ -1479,8 +1512,8 @@ The future outbox consumer must reconcile authenticated receipts and revalidate
 current route authority before deciding on SMS. Errors contain no provider body,
 phone, token or guest link. Tests inject transport; this adds no default network
 client, credential loader, Firebase export or activated sender. Canonical RCS
-sender/permission/queue contracts and dispatch integration still require the
-generator handoff, and the parked renderer remains unvalidated.
+sender configuration and validated rendering are now present. RCS permission,
+queue persistence and dispatch integration remain required before activation.
 
 ## Format Mapping And Wiring
 

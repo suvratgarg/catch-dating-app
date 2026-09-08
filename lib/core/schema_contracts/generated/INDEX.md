@@ -87,6 +87,7 @@ Do not edit it by hand.
 | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts` |
 | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts` |
 | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts` |
+| EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `functions/src/shared/generated/eventAssistanceRcsConfig.ts` |
 | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConfig.ts` |
 | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
 | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
@@ -717,6 +718,7 @@ Do not edit it by hand.
 | `schemaEventAssistanceSmsPermissionDocumentSchema` | EventAssistanceSmsPermissionDocument | `firestore/event_assistance_sms_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_permission_document.g.dart` |
 | `schemaEventAssistanceSmsBudgetDocumentSchema` | EventAssistanceSmsBudgetDocument | `firestore/event_assistance_sms_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_budget_document.g.dart` |
 | `schemaEventAssistanceSmsDispatchDocumentSchema` | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_dispatch_document.g.dart` |
+| `schemaEventAssistanceRcsConfigSchema` | EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_config.g.dart` |
 | `schemaEventAssistanceSmsConfigSchema` | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_config.g.dart` |
 | `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
 | `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |

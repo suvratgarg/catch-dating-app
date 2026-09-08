@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.67.0
+version: 1.68.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -64,6 +64,18 @@ requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
 request hashes, source binding, actor, outcome and committed revision for
 transactional retry safety. Both collections deny direct client access.
 See `docs/event_success.md` for lifecycle and integration boundaries.
+
+### Event Assistance RCS Configuration
+
+`contracts/operations/event_assistance_rcs_config.schema.json` references the
+canonical Google RBM sender shape in `event_assistance_rcs.schema.json`.
+Generated TypeScript validators and Dart schema metadata share its agent,
+region, credential-version, purpose, approval, quote and queue-limit fields.
+The messaging provider union permits `googleRbm` only for `catchEventRcs`.
+This is an operational configuration contract, not a registered Firestore
+collection or provisioning endpoint. It grants no recipient, spending or
+dispatch authority. See `docs/event_success.md` for rendering and integration
+boundaries.
 
 ### Host Today Attention Contract
 

@@ -332,6 +332,11 @@ const schemaSpecs = [
   "typeOutput": "functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts"
 },
   {
+    name: "EventAssistanceRcsConfig",
+    source: "operations/event_assistance_rcs_config.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsConfig.ts",
+  },
+  {
     name: "EventAssistanceSmsConfig",
     source: "operations/event_assistance_sms_config.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceSmsConfig.ts",

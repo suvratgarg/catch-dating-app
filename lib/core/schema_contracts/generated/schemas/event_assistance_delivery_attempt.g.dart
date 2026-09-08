@@ -442,6 +442,7 @@ const schemaEventAssistanceDeliveryAttemptSchema = <String, Object?>{
                   'enum': <Object?>[
                     'sinch',
                     'gupshup',
+                    'googleRbm',
                   ],
                 },
                 'senderId': <String, Object?>{

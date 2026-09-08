@@ -111,8 +111,9 @@ function suggestion(value: unknown): GoogleRbmSuggestion | null {
 }
 
 /** Copy supported fields; never serialize unknown fields or a toJSON hook. */
-export function rbmSendBody(input: GoogleRbmSendRequest,
-  now: number): string | null {
+export function rbmSendBody(input: Pick<GoogleRbmSendRequest,
+  "messageId" | "contentMessage" | "expiresAt">,
+now: number): string | null {
   const content = rbmRecord(input.contentMessage);
   if (!rbmUuid(input.messageId) || !rbmTime(input.expiresAt) ||
       !rbmTime(now) || input.expiresAt - now > MAX_EXPIRY_MILLIS ||
