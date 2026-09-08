@@ -3,7 +3,7 @@ import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
-import 'package:catch_ui/src/components/catch_top_bar_action_group.dart';
+import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/components/catch_top_bar_title_role.dart';
@@ -352,7 +352,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
     );
 
     final trailing = widget.actions.isNotEmpty
-        ? CatchTopBarActionGroup(actions: widget.actions)
+        ? CatchTopBarActionRow(actions: widget.actions)
         : widget.trailing;
     final title = large
         ? titleBlock
@@ -430,7 +430,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           frameConstraints.maxWidth *
                           CatchLayout.topBarTrailingMaxRatio;
                       final minimumTrailingWidth =
-                          trailing is CatchTopBarActionGroup
+                          trailing is CatchTopBarActionRow
                           ? trailing.minimumWidth
                           : CatchPlatformTokens.minimumInteractiveExtent;
                       final trailingEdge = trailing == null

@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_top_bar_action_group.dart';
+import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +100,7 @@ class CatchScreenHeader extends StatelessWidget {
               gapH8,
               Align(
                 alignment: AlignmentDirectional.centerEnd,
-                child: CatchTopBarActionGroup(actions: actions),
+                child: CatchTopBarActionRow(actions: actions),
               ),
             ],
           )
@@ -111,7 +111,7 @@ class CatchScreenHeader extends StatelessWidget {
               Expanded(child: titleStack),
               if (actions.isNotEmpty) ...[
                 gapW12,
-                CatchTopBarActionGroup(actions: actions),
+                CatchTopBarActionRow(actions: actions),
               ],
             ],
           );

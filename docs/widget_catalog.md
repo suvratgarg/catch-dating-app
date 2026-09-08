@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.30.0
+version: 3.31.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -241,7 +241,7 @@ Widgetbook callers.
 | `CatchOtpCodeField` | `packages/catch_ui/lib/src/components/catch_otp_code_field.dart` | Canonical OTP input primitive with a required caller-localized `semanticsLabel` and stable digit keys. Composes `CatchCodeInputRow` visuals over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
 | `CatchNumberStepper` | `packages/catch_ui/lib/src/components/catch_number_stepper.dart:7` | Canonical numeric +/- stepper. Renders the shared raised `CatchControlShell`, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by event duration and profile height controls. |
 | `CatchRangeSlider` | `packages/catch_ui/lib/src/components/catch_range_slider.dart` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds and an `onChangeEnd` commit seam for persistence that must not fire on every drag frame. |
-| `CatchTopBarActionGroup` | `packages/catch_ui/lib/src/components/catch_top_bar_action_group.dart` | Canonical header action spacing, minimum interactive width and direct-pill rejection. |
+| `CatchTopBarActionRow` | `packages/catch_ui/lib/src/components/catch_top_bar_action_row.dart` | Canonical header action spacing, minimum interactive width and direct-pill rejection. |
 | `CatchCollapsedSliverTitle` | `packages/catch_ui/lib/src/components/catch_collapsed_sliver_title.dart` | Title opacity follows flexible-space collapse extent; one-line typography and ignored pointer handling stay shared. |
 | `CatchTopBarTabLabel` | `packages/catch_ui/lib/src/components/catch_top_bar_tab_label.dart` | Adaptive-tab label styling with text, child, icon and arbitrary-widget inputs; selection owns shared text and icon color. |
 | `CatchScreenHeaderTitle` | `packages/catch_ui/lib/src/components/catch_screen_header_title.dart` | Root-screen title, eyebrow, subtitle and caller-owned leading/actions; actions reflow below the title at large text scale. |

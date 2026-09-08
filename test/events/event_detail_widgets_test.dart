@@ -1142,7 +1142,7 @@ void main() {
       expect(390 - save.right, CatchSpacing.screenPx);
       expect(calendar.left - share.right, CatchSpacing.s2);
       expect(save.left - calendar.right, CatchSpacing.s2);
-      expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
+      expect(find.byType(CatchTopBarActionRow), findsOneWidget);
     });
 
     testWidgets('reveals the event title in the collapsed toolbar', (

@@ -1666,7 +1666,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTopBarActionGroup',
+            name: 'CatchTopBarActionRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',

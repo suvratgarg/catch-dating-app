@@ -1077,13 +1077,13 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarActionGroup,
+  type: CatchTopBarActionRow,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarActionGroup',
-    catalogId: 'core.widgets.catch_top_bar_action_group',
+    title: 'CatchTopBarActionRow',
+    catalogId: 'core.widgets.catch_top_bar_action_row',
     children: [
       _StateCard(
         label: 'two actions / conditional third / disabled',
@@ -1092,7 +1092,7 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchTopBarActionGroup(
+            CatchTopBarActionRow(
               actions: [
                 CatchIconAction.toolbar(
                   icon: CatchIcons.share,
@@ -1107,7 +1107,7 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
               ],
             ),
             gapH12,
-            CatchTopBarActionGroup(
+            CatchTopBarActionRow(
               actions: [
                 CatchIconAction.toolbar(
                   icon: CatchIcons.share,

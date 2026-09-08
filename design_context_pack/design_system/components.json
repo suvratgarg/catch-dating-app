@@ -8241,8 +8241,8 @@
           },
           {
             "id": "catch.top_bar.action_group",
-            "symbol": "CatchTopBarActionGroup",
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar_action_group.dart",
+            "symbol": "CatchTopBarActionRow",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_action_row.dart",
             "summary": "Canonical action spacing and platform target width; rejects direct pill buttons in header slots.",
             "states": [
               "empty",
@@ -8255,6 +8255,15 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.top_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "TopBarAction",
+              "comparedWith": [
+                "catch.top_bar"
+              ],
+              "reason": "The parent TopBar owns route title and navigation chrome. This member arranges its action targets with one shared gap and minimum-width calculation, allows the native text recipe, and rejects pill buttons that bypass the responsive primary action. It adds layout constraints, not another action implementation."
             }
           },
           {
@@ -8326,7 +8335,8 @@
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
           "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
           "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors.",
-          "Toolbar overflow uses CatchActionMenu directly. Its former toolbar wrapper added no behavior, defaults or styling; command limits, disabled reasons, anchoring and callback dispatch have one implementation."
+          "Toolbar overflow uses CatchActionMenu directly. Its former toolbar wrapper added no behavior, defaults or styling; command limits, disabled reasons, anchoring and callback dispatch have one implementation.",
+          "CatchTopBarActionRow is the action-layout member: it owns target allocation and gaps without handling the actions themselves. The Row role names its actual responsibility."
         ]
       },
       "governance": {

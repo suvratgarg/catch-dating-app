@@ -309,7 +309,7 @@ void main() {
     expect(actionTaps, 1);
   });
 
-  testWidgets('CatchTopBarActionGroup owns peer gaps and trailing gutter', (
+  testWidgets('CatchTopBarActionRow owns peer gaps and trailing gutter', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -348,7 +348,7 @@ void main() {
     );
     expect(second.left - first.right, CatchSpacing.s2);
     expect(390 - second.right, CatchSpacing.screenPx);
-    expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
+    expect(find.byType(CatchTopBarActionRow), findsOneWidget);
   });
 
   testWidgets('CatchScreenHeader uses the same action group', (tester) async {
@@ -477,14 +477,14 @@ void main() {
     expect(find.byType(CatchIconAction), findsNothing);
   });
 
-  testWidgets('CatchTopBarActionGroup rejects a direct body-style pill', (
+  testWidgets('CatchTopBarActionRow rejects a direct body-style pill', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchTopBarActionGroup(
+          body: CatchTopBarActionRow(
             actions: [CatchButton(label: 'Invalid', onPressed: () {})],
           ),
         ),

@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.14.0
+version: 1.15.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -422,10 +422,10 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   fade and blur while the form remains visible and scrollable beneath them.
   `CatchBottomDock` is a required-child utility plane for chat inputs and
   compact action strips, not a second CTA family.
-- Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
+- Top-bar action grouping routes through `CatchTopBarActionRow`; callers do
   not compose parallel header rows. A primary root-screen action uses
-  `CatchTopBarPrimaryAction`, which owns the compact quiet icon target with the platform minimum hit extent and
-  wider labelled-button variants. Semantic text, icon-only, and overflow
+  `CatchTopBarPrimaryAction`, which owns a compact quiet icon target with the
+  platform minimum hit extent and wider labelled-button variants. Semantic text, icon-only, and overflow
   actions use `CatchButton.text`, `CatchIconAction`, and
   `CatchActionMenu`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.

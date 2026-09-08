@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 ///
 /// Action spacing is intentionally owned here so callers cannot create subtly
 /// different header geometry by composing their own [Row].
-class CatchTopBarActionGroup extends StatelessWidget {
-  const CatchTopBarActionGroup({super.key, required this.actions});
+class CatchTopBarActionRow extends StatelessWidget {
+  const CatchTopBarActionRow({super.key, required this.actions});
 
   final List<Widget> actions;
 

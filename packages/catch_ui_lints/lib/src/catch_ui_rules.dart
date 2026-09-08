@@ -594,7 +594,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const topBarRequiresActionGroup = LintCode(
     'catch_top_bar_requires_action_group',
-    'Compose CatchTopBar actions through CatchTopBarActionGroup so the primitive owns action geometry.',
+    'Compose CatchTopBar actions through CatchTopBarActionRow so the primitive owns action geometry.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -1365,7 +1365,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       final name = argument.name.label.name;
       if (name != 'actions' && name != 'leading') continue;
       final text = argument.expression.toSource();
-      if (text.contains('CatchTopBarActionGroup')) continue;
+      if (text.contains('CatchTopBarActionRow')) continue;
       if (RegExp(r'\b(?:Row|Wrap)\s*\(').hasMatch(text)) return true;
     }
     return false;

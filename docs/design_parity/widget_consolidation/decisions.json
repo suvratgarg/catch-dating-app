@@ -7045,6 +7045,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-action-row",
+      "patternFamilyId": "top-bar-action-row",
+      "decision": "rename-in-place",
+      "canonicalSymbol": "CatchTopBarActionRow",
+      "members": [
+        {
+          "name": "CatchTopBarActionGroup",
+          "action": "rename",
+          "target": "CatchTopBarActionRow"
+        }
+      ],
+      "rationale": "The parent TopBar owns route title and navigation chrome. This member arranges its action targets with one shared gap and minimum-width calculation, allows the native text recipe, and rejects pill buttons that bypass the responsive primary action. It adds layout constraints, not another action implementation. Render and interaction bodies are unchanged. The lint reference and every source caller move with the member; no alias remains.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

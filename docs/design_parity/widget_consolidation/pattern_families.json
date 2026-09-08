@@ -1764,6 +1764,34 @@
           "rationale": "Exact delegation adds no independently meaningful toolbar behavior or defaults."
         }
       ]
+    },
+    {
+      "id": "top-bar-action-row",
+      "title": "Toolbar action layout member",
+      "intent": "Give action layout the deterministic Row role while retaining its independently consumed spacing contract.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.top_bar",
+      "qualityReference": "CatchTopBarActionRow",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Rename only; the existing flexible layout, peer gap, minimum-width budget and pill guard are preserved."
+      ],
+      "members": [
+        {
+          "symbol": "CatchTopBarActionRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The parent TopBar delegates action arrangement to this member; both root headers and detail chrome consume its geometry."
+        },
+        {
+          "symbol": "CatchTopBarActionGroup",
+          "disposition": "unify",
+          "target": "CatchTopBarActionRow",
+          "preview": "not-applicable",
+          "rationale": "Replace the non-role Group suffix with Row, which names the existing single visual job."
+        }
+      ]
     }
   ]
 }

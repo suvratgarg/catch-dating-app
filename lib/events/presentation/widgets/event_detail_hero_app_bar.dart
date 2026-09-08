@@ -93,7 +93,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
           actions: [
             Padding(
               padding: CatchInsets.topBarTrailingActions,
-              child: CatchTopBarActionGroup(
+              child: CatchTopBarActionRow(
                 actions: [
                   if (showShareAction)
                     Builder(
