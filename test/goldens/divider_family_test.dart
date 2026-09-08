@@ -1,0 +1,57 @@
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'support/golden_pump.dart';
+
+void main() {
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('divider contracts at scale $scale', (tester) async {
+      await matchCatchGolden(
+        tester,
+        'divider_family@$scale',
+        textScale: scale,
+        size: const Size(440, 700),
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 24,
+            children: [
+              const CatchDivider.section(),
+              const CatchDivider.fieldRow(),
+              const CatchDivider.fieldSection(),
+              CatchDivider.section(
+                indent: 16,
+                endIndent: 24,
+                color: CatchTokens.of(context).primary,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const CatchMetricStripDivider(),
+                  CatchMetricStripDivider(
+                    color: CatchTokens.of(context).primary,
+                  ),
+                ],
+              ),
+              const CatchMetricStrip(
+                items: [
+                  CatchMetricStripItem(value: '12', label: 'Guests'),
+                  CatchMetricStripItem(value: '3', label: 'Events'),
+                ],
+              ),
+              const CatchTicketPerforatedDivider(),
+              CatchTicketPerforatedDivider(
+                height: 32,
+                notchRadius: 20,
+                lineColor: CatchTokens.of(context).primary,
+              ),
+            ],
+          ),
+        ),
+      );
+    }, tags: const ['golden']);
+  }
+}
