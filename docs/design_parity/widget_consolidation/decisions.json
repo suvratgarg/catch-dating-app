@@ -6142,14 +6142,8 @@
       "clusterId": "concept-discovery:skeleton-list-vs-hairline-list",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "CatchSkeletonList",
-          "action": "keep"
-        },
-        {
-          "name": "HairlineList",
-          "action": "keep"
-        }
+        {"name": "CatchSkeletonList", "action": "keep"},
+        {"name": "HairlineList", "action": "keep"}
       ],
       "rationale": "K4 churn threshold: both emit short Columns, but CatchSkeletonList owns repeated loading cards while HairlineList owns caller-built content separated by dividers. A shared API would need content-builder, loading-shape, divider, height, and spacing knobs and would erase distinct intent.",
       "decidedBy": "codex-rule:K4",
@@ -6160,26 +6154,11 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-a",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "ClubHostLoadingSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "EventDetailCompanionSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "EventTypeBrowseSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "HostChartSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "HostSummarySkeleton",
-          "action": "keep"
-        }
+        {"name": "ClubHostLoadingSkeleton", "action": "keep"},
+        {"name": "EventDetailCompanionSkeleton", "action": "keep"},
+        {"name": "EventTypeBrowseSkeleton", "action": "keep"},
+        {"name": "HostChartSkeleton", "action": "keep"},
+        {"name": "HostSummarySkeleton", "action": "keep"}
       ],
       "rationale": "K3 already-sharing-internals: every member delegates visual placeholder rendering to CatchSkeleton while retaining feature-specific content geometry. They are loading compositions under the loading-family decision, not competing primitive concepts.",
       "decidedBy": "codex-rule:K3",
@@ -6190,34 +6169,13 @@
       "clusterId": "concept-discovery:cross-domain-info-surfaces",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "AfterglowBeatRow",
-          "action": "keep"
-        },
-        {
-          "name": "CountdownCuePill",
-          "action": "keep"
-        },
-        {
-          "name": "EmptyRosterMessage",
-          "action": "keep"
-        },
-        {
-          "name": "PaperPrivacyCard",
-          "action": "keep"
-        },
-        {
-          "name": "StagePrivacyLine",
-          "action": "keep"
-        },
-        {
-          "name": "SwipeWindowBanner",
-          "action": "keep"
-        },
-        {
-          "name": "WaitingRevealCue",
-          "action": "keep"
-        }
+        {"name": "AfterglowBeatRow", "action": "keep"},
+        {"name": "CountdownCuePill", "action": "keep"},
+        {"name": "EmptyRosterMessage", "action": "keep"},
+        {"name": "PaperPrivacyCard", "action": "keep"},
+        {"name": "StagePrivacyLine", "action": "keep"},
+        {"name": "SwipeWindowBanner", "action": "keep"},
+        {"name": "WaitingRevealCue", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior reviewed c002-afterglow-beat-row and c007-attendee-prompt-preview decisions: animation, empty roster, privacy, swipe-window, and reveal-state surfaces have different typography, tokens, state, and domain invariants. Their low parameter compatibility is structural coincidence.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6228,22 +6186,10 @@
       "clusterId": "concept-discovery:badge-wrap-adapters",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "ClubTagWrap",
-          "action": "keep"
-        },
-        {
-          "name": "PeopleTokenRow",
-          "action": "keep"
-        },
-        {
-          "name": "PodGroupSummary",
-          "action": "keep"
-        },
-        {
-          "name": "VisiblePodAssignment",
-          "action": "keep"
-        }
+        {"name": "ClubTagWrap", "action": "keep"},
+        {"name": "PeopleTokenRow", "action": "keep"},
+        {"name": "PodGroupSummary", "action": "keep"},
+        {"name": "VisiblePodAssignment", "action": "keep"}
       ],
       "rationale": "K2 plus K3: all members already share CatchBadge rendering, while each maps a different domain invariant—club tags, profile loading, assignment counts, or visible pod membership. The shared Wrap skeleton is not another widget concept.",
       "decidedBy": "codex-rule:K2+K3",
@@ -6254,18 +6200,9 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-b",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "EventDetailSocialSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "HostAnalyticsMetricGridSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "HostTabRailSkeleton",
-          "action": "keep"
-        }
+        {"name": "EventDetailSocialSkeleton", "action": "keep"},
+        {"name": "HostAnalyticsMetricGridSkeleton", "action": "keep"},
+        {"name": "HostTabRailSkeleton", "action": "keep"}
       ],
       "rationale": "K3 already-sharing-internals: the members use CatchSkeleton for different social, analytics-grid, and tab-rail geometry. They are feature loading layouts, not duplicate primary concepts.",
       "decidedBy": "codex-rule:K3",
@@ -6276,14 +6213,8 @@
       "clusterId": "concept-discovery:profile-tab-live-vs-skeleton-sliver",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "ProfileTabSkeletonSliverBody",
-          "action": "keep"
-        },
-        {
-          "name": "ProfileTabSliverBody",
-          "action": "keep"
-        }
+        {"name": "ProfileTabSkeletonSliverBody", "action": "keep"},
+        {"name": "ProfileTabSliverBody", "action": "keep"}
       ],
       "rationale": "K4 reconciliation of prior c006-sliver-body: only the sliver padding/adapter/constraint shell overlaps. Live profile editing owns user and upload state; the loading body owns deterministic placeholder sections. Unification would require state and child-builder knobs without reducing concepts.",
       "decidedBy": "codex-rule:K4 -> prior-reviewed-ledger",
@@ -6294,18 +6225,9 @@
       "clusterId": "concept-discovery:icon-text-content-rows",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "PaperExpectationRow",
-          "action": "keep"
-        },
-        {
-          "name": "PreviewLine",
-          "action": "keep"
-        },
-        {
-          "name": "ProfileFacts",
-          "action": "keep"
-        }
+        {"name": "PaperExpectationRow", "action": "keep"},
+        {"name": "PreviewLine", "action": "keep"},
+        {"name": "ProfileFacts", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior c007-attendee-prompt-preview: paper expectations, companion preview lines, and profile fact sections use different typography, icon scale, section ownership, and data contracts. A row-like silhouette does not establish concept identity.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6316,14 +6238,8 @@
       "clusterId": "concept-discovery:swipe-reaction-controls",
       "decision": "escalate-owner-review",
       "members": [
-        {
-          "name": "CatchesPassButton",
-          "action": "review"
-        },
-        {
-          "name": "ReactionControlButton",
-          "action": "review"
-        }
+        {"name": "CatchesPassButton", "action": "review"},
+        {"name": "ReactionControlButton", "action": "review"}
       ],
       "rationale": "Both feature widgets independently implement semantic/tooltip ownership, disabled opacity, circular Material and InkWell chrome, pending spinners, and icon states. Their size, elevation, palette, localization, and stable test-key differences may be representable through CatchIconButton plus behavior adapters, but accepting that visual/API convergence belongs to the swipe-reaction-control-boundary owner review.",
       "decidedBy": "owner-review-requested -> codex",
@@ -6334,18 +6250,9 @@
       "clusterId": "concept-discovery:feature-skeleton-layouts-c",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "EventDetailHintSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "EventDetailMechanismSkeleton",
-          "action": "keep"
-        },
-        {
-          "name": "ProfileSurfaceFactsSkeleton",
-          "action": "keep"
-        }
+        {"name": "EventDetailHintSkeleton", "action": "keep"},
+        {"name": "EventDetailMechanismSkeleton", "action": "keep"},
+        {"name": "ProfileSurfaceFactsSkeleton", "action": "keep"}
       ],
       "rationale": "K3 already-sharing-internals: all three use CatchSkeleton primitives but preserve different hint, mechanism, and profile-facts geometry. Their feature composition names remain useful without creating concepts.",
       "decidedBy": "codex-rule:K3",
@@ -6356,14 +6263,8 @@
       "clusterId": "concept-discovery:host-report-metric-sections",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "HostFunnelSummary",
-          "action": "keep"
-        },
-        {
-          "name": "HostReportSignalGrid",
-          "action": "keep"
-        }
+        {"name": "HostFunnelSummary", "action": "keep"},
+        {"name": "HostReportSignalGrid", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: both deliberately compose CatchSection and CatchAnalyticsMetricGrid, while one owns event-funnel metrics and the other report-reliability signals. The shared renderer is already canonical; the classes are domain data adapters, not new concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6374,14 +6275,8 @@
       "clusterId": "concept-discovery:conversation-vs-progress-row",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "ConversationCueRow",
-          "action": "keep"
-        },
-        {
-          "name": "LiveStepRow",
-          "action": "keep"
-        }
+        {"name": "ConversationCueRow", "action": "keep"},
+        {"name": "LiveStepRow", "action": "keep"}
       ],
       "rationale": "K5 and the approved progress-cues family: LiveStepRow consumes future/current/complete state and duration semantics; ConversationCueRow renders contextual discussion copy and a badge. They share only an icon/text row skeleton.",
       "decidedBy": "codex-rule:K5 -> user-approved:progress-cues",
@@ -6392,14 +6287,8 @@
       "clusterId": "concept-discovery:profile-hero-vs-photo-block",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "ProfileHeroWidget",
-          "action": "keep"
-        },
-        {
-          "name": "ProfilePhotoBlock",
-          "action": "keep"
-        }
+        {"name": "ProfileHeroWidget", "action": "keep"},
+        {"name": "ProfilePhotoBlock", "action": "keep"}
       ],
       "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionControls. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
       "decidedBy": "codex-rule:K3",
@@ -6410,14 +6299,8 @@
       "clusterId": "concept-discovery:prompt-vs-analytics-empty-state",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "EventSuccessPromptCard",
-          "action": "keep"
-        },
-        {
-          "name": "UserAnalyticsEmptyState",
-          "action": "keep"
-        }
+        {"name": "EventSuccessPromptCard", "action": "keep"},
+        {"name": "UserAnalyticsEmptyState", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: a social-mission prompt and an analytics no-data state have different semantic roles, typography, token emphasis, and feature ownership. Preserving both compositions does not assert separate primitive concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6428,14 +6311,8 @@
       "clusterId": "concept-discovery:hero-metric-vs-reveal-copy",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "HostTodayHeroMetric",
-          "action": "keep"
-        },
-        {
-          "name": "RevealHostCopy",
-          "action": "keep"
-        }
+        {"name": "HostTodayHeroMetric", "action": "keep"},
+        {"name": "RevealHostCopy", "action": "keep"}
       ],
       "rationale": "K5 concept mismatch: HostTodayHeroMetric is a value plus mono metric label; RevealHostCopy is narrative headline plus supporting body. Different typography contracts and semantic content make the two-text Column a structural false positive.",
       "decidedBy": "codex-rule:K5",
@@ -6447,42 +6324,14 @@
       "decision": "split-contract-concepts",
       "canonicalSymbol": "CatchSkeleton + CatchLoadingIndicator + CatchAsyncValueView",
       "members": [
-        {
-          "name": "CatchSkeleton",
-          "action": "canonical-concept"
-        },
-        {
-          "name": "CatchSkeletonList",
-          "action": "register-member",
-          "note": "catch.skeleton"
-        },
-        {
-          "name": "CatchAsyncScreenLoading",
-          "action": "register-member",
-          "note": "catch.skeleton"
-        },
-        {
-          "name": "CatchAsyncSliverLoading",
-          "action": "register-member",
-          "note": "catch.skeleton"
-        },
-        {
-          "name": "CatchLoadingIndicator",
-          "action": "canonical-concept"
-        },
-        {
-          "name": "CatchAsyncValueView",
-          "action": "canonical-concept"
-        },
-        {
-          "name": "CatchAsyncValueSliver",
-          "action": "register-member",
-          "note": "catch.async_value"
-        },
-        {
-          "name": "CatchStartupLoadingScreen",
-          "action": "register-composition"
-        }
+        {"name": "CatchSkeleton", "action": "canonical-concept"},
+        {"name": "CatchSkeletonList", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncScreenLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncSliverLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchLoadingIndicator", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueView", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueSliver", "action": "register-member", "note": "catch.async_value"},
+        {"name": "CatchStartupLoadingScreen", "action": "register-composition"}
       ],
       "rationale": "Owner approval establishes three independent concepts based on semantic responsibility rather than the shared circumstance of waiting: content-shaped skeletons, indeterminate progress, and async data-state boundaries. The branded startup surface is a composition over the indicator. Stable Dart class names remain unchanged; the contract registry and formal previews now expose the actual concept boundaries.",
       "decidedBy": "owner-approved -> codex",
@@ -6494,14 +6343,8 @@
       "decision": "qualify-distinct-compositions",
       "canonicalSymbol": "HostBroadcastComposerSheet",
       "members": [
-        {
-          "name": "HostBroadcastComposerSheet",
-          "action": "canonical"
-        },
-        {
-          "name": "ChatBlastComposerSheet",
-          "action": "rename-and-keep"
-        }
+        {"name": "HostBroadcastComposerSheet", "action": "canonical"},
+        {"name": "ChatBlastComposerSheet", "action": "rename-and-keep"}
       ],
       "rationale": "The event-aware Hosts sheet owns the canonical host-broadcast workflow. The eventless Chats review surface remains useful but is explicitly named ChatBlastComposerSheet, eliminating the deterministic namespace collision without merging distinct workflow behavior.",
       "decidedBy": "owner-approved -> codex",
@@ -6513,20 +6356,9 @@
       "decision": "unify-renderer-keep-adapters",
       "canonicalSymbol": "CatchIconButton",
       "members": [
-        {
-          "name": "CatchIconButton",
-          "action": "canonical"
-        },
-        {
-          "name": "CatchesPassButton",
-          "action": "unify",
-          "note": "retain pass semantics and SwipeKeys.passButton"
-        },
-        {
-          "name": "ReactionControlButton",
-          "action": "unify",
-          "note": "retain reaction palette and pending semantics"
-        }
+        {"name": "CatchIconButton", "action": "canonical"},
+        {"name": "CatchesPassButton", "action": "unify", "note": "retain pass semantics and SwipeKeys.passButton"},
+        {"name": "ReactionControlButton", "action": "unify", "note": "retain reaction palette and pending semantics"}
       ],
       "rationale": "Both feature controls now delegate circular icon-action rendering to CatchIconButton while retaining behavior-bearing adapters. This removes duplicate renderer ownership without promoting pass or reaction behavior into a new core concept.",
       "decidedBy": "owner-approved -> codex",
@@ -6537,14 +6369,8 @@
       "clusterId": "concept-discovery:club-cover-vs-directory-image",
       "decision": "keep-distinct",
       "members": [
-        {
-          "name": "CatchClubCover",
-          "action": "keep"
-        },
-        {
-          "name": "ClubImage",
-          "action": "keep"
-        }
+        {"name": "CatchClubCover", "action": "keep"},
+        {"name": "ClubImage", "action": "keep"}
       ],
       "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. CatchClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
       "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
