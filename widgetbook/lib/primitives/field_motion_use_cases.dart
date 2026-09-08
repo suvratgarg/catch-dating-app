@@ -1,10 +1,7 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -72,7 +69,13 @@ Widget catchFieldStatusIndicatorContract(BuildContext context) {
       disableAnimations: disableAnimations,
     ),
     child: Scaffold(
-      body: Center(child: CatchFieldStatusIndicator(status: status)),
+      body: Center(
+        child: CatchFieldStatusIndicator(
+          savingSemanticLabel: context.l10n.coreCatchFieldSemanticSaving,
+          savedSemanticLabel: context.l10n.coreCatchFieldSemanticSaved,
+          status: status,
+        ),
+      ),
     ),
   );
 }
@@ -136,6 +139,7 @@ class _MotionReviewScreen extends StatelessWidget {
               title: 'Idle → saving → saved',
               before: _StatusSnapshot(status: status),
               approved: CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Profile details',
                 body: 'Shared production status motion',
                 status: status,

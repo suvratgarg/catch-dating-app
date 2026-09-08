@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -14,7 +12,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -85,7 +83,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
   static const _interactionField = 'interaction';
   static const _paceField = 'pace';
 
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
   bool _showPresentation = false;
   bool _showItinerary = false;
 
@@ -134,6 +132,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
               CatchSection.fieldRows(
                 children: [
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.name,
                     title: context.l10n.hostsEventDetailsStepTitleEventName,
                     contract:
@@ -154,7 +153,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       return null;
                     },
                   ),
-                  CatchField.choices<ActivityKind>(
+                  CatchField<ActivityKind>.choices(
+                    copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
                     contract: CatchContractConstraints
@@ -177,6 +177,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   if (widget.selectedActivityKind ==
                       ActivityKind.openActivity) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.customActivityLabel,
                       title: context.l10n.hostsEventDetailsStepTitleFormatName,
                       contract: CatchContractConstraints
@@ -208,7 +209,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                         return null;
                       },
                     ),
-                    CatchField.choices<EventInteractionModel>(
+                    CatchField<EventInteractionModel>.choices(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.customInteractionModel,
                       title: context
                           .l10n
@@ -235,6 +237,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ],
                   if (widget.selectedActivityKind.isDistanceBased) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.distance,
                       title: context.l10n.hostsEventDetailsStepTitleDistanceKm,
                       contract: CatchContractConstraints
@@ -280,31 +283,35 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                                 .l10n
                                 .hostsEventDetailsStepVisiblecopySelectAPace
                           : null,
-                      builder: (field) => CatchField.choices<PaceLevel>(
-                        title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
-                        contract: CatchContractConstraints
-                            .createEventCallablePayloadPace,
-                        contractValue: (value) => value.name,
-                        body: widget.selectedPace?.label,
-                        values: PaceLevel.values,
-                        itemLabel: (pace) => pace.label,
-                        itemAccent: (_) => activity.accent,
-                        selected: widget.selectedPace == null
-                            ? const <PaceLevel>{}
-                            : <PaceLevel>{widget.selectedPace!},
-                        onSelectionChanged: (selection) {
-                          final next = selection.isEmpty
-                              ? null
-                              : selection.single;
-                          widget.onPaceChanged(next);
-                          field.didChange(next);
-                        },
-                        allowEmptySelection: true,
-                        open: _accordion.isExpanded(_paceField),
-                        onOpenChanged: (open) => _setOpen(_paceField, open),
-                        icon: CatchIcons.speedOutlined,
-                        iconColor: activity.accent,
-                        error: field.errorText,
+                      builder: (field) => CatchFieldLanes.single(
+                        child: CatchField<PaceLevel>.choices(
+                          copy: catchFieldCopy(context.l10n),
+                          title:
+                              context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadPace,
+                          contractValue: (value) => value.name,
+                          body: widget.selectedPace?.label,
+                          values: PaceLevel.values,
+                          itemLabel: (pace) => pace.label,
+                          itemAccent: (_) => activity.accent,
+                          selected: widget.selectedPace == null
+                              ? const <PaceLevel>{}
+                              : <PaceLevel>{widget.selectedPace!},
+                          onSelectionChanged: (selection) {
+                            final next = selection.isEmpty
+                                ? null
+                                : selection.single;
+                            widget.onPaceChanged(next);
+                            field.didChange(next);
+                          },
+                          allowEmptySelection: true,
+                          open: _accordion.isExpanded(_paceField),
+                          onOpenChanged: (open) => _setOpen(_paceField, open),
+                          icon: CatchIcons.speedOutlined,
+                          iconColor: activity.accent,
+                          error: field.errorText,
+                        ),
                       ),
                     ),
                   ],
@@ -315,6 +322,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   Semantics(
                     expanded: _showPresentation,
                     child: CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host.create_event.presentation'),
                       title: context.l10n.hostsCreateEventPresentationTitle,
                       valueText: _showPresentation
@@ -328,6 +336,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   ),
                   if (_showPresentation) ...[
                     CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.description,
                       title: context.l10n.hostsEventDetailsStepTitleDescription,
                       contract: CatchContractConstraints
@@ -359,6 +368,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   Semantics(
                     expanded: _showItinerary,
                     child: CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host.create_event.itinerary'),
                       title: context.l10n.hostsCreateEventItineraryTitle,
                       valueText: _showItinerary

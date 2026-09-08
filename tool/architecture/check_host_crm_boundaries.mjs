@@ -138,7 +138,7 @@ export function scanPresentationFile({relativePath, source}) {
     ));
   }
   for (const pattern of [
-    /CatchField\.select\s*<\s*HostCommunicationRouteId\s*>/u,
+    /CatchField\s*<\s*HostCommunicationRouteId\s*>\s*\.select/u,
     /DropdownButton\s*<\s*HostCommunicationRouteId\s*>/u,
     /SegmentedButton\s*<\s*HostCommunicationRouteId\s*>/u,
   ]) {

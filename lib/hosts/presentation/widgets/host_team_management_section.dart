@@ -2,21 +2,13 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -145,6 +137,7 @@ class HostTeamManagementSection extends ConsumerWidget {
       children: [
         if (canManage && actionError != null)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostTeamManagementSectionTitleHostTeam,
             body: mutationErrorMessage(
               actionError,
@@ -156,6 +149,7 @@ class HostTeamManagementSection extends ConsumerWidget {
           ),
         if (hosts.isEmpty)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .hostsHostTeamManagementSectionTextNoHostTeamMembers,
@@ -174,6 +168,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             ),
         if (canManage)
           CatchField.add(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
             icon: CatchIcons.personAddAlt1Rounded,
             onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
@@ -296,6 +291,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: host.displayName,
         body: host.role == ClubHostRole.owner
             ? context.l10n.clubsClubIdentityAtomsLabelOwner
@@ -448,6 +444,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
         children: [
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title:
                   context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
               contract: CatchContractConstraints

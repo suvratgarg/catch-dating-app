@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -79,6 +79,7 @@ class _HostEventLiveLocationControlState
     };
     return CatchFieldLanes.single(
       child: CatchField.toggle(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_live_location_toggle'),
         title: context.l10n.hostEventLiveLocationTitle,
         body: context.l10n.hostEventLiveLocationBody,

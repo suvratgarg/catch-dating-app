@@ -1,13 +1,11 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,6 +41,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   Future<void> _pickDate(OnboardingNameDobDatePickerRequest request) async {
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: request.initialDate,
       firstDate: request.firstDate,
@@ -157,6 +156,7 @@ class OnboardingNameDobStep extends StatelessWidget {
             first: true,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.onboardingNameDobPageTitleFirstName,
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentFirstName,
@@ -172,6 +172,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: state.validateFirstName,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.onboardingNameDobPageTitleLastName,
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentLastName,
@@ -186,6 +187,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: state.validateLastName,
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 key: OnboardingFormKeys.dateOfBirth,
                 title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
                 contract: CatchContractConstraints
@@ -200,6 +202,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 validator: (_) => state.validateDateOfBirth(),
               ),
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 key: OnboardingFormKeys.phone,
                 title: context.l10n.onboardingNameDobPageTitlePhone,
                 contract:

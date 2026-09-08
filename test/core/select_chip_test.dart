@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -118,9 +117,15 @@ void main() {
         _wrap(
           Wrap(
             children: [
-              const CatchChip.activity(activityKind: ActivityKind.socialRun),
               CatchChip.activity(
-                activityKind: ActivityKind.pickleball,
+                data: ActivityPalette.light
+                    .getActivity(ActivityKind.socialRun)
+                    .chipData,
+              ),
+              CatchChip.activity(
+                data: ActivityPalette.light
+                    .getActivity(ActivityKind.pickleball)
+                    .chipData,
                 emphasis: CatchChipEmphasis.solid,
                 label: 'Primary court',
                 onTap: () => taps += 1,
@@ -277,7 +282,11 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchChip.activity(activityKind: ActivityKind.socialRun),
+        CatchChip.activity(
+          data: ActivityPalette.dark
+              .getActivity(ActivityKind.socialRun)
+              .chipData,
+        ),
         themeMode: ThemeMode.dark,
       ),
     );

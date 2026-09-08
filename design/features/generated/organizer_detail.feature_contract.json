@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:c74c73d0024740315897442d39cb2b4fad68e6f1da03c596cad656adf3e0ebb4",
+  "resolvedDigest": "sha256:b65d89de62553f8bb25e0e6a2cfd8590d889cf43d6f2d224e63b8b50fd635457",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1139,7 +1139,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1152,7 +1152,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -1177,7 +1177,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1190,7 +1190,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -1204,7 +1204,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]
@@ -2410,7 +2410,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -2423,7 +2423,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -2448,7 +2448,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -2461,7 +2461,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -2475,7 +2475,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

@@ -5,7 +5,7 @@ import { auditPlatformTokens, collectTokens, requiredDomains, resolveToken } fro
 
 const root = new URL('../../../', import.meta.url);
 const original = JSON.parse(fs.readFileSync(new URL('design/tokens/catch.tokens.json', root), 'utf8'));
-const styles = fs.readFileSync(new URL('lib/core/theme/catch_text_styles.dart', root), 'utf8');
+const styles = fs.readFileSync(new URL('packages/catch_ui/lib/src/foundations/catch_text_styles.dart', root), 'utf8');
 const copy = () => structuredClone(original);
 const fails = (document, pattern, options) => assert(auditPlatformTokens(document, options).some(error => pattern.test(error)), `Expected ${pattern}`);
 

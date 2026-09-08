@@ -348,3 +348,23 @@ test("an unavailable explicit base fails closed without scanning the working tre
   assert.match(result.stderr, /refusing to run a vacuous new-widget check/u);
   assert.doesNotMatch(result.stderr, /using the working tree as the baseline/u);
 });
+
+test("multiline function type aliases are not widget factories", () => {
+  const source = `
+typedef MenuBuilder =
+    Widget Function(
+      BuildContext context,
+      Widget Function() child,
+    );
+typedef NullableBuilder<T> =
+    ui.Widget? Function<T>(BuildContext context);
+
+Widget realHelper(BuildContext context) => const SizedBox();
+`;
+  const declarations = collectClassDeclarations(source);
+  const helpers = collectWidgetHelpers(
+    source, buildLineStarts(source), collectClassRanges(source),
+    resolveWidgetTypeNames(declarations),
+  );
+  assert.deepEqual(helpers.map(({name}) => name), ["realHelper"]);
+});

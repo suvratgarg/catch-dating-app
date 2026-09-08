@@ -510,7 +510,7 @@ void _registerExploreClubCardsTests() {
       find.textContaining('6 GOING · FULL', findRichText: true),
       findsOneWidget,
     );
-    expect(find.byType(EventStatusPill), findsNothing);
+    expect(find.byType(CatchTicketStatusBadge), findsNothing);
   });
 
   testWidgets('Explore event type browse index updates the activity filter', (

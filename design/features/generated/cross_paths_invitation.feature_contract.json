@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
-  "resolvedDigest": "sha256:d2639c4bc751e40e209bd9ffeb605a7b4c184e3437bcd43da206e2a921cfe0d1",
+  "resolvedDigest": "sha256:f95ba093d0a793a819a8a39d1f08f88802beeb0abb23a3251682ec8e8779e0b8",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -579,7 +579,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -592,7 +592,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchPersonPolaroid",
-              "file": "lib/core/widgets/catch_person_polaroid.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
               "constructors": [
                 "CatchPersonPolaroid"
               ]
@@ -603,7 +603,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -617,7 +617,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

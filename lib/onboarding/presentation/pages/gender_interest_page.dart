@@ -1,15 +1,13 @@
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -137,51 +135,59 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                   FormField<Set<Gender>>(
                     initialValue: state.selectedGender,
                     validator: state.validateGender,
-                    builder: (field) => CatchField.choices<Gender>(
-                      key: OnboardingFormKeys.gender,
-                      title: context.l10n.onboardingGenderInterestPageLabelIAmA,
-                      contract: CatchContractConstraints
-                          .onboardingDraftDocumentGender,
-                      contractValue: (gender) => gender.name,
-                      body: _orderedGenderLabels(state.selectedGender),
-                      values: Gender.values,
-                      itemLabel: (gender) => gender.label,
-                      selected: state.selectedGender,
-                      onSelectionChanged: state.requestControlsEnabled
-                          ? (selection) {
-                              callbacks.onGenderChanged(selection);
-                              field.didChange(selection);
-                            }
-                          : null,
-                      enabled: state.requestControlsEnabled,
-                      initiallyOpen: true,
-                      error: field.errorText,
+                    builder: (field) => CatchFieldLanes.single(
+                      child: CatchField<Gender>.choices(
+                        copy: catchFieldCopy(context.l10n),
+                        key: OnboardingFormKeys.gender,
+                        title:
+                            context.l10n.onboardingGenderInterestPageLabelIAmA,
+                        contract: CatchContractConstraints
+                            .onboardingDraftDocumentGender,
+                        contractValue: (gender) => gender.name,
+                        body: _orderedGenderLabels(state.selectedGender),
+                        values: Gender.values,
+                        itemLabel: (gender) => gender.label,
+                        selected: state.selectedGender,
+                        onSelectionChanged: state.requestControlsEnabled
+                            ? (selection) {
+                                callbacks.onGenderChanged(selection);
+                                field.didChange(selection);
+                              }
+                            : null,
+                        enabled: state.requestControlsEnabled,
+                        initiallyOpen: true,
+                        error: field.errorText,
+                      ),
                     ),
                   ),
                   FormField<Set<Gender>>(
                     initialValue: state.interestedIn,
                     validator: state.validateInterestedIn,
-                    builder: (field) => CatchField.choices<Gender>(
-                      key: OnboardingFormKeys.interestedIn,
-                      title:
-                          context.l10n.onboardingGenderInterestPageLabelShowMe,
-                      contract: CatchContractConstraints
-                          .onboardingDraftDocumentInterestedInGenders,
-                      contractValue: (gender) => gender.name,
-                      body: _orderedGenderLabels(state.interestedIn),
-                      values: Gender.values,
-                      itemLabel: (gender) => gender.label,
-                      selected: state.interestedIn,
-                      onSelectionChanged: state.requestControlsEnabled
-                          ? (selection) {
-                              callbacks.onInterestedInChanged(selection);
-                              field.didChange(selection);
-                            }
-                          : null,
-                      multi: true,
-                      enabled: state.requestControlsEnabled,
-                      initiallyOpen: true,
-                      error: field.errorText,
+                    builder: (field) => CatchFieldLanes.single(
+                      child: CatchField<Gender>.choices(
+                        copy: catchFieldCopy(context.l10n),
+                        key: OnboardingFormKeys.interestedIn,
+                        title: context
+                            .l10n
+                            .onboardingGenderInterestPageLabelShowMe,
+                        contract: CatchContractConstraints
+                            .onboardingDraftDocumentInterestedInGenders,
+                        contractValue: (gender) => gender.name,
+                        body: _orderedGenderLabels(state.interestedIn),
+                        values: Gender.values,
+                        itemLabel: (gender) => gender.label,
+                        selected: state.interestedIn,
+                        onSelectionChanged: state.requestControlsEnabled
+                            ? (selection) {
+                                callbacks.onInterestedInChanged(selection);
+                                field.didChange(selection);
+                              }
+                            : null,
+                        multi: true,
+                        enabled: state.requestControlsEnabled,
+                        initiallyOpen: true,
+                        error: field.errorText,
+                      ),
                     ),
                   ),
                 ],

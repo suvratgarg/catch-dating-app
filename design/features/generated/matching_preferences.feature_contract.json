@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:8fe13b81286631cb02585dcf6b38d0668565220221c7b1e6b1b3fb25b2753994",
+  "resolvedDigest": "sha256:ecadd54e0394bf131b093c8f7f200546a86dd246dbc80acd1b13a25a3738e4ab",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -810,7 +810,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -823,7 +823,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchChip",
-              "file": "lib/core/widgets/catch_chip.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_chip.dart",
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
@@ -837,10 +837,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -849,7 +848,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchRangeSlider",
-              "file": "lib/core/widgets/catch_range_slider.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
               "constructors": [
                 "CatchRangeSlider"
               ]
@@ -860,7 +859,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -874,7 +873,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

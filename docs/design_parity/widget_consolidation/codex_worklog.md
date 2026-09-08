@@ -522,6 +522,12 @@ drift.
 
 ## WO-007 — Absorb ChatShareCardSheet into CatchShareCardSheet
 
+Phase 3 ownership update: the single app adapter is now
+`lib/core/riverpod_ui/catch_sheet_share.dart`; it delegates the unchanged
+preview/button layout to `packages/catch_ui/lib/src/components/catch_share_card_sheet.dart`.
+Club, event and chat callers still share that one export/error implementation.
+The original absorption decision below remains in force.
+
 `lib/chats/presentation/widgets/chat_share_card.dart` hand-rolls the share
 sheet that `lib/core/widgets/catch_share_card_sheet.dart` provides (club and
 event share flows already use the core one).
@@ -1361,7 +1367,7 @@ Suggestions/Data coverage content to `CatchSection.fieldRows` plus
    `Row(['CATCH' kicker(t.ink), Spacer(), Text(trailing, labelS(color))])`
    (see chat_share_card.dart ~line 212 and club_share_card.dart ~line 109;
    check event_share_card.dart for its variant). New tiny primitive in
-   `lib/core/widgets/catch_share_card_footer.dart`:
+   `packages/catch_ui/lib/src/components/catch_share_card_footer.dart`:
    `CatchShareCardFooter({required String trailing, Color? trailingColor})`
    rendering exactly that row; replace the three hand-rolled footers. If the
    event card's footer diverges structurally, escalate instead.

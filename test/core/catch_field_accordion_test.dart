@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('CatchFieldAccordion keeps at most one field expanded', () {
-    final accordion = CatchFieldAccordion(initialExpanded: 'name');
+  test('CatchAccordionController keeps at most one field expanded', () {
+    final accordion = CatchAccordionController(initialExpanded: 'name');
     addTearDown(accordion.dispose);
     var notifications = 0;
     accordion.addListener(() => notifications += 1);

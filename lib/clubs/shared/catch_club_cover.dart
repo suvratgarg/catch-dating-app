@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Shared club-cover resolver for editorial cards and detail heroes.

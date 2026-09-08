@@ -45,7 +45,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             state.error!,
             context: AppErrorContext.event,
             onRetry: () {

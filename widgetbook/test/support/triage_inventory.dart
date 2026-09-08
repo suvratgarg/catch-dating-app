@@ -43,6 +43,11 @@ String? _resolveUri(String from, String? uri) {
   if (uri.startsWith('package:widgetbook_workspace/')) {
     return uri.replaceFirst('package:widgetbook_workspace/', 'widgetbook/lib/');
   }
+  for (final package in ['catch_ui', 'catch_tokens']) {
+    if (uri.startsWith('package:$package/')) {
+      return uri.replaceFirst('package:$package/', 'packages/$package/lib/');
+    }
+  }
   if (uri.startsWith('package:')) return null;
   return Uri.parse(from).resolve(uri).path;
 }
@@ -151,7 +156,9 @@ Map<String, Object?> _reach(String path, String builder) {
       if (target == null) continue;
       if (target.startsWith('widgetbook/lib/')) {
         pending.add((target, ref));
-      } else if (target.startsWith('lib/')) {
+      } else if (target.startsWith('lib/') ||
+          target.startsWith('packages/catch_ui/lib/') ||
+          target.startsWith('packages/catch_tokens/lib/')) {
         final declaration = _members(target)[ref];
         if (declaration is ClassDeclaration || _isUiDeclaration(declaration)) {
           production['$target:$ref'] = {
@@ -225,18 +232,25 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
   }
 }
 
-// Keep the pre-extraction denominator literal: every public Catch* class,
-// including descriptors, controllers and generated provider types. A class
-// without a visual surface must receive an explicit coverage disposition.
+// Preserve the migration denominator across shared UI and app adapters: every public
+// Catch* core class, including descriptors and controllers, remains inventoried
+// when moved into the package. Nonvisual classes need an explicit disposition.
 List<Map<String, Object?>> _coreSurface() {
-  final files =
-      Directory('lib/core/widgets')
-          .listSync(recursive: true)
-          .whereType<File>()
-          .map((file) => file.path)
-          .where((path) => path.endsWith('.dart'))
-          .toList()
-        ..sort();
+  final files = [
+    for (final root in [
+      'lib/core/widgets',
+      'lib/core/riverpod_ui',
+      'packages/catch_ui/lib/src/primitives',
+      'packages/catch_ui/lib/src/components',
+      'packages/catch_ui/lib/src/patterns',
+    ])
+      if (Directory(root).existsSync())
+        ...Directory(root)
+            .listSync(recursive: true)
+            .whereType<File>()
+            .map((file) => file.path)
+            .where((path) => path.endsWith('.dart')),
+  ]..sort();
   return [
     for (final file in files)
       for (final node in _unit(file).declarations.whereType<ClassDeclaration>())

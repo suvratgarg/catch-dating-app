@@ -43,7 +43,7 @@ class HostClubEditTab extends ConsumerStatefulWidget {
 }
 
 class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
-  late final CatchFieldAccordion _fieldAccordion;
+  late final CatchAccordionController _fieldAccordion;
   late List<_HostClubMediaDraft> _mediaDrafts;
   HostPickedClubLogo? _pickedLogo;
   bool _removeLogoOnSave = false;
@@ -74,7 +74,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   @override
   void initState() {
     super.initState();
-    _fieldAccordion = CatchFieldAccordion(
+    _fieldAccordion = CatchAccordionController(
       initialExpanded: widget.initialExpandedField,
     )..addListener(_handleAccordionChanged);
     _resetMediaFromClub();
@@ -592,6 +592,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           ),
         ),
         CatchFormRowList<UpdateClubPatch>(
+          fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleIdentity,
           rows: identityRows,
           accordion: _fieldAccordion,
@@ -599,6 +600,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           errorText: _errorText,
         ),
         CatchFormRowList<UpdateClubPatch>(
+          fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleContact,
           rows: contactRows,
           accordion: _fieldAccordion,
@@ -609,6 +611,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
           children: [
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-event-defaults'),
               title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
               valueText: club.hostDefaults.primaryActivityKind.label,
@@ -616,6 +619,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
               onTap: () => _openSpoke(Routes.hostClubEventDefaultsScreen),
             ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-live-guide'),
               title: context.l10n.hostsHostClubEditTabLabelLiveEventGuide,
               valueText: eventSuccess.enabled
@@ -626,12 +630,14 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             ),
             if (widget.isOwner)
               CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-club-settings-payments'),
                 title: context.l10n.hostsHostClubEditTabLabelPayments,
                 icon: CatchIcons.paymentsOutlined,
                 onTap: () => _openSpoke(Routes.hostClubPaymentsScreen),
               ),
             CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-host-team'),
               title: context.l10n.hostsHostClubEditTabLabelHostTeam,
               valueText: context.l10n.hostsHostClubEditTabValueHostCount(
@@ -698,6 +704,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
 
     return [
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
+        itemLabel: (value) => value.label,
         id: HostClubEditFieldKeys.organizerType,
         icon: CatchIcons.groups3Outlined,
         label: context.l10n.hostsOrganizerTypeLabel,
@@ -709,6 +716,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(organizerType: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.name,
         icon: CatchIcons.groups3Outlined,
         label: context.l10n.hostsHostClubProfileLabelClubName,
@@ -720,6 +728,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(name: value as String),
       ),
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostClubCityOption>(
+        itemLabel: (value) => value.label,
         id: HostClubEditFieldKeys.location,
         icon: CatchIcons.locationCityOutlined,
         label: context.l10n.hostsHostClubProfileLabelCity,
@@ -731,6 +740,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(location: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.area,
         icon: CatchIcons.locationOnOutlined,
         label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
@@ -742,6 +752,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(area: value as String),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.description,
         icon: CatchIcons.descriptionOutlined,
         label: context.l10n.hostsHostClubProfileLabelDescription,
@@ -787,6 +798,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
 
     return [
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.instagramHandle,
         icon: CatchIcons.alternateEmailRounded,
         label: context.l10n.hostsHostClubProfileLabelInstagram,
@@ -800,6 +812,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(instagramHandle: value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.phoneNumber,
         icon: CatchIcons.phoneOutlined,
         label: context.l10n.hostsHostClubProfileLabelPhone,
@@ -813,6 +826,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         patchForValue: (value) => UpdateClubPatch(phoneNumber: value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
+        validationCopy: catchFormValidationCopy(context.l10n),
         id: HostClubEditFieldKeys.email,
         icon: CatchIcons.emailOutlined,
         label: context.l10n.hostsHostClubProfileLabelEmail,

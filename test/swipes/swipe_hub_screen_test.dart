@@ -1,19 +1,13 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -145,7 +139,7 @@ void main() {
             'runner-1',
           ).overrideWith((ref) => Stream.value([activeRun])),
         ],
-        child: AppShellActiveTab(
+        child: CatchTabViewportScope(
           index: appShellHomeTabIndex,
           child: MaterialApp(
             theme: AppTheme.dark,
@@ -234,7 +228,7 @@ void main() {
             'runner-1',
           ).overrideWith((ref) => Stream.value(const <Event>[])),
         ],
-        child: AppShellActiveTab(
+        child: CatchTabViewportScope(
           index: appShellHomeTabIndex,
           child: MaterialApp(
             theme: AppTheme.light,

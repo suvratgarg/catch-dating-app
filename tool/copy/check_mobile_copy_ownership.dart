@@ -9,14 +9,21 @@ const _baselinePath = 'tool/copy/mobile_copy_baseline.json';
 const _allowlistPath = 'tool/copy/mobile_copy_allowlist.json';
 
 const _copyArgumentNames = <String>{
+  'privateToYouLabel',
+  'hostCanSeeLabel',
+  'catchPrivateLabel',
   'actionLabel',
   'answer',
   'antiPatterns',
   'attendeeExperience',
   'attendeePromise',
   'body',
+  'brandLabel',
   'caption',
   'ctaLabel',
+  'debugDetailsLabel',
+  'decreaseTooltip',
+  'increaseTooltip',
   'description',
   'detail',
   'emptyMessage',
@@ -39,6 +46,9 @@ const _copyArgumentNames = <String>{
   'linkLabel',
   'message',
   'note',
+  'optionalLabel',
+  'optionalSuffix',
+  'optionalSemantics',
   'placeholder',
   'prompt',
   'proof',
@@ -75,6 +85,7 @@ const _copyConstructors = <String>{
   'CatchSectionHeader',
   'CatchShareCardFooter',
   'CatchShareCardSheet',
+  'CatchSheetShare',
   'CatchText',
   'CelebrationDetail',
   'CupertinoActionSheetAction',
@@ -88,14 +99,21 @@ const _copyConstructors = <String>{
 };
 
 const _copyMemberNames = <String>{
+  'privateToYouLabel',
+  'hostCanSeeLabel',
+  'catchPrivateLabel',
   'balanceLabel',
   'badgeLabel',
   'body',
   'bodyFor',
+  'brandLabel',
   'cancelDetail',
   'clusterLabel',
   'countLabel',
   'defaultAttendeePrompt',
+  'debugDetailsLabel',
+  'decreaseTooltip',
+  'increaseTooltip',
   'description',
   'deleteDetail',
   'displayLabel',
@@ -114,6 +132,9 @@ const _copyMemberNames = <String>{
   'missingStartingPointMessage',
   'name',
   'peoplePerLabel',
+  'optionalLabel',
+  'optionalSuffix',
+  'optionalSemantics',
   'placeholder',
   'reasonLabel',
   'runTimesLabel',
@@ -262,10 +283,17 @@ Future<void> main(List<String> arguments) async {
 }
 
 ScanResult scanMobileCopy(Directory root) {
-  final lib = Directory('${root.path}/lib');
+  final sourceRoots = [
+    Directory('${root.path}/lib'),
+    Directory('${root.path}/packages/catch_ui/lib'),
+  ];
   final files =
-      lib
-          .listSync(recursive: true, followLinks: false)
+      sourceRoots
+          .where((directory) => directory.existsSync())
+          .expand(
+            (directory) =>
+                directory.listSync(recursive: true, followLinks: false),
+          )
           .whereType<File>()
           .where((file) => _isCandidate(file.path, root.path))
           .toList()
@@ -485,10 +513,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     return null;
   }
 
-  bool _isCopyMemberName(String name) {
-    if (_diagnosticName.hasMatch(name)) return false;
-    return _copyMemberNames.contains(name);
-  }
+  // Exact display-copy names include the visible debug-details disclosure label.
+  bool _isCopyMemberName(String name) => _copyMemberNames.contains(name);
 
   bool _isCopyFunctionName(String name) {
     if (_diagnosticName.hasMatch(name)) return false;
@@ -630,6 +656,22 @@ const route = '/events';
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
   }
+  const shareAdapterSource = '''
+Widget share() => CatchSheetShare(
+  buttonLabel: 'Share this card',
+  footnote: 'Visible sharing information',
+);
+''';
+  final shareAdapterTexts = scanDartSource(
+    'lib/example_share.dart',
+    shareAdapterSource,
+  ).map((finding) => finding.text).toSet();
+  if (!shareAdapterTexts.containsAll({
+    'Share this card',
+    'Visible sharing information',
+  })) {
+    throw StateError('App share adapter bypassed display-copy ownership.');
+  }
   const missedShapesSource = r'''
 enum DisplayMode {
   compact('Compact', 'A concise product description.'),
@@ -691,6 +733,53 @@ Widget buildForm(BuildContext context) => Column(children: [
       '$missedShapeFindings',
     );
   }
+  const sharedCopySource = r'''
+class SharedCopy {
+  const SharedCopy({
+    this.optionalLabel = 'Optional',
+    this.optionalSuffix = ' (optional)',
+    this.debugDetailsLabel = 'Developer details',
+    this.decreaseTooltip = 'Decrease',
+    this.increaseTooltip = 'Increase',
+    this.privateToYouLabel = 'Private to you',
+    this.hostCanSeeLabel = 'Host can see',
+    this.catchPrivateLabel = 'Catch private',
+  });
+  String optionalSemantics(String label) => '$label, optional';
+  String get diagnosticMessage => 'Internal diagnostic only';
+}
+final copy = SharedCopy(
+  optionalLabel: 'Optional field',
+  optionalSuffix: ' (not required)',
+  debugDetailsLabel: 'Technical details',
+  optionalSemantics: (label) => '$label, not required',
+);
+''';
+  final sharedCopyFindings = scanDartSource(
+    'packages/catch_ui/lib/src/components/example_copy.dart',
+    sharedCopySource,
+  );
+  final sharedCopyKinds = sharedCopyFindings
+      .map((finding) => finding.kind)
+      .toSet();
+  if (sharedCopyFindings.length != 13 ||
+      !sharedCopyKinds.containsAll({
+        'default:optionalLabel',
+        'default:optionalSuffix',
+        'default:debugDetailsLabel',
+        'default:decreaseTooltip',
+        'default:increaseTooltip',
+        'default:privateToYouLabel',
+        'default:hostCanSeeLabel',
+        'default:catchPrivateLabel',
+        'member:optionalSemantics',
+        'argument:optionalLabel',
+        'argument:optionalSuffix',
+        'argument:debugDetailsLabel',
+        'argument:optionalSemantics',
+      })) {
+    throw StateError('Shared display-copy ownership gaps: $sharedCopyFindings');
+  }
   const exceptionSource = '''
 void fail() => throw BackendOperationException(
   code: 'example',
@@ -716,6 +805,42 @@ Widget build(BuildContext context) => Text('Fixture title');
     throw StateError('File exemption escaped its developer-only boundary.');
   } on FormatException {
     // Expected: production surfaces cannot hide copy with a file exemption.
+  }
+  final fixtureRoot = Directory.systemTemp.createTempSync('catch-copy-roots-');
+  try {
+    for (final entry in const {
+      'lib/example.dart': "Widget build() => Text('App copy');",
+      'packages/catch_ui/lib/src/components/example.dart':
+          "Widget build() => Text('Package copy');",
+      'packages/catch_ui/lib/src/components/caller_copy.dart':
+          'Widget build(String label) => Text(label);',
+      'packages/catch_ui/lib/example.g.dart':
+          "Widget generated() => Text('Generated copy');",
+      'packages/catch_ui/test/example_test.dart':
+          "Widget fixture() => Text('Test copy');",
+    }.entries) {
+      final file = File('${fixtureRoot.path}/${entry.key}');
+      file.parent.createSync(recursive: true);
+      file.writeAsStringSync(entry.value);
+    }
+    final scan = scanMobileCopy(fixtureRoot);
+    final found = scan.findings.map((finding) => finding.text).toSet();
+    if (scan.checkedFiles != 3 ||
+        scan.findings.length != 2 ||
+        !found.containsAll({'App copy', 'Package copy'})) {
+      throw StateError('App/package copy-root self-test failed: $found');
+    }
+    try {
+      scanDartSource(
+        'packages/catch_ui/lib/src/components/example.dart',
+        fixtureSource,
+      );
+      throw StateError('A package widget hid copy with a file exemption.');
+    } on FormatException {
+      // Shared production components cannot opt out as developer fixtures.
+    }
+  } finally {
+    fixtureRoot.deleteSync(recursive: true);
   }
   stdout.writeln('Mobile copy ownership scanner self-test passed.');
 }

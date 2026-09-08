@@ -1,17 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_stat_column.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -22,6 +12,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +67,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     if (uidAsync.isLoading) {
       body = const CalendarLoadingScreen();
     } else if (uidAsync.hasError) {
-      body = CatchErrorState.fromError(
+      body = CatchLocalizedErrorState(
         uidAsync.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
@@ -93,7 +84,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
         body = const CalendarLoadingScreen();
       } else if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
-        body = CatchErrorState.fromError(
+        body = CatchLocalizedErrorState(
           signedUpEventsAsync.error ?? savedEventsAsync.error!,
           context: AppErrorContext.event,
           onRetry: uid == null
@@ -318,7 +309,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
       CalendarAgendaClubNamesErrorState(:final error) =>
         CatchSliverStateViewport(
           accountForBottomOverlay: false,
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
             onRetry: onRetryClubNames,

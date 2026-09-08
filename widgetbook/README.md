@@ -61,7 +61,7 @@ separate primitive review pages.
 
 Controller/helper-only catalog rows are represented through their visible
 widgets instead of standalone fake surfaces. Examples: `CatchGrade` is reviewed
-through `CatchGradedImage`, `EventTicketShapeClipper` through the ticket-surface
+through `CatchGradedImage`, `CatchTicketShapeClipper` through the ticket-surface
 preview, and celebration effects through `CatchCelebrationScreen` with effects
 disabled for deterministic review.
 

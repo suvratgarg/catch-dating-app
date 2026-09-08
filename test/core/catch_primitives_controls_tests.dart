@@ -1,6 +1,11 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesControlsTests() {
+  final stepLabel = catchStepHeaderLabelBuilder(AppLocalizationsEn());
+  final compactStepLabel = catchStepHeaderCompactLabelBuilder(
+    AppLocalizationsEn(),
+  );
+
   testWidgets('CatchField sortable owns inline hierarchy and handle lane', (
     tester,
   ) async {
@@ -10,6 +15,7 @@ void _registerCatchPrimitivesControlsTests() {
           width: 360,
           child: CatchFieldLanes.single(
             child: CatchField.sortable(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Full name',
               metadata: 'Short text · Required',
               reorderHandle: const SizedBox(
@@ -68,7 +74,7 @@ void _registerCatchPrimitivesControlsTests() {
         MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),
           child: Builder(
-            builder: (context) => CatchMapRevealTransition(
+            builder: (context) => CatchMapRevealViewport(
               animation: animation,
               child: const Text('Map surface'),
             ),
@@ -224,160 +230,7 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchButton exposes named rounded editorial geometry', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        CatchButton(
-          key: const ValueKey('rounded-button'),
-          label: 'Review & publish',
-          shape: CatchButtonShape.rounded,
-          onPressed: () {},
-        ),
-      ),
-    );
-
-    final decoration = tester.widget<DecoratedBox>(
-      find.descendant(
-        of: find.byKey(const ValueKey('rounded-button')),
-        matching: find.byType(DecoratedBox),
-      ),
-    );
-    expect(
-      (decoration.decoration as BoxDecoration).borderRadius,
-      BorderRadius.circular(CatchRadius.md),
-    );
-  });
-
-  testWidgets('CatchButton reflows full-width labels at large text', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 220,
-          child: CatchButton(
-            key: const ValueKey('large-text-button'),
-            label: 'Review every submitted response',
-            fullWidth: true,
-            onPressed: () {},
-          ),
-        ),
-        textScale: 2,
-      ),
-    );
-
-    expect(
-      tester.getSize(find.byKey(const ValueKey('large-text-button'))).height,
-      greaterThan(CatchSpacing.s12),
-    );
-    final label = tester.widget<CatchButtonLabel>(
-      find.byType(CatchButtonLabel),
-    );
-    expect(label.allowMultiline, isTrue);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('CatchButton resolves transitions under reduced motion', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        MediaQuery(
-          data: const MediaQueryData(disableAnimations: true),
-          child: CatchButton(
-            key: const ValueKey('reduced-motion-button'),
-            label: 'Continue',
-            onPressed: () {},
-          ),
-        ),
-      ),
-    );
-
-    final button = find.byKey(const ValueKey('reduced-motion-button'));
-    expect(
-      tester
-          .widget<AnimatedScale>(
-            find.descendant(of: button, matching: find.byType(AnimatedScale)),
-          )
-          .duration,
-      CatchMotion.none,
-    );
-    expect(
-      tester
-          .widget<AnimatedOpacity>(
-            find.descendant(of: button, matching: find.byType(AnimatedOpacity)),
-          )
-          .duration,
-      CatchMotion.none,
-    );
-    expect(
-      tester
-          .widget<AnimatedSwitcher>(
-            find.descendant(
-              of: button,
-              matching: find.byType(AnimatedSwitcher),
-            ),
-          )
-          .duration,
-      CatchMotion.none,
-    );
-  });
-
-  testWidgets('CatchButton pairs primary activity accent with white ink', (
-    tester,
-  ) async {
-    const accent = Color(0xFF116466);
-
-    await tester.pumpWidget(
-      _wrap(
-        CatchButton(
-          key: const ValueKey('accent-button'),
-          label: 'Run crew',
-          onPressed: () {},
-          accentColor: accent,
-        ),
-      ),
-    );
-
-    final buttonFinder = find.byKey(const ValueKey('accent-button'));
-    final buttonBox = tester.widget<DecoratedBox>(
-      find.descendant(of: buttonFinder, matching: find.byType(DecoratedBox)),
-    );
-    final buttonLabel = tester.widget<Text>(
-      find.descendant(of: buttonFinder, matching: find.text('Run crew')),
-    );
-    final decoration = buttonBox.decoration as BoxDecoration;
-
-    expect(decoration.color, accent);
-    expect(buttonLabel.style?.color, CatchTokens.editorialWhite);
-  });
-
-  testWidgets(
-    'CatchBottomAction forwards activity accent to the primary button',
-    (tester) async {
-      const accent = Color(0xFF116466);
-
-      await tester.pumpWidget(
-        _wrap(
-          CatchBottomAction(
-            label: 'Join event',
-            onPressed: () {},
-            buttonAccentColor: accent,
-            buttonShape: CatchButtonShape.rounded,
-          ),
-        ),
-      );
-
-      expect(find.byType(CatchBottomAction), findsOneWidget);
-      final button = tester.widget<CatchButton>(
-        find.widgetWithText(CatchButton, 'Join event'),
-      );
-      expect(button.accentColor, accent);
-      expect(button.shape, CatchButtonShape.rounded);
-    },
-  );
+  _registerCatchPrimitivesButtonTests();
 
   testWidgets('CatchBottomAction renders catch line and footnote', (
     tester,
@@ -777,9 +630,10 @@ void _registerCatchPrimitivesControlsTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchStepProgress(
+            counterLabelBuilder: (step, total) => '$step/$total',
             label: 'Profile setup',
             currentStep: 1,
             totalSteps: 5,
@@ -800,6 +654,8 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
           title: 'Basics',
           subtitle: 'South Bombay Runners',
           kicker: 'Create event',
@@ -877,7 +733,15 @@ void _registerCatchPrimitivesControlsTests() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(const CatchStepHeader(title: 'Schedule', step: 1, total: 3)),
+      _wrap(
+        CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
+          title: 'Schedule',
+          step: 1,
+          total: 3,
+        ),
+      ),
     );
 
     expect(find.text('Schedule'), findsOneWidget);
@@ -902,9 +766,11 @@ void _registerCatchPrimitivesControlsTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 350,
           child: CatchStepHeader(
+            stepLabelBuilder: stepLabel,
+            compactStepLabelBuilder: compactStepLabel,
             title: "What's your number?",
             subtitle: "We'll send you a one-time code to verify.",
             showBack: false,
@@ -931,6 +797,8 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchStepHeader(
+          stepLabelBuilder: stepLabel,
+          compactStepLabelBuilder: compactStepLabel,
           title: 'Schedule',
           step: 1,
           total: 3,
@@ -953,6 +821,8 @@ void _registerCatchPrimitivesControlsTests() {
       await tester.pumpWidget(
         _wrap(
           CatchStepHeader(
+            stepLabelBuilder: stepLabel,
+            compactStepLabelBuilder: compactStepLabel,
             title: 'Meeting location',
             step: 2,
             total: 5,
@@ -979,6 +849,10 @@ void _registerCatchPrimitivesControlsTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFormStepOverview(
+          fieldCopy: catchFieldCopy(AppLocalizationsEn()),
+          statusLabelBuilder: catchFormStepStatusLabelBuilder(
+            AppLocalizationsEn(),
+          ),
           items: const [
             CatchFormStepReviewItem(
               index: 0,
@@ -1146,6 +1020,8 @@ void _registerCatchPrimitivesControlsTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchOtpCodeField(
+              semanticsLabel:
+                  AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
               inputKey: const ValueKey('otp-input'),
               controller: controller,
               autofocus: true,

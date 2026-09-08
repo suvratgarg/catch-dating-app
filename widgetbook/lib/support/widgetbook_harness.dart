@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -157,4 +155,68 @@ class _WidgetbookCaseScopeState extends State<WidgetbookCaseScope> {
     state: _state,
     child: Builder(builder: widget.builder),
   );
+}
+
+/// Owns the lifetime of a text controller used by a catalog case.
+class WidgetbookTextControllerScope extends StatefulWidget {
+  const WidgetbookTextControllerScope({
+    super.key,
+    required this.initialText,
+    required this.builder,
+  });
+
+  final String initialText;
+  final Widget Function(BuildContext, TextEditingController) builder;
+
+  @override
+  State<WidgetbookTextControllerScope> createState() =>
+      _WidgetbookTextControllerScopeState();
+}
+
+class _WidgetbookTextControllerScopeState
+    extends State<WidgetbookTextControllerScope> {
+  late final _controller = TextEditingController(text: widget.initialText);
+
+  @override
+  void didUpdateWidget(covariant WidgetbookTextControllerScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialText != widget.initialText) {
+      _controller.text = widget.initialText;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _controller);
+}
+
+/// Opens a catalog menu after its production anchor has completed layout.
+class WidgetbookOpenMenuScope extends StatefulWidget {
+  const WidgetbookOpenMenuScope({super.key, required this.builder});
+
+  final Widget Function(BuildContext, MenuController) builder;
+
+  @override
+  State<WidgetbookOpenMenuScope> createState() =>
+      _WidgetbookOpenMenuScopeState();
+}
+
+class _WidgetbookOpenMenuScopeState extends State<WidgetbookOpenMenuScope> {
+  final _controller = MenuController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.open();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _controller);
 }

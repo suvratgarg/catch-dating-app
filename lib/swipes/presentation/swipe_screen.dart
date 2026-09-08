@@ -2,18 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -29,6 +21,7 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.d
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -132,7 +125,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       backgroundColor: t.bg,
       body: switch (state) {
         CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
-        CatchesEventQueueError(:final error) => CatchErrorState.fromError(
+        CatchesEventQueueError(:final error) => CatchLocalizedErrorState(
           error,
           context: AppErrorContext.swipes,
           onRetry: () => ref.invalidate(
@@ -253,9 +246,9 @@ class CatchesProfileReview extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: ComponentResponsiveBuilder(
+          child: CatchViewportBreakpoint(
             breakpoint: ComponentBreakpoints.catchesWidePaddingBreakpoint,
-            compact: (context) => ProfileSurface(
+            compactBuilder: (context) => ProfileSurface(
               key: ValueKey(profile.uid),
               profile: profile,
               mode: ProfileSurfaceMode.catches,
@@ -266,7 +259,7 @@ class CatchesProfileReview extends StatelessWidget {
               reactionsEnabled: actionsEnabled,
               reactionsPending: actionState.isReactionPending,
             ),
-            expanded: (context) => Padding(
+            expandedBuilder: (context) => Padding(
               padding: CatchInsets.catchesWideProfile,
               child: ProfileSurface(
                 key: ValueKey(profile.uid),

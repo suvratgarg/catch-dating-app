@@ -1,12 +1,14 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a
@@ -63,6 +65,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
       search: CatchTopBarSearch(
+        copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         value: chrome.searchValue,
         onChanged: onQueryChanged,
@@ -210,6 +213,7 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
       search: CatchTopBarSearch(
+        copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         expanded: chrome.searchExpanded,
         value: chrome.searchValue,

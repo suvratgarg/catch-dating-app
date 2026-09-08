@@ -1,7 +1,7 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
 Status: living review · phases A-F implemented 2026-08-28
-Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
+Scope: `packages/catch_ui/lib/src/components/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
 measured against the working tree on that date; §1 includes the census
@@ -13,6 +13,13 @@ by this doc.
 ---
 
 ## 0. What the system is
+
+Phase 3 of the [UI-system program](ui_system_blueprint_and_conformance_audit.md)
+supersedes the scope/controller homes in this dated review. The shared
+`CatchAccordionController` replaces `CatchFieldAccordion`; visibility, geometry,
+interaction-plane and divided-interaction scopes now have individual files in
+`packages/catch_ui/lib/src/components/`. Consumers read their geometry values
+through the package API. The historical phase plan below remains review context.
 
 `CatchField` is the canonical row primitive: one widget, five internal modes
 (`edit, read, nav, toggle, select`), exposed through 12 named
@@ -140,10 +147,11 @@ does not preserve a knob merely because an old caller once needed it.
   `CatchSectionFocusSurface` are implementation members. They remain public
   only where Dart library boundaries require it, are excluded from the export
   barrel, and are protected from feature construction by analyzer diagnostics.
-- `lib/catch_ui.dart` is the reviewed public barrel for the stable theme,
-  field, section, page, and form-orchestration vocabulary. Extraction into a
-  standalone package remains mechanical rather than requiring another API
-  design.
+- `packages/catch_ui/lib/catch_ui.dart` is the shared package's public barrel.
+  The unused app compatibility barrel is retired. Remaining schema-coupled
+  fields, sections, root-header composition, and form descriptors use focused
+  app imports during Phase 3; moving their owners also retires the temporary
+  renderer exports needed across the package boundary.
 
 #### API removals and migration rules
 
@@ -244,7 +252,7 @@ Census commands (re-run to refresh):
 for c in read content nav action toggle input control expanding actions \
   inputActions add select choices stepper; do
   printf 'CatchField.%s: ' "$c"
-  rg "CatchField\.$c" lib --type dart -g '!lib/core/widgets/catch_field.dart' | wc -l
+  rg "CatchField\.$c" lib --type dart -g '!packages/catch_ui/lib/src/components/catch_field.dart' | wc -l
 done
 rg -l 'CatchField' lib --type dart -g '!lib/core/widgets/*' \
   | awk -F/ '{print $2}' | sort | uniq -c | sort -rn
@@ -520,7 +528,7 @@ The highest-leverage improvement. Generalize the consumer profile pattern
 inline editors) into core so consumer, host, and onboarding share one form
 orchestration stack.
 
-1. New `lib/core/forms/catch_form_descriptors.dart` (names ratified by owner
+1. New `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart` (names ratified by owner
    on review of this doc):
 
    ```dart

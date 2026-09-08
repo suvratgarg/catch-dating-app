@@ -67,7 +67,10 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                           .eventSuccessEventSuccessCompanionFeedbackTextYourFeedbackIsSaved,
                 style: CatchTextStyles.titleL(context),
               ),
-              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.catchPrivate),
+              CatchPrivacyBadge(
+                copy: catchPrivacyBadgeCopy(context.l10n),
+                kind: CatchPrivacyBadgeKind.catchPrivate,
+              ),
             ],
           ),
           gapH4,
@@ -101,6 +104,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           gapH8,
           CatchFieldLanes.single(
             child: CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessCompanionFeedbackTitleIWantCatchTo,
@@ -115,6 +119,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           StageSoftBand(
             child: CatchFieldLanes.single(
               child: CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context
                     .l10n
                     .eventSuccessEventSuccessCompanionFeedbackTitlePrivateNoteToCatch,

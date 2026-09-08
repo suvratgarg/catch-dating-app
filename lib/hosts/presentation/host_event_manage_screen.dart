@@ -5,27 +5,15 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
     show EventAdmissionFormat;
 import 'package:catch_dating_app/event_success/event_success.dart'
@@ -59,6 +47,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -331,6 +320,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         CatchSection.fieldRows(
           children: [
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostEventRehearsalEntryTitle,
               body: context.l10n.hostEventRehearsalEntryBody,
               icon: CatchIcons.scienceOutlined,
@@ -385,6 +375,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           first: true,
           children: [
             CatchField.control(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostEventManageReviewSetupTitle,
               body: context.l10n.hostsHostEventManageReviewSetupBody,
               contractExemption:
@@ -418,6 +409,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           first: true,
           children: [
             CatchField.control(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
               contractExemption:
                   'Disclosure-only public runtime URL and QR; no editable '
@@ -883,7 +875,7 @@ class HostPrivateAccessCard extends StatelessWidget {
           ],
         ),
       ),
-      errorBuilder: (_, error, _) => CatchInlineErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchLocalizedInlineErrorState(
         error,
         context: AppErrorContext.event,
         compact: true,
@@ -1117,9 +1109,9 @@ class HostInviteLinksList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ComponentResponsiveBuilder(
+        CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint,
-          compact: (context) => Column(
+          compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               heading,
@@ -1127,7 +1119,7 @@ class HostInviteLinksList extends StatelessWidget {
               Align(alignment: Alignment.centerLeft, child: button),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               Expanded(child: heading),
               button,
@@ -1141,7 +1133,7 @@ class HostInviteLinksList extends StatelessWidget {
         ),
         if (mutationError != null) ...[
           gapH12,
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             mutationError!,
             context: AppErrorContext.event,
           ),
@@ -1154,7 +1146,7 @@ class HostInviteLinksList extends StatelessWidget {
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          errorBuilder: (_, error, _) => CatchInlineErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedInlineErrorState(
             error,
             context: AppErrorContext.event,
             compact: true,
@@ -1291,9 +1283,9 @@ class HostInviteLinkRow extends StatelessWidget {
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: ComponentResponsiveBuilder(
+        child: CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
-          compact: (context) => Column(
+          compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               details,
@@ -1301,7 +1293,7 @@ class HostInviteLinkRow extends StatelessWidget {
               Align(alignment: Alignment.centerRight, child: actions),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               Expanded(child: details),
               gapW8,
@@ -1348,6 +1340,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostEventManageScreenTitleLabel,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadLabel,
@@ -1360,6 +1353,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                   ),
                   gapH12,
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostEventManageScreenTitleSource,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadSource,
@@ -1411,6 +1405,7 @@ class HostFullCapacityApron extends StatelessWidget {
       first: true,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.groupsRounded,
           title: context.l10n.hostsHostEventManageScreenLabelBooked,
           body: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
@@ -1421,6 +1416,7 @@ class HostFullCapacityApron extends StatelessWidget {
               '${context.l10n.hostsHostEventManageScreenVisiblecopyCapacitylimit(capacityLimit: event.capacityLimit)}',
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.waitlisted,
           title: context.l10n.hostsHostEventManageScreenLabelWaitlist,
           body: waitlisted == 1
@@ -1434,11 +1430,13 @@ class HostFullCapacityApron extends StatelessWidget {
               ),
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.paymentsOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
           valueText: revenueLabel,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.receiptLongOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
           valueText: refundPolicy,
@@ -1564,7 +1562,7 @@ class HostEventActionsSection extends StatelessWidget {
         ),
         if (actionError != null) ...[
           gapH12,
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             actionError!,
             context: AppErrorContext.event,
           ),
@@ -1597,6 +1595,7 @@ class HostActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.action(
+        copy: catchFieldCopy(context.l10n),
         title: label,
         body: detail,
         titleMaxLines: 2,
@@ -1636,6 +1635,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
     final enabled = event.publicRegistrationEnabled;
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_website_registration_field'),
         title: context.l10n.hostsHostPublicRegistrationTitle,
         body: enabled
@@ -1689,7 +1689,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
             ),
             if (mutation.hasError) ...[
               gapH8,
-              CatchErrorBanner.fromError(
+              CatchLocalizedErrorBanner(
                 (mutation as MutationError).error,
                 context: AppErrorContext.event,
               ),
@@ -1727,21 +1727,25 @@ class HostEventSummaryCard extends StatelessWidget {
       title: title,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.groupsRounded,
           title: context.l10n.hostsHostEventManageScreenLabelClub,
           body: club.name,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.locationOnOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelMeet,
           body: event.locationName,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.routeRounded,
           title: context.l10n.hostsHostEventManageScreenLabelEvent,
           body: event.activitySummaryLabel,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.paymentsOutlined,
           title: context.l10n.hostsHostEventManageScreenLabelPrice,
           body: price,
@@ -1778,9 +1782,9 @@ class HostEventSummaryRow extends StatelessWidget {
 
     return Column(
       children: [
-        ComponentResponsiveBuilder(
+        CatchViewportBreakpoint(
           breakpoint: ComponentBreakpoints.hostEventSummaryRowStackBreakpoint,
-          compact: (context) => Row(
+          compactBuilder: (context) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               iconWidget,
@@ -1802,7 +1806,7 @@ class HostEventSummaryRow extends StatelessWidget {
               ),
             ],
           ),
-          expanded: (context) => Row(
+          expandedBuilder: (context) => Row(
             children: [
               iconWidget,
               gapW10,

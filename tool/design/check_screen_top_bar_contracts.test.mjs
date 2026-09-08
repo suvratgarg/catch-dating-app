@@ -886,7 +886,7 @@ test("exempts only the canonical CatchScreenScaffold app-bar forwarder", () => {
     result.findings.some(
       (finding) =>
         finding.code === "unregistered-app-bar" &&
-        finding.path === "lib/core/widgets/catch_screen_scaffold.dart",
+        finding.path === "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
     ),
   );
   assert.equal(
@@ -924,7 +924,7 @@ test("fails closed when the canonical app-bar forwarder drifts", () => {
     result.findings.some(
       (finding) =>
         finding.code === "unregistered-app-bar" &&
-        finding.path === "lib/core/widgets/catch_screen_scaffold.dart",
+        finding.path === "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
     ),
   );
 });
@@ -1061,7 +1061,7 @@ function fixtureRoot({
   write(root, contract.path, source);
   write(
     root,
-    "lib/core/widgets/catch_screen_scaffold.dart",
+    "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
     canonicalScaffoldSource,
   );
   if (includeRootContracts) {

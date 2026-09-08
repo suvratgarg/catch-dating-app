@@ -3,18 +3,11 @@ import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_footer.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showClubShareCardSheet(
@@ -24,7 +17,7 @@ Future<void> showClubShareCardSheet(
 }) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (_) => CatchShareCardSheet(
+    builder: (_) => CatchSheetShare(
       card: ClubShareCard(club: club),
       share: share,
       fileName: 'catch-organizer-card.png',
@@ -111,6 +104,7 @@ class ClubShareCard extends StatelessWidget {
                   if (tags.isNotEmpty) ...[gapH10, ClubTagWrap(tags: tags)],
                   const Spacer(),
                   CatchShareCardFooter(
+                    brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
                     trailing: context.l10n.clubsClubShareCardHostedBy(
                       hostName: club.displayHostName,
                     ),

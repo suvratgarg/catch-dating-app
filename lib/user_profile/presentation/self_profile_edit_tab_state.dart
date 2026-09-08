@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -15,6 +14,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart'
     show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;
 
@@ -271,6 +271,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
 }) {
   return [
     CatchFormTextRow<UpdateUserProfilePatch>(
+      validationCopy: catchFormValidationCopy(l10n),
       id: 'displayName',
       icon: CatchIcons.personOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelDisplayName,
@@ -313,6 +314,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       body: user.phoneNumber,
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
+      validationCopy: catchFormValidationCopy(l10n),
       id: 'email',
       icon: CatchIcons.emailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelEmail,
@@ -326,6 +328,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       validator: validateOptionalEmail,
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
+      validationCopy: catchFormValidationCopy(l10n),
       id: 'instagramHandle',
       icon: CatchIcons.alternateEmailOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelInstagram,
@@ -382,6 +385,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
 }) {
   return [
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, CityOption>(
+      itemLabel: (value) => value.label,
       id: 'city',
       icon: CatchIcons.locationOnOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCity,
@@ -395,6 +399,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       contract: CatchContractConstraints.updateUserProfilePatchCity,
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
+      validationCopy: catchFormValidationCopy(l10n),
       id: 'occupation',
       icon: CatchIcons.workOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
@@ -408,6 +413,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       ),
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
+      validationCopy: catchFormValidationCopy(l10n),
       id: 'company',
       icon: CatchIcons.businessOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
@@ -422,6 +428,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       ),
     ),
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, EducationLevel>(
+      itemLabel: (value) => value.label,
       id: 'education',
       icon: CatchIcons.schoolOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelEducation,
@@ -433,6 +440,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       contract: CatchContractConstraints.updateUserProfilePatchEducation,
     ),
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, Religion>(
+      itemLabel: (value) => value.label,
       id: 'religion',
       icon: CatchIcons.volunteerActivismOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelReligion,
@@ -445,6 +453,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       showOptionalLabel: true,
     ),
     CatchFormMultiChoiceRow<UpdateUserProfilePatch, Language>(
+      itemLabel: (value) => value.label,
       id: 'languages',
       icon: CatchIcons.languageOutlined,
       label: l10n.userProfileSelfProfileEditTabStateLabelLanguages,
@@ -456,6 +465,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       patchForValues: patchFactory.languages,
     ),
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, RelationshipGoal>(
+      itemLabel: (value) => value.label,
       id: 'relationshipGoal',
       icon: CatchIcons.favoriteOutline,
       label: l10n.userProfileSelfProfileEditTabStateLabelLookingFor,

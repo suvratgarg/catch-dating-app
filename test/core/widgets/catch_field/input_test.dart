@@ -1,18 +1,19 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../../test_pump_helpers.dart';
 
+import '../../../test_pump_helpers.dart';
 import 'test_support.dart';
+
+part 'input_selection_tests.dart';
 
 void main() {
   testWidgets(
@@ -34,6 +35,7 @@ void main() {
           Form(
             key: formKey,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Code',
               contract: contract,
               controller: controller,
@@ -61,7 +63,8 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Activity',
           contract: contract,
           contractValue: (value) => value,
@@ -88,6 +91,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Answer',
           controller: controller,
           maxLines: null,
@@ -113,7 +117,8 @@ void main() {
       _wrap(
         SizedBox(
           width: 280,
-          child: CatchField.choices<String>(
+          child: CatchField<String>.choices(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Languages',
             body: 'English',
             values: const ['English', 'Hindi', 'Marathi', 'Gujarati'],
@@ -191,6 +196,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           body: 'English',
           control: const Text('Language control'),
@@ -224,7 +230,8 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchField.choices<String>(
+          builder: (context, setState) => CatchField<String>.choices(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],
             itemLabel: (value) => value,
@@ -261,19 +268,22 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   key: inputKey,
                   title: 'Job title',
                   icon: CatchIcons.workOutline,
                   isOptional: true,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   key: multilineInputKey,
                   title: 'Review',
                   minLines: 2,
                   maxLines: 4,
                   isOptional: true,
                 ),
-                CatchField.choices<String>(
+                CatchField<String>.choices(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   key: choiceKey,
                   title: 'Workout',
                   values: const ['Never', 'Often'],
@@ -348,6 +358,7 @@ void main() {
         Form(
           key: formKey,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Date of birth',
             controller: controller,
             readOnly: true,
@@ -376,6 +387,7 @@ void main() {
 
     Widget field({String? error}) => _wrap(
       CatchField.input(
+        copy: catchFieldCopy(AppLocalizationsEn()),
         title: 'Invite code',
         controller: controller,
         maxLength: 10,
@@ -408,6 +420,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Bio',
           controller: controller,
           variant: CatchFieldVariant.underline,
@@ -430,7 +443,8 @@ void main() {
   testWidgets('CatchField renders optional field marker', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.input(
+        CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Bio',
           isOptional: true,
           placeholder: 'Share a little about yourself',
@@ -471,6 +485,7 @@ void main() {
           SizedBox(
             width: 320,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Public name',
               controller: controller,
               inputHint: 'e.g. Aanya',
@@ -523,9 +538,13 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
-          child: CatchField.input(title: 'Instagram', inputHint: 'Instagram'),
+          child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: 'Instagram',
+            inputHint: 'Instagram',
+          ),
         ),
       ),
     );
@@ -545,9 +564,10 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Answer',
             initialValue: 'Catch me if you can',
             maxLines: 3,
@@ -570,9 +590,13 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
-          child: CatchField.input(title: 'Display name', initialValue: 'Aanya'),
+          child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: 'Display name',
+            initialValue: 'Aanya',
+          ),
         ),
       ),
     );
@@ -598,6 +622,7 @@ void main() {
         SizedBox(
           width: 320,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Public name',
             inputHint: 'e.g. Aanya',
             onFocusChanged: changes.add,
@@ -627,9 +652,10 @@ void main() {
         _wrap(
           Form(
             key: formKey,
-            child: const SizedBox(
+            child: SizedBox(
               width: 320,
               child: CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Public name',
                 inputHint: 'e.g. Aanya',
                 validator: _requiredPublicName,
@@ -667,6 +693,7 @@ void main() {
           SizedBox(
             width: 320,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Public name',
               controller: controller,
               inputHint: 'e.g. Aanya',
@@ -693,18 +720,20 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 320,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchField.input(
-                  key: ValueKey('plain-populated-field'),
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  key: const ValueKey('plain-populated-field'),
                   title: 'Public name',
                   initialValue: 'Run',
                 ),
                 CatchField.input(
-                  key: ValueKey('clearable-populated-field'),
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  key: const ValueKey('clearable-populated-field'),
                   title: 'Display name',
                   initialValue: 'Run',
                   showClearButton: true,
@@ -744,6 +773,7 @@ void main() {
           child: SizedBox(
             width: 320,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Search',
               showLabel: false,
               placeholder: 'Search by name',
@@ -774,9 +804,10 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Search for a meeting point',
             showLabel: false,
             placeholder: 'Search for a meeting point',
@@ -790,262 +821,7 @@ void main() {
     expect(find.text('Search for a meeting point'), findsOneWidget);
   });
 
-  testWidgets('CatchField.select validates and reports selection changes', (
-    tester,
-  ) async {
-    final formKey = GlobalKey<FormState>();
-    CityOption? selected;
-
-    await tester.pumpWidget(
-      _wrap(
-        Form(
-          key: formKey,
-          child: CatchField.select<CityOption>(
-            title: 'City',
-            contractExemption: 'Fixture selection is not persisted.',
-            values: defaultCityOptions,
-            itemLabel: (city) => city.label,
-            value: selected,
-            prefixIcon: Icon(CatchIcons.locationOnOutlined),
-            validator: (value) => value == null ? 'Please select a city' : null,
-            onChanged: (value) => selected = value,
-          ),
-        ),
-      ),
-    );
-
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.locationOnOutlined));
-    final titleRect = tester.getRect(find.text('City'));
-    final valueRect = tester.getRect(find.text('Select city'));
-    final chevronRect = tester.getRect(
-      find.byIcon(CatchIcons.expandMoreRounded),
-    );
-
-    expect(iconRect.right, lessThan(titleRect.left));
-    expect((titleRect.left - valueRect.left).abs(), lessThanOrEqualTo(1));
-    expect(chevronRect.center.dy, closeTo(valueRect.center.dy, 0.1));
-
-    expect(formKey.currentState!.validate(), isFalse);
-    await tester.pump();
-    expect(find.text('Please select a city'), findsOneWidget);
-
-    final label = tester.widget<Text>(find.text('City'));
-    final value = tester.widget<Text>(find.text('Select city'));
-    final chevron = tester.widget<Icon>(
-      find.byIcon(CatchIcons.expandMoreRounded),
-    );
-    final iconTheme = IconTheme.of(
-      tester.element(find.byIcon(CatchIcons.locationOnOutlined)),
-    );
-
-    expect(label.style?.color, CatchTokens.editorialLight.danger);
-    expect(value.style?.color, CatchTokens.editorialLight.ink3);
-    expect(chevron.color, CatchTokens.editorialLight.ink3);
-    expect(chevron.size, CatchFieldTokens.disclosureGlyphExtent);
-    final rotation = tester.widget<AnimatedRotation>(
-      find.ancestor(
-        of: find.byIcon(CatchIcons.expandMoreRounded),
-        matching: find.byType(AnimatedRotation),
-      ),
-    );
-    expect(rotation.duration, CatchMotion.base);
-    expect(iconTheme.color, CatchTokens.editorialLight.ink2);
-
-    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Mumbai').hitTestable());
-    await pumpFeatureUi(tester);
-
-    expect(selected, cityOptionByName('mumbai')!);
-    expect(formKey.currentState!.validate(), isTrue);
-  });
-
-  testWidgets(
-    'CatchField.select exposes button semantics with label and value',
-    (tester) async {
-      final selected = cityOptionByName('mumbai')!;
-
-      await tester.pumpWidget(
-        _wrap(
-          SizedBox(
-            width: 320,
-            child: CatchField.select<CityOption>(
-              title: 'City',
-              values: defaultCityOptions,
-              itemLabel: (city) => city.label,
-              value: selected,
-              onChanged: (_) {},
-            ),
-          ),
-        ),
-      );
-
-      final semantics = tester.widget<Semantics>(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is Semantics &&
-              widget.properties.label == 'City' &&
-              widget.properties.value == 'Mumbai',
-        ),
-      );
-
-      expect(semantics.properties.button, isTrue);
-      expect(semantics.properties.enabled, isTrue);
-    },
-  );
-
-  testWidgets('CatchField.select disabled state does not open menu', (
-    tester,
-  ) async {
-    final selected = cityOptionByName('mumbai')!;
-
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 320,
-          child: CatchField.select<CityOption>(
-            title: 'City',
-            values: defaultCityOptions,
-            itemLabel: (city) => city.label,
-            value: selected,
-            enabled: false,
-            onChanged: (_) {},
-          ),
-        ),
-      ),
-    );
-
-    final semantics = tester.widget<Semantics>(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is Semantics &&
-            widget.properties.label == 'City' &&
-            widget.properties.value == 'Mumbai',
-      ),
-    );
-
-    expect(semantics.properties.button, isTrue);
-    expect(semantics.properties.enabled, isFalse);
-    expect(semantics.properties.onTap, isNull);
-
-    expect(find.text('Delhi'), findsNothing);
-  });
-
-  testWidgets('CatchField.select clears form state when options remove value', (
-    tester,
-  ) async {
-    final formKey = GlobalKey<FormState>();
-    final mumbai = cityOptionByName('mumbai')!;
-    var selected = mumbai;
-    var values = [mumbai, cityOptionByName('delhi')!];
-    late StateSetter updateState;
-
-    await tester.pumpWidget(
-      _wrap(
-        Form(
-          key: formKey,
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              updateState = setState;
-              return SizedBox(
-                width: 320,
-                child: CatchField.select<CityOption>(
-                  title: 'City',
-                  values: values,
-                  itemLabel: (city) => city.label,
-                  value: selected,
-                  validator: (value) =>
-                      value == null ? 'Please select a city' : null,
-                  onChanged: (value) {
-                    if (value != null) selected = value;
-                  },
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Mumbai'), findsOneWidget);
-    expect(formKey.currentState!.validate(), isTrue);
-
-    updateState(() {
-      values = [cityOptionByName('delhi')!];
-    });
-    await tester.pump();
-    await tester.pump();
-
-    expect(find.text('Select city'), findsOneWidget);
-    expect(formKey.currentState!.validate(), isFalse);
-    await tester.pump();
-
-    expect(find.text('Please select a city'), findsOneWidget);
-  });
-
-  test('CatchField guards ambiguous form configuration', () {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-
-    expect(
-      () => CatchField.input(
-        title: 'Name',
-        controller: controller,
-        initialValue: 'Aanya',
-      ),
-      throwsAssertionError,
-    );
-
-    expect(
-      () => CatchField.select<String>(
-        title: 'Activity',
-        values: const ['Run', 'Run'],
-        itemLabel: (value) => value,
-      ),
-      throwsAssertionError,
-    );
-  });
-
-  testWidgets('CatchField.select opens the shared CatchMenu panel', (
-    tester,
-  ) async {
-    CityOption? selected = cityOptionByName('ahmedabad');
-
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 240,
-          child: CatchField.select<CityOption>(
-            title: 'City',
-            values: defaultCityOptions,
-            value: selected,
-            itemLabel: (city) => city.label,
-            prefixIcon: Icon(CatchIcons.locationOnOutlined),
-            showLabel: false,
-            onChanged: (value) => selected = value,
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
-    await pumpFeatureUi(tester);
-
-    // Select renders through the shared CatchMenu panel, not raw Material
-    // menu items; the selected option carries the shared check affordance.
-    expect(find.byType(CatchMenu<Object?>), findsOneWidget);
-    expect(find.byType(MenuItemButton), findsNothing);
-    expect(find.byIcon(CatchIcons.check), findsOneWidget);
-
-    final other = defaultCityOptions.firstWhere(
-      (city) => city != cityOptionByName('ahmedabad'),
-    );
-    await tester.tap(find.text(other.label));
-    await pumpFeatureUi(tester);
-
-    expect(selected, other);
-    expect(find.byType(CatchMenu<Object?>), findsNothing);
-  });
+  _registerInputSelectionTests();
 
   testWidgets(
     'CatchField.input pins controller, formatter, submit, validator, and support',
@@ -1060,6 +836,7 @@ void main() {
           Form(
             key: formKey,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Invite code',
               controller: controller,
               autofocus: true,
@@ -1108,6 +885,7 @@ void main() {
             builder: (context, setState) {
               update = setState;
               return CatchField.inputActions(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Bio',
                 controller: controller,
                 open: open,
@@ -1171,6 +949,7 @@ void main() {
           SizedBox(
             width: 280,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Description',
               controller: controller,
               maxLines: 3,
@@ -1192,7 +971,8 @@ void main() {
         _wrap(
           SizedBox(
             width: 280,
-            child: CatchField.select<CityOption>(
+            child: CatchField<CityOption>.select(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred city',
               values: defaultCityOptions,
               itemLabel: (city) => city.label,
@@ -1221,6 +1001,7 @@ void main() {
           child: SizedBox(
             width: 280,
             child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               initialValue: 'Mumbai',
               prefixIcon: Icon(CatchIcons.locationOnOutlined),
@@ -1243,7 +1024,8 @@ void main() {
           textDirection: TextDirection.rtl,
           child: SizedBox(
             width: 280,
-            child: CatchField.select<CityOption>(
+            child: CatchField<CityOption>.select(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               values: defaultCityOptions,
               itemLabel: (city) => city.label,

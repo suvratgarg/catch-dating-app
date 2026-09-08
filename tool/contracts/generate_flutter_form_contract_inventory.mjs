@@ -81,7 +81,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
   const patterns = [
     {
       expression:
-        /CatchField\.(choices|control|input|inputActions|optionCards|select|stepper|toggle)(?:<[^>]+>)?\s*\(/g,
+        /CatchField(?:<[^>]+>)?\.(choices|control|input|inputActions|optionCards|select|stepper|toggle)\s*\(/g,
       symbol: (match) => match[1],
     },
     {

@@ -96,7 +96,7 @@ class MicroPodsHostCard extends StatelessWidget {
           ],
           if (actionState.error != null) ...[
             gapH8,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               actionState.error!,
               context: AppErrorContext.event,
             ),
@@ -229,7 +229,7 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               _saveError!,
               context: AppErrorContext.event,
             ),
@@ -508,6 +508,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
               Expanded(
                 child: CatchFieldLanes.single(
                   child: CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
@@ -588,21 +589,24 @@ class GroupOverrideMemberEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchField.select<String>(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
-            contract: CatchContractConstraints
-                .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
-            contractValue: (value) => value,
-            values: participantUids,
-            value: value,
-            itemLabel: participantLabel,
-            hintText: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesHinttextAttendee,
-            showLabel: false,
-            onChanged: onChanged,
+          child: CatchFieldLanes.single(
+            child: CatchField<String>.select(
+              copy: catchFieldCopy(context.l10n),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
+              contract: CatchContractConstraints
+                  .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
+              contractValue: (value) => value,
+              values: participantUids,
+              value: value,
+              itemLabel: participantLabel,
+              hintText: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesHinttextAttendee,
+              showLabel: false,
+              onChanged: onChanged,
+            ),
           ),
         ),
         gapW8,
@@ -756,7 +760,7 @@ class RotationsHostCard extends StatelessWidget {
           ],
           if (actionState.error != null) ...[
             gapH8,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               actionState.error!,
               context: AppErrorContext.event,
             ),
@@ -847,6 +851,7 @@ class RotationsHostCard extends StatelessWidget {
     int roundIndex,
   ) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.eventSuccessLiveControlPublishRotationTitle,
       message: context.l10n.eventSuccessLiveControlPublishRotationMessage(
@@ -926,7 +931,7 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               _saveError!,
               context: AppErrorContext.event,
             ),
@@ -1163,46 +1168,52 @@ class RotationOverridePairEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchField.select<String>(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
-            contract: CatchContractConstraints
-                .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
-            contractValue: (value) => value,
-            values: participantUids,
-            value: pair.uidA,
-            itemLabel: participantLabel,
-            hintText: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesHinttextAttendee,
-            showLabel: false,
-            onChanged: (value) {
-              pair.uidA = value;
-              onChanged();
-            },
+          child: CatchFieldLanes.single(
+            child: CatchField<String>.select(
+              copy: catchFieldCopy(context.l10n),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
+              contract: CatchContractConstraints
+                  .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
+              contractValue: (value) => value,
+              values: participantUids,
+              value: pair.uidA,
+              itemLabel: participantLabel,
+              hintText: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesHinttextAttendee,
+              showLabel: false,
+              onChanged: (value) {
+                pair.uidA = value;
+                onChanged();
+              },
+            ),
           ),
         ),
         gapW8,
         Expanded(
-          child: CatchField.select<String>(
-            title: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
-            contract: CatchContractConstraints
-                .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
-            contractValue: (value) => value,
-            values: participantUids,
-            value: pair.uidB,
-            itemLabel: participantLabel,
-            hintText: context
-                .l10n
-                .eventSuccessEventSuccessHostOverridesHinttextPartner,
-            showLabel: false,
-            onChanged: (value) {
-              pair.uidB = value;
-              onChanged();
-            },
+          child: CatchFieldLanes.single(
+            child: CatchField<String>.select(
+              copy: catchFieldCopy(context.l10n),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
+              contract: CatchContractConstraints
+                  .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
+              contractValue: (value) => value,
+              values: participantUids,
+              value: pair.uidB,
+              itemLabel: participantLabel,
+              hintText: context
+                  .l10n
+                  .eventSuccessEventSuccessHostOverridesHinttextPartner,
+              showLabel: false,
+              onChanged: (value) {
+                pair.uidB = value;
+                onChanged();
+              },
+            ),
           ),
         ),
         gapW8,

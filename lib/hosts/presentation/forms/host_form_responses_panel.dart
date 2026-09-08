@@ -1,27 +1,16 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -130,7 +119,7 @@ class _HostFormResponsesPanelState
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.formResponses,
             mode: CatchErrorStateMode.compact,
@@ -210,7 +199,7 @@ class _HostFormResponsesPanelState
                 ],
                 if (state.loadMoreError case final error?) ...[
                   gapH12,
-                  CatchErrorState.fromError(
+                  CatchLocalizedErrorState(
                     error,
                     context: AppErrorContext.formResponses,
                     mode: CatchErrorStateMode.compact,
@@ -271,6 +260,7 @@ class _HostFormResponsesPanelState
             children: [
               CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostAudienceAllForms,
                   onTap: () => Navigator.of(sheetContext).pop(''),
                 ),
@@ -285,6 +275,7 @@ class _HostFormResponsesPanelState
                   children: [
                     for (final form in state.forms)
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         title: form.title,
                         onTap: () =>
                             Navigator.of(sheetContext).pop(form.formId),
@@ -303,7 +294,7 @@ class _HostFormResponsesPanelState
                                   .loadMore(),
                       ),
                     if (state.loadMoreError case final error?)
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,

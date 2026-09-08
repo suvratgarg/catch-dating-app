@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.65.0
-updated: 2026-09-07
+version: 1.66.0
+updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -1098,6 +1098,12 @@ steps from every registered schema into typed
 documents, callable payloads, and `contracts/forms/mobile_form_state.schema.json`
 for editable presentation values that are deterministically transformed before
 they are stored.
+
+The presentation-neutral `CatchContractFieldConstraints` value type and
+`CatchContractFieldPolicy` live in `packages/catch_ui/lib/src/components/`.
+The generated app file imports that shared type and owns the concrete schema
+paths, values, and `CatchContractConstraints` lookup. The shared UI package
+does not import the generated app constants or the schema generator.
 
 `CatchContractFieldPolicy` applies those constants at runtime. Text controls
 derive validators, counters, and length formatters; choices filter values

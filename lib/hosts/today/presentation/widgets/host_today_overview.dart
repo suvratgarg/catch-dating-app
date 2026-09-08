@@ -1,16 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/host_events_policy.dart';
@@ -18,6 +9,7 @@ import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class HostTodayOverview extends StatelessWidget {
@@ -63,9 +55,9 @@ class HostTodayOverview extends StatelessWidget {
       onOpenAttention: onOpenAttention,
     );
 
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compact: (_) => Column(
+      compactBuilder: (_) => Column(
         key: const ValueKey<String>('host-today-compact-layout'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -87,15 +79,15 @@ class HostTodayOverview extends StatelessWidget {
           ),
         ],
       ),
-      expanded: (_) => ComponentResponsiveBuilder(
+      expandedBuilder: (_) => CatchViewportBreakpoint(
         breakpoint: CatchLayout.hostTodayExpandedAttentionPaneBreakpoint,
-        compact: (_) => _HostTodayWideLayout(
+        compactBuilder: (_) => _HostTodayWideLayout(
           primary: primary,
           attention: attention,
           attentionVisible: attentionVisible,
           attentionPaneWidth: CatchLayout.hostTodayAttentionPaneCompactWidth,
         ),
-        expanded: (_) => _HostTodayWideLayout(
+        expandedBuilder: (_) => _HostTodayWideLayout(
           primary: primary,
           attention: attention,
           attentionVisible: attentionVisible,
@@ -280,7 +272,7 @@ class HostTodayAttentionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final issue in state.attentionIssues) ...[
-          CatchInlineErrorState.fromError(
+          CatchLocalizedInlineErrorState(
             issue.error,
             context: AppErrorContext.event,
             onRetry: onRetry,
@@ -526,6 +518,7 @@ class HostTodayAttentionCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: data.title,
         body: data.body,
         emphasis: CatchFieldEmphasis.title,
@@ -567,6 +560,7 @@ class HostTodayEventRow extends StatelessWidget {
               '${data.event.startTime.day} ${data.monthLabel}';
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: data.event.title,
         body: data.event.locationName,
         emphasis: CatchFieldEmphasis.title,

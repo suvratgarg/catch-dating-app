@@ -236,7 +236,7 @@ export function resolveAnchor(repoRoot, anchor) {
 export function findCallLines(source, symbol) {
   const sanitized = stripCommentsAndStrings(source);
   const expression = new RegExp(
-    `(^|[^A-Za-z0-9_])${escapeRegExp(symbol)}(?:<[^>{}()]+>)?\\s*\\(`,
+    `(^|[^A-Za-z0-9_])${symbol.split(".").map((part) => `${escapeRegExp(part)}(?:<[^>{}()]+>)?`).join("\\s*\\.\\s*")}\\s*\\(`,
     "gmu",
   );
   const lineStarts = [0];

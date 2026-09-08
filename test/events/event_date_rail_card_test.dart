@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -41,8 +41,8 @@ void main() {
     expect(find.text('Social run'), findsOneWidget);
     expect(find.text('FREE'), findsOneWidget);
     expect(find.byType(EventActivityStamp), findsNothing);
-    expect(find.byType(EventClockMark), findsNothing);
-    expect(find.byType(EventStatusPill), findsNothing);
+    expect(find.byType(CatchTicketClock), findsNothing);
+    expect(find.byType(CatchTicketStatusBadge), findsNothing);
 
     final glyph = tester.widget<Icon>(
       find.byKey(const ValueKey('event_date_rail_card.activity_glyph')),

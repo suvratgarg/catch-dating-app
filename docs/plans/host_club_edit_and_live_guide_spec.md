@@ -230,6 +230,11 @@ absent otherwise, and opens the sheet.
 
 ### 4.4 Shared accordion scope (extraction, F16)
 
+Current owner: `CatchAccordionController` in
+`packages/catch_ui/lib/src/components/catch_accordion_controller.dart`.
+The UI-system program's Phase 3 extraction supersedes the original name and
+app path below; the single-expanded-field behavior is unchanged.
+
 Extract the duplicated single-expanded-field logic into
 `lib/core/widgets/catch_field_accordion.dart`:
 

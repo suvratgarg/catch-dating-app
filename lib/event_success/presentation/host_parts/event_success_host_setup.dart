@@ -175,7 +175,7 @@ class _SetupTabState extends State<SetupTab> {
           gapH16,
         ],
         if (widget.actionState.hasError) ...[
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             widget.actionState.error!,
             context: AppErrorContext.event,
           ),
@@ -326,30 +326,34 @@ class TargetAttendeeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.stepper(
-      title: context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
-      contract:
-          CatchContractConstraints.eventSuccessPlanDocumentTargetAttendeeCount,
-      body: context.l10n
-          .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
-            recommendedMin: recommendedMin,
-            recommendedMax: recommendedMax,
-          ),
-      value: value,
-      min: 1,
-      max: 1000,
-      formatter: (number) =>
-          context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
-            toInt: number.toInt(),
-          ),
-      enabled: enabled,
-      decreaseSemanticLabel: context
-          .l10n
-          .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
-      increaseSemanticLabel: context
-          .l10n
-          .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
-      onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
+    return CatchFieldLanes.single(
+      child: CatchField.stepper(
+        copy: catchFieldCopy(context.l10n),
+        title:
+            context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
+        contract: CatchContractConstraints
+            .eventSuccessPlanDocumentTargetAttendeeCount,
+        body: context.l10n
+            .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
+              recommendedMin: recommendedMin,
+              recommendedMax: recommendedMax,
+            ),
+        value: value,
+        min: 1,
+        max: 1000,
+        formatter: (number) =>
+            context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
+              toInt: number.toInt(),
+            ),
+        enabled: enabled,
+        decreaseSemanticLabel: context
+            .l10n
+            .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
+        increaseSemanticLabel: context
+            .l10n
+            .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
+        onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
+      ),
     );
   }
 }
@@ -364,6 +368,7 @@ class ReadinessIssues extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
         body: issues.join('\n'),
         bodyMaxLines: math.max(3, issues.length * 2),

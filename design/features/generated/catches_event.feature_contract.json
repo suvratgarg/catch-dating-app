@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a8c781d10f212a6e6a93cc33a6d8355ff7f94bf2195e98d1c5da67444edd5c9a",
-  "resolvedDigest": "sha256:e09b3aea97d3fcbd7bc3318fbfcb7904dadae6e02f7e13d8f5232c90a08671ce",
+  "resolvedDigest": "sha256:da0e60f03fd4038fbc2e8058ef20ce0e7c64eee1d8c583212dc2c628f92a4a02",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -1200,7 +1200,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1213,11 +1213,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",
@@ -1236,7 +1237,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1249,7 +1250,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

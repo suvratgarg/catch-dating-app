@@ -537,7 +537,7 @@ void _registerExploreScreenFiltersTests() {
           home: StatefulBuilder(
             builder: (context, setState) {
               setShellState = setState;
-              return AppShellActiveTab(
+              return CatchTabViewportScope(
                 index: activeIndex,
                 child: const ExploreScreen(),
               );

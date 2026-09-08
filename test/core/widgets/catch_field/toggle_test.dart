@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +30,8 @@ void main() {
             builder: (context, setState) => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchField.choices<String>(
+                CatchField<String>.choices(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Languages',
                   values: const ['English', 'Hindi'],
                   itemLabel: (value) => value,
@@ -41,6 +43,7 @@ void main() {
                   onSubmit: () {},
                 ),
                 CatchField.stepper(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Height',
                   value: height,
                   min: 160,
@@ -53,6 +56,7 @@ void main() {
                   onSubmit: () {},
                 ),
                 CatchField.toggle(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Show my pace',
                   value: visible,
                   onChanged: (next) => setState(() => visible = next),
@@ -146,6 +150,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
           onOpenChanged: openChanges.add,
@@ -176,6 +181,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           open: true,
           onOpenChanged: openChanges.add,
@@ -207,6 +213,7 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchField.toggle(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Show pace',
                   body: 'Visible on your profile',
                   value: value,
@@ -214,7 +221,8 @@ void main() {
                   tone: CatchFieldTone.danger,
                   onChanged: (next) => setState(() => value = next),
                 ),
-                const CatchField.toggle(
+                CatchField.toggle(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Locked preference',
                   value: true,
                   onChanged: null,
@@ -253,7 +261,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.toggle(
+        CatchField.toggle(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Live guide',
           body: 'Enable the run-of-show companion.',
           helperText: 'You can change this before the event.',
@@ -278,9 +287,10 @@ void main() {
     ) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 280,
             child: CatchField.toggle(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Show running pace on my public event profile',
               body: 'Visible to other participants before the event.',
               value: true,
@@ -308,11 +318,12 @@ void main() {
   testWidgets('CatchField toggle lanes mirror in RTL', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const Directionality(
+        Directionality(
           textDirection: TextDirection.rtl,
           child: SizedBox(
             width: 280,
             child: CatchField.toggle(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Show pace',
               value: true,
               onChanged: null,

@@ -2,19 +2,14 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,12 +39,13 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
         title: context.l10n.hostManualSendQueueTitle,
         children: [
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostManualSendQueueLoading,
             body: context.l10n.hostManualSendQueueDisclosure,
           ),
         ],
       ),
-      error: (error, _) => CatchErrorState.fromError(
+      error: (error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
         mode: CatchErrorStateMode.compact,
@@ -210,6 +206,7 @@ class _HostManualSendQueueContent extends StatelessWidget {
       children: [
         for (final task in tasks)
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-manual-send-${task.taskId}'),
             title: task.displayName,
             body: _manualTaskBody(context, task),
@@ -253,6 +250,7 @@ class _HostManualSendTaskSheetState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.manual-send.${_task.taskId}',
             title: _manualTaskStatus(context, _task),
@@ -263,12 +261,14 @@ class _HostManualSendTaskSheetState
         CatchSection.fieldRows(
           children: [
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-manual-send-open-whatsapp'),
               title: context.l10n.hostManualSendTaskOpenWhatsapp,
               body: _task.phoneE164,
               onTap: _busy ? null : () => unawaited(_openWhatsapp()),
             ),
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-manual-send-skip'),
               title: context.l10n.hostManualSendTaskSkip,
               body: context.l10n.hostManualSendTaskSkipBody,
@@ -358,6 +358,7 @@ class _HostManualSendReplanSheet extends StatelessWidget {
       children: [
         for (final task in tasks.take(50))
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: task.displayName,
             body: _manualTaskReplanBody(context, results[task.taskId]),
           ),

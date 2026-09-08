@@ -3,17 +3,56 @@ import fs from "node:fs";
 import test from "node:test";
 
 import {
+  buildFieldFacadeInventory,
+  buildFromRepo,
   extractCatchFieldFacades,
   extractCatchSectionContract,
   extractCatchSectionVariants,
   facadeUseWhen,
 } from "./generate_field_inventory.mjs";
 
-const source = fs.readFileSync("lib/core/widgets/catch_field.dart", "utf8");
+const source = fs.readFileSync("packages/catch_ui/lib/src/components/catch_field.dart", "utf8");
 const sectionSource = fs.readFileSync(
-  "lib/core/widgets/catch_section_layout.dart",
+  "packages/catch_ui/lib/src/components/catch_section.dart",
   "utf8",
 );
+const statusPath = "packages/catch_ui/lib/src/components/catch_field_status.dart";
+const statusSource = fs.readFileSync(statusPath, "utf8");
+const {interactionContracts} = JSON.parse(
+  fs.readFileSync("design/components/catch.components.json", "utf8"),
+);
+
+test("builds the live inventory from the package-owned status enum", () => {
+  const inventory = buildFromRepo();
+  assert.equal(inventory.summary.facadeCount, 14);
+  assert.equal(inventory.summary.saveStateCount, 3);
+  assert.equal(inventory.source.catchFieldStatus, statusPath);
+  assert.match(inventory.source.catchFieldStatusApiSha256, /^[a-f0-9]{64}$/u);
+});
+
+test("rejects package status drift even when the former owner has a matching enum", () => {
+  assert.throws(
+    () => buildFieldFacadeInventory({
+      fieldSource: `${source}\n${statusSource}`,
+      sectionSource,
+      statusSource: statusSource.replace(/\bsaved\b/u, "synced"),
+      interactionContracts,
+    }),
+    /interactionContracts\.field_row\.saveStates drifted/u,
+  );
+});
+
+test("does not fall back to a status enum in the former owner", () => {
+  assert.throws(
+    () => buildFieldFacadeInventory({
+      fieldSource: `${source}\n${statusSource}`,
+      sectionSource,
+      statusSource: "",
+      interactionContracts,
+    }),
+    /Unable to find enum CatchFieldStatus/u,
+  );
+});
 
 test("extracts every current facade and semantic slot", () => {
   const facades = extractCatchFieldFacades(source);
@@ -60,8 +99,8 @@ test("extracts every current facade and semantic slot", () => {
 
 test("known-bad deleted facade changes generated inventory", () => {
   const deleted = source.replace(
-    /\n  const factory CatchField\.add\([\s\S]*?\) = _RowConfig\.add;\n/u,
-    "\n",
+    "const CatchField.add(",
+    "const CatchField._add(",
   );
   const modes = extractCatchFieldFacades(deleted).map((entry) => entry.mode);
   assert.ok(!modes.includes("add"));
@@ -70,8 +109,8 @@ test("known-bad deleted facade changes generated inventory", () => {
 
 test("known-bad added slot parameter changes generated inventory", () => {
   const changed = source.replace(
-    "const factory CatchField.read({",
-    "const factory CatchField.read({\n    Widget? feedback,",
+    "const CatchField.read({",
+    "const CatchField.read({\n    Widget? feedback,",
   );
   const read = extractCatchFieldFacades(changed).find((entry) => entry.mode === "read");
   assert.ok(read.parameters.some((parameter) => parameter.name === "feedback"));
@@ -85,4 +124,20 @@ test("rejects a facade without owner-reviewed use-when metadata", () => {
     () => extractCatchFieldFacades(source, {useWhen: metadata}),
     /optionCards is missing owner-reviewed use-when metadata/u,
   );
+});
+
+
+test("private named initializing formals retain public parameter and slot names", () => {
+  const facades = extractCatchFieldFacades(`
+    const CatchField.inputActions({
+      required String this.title,
+      this._supporting,
+      this._secondaryAction,
+      this._feedback,
+    });
+  `);
+  assert.deepEqual(facades[0].parameters.map(({name}) => name), [
+    "title", "supporting", "secondaryAction", "feedback",
+  ]);
+  assert.deepEqual(facades[0].slots, ["title", "support", "feedback", "actions"]);
 });

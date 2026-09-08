@@ -1,103 +1,17 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+part 'catch_section_interaction_tests.dart';
+
 void main() {
-  testWidgets(
-    'semantic page body gives divided field interaction the full paint plane',
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: const Scaffold(
-            body: SizedBox(
-              width: 390,
-              child: CatchScreenBody(
-                scrollable: false,
-                pt: 0,
-                pb: 0,
-                child: CatchSection.fieldRows(
-                  first: true,
-                  title: 'Notifications',
-                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final fieldRect = tester.getRect(find.byType(CatchField));
-      final overlayFinder = find.byKey(CatchField.pressOverlayKey);
-      final overlayRect = tester.getRect(overlayFinder);
-      expect(fieldRect.left, CatchSpacing.screenPx);
-      expect(fieldRect.right, 390 - CatchSpacing.screenPx);
-      expect(overlayRect.left, 0);
-      expect(overlayRect.right, 390);
-
-      final gesture = await tester.startGesture(
-        tester.getCenter(find.byType(CatchField)),
-      );
-      await tester.pump();
-      final decoration =
-          tester.widget<AnimatedContainer>(overlayFinder).decoration!
-              as BoxDecoration;
-      expect(decoration.borderRadius, BorderRadius.zero);
-      expect(decoration.border, isNull);
-      expect(
-        decoration.color,
-        CatchFieldTokens.pressedSurface(CatchTokens.editorialLight),
-      );
-      await gesture.up();
-    },
-  );
-
-  testWidgets(
-    'divided section can explicitly retain rounded tile interaction',
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: const Scaffold(
-            body: SizedBox(
-              width: 390,
-              child: CatchScreenBody(
-                scrollable: false,
-                pt: 0,
-                pb: 0,
-                child: CatchSection.fieldRows(
-                  first: true,
-                  interaction: CatchDividedFieldInteraction.roundedTile,
-                  children: [CatchField.nav(title: 'Delivery', onTap: _noop)],
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final fieldRect = tester.getRect(find.byType(CatchField));
-      final overlayRect = tester.getRect(
-        find.byKey(CatchField.pressOverlayKey),
-      );
-      expect(
-        overlayRect.left,
-        fieldRect.left - CatchFieldTokens.dividedRowBleed,
-      );
-      expect(
-        overlayRect.right,
-        fieldRect.right + CatchFieldTokens.dividedRowBleed,
-      );
-    },
-  );
+  _registerSectionInteractionTests();
 
   testWidgets(
     'CatchSection.fieldRows renders rows flush with lane-aligned dividers',
@@ -110,11 +24,13 @@ void main() {
               title: 'Details',
               children: [
                 CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'First',
                   valueText: 'A',
                   icon: CatchIcons.helpOutline,
                 ),
                 CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Second',
                   valueText: 'B',
                   icon: CatchIcons.schedule,
@@ -173,14 +89,15 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 360,
           child: CatchSection.fieldRows(
             title: 'Events',
             children: [
               CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'First',
-                leading: SizedBox(
+                leading: const SizedBox(
                   key: ValueKey('first-leading'),
                   width: 48,
                   height: 32,
@@ -188,8 +105,9 @@ void main() {
                 leadingExtent: 48,
               ),
               CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Second',
-                leading: SizedBox(width: 48, height: 32),
+                leading: const SizedBox(width: 48, height: 32),
                 leadingExtent: 48,
               ),
             ],
@@ -223,19 +141,28 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.fieldRows(
               first: true,
               children: [
-                CatchField.read(title: 'First', body: 'A'),
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'First',
+                  body: 'A',
+                ),
                 CatchField.control(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Second',
                   body: 'B',
                   initiallyOpen: true,
-                  control: Text('Second control'),
+                  control: const Text('Second control'),
                 ),
-                CatchField.read(title: 'Third', body: 'C'),
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Third',
+                  body: 'C',
+                ),
               ],
             ),
           ),
@@ -284,11 +211,16 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 360,
           child: CatchSection.fieldRows(
             first: true,
-            children: [CatchField.read(title: 'Log out')],
+            children: [
+              CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Log out',
+              ),
+            ],
           ),
         ),
       ),
@@ -307,13 +239,23 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.fieldRows(
               first: true,
               children: [
-                SizedBox(child: CatchField.read(title: 'First')),
-                SizedBox(child: CatchField.read(title: 'Second')),
+                SizedBox(
+                  child: CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'First',
+                  ),
+                ),
+                SizedBox(
+                  child: CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Second',
+                  ),
+                ),
               ],
             ),
           ),
@@ -341,12 +283,18 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 360,
           child: CatchSection.fieldRows(
             first: true,
-            footer: Text('We never show your birth year.'),
-            children: [CatchField.read(title: 'Date of birth', body: '12 Aug')],
+            footer: const Text('We never show your birth year.'),
+            children: [
+              CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Date of birth',
+                body: '12 Aug',
+              ),
+            ],
           ),
         ),
       ),
@@ -378,18 +326,24 @@ void main() {
             first: true,
             children: [
               CatchField.nav(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.personOutlineRounded,
                 title: 'Aanya',
                 body: 'Name',
                 onTap: () {},
               ),
-              const CatchField.add(title: '+ Add bio'),
+              CatchField.add(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: '+ Add bio',
+              ),
               CatchField.toggle(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Visible',
                 value: toggleValue,
                 onChanged: (value) => setState(() => toggleValue = value),
               ),
               CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.deleteOutline,
                 title: 'Delete account',
                 tone: CatchFieldTone.danger,
@@ -480,20 +434,20 @@ void main() {
               context,
               ActivityKind.socialRun,
             ).accent;
-            return const Column(
+            return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchSection.divided(
                   title: 'The plan',
-                  activityKind: ActivityKind.socialRun,
+                  leadAccent: activityAccent,
                   lead: true,
                   first: true,
-                  child: Text('Lead body'),
+                  child: const Text('Lead body'),
                 ),
                 CatchSection.divided(
                   title: 'Details',
-                  activityKind: ActivityKind.socialRun,
-                  child: Text('Neutral body'),
+                  leadAccent: activityAccent,
+                  child: const Text('Neutral body'),
                 ),
               ],
             );
@@ -544,14 +498,20 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.containedFieldRows(
               title: 'Where',
               count: '2 OF 4',
-              trailing: Text('Ready'),
-              footer: Text('Attendees see this on event cards.'),
-              children: [CatchField.read(title: 'Location', body: 'Bandra')],
+              trailing: const Text('Ready'),
+              footer: const Text('Attendees see this on event cards.'),
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Location',
+                  body: 'Bandra',
+                ),
+              ],
             ),
           ),
         ),
@@ -653,10 +613,16 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.containedFieldRows(
-              children: [CatchField.read(title: 'Prompt 1', body: 'Answer')],
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Prompt 1',
+                  body: 'Answer',
+                ),
+              ],
             ),
           ),
         ),
@@ -681,14 +647,20 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.containedFieldRows(
               title: 'Event settings',
               count: '2 fields',
-              trailing: Text('Ready'),
+              trailing: const Text('Ready'),
               headerPlacement: CatchSectionHeaderPlacement.inside,
-              children: [CatchField.read(title: 'Host', body: 'Catch Hosts')],
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Host',
+                  body: 'Catch Hosts',
+                ),
+              ],
             ),
           ),
         ),
@@ -740,14 +712,20 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.containedFieldRows(
               title: 'Media library',
               count: '3 photos',
-              trailing: Text('Manage images'),
+              trailing: const Text('Manage images'),
               headerPlacement: CatchSectionHeaderPlacement.inside,
-              children: [CatchField.read(title: 'Cover', body: 'Hero image')],
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Cover',
+                  body: 'Hero image',
+                ),
+              ],
             ),
           ),
           textScale: 2,
@@ -773,6 +751,7 @@ void main() {
                 children: [
                   for (var index = 0; index < count; index++)
                     CatchField.nav(
+                      copy: catchFieldCopy(AppLocalizationsEn()),
                       key: ValueKey('row-$index'),
                       title: 'Row $index',
                       onTap: () {},
@@ -876,14 +855,20 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSection.fieldRows(
               first: true,
               title: 'Prompts',
               count: '3 OF 3 ANSWERED',
-              trailing: Text('Edit'),
-              children: [CatchField.read(title: 'Prompt', body: 'Answer')],
+              trailing: const Text('Edit'),
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Prompt',
+                  body: 'Answer',
+                ),
+              ],
             ),
           ),
         ),
@@ -1006,6 +991,7 @@ void main() {
                 children: [
                   for (var index = 0; index < rowCount; index++)
                     CatchField.control(
+                      copy: catchFieldCopy(AppLocalizationsEn()),
                       key: ValueKey('active-row-$index'),
                       title: 'Row $index',
                       body: 'Value $index',
@@ -1103,7 +1089,7 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const SizedBox(
+          SizedBox(
             width: 360,
             child: CatchSectionFocusSurface(
               padding: EdgeInsets.zero,
@@ -1111,6 +1097,7 @@ void main() {
               hasError: false,
               fieldRows: true,
               child: CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Answer',
                 initialValue: 'The child owns this focus ring.',
                 focused: true,
@@ -1155,6 +1142,7 @@ void main() {
             width: 360,
             child: CatchSection.contained(
               child: CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Notifications',
                 valueText: 'On',
                 icon: CatchIcons.helpOutline,

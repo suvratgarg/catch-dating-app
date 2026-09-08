@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.11.0
-updated: 2026-09-04
+version: 1.12.0
+updated: 2026-09-06
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -145,8 +145,9 @@ Dynamic Type behavior.
 > The old serif/custom-sans direction is retired. Keep the swap centralized in
 > `CatchFonts`, `CatchTextStyles`, and `design/tokens/catch.tokens.json`.
 Generated Flutter scales and handwritten L0 roles live in `packages/catch_tokens`,
-imported through `package:catch_tokens/catch_tokens.dart`. App theme wiring and
-activity-domain color mapping remain in `lib/core/theme`.
+imported through `package:catch_tokens/catch_tokens.dart`. Shared theme wiring, text styles, icons, motion, and bundled fonts live in
+`packages/catch_ui`, imported through `package:catch_ui/catch_ui.dart`.
+`AppTheme` attaches the app-specific activity palette to `CatchTheme`.
 
 **Legibility-first craft:**
 - **Single Archivo width — 78% (ratified 2026-07-06).** The DS
@@ -290,7 +291,7 @@ form for long lists and date-grouped rails (DateTicket rows, index rows).
 More tiers are allowed when a surface justifies them; a surface never mixes
 tiers within one list.
 
-- **Ticket → events: keep & refine.** `event_ticket_surface.dart` (real `CustomClipper`
+- **Ticket → events: keep & refine.** `catch_ticket_shape_clipper.dart` (real `CustomClipper`
   notches, perforation, Hero card→detail) is strong, award-adjacent craft. Refine: the
   fixed `eventTicketMediaHeight = 136` → aspect-ratio/constraint (Dynamic Type); push
   the ticket-stub typography (serial/time treatment).
@@ -539,10 +540,13 @@ are deleted rather than kept as aliases. Component contracts, Widgetbook
 states, and the section/top-bar scanners provide the review and regression
 layers.
 
-The reviewed Flutter library surface is `package:catch_dating_app/catch_ui.dart`.
-It exports semantic tokens, fields, sections, page composition, responsive
-policies, and typed form orchestration while excluding renderer scopes and
-focus-surface implementation members. Analyzer diagnostics reject feature-level
+Shared Flutter UI is imported through `package:catch_ui/catch_ui.dart`, with
+semantic tokens in `package:catch_tokens/catch_tokens.dart`. The app compatibility
+barrel is retired. Schema-coupled fields, sections, root-header composition, and
+typed form orchestration retain focused app imports until their Phase 3 move.
+The final reviewed barrel excludes renderer scopes and focus-surface
+implementation members; their temporary package exports support the remaining
+app-side owners during extraction. Analyzer diagnostics reject feature-level
 construction of those internal geometry objects and reject field-owned sibling
 dividers or lane-gutter overrides that still type-check.
 
@@ -614,10 +618,10 @@ that detaches the explanation from the options it describes.
   enlarge phone components. The canonical Host contract lives in
   [`app_architecture.md#host-adaptive-workspace-specification`](app_architecture.md#host-adaptive-workspace-specification).
 - **Motion:** route motion through `CatchMotion` and
-  `lib/core/motion/catch_transitions.dart`. Use `catchSelectionHaptic()` for
+  `package:catch_ui/catch_ui.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
-  `catchFadeScalePageTransition` for calm card-to-detail routes, and
-  `catchHeroSurface`/`CatchTicketHero` for ticket or polaroid flights. Avoid
+  `CatchFadeScaleViewport` for calm card-to-detail routes, and
+  `CatchHeroViewport`/`CatchTicketHeroViewport` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
 

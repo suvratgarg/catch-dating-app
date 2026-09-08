@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "6a6f5af678e0061db1cbaa9386d447598d179f53bd7142a0c68cefece09c7227",
+  "sourceDigest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -22,7 +22,7 @@
       "conceptId": "catch.badge",
       "parentConceptId": null,
       "dartSymbol": "CatchBadge",
-      "dartFile": "lib/core/widgets/catch_badge.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_badge.dart",
       "claudeHandoffName": "Badge",
       "figmaComponentName": "Catch/Badge",
       "supportedStates": [
@@ -61,7 +61,7 @@
       "conceptId": "catch.field",
       "parentConceptId": null,
       "dartSymbol": "CatchField",
-      "dartFile": "lib/core/widgets/catch_field.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_field.dart",
       "claudeHandoffName": "Field",
       "figmaComponentName": "Catch/Field",
       "supportedStates": [
@@ -117,7 +117,7 @@
         "add"
       ],
       "supportedStatesDigest": "adb5de9605a60a3474197d597d00871e7dc8135bc9ce2bc3f6153521a4d48db3",
-      "propsDigest": "8070da78007822867ae0410ce9e1f6a751f4f08168766c271f28513ab9ae87e5",
+      "propsDigest": "c0b0fcf03c1c96c80983edb1df4929d9479247c7a24fe1d9b6cfd53bc5a32718",
       "tokens": [
         "space.micro10",
         "space.micro14",

@@ -1,10 +1,9 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Guest source and runtime access; ticketing rules belong to EventPolicyStep.
@@ -49,7 +48,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
   static const _externalProviderField = 'external-provider';
   static const _walkInPolicyField = 'walk-in-policy';
   bool _showBookingDetails = false;
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
 
   @override
   void initState() {
@@ -134,6 +133,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
       CatchSection.fieldRows(
         children: [
           CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host.create_event.roster_file'),
             title: context.l10n.hostsCreateEventRosterTitle,
             body: widget.rosterFileName == null
@@ -155,7 +155,8 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             icon: CatchIcons.cloudUploadOutlined,
             onTap: widget.onPickRoster,
           ),
-          CatchField.choices<EventRuntimeWalkInPolicy>(
+          CatchField<EventRuntimeWalkInPolicy>.choices(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.runtimeWalkInPolicy,
             title: context.l10n.hostsEventDetailsStepExternalWalkInTitle,
             contract: CatchContractConstraints
@@ -178,6 +179,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
           Semantics(
             expanded: _showBookingDetails,
             child: CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host.create_event.booking_details'),
               title: context.l10n.hostsCreateEventExternalDetailsTitle,
               body: _externalBookingProviderLabel(
@@ -191,7 +193,8 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             ),
           ),
           if (_showBookingDetails) ...[
-            CatchField.choices<ExternalBookingProvider>(
+            CatchField<ExternalBookingProvider>.choices(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalBookingProvider,
               title: context.l10n.hostsEventDetailsStepExternalProviderTitle,
               contract: CatchContractConstraints
@@ -213,6 +216,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               icon: CatchIcons.linkOutlined,
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalEventUrl,
               title: context.l10n.hostsEventDetailsStepExternalEventUrlTitle,
               contract: CatchContractConstraints
@@ -239,6 +243,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               },
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.externalEventId,
               title: context.l10n.hostsEventDetailsStepExternalEventIdTitle,
               contract: CatchContractConstraints

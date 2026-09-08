@@ -47,7 +47,7 @@
           "additionalProperties": false,
           "properties": {
             "owner": {"const": "CatchField"},
-            "source": {"const": "lib/core/widgets/catch_field.dart"},
+            "source": {"const": "packages/catch_ui/lib/src/components/catch_field.dart"},
             "modes": {
               "type": "array",
               "minItems": 1,
@@ -80,7 +80,7 @@
           "additionalProperties": false,
           "properties": {
             "owner": {"const": "CatchSection"},
-            "source": {"const": "lib/core/widgets/catch_section_layout.dart"},
+            "source": {"const": "packages/catch_ui/lib/src/components/catch_section.dart"},
             "variants": {
               "type": "array",
               "minItems": 1,
@@ -172,7 +172,7 @@
             },
             "file": {
               "type": "string",
-              "pattern": "^lib/.+\\.dart$"
+              "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
             },
             "constructors": {
               "type": "array",
@@ -713,7 +713,7 @@
         },
         "file": {
           "type": "string",
-          "pattern": "^lib/.+\\.dart$"
+          "pattern": "^(?:lib|packages/catch_ui/lib)/.+\\.dart$"
         },
         "summary": {
           "type": "string",
