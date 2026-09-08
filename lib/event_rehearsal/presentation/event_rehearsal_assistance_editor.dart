@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -130,11 +131,17 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     _ => null,
   };
 
-  void select(RehearsalAssistanceCommand? command) {
+  void select(RehearsalAssistanceCommand? command) => _select(() => command);
+
+  void selectPublication(RehearsalPublicationDraft draft) =>
+      _select(() => draft.prepare(review.snapshot));
+
+  void _select(RehearsalAssistanceCommand? Function() resolve) {
     final form = _form;
     if (form == null || !form.canEdit) return;
     try {
       _requireCurrentReview();
+      final command = resolve();
       final change = command == null
           ? null
           : RehearsalAssistanceChange(

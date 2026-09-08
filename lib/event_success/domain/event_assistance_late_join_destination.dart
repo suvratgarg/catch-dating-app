@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 enum LateEntryRule { allowed, hostDecision, closed }
@@ -18,6 +19,28 @@ sealed class LateJoinDestination {
   }
 
   Map<String, Object?> toJson();
+
+  /// Scope compatibility only; this does not authorize entry or dispatch.
+  bool permits(AssistanceJoiningTarget candidate) => switch (this) {
+    LateJoinConfirmedProgress() => false,
+    LateJoinFixedPlace(:final placeId, :final lateEntry) =>
+      candidate is AssistanceFixedPlace &&
+          candidate.placeId == placeId &&
+          candidate.lateEntry.name == lateEntry.name,
+    LateJoinItinerary(:final itineraryId, :final permittedStopIds) =>
+      candidate is AssistanceItineraryStop &&
+          candidate.itineraryId == itineraryId &&
+          permittedStopIds.contains(candidate.stopId),
+    LateJoinGroupCheckpoints(
+      :final routeId,
+      :final groupId,
+      :final permittedCheckpointIds,
+    ) =>
+      candidate is AssistanceGroupCheckpoint &&
+          candidate.routeId == routeId &&
+          candidate.groupId == groupId &&
+          permittedCheckpointIds.contains(candidate.checkpointId),
+  };
 }
 
 final class LateJoinConfirmedProgress extends LateJoinDestination {

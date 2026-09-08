@@ -157,6 +157,7 @@ export interface EventRehearsalBootstrapCallableResponse {
       | "reducedMotion"
       | "lowBandwidth";
     expiresAtMillis: number;
+    virtualStartedAtMillis: number;
   };
   /**
    * @maxItems 50

@@ -38,6 +38,7 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         'virtualNowMillis',
         'faultId',
         'expiresAtMillis',
+        'virtualStartedAtMillis',
       ],
       'properties': <String, Object?>{
         'id': <String, Object?>{
@@ -548,6 +549,11 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
         'expiresAtMillis': <String, Object?>{
           'type': 'integer',
+        },
+        'virtualStartedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
         },
       },
     },
@@ -1043,6 +1049,7 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         'virtualNowMillis',
         'faultId',
         'expiresAtMillis',
+        'virtualStartedAtMillis',
       ],
       'properties': <String, Object?>{
         'id': <String, Object?>{
@@ -1553,6 +1560,11 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
         'expiresAtMillis': <String, Object?>{
           'type': 'integer',
+        },
+        'virtualStartedAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
         },
       },
     },

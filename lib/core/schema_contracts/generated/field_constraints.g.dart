@@ -29573,6 +29573,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionVirtualStartedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.virtualStartedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalDocumentActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.actionCount',
     required: true,
@@ -85946,6 +85954,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.sourceEventId': eventRehearsalBootstrapCallableResponseSessionSourceEventId,
     'eventRehearsalBootstrapCallableResponse.session.status': eventRehearsalBootstrapCallableResponseSessionStatus,
     'eventRehearsalBootstrapCallableResponse.session.virtualNowMillis': eventRehearsalBootstrapCallableResponseSessionVirtualNowMillis,
+    'eventRehearsalBootstrapCallableResponse.session.virtualStartedAtMillis': eventRehearsalBootstrapCallableResponseSessionVirtualStartedAtMillis,
     'eventRehearsalDocument.actionCount': eventRehearsalDocumentActionCount,
     'eventRehearsalDocument.activeStepIndex': eventRehearsalDocumentActiveStepIndex,
     'eventRehearsalDocument.actorCount': eventRehearsalDocumentActorCount,

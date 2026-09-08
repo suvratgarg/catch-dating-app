@@ -252,6 +252,7 @@ class EventRehearsalSession {
     required this.runtimeRevision,
     required this.activeStepIndex,
     required this.virtualNow,
+    this.virtualStartedAt,
     required this.fault,
     required this.expiresAt,
   });
@@ -276,6 +277,11 @@ class EventRehearsalSession {
     virtualNow: DateTime.fromMillisecondsSinceEpoch(
       _requiredInt(map, 'virtualNowMillis'),
     ),
+    virtualStartedAt: map['virtualStartedAtMillis'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(
+            _requiredInt(map, 'virtualStartedAtMillis'),
+          ),
     fault: EventRehearsalFault.values.byName(_requiredString(map, 'faultId')),
     expiresAt: DateTime.fromMillisecondsSinceEpoch(
       _requiredInt(map, 'expiresAtMillis'),
@@ -295,6 +301,8 @@ class EventRehearsalSession {
   final int runtimeRevision;
   final int activeStepIndex;
   final DateTime virtualNow;
+  // Older servers cannot provide a trustworthy remaining practice window.
+  final DateTime? virtualStartedAt;
   final EventRehearsalFault fault;
   final DateTime expiresAt;
 

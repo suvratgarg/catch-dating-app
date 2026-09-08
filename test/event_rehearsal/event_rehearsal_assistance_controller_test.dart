@@ -5,8 +5,10 @@ import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +83,43 @@ void main() {
 
   RehearsalPublishInstruction publish() =>
       RehearsalPublishInstruction(actorId: 'actor-01', plan: practicePlan());
+
+  test('publication selection binds the plan to the current review', () async {
+    final current = await review();
+    final actions = editor(current);
+    final point = rehearsalJoiningPoints(current.snapshot.session).single;
+    RehearsalPublicationDraft draft({DateTime? deadline}) =>
+        RehearsalPublicationDraft(
+          actorId: 'actor-01',
+          joiningPoint: point,
+          rules: practiceRules(destination: const LateJoinConfirmedProgress()),
+          guidanceText: 'Meet us at the studio.',
+          departureConfirmed: true,
+          routes: practicePlan().routes,
+          deliveryPolicy: practicePlan().deliveryPolicy,
+          responseDeadline: deadline,
+        );
+    actions.selectPublication(
+      draft(deadline: current.snapshot.session.virtualNow),
+    );
+    expect(form(current).error, isA<FormatException>());
+    expect(form(current).canSubmit, isFalse);
+    expect(repository.writes, isEmpty);
+    actions.selectPublication(draft());
+    final change = form(current).change!;
+    final command = change.command as RehearsalPublishInstruction;
+    expect(command.plan.guidance.destination, point.target);
+    expect(command.plan.guidance.validUntil, 3600000);
+    expect(command.plan.departureConfirmed, isTrue);
+    expect(change.toJson()['expectedSetupRevision'], 1);
+    final pending = actions.submit();
+    actions.selectPublication(draft());
+    expect(form(current).change, same(change));
+    expect(repository.writes.single.change, same(change));
+    confirm(0);
+    await pending;
+    expect(form(current).phase, RehearsalAssistancePhase.applied);
+  });
 
   test(
     'loading, signed-out and failed authentication expose no private review',

@@ -143090,7 +143090,8 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
         "activeStepIndex",
         "virtualNowMillis",
         "faultId",
-        "expiresAtMillis"
+        "expiresAtMillis",
+        "virtualStartedAtMillis"
       ],
       "properties": {
         "id": {
@@ -143601,6 +143602,11 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
         },
         "expiresAtMillis": {
           "type": "integer"
+        },
+        "virtualStartedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       }
     },
@@ -144095,7 +144101,8 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
         "activeStepIndex",
         "virtualNowMillis",
         "faultId",
-        "expiresAtMillis"
+        "expiresAtMillis",
+        "virtualStartedAtMillis"
       ],
       "properties": {
         "id": {
@@ -144606,6 +144613,11 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
         },
         "expiresAtMillis": {
           "type": "integer"
+        },
+        "virtualStartedAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       }
     },

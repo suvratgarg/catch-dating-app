@@ -126,6 +126,7 @@ Map<String, Object?> practiceBootstrap({
     'runtimeRevision': runtimeRevision,
     'activeStepIndex': 0,
     'virtualNowMillis': 1000,
+    'virtualStartedAtMillis': 0,
     'faultId': 'none',
     'expiresAtMillis': 86400000,
   },

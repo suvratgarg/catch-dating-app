@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.83.0
+version: 1.84.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -58,6 +58,13 @@ transaction, preventing an old pending instruction from publishing into the
 new run. Other existing lifecycle controls retain their previous payload;
 this additional required field applies to assistance only. Native typed
 commands serialize the reviewed generation and also verify it in the result.
+
+Host rehearsal bootstrap also exposes the stored `virtualStartedAtMillis`.
+Native practice instruction assembly uses that anchor plus the configured
+duration to bound expiry; advancing the virtual clock cannot extend the event
+window. Older Host responses without the anchor remain readable, but cannot
+assemble a new instruction until a current bootstrap supplies it. The guest
+bootstrap shape is unchanged.
 
 ### Event Assistance Transaction Boundary
 

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.82.0
+version: 1.83.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -210,10 +210,24 @@ during a request cannot restore a stale result. This controller still needs
 Host UI and coach wiring; it does not persist pending requests across app
 restarts or automatically retry them.
 
+`RehearsalPublicationDraft` now assembles a practice instruction through that
+same guarded editor. Joining choices come from the copied venue, configured
+itinerary stops and configured pace-group checkpoints with a location or route
+distance. They are review candidates, not reports of current position or safe
+intercept recommendations. The Host supplies guidance, departure confirmation,
+policy, channel order and retry limits explicitly. Concrete policies retain
+their destination scope; unresolved confirmed-progress policies bind to the
+reviewed destination and compatible later choices. Foreign, reset or changed
+setup choices cannot be silently reused. Lists are frozen before submission.
+The stored virtual start and configured duration bound instruction expiry;
+elapsed time cannot restart that window. Material identity follows the target,
+text and expiry, so unrelated clock or runtime revisions do not manufacture a
+new instruction. Assembly never changes attendance or dispatches a message.
+
 This integrates backend fact assembly, storage, guest effects, the guest
-web reply flow and the native typed command/data boundary. Native Host
-presentation, setup/coach plan assembly and automatic evaluation on clock or
-actor changes remain unfinished. No real sender or delivery is enabled.
+web reply flow and the native typed command/data and plan assembly boundaries.
+Native Host presentation, setup/coach wiring and automatic evaluation on clock
+or actor changes remain unfinished. No real sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,

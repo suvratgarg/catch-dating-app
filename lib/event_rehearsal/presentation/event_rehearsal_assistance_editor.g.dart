@@ -73,7 +73,7 @@ final class EventRehearsalAssistanceEditorProvider
 }
 
 String _$eventRehearsalAssistanceEditorHash() =>
-    r'ceb0392cac3cad9efcecf4781ed1ddfbb7eb2487';
+    r'd203494b5c762ee1f23f989a9347543f1495df35';
 
 /// One reviewed practice command. Applied means its action receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.

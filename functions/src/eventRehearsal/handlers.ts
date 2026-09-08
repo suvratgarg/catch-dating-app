@@ -1224,6 +1224,7 @@ async function hostProjection(
       setupRevision: session.setupRevision,
       runtimeRevision: session.runtimeRevision,
       activeStepIndex: session.activeStepIndex,
+      virtualStartedAtMillis: session.virtualStartedAt.toMillis(),
       virtualNowMillis: session.virtualNow.toMillis(),
       faultId: session.faultId,
       expiresAtMillis: session.expiresAt.toMillis(),

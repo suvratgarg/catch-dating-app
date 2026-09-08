@@ -354,6 +354,8 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
     expectedSetupRevision: 1})), {code: "aborted"});
   assert.equal((await sessionRef.get()).data()!.actionCount, 0);
   const first = await controlEventRehearsalHandler(request(publish));
+  assert.equal(first.session.virtualStartedAtMillis,
+    session.virtualStartedAt.toMillis());
   const message = first.actors.find((a) =>
     a.actorId === actors[0].actorId)?.assistanceMessage;
   assert.ok(message);
