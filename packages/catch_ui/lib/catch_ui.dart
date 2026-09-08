@@ -6,8 +6,6 @@ export 'src/components/catch_action_menu.dart';
 export 'src/components/catch_action_menu_item.dart';
 export 'src/components/catch_activity_initials_placeholder.dart';
 export 'src/components/catch_adaptive_picker.dart';
-export 'src/components/catch_adaptive_selection_control.dart';
-export 'src/components/catch_adaptive_selection_menu.dart';
 export 'src/components/catch_analytics_bar.dart';
 export 'src/components/catch_analytics_data_quality_list.dart';
 export 'src/components/catch_avatar_colors.dart';

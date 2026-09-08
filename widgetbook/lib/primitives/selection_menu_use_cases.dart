@@ -41,14 +41,14 @@ Widget selectionSheetStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Custom trigger at window boundaries',
-  type: CatchAdaptiveSelectionMenu,
+  type: CatchSelectionMenu,
   path: '[Core primitives]/Menus',
 )
 Widget adaptiveSelectionMenuStates(BuildContext context) {
   var selected = 'recent';
   return WidgetbookCatalogFrame(
     title: 'Custom selection trigger',
-    catalogId: 'catch.menu.adaptive_trigger',
+    catalogId: 'catch.menu.selection_menu',
     children: [
       for (final width in [599.0, 600.0, 840.0]) ...[
         CatchMetadataText(
@@ -58,7 +58,7 @@ Widget adaptiveSelectionMenuStates(BuildContext context) {
         MediaQuery(
           data: MediaQuery.of(context).copyWith(size: Size(width, 800)),
           child: StatefulBuilder(
-            builder: (context, setState) => CatchAdaptiveSelectionMenu<String>(
+            builder: (context, setState) => CatchSelectionMenu<String>.adaptive(
               title: 'Sort customers',
               items: _choices,
               value: selected,
@@ -75,14 +75,14 @@ Widget adaptiveSelectionMenuStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Visible trigger at window boundaries',
-  type: CatchAdaptiveSelectionControl,
+  type: CatchSelectionMenu,
   path: '[Core primitives]/Menus',
 )
 Widget adaptiveSelectionControlStates(BuildContext context) {
   var selected = 'attended';
   return WidgetbookCatalogFrame(
     title: 'Visible selection control',
-    catalogId: 'catch.menu.adaptive_selection',
+    catalogId: 'catch.menu.selection_menu',
     children: [
       for (final width in [599.0, 600.0, 840.0]) ...[
         CatchMetadataText(
@@ -92,15 +92,14 @@ Widget adaptiveSelectionControlStates(BuildContext context) {
         MediaQuery(
           data: MediaQuery.of(context).copyWith(size: Size(width, 800)),
           child: StatefulBuilder(
-            builder: (context, setState) =>
-                CatchAdaptiveSelectionControl<String>(
-                  title: 'Sort customers',
-                  tooltip: 'Sort customers',
-                  items: _choices,
-                  value: selected,
-                  triggerLabel: (item) => 'Sort: ${item.label}',
-                  onSelected: (value) => setState(() => selected = value),
-                ),
+            builder: (context, setState) => CatchSelectionMenu<String>.control(
+              title: 'Sort customers',
+              tooltip: 'Sort customers',
+              items: _choices,
+              value: selected,
+              labelBuilder: (item) => 'Sort: ${item.label}',
+              onSelected: (value) => setState(() => selected = value),
+            ),
           ),
         ),
         gapH8,

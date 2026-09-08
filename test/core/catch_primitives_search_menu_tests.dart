@@ -588,7 +588,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchAdaptiveSelectionControl<String>(
+          builder: (context, setState) => CatchSelectionMenu<String>.control(
             title: 'Sort customers',
             subtitle: 'Choose how customers are ordered.',
             tooltip: 'Sort customers',
@@ -597,7 +597,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
               CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
               CatchSelectionMenuItem(value: 'name', label: 'Name'),
             ],
-            triggerLabel: (item) => 'Sort: ${item.label}',
+            labelBuilder: (item) => 'Sort: ${item.label}',
             onSelected: (value) => setState(() => selected = value),
           ),
         ),
@@ -633,7 +633,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchAdaptiveSelectionControl<String>(
+        CatchSelectionMenu<String>.control(
           title: 'Sort customers',
           tooltip: 'Sort customers',
           value: 'last-seen',
@@ -641,7 +641,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
             CatchSelectionMenuItem(value: 'last-seen', label: 'Last seen'),
             CatchSelectionMenuItem(value: 'name', label: 'Name'),
           ],
-          triggerLabel: (item) => 'Sort: ${item.label}',
+          labelBuilder: (item) => 'Sort: ${item.label}',
           onSelected: (_) {},
         ),
       ),

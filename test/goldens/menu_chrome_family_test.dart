@@ -39,12 +39,12 @@ void main() {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: CatchAdaptiveSelectionControl<String>(
+                child: CatchSelectionMenu<String>.control(
                   title: 'Sort people',
                   tooltip: 'Sort people',
                   items: _choices,
                   value: 'recent',
-                  triggerLabel: (item) => item.label,
+                  labelBuilder: (item) => item.label,
                   onSelected: _select,
                 ),
               ),

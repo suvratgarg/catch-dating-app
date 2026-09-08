@@ -3340,28 +3340,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Menus',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAdaptiveSelectionControl',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Visible trigger at window boundaries',
-                builder:
-                    _widgetbook_workspace_primitives_selection_menu_use_cases
-                        .adaptiveSelectionControlStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchAdaptiveSelectionMenu',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Custom trigger at window boundaries',
-                builder:
-                    _widgetbook_workspace_primitives_selection_menu_use_cases
-                        .adaptiveSelectionMenuStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchMenu',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3373,6 +3351,23 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Top anchored menu',
                 builder: _widgetbook_workspace_primitives_menu_anchor_use_cases
                     .catchMenuAnchorTop,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSelectionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Custom trigger at window boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_selection_menu_use_cases
+                        .adaptiveSelectionMenuStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Visible trigger at window boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_selection_menu_use_cases
+                        .adaptiveSelectionControlStates,
               ),
             ],
           ),

@@ -23,7 +23,7 @@ class HostCustomerDirectoryControls extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: CatchSpacing.s4,
       children: [
-        CatchAdaptiveSelectionMenu<HostCustomerSort>(
+        CatchSelectionMenu<HostCustomerSort>.adaptive(
           title: context.l10n.hostCustomersSort,
           subtitle: context.l10n.hostCustomersSortSheetSubtitle,
           value: sort,

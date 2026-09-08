@@ -907,7 +907,7 @@ Widget menuGeometryMatrix(BuildContext context) {
         label: 'Adaptive selection',
         description:
             'The same choice model opens as a compact sheet or an anchored wider-layout menu.',
-        child: CatchAdaptiveSelectionControl<String>(
+        child: CatchSelectionMenu<String>.control(
           title: 'Sort customers',
           subtitle: 'Choose how customers are ordered.',
           tooltip: 'Sort customers',
@@ -920,7 +920,7 @@ Widget menuGeometryMatrix(BuildContext context) {
             ),
             CatchSelectionMenuItem(value: 'name', label: 'Name'),
           ],
-          triggerLabel: (item) => 'Sort: ${item.label}',
+          labelBuilder: (item) => 'Sort: ${item.label}',
           onSelected: _ignoreString,
         ),
       ),

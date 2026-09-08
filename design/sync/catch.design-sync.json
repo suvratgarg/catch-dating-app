@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "712ae3aa7e9f7d98eba84e083e2251b4624a67bc319b4c4dd55b81e497c92d26",
+  "sourceDigest": "7008b6099287ffe70542957c10d97d26a88f8493ceaba6f01abc9766f1ab406b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "712ae3aa7e9f7d98eba84e083e2251b4624a67bc319b4c4dd55b81e497c92d26",
-    "contractDigest": "712ae3aa7e9f7d98eba84e083e2251b4624a67bc319b4c4dd55b81e497c92d26"
+    "digest": "7008b6099287ffe70542957c10d97d26a88f8493ceaba6f01abc9766f1ab406b",
+    "contractDigest": "7008b6099287ffe70542957c10d97d26a88f8493ceaba6f01abc9766f1ab406b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "d4eb0e750c053f70a8b536009a8cf88e80e5c482a16aad5932a2724b9b69f99a",
+    "handoffRequestDigest": "bdc81c0bcd472a843ec9dfccd8ab6641e4f057416029bcd22cace27b9b86de3d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 77,
-    "publicClassCount": 274,
+    "publicClassCount": 272,
     "conceptCount": 70,
-    "memberCount": 186,
-    "membersPerConcept": 2.66,
+    "memberCount": 184,
+    "membersPerConcept": 2.63,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 70,
-      "member": 186,
+      "member": 184,
       "screen": 15
     },
     "collisionCount": 36,
@@ -267,8 +267,6 @@
         "key": "catch.menu",
         "symbols": [
           "CatchActionMenu",
-          "CatchAdaptiveSelectionControl",
-          "CatchAdaptiveSelectionMenu",
           "CatchMenu",
           "CatchMenuRow",
           "CatchSelectionMenu",
@@ -1284,7 +1282,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "072906cf2a0fc94cae43ecca19ca397f948fa4e18b6c1427e86d5a6c7491c3a0"
+      "contractDigest": "68654d679fd93cbe727c9e3ecc52cc1f4991982dafef1484b48895f74f920b69"
     },
     {
       "contractId": "catch.icon_tile",

@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// inline scalar scope controls whose fixed, terse options fit the viewport.
 /// Non-summary variants scroll automatically when full scaled labels no longer
 /// fit. [scrollable] forces that mode; it never permits undersized targets.
-/// Use `CatchAdaptiveSelectionControl` when the choices are numerous, long, or
+/// Use `CatchSelectionMenu.control` when the choices are numerous, long, or
 /// dynamic enough that the inline row would hide their meaning.
 class CatchOptionGroup<T> extends StatefulWidget {
   const CatchOptionGroup({

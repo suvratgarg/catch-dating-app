@@ -1673,6 +1673,41 @@
           "rationale": "Anchoring composes the same panel and is a named Menu presentation recipe, not an independent UI concept."
         }
       ]
+    },
+    {
+      "id": "adaptive-selection-menu-recipes",
+      "title": "Canonical adaptive selection recipes",
+      "intent": "Keep selected-value semantics, presentation adaptation and the visible trigger in one SelectionMenu API.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.menu.selection_menu",
+      "qualityReference": "CatchSelectionMenu",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve button typography, selected and disabled rows, compact sheet versus wider anchor, haptics and typed callbacks."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSelectionMenu",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns the selected-value contract across all menu presentation recipes."
+        },
+        {
+          "symbol": "CatchAdaptiveSelectionMenu",
+          "disposition": "unify",
+          "target": "CatchSelectionMenu.adaptive",
+          "preview": "not-applicable",
+          "rationale": "The window adaptation is a presentation recipe of the same selection contract."
+        },
+        {
+          "symbol": "CatchAdaptiveSelectionControl",
+          "disposition": "unify",
+          "target": "CatchSelectionMenu.control",
+          "preview": "not-applicable",
+          "rationale": "The visible button is a standard trigger recipe and adds no independent state or selection behavior."
+        }
+      ]
     }
   ]
 }

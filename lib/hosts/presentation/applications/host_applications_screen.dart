@@ -70,7 +70,7 @@ class _HostApplicationsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
-          CatchAdaptiveSelectionMenu<HostApplicationSort>(
+          CatchSelectionMenu<HostApplicationSort>.adaptive(
             title: context.l10n.hostApplicationsSort,
             value: _sort,
             items: [

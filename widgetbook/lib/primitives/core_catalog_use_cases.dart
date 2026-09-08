@@ -204,13 +204,13 @@ Widget catchSelectionMenuCatalogStates(BuildContext context) {
           label: 'adaptive single selection',
           description:
               'Uses an anchored picker on wider layouts and a sheet on phones.',
-          child: CatchAdaptiveSelectionControl<String>(
+          child: CatchSelectionMenu<String>.control(
             title: 'Sort customers',
             subtitle: 'Choose how customers are ordered.',
             tooltip: 'Sort customers',
             items: items,
             value: selected,
-            triggerLabel: (item) => 'Sort: ${item.label}',
+            labelBuilder: (item) => 'Sort: ${item.label}',
             onSelected: (value) => setState(() => selected = value),
           ),
         ),

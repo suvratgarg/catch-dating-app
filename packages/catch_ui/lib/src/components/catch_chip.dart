@@ -16,7 +16,7 @@ enum _CatchChipVariant { tag, selectable, activity, removable }
 /// - [CatchChip.tag] is passive metadata.
 /// - [CatchChip.selectable] is a parent-owned independent binary choice or one
 ///   member of a multi-select set. Scalar scope, lifecycle, and mode rows use
-///   `CatchOptionGroup` or `CatchAdaptiveSelectionControl` instead.
+///   `CatchOptionGroup` or `CatchSelectionMenu.control` instead.
 /// - [CatchChip.activity] renders caller-resolved text, glyph, and pigments.
 /// - [CatchChip.removable] exposes one removal action across the whole chip.
 class CatchChip extends StatefulWidget {

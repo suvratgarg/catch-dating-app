@@ -5530,7 +5530,7 @@ Widget catchMenuContractStates(BuildContext context) {
         label: 'adaptive selection',
         description:
             'Open on compact and wider viewports to compare sheet and anchor.',
-        child: CatchAdaptiveSelectionControl<String>(
+        child: CatchSelectionMenu<String>.control(
           title: 'Sort customers',
           subtitle: 'Choose how customers are ordered.',
           tooltip: 'Sort customers',
@@ -5543,7 +5543,7 @@ Widget catchMenuContractStates(BuildContext context) {
             ),
             CatchSelectionMenuItem(value: 'name', label: 'Name'),
           ],
-          triggerLabel: (item) => 'Sort: ${item.label}',
+          labelBuilder: (item) => 'Sort: ${item.label}',
           onSelected: _ignoreString,
         ),
       ),

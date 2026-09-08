@@ -1302,7 +1302,7 @@
           "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
           "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
           "Use OptionCard when each choice needs explanatory copy.",
-          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchOptionGroup when fixed terse choices fit, or CatchAdaptiveSelectionControl when they do not."
+          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchOptionGroup when fixed terse choices fit, or CatchSelectionMenu.control when they do not."
         ]
       },
       "governance": {
@@ -6805,8 +6805,6 @@
           "CatchActionMenu",
           "CatchSelectionMenu",
           "CatchSelectionSheet",
-          "CatchAdaptiveSelectionMenu",
-          "CatchAdaptiveSelectionControl",
           "CatchSurface",
           "CatchIconAction",
           "CatchTextStyles.body",
@@ -6880,12 +6878,17 @@
             "id": "catch.menu.selection_menu",
             "symbol": "CatchSelectionMenu",
             "file": "packages/catch_ui/lib/src/components/catch_selection_menu.dart",
-            "summary": "Anchored picker for typed mutually-exclusive choices on medium and expanded layouts.",
+            "summary": "Mutually-exclusive selection with anchored, adaptive and canonical button-trigger recipes; adaptive recipes use the existing phone sheet and wider menu at the shared window boundary.",
             "states": [
               "closed",
               "open",
               "selected-choice",
-              "disabled-choice"
+              "disabled-choice",
+              "compact",
+              "medium",
+              "expanded",
+              "custom-trigger",
+              "visible-trigger"
             ],
             "governance": {
               "conceptRole": "member",
@@ -6920,46 +6923,6 @@
               "conceptId": "catch.menu",
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.menu"
-            }
-          },
-          {
-            "id": "catch.menu.adaptive_trigger",
-            "symbol": "CatchAdaptiveSelectionMenu",
-            "file": "packages/catch_ui/lib/src/components/catch_adaptive_selection_menu.dart",
-            "summary": "Caller-supplied selection trigger choosing the existing sheet or anchored-menu presentation at the shared window-size boundary.",
-            "states": [
-              "compact",
-              "medium",
-              "expanded",
-              "closed",
-              "open"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.menu",
-              "parentConceptId": "catch.menu",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.menu"
-            }
-          },
-          {
-            "id": "catch.menu.adaptive_selection",
-            "symbol": "CatchAdaptiveSelectionControl",
-            "file": "packages/catch_ui/lib/src/components/catch_adaptive_selection_control.dart",
-            "summary": "Visible selection control that opens a sheet on compact windows and an anchored picker on wider windows.",
-            "states": [
-              "compact",
-              "medium",
-              "expanded",
-              "open",
-              "closed"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.menu",
-              "parentConceptId": "catch.menu",
-              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.menu"
             }
           }
@@ -7000,10 +6963,11 @@
         ],
         "notes": [
           "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
-          "Use CatchAdaptiveSelectionControl when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchOptionGroup; use CatchAdaptiveSelectionMenu with a custom trigger when needed.",
+          "Use CatchSelectionMenu.control when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchOptionGroup; use CatchSelectionMenu.adaptive with a custom trigger when needed.",
           "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
           "Use explicit section boundaries instead of drawing a divider after every row.",
-          "CatchMenu.anchored pairs the trigger and panel, carries shell obstruction into the overlay, flips above low triggers and constrains long menus. Direct top/bottom anchored previews and geometry tests cover the same closed/open, flipped and scrolling states as the former anchor wrapper."
+          "CatchMenu.anchored pairs the trigger and panel, carries shell obstruction into the overlay, flips above low triggers and constrains long menus. Direct top/bottom anchored previews and geometry tests cover the same closed/open, flipped and scrolling states as the former anchor wrapper.",
+          "CatchSelectionMenu.adaptive accepts the existing trigger builder; .control owns the standard visible button and its labelBuilder. Both keep the same selection state and callback contract and reuse CatchSelectionSheet on compact windows."
         ]
       },
       "governance": {
@@ -11054,7 +11018,7 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchAdaptiveSelectionControl when it does not.",
+          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchSelectionMenu.control when it does not.",
           "The group measures full scaled labels before allocation and scrolls automatically if they would be compressed. Operational choices are equal-width while they fit and intrinsic-width when scrolling; icons yield to labels at large text scale. Reduced motion makes item and selected-indicator transitions immediate."
         ]
       },
