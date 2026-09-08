@@ -125,3 +125,19 @@ test("rejects a facade without owner-reviewed use-when metadata", () => {
     /optionCards is missing owner-reviewed use-when metadata/u,
   );
 });
+
+
+test("private named initializing formals retain public parameter and slot names", () => {
+  const facades = extractCatchFieldFacades(`
+    const CatchField.inputActions({
+      required String this.title,
+      this._supporting,
+      this._secondaryAction,
+      this._feedback,
+    });
+  `);
+  assert.deepEqual(facades[0].parameters.map(({name}) => name), [
+    "title", "supporting", "secondaryAction", "feedback",
+  ]);
+  assert.deepEqual(facades[0].slots, ["title", "support", "feedback", "actions"]);
+});

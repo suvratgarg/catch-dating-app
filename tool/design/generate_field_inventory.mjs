@@ -358,7 +358,11 @@ function splitParameters(source) {
 function parseParameter(source) {
   const equalsIndex = source.indexOf("=");
   const declaration = (equalsIndex === -1 ? source : source.slice(0, equalsIndex)).trim();
-  const name = declaration.match(/([A-Za-z_][A-Za-z0-9_]*)\s*$/u)?.[1];
+  const fieldName = declaration.match(/([A-Za-z_][A-Za-z0-9_]*)\s*$/u)?.[1];
+  // Dart 3.12 exposes a private named initializing formal by its public name.
+  const name = /\bthis\._/u.test(declaration)
+    ? fieldName?.replace(/^_+/u, "")
+    : fieldName;
   if (!name) throw new Error(`Unable to parse CatchField parameter: ${source}`);
   return {
     name,
