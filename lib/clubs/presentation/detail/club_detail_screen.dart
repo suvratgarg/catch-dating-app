@@ -203,7 +203,7 @@ class ClubDetailScreen extends ConsumerWidget {
           title: context.l10n.clubsClubDetailScreenTitleClubNotFound,
           message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
           icon: CatchIcons.groupsOutlined,
-          actions: [const CatchErrorBackAction()],
+          actions: [const CatchErrorBackButton()],
         ),
         HostClubDetailContent() => const SizedBox.shrink(),
       },

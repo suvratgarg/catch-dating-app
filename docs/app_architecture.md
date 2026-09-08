@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.40.0
+version: 1.41.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -1388,7 +1388,7 @@ timeout to a long-lived Firestore stream after its first value.
 Every full-screen or sliver error must also leave the user a truthful next
 step. Use `onRetry` when the failed operation is safe to rerun. For terminal
 route conditions such as a deleted resource, invalid route argument, or lost
-authorization, supply `secondaryAction: CatchErrorBackAction()` (or another
+authorization, supply `actions: [CatchErrorBackButton()]` (or another
 explicit destination action) instead. Inline errors may inherit recovery from
 their surrounding section. The `catch_error_state_requires_action` analyzer
 diagnostic rejects actionless full-screen and sliver error surfaces in feature
@@ -1442,7 +1442,7 @@ delivery channels:
   selects stacked or inline content; `CatchSliverEmptyState` owns sliver placement.
   Their `actions` list shares the same slot spelling while empty results retain
   their distinct meaning and layout.
-- `CatchErrorBackAction` is the canonical route-exit action when retry would
+- `CatchErrorBackButton` is the canonical route-exit action when retry would
   be dishonest or impossible.
 - `CatchBanner.error` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.

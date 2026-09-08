@@ -55,7 +55,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
             message: context
                 .l10n
                 .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
-            actions: [const CatchErrorBackAction()],
+            actions: [const CatchErrorBackButton()],
           );
         }
         if (data.isPendingExternalCheckout) {

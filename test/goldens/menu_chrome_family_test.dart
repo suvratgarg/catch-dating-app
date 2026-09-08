@@ -88,7 +88,7 @@ void main() {
                 value: 'recent',
               ),
               const Align(
-                child: CatchErrorBackAction(label: 'Go back', onPressed: _noop),
+                child: CatchErrorBackButton(label: 'Go back', onPressed: _noop),
               ),
             ],
           ),

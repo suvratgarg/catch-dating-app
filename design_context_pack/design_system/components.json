@@ -1703,8 +1703,8 @@
         "members": [
           {
             "id": "catch.error_state.error_back_action",
-            "symbol": "CatchErrorBackAction",
-            "file": "packages/catch_ui/lib/src/components/catch_error_back_action.dart",
+            "symbol": "CatchErrorBackButton",
+            "file": "packages/catch_ui/lib/src/components/catch_error_back_button.dart",
             "summary": "Canonical terminal recovery action with caller or Material-localized back copy.",
             "states": [
               "default",
@@ -1716,6 +1716,16 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L3",
+            "roleNoun": "Button",
+            "naming": {
+              "useCase": "ErrorBack",
+              "comparedWith": [
+                "catch.error_state",
+                "catch.button"
+              ],
+              "reason": "The parent error state presents a failure and offers explicit recovery. This member supplies the terminal route-exit operation with inherited Material back copy and Navigator.maybePop defaults, while respecting an explicit label or callback. It delegates all button painting to CatchButton with its secondary variant; it does not own a second button renderer or retry behavior."
             }
           },
           {

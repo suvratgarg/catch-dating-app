@@ -82,7 +82,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     tester,
   ) async {
     var alternateCount = 0;
-    Widget alternateAction() => CatchErrorBackAction(
+    Widget alternateAction() => CatchErrorBackButton(
       label: 'Go back',
       onPressed: () => alternateCount += 1,
     );

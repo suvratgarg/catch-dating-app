@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f",
+  "sourceDigest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f",
-    "contractDigest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f"
+    "digest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d",
+    "contractDigest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1a6c50767247b21109d1891f57c0bad0458c2db870dbffde8e0466eb140b61e6",
+    "handoffRequestDigest": "34f3ea95309781d50488ca0a4ce8c0621debfe39d506260c717f12da887d6745",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -182,7 +182,7 @@
       {
         "key": "catch.error_state",
         "symbols": [
-          "CatchErrorBackAction",
+          "CatchErrorBackButton",
           "CatchErrorScaffold",
           "CatchErrorState",
           "CatchFrameworkErrorDebugDetails",
@@ -750,7 +750,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ErrorState",
       "claudeAllowed": true,
-      "contractDigest": "76b0b358ce9e8cab464e2b91a5b7be14c38e32bed4c2d1a1297572853dcf50a2"
+      "contractDigest": "860751ab8537b2d58922364d36297f2e89a39694ecfa201ed98f5862a6f590e8"
     },
     {
       "contractId": "catch.banner",

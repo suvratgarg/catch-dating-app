@@ -43,7 +43,7 @@ Widget localizedErrorScaffoldCases(BuildContext context) =>
           height: 480,
           child: CatchLocalizedErrorScaffold(
             const PermissionException('Access denied.'),
-            actions: [CatchErrorBackAction(onPressed: () {})],
+            actions: [CatchErrorBackButton(onPressed: () {})],
           ),
         ),
       ],
@@ -98,7 +98,7 @@ Widget localizedInlineErrorStateCases(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Default and caller-owned recovery',
-  type: CatchErrorBackAction,
+  type: CatchErrorBackButton,
   path: '[Core primitives]/Feedback',
 )
 Widget errorBackActionCases(BuildContext context) => WidgetbookCatalogFrame(
@@ -107,11 +107,11 @@ Widget errorBackActionCases(BuildContext context) => WidgetbookCatalogFrame(
   children: [
     Align(
       alignment: Alignment.centerLeft,
-      child: CatchErrorBackAction(onPressed: () {}),
+      child: CatchErrorBackButton(onPressed: () {}),
     ),
     Align(
       alignment: Alignment.centerLeft,
-      child: CatchErrorBackAction(label: 'Return to list', onPressed: () {}),
+      child: CatchErrorBackButton(label: 'Return to list', onPressed: () {}),
     ),
   ],
 );

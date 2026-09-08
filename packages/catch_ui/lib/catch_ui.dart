@@ -44,7 +44,7 @@ export 'src/components/catch_divided_field_interaction_scope.dart';
 export 'src/components/catch_draggable_sheet_shell.dart';
 export 'src/components/catch_empty_state.dart';
 export 'src/components/catch_empty_state_variant.dart';
-export 'src/components/catch_error_back_action.dart';
+export 'src/components/catch_error_back_button.dart';
 export 'src/components/catch_error_state.dart';
 export 'src/components/catch_error_state_mode.dart';
 export 'src/components/catch_field.dart';

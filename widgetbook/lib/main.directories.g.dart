@@ -2544,7 +2544,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchErrorBackAction',
+            name: 'CatchErrorBackButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Default and caller-owned recovery',

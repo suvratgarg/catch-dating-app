@@ -84,7 +84,7 @@ void main() {
           onRetry: () => retries++,
           retryLabel: 'Recharger',
           icon: CatchIcons.refreshRounded,
-          secondaryAction: CatchErrorBackAction(
+          secondaryAction: CatchErrorBackButton(
             label: 'Retour',
             onPressed: () => exits++,
           ),

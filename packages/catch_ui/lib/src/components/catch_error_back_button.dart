@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 /// Canonical exit affordance for terminal error states where retry is not a
 /// truthful action (for example a deleted event or an unauthorized route).
-class CatchErrorBackAction extends StatelessWidget {
-  const CatchErrorBackAction({super.key, this.label, this.onPressed});
+class CatchErrorBackButton extends StatelessWidget {
+  const CatchErrorBackButton({super.key, this.label, this.onPressed});
 
   final String? label;
   final VoidCallback? onPressed;

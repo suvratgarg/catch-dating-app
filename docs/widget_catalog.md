@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.32.0
+version: 3.33.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -290,12 +290,12 @@ Widgetbook callers.
 | `CatchFrameworkErrorDebugDetails` | `packages/catch_ui/lib/src/components/catch_framework_error_debug_details.dart:8` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `packages/catch_ui/lib/src/primitives/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
 | `CatchErrorState` | `packages/catch_ui/lib/src/components/catch_error_state.dart` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public, cardless `CatchErrorBody`. Widgetbook groups this family as one recovery-state review point. |
-| `CatchErrorBackAction` | `packages/catch_ui/lib/src/components/catch_error_back_action.dart` | Canonical alternate action for terminal route errors where retry is not truthful. Uses the secondary button treatment and either invokes a caller-owned destination or safely pops the current route. |
+| `CatchErrorBackButton` | `packages/catch_ui/lib/src/components/catch_error_back_button.dart` | Canonical alternate action for terminal route errors where retry is not truthful. Uses the secondary button treatment and either invokes a caller-owned destination or safely pops the current route. |
 | `CatchLocalizedErrorState` | `lib/core/riverpod_ui/catch_localized_error_state.dart` | App-localized adapter for `CatchErrorState`. Resolves error copy on build, preserves explicit retry and secondary actions, and leaves rendering to the shared package. |
 | `CatchLocalizedErrorScaffold` | `lib/core/riverpod_ui/catch_localized_error_scaffold.dart` | App-localized adapter for `CatchErrorScaffold`. Resolves error copy on build, preserves explicit retry and secondary actions, and leaves rendering to the shared package. |
 | `CatchLocalizedSliverErrorState` | `lib/core/riverpod_ui/catch_localized_sliver_error_state.dart` | App-localized adapter for `CatchSliverErrorState`. Resolves error copy on build, preserves explicit retry and secondary actions, and leaves rendering to the shared package. |
 | `CatchLocalizedInlineErrorState` | `lib/core/riverpod_ui/catch_localized_inline_error_state.dart` | App-localized adapter for `CatchInlineErrorState`. Resolves error copy on build, preserves explicit retry and secondary actions, and leaves rendering to the shared package. |
-| `CatchErrorBackAction` | `packages/catch_ui/lib/src/components/catch_error_back_action.dart` | Canonical terminal recovery action. Preserves caller-supplied labels/actions and Material-localized back navigation defaults. |
+| `CatchErrorBackButton` | `packages/catch_ui/lib/src/components/catch_error_back_button.dart` | Canonical terminal recovery action. Preserves caller-supplied labels/actions and Material-localized back navigation defaults. |
 | `CatchErrorBody` | `packages/catch_ui/lib/src/components/catch_error_body.dart` | Direct branded error-body renderer used by error placement adapters. Owns icon sizing, title/message typography, retry and secondary-action layout, cardless inline/compact spacing, and full-screen centering. Parent sections own any justified containment. |
 | `CatchErrorScaffold` | `packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
 | `CatchStateViewport` | `packages/catch_ui/lib/src/patterns/catch_state_viewport.dart:10` | Canonical box-layout placement for terminal empty/error content inside an app shell. Subtracts the floating bottom obstruction from the visible optical center and is used by Profile's unavailable/error branches; feature screens must not recreate this with local spacers or bottom padding. |
