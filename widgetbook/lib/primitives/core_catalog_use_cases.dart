@@ -2505,7 +2505,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketPerforatedDivider,
+  type: CatchTicketDivider,
   path: '[Core catalog]/Event cards',
 )
 Widget eventTicketSurfaceCatalogStates(BuildContext context) {
@@ -2518,7 +2518,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
         label: 'perforated divider / clipped shape',
         child: Column(
           children: [
-            const CatchTicketPerforatedDivider(),
+            const CatchTicketDivider(),
             gapH16,
             PhysicalShape(
               clipper: const CatchTicketShapeClipper(
@@ -2542,7 +2542,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
                         dense: true,
                       ),
                     ),
-                    const CatchTicketPerforatedDivider(),
+                    const CatchTicketDivider(),
                     const Padding(
                       padding: EdgeInsets.all(CatchSpacing.s4),
                       child: Text('Ticket body surface'),

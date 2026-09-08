@@ -59,9 +59,9 @@ Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
       Text(mode.name, style: CatchTextStyles.bodyM(context)),
       CatchSectionBody(
         mode: mode,
-        dividerRole: mode == CatchSectionBodyMode.content
-            ? CatchDividerRole.fieldRow
-            : CatchDividerRole.fieldSection,
+        dividerVariant: mode == CatchSectionBodyMode.content
+            ? CatchDividerVariant.fieldRow
+            : CatchDividerVariant.fieldSection,
         children: [
           CatchField.read(
             copy: catchFieldCopy(context.l10n),

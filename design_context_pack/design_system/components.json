@@ -3954,8 +3954,8 @@
             "first",
             "dividerColor",
             "dividerIndent",
-            "dividerRole",
-            "internalDividerRole",
+            "dividerVariant",
+            "internalDividerVariant",
             "titleColor",
             "bodyGap",
             "showInternalDividers",
@@ -4120,11 +4120,11 @@
             "dartType": "double"
           },
           {
-            "name": "dividerRole",
+            "name": "dividerVariant",
             "type": "enum",
             "required": false,
             "default": "section",
-            "dartType": "CatchDividerRole",
+            "dartType": "CatchDividerVariant",
             "values": [
               "section",
               "fieldSection",
@@ -4132,11 +4132,11 @@
             ]
           },
           {
-            "name": "internalDividerRole",
+            "name": "internalDividerVariant",
             "type": "enum",
             "required": false,
             "default": "fieldRow",
-            "dartType": "CatchDividerRole",
+            "dartType": "CatchDividerVariant",
             "values": [
               "section",
               "fieldSection",
@@ -4307,8 +4307,8 @@
           "CatchField",
           "CatchFieldTokens",
           "CatchSectionFieldGroup",
-          "CatchDividerRole.fieldSection",
-          "CatchDividerRole.fieldRow",
+          "CatchDividerVariant.fieldSection",
+          "CatchDividerVariant.fieldRow",
           "CatchKickerText",
           "CatchSectionHeader",
           "CatchSectionHeaderTitle",
@@ -4539,11 +4539,14 @@
             "id": "catch.section.divider",
             "symbol": "CatchDivider",
             "file": "packages/catch_ui/lib/src/primitives/catch_divider.dart",
-            "summary": "Shared semantic section and field-row separator.",
+            "summary": "Canonical continuous hairline for section and field-row boundaries, plus bounded vertical separators between metric columns.",
             "states": [
               "section",
               "field-section",
-              "field-row"
+              "field-row",
+              "vertical",
+              "default",
+              "color-override"
             ],
             "governance": {
               "conceptRole": "member",
@@ -4551,6 +4554,11 @@
               "parentConceptId": "catch.section",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L2",
+            "roleNoun": "Divider",
+            "naming": {
+              "useCase": ""
             }
           }
         ],
@@ -5803,23 +5811,6 @@
               "with-unit",
               "long-label",
               "color-overrides"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.metric_strip",
-              "parentConceptId": "catch.metric_strip",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.metric_strip"
-            }
-          },
-          {
-            "id": "catch.metric_strip.divider",
-            "symbol": "CatchMetricStripDivider",
-            "file": "packages/catch_ui/lib/src/components/catch_metric_strip_divider.dart",
-            "summary": "Direct metric-strip divider renderer.",
-            "states": [
-              "default",
-              "color-override"
             ],
             "governance": {
               "conceptRole": "member",
@@ -13932,7 +13923,7 @@
           "EventActivityBackdrop",
           "CatchTicketClock",
           "CatchBadge.ticketStatus",
-          "CatchTicketPerforatedDivider",
+          "CatchTicketDivider",
           "CatchSurface"
         ],
         "goldens": [],
@@ -17223,7 +17214,7 @@
         ],
         "dartRoles": [
           "CatchTicketHeroSectionBuilder",
-          "CatchTicketPerforatedDivider",
+          "CatchTicketDivider",
           "CatchTicketShapeClipper",
           "CatchTicketPerforationPainter",
           "CatchLayout",
@@ -17233,8 +17224,8 @@
         "members": [
           {
             "id": "catch.ticket.perforated_divider",
-            "symbol": "CatchTicketPerforatedDivider",
-            "file": "packages/catch_ui/lib/src/components/catch_ticket_perforated_divider.dart",
+            "symbol": "CatchTicketDivider",
+            "file": "packages/catch_ui/lib/src/components/catch_ticket_divider.dart",
             "summary": "Horizontal ticket perforation with caller-selected height, notch radius and line color.",
             "states": [
               "default",
@@ -17247,6 +17238,15 @@
               "parentConceptId": "catch.ticket",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.ticket"
+            },
+            "level": "L3",
+            "roleNoun": "Divider",
+            "naming": {
+              "useCase": "Ticket",
+              "comparedWith": [
+                "catch.section.divider"
+              ],
+              "reason": "Dashed perforation reserves the ticket notch insets and selected vertical band; the canonical Divider paints a continuous section, field-row or metric rule."
             }
           },
           {

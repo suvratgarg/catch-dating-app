@@ -1350,6 +1350,47 @@
           "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
         }
       ]
+    },
+    {
+      "id": "divider-canonical-recipes",
+      "title": "Continuous separator recipes and ticket perforation",
+      "intent": "Use one continuous divider across sections, fields and metric columns; retain notch-aware dashed ticket anatomy as a reviewed use case.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.section",
+      "qualityReference": "CatchDivider",
+      "decisionSource": "owner-delegated:2026-09-08 deterministic naming source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve the section and field ink, hairline, text-lane insets, 36 px metric separator and large-text reflow, and ticket perforation geometry."
+      ],
+      "members": [
+        {
+          "symbol": "CatchDivider",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns the continuous section and field rule, now with a bounded vertical recipe for metric columns."
+        },
+        {
+          "symbol": "CatchMetricStripDivider",
+          "disposition": "unify",
+          "target": "CatchDivider.vertical",
+          "preview": "not-applicable",
+          "rationale": "Same continuous line token and hairline, differing only in orientation and extent."
+        },
+        {
+          "symbol": "CatchTicketPerforatedDivider",
+          "disposition": "unify",
+          "target": "CatchTicketDivider",
+          "preview": "not-applicable",
+          "rationale": "Name the concrete ticket use case under the Divider role."
+        },
+        {
+          "symbol": "CatchTicketDivider",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Dash pattern, ticket ink, notch insets and selected vertical band are complementary ticket anatomy, not a second continuous divider."
+        }
+      ]
     }
   ]
 }

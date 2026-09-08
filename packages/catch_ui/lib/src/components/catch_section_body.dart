@@ -17,7 +17,7 @@ class CatchSectionBody extends StatelessWidget {
     this.child,
     this.mode = CatchSectionBodyMode.content,
     this.dividerIndent,
-    this.dividerRole = CatchDividerRole.fieldRow,
+    this.dividerVariant = CatchDividerVariant.fieldRow,
     this.showInternalDividers = true,
   });
 
@@ -25,7 +25,7 @@ class CatchSectionBody extends StatelessWidget {
   final Widget? child;
   final CatchSectionBodyMode mode;
   final double? dividerIndent;
-  final CatchDividerRole dividerRole;
+  final CatchDividerVariant dividerVariant;
   final bool showInternalDividers;
 
   @override
@@ -49,7 +49,7 @@ class CatchSectionBody extends StatelessWidget {
                     top: 0,
                     left: dividerIndent ?? 0,
                     right: 0,
-                    child: CatchDivider(role: dividerRole),
+                    child: CatchDivider(variant: dividerVariant),
                   ),
                 ],
               ),
@@ -86,7 +86,7 @@ class CatchSectionBody extends StatelessWidget {
                   bottom: -CatchStroke.hairline,
                   left: effectiveDividerIndent,
                   right: contained ? CatchFieldTokens.rowHorizontalPadding : 0,
-                  child: CatchDivider(role: dividerRole),
+                  child: CatchDivider(variant: dividerVariant),
                 ),
                 children[i],
               ],

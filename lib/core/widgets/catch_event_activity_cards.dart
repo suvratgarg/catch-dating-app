@@ -97,7 +97,7 @@ class CatchEventCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const CatchTicketPerforatedDivider(),
+                  const CatchTicketDivider(),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                       CatchSpacing.s4,

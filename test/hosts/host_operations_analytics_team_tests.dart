@@ -93,7 +93,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
             widget is CatchScreenHeader && widget.title == 'Saket Run Club',
       ),
     );
-    expect(loadedHeader.eyebrow, isNull);
+    expect(loadedHeader.kicker, isNull);
     expect(loadedHeader.subtitle, isNull);
     expect(loadedHeader.leading, isNull);
     final publicationSection = find.byWidgetPredicate(

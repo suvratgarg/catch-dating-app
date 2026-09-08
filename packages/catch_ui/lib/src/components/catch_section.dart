@@ -35,8 +35,8 @@ class CatchSection extends StatelessWidget {
     bool first = false,
     Color? dividerColor,
     double dividerIndent = 0,
-    CatchDividerRole dividerRole = CatchDividerRole.section,
-    CatchDividerRole internalDividerRole = CatchDividerRole.fieldRow,
+    CatchDividerVariant dividerVariant = CatchDividerVariant.section,
+    CatchDividerVariant internalDividerVariant = CatchDividerVariant.fieldRow,
     Color? titleColor,
     double bodyGap = CatchSpacing.s3,
     bool showInternalDividers = true,
@@ -58,8 +58,8 @@ class CatchSection extends StatelessWidget {
          first: first,
          dividerColor: dividerColor,
          dividerIndent: dividerIndent,
-         dividerRole: dividerRole,
-         internalDividerRole: internalDividerRole,
+         dividerVariant: dividerVariant,
+         internalDividerVariant: internalDividerVariant,
          showInternalDividers: showInternalDividers,
        ),
        _fieldRowsConfig = null,
@@ -290,13 +290,13 @@ class CatchSection extends StatelessWidget {
       (_fieldRowsConfig != null || _containedFieldRowsConfig != null
           ? null
           : 0);
-  CatchDividerRole get dividerRole =>
-      _dividedConfig?.dividerRole ?? CatchDividerRole.section;
-  CatchDividerRole get internalDividerRole =>
-      _dividedConfig?.internalDividerRole ??
+  CatchDividerVariant get dividerVariant =>
+      _dividedConfig?.dividerVariant ?? CatchDividerVariant.section;
+  CatchDividerVariant get internalDividerVariant =>
+      _dividedConfig?.internalDividerVariant ??
       (_fieldRowsConfig != null || _containedFieldRowsConfig != null
-          ? CatchDividerRole.fieldSection
-          : CatchDividerRole.fieldRow);
+          ? CatchDividerVariant.fieldSection
+          : CatchDividerVariant.fieldRow);
   EdgeInsetsGeometry? get padding => _containedFieldRowsConfig != null
       ? EdgeInsets.zero
       : _containedConfig?.padding ?? _plainConfig?.padding;
@@ -357,7 +357,7 @@ class CatchSection extends StatelessWidget {
     final body = CatchSectionBody(
       mode: bodyMode,
       dividerIndent: dividerIndent,
-      dividerRole: internalDividerRole,
+      dividerVariant: internalDividerVariant,
       showInternalDividers: showInternalDividers,
       children: children ?? const [],
       child: child,
@@ -390,8 +390,8 @@ class CatchSection extends StatelessWidget {
           // Field sections own the header-to-row boundary even without a title.
           if (fieldRows)
             CatchDivider(
-              color: dividerColor ?? CatchDivider.colorFor(t, dividerRole),
-              role: dividerRole,
+              color: dividerColor ?? CatchDivider.colorFor(t, dividerVariant),
+              variant: dividerVariant,
             ),
           CatchFieldGeometryScope(
             gutterOwnership: CatchFieldGutterOwnership.container,
@@ -420,7 +420,7 @@ class CatchSection extends StatelessWidget {
                           top: BorderSide(
                             color:
                                 dividerColor ??
-                                CatchDivider.colorFor(t, dividerRole),
+                                CatchDivider.colorFor(t, dividerVariant),
                           ),
                         ),
                       ),
@@ -498,7 +498,7 @@ class CatchSection extends StatelessWidget {
                     CatchSectionBody(
                       mode: bodyMode,
                       dividerIndent: dividerIndent,
-                      dividerRole: internalDividerRole,
+                      dividerVariant: internalDividerVariant,
                       showInternalDividers: showInternalDividers,
                       children: group.children,
                     ),

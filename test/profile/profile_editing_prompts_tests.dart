@@ -117,7 +117,7 @@ void _registerProfileEditingPromptsTests() {
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is CatchDivider &&
-            widget.role == CatchDividerRole.fieldSection,
+            widget.variant == CatchDividerVariant.fieldSection,
       ),
     );
     expect(dividers, findsWidgets);

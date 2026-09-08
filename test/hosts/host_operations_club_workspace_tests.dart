@@ -609,12 +609,12 @@ void _registerHostOperationsClubWorkspaceTests() {
           find.descendant(of: maySection, matching: find.byType(CatchDivider)),
         )
         .toList();
-    expect(mayDividers.map((divider) => divider.role), [
-      CatchDividerRole.fieldRow,
+    expect(mayDividers.map((divider) => divider.variant), [
+      CatchDividerVariant.fieldRow,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
     expect(
-      CatchDivider.colorFor(tokens, mayDividers.last.role),
+      CatchDivider.colorFor(tokens, mayDividers.last.variant),
       tokens.line.withValues(
         alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
       ),
@@ -623,7 +623,8 @@ void _registerHostOperationsClubWorkspaceTests() {
       of: maySection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+            widget is CatchDivider &&
+            widget.variant == CatchDividerVariant.fieldRow,
       ),
     );
     expect(
@@ -764,7 +765,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
-      tester.widget<CatchScreenHeader>(find.byType(CatchScreenHeader)).eyebrow,
+      tester.widget<CatchScreenHeader>(find.byType(CatchScreenHeader)).kicker,
       isNull,
     );
     expect(

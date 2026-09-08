@@ -387,10 +387,19 @@ void _registerHostOperationsStateEventsTests() {
               matching: find.byType(CatchDivider),
             ),
           )
-          .where((divider) => divider.role == CatchDividerRole.section),
+          .where((divider) => divider.variant == CatchDividerVariant.section),
       hasLength(6),
     );
-    expect(find.byType(CatchSectionHeader), findsNothing);
+    final headers = tester.widgetList<CatchSectionHeader>(
+      find.byType(CatchSectionHeader),
+    );
+    expect(headers, hasLength(6));
+    expect(
+      headers.every(
+        (header) => header.variant == CatchSectionHeaderVariant.kicker,
+      ),
+      isTrue,
+    );
     expect(find.byType(CatchField), findsWidgets);
     expect(find.text('Set up international payouts'), findsOneWidget);
     expect(find.text('Razorpay'), findsWidgets);

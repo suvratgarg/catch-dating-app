@@ -162,7 +162,7 @@ void main() {
               matching: find.byType(CatchDivider),
             ),
           )
-          .where((divider) => divider.role == CatchDividerRole.section),
+          .where((divider) => divider.variant == CatchDividerVariant.section),
       hasLength(1),
     );
     expect(find.text('Owner Host'), findsOneWidget);

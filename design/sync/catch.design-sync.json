@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "f36f5ff2a72389ee29309d5b2f91c924efba48ce7d74375e0870176e2ccb8dee",
+  "sourceDigest": "d3a20feb6d0d2251f85f2dbedc408c38d59f52e514d9fb3695ceaae343508b72",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "f36f5ff2a72389ee29309d5b2f91c924efba48ce7d74375e0870176e2ccb8dee",
-    "contractDigest": "f36f5ff2a72389ee29309d5b2f91c924efba48ce7d74375e0870176e2ccb8dee"
+    "digest": "d3a20feb6d0d2251f85f2dbedc408c38d59f52e514d9fb3695ceaae343508b72",
+    "contractDigest": "d3a20feb6d0d2251f85f2dbedc408c38d59f52e514d9fb3695ceaae343508b72"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "d82a5e86fcf23ca1976e5d54219ab35312f8d9d8a9efff9ad9d1f3ad8d54124e",
+    "handoffRequestDigest": "e631d7ea6821d2d6c78b009f0867c0cc638fb0b1d5ddc4af93069d05309070eb",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 285,
+    "publicClassCount": 284,
     "conceptCount": 71,
-    "memberCount": 196,
-    "membersPerConcept": 2.76,
+    "memberCount": 195,
+    "membersPerConcept": 2.75,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 71,
-      "member": 196,
+      "member": 195,
       "screen": 15
     },
     "collisionCount": 38,
@@ -300,7 +300,6 @@
           "CatchMetaEntryView",
           "CatchMetricStrip",
           "CatchMetricStripCell",
-          "CatchMetricStripDivider",
           "CatchStatColumn"
         ]
       },
@@ -482,8 +481,8 @@
       {
         "key": "catch.ticket",
         "symbols": [
+          "CatchTicketDivider",
           "CatchTicketHeroLayout",
-          "CatchTicketPerforatedDivider",
           "CatchTicketPerforationPainter",
           "CatchTicketShapeClipper"
         ]
@@ -978,7 +977,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 16,
-      "figmaExpectedPropertyDigest": "9a1c264bc684f6dcedff6f65ee7144e51bb92b87ceb33f61f7518a61dbd4b219",
+      "figmaExpectedPropertyDigest": "8bb9a14831bcce20292966051a60c0796d96fb0d7e5060a7ff4cf50e44afedfa",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -986,7 +985,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "61ef785cbee0e6dfa7f81f6d8d3276cfb88f655422e5f5d5a62606c23e771ca8"
+      "contractDigest": "b9cc7b2be4c7a2577b5ba85f9196603ac359820d1aea4e4f1133bc02ca80adcc"
     },
     {
       "contractId": "catch.skeleton",
@@ -1210,7 +1209,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "MetricStrip",
       "claudeAllowed": true,
-      "contractDigest": "21fb80efd907cca717df0f3064253e5705accbd1d17397c06f91e03c2b48106a"
+      "contractDigest": "97d138ef580a084e4d00b128c57dc2c3e57ec21a4001eb58568e6f6162d628b7"
     },
     {
       "contractId": "catch.sheet",
@@ -3098,7 +3097,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Ticket",
       "claudeAllowed": true,
-      "contractDigest": "4ccffef1541852ec9d813822550d317b8af40ed2c2fe7bfb45cd487b43d3003f"
+      "contractDigest": "ca4978b62e8c0e9cac2169b6f594297928f63a923d6686ddb6b536f942033029"
     },
     {
       "contractId": "catch.viewport",

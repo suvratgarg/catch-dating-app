@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.20.0
+version: 3.21.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -232,7 +232,6 @@ Widgetbook callers.
 | `CatchScrim` | `packages/catch_ui/lib/src/primitives/catch_scrim.dart:6` | Shared pointer-transparent photo scrim renderer. Named presets cover detail hero media, club/directory photo frames, and profile hero tinting so photo text-protection gradients stay centralized. |
 | `CatchMetricStrip` | `packages/catch_ui/lib/src/components/catch_metric_strip.dart:10` | Canonical metric rail for compact value-over-label stats. Owns the surface, border, spacing, hairline dividers, mono value styling, optional unit styling, label truncation, and surface/color overrides so club and event detail stats cannot drift. At large text scales it reflows into a divided vertical stack before labels can collide or truncate. Registered as formal component contract `catch.metric_strip`; Widgetbook contract states are the canonical review surface. |
 | `CatchMetricStripCell` | `packages/catch_ui/lib/src/components/catch_metric_strip_cell.dart:7` | Direct value-over-label metric cell renderer used by `CatchMetricStrip`. Keeps mono value/unit styling, large-text label reflow, optional color overrides, and expanded-row behavior reviewable without private widget-returning helpers. |
-| `CatchMetricStripDivider` | `packages/catch_ui/lib/src/components/catch_metric_strip_divider.dart:4` | Direct metric-rail hairline divider renderer used between `CatchMetricStripCell` instances. Centralizes metric divider height, width, and optional color override. |
 | `CatchAnalyticsBar` | `packages/catch_ui/lib/src/components/catch_analytics_bar.dart:8` | Bottom-anchored fractional fill bar for dense host and user analytics mini charts. Normalizes `value / maxValue`, keeps zero values visible with a faint stub, and owns the shared `CatchSurface` fill treatment so analytics trend panels do not duplicate chart bars. |
 | `CatchAnalyticsDataQualityList` | `packages/catch_ui/lib/src/components/catch_analytics_data_quality_list.dart:11` | Shared display-data analytics list. Renders display-ready `CatchDataQualityRowData` rows as content-dense `CatchSurface` rows with ready/partial/missing status icons and warning fill for incomplete data. Host analytics uses this compact operational presentation; Profile Insights uses canonical `CatchField.content` rows so profile section formatting stays aligned with Edit Profile. |
 | `CatchAnalyticsMetricTile` | `packages/catch_ui/lib/src/components/catch_analytics_metric_tile.dart:11` | Shared display-data analytics summary card. Renders caller-supplied icon, value, label, optional caption, and ready/partial/missing badge state without owning feature metric IDs, value formatting, or copy tables. |
@@ -414,7 +413,7 @@ Widgetbook callers.
 | `CatchSectionFocusSurface` | `packages/catch_ui/lib/src/components/catch_section_focus_surface.dart` | Internal renderer for the single contained-section perimeter, clip, focus, and error chrome. It is excluded from the app’s curated `catch_ui.dart` barrel; feature-level construction is rejected so contained fields cannot acquire a second perimeter. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `CatchTicketHeroLayout` | `packages/catch_ui/lib/src/components/catch_ticket_hero_layout.dart:11` | Presentation-neutral adaptive ticket hero slots with a shared compact flag, visual-height clamp and fitted body. |
-| `CatchTicketPerforatedDivider` | `packages/catch_ui/lib/src/components/catch_ticket_perforated_divider.dart:5` | Ticket perforation with configurable height, line color and notch radius. |
+| `CatchTicketDivider` | `packages/catch_ui/lib/src/components/catch_ticket_divider.dart:5` | Ticket perforation with configurable height, line color and notch radius. |
 | `CatchTicketShapeClipper` | `packages/catch_ui/lib/src/components/catch_ticket_shape_clipper.dart:5` | Notched ticket outline from explicit corner radius, notch geometry and notch center. |
 | `CatchTicketPerforationPainter` | `packages/catch_ui/lib/src/components/catch_ticket_perforation_painter.dart:4` | Dashed ticket perforation painter used by the shared divider and its direct catalog specimen. |
 | `EventCapacityPresenter` | `lib/events/presentation/widgets/event_tiles/event_capacity_presenter.dart:4` | Shared event-capacity display helper. Owns signed-up/spots/progress values plus "going · left/full", activity summary, attendee-confirmed, and join-CTA availability copy so cards and CTAs do not fork booking language. |

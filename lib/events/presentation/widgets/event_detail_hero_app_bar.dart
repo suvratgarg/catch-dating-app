@@ -273,7 +273,7 @@ class EventDetailTicketSurface extends StatelessWidget {
     return ColoredBox(
       color: bodyColor,
       child: CatchTicketHeroLayout(
-        divider: CatchTicketPerforatedDivider(lineColor: lineColor),
+        divider: CatchTicketDivider(lineColor: lineColor),
         visualBuilder: (context, compact) => Stack(
           fit: StackFit.expand,
           children: [

@@ -60,22 +60,22 @@ void main() {
         dividerBox.color,
         CatchDivider.colorFor(
           CatchTokens.editorialLight,
-          CatchDividerRole.fieldSection,
+          CatchDividerVariant.fieldSection,
         ),
       );
       final sectionDividers = tester
           .widgetList<CatchDivider>(find.byType(CatchDivider))
           .toList(growable: false);
-      expect(sectionDividers.map((divider) => divider.role), [
-        CatchDividerRole.section,
-        CatchDividerRole.fieldSection,
+      expect(sectionDividers.map((divider) => divider.variant), [
+        CatchDividerVariant.section,
+        CatchDividerVariant.fieldSection,
       ]);
       expect(
         sectionDividers
             .map(
               (divider) => CatchDivider.colorFor(
                 CatchTokens.editorialLight,
-                divider.role,
+                divider.variant,
               ),
             )
             .toSet(),
@@ -190,12 +190,12 @@ void main() {
         CatchTokens.editorialDark,
       ]) {
         expect(
-          CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
+          CatchDivider.colorFor(tokens, CatchDividerVariant.fieldSection),
           tokens.line,
         );
         final rowColor = CatchDivider.colorFor(
           tokens,
-          CatchDividerRole.fieldRow,
+          CatchDividerVariant.fieldRow,
         );
         expect(
           rowColor.a,
@@ -690,7 +690,7 @@ void main() {
       );
       final divider = tester.widget<CatchDivider>(dividerFinder);
       final dividerRect = tester.getRect(dividerFinder);
-      expect(divider.role, CatchDividerRole.section);
+      expect(divider.variant, CatchDividerVariant.section);
       expect(
         dividerRect.left - surfaceRect.left,
         CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,

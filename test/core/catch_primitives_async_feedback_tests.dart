@@ -160,7 +160,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('upcoming'), findsOneWidget);
     expect(find.text('rating'), findsOneWidget);
     expect(find.byType(CatchMetricStripCell), findsNWidgets(3));
-    expect(find.byType(CatchMetricStripDivider), findsNWidgets(2));
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchDivider && widget.axis == Axis.vertical,
+      ),
+      findsNWidgets(2),
+    );
   });
 
   testWidgets('CatchMetricStrip stacks data pairs at large text', (
@@ -194,7 +199,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       tester.getCenter(find.text('6')).dy,
       lessThan(tester.getCenter(find.text('1')).dy),
     );
-    expect(find.byType(CatchMetricStripDivider), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchDivider && widget.axis == Axis.vertical,
+      ),
+      findsNothing,
+    );
     expect(tester.takeException(), isNull);
   });
 

@@ -642,8 +642,8 @@ void _registerHostOperationsTeamFailuresTests() {
               matching: find.byType(CatchDivider),
             ),
           )
-          .map((divider) => divider.role),
-      contains(CatchDividerRole.fieldSection),
+          .map((divider) => divider.variant),
+      contains(CatchDividerVariant.fieldSection),
     );
   });
 

@@ -21,8 +21,8 @@ typedef _DividedSectionConfig = ({
   bool first,
   Color? dividerColor,
   double dividerIndent,
-  CatchDividerRole dividerRole,
-  CatchDividerRole internalDividerRole,
+  CatchDividerVariant dividerVariant,
+  CatchDividerVariant internalDividerVariant,
   bool showInternalDividers,
 });
 

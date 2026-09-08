@@ -59,7 +59,8 @@ void main() {
       of: focusSurface,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.section,
+            widget is CatchDivider &&
+            widget.variant == CatchDividerVariant.section,
       ),
     );
     final dividers = tester
@@ -79,12 +80,14 @@ void main() {
     expect(find.text('Choose one'), findsOneWidget);
     expect(sectionDividers, findsNWidgets(2));
     expect(
-      dividers.where((divider) => divider.role == CatchDividerRole.section),
+      dividers.where(
+        (divider) => divider.variant == CatchDividerVariant.section,
+      ),
       hasLength(2),
     );
     expect(
       dividers.where(
-        (divider) => divider.role == CatchDividerRole.fieldSection,
+        (divider) => divider.variant == CatchDividerVariant.fieldSection,
       ),
       hasLength(2),
     );

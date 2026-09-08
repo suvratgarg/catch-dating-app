@@ -30,10 +30,8 @@ void main() {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const CatchMetricStripDivider(),
-                  CatchMetricStripDivider(
-                    color: CatchTokens.of(context).primary,
-                  ),
+                  const CatchDivider.vertical(),
+                  CatchDivider.vertical(color: CatchTokens.of(context).primary),
                 ],
               ),
               const CatchMetricStrip(
@@ -42,8 +40,8 @@ void main() {
                   CatchMetricStripItem(value: '3', label: 'Events'),
                 ],
               ),
-              const CatchTicketPerforatedDivider(),
-              CatchTicketPerforatedDivider(
+              const CatchTicketDivider(),
+              CatchTicketDivider(
                 height: 32,
                 notchRadius: 20,
                 lineColor: CatchTokens.of(context).primary,

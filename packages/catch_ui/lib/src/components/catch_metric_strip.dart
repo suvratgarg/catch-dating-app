@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_metric_strip_cell.dart';
-import 'package:catch_ui/src/components/catch_metric_strip_divider.dart';
 import 'package:catch_ui/src/components/catch_metric_strip_item.dart';
+import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -59,11 +59,7 @@ class CatchMetricStrip extends StatelessWidget {
                     ),
                   ),
                   if (item != items.last)
-                    SizedBox(
-                      width: double.infinity,
-                      height: CatchStroke.hairline,
-                      child: ColoredBox(color: dividerColor ?? t.line),
-                    ),
+                    CatchDivider.section(color: dividerColor ?? t.line),
                 ],
               ],
             )
@@ -78,7 +74,7 @@ class CatchMetricStrip extends StatelessWidget {
                     expanded: true,
                   ),
                   if (item != items.last)
-                    CatchMetricStripDivider(color: dividerColor ?? t.line),
+                    CatchDivider.vertical(color: dividerColor ?? t.line),
                 ],
               ],
             ),

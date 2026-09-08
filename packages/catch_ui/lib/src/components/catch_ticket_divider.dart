@@ -2,8 +2,11 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_ticket_perforation_painter.dart';
 import 'package:flutter/material.dart';
 
-class CatchTicketPerforatedDivider extends StatelessWidget {
-  const CatchTicketPerforatedDivider({
+/// Ticket perforation aligned to the notch geometry of its containing ticket.
+///
+/// Unlike a continuous section rule, the dashed line stops inside the notches.
+class CatchTicketDivider extends StatelessWidget {
+  const CatchTicketDivider({
     super.key,
     this.height = CatchLayout.eventTicketDividerHeight,
     this.lineColor,

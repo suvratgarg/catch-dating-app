@@ -4642,7 +4642,7 @@ Widget catchTicketContractStates(BuildContext context) {
                   ),
                 ),
               ),
-              divider: const CatchTicketPerforatedDivider(),
+              divider: const CatchTicketDivider(),
               bodyBuilder: (context, compact) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -4665,7 +4665,7 @@ Widget catchTicketContractStates(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CatchTicketPerforatedDivider(
+            CatchTicketDivider(
               height: 32,
               notchRadius: 14,
               lineColor: t.primary,
@@ -4933,25 +4933,43 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchMetricStripDivider,
+  type: CatchDivider,
   path: '[Core primitives]/Data display',
 )
-Widget catchMetricStripDividerContractStates(BuildContext context) {
+Widget catchDividerContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchMetricStripDivider',
-    contractId: 'catch.metric_strip.divider',
-    states: const ['default', 'color-override'],
+    title: 'CatchDivider',
+    contractId: 'catch.section.divider',
+    states: const [
+      'section',
+      'field-section',
+      'field-row',
+      'vertical',
+      'default',
+      'color-override',
+    ],
     children: [
+      const _StateCard(
+        label: 'horizontal rules',
+        child: Column(
+          spacing: CatchSpacing.s4,
+          children: [
+            CatchDivider.section(),
+            CatchDivider.fieldSection(),
+            CatchDivider.fieldRow(),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'divider colors',
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchMetricStripDivider(),
+            const CatchDivider.vertical(),
             const SizedBox(width: CatchSpacing.s2),
-            CatchMetricStripDivider(color: t.primary),
+            CatchDivider.vertical(color: t.primary),
           ],
         ),
       ),

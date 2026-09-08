@@ -44,7 +44,7 @@ void registerHostEventEntryTests() {
     final header = tester.widget<CatchScreenHeader>(
       find.byType(CatchScreenHeader),
     );
-    expect(header.eyebrow, 'Monday, June 15, 2026');
+    expect(header.kicker, 'Monday, June 15, 2026');
     expect(header.subtitle, isNull);
     expect(header.actions, isEmpty);
     expect(
