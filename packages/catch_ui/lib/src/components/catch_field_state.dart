@@ -627,16 +627,9 @@ class _CatchFieldState extends State<CatchField>
             final disclosureStartPadding =
                 rowPadding.left +
                 (_hasLeadingSlot ? _leadingTextLaneInset : 0.0);
-            final disclosureControl = widget._explicitSaveInput
-                ? CatchFieldExplicitSaveControl(
-                    supporting: widget._supporting,
-                    feedback: widget._feedback,
-                    secondaryAction: widget._secondaryAction,
-                  )
-                : widget.control;
             final actionBar = widget._onSubmit == null
                 ? null
-                : CatchFieldActionBar(
+                : CatchFieldActionRow(
                     cancelLabel: widget.copy.cancelLabel,
                     doneLabel: widget.copy.doneLabel,
                     savingLabel: widget.copy.savingLabel,
@@ -652,12 +645,18 @@ class _CatchFieldState extends State<CatchField>
               children: [
                 keyboardTarget,
                 if (_hasControl)
-                  CatchFieldDisclosureDrawer(
+                  CatchFieldDrawer(
                     open: _isOpen,
                     offstage: _disclosureOffstage,
                     revealTargetKey: _disclosureRevealTargetKey,
-                    control: disclosureControl!,
-                    actionBar: actionBar,
+                    body: widget._explicitSaveInput
+                        ? widget._feedback
+                        : widget.control,
+                    meta: widget._explicitSaveInput ? widget._supporting : null,
+                    actions: widget._explicitSaveInput
+                        ? widget._secondaryAction
+                        : null,
+                    footer: actionBar,
                     startPadding: disclosureStartPadding,
                     endPadding: rowPadding.right,
                     bottomPadding: rowPadding.bottom,

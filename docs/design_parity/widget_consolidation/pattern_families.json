@@ -2227,6 +2227,67 @@
           "rationale": "Retire the full-width renderer and unnecessary Number qualifier. Preserve useful explicit callbacks as actions on the base Stepper role."
         }
       ]
+    },
+    {
+      "id": "field-disclosure-actions",
+      "title": "Field drawer content and commit action anatomy",
+      "intent": "Keep one drawer content layout and explicitly name the field action and validation roles.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchFieldDrawer",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production. Preserve metadata/body/action order and 8 px gaps, the footer gap, reveal geometry and timing, root validation placement and the Cancel/Done pair.",
+        "Direct previews use explicit theme-resolved body text so drawer and leading-slot copy is readable in light mode."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFieldDrawer",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Own the full revealed content layout and its clipping/focus/pointer lifecycle. Standard meta/body/actions/footer slots absorb the content-only wrapper."
+        },
+        {
+          "symbol": "CatchFieldDisclosureDrawer",
+          "disposition": "unify",
+          "target": "CatchFieldDrawer",
+          "preview": "not-applicable",
+          "rationale": "Drawer already names disclosure; retain Field as the meaningful owning use case."
+        },
+        {
+          "symbol": "CatchFieldExplicitSaveControl",
+          "disposition": "unify",
+          "target": "CatchFieldDrawer",
+          "preview": "not-applicable",
+          "rationale": "This wrapper has no editing, state or interaction; it only orders three slots inside the drawer. Flatten the exact layout into the drawer and remove the duplicate public destination."
+        },
+        {
+          "symbol": "CatchFieldActionRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "A fixed Cancel/Done command pair owns shared busy presentation, localized labels and trailing alignment, distinct from arbitrary top-bar action packing."
+        },
+        {
+          "symbol": "CatchFieldActionBar",
+          "disposition": "unify",
+          "target": "CatchFieldActionRow",
+          "preview": "not-applicable",
+          "rationale": "Its public role is one non-wrapping row; use the closed Row role and standard leading slot."
+        },
+        {
+          "symbol": "CatchFieldCommitButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Field anatomy configures Button.text with commit-specific pending semantics, opacity and focus-ring behavior."
+        },
+        {
+          "symbol": "CatchFieldSupportRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Root helper/error/counter output and live error semantics remain outside the drawer and distinct from executable actions."
+        }
+      ]
     }
   ]
 }

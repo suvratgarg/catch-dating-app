@@ -7343,6 +7343,33 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:field-disclosure-actions",
+      "patternFamilyId": "field-disclosure-actions",
+      "decision": "one-drawer-layout-and-explicit-action-roles",
+      "canonicalSymbol": "CatchFieldDrawer",
+      "members": [
+        {
+          "name": "CatchFieldExplicitSaveControl",
+          "action": "absorb",
+          "target": "CatchFieldDrawer"
+        },
+        {
+          "name": "CatchFieldDisclosureDrawer",
+          "action": "rename",
+          "target": "CatchFieldDrawer"
+        },
+        {
+          "name": "CatchFieldActionBar",
+          "action": "rename",
+          "target": "CatchFieldActionRow"
+        }
+      ],
+      "rationale": "The explicit-save wrapper only stacks drawer metadata, feedback and a secondary action. Flatten that exact order and spacing into the canonical drawer using standard slots, preserving the final action footer and hidden focus/pointer/semantics lifecycle. Name the fixed Cancel/Done group as FieldActionRow and use leading. Retain CommitButton as the Button.text configuration and SupportRow as root validation output; parent field state keeps save/cancel behavior and error placement.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

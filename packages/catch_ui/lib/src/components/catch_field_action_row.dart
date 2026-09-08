@@ -3,8 +3,8 @@ import 'package:catch_ui/src/components/catch_field_commit_button.dart';
 import 'package:flutter/material.dart';
 
 /// Trailing Cancel/Done group used by explicit-save field drawers.
-class CatchFieldActionBar extends StatelessWidget {
-  const CatchFieldActionBar({
+class CatchFieldActionRow extends StatelessWidget {
+  const CatchFieldActionRow({
     super.key,
     required this.onCancel,
     required this.onSubmit,
@@ -12,7 +12,7 @@ class CatchFieldActionBar extends StatelessWidget {
     required this.doneLabel,
     required this.savingLabel,
     this.loading = false,
-    this.actionLeading,
+    this.leading,
     this.revealTargetKey,
   });
 
@@ -22,7 +22,7 @@ class CatchFieldActionBar extends StatelessWidget {
   final String doneLabel;
   final String savingLabel;
   final bool loading;
-  final Widget? actionLeading;
+  final Widget? leading;
   final Key? revealTargetKey;
 
   @override
@@ -47,11 +47,11 @@ class CatchFieldActionBar extends StatelessWidget {
         width: double.infinity,
         child: Row(
           children: [
-            if (actionLeading != null)
+            if (leading != null)
               Expanded(
                 child: Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: actionLeading,
+                  child: leading,
                 ),
               )
             else

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d",
+  "sourceDigest": "afb2f7320b731e14357890142197fb504ef3bc0e4adb45414bba42f61fb4ed47",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d",
-    "contractDigest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d"
+    "digest": "afb2f7320b731e14357890142197fb504ef3bc0e4adb45414bba42f61fb4ed47",
+    "contractDigest": "afb2f7320b731e14357890142197fb504ef3bc0e4adb45414bba42f61fb4ed47"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1430ea151e9c1a621551d1f3d2d8a7b0e6c4db85a106f0e03eda555b46c43b20",
+    "handoffRequestDigest": "8d67d1c21b327aefc83b673decd610f2bdaa33ae8f7fc7d2b1c23425d2f1c95d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 263,
+    "publicClassCount": 262,
     "conceptCount": 69,
-    "memberCount": 176,
-    "membersPerConcept": 2.55,
+    "memberCount": 175,
+    "membersPerConcept": 2.54,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 176,
+      "member": 175,
       "screen": 15
     },
     "collisionCount": 37,
@@ -212,15 +212,14 @@
           "CatchAccordionController",
           "CatchDividedFieldInteractionScope",
           "CatchField",
-          "CatchFieldActionBar",
+          "CatchFieldActionRow",
           "CatchFieldChoiceChip",
           "CatchFieldChoiceControl",
           "CatchFieldChoicePickedNotification",
           "CatchFieldCommitButton",
           "CatchFieldContentRow",
-          "CatchFieldDisclosureDrawer",
           "CatchFieldDividerGeometry",
-          "CatchFieldExplicitSaveControl",
+          "CatchFieldDrawer",
           "CatchFieldGeometryScope",
           "CatchFieldInteractionPlane",
           "CatchFieldInteractionPlaneScope",
@@ -928,7 +927,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "a6465e6f944ad7978c3e0a1a44198745839ad4cf21c095d9118fa2ed7a11debc"
+      "contractDigest": "8a342bb44827675e533488c601ebbaf6476db03ed38ee40b300cc31ec2ee5ece"
     },
     {
       "contractId": "catch.section",

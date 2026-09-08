@@ -1,27 +1,34 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Full-row disclosure sibling below a `CatchField` header.
-class CatchFieldDisclosureDrawer extends StatelessWidget {
-  const CatchFieldDisclosureDrawer({
+/// Full-row disclosure below a field header, including its supporting content.
+///
+/// Metadata, body and secondary actions retain their order and spacing before
+/// the commit footer. Root validation remains outside this clipped drawer.
+class CatchFieldDrawer extends StatelessWidget {
+  const CatchFieldDrawer({
     super.key,
     required this.open,
     required this.offstage,
-    required this.control,
+    this.body,
+    this.meta,
+    this.actions,
     required this.startPadding,
     required this.endPadding,
     required this.bottomPadding,
     required this.revealDuration,
     required this.opacityDuration,
     required this.onRevealEnd,
-    this.actionBar,
+    this.footer,
     this.revealTargetKey,
   });
 
   final bool open;
   final bool offstage;
-  final Widget control;
-  final Widget? actionBar;
+  final Widget? body;
+  final Widget? meta;
+  final Widget? actions;
+  final Widget? footer;
   final double startPadding;
   final double endPadding;
   final double bottomPadding;
@@ -57,10 +64,20 @@ class CatchFieldDisclosureDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              control,
-              if (actionBar != null) ...[
+              if (meta != null)
+                Align(alignment: Alignment.centerRight, child: meta),
+              if (body != null) ...[
+                if (meta != null) const SizedBox(height: CatchSpacing.s2),
+                body!,
+              ],
+              if (actions != null) ...[
+                if (meta != null || body != null)
+                  const SizedBox(height: CatchSpacing.s2),
+                actions!,
+              ],
+              if (footer != null) ...[
                 const SizedBox(height: CatchFieldTokens.actionBarTopGap),
-                actionBar!,
+                footer!,
               ],
             ],
           ),

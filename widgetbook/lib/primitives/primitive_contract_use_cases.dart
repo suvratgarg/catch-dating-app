@@ -2929,52 +2929,20 @@ Widget catchFieldSupportRowContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldExplicitSaveControl,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldExplicitSaveControlContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchFieldExplicitSaveControl',
-    contractId: 'catch.field.explicit_save_control',
-    states: const ['supporting', 'feedback', 'secondary-action'],
-    children: [
-      const _StateCard(
-        label: 'supporting',
-        child: CatchFieldExplicitSaveControl(supporting: Text('19 / 300')),
-      ),
-      const _StateCard(
-        label: 'feedback',
-        child: CatchFieldExplicitSaveControl(feedback: Text('Draft restored.')),
-      ),
-      _StateCard(
-        label: 'secondary-action',
-        child: CatchFieldExplicitSaveControl(
-          secondaryAction: CatchButton.text(
-            label: 'Change prompt',
-            onPressed: _noop,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchFieldActionBar,
+  type: CatchFieldActionRow,
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldActionBarContractStates(BuildContext context) {
   final textScale = MediaQuery.textScalerOf(context).scale(1);
 
   return _ContractScreen(
-    title: 'CatchFieldActionBar',
+    title: 'CatchFieldActionRow',
     contractId: 'catch.field.action_bar',
-    states: const ['ready', 'saving', 'leading', 'wrapped'],
+    states: const ['ready', 'saving', 'leading', 'compact'],
     children: [
       _StateCard(
         label: 'ready',
-        child: CatchFieldActionBar(
+        child: CatchFieldActionRow(
           cancelLabel: context.l10n.coreCatchFieldLabelCancel,
           doneLabel: context.l10n.coreCatchFieldLabelDone,
           savingLabel: context.l10n.coreCatchFieldLabelSaving,
@@ -2984,7 +2952,7 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'saving',
-        child: CatchFieldActionBar(
+        child: CatchFieldActionRow(
           cancelLabel: context.l10n.coreCatchFieldLabelCancel,
           doneLabel: context.l10n.coreCatchFieldLabelDone,
           savingLabel: context.l10n.coreCatchFieldLabelSaving,
@@ -2996,28 +2964,28 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'leading',
-        child: CatchFieldActionBar(
+        child: CatchFieldActionRow(
           cancelLabel: context.l10n.coreCatchFieldLabelCancel,
           doneLabel: context.l10n.coreCatchFieldLabelDone,
           savingLabel: context.l10n.coreCatchFieldLabelSaving,
 
-          actionLeading: const Text('19 / 300'),
+          leading: Text('19 / 300', style: CatchTextStyles.bodyM(context)),
           onCancel: _noop,
           onSubmit: _noop,
         ),
       ),
       _StateCard(
-        label: 'wrapped',
+        label: 'compact',
         child: SizedBox(
           width: textScale >= 2
               ? WidgetbookPreviewLayout.standardContractWidth
               : WidgetbookPreviewLayout.fieldActionBarWrapWidth,
-          child: CatchFieldActionBar(
+          child: CatchFieldActionRow(
             cancelLabel: context.l10n.coreCatchFieldLabelCancel,
             doneLabel: context.l10n.coreCatchFieldLabelDone,
             savingLabel: context.l10n.coreCatchFieldLabelSaving,
 
-            actionLeading: const Text('19 / 300'),
+            leading: const Text('19 / 300'),
             onCancel: _noop,
             onSubmit: _noop,
           ),
@@ -3029,15 +2997,24 @@ Widget catchFieldActionBarContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldDisclosureDrawer,
+  type: CatchFieldDrawer,
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
-  CatchFieldDisclosureDrawer drawer({required bool open}) {
-    return CatchFieldDisclosureDrawer(
+  CatchFieldDrawer drawer({
+    required bool open,
+    Widget? body,
+    Widget? meta,
+    Widget? actions,
+    Widget? footer,
+  }) {
+    return CatchFieldDrawer(
       open: open,
       offstage: !open,
-      control: const Text('Disclosure control'),
+      body: body,
+      meta: meta,
+      actions: actions,
+      footer: footer,
       startPadding: CatchSpacing.s4,
       endPadding: CatchSpacing.s4,
       bottomPadding: CatchFieldTokens.rowVerticalPadding,
@@ -3048,12 +3025,65 @@ Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
   }
 
   return _ContractScreen(
-    title: 'CatchFieldDisclosureDrawer',
+    title: 'CatchFieldDrawer',
     contractId: 'catch.field.disclosure_drawer',
-    states: const ['closed', 'open'],
+    states: const [
+      'closed',
+      'open',
+      'meta',
+      'feedback',
+      'secondary-action',
+      'combined',
+    ],
     children: [
       _StateCard(label: 'closed', child: drawer(open: false)),
-      _StateCard(label: 'open', child: drawer(open: true)),
+      _StateCard(
+        label: 'open',
+        child: drawer(
+          open: true,
+          body: Text(
+            'Disclosure control',
+            style: CatchTextStyles.bodyM(context),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'meta',
+        child: drawer(
+          open: true,
+          meta: Text('19 / 300', style: CatchTextStyles.bodyM(context)),
+        ),
+      ),
+      _StateCard(
+        label: 'feedback',
+        child: drawer(
+          open: true,
+          body: Text('Draft restored.', style: CatchTextStyles.bodyM(context)),
+        ),
+      ),
+      _StateCard(
+        label: 'secondary-action',
+        child: drawer(
+          open: true,
+          actions: CatchButton.text(label: 'Change prompt', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'combined',
+        child: drawer(
+          open: true,
+          meta: Text('19 / 300', style: CatchTextStyles.bodyM(context)),
+          body: Text('Draft restored.', style: CatchTextStyles.bodyM(context)),
+          actions: CatchButton.text(label: 'Change prompt', onPressed: _noop),
+          footer: CatchFieldActionRow(
+            cancelLabel: 'Cancel',
+            doneLabel: 'Done',
+            savingLabel: 'Saving',
+            onCancel: _noop,
+            onSubmit: _noop,
+          ),
+        ),
+      ),
     ],
   );
 }

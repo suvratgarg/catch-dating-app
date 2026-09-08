@@ -598,7 +598,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
     expect(find.byType(CatchToggleInput), findsNothing);
-    expect(find.byType(CatchFieldActionBar), findsNothing);
+    expect(find.byType(CatchFieldActionRow), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);
 
     await _pumpHostScreen(
@@ -607,7 +607,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       overrides: overrides,
     );
     expect(find.byType(CatchToggleInput), findsNothing);
-    expect(find.byType(CatchFieldActionBar), findsNothing);
+    expect(find.byType(CatchFieldActionRow), findsNothing);
 
     await _pumpHostScreen(
       tester,

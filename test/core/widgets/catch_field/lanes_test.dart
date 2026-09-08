@@ -14,7 +14,7 @@ void main() {
     for (final loading in [false, true]) {
       await tester.pumpWidget(
         _wrap(
-          CatchFieldActionBar(
+          CatchFieldActionRow(
             cancelLabel: 'Annuler',
             doneLabel: 'Terminer',
             savingLabel: 'Enregistrement',
@@ -345,7 +345,7 @@ void main() {
         SizedBox(
           key: const ValueKey('compact-action-bar'),
           width: 220,
-          child: CatchFieldActionBar(
+          child: CatchFieldActionRow(
             cancelLabel: 'Cancel',
             doneLabel: 'Done',
             savingLabel: 'Saving',

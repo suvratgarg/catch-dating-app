@@ -129,8 +129,8 @@ void main() {
     expect(find.text('Custom done'), findsOneWidget);
     update(() => saving = true);
     await tester.pump();
-    final actionBar = tester.widget<CatchFieldActionBar>(
-      find.byType(CatchFieldActionBar),
+    final actionBar = tester.widget<CatchFieldActionRow>(
+      find.byType(CatchFieldActionRow),
     );
     expect(actionBar.savingLabel, 'Custom working');
     final indicator = tester.widget<CatchFieldStatusIndicator>(

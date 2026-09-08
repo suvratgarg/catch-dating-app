@@ -321,10 +321,10 @@ class _DrawerPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
-      child: CatchFieldDisclosureDrawer(
+      child: CatchFieldDrawer(
         open: open,
         offstage: !open,
-        control: const Text('Drawer control content'),
+        body: const Text('Drawer control content'),
         startPadding: CatchSpacing.s4,
         endPadding: CatchSpacing.s4,
         bottomPadding: CatchSpacing.s4,

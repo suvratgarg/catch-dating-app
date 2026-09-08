@@ -2877,7 +2877,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldActionBar',
+            name: 'CatchFieldActionRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -2921,24 +2921,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldDisclosureDrawer',
+            name: 'CatchFieldDrawer',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldDisclosureDrawerContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldExplicitSaveControl',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldExplicitSaveControlContractStates,
               ),
             ],
           ),

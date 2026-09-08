@@ -144,7 +144,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                     CatchBanner.error(message: _contactMethodError!),
                     gapH12,
                   ],
-                  CatchFieldActionBar(
+                  CatchFieldActionRow(
                     cancelLabel: context.l10n.coreCatchFieldLabelCancel,
                     doneLabel: context.l10n.coreCatchFieldLabelDone,
                     savingLabel: context.l10n.coreCatchFieldLabelSaving,

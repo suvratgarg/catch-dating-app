@@ -3388,61 +3388,76 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.explicit_save_control",
-            "symbol": "CatchFieldExplicitSaveControl",
-            "summary": "Compatibility content stack for explicit-save text editors, ordered as supporting metadata, feedback, and secondary action before the commit bar.",
-            "states": [
-              "supporting",
-              "feedback",
-              "secondary-action"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_explicit_save_control.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-disclosure-actions"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "FieldSupport",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.action_bar"
+              ],
+              "reason": "Baseline-aligned helper/error copy and optional counter remain visible beneath the field, with error announcement semantics. The action row owns executable Cancel/Done commands. Supporting drawer slots arrange arbitrary content inside the reveal and cannot replace root validation that must remain readable when closed."
             }
           },
           {
             "id": "catch.field.action_bar",
-            "symbol": "CatchFieldActionBar",
+            "symbol": "CatchFieldActionRow",
             "summary": "Full-width, non-wrapping trailing Cancel/Done group with optional leading content. While visible during an explicit save, Done owns the field's sole progress indicator. Cancel, Done and Saving copy is resolved by callers.",
             "states": [
               "ready",
               "saving",
               "leading",
-              "wrapped"
+              "compact"
             ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_action_bar.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_action_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-disclosure-actions"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "FieldAction",
+              "comparedWith": [
+                "catch.field",
+                "catch.top_bar.action_group"
+              ],
+              "reason": "Field owns editing and persistence; this member owns its fixed Cancel/Done pair, caller labels, shared saving state and trailing alignment. TopBarActionRow arranges arbitrary header commands and exposes minimum-width packing, without field commit or cancel semantics."
             }
           },
           {
             "id": "catch.field.disclosure_drawer",
-            "symbol": "CatchFieldDisclosureDrawer",
-            "summary": "Full-row clipped height-and-opacity disclosure sibling that isolates nested pointer and focus interactions from the header.",
+            "symbol": "CatchFieldDrawer",
+            "summary": "Clipped height-and-opacity disclosure with ordered metadata, body, secondary actions and commit footer; isolates hidden content from pointer, focus and semantics while root validation remains outside.",
             "states": [
               "closed",
-              "open"
+              "open",
+              "meta",
+              "feedback",
+              "secondary-action",
+              "combined"
             ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_disclosure_drawer.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_drawer.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-disclosure-actions"
+            },
+            "level": "L3",
+            "roleNoun": "Drawer",
+            "naming": {
+              "useCase": "Field",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Field owns editing and save state. This member owns the animated full-row reveal, clipping, pointer/focus isolation and supporting-content order below its persistent header. The former explicit-save content stack only arranged this drawer content and is absorbed into its standard slots."
             }
           },
           {
@@ -3825,7 +3840,17 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-disclosure-actions"
+            },
+            "level": "L3",
+            "roleNoun": "Button",
+            "naming": {
+              "useCase": "FieldCommit",
+              "comparedWith": [
+                "catch.field",
+                "catch.button"
+              ],
+              "reason": "This field anatomy configures the canonical Button.text renderer for Cancel/Done: caller copy, loading semantics, saving opacity and layout-neutral keyboard focus. The field chooses the transaction callback and busy state; a generic Button does not own these paired commit roles."
             }
           },
           {
