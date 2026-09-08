@@ -863,7 +863,7 @@ Widget menuGeometryMatrix(BuildContext context) {
               value: 'going',
               label: 'Going',
               selected: true,
-              role: CatchMenuItemRole.choice,
+              variant: CatchMenuItemVariant.choice,
               icon: CatchIcons.checkCircle,
               startsSection: true,
             ),

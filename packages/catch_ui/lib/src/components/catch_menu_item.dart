@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum CatchMenuItemRole { action, choice }
+enum CatchMenuItemVariant { action, choice }
 
 class CatchMenuItem<T> {
   const CatchMenuItem({
@@ -11,11 +11,11 @@ class CatchMenuItem<T> {
     this.selected = false,
     this.danger = false,
     this.enabled = true,
-    this.role = CatchMenuItemRole.action,
+    this.variant = CatchMenuItemVariant.action,
     this.startsSection = false,
     this.onSelected,
   }) : assert(
-         !selected || role == CatchMenuItemRole.choice,
+         !selected || variant == CatchMenuItemVariant.choice,
          'Only choice rows can be selected.',
        );
 
@@ -26,7 +26,7 @@ class CatchMenuItem<T> {
   final bool selected;
   final bool danger;
   final bool enabled;
-  final CatchMenuItemRole role;
+  final CatchMenuItemVariant variant;
   final bool startsSection;
   final ValueChanged<T>? onSelected;
 }

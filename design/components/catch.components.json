@@ -6818,7 +6818,7 @@
         ],
         "dartRoles": [
           "CatchMenuItem",
-          "CatchMenuItemRole",
+          "CatchMenuItemVariant",
           "CatchActionMenuItem",
           "CatchSelectionMenuItem",
           "CatchMenuRow",

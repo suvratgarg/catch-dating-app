@@ -284,7 +284,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
                   value: window,
                   label: _windowLabel(context, window),
                   selected: window == _window,
-                  role: CatchMenuItemRole.choice,
+                  variant: CatchMenuItemVariant.choice,
                 ),
             ],
             onSelected: (window, _) => setState(() => _window = window),

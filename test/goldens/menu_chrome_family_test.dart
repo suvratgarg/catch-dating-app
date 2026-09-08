@@ -59,12 +59,12 @@ void main() {
                         value: 'recent',
                         label: 'Recently joined',
                         selected: true,
-                        role: CatchMenuItemRole.choice,
+                        variant: CatchMenuItemVariant.choice,
                       ),
                       CatchMenuItem(
                         value: 'name',
                         label: 'Name',
-                        role: CatchMenuItemRole.choice,
+                        variant: CatchMenuItemVariant.choice,
                       ),
                       CatchMenuItem(
                         value: 'unavailable',

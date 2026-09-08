@@ -52,7 +52,7 @@ class WidgetbookMenuAnchorCanvas extends StatelessWidget {
                             value: index,
                             label: 'Option ${index + 1}',
                             selected: index == 0,
-                            role: CatchMenuItemRole.choice,
+                            variant: CatchMenuItemVariant.choice,
                           ),
                       ],
                       onSelected: (_, _) => controller.close(),

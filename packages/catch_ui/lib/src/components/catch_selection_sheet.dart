@@ -46,7 +46,7 @@ class CatchSelectionSheet<T> extends StatelessWidget {
                     icon: item.icon,
                     selected: item.value == value,
                     enabled: item.enabled,
-                    role: CatchMenuItemRole.choice,
+                    variant: CatchMenuItemVariant.choice,
                   ),
                   onSelected: (selected, _) {
                     if (selected != value) catchSelectionHaptic();

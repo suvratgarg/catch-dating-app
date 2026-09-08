@@ -241,7 +241,7 @@ Widget catchMenuCatalogStates(BuildContext context) {
               sublabel: 'Confirmed attendee view',
               icon: CatchIcons.checkCircle,
               selected: true,
-              role: CatchMenuItemRole.choice,
+              variant: CatchMenuItemVariant.choice,
             ),
             CatchMenuItem(
               value: 'waitlist',
@@ -288,7 +288,7 @@ Widget catchMenuRowCatalogStates(BuildContext context) {
             sublabel: 'Confirmed attendee view',
             icon: CatchIcons.checkCircle,
             selected: true,
-            role: CatchMenuItemRole.choice,
+            variant: CatchMenuItemVariant.choice,
           ),
           onSelected: (value, _) => _ignoreString(value),
         ),

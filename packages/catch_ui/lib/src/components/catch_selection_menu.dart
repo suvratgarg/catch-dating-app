@@ -138,7 +138,7 @@ class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
             icon: item.icon,
             selected: item.value == widget.value,
             enabled: item.enabled,
-            role: CatchMenuItemRole.choice,
+            variant: CatchMenuItemVariant.choice,
           ),
       ],
       onSelected: (value, _) {

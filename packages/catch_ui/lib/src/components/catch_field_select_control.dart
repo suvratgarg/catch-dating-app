@@ -160,7 +160,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
                 value: item,
                 label: labelOf(item),
                 selected: item == value,
-                role: CatchMenuItemRole.choice,
+                variant: CatchMenuItemVariant.choice,
               ),
           ],
           onSelected: (item, _) {

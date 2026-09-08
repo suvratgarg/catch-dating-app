@@ -661,7 +661,7 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
                 value: scope,
                 label: _scopeMenuLabel(scope, eventsById),
                 selected: scope == selectedScope,
-                role: CatchMenuItemRole.choice,
+                variant: CatchMenuItemVariant.choice,
               ),
           ],
           onSelected: (scope, _) {

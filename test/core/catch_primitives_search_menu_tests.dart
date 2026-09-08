@@ -201,7 +201,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
               sublabel: 'OWNER',
               icon: CatchIcons.hostBadge,
               selected: true,
-              role: CatchMenuItemRole.choice,
+              variant: CatchMenuItemVariant.choice,
             ),
             CatchMenuItem(
               value: 'delete',
