@@ -210,6 +210,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   setEventAssistanceSmsPreference: {maxRequests: 20, windowMs: 60 * 1000},
   getEventRcsWithdrawal: {maxRequests: 60, windowMs: 60 * 1000},
   withdrawEventRcs: {maxRequests: 20, windowMs: 60 * 1000},
+  listEventRcsPreferences: {maxRequests: 30, windowMs: 60 * 1000},
   getEventRcsPreference: {maxRequests: 60, windowMs: 60 * 1000},
   setEventRcsPreference: {maxRequests: 20, windowMs: 60 * 1000},
   getEventAssistanceGuestView: {maxRequests: 60, windowMs: 60 * 1000},

@@ -354,6 +354,8 @@ export 'inject_event_rehearsal_behavior_callable_payload.g.dart';
 export 'join_waitlist_http_request.g.dart';
 export 'join_waitlist_http_response.g.dart';
 export 'list_event_assistance_cases_callable_payload.g.dart';
+export 'list_event_rcs_preferences_callable_payload.g.dart';
+export 'list_event_rcs_preferences_callable_response.g.dart';
 export 'list_organizer_applications_callable_payload.g.dart';
 export 'list_organizer_applications_callable_response.g.dart';
 export 'list_organizer_attention_items_callable_payload.g.dart';

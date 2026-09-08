@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.71.0
+version: 1.72.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1553,6 +1553,32 @@ name. Tests cover stale review hashes, source replacement, rollback, receipt
 tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
 preference UI, audited provisioning, deployment and activation remain open.
 No live sender is activated by these callables.
+
+`listEventRcsPreferences` discovers the saved RCS sender for a verified
+participant's event and earlier preferences owned by that participant. It
+requires App Check and sign-in, checks the current roster UID before private
+reads, and returns only event/attendee scope, server time, the configured sender
+ID, up to 50 previous sender IDs and an explicit continuation cursor. It does
+not expose phone numbers, provider agent IDs, credentials, consent evidence,
+budgets or other roster members.
+
+The configured sender comes from the canonical saved runtime configuration.
+A paused execution retains its selection; a mismatched event source does not.
+Selection is independent of sender readiness, consent, policy enablement and
+actual delivery. Each guest-facing card must still load `getEventRcsPreference`
+and submit its exact review hash through `setEventRcsPreference`.
+
+Previous preferences are queried by live organizer/event, attendee and signed
+UID with a composite index and a 51-row lookahead. Source-generation or phone
+changes exclude stale records; malformed matching records fail the read instead
+of masquerading as an empty history. The cursor advances by the last scanned
+row, including filtered records, and remains usable if that row is removed.
+Each page rechecks participant ownership. A current sender is excluded from the
+previous-sender list. Discovery neither grants nor withdraws permission, creates
+no runtime work and performs no provider I/O. Tests cover sender changes,
+paused configuration, participant relinking, stale source evidence, bounded
+history and real Firestore pagination. The verified opt-in page and its
+progressive disclosure of previous preferences remain the next client step.
 
 ### RCS message-link withdrawal
 

@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListEventRcsPreferencesCallablePayload',
+    source: 'callables/list_event_rcs_preferences_payload.schema.json',
+    schema: schemaListEventRcsPreferencesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ListEventRcsPreferencesCallableResponse',
+    source: 'callable_responses/list_event_rcs_preferences_response.schema.json',
+    schema: schemaListEventRcsPreferencesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRcsCallbackReceiptDocument',
     source: 'firestore/event_assistance_rcs_callback_receipts.schema.json',
     schema: schemaEventRcsCallbackReceiptDocumentSchema,
@@ -3234,6 +3244,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListEventRcsPreferencesCallablePayload': schemaListEventRcsPreferencesCallablePayloadSchema,
+  'ListEventRcsPreferencesCallableResponse': schemaListEventRcsPreferencesCallableResponseSchema,
   'EventRcsCallbackReceiptDocument': schemaEventRcsCallbackReceiptDocumentSchema,
   'EventRcsBudgetDocument': schemaEventRcsBudgetDocumentSchema,
   'EventRcsDispatchDocument': schemaEventRcsDispatchDocumentSchema,
@@ -3880,6 +3892,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_event_rcs_preferences_payload.schema.json': schemaListEventRcsPreferencesCallablePayloadSchema,
+  'callable_responses/list_event_rcs_preferences_response.schema.json': schemaListEventRcsPreferencesCallableResponseSchema,
   'firestore/event_assistance_rcs_callback_receipts.schema.json': schemaEventRcsCallbackReceiptDocumentSchema,
   'firestore/event_assistance_rcs_budgets.schema.json': schemaEventRcsBudgetDocumentSchema,
   'firestore/event_assistance_rcs_dispatches.schema.json': schemaEventRcsDispatchDocumentSchema,

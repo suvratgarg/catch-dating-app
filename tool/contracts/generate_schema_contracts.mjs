@@ -16,6 +16,22 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "ListEventRcsPreferencesCallablePayload",
+  "source": "callables/list_event_rcs_preferences_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventRcsPreferencesInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventRcsPreferencesInput.ts"
+  ]
+},
+{
+  "name": "ListEventRcsPreferencesCallableResponse",
+  "source": "callable_responses/list_event_rcs_preferences_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventRcsPreferencesOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventRcsPreferencesOutput.ts"
+  ]
+},
+{
   "name": "EventRcsCallbackReceiptDocument",
   "source": "firestore/event_assistance_rcs_callback_receipts.schema.json",
   "typeOutput": "functions/src/shared/generated/eventRcsCallbackReceiptDocument.ts"

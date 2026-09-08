@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.79.0
+version: 1.80.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -98,6 +98,16 @@ linked UID; a grant additionally verifies its signed phone claim. The reviewed
 hash binds sender identity, event name and captured window, subject and phone,
 attendee and Firestore source generations, and latest STOP. Caller-selected
 provider IDs, phone numbers or evidence timestamps are rejected.
+
+The `list_event_rcs_preferences` request/response contracts expose bounded,
+participant-only sender discovery. Requests name only event, attendee and a
+nullable permission cursor; identity comes from Firebase Auth. Responses retain
+configured sender selection separately from previous sender IDs and pagination.
+The configured sender uses the canonical runtime source binding, including
+paused configurations. Historical discovery uses a composite index over live
+context, attendee, subject UID and document ID; source/phone mismatches are
+filtered after a bounded read. It never supplies consent or sender readiness.
+The existing reviewed preference callables remain the only grant/write path.
 
 Private `eventAssistanceRcsPermissions` and `eventAssistanceRcsConsentReceipts`
 commit together. Granted and revoked records are a closed union; a grant

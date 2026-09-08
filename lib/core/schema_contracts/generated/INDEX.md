@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `functions/src/shared/generated/listEventRcsPreferencesInput.ts` |
+| ListEventRcsPreferencesCallableResponse | `callable_responses/list_event_rcs_preferences_response.schema.json` | `functions/src/shared/generated/listEventRcsPreferencesOutput.ts` |
 | EventRcsCallbackReceiptDocument | `firestore/event_assistance_rcs_callback_receipts.schema.json` | `functions/src/shared/generated/eventRcsCallbackReceiptDocument.ts` |
 | EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `functions/src/shared/generated/eventRcsBudgetDocument.ts` |
 | EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `functions/src/shared/generated/eventRcsDispatchDocument.ts` |
@@ -660,6 +662,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaListEventRcsPreferencesCallablePayloadSchema` | ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_payload.g.dart` |
+| `schemaListEventRcsPreferencesCallableResponseSchema` | ListEventRcsPreferencesCallableResponse | `callable_responses/list_event_rcs_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_response.g.dart` |
 | `schemaEventRcsCallbackReceiptDocumentSchema` | EventRcsCallbackReceiptDocument | `firestore/event_assistance_rcs_callback_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_callback_receipt_document.g.dart` |
 | `schemaEventRcsBudgetDocumentSchema` | EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_budget_document.g.dart` |
 | `schemaEventRcsDispatchDocumentSchema` | EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_dispatch_document.g.dart` |
@@ -1308,6 +1312,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ListEventRcsPreferencesCallableRequest | ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_rcs_preferences_callable_request.g.dart` |
 | GetEventRcsWithdrawalCallableRequest | GetEventRcsWithdrawalCallablePayload | `callables/get_event_rcs_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rcs_withdrawal_callable_request.g.dart` |
 | WithdrawEventRcsCallableRequest | WithdrawEventRcsCallablePayload | `callables/withdraw_event_rcs_payload.schema.json` | `lib/core/schema_contracts/generated/callables/withdraw_event_rcs_callable_request.g.dart` |
 | GetEventRcsPreferenceCallableRequest | GetEventRcsPreferenceCallablePayload | `callables/get_event_rcs_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rcs_preference_callable_request.g.dart` |

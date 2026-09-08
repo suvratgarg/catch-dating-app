@@ -45400,6 +45400,76 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['open', 'resolved'],
   );
 
+  static const listEventRcsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallablePayload.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallablePayload.cursor',
+    valueTypes: <String>['string'],
+    pattern: '^rcs-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventRcsPreferencesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallablePayload.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponseConfiguredSenderId = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.configuredSenderId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.nextCursor',
+    valueTypes: <String>['string'],
+    pattern: '^rcs-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponsePreviousSenderIds = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.previousSenderIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const listEventRcsPreferencesCallableResponsePreviousSenderIdsItems = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.previousSenderIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventRcsPreferencesCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'listEventRcsPreferencesCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const listOrganizerApplicationsCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'listOrganizerApplicationsCallablePayload.contactId',
     maxLength: 180,
@@ -86390,6 +86460,16 @@ abstract final class CatchContractConstraints {
     'listEventAssistanceCasesCallablePayload.context.organizerId': listEventAssistanceCasesCallablePayloadContextOrganizerId,
     'listEventAssistanceCasesCallablePayload.cursor': listEventAssistanceCasesCallablePayloadCursor,
     'listEventAssistanceCasesCallablePayload.status': listEventAssistanceCasesCallablePayloadStatus,
+    'listEventRcsPreferencesCallablePayload.attendeeId': listEventRcsPreferencesCallablePayloadAttendeeId,
+    'listEventRcsPreferencesCallablePayload.cursor': listEventRcsPreferencesCallablePayloadCursor,
+    'listEventRcsPreferencesCallablePayload.eventId': listEventRcsPreferencesCallablePayloadEventId,
+    'listEventRcsPreferencesCallableResponse.attendeeId': listEventRcsPreferencesCallableResponseAttendeeId,
+    'listEventRcsPreferencesCallableResponse.configuredSenderId': listEventRcsPreferencesCallableResponseConfiguredSenderId,
+    'listEventRcsPreferencesCallableResponse.eventId': listEventRcsPreferencesCallableResponseEventId,
+    'listEventRcsPreferencesCallableResponse.nextCursor': listEventRcsPreferencesCallableResponseNextCursor,
+    'listEventRcsPreferencesCallableResponse.previousSenderIds': listEventRcsPreferencesCallableResponsePreviousSenderIds,
+    'listEventRcsPreferencesCallableResponse.previousSenderIds.items': listEventRcsPreferencesCallableResponsePreviousSenderIdsItems,
+    'listEventRcsPreferencesCallableResponse.serverTime': listEventRcsPreferencesCallableResponseServerTime,
     'listOrganizerApplicationsCallablePayload.contactId': listOrganizerApplicationsCallablePayloadContactId,
     'listOrganizerApplicationsCallablePayload.cursor': listOrganizerApplicationsCallablePayloadCursor,
     'listOrganizerApplicationsCallablePayload.formId': listOrganizerApplicationsCallablePayloadFormId,
