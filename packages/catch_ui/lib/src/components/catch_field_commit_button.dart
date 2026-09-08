@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_field_focus_outline.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:catch_ui/src/components/catch_field_spinner.dart';
-import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_field_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -101,13 +101,13 @@ class _CatchFieldCommitButtonState extends State<CatchFieldCommitButton> {
         opacity: widget.onPressed == null && !widget.primary
             ? CatchFieldTokens.savingCancelOpacity
             : 1,
-        child: CatchFieldFocusOutline(
-          debugKey: ValueKey(
+        child: CatchFieldSurface.focusTarget(
+          outlineKey: ValueKey(
             widget.primary
                 ? 'catch-field-done-focus-outline'
                 : 'catch-field-cancel-focus-outline',
           ),
-          show: _showFocusHighlight,
+          states: _showFocusHighlight ? const {WidgetState.focused} : const {},
           borderRadius: BorderRadius.circular(CatchRadius.pill),
           child: button,
         ),

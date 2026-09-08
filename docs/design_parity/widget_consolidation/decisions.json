@@ -7282,6 +7282,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:field-state-surface",
+      "patternFamilyId": "field-state-surface",
+      "decision": "absorb-focus-paint-recipe",
+      "canonicalSymbol": "CatchFieldSurface",
+      "members": [
+        {
+          "name": "CatchFieldFocusOutline",
+          "action": "absorb",
+          "target": "CatchFieldSurface.focusTarget"
+        }
+      ],
+      "rationale": "Source and rendered review separate field paint from group boundaries and from the generic RowPressSurface interaction owner. Row paint and small-target outline are two passive operations of the same field-state paint member. Preserve both algorithms through named construction and Flutter WidgetState.focused. Move the exact focus painter with its keys and geometry; migrate commit/stepper controls and keyboard tests, then remove the old class, export, registry member and redundant preview.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

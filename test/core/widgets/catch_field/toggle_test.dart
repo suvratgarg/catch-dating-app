@@ -97,7 +97,7 @@ void main() {
             (widget) =>
                 widget is CustomPaint &&
                 widget.painter.runtimeType.toString() ==
-                    '_CatchFieldFocusOutlinePainter',
+                    '_CatchFieldFocusPainter',
           ),
         ),
         findsOneWidget,

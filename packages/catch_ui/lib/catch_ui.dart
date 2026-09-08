@@ -62,7 +62,6 @@ export 'src/components/catch_field_disclosure_drawer.dart';
 export 'src/components/catch_field_divider_geometry.dart';
 export 'src/components/catch_field_emphasis.dart';
 export 'src/components/catch_field_explicit_save_control.dart';
-export 'src/components/catch_field_focus_outline.dart';
 export 'src/components/catch_field_geometry_scope.dart';
 export 'src/components/catch_field_gutter_ownership.dart';
 export 'src/components/catch_field_interaction_plane_scope.dart';

@@ -3068,42 +3068,6 @@ Widget catchFieldSpinnerContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldFocusOutline,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldFocusOutlineContractStates(BuildContext context) {
-  Widget sample({required bool show, required String label}) {
-    return CatchFieldFocusOutline(
-      debugKey: ValueKey('catch-field-focus-outline-$label'),
-      show: show,
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
-      child: const SizedBox(
-        width: WidgetbookPreviewLayout.fieldFocusTargetWidth,
-        height: WidgetbookPreviewLayout.fieldFocusTargetHeight,
-        child: Center(child: Text('Target')),
-      ),
-    );
-  }
-
-  return _ContractScreen(
-    title: 'CatchFieldFocusOutline',
-    contractId: 'catch.field.focus_outline',
-    states: const ['hidden', 'visible'],
-    children: [
-      _StateCard(
-        label: 'hidden',
-        child: sample(show: false, label: 'hidden'),
-      ),
-      _StateCard(
-        label: 'visible',
-        child: sample(show: true, label: 'visible'),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchFieldChoiceChip,
   path: '[Core primitives]/Inputs',
 )

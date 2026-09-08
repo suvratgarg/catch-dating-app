@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_field_focus_outline.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
+import 'package:catch_ui/src/components/catch_field_surface.dart';
 import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -186,11 +186,13 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
                 onPointerMove: widget.enabled ? _handlePointerMove : null,
                 onPointerUp: widget.enabled ? _handlePointerEnd : null,
                 onPointerCancel: widget.enabled ? _handlePointerEnd : null,
-                child: CatchFieldFocusOutline(
-                  debugKey: ValueKey(
+                child: CatchFieldSurface.focusTarget(
+                  outlineKey: ValueKey(
                     'catch-field-stepper-${widget.semanticLabel}-focus-outline',
                   ),
-                  show: _showFocusHighlight,
+                  states: _showFocusHighlight
+                      ? const {WidgetState.focused}
+                      : const {},
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
                   child: SizedBox.square(
                     dimension: CatchFieldRepeatButton.hitExtent,

@@ -2121,6 +2121,35 @@
           "rationale": "Rename the existing perimeter owner, replace the three booleans with Flutter WidgetState values and a fieldRows recipe, and retain one StatefulWidget identity across recipe changes."
         }
       ]
+    },
+    {
+      "id": "field-state-surface",
+      "title": "Field state paint with row and focus-target recipes",
+      "intent": "Use one public field paint member for resolved row state and the outer focus ring of field controls.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchFieldSurface",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production. Preserve row fill, stroke handoff, clipping and horizontal outsets, plus the immediate 2 px outer focus ring with its 2 px gap and unchanged target bounds.",
+        "The former outline preview joins the shared field-surface gallery and uses explicit theme-resolved text so target copy is readable in both themes."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFieldSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Both operations paint caller-resolved state around field content. Keep row paint and small-target focus as named recipes under the existing Surface member; input gestures, focus acquisition and save behavior remain with their controls."
+        },
+        {
+          "symbol": "CatchFieldFocusOutline",
+          "disposition": "unify",
+          "target": "CatchFieldSurface",
+          "preview": "not-applicable",
+          "rationale": "Absorb the exact Stack and CustomPainter as focusTarget, preserving its keys, ring gap, radius and hit bounds. The separate public wrapper has no independent interaction or lifecycle."
+        }
+      ]
     }
   ]
 }

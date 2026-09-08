@@ -4,26 +4,62 @@ import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:flutter/material.dart';
 
-/// Field interaction background, border, and shadow beneath its content.
+/// Field state paint: row backgrounds and the focus ring of a small target.
 ///
 /// The field owns gestures, focus, and expansion. This surface paints their
 /// resolved states using the containing section's shape and horizontal outsets.
 /// [WidgetState.selected] represents an active field (focused or expanded).
+/// [CatchFieldSurface.focusTarget] paints the layout-neutral outer focus ring
+/// of a stepper or commit target, without adding a row background.
 class CatchFieldSurface extends StatelessWidget {
   const CatchFieldSurface({
     super.key,
     required this.child,
-    required this.pressedOverlayKey,
+    required Key pressedOverlayKey,
     this.states = const {},
-  });
+  }) : _pressedOverlayKey = pressedOverlayKey,
+       _focusTarget = null;
+
+  const CatchFieldSurface.focusTarget({
+    super.key,
+    required Key outlineKey,
+    required BorderRadius borderRadius,
+    required this.child,
+    this.states = const {},
+  }) : _pressedOverlayKey = null,
+       _focusTarget = (key: outlineKey, borderRadius: borderRadius);
 
   final Widget child;
-  final Key pressedOverlayKey;
   final Set<WidgetState> states;
+  final Key? _pressedOverlayKey;
+  final ({Key key, BorderRadius borderRadius})? _focusTarget;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (_focusTarget case final target?) {
+      final focusBorder = CatchBorder.resolve(t, CatchBorderRole.focus);
+      return Stack(
+        key: target.key,
+        fit: StackFit.passthrough,
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          if (states.contains(WidgetState.focused))
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: _CatchFieldFocusPainter(
+                    color: focusBorder.color,
+                    width: focusBorder.width,
+                    borderRadius: target.borderRadius,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    }
     final active = states.contains(WidgetState.selected);
     final focused = states.contains(WidgetState.focused);
     final pressed = states.contains(WidgetState.pressed);
@@ -98,7 +134,7 @@ class CatchFieldSurface extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 AnimatedContainer(
-                  key: pressedOverlayKey,
+                  key: _pressedOverlayKey,
                   duration: catchFieldMotionDuration(
                     context,
                     pressed
@@ -127,4 +163,36 @@ class CatchFieldSurface extends StatelessWidget {
       ],
     );
   }
+}
+
+class _CatchFieldFocusPainter extends CustomPainter {
+  const _CatchFieldFocusPainter({
+    required this.color,
+    required this.width,
+    required this.borderRadius,
+  });
+
+  final Color color;
+  final double width;
+  final BorderRadius borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final reach =
+        CatchFieldTokens.focusRingOffset + CatchFieldTokens.focusRingWidth / 2;
+    final outline = borderRadius.toRRect(Offset.zero & size).inflate(reach);
+    canvas.drawRRect(
+      outline,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CatchFieldFocusPainter oldDelegate) =>
+      color != oldDelegate.color ||
+      width != oldDelegate.width ||
+      borderRadius != oldDelegate.borderRadius;
 }

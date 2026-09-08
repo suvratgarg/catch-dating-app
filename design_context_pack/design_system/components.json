@@ -3453,23 +3453,6 @@
             }
           },
           {
-            "id": "catch.field.focus_outline",
-            "symbol": "CatchFieldFocusOutline",
-            "summary": "Layout-neutral immediate 2 px outer focus ring with a 2 px transparent gap for field stepper targets and commit buttons. Choice chips delegate focus chrome to CatchChip instead of drawing a second field outline.",
-            "states": [
-              "hidden",
-              "visible"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_focus_outline.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.choice_picked_notification",
             "symbol": "CatchFieldChoicePickedNotification",
             "file": "packages/catch_ui/lib/src/components/catch_field_choice_picked_notification.dart",
@@ -3726,21 +3709,34 @@
             "id": "catch.field.surface",
             "symbol": "CatchFieldSurface",
             "file": "packages/catch_ui/lib/src/components/catch_field_surface.dart",
-            "summary": "Field active and pressed painting with one shared stroke, section-owned shape, and inherited horizontal outsets; the field retains input behavior.",
+            "summary": "Field state paint with row backgrounds and a focusTarget recipe for the layout-neutral outer focus ring of stepper and commit targets.",
             "states": [
               "idle",
               "active",
               "pressed",
               "active-pressed",
               "focused",
-              "focused-pressed"
+              "focused-pressed",
+              "focus-target-hidden",
+              "focus-target-visible"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-state-surface"
+            },
+            "level": "L3",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "Field",
+              "comparedWith": [
+                "catch.field",
+                "catch.surface",
+                "catch.section.focus_surface"
+              ],
+              "reason": "Field owns editing, pointer and save behavior. This member paints its resolved row states and the outer focus ring of its small controls. General Surface owns box paint and taps; SectionSurface owns the entire group perimeter and clip. These scopes do not replace individual field-state painting."
             }
           },
           {
