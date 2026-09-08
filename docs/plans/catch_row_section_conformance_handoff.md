@@ -1,6 +1,6 @@
 ---
 doc_id: catch_row_section_conformance_handoff
-version: 2.0.0
+version: 2.1.0
 updated: 2026-09-08
 owner: ui_elevation_initiative
 status: proposed
@@ -52,7 +52,7 @@ enforcement, verification, delivery and the ready-to-send task prompt.
 
 | Status | Meaning in this document |
 |---|---|
-| Agreed | Direct user direction: full-bleed default, rounded deliberate inset treatment, content-width header rule, ordinary rows through Section/Field, passive person/record layouts, attached dependent area, two dependent levels inline, no automatic modal, current-performance-first Insights. |
+| Agreed | Direct user direction: full-bleed default, rounded deliberate inset treatment, content-width header rule, ordinary rows through Section/Field, passive person/record layouts, attached dependent area, two dependent levels inline, no automatic modal, current-performance-first Insights, and Messaging grouped by person across channels. |
 | Required consequence | Ownership and verification constraints needed to make the agreed behavior hold, such as no second row recognizer and testing painted and hit bounds separately. |
 | Recommended | Proposed API names, screen reading order beyond agreed cases, control recipes and migration structure. Validate against the reference cases before making them permanent. |
 | To validate | Specific remaining visual/product questions in §13. They do not reopen agreed decisions or block unrelated foundations. |
@@ -90,7 +90,7 @@ Event Policy is the dependency stress case; Consumer Activity and Profile are
 cross-product visual references, not templates to copy indiscriminately.
 
 Excluded from automatic implementation: new palette/fonts, business policy or
-permission changes, new messaging capabilities, a universal schema-to-UI engine,
+permission changes, new sending capabilities/channels, a universal schema-to-UI engine,
 new analytics, speculative onboarding, release/deploy changes, and a wholesale
 rewrite of every feature controller. Preserve unrelated work and concurrent
 extraction changes. Source tests, merged CI, distribution and installed device
@@ -301,7 +301,8 @@ render/state helpers; passive layouts are immutable configuration values.
 
 - Record: `title`, `supportingText`, `metadata`, `facts`; editable attribute:
   `label`, `value`, `supportingText`; conversation: `name`, `preview`,
-  `timestamp`, `unreadCount`, optional `context`. Do not flatten rich facts or
+  `timestamp`, typed `activity` (including exact/partial unread state), optional
+  `context`. Do not flatten rich facts or
   unread states into one string to make a generic label/value row fit.
 - `leading` is a closed visual descriptor (icon, avatar, image, none), not an
   arbitrary interactive widget. Its extent and text-lane metrics are resolved
@@ -908,22 +909,34 @@ Booked/Prospective is a collection filter, not another navigation rail. Rename
 the wrapper `HostInboxAudienceRail` to `HostInboxSegmentFilters` and use the
 same semantic filter/count recipe as Audience. Current counts describe Catch
 inquiry threads; roster-backed announcement recipients are a separate count,
-and appended WhatsApp entries are not in those inquiry totals. Preserve those
-meanings or explicitly model a new count. Do not imply unique people or complete
-cross-channel coverage without authority.
+and appended WhatsApp entries are not in those inquiry totals. **The new target
+counts distinct people after authoritative identity resolution**, within the
+chosen scope/segment. Do not relabel today's thread counts as people or use
+roster-recipient totals. Unavailable identity/classification or incomplete source
+coverage must remain explicit; missing participation is not automatically
+Prospective. Filter counts exclude search unless the control explicitly promises
+search-result counts, and share one documented coverage contract with results.
 
 ### Conversation list and result state
+
+**Agreed revision (2026-09-08): organize Messaging by person, not channel.** One
+known person has one row and one combined conversation view across linked Catch
+and WhatsApp threads. Remove Catch/WhatsApp section headings and duplicate person
+rows. This supersedes the earlier plan to share only browse geometry while
+leaving channel-separated lists/details. Keep the existing event/General scope;
+this decision does not itself broaden visibility or infer event attribution.
 
 Three current constructions must converge:
 
 | Current construction | Replacement |
 |---|---|
-| Catch conversations: PersonRow with its own divider/press behavior, external selected `ColoredBox` | Section entries → Field.navigate with selected state → ConversationLayout |
-| WhatsApp conversations: tappable `CatchSurface.card` with separate hierarchy | Same conversation layout/Field recipe; channel-specific detail capability remains app-owned |
+| Catch conversations: PersonRow with its own divider/press behavior, external selected `ColoredBox` | Person conversation projection → Section entries → Field.navigate with selected person → ConversationLayout |
+| WhatsApp conversations: tappable `CatchSurface.card` with separate hierarchy | Contributes messages/endpoints to the same person projection; an additional person row only when identity is distinct or unresolved |
 | Sends history: read Field → single FieldLanes → external RowPressSurface → divided FieldLanes → divided Section | Navigable Field entries directly in a row Section; no read-only Field made clickable externally |
 
-Conversation content has identity/name, explicit preview state (including no
-messages), timestamp, contextual channel/scope and known activity/unread state.
+Conversation content has person identity/name, latest visible message preview
+(including no-message state), timestamp and known activity/unread state. Channel
+is message/delivery context, not the list's grouping or primary subject.
 Do not use `lastMessage != null` to choose the layout. Do not hardcode a running
 icon for arbitrary context, as `CatchPersonChatLayout` currently does. A typed
 context visual is supplied by the feature. WhatsApp's available timestamp should
@@ -932,8 +945,10 @@ be shown; unread counts/read receipts must not be invented.
 Current search appears based on Catch count only, so WhatsApp-only results can
 lose search. Catch matches names while WhatsApp also matches the last message,
 despite name-search copy. Define one query meaning and expose search when either
-channel has content or a query is active. Keep independently paged projections;
-matching row appearance does not imply merged histories or deduplicated people.
+channel has content or a query is active. A feature-owned coordinator joins the
+independently paged sources into one person result set, ordered by latest known
+message activity with stable identity tie-breaking. Catch UI only renders its
+typed presentation data. No name-based matching in a widget or layout.
 
 WhatsApp loading/error currently becomes an empty list and its `nextCursor` is
 unused. Add local channel loading/retry/coverage/paging without replacing usable
@@ -943,6 +958,66 @@ or credible conversations. Never guess Booked/Prospective membership before its
 authoritative classification resolves. Empty, no matches and unavailable data
 need distinct copy and actions.
 
+### Person identity, ordering and transport contract
+
+The audited source already distinguishes the necessary ownership:
+`ChatThreadPreview` in `lib/chats/presentation/inbox/chats_list_view_model.dart`
+exposes `otherUid/matchId`; `HostWhatsappThreadSummary` in
+`lib/hosts/data/host_crm_repository.dart` exposes `contactId/threadId`.
+`HostAudienceContactDetail` exposes linkage/confidence state, and
+`HostCommunicationRecipientPlan` exposes contact-scoped available/recommended
+routes. These are useful existing boundaries, **not proof that an exact combined
+Inbox projection already exists**. Trace the authoritative identity mapping and
+extend its projection/contracts as needed; do not invent the join client-side.
+
+- A canonical organizer-scoped person key owns list/detail selection. Under it
+  retain typed source thread/endpoint IDs. Use the existing CRM/account identity
+  authority and its resolved merges/links, never matching display names or a
+  widget-normalized phone number. Shared numbers, ambiguous candidates and
+  unlinked accounts remain unresolved. Unifying the view does not authorize
+  silently merging CRM records, creating accounts or changing contact ownership.
+- Preserve source authorization and event/General eligibility before combining.
+  Render channel/event context where known; do not assign every message to every
+  event on a thread's summary. Resolve ambiguous message-scope coverage explicitly
+  in the feature projection. A merge must not expose another organizer's history.
+- One lazy result entry per resolved person; preview comes from the newest
+  eligible message across linked sources. Distinct message keys include channel,
+  source thread and source message ID. Equal text is not a duplicate-message
+  key. Timeline order uses authoritative timestamps and stable tie-breaks;
+  pending messages keep stable client/request identity when acknowledged.
+- Joining two first pages does not prove complete global ordering/counts. Reuse
+  or add a server-owned person index, or implement a bounded merge with explicit
+  per-source cursors/watermarks and partial coverage. Late pages update an existing
+  person rather than append a duplicate; source failure retains known history
+  with a scoped notice. Do not claim the preview is globally latest while a
+  relevant source is unavailable.
+- Unread/activity state has known, partial and unavailable forms. Aggregate only
+  supported read models; for example a known Catch count plus unknown WhatsApp
+  state may render `2+` with accessible explanation, never an exact combined 2.
+  No badge cannot imply everything is read. Mark only source-supported visible
+  messages read; selecting a person does not fabricate a WhatsApp read receipt.
+- One transcript interleaves the authorized history, with channel labels on
+  message metadata or at changes and accessible provenance on every message.
+  Keep source delivery/read status local to that message. Existing send-history
+  reports remain in Sends; merging the Inbox does not turn campaigns into
+  ordinary chat messages without a corresponding message record.
+- The composer states **Reply via Catch/WhatsApp**. Use existing route-availability
+  policy for the initial recommendation and show the chosen route before send.
+  Retain the chosen route while a draft/pending request exists; do not silently
+  switch after a new inbound message, a service-window expiry or send failure.
+  Route changes are explicit; one send targets exactly one endpoint. No automatic
+  fallback, fan-out, broader consent or WhatsApp attachment support.
+- Draft/pending-send identity includes organizer, person, scope and reply route;
+  changing route must not accidentally send another route's pending draft. Keep
+  channel-specific drafts or explicitly support a validated transfer. Preserve
+  uncertain-retry idempotency and re-evaluate eligibility at dispatch. Contact
+  re-link/merge/split invalidates stale projections and safely reconciles selected
+  identity/drafts without silently changing a pending recipient.
+
+This is now a required app/data projection slice as well as a presentation
+change. Generic Catch UI does not import CRM identities, reconcile sources,
+choose delivery routes or implement channel permissions.
+
 ### State, detail and specialized boundaries
 
 The screen synchronizes segment changes, but `_routeQuery` does not serialize
@@ -951,8 +1026,11 @@ workspace/scope/segment/query/selection, with an explicit serialized subset and
 one parser/encoder. Preserve existing deep-link values. Query/draft restoration
 need not expose private message text in a URL.
 
-Scope identity includes organizer, channel and conversation. Reconcile selection
-and cached drafts on organizer changes; reject late results for the old scope.
+Selected-conversation identity is organizer + canonical person, with explicit
+scope. Transport request/draft identity additionally includes channel + endpoint.
+Resolve old thread deep links through that source-to-person mapping and retain
+their message anchor/context. Reconcile selection and cached drafts on organizer
+changes; reject late results for the old scope.
 This is a state-correctness requirement, not a demonstrated backend permission
 bypass. Resolve split rendering and click behavior from the same local width,
 as Inbox already does. Each pane owns its viewport, interaction edges and
@@ -978,9 +1056,11 @@ Transcript and composer are explicit exceptions to ordinary row composition:
   percentages. Preserve its distinct service-window eligibility and text reply
   operation; no new attachments or Catch read/delivery semantics.
 
-Unified adjacent WhatsApp detail is an optional later presentation improvement.
-Shared browse geometry does not require changing the current sheet route in the
-first migration slice.
+The combined person detail is shared by compact routed and wide pane wrappers.
+Channel-specific sheets may remain for specialized actions, but selecting the
+same person must not open a different primary history based on their last
+channel. A foundational geometry slice can precede this integration; the complete
+Messaging migration now requires the person-based list and combined detail.
 
 ### Sends and dependency-heavy composers
 
@@ -1008,7 +1088,8 @@ organizer change. No tests in this migration send live messages.
 ```text
 Host shell
 └── HostMessagingScreen / route coordinator
-    ├── workspace, scope, segment, query, selected conversation
+    ├── workspace, scope, segment, query, selected person
+    ├── person-conversation coordinator: identity links + source coverage
     └── workspace presentation
         ├── Inbox: adaptive master-detail
         │   ├── master viewport
@@ -1019,18 +1100,20 @@ Host shell
         │   │       │   └── selected-value layout
         │   │       ├── Booked / Prospective filters when applicable
         │   │       ├── channel/classification notices and coverage
-        │   │       ├── lazy Section.rows
+        │   │       ├── one lazy Section.rows, grouped by person
         │   │       │   └── Field.navigate(isSelected)
         │   │       │       └── ConversationLayout
-        │   │       │           ├── identity + name
-        │   │       │           ├── preview / typing / no-message state
-        │   │       │           └── timestamp, known activity, context
-        │   │       └── channel-aware pagination
+        │   │       │           ├── person identity + name
+        │   │       │           ├── latest message / typing / no-message state
+        │   │       │           └── timestamp, known/partial activity, context
+        │   │       └── merged-result pagination / source coverage
         │   └── detail viewport / empty selection
         │       ├── identity header + available actions
         │       ├── optional event/channel context
-        │       ├── transcript state → date groups → message bubbles
-        │       └── composer dock / explicit unavailable reason
+        │       ├── combined transcript → date groups → message bubbles
+        │       │   └── source channel / timestamp / known delivery state
+        │       └── composer dock → explicit reply route + native input
+        │           └── route availability / scoped draft and pending send
         └── Sends: bounded operational page
             ├── Messaging header + Inbox / Sends rail
             └── flow state
@@ -1045,8 +1128,8 @@ Host shell
                 │   └── preview/approval/dispatch as feature policy permits
                 └── report → channel status + permitted actions
 
-Compact route → routed wrapper → same conversation content
-WhatsApp sheet → sheet wrapper → shared transcript/composer layout roles
+Compact route → routed wrapper → same person conversation content
+Source thread deep link → identity resolver → person + source message context
 ```
 
 Names: `HostInboxScreen` → `HostMessagingScreen` because it also owns Sends;
@@ -1058,13 +1141,15 @@ not another generic popup implementation. Conversation layout activity should
 have authored precedence, not independent `isFresh/showFreshBackground/
 showFreshDot` switches that can disagree.
 
-Acceptance: same browse geometry across channels; real event identity in picker
+Acceptance: one row/combined history per resolved person across channels; real event identity in picker
 and options; General/long/removed/duplicate-title scopes; segment route round-trip;
 WhatsApp-only search; partial/error paging; local-width selection/draft retention;
 organizer revision fences; transcript grouping and keyboard obstruction; blocked/
 closed/service-window reply states; failure retains draft; successful matching
 send clears it; channel capabilities unchanged; Sends flow states exclusive;
-dependent composer validation, applicability and retention tested.
+dependent composer validation, applicability and retention tested. Add the
+person-identity/ordering/route cases in §12; a shared row style alone no longer
+satisfies this acceptance.
 
 ## 11. Enforcement specification
 
@@ -1179,13 +1264,40 @@ with deterministic behavior assertions over an unbounded Cartesian golden suite.
 | Audience | All 4 views, route/back restoration, query reset, partial/unavailable counts, independent notices, form secondary menu, Applications navigation, local-width detail selection and removal policy |
 | Organizer | Permissions/read-only, explicit commit/cancel and snapshot conflict handling, media Save/Discard, field-ID reveal above keyboard, organizer/view restoration, period-query controls during failure, agreed Insights order, saved public Preview without actions/double chrome |
 | Today | Current/next/attention-only/quiet, unknown attention count, event-independent attention failure, local attendance retry/conflict, bounded horizon, future-evening date copy, midnight/timezone/locale, freshness/refresh; evidence-backed quiet recommendations only if that optional follow-up is adopted |
-| Messaging | Exact selected event identity; General/no events/removed scope/20+ options/duplicate names; segment encode/parse/back; WhatsApp-only search and partial failure/paging; organizer/channel revision fences; draft/selection across resize; no read until detail active; channel capability and service-window cases; mutually exclusive Sends flow |
+| Messaging | Exact selected event identity; General/no events/removed scope/20+ options; segment encode/parse/back; person grouping/search/counts across channels; partial failure/paging; organizer/person/source revision fences; draft/selection across resize; no read until detail active; reply-route capability/service-window cases; mutually exclusive Sends flow |
 
 Use fake clocks, repositories and deterministic permissions/projections. For
 sending, verify stable request identity on uncertain retry, failure retains
 draft, success clears only the matching draft, and text/attachment pending
 remain independent. Keep existing permission/idempotency suites authoritative;
 no live dispatch, privacy-policy change or new capability is part of a UI test.
+
+Person-conversation integration fixtures must prove:
+
+1. One person with Catch and WhatsApp source threads produces one row and an
+   ordered combined timeline; two people with the same name remain distinct.
+   Shared-number, ambiguous/unlinked-account and conflicting-link cases do not
+   merge by guesswork. The same identity in two organizers cannot cross scopes.
+2. Booked/Prospective counts use distinct resolved people and authoritative
+   participation; unknown is not Prospective. New pages or linkage updates do
+   not append duplicate rows. Preview/count/order claims reflect source coverage.
+3. Equal timestamps and repeated message bodies retain distinct source IDs;
+   duplicate delivery/page retries deduplicate only by authoritative identity.
+   Late messages update activity ordering while preserving selected person and
+   scroll anchoring. Partial history/source failure remains visible locally.
+4. Known Catch unread plus unsupported WhatsApp unread remains partial; no exact
+   total, all-read claim or synthetic source receipt. Source read markers update
+   only when eligible history is actually active/visible.
+5. Reply route is visible and dispatches once to its selected endpoint. Switching
+   route preserves separate drafts, limits attachments to that route and leaves
+   uncertain sends bound to their original idempotency key/recipient. Window
+   expiry/failure/new inbound activity cannot silently switch channel or fan out.
+6. Old thread/message deep links resolve to the correct person/context. Identity
+   merge/split/re-link and organizer switches fence late pages, selection and
+   pending drafts; permission loss cannot retain unauthorized history.
+
+These extend app/data integration suites, not only Catch UI widget tests. Derive
+data-contract and backend checks if the implementation changes those projections.
 
 ### Mutation proof
 
@@ -1208,6 +1320,8 @@ not a requirement to adopt a new mutation-testing service.
    channel failure as empty; accept an old organizer's late page/result.
 9. Validate only visible form rows, submit retained inactive values, or allow an
    inline chain past the declared depth without an implemented continuation.
+10. Group people by channel or name, count source threads as people, present a
+    partial unread total as exact, or silently reroute/fan out a pending reply.
 
 ### Existing extension points and visual acceptance
 
@@ -1252,7 +1366,7 @@ five-screen controller rewrite a prerequisite for fixing the original defect.
 | B. Contract and failing proof | Typed entries/layouts, capability/prop decisions, scope/default geometry, exported API and negative fixtures | Invalid states rejected at the narrowest reliable layer; tests reproduce original defects |
 | C. Field/Section kernel | One interaction owner including Add/hover; passive layouts; text-lane rules; full-bleed paint and input; contained clip; private renderers | Package/compiler/lint/behavior/paint fixtures pass; existing editor/accordion/commit behavior preserved |
 | D. Three reference screens | Events + all Audience modes + Organizer Field/content roles | Original three screenshots corrected by common implementation; routing/forms/state cases and captures pass |
-| E. Today and Messaging roots | Today row/metric/coverage composition; scope picker/filters; shared conversation rows; Sends history; scoped state fixes | Two additional root trees proven, data failures honest, existing channel/workflow capability preserved |
+| E. Today and Messaging roots | Today row/metric/coverage composition; scope picker/filters; authoritative person-conversation projection and merged timeline; explicit reply route; Sends history; scoped state fixes | Two additional root trees proven, one row per resolved person, identity/count/order/coverage and channel capabilities verified |
 | F. Dependent and mixed-content adoption | Event Policy stress case, agreed Insights order, composer dependency groups, selected controller/body extractions | Accepted hierarchy/visuals and validation/retention/flow tests; no auto-modal or unapproved policy change |
 | G. Close remaining consumers | Remaining menu/index/host/roster/history/settings adapters, examples/Widgetbook, API and waiver deletion | No live bypasses or legacy public shells; generated contracts current; package and apps enforce the same rules |
 
@@ -1260,9 +1374,11 @@ Slices may be split into reviewable changes while sharing the same contract.
 Every consumer migrated uses the final ownership model; compatibility shims may
 forward configuration temporarily but cannot retain old interaction logic.
 Structural naming changes accompany the slice changing that responsibility.
-Cosmetic domain/route renames, Today personalization, media-controller extraction
-and unified WhatsApp adjacent detail remain separately bounded follow-ups unless
-needed by an agreed acceptance case.
+Cosmetic domain/route renames, Today personalization and media-controller
+extraction remain separately bounded follow-ups unless needed by an agreed
+acceptance case. Person-based cross-channel Inbox/detail is now agreed scope;
+implement its identity/read-projection contract before claiming the combined
+experience is complete. Geometry may land first as a clearly partial slice.
 
 ### Decisions still requiring targeted review
 
@@ -1279,9 +1395,11 @@ needed by an agreed acceptance case.
 - **Draft reconciliation:** preserve current commit/retention behavior first.
   Specify each feature's external-update conflict policy before changing it;
   package geometry cannot decide which domain value wins.
-- **Messaging search/counts:** default to the currently promised name-search
-  meaning and channel-scoped factual counts. Broader message search, merged
-  ordering or cross-channel deduplication needs an explicit data/product contract.
+- **Messaging search/counts:** retain name search initially. Person grouping,
+  combined history and distinct-person counts are agreed; §10 defines their
+  identity/coverage contract. Verify the actual identity authority and required
+  projection extensions before implementation. Broader message-body search
+  remains a separate choice; channel-separated grouping is no longer an option.
 - **Today recommendations:** reconcile the separate onboarding work and use
   authoritative evidence. Geometry and truthful error/count states can proceed
   without introducing a recommendation engine.
@@ -1295,6 +1413,9 @@ Update `docs/design_language.md` for deterministic precedence/geometry (includin
 the older implicit split-pane rounding rule), `docs/app_architecture.md` for
 ownership, `docs/widget_catalog.md` and existing component contracts for public
 APIs/recipes, and existing feature responsibility sources for feature behavior.
+Record the person-conversation projection and identity/source boundaries in the
+existing data-contract owners if those contracts change; it is not package UI
+state. Keep identity resolution with People/CRM and delivery policy with Messaging.
 Generate their derived outputs through current tools. Keep a small production
 example per semantic use case, linked from those owners. Remove conflicting
 older examples and deprecated public constructors; don't leave two supported
@@ -1322,7 +1443,7 @@ audit ledger or tracked test-run receipt is needed.
 ## 14. Ready-to-send implementation task
 
 > Implement the Catch UI composition and Host-screen handoff in
-> `docs/plans/catch_row_section_conformance_handoff.md` (version 2.0.0,
+> `docs/plans/catch_row_section_conformance_handoff.md` (version 2.1.0,
 > 2026-09-08). Read the complete specification and the current owning documents.
 > Retrieve the spec from `codex/catch-ui-composition-handoff-20260908` if it has
 > not reached main; it is the replacement for the earlier narrower handoff.
@@ -1345,8 +1466,12 @@ audit ledger or tracked test-run receipt is needed.
 > `c5434f42dde36dfc4ba972fe717541f22cdeae22`; do not transplant its old branch
 > wholesale or treat unfinished visuals/continuations as completed work.
 >
-> Preserve domain/permission/save/send behavior and route compatibility. Keep
-> optional follow-ups separate and raise only concrete unresolved decisions.
+> Preserve domain/permission/save/send behavior and route compatibility. Provide
+> one Inbox row and combined authorized history per resolved person across Catch
+> and WhatsApp, using authoritative identity links, honest counts/coverage and an
+> explicit reply route. Preserve source messages/permissions and channel-scoped
+> idempotency; no name matching, silent transport fallback or contact mutation.
+> Keep optional follow-ups separate and raise only concrete unresolved decisions.
 > Work in the reviewable slices in §13, extend existing authorities/checks, derive
 > required gates from the current planner, and preserve each coherent result in
 > Git. Provide production captures and distinguish automated verification from
