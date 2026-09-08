@@ -1931,6 +1931,41 @@
           "rationale": "The component renders any quantitative observation; Analytics is not a different renderer or feature contract."
         }
       ]
+    },
+    {
+      "id": "avatar-initials-surface",
+      "title": "One initials surface with person and activity recipes",
+      "intent": "Keep avatar identity distinct from activity pigment while sharing initials layout and typography.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.person_avatar",
+      "qualityReference": "CatchAvatarInitialsSurface",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production. Preserve quiet-person fill and initials scale, activity gradient, texture, white initials scale, empty states, dim veil and inherited theme updates."
+      ],
+      "members": [
+        {
+          "symbol": "CatchAvatarInitialsSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One shared initials stack owns label placement and typography. Its named activity recipe selects existing pigment and texture without adding another renderer or changing the parent photo, clip or status contract."
+        },
+        {
+          "symbol": "CatchActivityInitialsPlaceholder",
+          "disposition": "unify",
+          "target": "CatchAvatarInitialsSurface",
+          "preview": "not-applicable",
+          "rationale": "Preserve activity colors, texture and optional dim overlay through the activity recipe."
+        },
+        {
+          "symbol": "CatchInitialsAvatarPlaceholder",
+          "disposition": "unify",
+          "target": "CatchAvatarInitialsSurface",
+          "preview": "not-applicable",
+          "rationale": "Preserve name-derived or explicit initials, deterministic quiet tone and empty-name behavior through the default recipe."
+        }
+      ]
     }
   ]
 }

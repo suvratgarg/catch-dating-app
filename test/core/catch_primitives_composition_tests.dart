@@ -650,7 +650,7 @@ void _registerCatchPrimitivesCompositionTests() {
       expect(find.text('SR'), findsOneWidget);
       expect(find.text('PB'), findsOneWidget);
       expect(find.byType(CatchPersonAvatarShell), findsNWidgets(2));
-      expect(find.byType(CatchActivityInitialsPlaceholder), findsNWidgets(2));
+      expect(find.byType(CatchAvatarInitialsSurface), findsNWidgets(2));
       expect(CatchPersonAvatar.initialsOf('Social run'), 'SR');
     },
   );
@@ -671,7 +671,7 @@ void _registerCatchPrimitivesCompositionTests() {
       expect(find.text('PG'), findsOneWidget);
       expect(find.byType(CatchPersonAvatarShell), findsOneWidget);
       expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
-      expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
+      expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
     },
   );
 
@@ -693,8 +693,15 @@ void _registerCatchPrimitivesCompositionTests() {
       );
       await pumpFeatureUi(tester);
 
-      expect(find.byType(CatchActivityInitialsPlaceholder), findsOneWidget);
-      expect(find.byType(CatchInitialsAvatarPlaceholder), findsNothing);
+      expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
+      expect(
+        tester
+            .widget<CatchAvatarInitialsSurface>(
+              find.byType(CatchAvatarInitialsSurface),
+            )
+            .variant,
+        CatchAvatarInitialsSurfaceVariant.activity,
+      );
       expect(find.text('SF'), findsOneWidget);
     },
   );
@@ -721,7 +728,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('AS'), findsOneWidget);
     expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
     expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(2));
-    expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
+    expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
   });
 

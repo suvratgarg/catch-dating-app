@@ -7161,6 +7161,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-initials-surface",
+      "patternFamilyId": "avatar-initials-surface",
+      "decision": "absorb-into-one-renderer",
+      "canonicalSymbol": "CatchAvatarInitialsSurface",
+      "members": [
+        {
+          "name": "CatchActivityInitialsPlaceholder",
+          "action": "absorb",
+          "target": "CatchAvatarInitialsSurface.activity"
+        },
+        {
+          "name": "CatchInitialsAvatarPlaceholder",
+          "action": "absorb",
+          "target": "CatchAvatarInitialsSurface"
+        }
+      ],
+      "rationale": "Both implementations paint the initials layer of one avatar and duplicate its expanded stack, centered label and typography. Preserve quiet person identity versus activity-context pigment with named recipes and an owning Variant enum. The parent still owns photos, failure fallback, clipping, rings, privacy treatment and status. Move the existing 0.34 person scale and 150-degree activity rotation into the layout token owner without changing values. Delete both old Widgets and exports; migrate all package, test and catalog callers.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

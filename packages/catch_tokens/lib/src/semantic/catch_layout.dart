@@ -197,6 +197,8 @@ abstract final class CatchLayout {
   static const double badgeActionIconSize = 15.0;
   static const double activityAvatarDefaultSize = 40.0;
   static const double activityAvatarInitialsScale = 0.32;
+  static const double personAvatarInitialsScale = 0.34;
+  static const double activityAvatarGradientRotationDegrees = 150.0;
   static const double activityAvatarRingSpread = 2.0;
   static const double activityAvatarTextureStrokeWidth = 2.0;
   static const double activityAvatarTextureStride = 13.0;

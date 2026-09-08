@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_activity_initials_placeholder.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials.dart';
-import 'package:catch_ui/src/components/catch_initials_avatar_placeholder.dart';
+import 'package:catch_ui/src/components/catch_avatar_initials_surface.dart';
 import 'package:catch_ui/src/components/catch_obscured_avatar_content.dart';
 import 'package:catch_ui/src/components/catch_person_avatar_shape.dart';
 import 'package:catch_ui/src/components/catch_person_avatar_shell.dart';
@@ -127,12 +126,12 @@ class CatchPersonAvatar extends StatelessWidget {
       final image = CatchNetworkImage(
         imageUrl!,
         errorBuilder: (context, _, _) => colors == null
-            ? CatchInitialsAvatarPlaceholder(
+            ? CatchAvatarInitialsSurface(
                 name: name,
                 initials: initials,
                 size: innerSize,
               )
-            : CatchActivityInitialsPlaceholder(
+            : CatchAvatarInitialsSurface.activity(
                 colors: colors!,
                 initials: initials ?? catchAvatarInitialsOf(name),
                 size: innerSize,
@@ -148,7 +147,7 @@ class CatchPersonAvatar extends StatelessWidget {
       avatar = CatchPersonAvatarShell(
         size: innerSize,
         shape: shape,
-        child: CatchActivityInitialsPlaceholder(
+        child: CatchAvatarInitialsSurface.activity(
           colors: colors!,
           initials: initials ?? catchAvatarInitialsOf(name),
           size: innerSize,
@@ -156,7 +155,7 @@ class CatchPersonAvatar extends StatelessWidget {
         ),
       );
     } else {
-      final placeholder = CatchInitialsAvatarPlaceholder(
+      final placeholder = CatchAvatarInitialsSurface(
         name: name,
         initials: initials,
         size: innerSize,

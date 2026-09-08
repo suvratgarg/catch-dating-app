@@ -70,21 +70,18 @@ void main() {
             home: Scaffold(body: content),
           ),
         );
-        await pumpUntilFound(
-          tester,
-          find.byType(CatchActivityInitialsPlaceholder),
-        );
+        await pumpUntilFound(tester, find.byType(CatchAvatarInitialsSurface));
         final palette = (dark ? ActivityPalette.dark : ActivityPalette.light)
             .getActivity(ActivityKind.socialRun);
-        final placeholder = tester.widget<CatchActivityInitialsPlaceholder>(
-          find.byType(CatchActivityInitialsPlaceholder),
+        final placeholder = tester.widget<CatchAvatarInitialsSurface>(
+          find.byType(CatchAvatarInitialsSurface),
         );
-        expect(placeholder.colors.accent, palette.accent);
-        expect(placeholder.colors.deep, palette.deep);
+        expect(placeholder.colors!.accent, palette.accent);
+        expect(placeholder.colors!.deep, palette.deep);
         final gradient = tester
             .widgetList<DecoratedBox>(
               find.descendant(
-                of: find.byType(CatchActivityInitialsPlaceholder),
+                of: find.byType(CatchAvatarInitialsSurface),
                 matching: find.byType(DecoratedBox),
               ),
             )
@@ -95,7 +92,7 @@ void main() {
             .single;
         expect(gradient.colors, [palette.accent, palette.deep]);
         expect(find.text('SR'), findsOneWidget);
-        expect(find.byType(CatchInitialsAvatarPlaceholder), findsNothing);
+        expect(placeholder.variant, CatchAvatarInitialsSurfaceVariant.activity);
         expect(tester.takeException(), isNull);
       }
     },

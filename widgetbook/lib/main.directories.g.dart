@@ -3589,17 +3589,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'People',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchActivityInitialsPlaceholder',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchActivityInitialsPlaceholderContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchAvatarColors',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3610,13 +3599,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchInitialsAvatarPlaceholder',
+            name: 'CatchAvatarInitialsSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchInitialsAvatarPlaceholderContractStates,
+                        .catchAvatarInitialsSurfaceContractStates,
               ),
             ],
           ),

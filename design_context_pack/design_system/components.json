@@ -13383,39 +13383,34 @@
             }
           },
           {
-            "id": "catch.person_avatar.activity_initials",
-            "symbol": "CatchActivityInitialsPlaceholder",
-            "file": "packages/catch_ui/lib/src/components/catch_activity_initials_placeholder.dart",
-            "summary": "Direct activity-context initials placeholder renderer.",
-            "states": [
-              "initials",
-              "dim",
-              "empty"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_avatar",
-              "parentConceptId": "catch.person_avatar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.person_avatar"
-            }
-          },
-          {
             "id": "catch.person_avatar.initials",
-            "symbol": "CatchInitialsAvatarPlaceholder",
-            "file": "packages/catch_ui/lib/src/components/catch_initials_avatar_placeholder.dart",
-            "summary": "Direct initials placeholder renderer for person avatars.",
+            "symbol": "CatchAvatarInitialsSurface",
+            "file": "packages/catch_ui/lib/src/components/catch_avatar_initials_surface.dart",
+            "summary": "One initials renderer with quiet person and caller-colored activity recipes; its parent owns image loading, clipping, rings and status.",
             "states": [
               "derived",
               "explicit",
-              "empty"
+              "empty",
+              "activity",
+              "dim",
+              "activity-empty"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.person_avatar",
               "parentConceptId": "catch.person_avatar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.person_avatar"
+              "qualifier": "anatomy",
+              "decisionRef": "pattern-family:avatar-initials-surface"
+            },
+            "level": "L3",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "AvatarInitials",
+              "comparedWith": [
+                "catch.person_avatar",
+                "catch.surface"
+              ],
+              "reason": "The avatar parent owns photo loading, clipping and status. This member paints initials when no photo is available, preserving distinct quiet-person and activity-pigment recipes. Surface owns general box paint and interaction; it does not derive initials or render an avatar fallback."
             }
           }
         ],

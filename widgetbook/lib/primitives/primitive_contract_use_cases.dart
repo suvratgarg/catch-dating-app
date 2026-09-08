@@ -9348,20 +9348,52 @@ Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchActivityInitialsPlaceholder,
+  type: CatchAvatarInitialsSurface,
   path: '[Core primitives]/People',
 )
-Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
+Widget catchAvatarInitialsSurfaceContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchActivityInitialsPlaceholder',
-    contractId: 'catch.person_avatar.activity_initials',
-    states: ['initials', 'dim', 'empty'],
+    title: 'CatchAvatarInitialsSurface',
+    contractId: 'catch.person_avatar.initials',
+    states: [
+      'derived',
+      'explicit',
+      'empty',
+      'activity',
+      'dim',
+      'activity-empty',
+    ],
     children: [
       _StateCard(
-        label: 'initials',
+        label: 'derived',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchActivityInitialsPlaceholder(
+          child: CatchAvatarInitialsSurface(name: 'Aanya Rao', size: 56),
+        ),
+      ),
+      _StateCard(
+        label: 'explicit',
+        child: SizedBox.square(
+          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
+          child: CatchAvatarInitialsSurface(
+            name: 'Host team',
+            initials: 'HT',
+            size: 56,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'empty',
+        child: SizedBox.square(
+          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
+          child: CatchAvatarInitialsSurface(name: '', size: 56),
+        ),
+      ),
+      _StateCard(
+        label: 'activity',
+        child: SizedBox.square(
+          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
+          child: CatchAvatarInitialsSurface.activity(
             colors: ActivityPalette.resolve(
               context,
               ActivityKind.socialRun,
@@ -9375,7 +9407,7 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         label: 'dim',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchActivityInitialsPlaceholder(
+          child: CatchAvatarInitialsSurface.activity(
             colors: ActivityPalette.resolve(
               context,
               ActivityKind.dinner,
@@ -9387,10 +9419,10 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
         ),
       ),
       _StateCard(
-        label: 'empty',
+        label: 'activity-empty',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchActivityInitialsPlaceholder(
+          child: CatchAvatarInitialsSurface.activity(
             colors: ActivityPalette.resolve(
               context,
               ActivityKind.yoga,
@@ -9398,46 +9430,6 @@ Widget catchActivityInitialsPlaceholderContractStates(BuildContext context) {
             initials: '',
             size: 56,
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchInitialsAvatarPlaceholder,
-  path: '[Core primitives]/People',
-)
-Widget catchInitialsAvatarPlaceholderContractStates(BuildContext context) {
-  return const _ContractScreen(
-    title: 'CatchInitialsAvatarPlaceholder',
-    contractId: 'catch.person_avatar.initials',
-    states: ['derived', 'explicit', 'empty'],
-    children: [
-      _StateCard(
-        label: 'derived',
-        child: SizedBox.square(
-          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchInitialsAvatarPlaceholder(name: 'Aanya Rao', size: 56),
-        ),
-      ),
-      _StateCard(
-        label: 'explicit',
-        child: SizedBox.square(
-          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchInitialsAvatarPlaceholder(
-            name: 'Host team',
-            initials: 'HT',
-            size: 56,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'empty',
-        child: SizedBox.square(
-          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchInitialsAvatarPlaceholder(name: '', size: 56),
         ),
       ),
     ],

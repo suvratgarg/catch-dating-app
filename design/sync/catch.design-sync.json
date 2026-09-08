@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "d884d6df6f5c7161d2d0d354fbffcd5cebd9d3cc11f59b78bdbe206ed54e493e",
+  "sourceDigest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "d884d6df6f5c7161d2d0d354fbffcd5cebd9d3cc11f59b78bdbe206ed54e493e",
-    "contractDigest": "d884d6df6f5c7161d2d0d354fbffcd5cebd9d3cc11f59b78bdbe206ed54e493e"
+    "digest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4",
+    "contractDigest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "33b0f2c9a580dc6f39308dae90ba18a3e7908ed74183002781ad4e0db75dd90d",
+    "handoffRequestDigest": "bd7aace14de586180956e7d6ff9ec552720af5538571500811138b89660d67b8",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 269,
+    "publicClassCount": 268,
     "conceptCount": 69,
-    "memberCount": 182,
-    "membersPerConcept": 2.64,
+    "memberCount": 181,
+    "membersPerConcept": 2.62,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 182,
+      "member": 181,
       "screen": 15
     },
     "collisionCount": 36,
@@ -329,9 +329,8 @@
       {
         "key": "catch.person_avatar",
         "symbols": [
-          "CatchActivityInitialsPlaceholder",
           "CatchAvatarColors",
-          "CatchInitialsAvatarPlaceholder",
+          "CatchAvatarInitialsSurface",
           "CatchObscuredAvatarContent",
           "CatchPersonAvatar",
           "CatchPersonAvatarShell",
@@ -2304,7 +2303,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PersonAvatar",
       "claudeAllowed": true,
-      "contractDigest": "e5c893cd10f8c4f31c207a3b7efd640a235e3590d5d49cbcace2367aeaef25cf"
+      "contractDigest": "c99a35d53e9a287fc7330fb988fa477436e726a79f3292a1290b14f74b2518dd"
     },
     {
       "contractId": "catch.record_row",
