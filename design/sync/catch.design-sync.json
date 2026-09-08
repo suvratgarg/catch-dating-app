@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-07",
+  "updated": "2026-09-08",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "57b42df284780586f11944f9799a1272c2d128dd7db1cd4068a8a484a00a18c2",
+  "sourceDigest": "6d8b9510d13ffcbea1ebc9098b77e7753c9b796c203d88eb8da38568963de91c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "57b42df284780586f11944f9799a1272c2d128dd7db1cd4068a8a484a00a18c2",
-    "contractDigest": "57b42df284780586f11944f9799a1272c2d128dd7db1cd4068a8a484a00a18c2"
+    "digest": "6d8b9510d13ffcbea1ebc9098b77e7753c9b796c203d88eb8da38568963de91c",
+    "contractDigest": "6d8b9510d13ffcbea1ebc9098b77e7753c9b796c203d88eb8da38568963de91c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "c1c12eca0d9c144655089e70f36dbbeeacf7d5e514df561378d11ae5a67b02ff",
+    "handoffRequestDigest": "144d81d3cce94509611062b116a474f4145504f99802f3ff4223617299f2bc19",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 292,
+    "publicClassCount": 293,
     "conceptCount": 72,
-    "memberCount": 202,
-    "membersPerConcept": 2.81,
+    "memberCount": 203,
+    "membersPerConcept": 2.82,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 202,
+      "member": 203,
       "screen": 15
     },
     "collisionCount": 39,
@@ -247,6 +247,7 @@
           "CatchFieldOptionCardControl",
           "CatchFieldRepeatButton",
           "CatchFieldRow",
+          "CatchFieldSelectControl",
           "CatchFieldSpinner",
           "CatchFieldStatusIndicator",
           "CatchFieldStepper",
@@ -966,7 +967,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "624c403cc139652d675d1d71ebd4bc8667177bc1065afd70d4d9af58a35693e3"
+      "contractDigest": "d091a1f5edf68c689dc46e0057aceb8e1f735cde1d7713a78e685f6a8fc337d8"
     },
     {
       "contractId": "catch.section",

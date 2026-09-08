@@ -7,7 +7,6 @@ class _CatchFieldDismissIntent extends Intent {
 class _CatchFieldState extends State<CatchField>
     with SingleTickerProviderStateMixin {
   final _fieldKey = GlobalKey<FormFieldState<String>>();
-  final _selectFieldKey = GlobalKey<FormFieldState<Object?>>();
   final _disclosureRevealTargetKey = GlobalKey();
   final _actionBarRevealTargetKey = GlobalKey();
   final _menuController = MenuController();
@@ -111,11 +110,6 @@ class _CatchFieldState extends State<CatchField>
       _pendingExpansionFocus = false;
       _focusNode.unfocus();
     }
-    if (oldWidget._selectValue != widget._selectValue ||
-        !listEquals(oldWidget._selectValues, widget._selectValues)) {
-      _scheduleSelectFieldSync();
-    }
-
     final oldController = oldWidget.controller ?? _internalController;
     if (oldController != _controller) {
       _attachControllerListener(_controller);
@@ -197,17 +191,6 @@ class _CatchFieldState extends State<CatchField>
     final needsParentRebuild = isEmpty != _inputWasEmpty;
     _inputWasEmpty = isEmpty;
     if (mounted && needsParentRebuild) setState(() {});
-  }
-
-  void _scheduleSelectFieldSync() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final field = _selectFieldKey.currentState;
-      final value = _normalizedSelectValue(widget._selectValue);
-      if (field != null && field.value != value) {
-        field.didChange(value);
-      }
-    });
   }
 
   void _setTextEntryValidationError(bool hasError) {
@@ -708,7 +691,28 @@ class _CatchFieldState extends State<CatchField>
     final Widget field;
     switch (widget._config) {
       case _SelectConfig():
-        field = _buildSelectField(context);
+        field = CatchFieldSelectControl(
+          copy: widget.copy,
+          title: _title,
+          values: widget._selectValues!,
+          itemLabel: widget._selectItemLabel!,
+          value: widget._selectValue,
+          onChanged: widget._onSelectChanged,
+          validator: widget._selectValidator,
+          menuController: _menuController,
+          focusNode: _focusNode,
+          enabled: widget.enabled,
+          showLabel: widget.showLabel,
+          size: widget.size,
+          placeholder: widget.placeholder,
+          prefixIcon: widget.prefixIcon,
+          error: _displayError,
+          helperText: widget.helperText,
+          helperTone: widget.helperTone,
+          status: _active
+              ? CatchFieldValueContentStatus.active
+              : CatchFieldValueContentStatus.idle,
+        );
       case _EditConfig() when _usesUnderlineChrome:
         field = _buildTextEntryField(context);
       case _EditConfig() || _RowConfig() || _ToggleConfig() || _ControlConfig():

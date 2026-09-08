@@ -69,6 +69,8 @@ import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
     as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/field_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_field_protocol_use_cases;
+import 'package:widgetbook_workspace/primitives/field_select_control_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_select_control_use_cases;
 import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
     as _widgetbook_workspace_primitives_field_value_content_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
@@ -2703,6 +2705,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_section_anatomy_use_cases
                         .fieldDividerGeometryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldSelectControl',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selection value and validation states',
+                builder:
+                    _widgetbook_workspace_primitives_field_select_control_use_cases
+                        .fieldSelectControlStates,
               ),
             ],
           ),

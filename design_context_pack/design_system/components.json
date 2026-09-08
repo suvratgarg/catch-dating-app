@@ -3177,6 +3177,24 @@
             }
           },
           {
+            "id": "catch.field.select_control",
+            "symbol": "CatchFieldSelectControl",
+            "file": "packages/catch_ui/lib/src/components/catch_field_select_control.dart",
+            "summary": "Field-owned selection menu, form-value synchronization, and validation row; the enclosing field supplies copy and retains focus and dismissal controllers.",
+            "states": [
+              "select",
+              "select-disabled",
+              "select-error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.choice_control",
             "symbol": "CatchFieldChoiceControl",
             "summary": "Field-owned wrapping single- or multi-choice control with staged selection and canonical commit actions.",

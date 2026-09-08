@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.12
+version: 1.9.13
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1092,6 +1092,13 @@ fourteen private render helpers and the redundant action getter are deleted.
 The row body and trailing-state selection, underline chrome, select trigger,
 and configured-row wrapper render at their existing callers. Their precedence,
 null-slot allocation, form-state callbacks and widget tree remain unchanged.
+
+`CatchFieldSelectControl` owns selection-menu rendering, form validation and
+selected-value synchronization at its shared package home. `CatchField.select`
+keeps its typed caller API and supplies copy, choices, focus and menu controllers.
+The former select renderer and app-side form-state synchronization are deleted;
+the direct preview mounts production fields in empty, selected, compact,
+disabled and validation-error states.
 
 ### Phase 4 — One registry, binding grammar
 
