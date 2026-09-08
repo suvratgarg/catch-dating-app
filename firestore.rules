@@ -827,6 +827,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceCaseReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceCases/{caseId} {
       allow read, write: if false;
     }

@@ -78,6 +78,10 @@ export function applyGuestChoice(db: Firestore, tx: Transaction, input: {
       attendeeId: guest.attendeeId, episodeId: guest.episodeId,
       responseId: response.responseId, messageId: message.messageId,
       status: "open", category, receivedAt: now,
+      sourceGeneration: guest.sourceGeneration,
+      attendeeGeneration: guest.attendeeGeneration,
+      handling: {revision: 0, assigneeUid: null, updatedAt: now,
+        resolution: null},
       owner: category === "comfortSafety" ?
         "authorizedSafetyOperator" : "eventLead"};
     if (!validateEventAssistanceCaseDocument(request)) {

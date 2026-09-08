@@ -15,6 +15,12 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {"name":"ListEventAssistanceCasesCallablePayload","source":"callables/list_event_assistance_cases_payload.schema.json","typeOutput":"functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts"},
+  {"name":"ResolveEventAssistanceCaseCallablePayload","source":"callables/resolve_event_assistance_case_payload.schema.json","typeOutput":"functions/src/shared/generated/resolveEventAssistanceCaseCallablePayload.ts"},
+  {"name":"EventAssistanceCasesCallableResponse","source":"callable_responses/event_assistance_cases_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCasesCallableResponse.ts"},
+  {"name":"EventAssistanceCaseCallableResponse","source":"callable_responses/event_assistance_case_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCaseCallableResponse.ts"},
+  {"name":"EventAssistanceCaseReceiptDocument","source":"firestore/event_assistance_case_receipts.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCaseReceiptDocument.ts"},
+
   {"name":"GetEventAssistanceHostGuestsCallablePayload","source":"callables/get_event_assistance_host_guests_payload.schema.json","typeOutput":"functions/src/shared/generated/getEventAssistanceHostGuestsCallablePayload.ts"},
   {"name":"EventAssistanceHostGuestsCallableResponse","source":"callable_responses/event_assistance_host_guests_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceHostGuestsCallableResponse.ts"},
   {"name": "SetEventAssistanceCheckpointCloseoutCallablePayload", "source": "callables/set_event_assistance_checkpoint_closeout_payload.schema.json", "typeOutput": "functions/src/shared/generated/setEventAssistanceCheckpointCloseoutCallablePayload.ts"},

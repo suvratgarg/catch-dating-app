@@ -5235,66 +5235,7 @@
           }
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "context",
-            "eventId",
-            "operationId",
-            "payload"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "resolveAssistance"
-            },
-            "context": {
-              "$ref": "#/definitions/ExecutionContext"
-            },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "operationId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "payload": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "caseId",
-                "outcome",
-                "owner"
-              ],
-              "properties": {
-                "caseId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 2000
-                },
-                "outcome": {
-                  "type": "string",
-                  "enum": [
-                    "resolved",
-                    "declined",
-                    "transferred"
-                  ]
-                },
-                "owner": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                }
-              }
-            }
-          }
+          "$ref": "#/definitions/ResolveAssistanceCommand"
         },
         {
           "type": "object",
@@ -7391,6 +7332,76 @@
                 "close",
                 "reopen"
               ]
+            }
+          }
+        }
+      }
+    },
+    "ResolveAssistanceCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "resolveAssistance"
+        },
+        "context": {
+          "$ref": "#/definitions/ExecutionContext"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "outcome",
+            "owner",
+            "expectedRevision"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "resolved",
+                "declined",
+                "transferred"
+              ]
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "description": "Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID."
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             }
           }
         }

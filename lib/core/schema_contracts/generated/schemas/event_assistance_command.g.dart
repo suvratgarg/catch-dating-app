@@ -3446,12 +3446,14 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
             'caseId',
             'outcome',
             'owner',
+            'expectedRevision',
           ],
           'properties': <String, Object?>{
             'caseId': <String, Object?>{
               'type': 'string',
               'minLength': 1,
-              'maxLength': 2000,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
             'outcome': <String, Object?>{
               'type': 'string',
@@ -3466,6 +3468,12 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
               'minLength': 1,
               'maxLength': 160,
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              'description': 'Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID.',
+            },
+            'expectedRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
             },
           },
         },

@@ -1,6 +1,36 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceCases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "owner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceRuntimeConfigs",
       "queryScope": "COLLECTION",
       "fields": [

@@ -3,6 +3,11 @@
 
 import {createRequire} from "node:module";
 import {
+  listEventAssistanceCasesCallablePayloadSchema,
+  resolveEventAssistanceCaseCallablePayloadSchema,
+  eventAssistanceCasesCallableResponseSchema,
+  eventAssistanceCaseCallableResponseSchema,
+  eventAssistanceCaseReceiptDocumentSchema,
   getEventAssistanceHostGuestsCallablePayloadSchema,
   eventAssistanceHostGuestsCallableResponseSchema,
   setEventAssistanceCheckpointCloseoutCallablePayloadSchema,
@@ -647,6 +652,11 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateListEventAssistanceCasesCallablePayload = ajv.compile(listEventAssistanceCasesCallablePayloadSchema);
+export const validateResolveEventAssistanceCaseCallablePayload = ajv.compile(resolveEventAssistanceCaseCallablePayloadSchema);
+export const validateEventAssistanceCasesCallableResponse = ajv.compile(eventAssistanceCasesCallableResponseSchema);
+export const validateEventAssistanceCaseCallableResponse = ajv.compile(eventAssistanceCaseCallableResponseSchema);
+export const validateEventAssistanceCaseReceiptDocument = ajv.compile(eventAssistanceCaseReceiptDocumentSchema);
 export const validateGetEventAssistanceHostGuestsCallablePayload = ajv.compile(getEventAssistanceHostGuestsCallablePayloadSchema);
 export const validateEventAssistanceHostGuestsCallableResponse = ajv.compile(eventAssistanceHostGuestsCallableResponseSchema);
 export const validateSetEventAssistanceCheckpointCloseoutCallablePayload = ajv.compile(setEventAssistanceCheckpointCloseoutCallablePayloadSchema);

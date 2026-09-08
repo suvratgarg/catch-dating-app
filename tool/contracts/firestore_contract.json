@@ -2076,7 +2076,21 @@
       "write": "server only",
       "exportedFunctions": [
         "getEventAssistanceGuestView",
-        "submitEventAssistanceGuestChoice"
+        "submitEventAssistanceGuestChoice",
+        "listEventAssistanceCases",
+        "resolveEventAssistanceCase"
+      ]
+    },
+    {
+      "id": "eventAssistanceCaseReceipts",
+      "path": "eventAssistanceCaseReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceCaseReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance case handling",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "resolveEventAssistanceCase"
       ]
     },
     {

@@ -17,6 +17,31 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListEventAssistanceCasesCallablePayload',
+    source: 'callables/list_event_assistance_cases_payload.schema.json',
+    schema: schemaListEventAssistanceCasesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ResolveEventAssistanceCaseCallablePayload',
+    source: 'callables/resolve_event_assistance_case_payload.schema.json',
+    schema: schemaResolveEventAssistanceCaseCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCasesCallableResponse',
+    source: 'callable_responses/event_assistance_cases_response.schema.json',
+    schema: schemaEventAssistanceCasesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCaseCallableResponse',
+    source: 'callable_responses/event_assistance_case_response.schema.json',
+    schema: schemaEventAssistanceCaseCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceCaseReceiptDocument',
+    source: 'firestore/event_assistance_case_receipts.schema.json',
+    schema: schemaEventAssistanceCaseReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetEventAssistanceHostGuestsCallablePayload',
     source: 'callables/get_event_assistance_host_guests_payload.schema.json',
     schema: schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
@@ -3119,6 +3144,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListEventAssistanceCasesCallablePayload': schemaListEventAssistanceCasesCallablePayloadSchema,
+  'ResolveEventAssistanceCaseCallablePayload': schemaResolveEventAssistanceCaseCallablePayloadSchema,
+  'EventAssistanceCasesCallableResponse': schemaEventAssistanceCasesCallableResponseSchema,
+  'EventAssistanceCaseCallableResponse': schemaEventAssistanceCaseCallableResponseSchema,
+  'EventAssistanceCaseReceiptDocument': schemaEventAssistanceCaseReceiptDocumentSchema,
   'GetEventAssistanceHostGuestsCallablePayload': schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
   'EventAssistanceHostGuestsCallableResponse': schemaEventAssistanceHostGuestsCallableResponseSchema,
   'SetEventAssistanceCheckpointCloseoutCallablePayload': schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,
@@ -3742,6 +3772,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_event_assistance_cases_payload.schema.json': schemaListEventAssistanceCasesCallablePayloadSchema,
+  'callables/resolve_event_assistance_case_payload.schema.json': schemaResolveEventAssistanceCaseCallablePayloadSchema,
+  'callable_responses/event_assistance_cases_response.schema.json': schemaEventAssistanceCasesCallableResponseSchema,
+  'callable_responses/event_assistance_case_response.schema.json': schemaEventAssistanceCaseCallableResponseSchema,
+  'firestore/event_assistance_case_receipts.schema.json': schemaEventAssistanceCaseReceiptDocumentSchema,
   'callables/get_event_assistance_host_guests_payload.schema.json': schemaGetEventAssistanceHostGuestsCallablePayloadSchema,
   'callable_responses/event_assistance_host_guests_response.schema.json': schemaEventAssistanceHostGuestsCallableResponseSchema,
   'callables/set_event_assistance_checkpoint_closeout_payload.schema.json': schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema,

@@ -12,6 +12,11 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts` |
+| ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `functions/src/shared/generated/resolveEventAssistanceCaseCallablePayload.ts` |
+| EventAssistanceCasesCallableResponse | `callable_responses/event_assistance_cases_response.schema.json` | `functions/src/shared/generated/eventAssistanceCasesCallableResponse.ts` |
+| EventAssistanceCaseCallableResponse | `callable_responses/event_assistance_case_response.schema.json` | `functions/src/shared/generated/eventAssistanceCaseCallableResponse.ts` |
+| EventAssistanceCaseReceiptDocument | `firestore/event_assistance_case_receipts.schema.json` | `functions/src/shared/generated/eventAssistanceCaseReceiptDocument.ts` |
 | GetEventAssistanceHostGuestsCallablePayload | `callables/get_event_assistance_host_guests_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceHostGuestsCallablePayload.ts` |
 | EventAssistanceHostGuestsCallableResponse | `callable_responses/event_assistance_host_guests_response.schema.json` | `functions/src/shared/generated/eventAssistanceHostGuestsCallableResponse.ts` |
 | SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `functions/src/shared/generated/setEventAssistanceCheckpointCloseoutCallablePayload.ts` |
@@ -637,6 +642,11 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaListEventAssistanceCasesCallablePayloadSchema` | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_assistance_cases_callable_payload.g.dart` |
+| `schemaResolveEventAssistanceCaseCallablePayloadSchema` | ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/resolve_event_assistance_case_callable_payload.g.dart` |
+| `schemaEventAssistanceCasesCallableResponseSchema` | EventAssistanceCasesCallableResponse | `callable_responses/event_assistance_cases_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_cases_callable_response.g.dart` |
+| `schemaEventAssistanceCaseCallableResponseSchema` | EventAssistanceCaseCallableResponse | `callable_responses/event_assistance_case_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_case_callable_response.g.dart` |
+| `schemaEventAssistanceCaseReceiptDocumentSchema` | EventAssistanceCaseReceiptDocument | `firestore/event_assistance_case_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_case_receipt_document.g.dart` |
 | `schemaGetEventAssistanceHostGuestsCallablePayloadSchema` | GetEventAssistanceHostGuestsCallablePayload | `callables/get_event_assistance_host_guests_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_host_guests_callable_payload.g.dart` |
 | `schemaEventAssistanceHostGuestsCallableResponseSchema` | EventAssistanceHostGuestsCallableResponse | `callable_responses/event_assistance_host_guests_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_host_guests_callable_response.g.dart` |
 | `schemaSetEventAssistanceCheckpointCloseoutCallablePayloadSchema` | SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_assistance_checkpoint_closeout_callable_payload.g.dart` |
@@ -1262,6 +1272,8 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ListEventAssistanceCasesCallableRequest | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_assistance_cases_callable_request.g.dart` |
+| ResolveEventAssistanceCaseCallableRequest | ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `lib/core/schema_contracts/generated/callables/resolve_event_assistance_case_callable_request.g.dart` |
 | GetEventAssistanceHostGuestsCallableRequest | GetEventAssistanceHostGuestsCallablePayload | `callables/get_event_assistance_host_guests_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_host_guests_callable_request.g.dart` |
 | SetEventAssistanceCheckpointCloseoutCallableRequest | SetEventAssistanceCheckpointCloseoutCallablePayload | `callables/set_event_assistance_checkpoint_closeout_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_event_assistance_checkpoint_closeout_callable_request.g.dart` |
 | ReassignEventAssistanceCheckpointReporterCallableRequest | ReassignEventAssistanceCheckpointReporterCallablePayload | `callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json` | `lib/core/schema_contracts/generated/callables/reassign_event_assistance_checkpoint_reporter_callable_request.g.dart` |

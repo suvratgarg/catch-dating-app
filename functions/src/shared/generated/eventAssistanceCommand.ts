@@ -682,7 +682,11 @@ export type EventAssistanceCommand =
       payload: {
         caseId: string;
         outcome: "resolved" | "declined" | "transferred";
+        /**
+         * Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID.
+         */
         owner: string;
+        expectedRevision: number;
       };
     }
   | {

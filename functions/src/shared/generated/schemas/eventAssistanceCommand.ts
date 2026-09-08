@@ -3443,13 +3443,15 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "required": [
             "caseId",
             "outcome",
-            "owner"
+            "owner",
+            "expectedRevision"
           ],
           "properties": {
             "caseId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 2000
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
             "outcome": {
               "type": "string",
@@ -3463,7 +3465,13 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
               "type": "string",
               "minLength": 1,
               "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+              "description": "Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID."
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             }
           }
         }

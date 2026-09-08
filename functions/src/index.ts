@@ -519,6 +519,8 @@ export {
   recordOrganizerAnalyticsEvent,
 } from "./analytics/organizerAnalyticsEvents";
 
+export {listEventAssistanceCases, resolveEventAssistanceCase} from
+  "./eventSuccess/operations/hostCasesHandlers";
 export {getEventAssistanceHostGuests} from
   "./eventSuccess/operations/hostGuestsHandlers";
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from

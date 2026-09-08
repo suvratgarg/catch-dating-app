@@ -1,0 +1,578 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_cases.schema.json",
+  "title": "EventAssistanceCasesContracts",
+  "definitions": {
+    "Resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "actorUid",
+        "at"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "resolved",
+            "declined"
+          ]
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "at": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "ReadInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "status",
+        "cursor"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ],
+          "type": "string"
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
+    },
+    "WriteInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "command": {
+          "$ref": "event_assistance_common.schema.json#/definitions/ResolveAssistanceCommand"
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "command": {
+              "properties": {
+                "context": {
+                  "properties": {
+                    "mode": {
+                      "const": "live"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "View": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "revision",
+            "sourceHash",
+            "availability",
+            "attendeeId",
+            "category",
+            "receivedAt",
+            "status",
+            "resolution",
+            "canChange",
+            "assignment"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "availability": {
+              "const": "current"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ]
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "const": "open"
+            },
+            "resolution": {
+              "type": "null"
+            },
+            "canChange": {
+              "const": true
+            },
+            "assignment": {
+              "$ref": "#/definitions/Assignment"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "revision",
+            "sourceHash",
+            "availability",
+            "attendeeId",
+            "category",
+            "receivedAt",
+            "status",
+            "resolution",
+            "canChange",
+            "assignment"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "availability": {
+              "const": "current"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ]
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "const": "resolved"
+            },
+            "resolution": {
+              "$ref": "#/definitions/Resolution"
+            },
+            "canChange": {
+              "const": false
+            },
+            "assignment": {
+              "$ref": "#/definitions/Assignment"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "revision",
+            "sourceHash",
+            "availability",
+            "attendeeId",
+            "category",
+            "receivedAt",
+            "status",
+            "resolution",
+            "canChange",
+            "assignment"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "availability": {
+              "const": "sourceChanged"
+            },
+            "attendeeId": {
+              "type": "null"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ]
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "enum": [
+                "open",
+                "resolved"
+              ]
+            },
+            "resolution": {
+              "type": "null"
+            },
+            "canChange": {
+              "const": false
+            },
+            "assignment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "revision",
+            "sourceHash",
+            "availability",
+            "attendeeId",
+            "category",
+            "receivedAt",
+            "status",
+            "resolution",
+            "canChange",
+            "assignment"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "null"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "availability": {
+              "const": "legacy"
+            },
+            "attendeeId": {
+              "type": "null"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ]
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "status": {
+              "enum": [
+                "open",
+                "resolved"
+              ]
+            },
+            "resolution": {
+              "type": "null"
+            },
+            "canChange": {
+              "const": false
+            },
+            "assignment": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ListResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "serverTime",
+        "coverage",
+        "status",
+        "cases",
+        "nextCursor"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "coverage": {
+          "const": "page"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "cases": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/View"
+          }
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "Response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "serverTime",
+        "outcome",
+        "operationRevision",
+        "view"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "outcome": {
+          "enum": [
+            "applied",
+            "replayed"
+          ]
+        },
+        "operationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "view": {
+          "$ref": "#/definitions/View"
+        }
+      }
+    },
+    "Receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receiptId",
+        "context",
+        "caseId",
+        "caseBindingHash",
+        "requestHash",
+        "revision",
+        "actorUid",
+        "outcome",
+        "createdAt"
+      ],
+      "properties": {
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "caseBindingHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requestHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "outcome": {
+          "enum": [
+            "resolved",
+            "declined",
+            "transferred"
+          ]
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "Assignment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unassigned"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "uid",
+            "authority"
+          ],
+          "properties": {
+            "kind": {
+              "const": "assigned"
+            },
+            "uid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "authority": {
+              "enum": [
+                "current",
+                "revoked"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

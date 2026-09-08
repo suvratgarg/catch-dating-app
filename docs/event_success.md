@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.59.0
+version: 1.60.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -273,6 +273,42 @@ responses remain visible read errors.
 Host attention/roster presentation, rehearsal projection and activation remain
 integration work. The existing runtime and participation commands retain their
 own reviewed mutation boundaries.
+
+### Practical guest-help queue and handling
+
+`listEventAssistanceCases` reads open or settled practical requests for one
+live event. Each manager-authorized transaction returns at most 50 cases and
+an explicit continuation cursor. Coverage is one page at the returned server
+time, not an event-wide count, a live subscription or an all-clear. The query
+filters for the event-lead owner before reading requests; comfort/safety cases
+remain exclusively in the authorized safety-operator boundary.
+
+New guest-help responses preserve both canonical source-generation hashes and
+start with an unassigned, revision-zero handling state. Legacy cases remain
+readable as `legacy`; missing historical identity evidence is never fabricated.
+Recreated, deleted or foreign guest sources produce `sourceChanged`. These
+variants hide attendee identity and prohibit mutation. Current requests retain
+explicit open/settled state, assignment authority and the recorded resolution.
+An assignee whose management access was removed is shown as revoked, without
+removing the request from the queue or granting continued access.
+
+`resolveEventAssistanceCase` implements the typed `resolveAssistance` command
+for organizer managers. `resolved` and `declined` record the authenticated
+manager and timestamp and settle the request. `transferred` assigns a current
+organizer manager and keeps it open. A named recipient is not itself an
+access grant; the canonical organizer is re-read in the mutation transaction.
+Every command requires the reviewed source hash and case revision. Immutable
+`eventAssistanceCaseReceipts` make exact retries return their original operation
+revision with the latest case view; reused operation IDs with changed content
+fail. Concurrent resolutions cannot overwrite one another.
+
+Handling never changes attendance, participation, allocations, guest intention,
+message delivery, consent or the restricted safety queue. Check-in, a new guest
+episode, event cancellation and the event end time do not settle an unanswered
+help request. A retried guest reply cannot reopen a settled case. Case records
+and receipts remain server-only. Host Today integration, the actionable runtime
+sheet, rehearsal simulation, audited legacy repair and terminal retention remain
+subsequent work; these callables have not been deployed by this source change.
 
 ### Saved assistance settings
 

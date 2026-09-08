@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.66.0
+version: 1.67.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -47,6 +47,23 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Assistance Practical Requests
+
+Guest responses create `eventAssistanceCases` with distinct practical and
+restricted-safety ownership. New records bind their roster/event generations
+and contain a revisioned handling state. The schema preserves historical
+records without those fields as an explicit legacy variant; the Host reader
+cannot invent their missing source binding or authorize their mutation.
+
+`listEventAssistanceCases` provides a manager-only, bounded page of practical
+requests, with stale identity redaction and no event-wide completeness claim.
+`resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
+canonical command includes the expected case revision; its callable also
+requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
+request hashes, source binding, actor, outcome and committed revision for
+transactional retry safety. Both collections deny direct client access.
+See `docs/event_success.md` for lifecycle and integration boundaries.
 
 ### Host Today Attention Contract
 

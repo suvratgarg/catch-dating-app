@@ -537,6 +537,22 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventAssistanceCaseReceiptDocument {
+  receiptId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  caseId: string;
+  caseBindingHash: string;
+  requestHash: string;
+  revision: number;
+  actorUid: string;
+  outcome: "resolved" | "declined" | "transferred";
+  createdAt: number;
+}
+
 export interface EventAssistanceCheckpointDocument {
   schemaVersion: 1;
   reportId: string;
