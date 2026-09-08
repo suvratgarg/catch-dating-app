@@ -187,7 +187,6 @@ export 'src/components/catch_toggle_input.dart';
 export 'src/components/catch_top_bar.dart';
 export 'src/components/catch_top_bar_action_group.dart';
 export 'src/components/catch_top_bar_leading.dart';
-export 'src/components/catch_top_bar_menu_action.dart';
 export 'src/components/catch_top_bar_primary_action.dart';
 export 'src/components/catch_top_bar_search.dart';
 export 'src/components/catch_top_bar_tab_bar.dart';

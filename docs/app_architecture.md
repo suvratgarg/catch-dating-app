@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.37.0
-updated: 2026-09-08
+version: 1.38.0
+updated: 2026-09-09
 owner: app_architecture
 status: active
 ---
@@ -3970,11 +3970,12 @@ than compensating with route-owned fixed heights.
 
 Top-bar action slots accept only the top-bar action family. Use
 `CatchTopBarPrimaryAction` for a primary root-screen action: it renders the
-canonical 40 px bordered icon target on compact phones and preserves the
+quiet icon target with the platform minimum hit extent on compact phones and preserves the
 labelled small button on medium and expanded layouts. Use `CatchIconAction`,
-`CatchTopBarTextAction`, or `CatchTopBarMenuAction` for icon-only, semantic text,
-or overflow behavior. A direct `CatchButton` is page/body CTA chrome and is
-rejected by `CatchTopBarActionGroup` in debug builds. The
+`CatchButton.text`, or `CatchActionMenu` for icon-only, semantic text,
+or overflow behavior. The explicit `CatchButton.text` recipe is permitted;
+other `CatchButton` recipes are page/body CTA chrome and are rejected by
+`CatchTopBarActionGroup` in debug builds. The
 `design:screen-top-bar-contracts` gate also rejects direct pills in inline
 action lists and simple local action-list variables.
 

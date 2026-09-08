@@ -1736,6 +1736,34 @@
           "rationale": "The wrapper adds no behavior or visual defaults beyond those supplied by Button.text."
         }
       ]
+    },
+    {
+      "id": "toolbar-overflow-menu",
+      "title": "Canonical toolbar overflow menu",
+      "intent": "Use the command-menu component directly wherever toolbar overflow is needed.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.menu",
+      "qualityReference": "CatchActionMenu",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. The wrapper forwards every property and resolves the same default overflow icon."
+      ],
+      "members": [
+        {
+          "symbol": "CatchActionMenu",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns command validation, trigger availability, overlay lifetime and command dispatch."
+        },
+        {
+          "symbol": "CatchTopBarMenuAction",
+          "disposition": "unify",
+          "target": "CatchActionMenu",
+          "preview": "not-applicable",
+          "rationale": "Exact delegation adds no independently meaningful toolbar behavior or defaults."
+        }
+      ]
     }
   ]
 }

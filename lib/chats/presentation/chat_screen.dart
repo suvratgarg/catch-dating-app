@@ -311,7 +311,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           divider: scrolledUnder,
           actions: [
             if (availableThreadActions.isNotEmpty)
-              CatchTopBarMenuAction<ChatThreadAction>(
+              CatchActionMenu<ChatThreadAction>(
                 tooltip: context.l10n.chatsChatScreenTooltipChatActions,
                 onSelected: (action) => unawaited(
                   _threadActionController.runThreadAction(

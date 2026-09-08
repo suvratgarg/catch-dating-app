@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.13.0
-updated: 2026-09-08
+version: 1.14.0
+updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -424,16 +424,16 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   compact action strips, not a second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
   not compose parallel header rows. A primary root-screen action uses
-  `CatchTopBarPrimaryAction`, which owns the compact 40 px bordered icon and
+  `CatchTopBarPrimaryAction`, which owns the compact quiet icon target with the platform minimum hit extent and
   wider labelled-button variants. Semantic text, icon-only, and overflow
-  actions use `CatchTopBarTextAction`, `CatchIconAction`, and
-  `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
+  actions use `CatchButton.text`, `CatchIconAction`, and
+  `CatchActionMenu`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
   product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
   mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
-  dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
+  dynamic mutually-exclusive filters use `CatchSelectionMenu.control` so
   options do not disappear beyond the viewport. Selectable chips express
   independent binary or multi-select values, not scalar scope or lifecycle
   rails. A query that searches the whole active view belongs to that screen's

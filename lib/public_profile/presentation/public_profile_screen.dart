@@ -124,7 +124,7 @@ class PublicProfileScreen extends ConsumerWidget {
             divider: scrolledUnder,
             actions: [
               if (screenState.showSafetyActions)
-                CatchTopBarMenuAction<String>(
+                CatchActionMenu<String>(
                   tooltip: context
                       .l10n
                       .publicProfilePublicProfileScreenTooltipProfileActions,

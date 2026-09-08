@@ -731,7 +731,7 @@ void main() {
                 ],
               ),
               actions: [
-                CatchTopBarMenuAction<String>(
+                CatchActionMenu<String>(
                   tooltip: 'More profile actions',
                   onSelected: (value) => selected = value,
                   items: const [

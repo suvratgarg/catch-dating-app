@@ -28,7 +28,7 @@ void main() {
                     onPressed: _noop,
                   ),
                   const CatchButton.text(label: 'Done', onPressed: _noop),
-                  const CatchTopBarMenuAction<String>(
+                  const CatchActionMenu<String>(
                     tooltip: 'More',
                     items: [
                       CatchActionMenuItem(value: 'export', label: 'Export'),

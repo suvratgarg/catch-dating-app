@@ -5311,7 +5311,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             onBack: _noop,
             actions: [
               CatchButton.text(label: 'Preview', onPressed: _noop),
-              CatchTopBarMenuAction<String>(
+              CatchActionMenu<String>(
                 tooltip: 'Form actions',
                 variant: CatchIconActionVariant.plain,
                 items: const [
@@ -5380,7 +5380,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             surface: true,
             divider: true,
             actions: [
-              CatchTopBarMenuAction<String>(
+              CatchActionMenu<String>(
                 tooltip: 'Chat actions',
                 onSelected: _ignoreString,
                 items: [

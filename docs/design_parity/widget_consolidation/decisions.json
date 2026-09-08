@@ -7028,6 +7028,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toolbar-overflow-menu",
+      "patternFamilyId": "toolbar-overflow-menu",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchActionMenu",
+      "members": [
+        {
+          "name": "CatchTopBarMenuAction",
+          "action": "absorb",
+          "target": "CatchActionMenu"
+        }
+      ],
+      "rationale": "Source comparison confirms identical items, callback, tooltip, enabled state, icon variant and fallback icon. Delete the wrapper and use ActionMenu directly; retain the short-command limits, disabled explanations, anchor geometry and selection behavior at the existing owner.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

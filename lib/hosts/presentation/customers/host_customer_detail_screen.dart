@@ -111,7 +111,7 @@ class _HostCustomerDetailScreenState
               ),
           ],
           if (detailState.value case final customer?)
-            CatchTopBarMenuAction<_HostCustomerRecordAction>(
+            CatchActionMenu<_HostCustomerRecordAction>(
               key: const ValueKey('host-customer-record-actions'),
               tooltip: context.l10n.hostCustomersMoreActions,
               variant: CatchIconActionVariant.plain,

@@ -294,7 +294,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   icon: CatchIcons.personAddAlt1Rounded,
                   onPressed: () => _addCustomer(selectedClub, request),
                 ),
-                CatchTopBarMenuAction<_HostCustomersHeaderAction>(
+                CatchActionMenu<_HostCustomersHeaderAction>(
                   variant: CatchIconActionVariant.plain,
                   tooltip: context.l10n.hostCustomersMoreActions,
                   items: _hostCustomersHeaderActions(

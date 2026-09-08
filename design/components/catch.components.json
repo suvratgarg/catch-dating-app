@@ -8117,7 +8117,7 @@
           "CatchCollapsedHeaderTitle",
           "CatchIconAction",
           "CatchTopBarPrimaryAction",
-          "CatchTopBarMenuAction",
+          "CatchActionMenu",
           "CatchButton.text",
           "CatchTopBarTabBar"
         ],
@@ -8199,25 +8199,6 @@
                 "catch.top_bar"
               ],
               "reason": "Reveals a toolbar title from inherited flexible-header collapse progress; it owns no screen header/action layout and returns a box title, not a sliver."
-            }
-          },
-          {
-            "id": "catch.top_bar.menu_action",
-            "symbol": "CatchTopBarMenuAction",
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar_menu_action.dart",
-            "summary": "Top-bar-scoped overflow menu action that delegates to CatchActionMenu.",
-            "states": [
-              "default",
-              "selected-row",
-              "disabled-row",
-              "danger-row"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.top_bar"
             }
           },
           {
@@ -8344,7 +8325,8 @@
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
           "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
-          "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors."
+          "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors.",
+          "Toolbar overflow uses CatchActionMenu directly. Its former toolbar wrapper added no behavior, defaults or styling; command limits, disabled reasons, anchoring and callback dispatch have one implementation."
         ]
       },
       "governance": {

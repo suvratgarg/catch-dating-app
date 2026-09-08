@@ -1037,8 +1037,8 @@ Widget catchTopBarTabBarCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarMenuAction,
+  name: 'Toolbar actions',
+  type: CatchActionMenu,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionsCatalogStates(BuildContext context) {
@@ -1060,7 +1060,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
               onPressed: _noop,
             ),
             CatchButton.text(label: 'Done', onPressed: _noop),
-            CatchTopBarMenuAction<String>(
+            CatchActionMenu<String>(
               tooltip: 'More',
               onSelected: _ignoreString,
               items: const [

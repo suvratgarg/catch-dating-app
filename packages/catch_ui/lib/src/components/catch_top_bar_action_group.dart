@@ -28,7 +28,7 @@ class CatchTopBarActionGroup extends StatelessWidget {
             'Use CatchTopBarPrimaryAction for a primary action that compacts '
             'to an icon, CatchIconAction for an icon-only action, '
             'CatchButton.text for a semantic text action, or '
-            'CatchTopBarMenuAction for overflow actions.',
+            'CatchActionMenu for overflow actions.',
           ),
         ]);
       }

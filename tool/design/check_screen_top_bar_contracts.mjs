@@ -229,7 +229,7 @@ function checkTopBarActionFamilies({root, findings}) {
         message:
           `${match[1]} receives CatchButton as a direct top-bar action. ` +
           "Use CatchTopBarPrimaryAction, CatchIconAction, " +
-          "CatchButton.text, or CatchTopBarMenuAction so top-bar " +
+          "CatchButton.text, or CatchActionMenu so top-bar " +
           "geometry and compact behavior stay canonical.",
       });
     }

@@ -1596,6 +1596,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Navigation',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchActionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Toolbar actions',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchTopBarActionsCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1662,16 +1672,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchTopBarActionGroupCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTopBarMenuAction',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchTopBarActionsCatalogStates,
               ),
             ],
           ),
