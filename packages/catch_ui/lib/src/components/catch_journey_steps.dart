@@ -1,0 +1,92 @@
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_journey_step.dart';
+import 'package:catch_ui/src/components/catch_journey_step_node.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:flutter/material.dart';
+
+/// Design-system `JourneySteps` (`components/events/JourneySteps`): a numbered,
+/// line-traced sequence — the Itinerary grammar applied to ordered steps. A mono
+/// index, a node rail with a connecting line tracing one step into the next, and
+/// a function-font title + body. Indices auto-number (01, 02 …). Use where a list
+/// is genuinely a sequence (first-run dashboard, multi-step "how it works"); the
+/// trace is the point. [accent] defaults to the ink primary.
+class CatchJourneySteps extends StatelessWidget {
+  const CatchJourneySteps({super.key, required this.steps, this.accent});
+
+  final List<CatchJourneyStep> steps;
+  final Color? accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final accentColor = accent ?? t.primary;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < steps.length; i++)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: CatchLayout.journeyStepsIndexColumnWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: CatchStroke.hairline),
+                    child: Text(
+                      (i + 1).toString().padLeft(2, '0'),
+                      style: CatchTextStyles.mono(
+                        context,
+                        color: accentColor,
+                      ).copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: CatchLayout.journeyStepsRailColumnWidth,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: CatchSpacing.micro3),
+                      CatchJourneyStepNode(accent: accentColor),
+                      if (i < steps.length - 1)
+                        Expanded(
+                          child: Container(
+                            width: CatchStroke.underline,
+                            color: t.line2,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                gapW10,
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: i < steps.length - 1 ? CatchSpacing.s5 : 0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          steps[i].title,
+                          style: CatchTextStyles.fieldRowTitle(context),
+                        ),
+                        if (steps[i].body != null) ...[
+                          const SizedBox(height: CatchSpacing.micro3),
+                          Text(
+                            steps[i].body!,
+                            style: CatchTextStyles.supporting(context),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}

@@ -1,16 +1,13 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_path_builder_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 enum _PacePreset { social, steady, fast }
@@ -49,7 +46,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
   static const _paceGroupsField = 'route-pace-groups';
   static const _trackingField = 'route-live-tracking';
 
-  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  final CatchAccordionController _accordion = CatchAccordionController();
 
   @override
   void initState() {
@@ -83,10 +80,11 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
     final accent = ActivityPalette.resolve(context, widget.activityKind).accent;
     return CatchSection.fieldRows(
       title: context.l10n.hostsRouteEventPlanSectionTitle,
-      activityKind: widget.activityKind,
+      leadAccent: accent,
       children: [
         if (widget.activityKind == ActivityKind.openActivity)
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.routePlanEnabled,
             title: context.l10n.hostsRouteEventPlanOptInTitle,
             body: context.l10n.hostsRouteEventPlanOptInBody,
@@ -100,6 +98,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
           ),
         if (plan != null)
           CatchField.control(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.routePlanSummary,
             title: context.l10n.hostsRouteEventPlanSummaryTitle,
             body: [
@@ -113,7 +112,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
             iconColor: accent,
             control: CatchSection.containedFieldRows(
               children: [
-                CatchField.choices<RouteMovementMode>(
+                CatchField<RouteMovementMode>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeMovement,
                   title: context.l10n.hostsRouteEventPlanMovementTitle,
                   contract: CatchContractConstraints
@@ -130,7 +130,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.syncAltRounded,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteShape>(
+                CatchField<RouteShape>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeShape,
                   title: context.l10n.hostsRouteEventPlanShapeTitle,
                   contract: CatchContractConstraints
@@ -147,7 +148,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.mapOutlined,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteGroupStrategy>(
+                CatchField<RouteGroupStrategy>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeGroupStrategy,
                   title: context.l10n.hostsRouteEventPlanGroupTitle,
                   contract: CatchContractConstraints
@@ -164,7 +166,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.groups2Outlined,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteStopCadence>(
+                CatchField<RouteStopCadence>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeStopCadence,
                   title: context.l10n.hostsRouteEventPlanCadenceTitle,
                   contract: CatchContractConstraints
@@ -181,7 +184,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.ruleFolderOutlined,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteStopKind>(
+                CatchField<RouteStopKind>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeStopKinds,
                   title: context.l10n.hostsRouteEventPlanStopsTitle,
                   contract: CatchContractConstraints
@@ -203,7 +207,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.tableRestaurantOutlined,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteRoleKind>(
+                CatchField<RouteRoleKind>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeRoleKinds,
                   title: context.l10n.hostsRouteEventPlanRolesTitle,
                   contract: CatchContractConstraints
@@ -231,6 +236,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CatchFieldContentRow(
+                        labelCopy: catchFormFieldLabelCopy(context.l10n),
+
                         title: context.l10n.hostsRouteEventPlanPathTitle,
                         body: plan.path.length >= 2
                             ? context.l10n.hostsRouteEventPlanPathCount(
@@ -247,7 +254,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                     ],
                   ),
                 ),
-                CatchField.choices<_PacePreset>(
+                CatchField<_PacePreset>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routePaceGroups,
                   title: context.l10n.hostsRouteEventPlanPaceGroupsTitle,
                   body: context.l10n.hostsRouteEventPlanPaceGroupsBody,
@@ -266,7 +274,8 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   icon: CatchIcons.speedOutlined,
                   iconColor: accent,
                 ),
-                CatchField.choices<RouteLiveTrackingMode>(
+                CatchField<RouteLiveTrackingMode>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.routeLiveTracking,
                   title: context.l10n.hostsRouteEventPlanTrackingTitle,
                   body: context.l10n.hostsRouteEventPlanTrackingBody,

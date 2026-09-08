@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:95e0d435db31467baa1a45fa8926b2b151b20b112366cd1e7344056907d2717c",
+  "resolvedDigest": "sha256:337ddad7023c11458061287a25eb3f5f07d4fc2d79b178f275614e37cb796f4d",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4462,7 +4462,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -4475,10 +4475,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },
@@ -4487,10 +4487,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -4499,11 +4498,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",
@@ -4522,7 +4522,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchFormDialog",
-              "file": "lib/core/widgets/catch_adaptive_dialog.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
               "constructors": [
                 "CatchFormDialog"
               ]
@@ -4544,7 +4544,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchOptionCard",
-              "file": "lib/core/widgets/catch_option_card.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
               "constructors": [
                 "CatchOptionCard"
               ]
@@ -4555,7 +4555,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]
@@ -4566,7 +4566,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -4580,7 +4580,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

@@ -74,7 +74,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             uidState.error!,
             context: AppErrorContext.auth,
             onRetry: () => ref.invalidate(uidProvider),
@@ -116,7 +116,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
@@ -133,7 +133,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorState.fromError(
+              child: CatchLocalizedErrorState(
                 StateError('Organizer unavailable'),
                 context: AppErrorContext.club,
                 onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
@@ -277,11 +277,13 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,
           valueText: club.hostDefaults.primaryActivityKind.label,
           icon: CatchIcons.eventOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleAdmission,
           body: _admissionDefaultDescription(
             policy.admissionPreset,
@@ -294,6 +296,7 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
           icon: CatchIcons.eventSeatOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleAgeRange,
           valueText: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
             minAge: policy.minAge,
@@ -302,6 +305,7 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
           icon: CatchIcons.cakeOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleCancellationPolicy,
           body: policy.cancellationPolicy.attendeeSummary,
           valueText: policy.cancellationPolicy.title,

@@ -5,14 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -40,6 +33,7 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1843,11 +1837,11 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(sharedParams, isNull);
-      expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
+      expect(find.byKey(CatchShareCardSheet.cardPreviewKey), findsOneWidget);
       expect(find.byType(EventShareCard), findsOneWidget);
       expect(find.text('CATCH INVITE'), findsOneWidget);
 
-      await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
+      await tester.tap(find.byKey(CatchShareCardSheet.shareButtonKey));
       await tester.pump();
       await pumpFeatureUi(tester);
       await tester.runAsync(() async {

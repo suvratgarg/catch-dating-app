@@ -65,7 +65,6 @@ export 'presentation/widgets/event_pins_map.dart'; // public-api: shared present
 export 'presentation/widgets/who_is_going.dart'; // public-api: shared presentation component used outside this feature
 export 'shared/event_share_card.dart';
 export 'presentation/widgets/event_stats_grid.dart'; // public-api: shared presentation component used outside this feature
-export 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
 export 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 export 'shared/event_tiles/event_tile_data.dart';
 export 'shared/event_tiles/event_tiles.dart';

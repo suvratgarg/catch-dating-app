@@ -1004,6 +1004,7 @@ class _EventSuccessOutcomeRecorderState
               children: [
                 for (var index = 0; index < widget.units.length; index++)
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'event_success.outcome.${widget.nextRoundIndex}.${widget.units[index].id}',
                     ),
@@ -1589,13 +1590,13 @@ class RevealHostStatusLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint,
-      compact: (context) => Column(
+      compactBuilder: (context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [number, gapH14, copy],
       ),
-      expanded: (context) => Row(
+      expandedBuilder: (context) => Row(
         children: [
           number,
           gapW16,

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {productionWidgetRoots} from "./lib/production_widget_roots.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
 const registry = readJson("design/components/catch.components.json");
@@ -11,7 +12,8 @@ const componentById = new Map(
 );
 const allowedSurfaces = new Set(["flutter", "website", "admin", "webui"]);
 const symbols = {
-  flutter: collectDartSymbols(fromRepo("lib")),
+  flutter: new Set(productionWidgetRoots.flatMap((root) =>
+    [...collectDartSymbols(fromRepo(root))])),
   website: collectTypeScriptExports(fromRepo("website/src/shared/ui")),
   admin: collectTypeScriptExports(fromRepo("admin/src/shared/ui/AdminPrimitives")),
   webui: collectTypeScriptExports(fromRepo("packages/web-ui/src")),

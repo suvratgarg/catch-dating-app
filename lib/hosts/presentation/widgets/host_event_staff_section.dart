@@ -2,24 +2,17 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,6 +36,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_staff_access_field'),
         title: context.l10n.hostsEventStaffTitle,
         body: context.l10n.hostsEventStaffSubtitle,
@@ -78,7 +72,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
             ),
             gapH12,
             if (_mutationError case final error?) ...[
-              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+              CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
               gapH12,
             ],
             if (_loaded)
@@ -100,6 +94,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                     children: [
                       for (final indexed in list.members.indexed)
                         CatchPersonRow(
+                          copy: catchPersonRowCopy(context.l10n),
                           key: ValueKey(indexed.$2.uid),
                           divider: indexed.$1 > 0,
                           data: CatchPersonRowData(
@@ -192,6 +187,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
 
   Future<void> _revoke(HostEventStaffMember member) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.hostsEventStaffRevokeTitle,
       message: context.l10n.hostsEventStaffRevokeMessage(
@@ -271,6 +267,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
       child: CatchFieldLanes.divided(
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsEventStaffPhone,
             contract: CatchContractConstraints
                 .grantEventStaffCallablePayloadPhoneNumber,
@@ -293,6 +290,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
             onSelected: (window, _) => setState(() => _window = window),
             builder: (context, controller, _) => CatchFieldLanes.single(
               child: CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsEventStaffAccessDuration,
                 valueText: _windowLabel(context, _window),
                 onTap: controller.isOpen ? controller.close : controller.open,

@@ -1,7 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,7 +20,7 @@ void main() {
       ),
     );
 
-    expect(style.fontFamily, CatchFonts.voiceFamily);
+    expect(style.fontFamily, 'packages/catch_ui/${CatchFonts.voiceFamily}');
     expect(style.fontSize, 20);
     expect(style.fontWeight, FontWeight.w700);
     expect(style.height, 1.16);

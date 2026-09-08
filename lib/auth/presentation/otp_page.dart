@@ -8,17 +8,12 @@ import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart'
 import 'package:catch_dating_app/auth/presentation/host_auth_widgets.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_divider.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -229,6 +224,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ),
             gapH8,
             CatchOtpCodeField(
+              semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
               inputKey: AuthFormKeys.otpField,
               contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
               controller: _otpController,
@@ -299,6 +295,10 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       ),
       children: [
         CatchStepHeader(
+          stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+          compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(
+            context.l10n,
+          ),
           title: l10n.authOtpTitle,
           subtitle: l10n.authOtpSentTo(
             phoneNumber: viewState.displayPhoneNumber.isEmpty
@@ -310,6 +310,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         gapH28,
         CatchOtpCodeField(
+          semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
           inputKey: AuthFormKeys.otpField,
           contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
           controller: _otpController,

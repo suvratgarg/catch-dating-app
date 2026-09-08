@@ -1,12 +1,8 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical chat composer.
@@ -180,6 +176,7 @@ class _ChatComposer extends StatelessWidget {
                         onTap: hardDisabled ? null : focusNode.requestFocus,
                         child: CatchFieldLanes.single(
                           child: CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             title: context.l10n.chatsChatInputBarTitleMessage,
                             contract: CatchContractConstraints
                                 .createChatMessageClientWriteDataText,

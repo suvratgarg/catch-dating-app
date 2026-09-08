@@ -1,15 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -19,6 +12,7 @@ import 'package:catch_dating_app/public_profile/presentation/public_profile_scre
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -202,7 +196,7 @@ class PublicProfileScreenBody extends StatelessWidget {
       case PublicProfileRouteStatus.loading:
         return const ProfileSurfaceSkeleton(bottomPadding: CatchSpacing.s8);
       case PublicProfileRouteStatus.error:
-        return CatchErrorState.fromError(
+        return CatchLocalizedErrorState(
           state.error!,
           context: AppErrorContext.profile,
           onRetry: onRetry,
@@ -350,6 +344,7 @@ class PublicProfileReportReasonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: label,
         icon: CatchIcons.flagOutlined,
         onTap: () => onSelected(value),

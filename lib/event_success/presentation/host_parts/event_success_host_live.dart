@@ -605,12 +605,12 @@ class LiveTab extends StatelessWidget {
             compact: compactLiveControls,
           ),
       if (actionState.stepError != null)
-        CatchErrorBanner.fromError(
+        CatchLocalizedErrorBanner(
           actionState.stepError!,
           context: AppErrorContext.event,
         ),
       if (actionState.completeError != null)
-        CatchErrorBanner.fromError(
+        CatchLocalizedErrorBanner(
           actionState.completeError!,
           context: AppErrorContext.event,
         ),
@@ -841,7 +841,7 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
           ),
           if (error != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(error!, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error!, context: AppErrorContext.event),
           ],
           if (isLoading && attendees.isEmpty) ...[
             gapH12,
@@ -858,7 +858,8 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
               first: true,
               children: [
                 for (final indexed in attendees.indexed)
-                  CatchField.choices<_EventSuccessAccountabilitySelection>(
+                  CatchField<_EventSuccessAccountabilitySelection>.choices(
+                    copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'event_success.accountability.${indexed.$2.id}',
                     ),
@@ -964,7 +965,7 @@ class _EventSuccessPresenceCard extends StatelessWidget {
           ),
           if (presenceError != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               presenceError!,
               context: AppErrorContext.event,
             ),
@@ -1033,7 +1034,7 @@ class _EventSuccessPresenceCard extends StatelessWidget {
           ],
           if (lateArrivalError != null) ...[
             gapH10,
-            CatchErrorBanner.fromError(
+            CatchLocalizedErrorBanner(
               lateArrivalError!,
               context: AppErrorContext.event,
             ),
@@ -1204,12 +1205,14 @@ class LiveNowConsole extends StatelessWidget {
       child: CatchSection.fieldRows(
         children: [
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.eventSuccessControlRoomGuests,
             body: guestSummary,
             onTap: onOpenGuests,
           ),
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             icon: CatchIcons.helpOutlineRounded,
             title: context.l10n.eventSuccessControlRoomHelpFallback,
             body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
@@ -1393,10 +1396,10 @@ class LiveNowConsole extends StatelessWidget {
       if (largeText) {
         return compactLayout;
       }
-      return ComponentResponsiveBuilder(
+      return CatchViewportBreakpoint(
         breakpoint: ComponentBreakpoints.hostEventLiveSupportingPaneBreakpoint,
-        compact: (_) => compactLayout,
-        expanded: (_) => expandedLayout,
+        compactBuilder: (_) => compactLayout,
+        expandedBuilder: (_) => expandedLayout,
       );
     }
 
@@ -1814,16 +1817,19 @@ Future<void> _showControlRoomFallback(BuildContext context) {
       child: CatchSection.fieldRows(
         children: [
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackStayTitle,
             body: context.l10n.eventSuccessControlRoomFallbackStayBody,
             icon: CatchIcons.checklistRounded,
           ),
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackGuestsTitle,
             body: context.l10n.eventSuccessControlRoomFallbackGuestsBody,
             icon: CatchIcons.groupsOutlined,
           ),
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackContinueTitle,
             body: context.l10n.eventSuccessControlRoomFallbackContinueBody,
             icon: CatchIcons.arrowForwardRounded,

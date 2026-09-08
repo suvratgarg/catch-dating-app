@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -132,7 +132,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(
+          home: Scaffold(
             body: SizedBox(
               width: 780,
               height: 640,
@@ -142,7 +142,11 @@ void main() {
                     child: CatchSection.fieldRows(
                       first: true,
                       children: [
-                        CatchField.nav(title: 'Reminder timing', onTap: _noop),
+                        CatchField.nav(
+                          copy: catchFieldCopy(AppLocalizationsEn()),
+                          title: 'Reminder timing',
+                          onTap: _noop,
+                        ),
                       ],
                     ),
                   ),
@@ -178,20 +182,27 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: SizedBox(
             width: 780,
             height: 640,
             child: CatchResponsiveSectionPage(
               composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
-              fieldInteractionPolicy: CatchResponsiveFieldInteractionPolicy(
-                splitPane: CatchDividedFieldInteraction.fullBleed,
-              ),
+              fieldInteractionPolicy:
+                  const CatchResponsiveFieldInteractionPolicy(
+                    splitPane: CatchDividedFieldInteraction.fullBleed,
+                  ),
               sections: [
                 CatchResponsiveSectionItem(
                   child: CatchSection.fieldRows(
                     first: true,
-                    children: [CatchField.nav(title: 'Primary', onTap: _noop)],
+                    children: [
+                      CatchField.nav(
+                        copy: catchFieldCopy(AppLocalizationsEn()),
+                        title: 'Primary',
+                        onTap: _noop,
+                      ),
+                    ],
                   ),
                 ),
                 CatchResponsiveSectionItem(
@@ -199,7 +210,11 @@ void main() {
                   child: CatchSection.fieldRows(
                     first: true,
                     children: [
-                      CatchField.nav(title: 'Secondary', onTap: _noop),
+                      CatchField.nav(
+                        copy: catchFieldCopy(AppLocalizationsEn()),
+                        title: 'Secondary',
+                        onTap: _noop,
+                      ),
                     ],
                   ),
                 ),
@@ -236,10 +251,10 @@ void main() {
         theme: AppTheme.light,
         home: MediaQuery(
           data: const MediaQueryData(size: Size(390, 640)),
-          child: AppShellActiveTab(
+          child: CatchTabViewportScope(
             index: 0,
             bottomOverlayInset: 88,
-            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: Scaffold(
               body: SizedBox(
                 width: 390,
@@ -249,9 +264,10 @@ void main() {
                     CatchResponsiveSectionItem(
                       child: Builder(
                         builder: (context) {
-                          final obstruction = CatchFieldVisibilityScope.maybeOf(
-                            context,
-                          )?.bottomObstruction;
+                          final obstruction =
+                              CatchFieldVisibilityScope.bottomObstructionOf(
+                                context,
+                              );
                           return Text('obstruction:$obstruction');
                         },
                       ),

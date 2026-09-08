@@ -1,24 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -94,6 +85,7 @@ class HostCustomerMemorySection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host-customer-edit-tags'),
                   titleMaxLines: 3,
                   valueMaxLines: 2,
@@ -106,6 +98,7 @@ class HostCustomerMemorySection extends StatelessWidget {
                 ),
                 if (notes.isEmpty)
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     key: const ValueKey('host-customer-add-note'),
                     title: context.l10n.hostCustomersNotes,
                     body: context.l10n.hostCustomersNoNotes,
@@ -230,6 +223,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-customer-note-body'),
             title: context.l10n.hostCustomersNoteBody,
             contract: widget.note == null
@@ -363,6 +357,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
               ),
             if (_vocabulary.isNotEmpty) gapH16,
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-customer-new-tag'),
               title: context.l10n.hostCustomersNewTag,
               contract: CatchContractConstraints

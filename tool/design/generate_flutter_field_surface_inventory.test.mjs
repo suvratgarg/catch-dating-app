@@ -28,7 +28,7 @@ test("finds generic constructor calls", () => {
 });
 
 test("finds named generic constructor calls", () => {
-  const source = "CatchField.choices<ExampleValue>(values: values);\n";
+  const source = "CatchField<ExampleValue>.choices(values: values);\n";
   assert.deepEqual(findCallLines(source, "CatchField.choices"), [1]);
 });
 

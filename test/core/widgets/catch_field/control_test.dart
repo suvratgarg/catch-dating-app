@@ -1,16 +1,17 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_pump_helpers.dart';
 import 'test_support.dart';
+
+part 'control_interaction_tests.dart';
 
 void main() {
   testWidgets('CatchField preserves the last state when control is released', (
@@ -25,6 +26,7 @@ void main() {
           builder: (context, setState) {
             releaseControl = () => setState(() => controlled = false);
             return CatchField.control(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Capacity',
               open: controlled ? true : null,
               onOpenChanged: (_) {},
@@ -63,6 +65,7 @@ void main() {
           builder: (context, setState) {
             setOpen = (value) => setState(() => open = value);
             return CatchField.control(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Age range',
               open: open,
               onOpenChanged: setOpen,
@@ -91,7 +94,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Distances',
           body: '5K and beyond',
           values: const ['5K', '10K'],
@@ -113,7 +117,8 @@ void main() {
     const accent = Color(0xFF8C5BFF);
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Format',
           helperText: 'Pick the format guests will see.',
           values: const ['Social', 'Competitive'],
@@ -141,7 +146,8 @@ void main() {
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchField.optionCards<String>(
+            builder: (context, setState) => CatchField<String>.optionCards(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Admission format',
               values: const ['open', 'invite'],
               itemTitle: (value) => value == 'open' ? 'Open' : 'Invite only',
@@ -196,6 +202,7 @@ void main() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchField.stepper(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Height',
             body: '$value cm',
             value: value,
@@ -364,11 +371,12 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const CatchField.control(
+        CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
           initiallyOpen: true,
-          control: Text('Height control'),
+          control: const Text('Height control'),
           onCancel: _noop,
           onSubmit: _noop,
         ),
@@ -409,7 +417,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'City',
           values: const ['Indore', 'Mumbai'],
           itemLabel: (value) => value,
@@ -439,6 +448,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
           control: const Text('Height control'),
@@ -464,6 +474,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
           control: const Text('Height control'),
@@ -490,6 +501,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           open: true,
           onOpenChanged: openChanges.add,
@@ -516,6 +528,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           control: const Text('Height control'),
           onOpenChanged: openChanges.add,
@@ -534,311 +547,7 @@ void main() {
     expect(openChanges, <bool>[true, false]);
   });
 
-  testWidgets('CatchField control cancels after an outside pointer is lifted', (
-    tester,
-  ) async {
-    var open = true;
-    var cancelCount = 0;
-
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => Column(
-            children: [
-              CatchField.control(
-                title: 'Height',
-                open: open,
-                onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
-                onCancel: () {
-                  cancelCount++;
-                  setState(() => open = false);
-                },
-                onSubmit: () {},
-              ),
-              const SizedBox(height: 80),
-              const Text('Outside target'),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.text('Outside target')),
-    );
-    await tester.pump();
-
-    expect(open, isTrue);
-    expect(cancelCount, 0);
-
-    await gesture.up();
-    await tester.pump();
-
-    expect(open, isFalse);
-    expect(cancelCount, 1);
-  });
-
-  testWidgets('CatchField control stays open after an outside drag', (
-    tester,
-  ) async {
-    var open = true;
-    var cancelCount = 0;
-
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => Column(
-            children: [
-              CatchField.control(
-                title: 'Height',
-                open: open,
-                onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
-                onCancel: () {
-                  cancelCount++;
-                  setState(() => open = false);
-                },
-                onSubmit: () {},
-              ),
-              const SizedBox(height: 120),
-              const Text('Outside drag target'),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.text('Outside drag target')),
-    );
-    await gesture.moveBy(const Offset(48, 0));
-    await gesture.up();
-    await tester.pump();
-
-    expect(open, isTrue);
-    expect(cancelCount, 0);
-  });
-
-  testWidgets('CatchField ignores Escape while an explicit save is loading', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: 'Saving value');
-    final focusNode = FocusNode();
-    addTearDown(controller.dispose);
-    addTearDown(focusNode.dispose);
-    var open = true;
-    var openChanges = 0;
-    var cancelCount = 0;
-
-    await tester.pumpWidget(
-      _wrap(
-        StatefulBuilder(
-          builder: (context, setState) => CatchField.inputActions(
-            title: 'Prompt',
-            controller: controller,
-            focusNode: focusNode,
-            open: open,
-            onOpenChanged: (value) {
-              openChanges++;
-              setState(() => open = value);
-            },
-            onCancel: () {
-              cancelCount++;
-              setState(() => open = false);
-            },
-            onSubmit: () {},
-            isLoading: true,
-          ),
-        ),
-      ),
-    );
-    await tester.pump();
-    expect(focusNode.hasFocus, isTrue);
-
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.pump();
-
-    expect(open, isTrue);
-    expect(openChanges, 0);
-    expect(cancelCount, 0);
-  });
-
-  testWidgets('CatchField cancels an in-flight reveal when it closes', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(400, 600);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    final scrollController = ScrollController();
-    addTearDown(scrollController.dispose);
-    var open = false;
-    late void Function(bool value) setOpen;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchFieldVisibilityScope(
-            bottomObstruction: 120,
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                setOpen = (value) => setState(() => open = value);
-                return ListView(
-                  controller: scrollController,
-                  children: [
-                    const SizedBox(height: 460),
-                    CatchField.control(
-                      title: 'Diet',
-                      body: 'Jain',
-                      open: open,
-                      onOpenChanged: setOpen,
-                      control: const SizedBox(height: 180),
-                      onCancel: () => setOpen(false),
-                      onSubmit: _noop,
-                    ),
-                    const SizedBox(height: 160),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.text('Diet'));
-    await tester.pump();
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
-    expect(scrollController.offset, greaterThan(0));
-
-    setOpen(false);
-    await tester.pump();
-    final offsetAfterClose = scrollController.offset;
-    await tester.pump(CatchMotion.base);
-
-    expect(scrollController.offset, lessThanOrEqualTo(offsetAfterClose + 0.1));
-  });
-
-  testWidgets('CatchField automatic reveal yields to direct user scrolling', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(400, 600);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    final scrollController = ScrollController();
-    addTearDown(scrollController.dispose);
-    var open = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchFieldVisibilityScope(
-            bottomObstruction: 120,
-            child: StatefulBuilder(
-              builder: (context, setState) => ListView(
-                controller: scrollController,
-                children: [
-                  const SizedBox(height: 460),
-                  CatchField.control(
-                    title: 'Diet',
-                    body: 'Jain',
-                    open: open,
-                    onOpenChanged: (value) => setState(() => open = value),
-                    control: const SizedBox(height: 180),
-                    onCancel: _noop,
-                    onSubmit: _noop,
-                  ),
-                  const SizedBox(height: 160),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.text('Diet'));
-    await tester.pump();
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
-    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
-    expect(scrollController.offset, greaterThan(0));
-
-    final drag = await tester.startGesture(const Offset(200, 300));
-    await drag.moveBy(const Offset(0, -40));
-    await tester.pump();
-    expect(scrollController.position.isScrollingNotifier.value, isTrue);
-    final offsetDuringDrag = scrollController.offset;
-    await tester.pump(
-      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
-    );
-    expect(scrollController.offset, closeTo(offsetDuringDrag, 0.1));
-
-    await drag.up();
-    await pumpFeatureUi(tester);
-    expect(open, isTrue);
-  });
-
-  testWidgets('CatchField reveal jumps immediately with reduced motion', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(400, 600);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    final scrollController = ScrollController();
-    addTearDown(scrollController.dispose);
-    var open = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: MediaQuery(
-            data: const MediaQueryData(disableAnimations: true),
-            child: CatchFieldVisibilityScope(
-              bottomObstruction: 120,
-              child: StatefulBuilder(
-                builder: (context, setState) => ListView(
-                  controller: scrollController,
-                  children: [
-                    const SizedBox(height: 460),
-                    CatchField.control(
-                      title: 'Diet',
-                      body: 'Jain',
-                      open: open,
-                      onOpenChanged: (value) => setState(() => open = value),
-                      control: const SizedBox(height: 180),
-                      onCancel: _noop,
-                      onSubmit: _noop,
-                    ),
-                    const SizedBox(height: 160),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.text('Diet'));
-    await tester.pump();
-    await tester.pump();
-
-    expect(scrollController.offset, greaterThan(0));
-    expect(
-      tester.getRect(find.byKey(const ValueKey('catch-field-done'))).bottom,
-      lessThanOrEqualTo(472.1),
-    );
-    final offsetAfterReveal = scrollController.offset;
-    await tester.pump(CatchMotion.base);
-    expect(scrollController.offset, closeTo(offsetAfterReveal, 0.1));
-  });
+  _registerControlInteractionTests();
 
   testWidgets('CatchField renders label, helper text, changes, and errors', (
     tester,
@@ -851,6 +560,7 @@ void main() {
         Form(
           key: formKey,
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Event title',
             placeholder: 'Short and memorable',
             helperText: 'Shows on event cards',
@@ -894,6 +604,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Name',
           controller: controller,
           onSubmitted: (value) => submitted = value,
@@ -922,7 +633,8 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const CatchField.input(
+        CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Invite code',
           initialValue: 'ABC',
           error: error,
@@ -948,6 +660,7 @@ void main() {
           MediaQuery(
             data: const MediaQueryData(disableAnimations: true),
             child: CatchField.inputActions(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Prompt',
               controller: controller,
               open: true,
@@ -989,7 +702,8 @@ void main() {
           StatefulBuilder(
             builder: (context, setState) {
               update = setState;
-              return CatchField.choices<String>(
+              return CatchField<String>.choices(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Activities',
                 values: const ['Run', 'Walk'],
                 itemLabel: (value) => value,
@@ -1015,7 +729,8 @@ void main() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchField.choices<String>(
+          CatchField<String>.choices(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Locked activities',
             values: const ['Run', 'Walk'],
             itemLabel: (value) => value,
@@ -1043,6 +758,7 @@ void main() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchField.stepper(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Guests',
               value: value,
               min: 1,
@@ -1074,6 +790,7 @@ void main() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchField.stepper(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Duration',
             contract:
                 CatchContractConstraints.mobileFormStateEventDurationMinutes,
@@ -1108,6 +825,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.inputActions(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Bio',
           controller: controller,
           focusNode: focusNode,
@@ -1135,6 +853,7 @@ void main() {
           SizedBox(
             width: 280,
             child: CatchField.control(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred group size',
               body: 'Four people for a comfortable conversation',
               initiallyOpen: true,

@@ -12,9 +12,9 @@ void _registerProfileShellLayoutTests() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const AppShellActiveTab(
+              home: const CatchTabViewportScope(
                 index: appShellProfileTabIndex,
-                bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                bottomBarPlacement: CatchTabViewportScopePlacement.floating,
                 bottomOverlayInset: _profileBottomOverlayInset,
                 child: ProfileScreen(),
               ),
@@ -651,6 +651,7 @@ void _registerProfileShellLayoutTests() {
             child: SizedBox(
               width: 180,
               child: CatchField.nav(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.emailOutlined,
                 title: 'Email',
                 body: 'averylongemailaddress@examplecatchdatingapp.com',

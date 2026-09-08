@@ -683,7 +683,7 @@
               "tests": [
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "AsyncError uses CatchErrorScaffold.fromError for the event context; fatal error route capture added.",
+              "notes": "AsyncError uses CatchLocalizedErrorScaffold for the event context; fatal error route capture added.",
               "captureIds": [
                 "event_detail_error"
               ],
@@ -2457,7 +2457,7 @@
               "id": "data_load_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Event, profile, participation, and plan provider failures render _CompanionError through CatchInlineErrorState.fromError and now have deterministic captures.",
+              "notes": "Event, profile, participation, and plan provider failures render _CompanionError through CatchLocalizedInlineErrorState and now have deterministic captures.",
               "previewIds": [
                 "EventSuccessCompanionRouteScreen/Route states"
               ],
@@ -2718,7 +2718,7 @@
               "id": "offline",
               "kind": "offline",
               "status": "captured",
-              "notes": "Companion provider failures use shared mapped offline copy through CatchInlineErrorState.fromError; event_success_companion_offline captures an offline-mapped plan load failure.",
+              "notes": "Companion provider failures use shared mapped offline copy through CatchLocalizedInlineErrorState; event_success_companion_offline captures an offline-mapped plan load failure.",
               "previewIds": [
                 "EventSuccessCompanionRouteScreen/Route states"
               ],
@@ -3414,7 +3414,7 @@
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-            "lib/core/widgets/catch_person_row.dart"
+            "packages/catch_ui/lib/src/components/catch_person_row.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -3462,7 +3462,7 @@
               "id": "matches_error",
               "kind": "error",
               "status": "captured",
-              "notes": "ChatsList renders CatchSliverErrorState.fromError with AppErrorContext.chat and retry invalidation.",
+              "notes": "ChatsList renders CatchLocalizedSliverErrorState with AppErrorContext.chat and retry invalidation.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],
@@ -3677,7 +3677,7 @@
             "lib/chats/presentation/chat_retry_controller.dart",
             "lib/chats/presentation/chat_controller.dart",
             "lib/chats/presentation/suvbot_controller.dart",
-            "lib/core/widgets/catch_top_bar.dart",
+            "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/message_bubble.dart",
@@ -4157,7 +4157,7 @@
               "id": "profile_error",
               "kind": "error",
               "status": "captured",
-              "notes": "profile_self_error captures the full ProfileScreen route rendering CatchErrorState.fromError with profile retry copy under the header chrome.",
+              "notes": "profile_self_error captures the full ProfileScreen route rendering CatchLocalizedErrorState with profile retry copy under the header chrome.",
               "previewIds": [
                 "ProfileScreen/Self route states"
               ],
@@ -4794,7 +4794,7 @@
               "id": "host_clubs_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Hosted or owned club stream errors become CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation. Generic and offline captures are registered.",
+              "notes": "Hosted or owned club stream errors become CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation. Generic and offline captures are registered.",
               "previewIds": [
                 "hostHomeRouteStates"
               ],
@@ -4878,7 +4878,7 @@
               "id": "club_events_error",
               "kind": "error",
               "status": "captured",
-              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchSliverErrorState.fromError in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
+              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -6138,7 +6138,7 @@
               "id": "insights_error",
               "kind": "error",
               "status": "captured",
-              "notes": "hostAnalyticsProvider errors render CatchErrorState.fromError with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
+              "notes": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
                 "HostClubInsightsPane/Insights scorecard states"
               ],
@@ -6557,7 +6557,7 @@
                 "test/clubs/clubs_controllers_test.dart",
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "HostClubDetailScreenState maps load failures to HostClubDetailError with HostClubDetailRetryIntent.reloadDetail before ClubDetailScreen renders CatchErrorState.fromError with AppErrorContext.club and executes the typed retry target. Keep generic and offline error copy aligned with the shared CatchErrorState policy.",
+              "notes": "HostClubDetailScreenState maps load failures to HostClubDetailError with HostClubDetailRetryIntent.reloadDetail before ClubDetailScreen renders CatchLocalizedErrorState with AppErrorContext.club and executes the typed retry target. Keep generic and offline error copy aligned with the shared CatchErrorState policy.",
               "previewIds": [
                 "ClubDetailScreen/Public preview states"
               ],
@@ -6962,7 +6962,7 @@
               "id": "club_fetch_error",
               "kind": "error",
               "status": "captured",
-              "notes": "fetchClubProvider errors render CatchErrorScaffold.fromError with AppErrorContext.club and retry invalidation. Generic route error and offline route error are captured separately.",
+              "notes": "fetchClubProvider errors render CatchLocalizedErrorScaffold with AppErrorContext.club and retry invalidation. Generic route error and offline route error are captured separately.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -7686,7 +7686,7 @@
               "id": "route_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Generic route provider failures now have the deterministic host_manage_route_error capture through CatchErrorScaffold.fromError.",
+              "notes": "Generic route provider failures now have the deterministic host_manage_route_error capture through CatchLocalizedErrorScaffold.",
               "previewIds": [
                 "HostEventManageRouteScreen/Route and section states"
               ],
@@ -8739,8 +8739,8 @@
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
-            "lib/core/widgets/catch_person_row.dart",
-            "lib/core/widgets/catch_master_detail_layout.dart",
+            "packages/catch_ui/lib/src/components/catch_person_row.dart",
+            "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
@@ -8818,7 +8818,7 @@
               "id": "matches_error",
               "kind": "error",
               "status": "captured",
-              "notes": "ChatsListDisplayState maps match stream failures to ChatsListError with ChatsListRetryIntent.reloadViewModel before ChatsList renders CatchSliverErrorState.fromError with AppErrorContext.chat and executes the typed retry target.",
+              "notes": "ChatsListDisplayState maps match stream failures to ChatsListError with ChatsListRetryIntent.reloadViewModel before ChatsList renders CatchLocalizedSliverErrorState with AppErrorContext.chat and executes the typed retry target.",
               "previewIds": [
                 "HostInboxScreen/Event-scoped states"
               ],
@@ -9350,7 +9350,7 @@
             "lib/events/data/event_repository.dart",
             "lib/clubs/data/clubs_repository.dart",
             "lib/public_profile/data/public_profile_repository.dart",
-            "lib/core/widgets/catch_top_bar.dart",
+            "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/chat_input_bar.dart",
@@ -10360,7 +10360,7 @@
               "captureIds": [
                 "calendar_events_error"
               ],
-              "notes": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation."
+              "notes": "signedUpEvents or savedEvents errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation."
             },
             {
               "id": "planned_events",
@@ -10527,7 +10527,7 @@
               "captureIds": [
                 "saved_events_error"
               ],
-              "notes": "Saved-event stream errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation."
+              "notes": "Saved-event stream errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation."
             },
             {
               "id": "empty_saved_events",
@@ -10683,7 +10683,7 @@
               "captureIds": [
                 "filters_profile_error"
               ],
-              "notes": "watchUserProfileProvider errors render CatchErrorState.fromError with AppErrorContext.profile and retry invalidation.",
+              "notes": "watchUserProfileProvider errors render CatchLocalizedErrorState with AppErrorContext.profile and retry invalidation.",
               "previewIds": [
                 "FiltersScreen/Route states"
               ]
@@ -11147,7 +11147,7 @@
               "id": "route_error",
               "kind": "error",
               "status": "captured",
-              "notes": "Event view-model errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+              "notes": "Event view-model errors render CatchLocalizedErrorState with AppErrorContext.event and retry invalidation.",
               "previewIds": [
                 "EventLocationMapRouteScreen/Route states"
               ],
@@ -12132,7 +12132,7 @@
                 "settings_blocked_loading",
                 "settings_blocked_error"
               ],
-              "notes": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchInlineErrorState.fromError with retry on failure.",
+              "notes": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedInlineErrorState with retry on failure.",
               "previewIds": [
                 "SettingsScreen/Screen states"
               ]
@@ -12356,7 +12356,7 @@
               "id": "uid_error",
               "kind": "error",
               "status": "captured",
-              "notes": "payment_history_uid_error captures uidProvider errors through CatchErrorState.fromError with AppErrorContext.payments.",
+              "notes": "payment_history_uid_error captures uidProvider errors through CatchLocalizedErrorState with AppErrorContext.payments.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ],
@@ -12392,7 +12392,7 @@
               "id": "payments_error",
               "kind": "error",
               "status": "captured",
-              "notes": "payment_history_error captures payment stream errors through CatchErrorState.fromError with retry invalidation.",
+              "notes": "payment_history_error captures payment stream errors through CatchLocalizedErrorState with retry invalidation.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ],

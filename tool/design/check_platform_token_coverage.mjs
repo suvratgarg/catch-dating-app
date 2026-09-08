@@ -264,7 +264,7 @@ function main(args) {
   const inventoryIndex = args.indexOf('--inventory');
   if (args.length !== 0 && (args.length !== 2 || inventoryIndex !== 0 || !args[1] || args[1].startsWith('--'))) throw new Error('Usage: node tool/design/check_platform_token_coverage.mjs [--inventory /path/to/inventory.json]');
   const document = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'design/tokens/catch.tokens.json'), 'utf8'));
-  const textStyles = fs.readFileSync(path.join(repositoryRoot, 'lib/core/theme/catch_text_styles.dart'), 'utf8');
+  const textStyles = fs.readFileSync(path.join(repositoryRoot, 'packages/catch_ui/lib/src/foundations/catch_text_styles.dart'), 'utf8');
   const inventory = inventoryIndex >= 0 ? JSON.parse(fs.readFileSync(args[inventoryIndex + 1], 'utf8')) : undefined;
   const errors = auditPlatformTokens(document, { inventory, textStyles });
   if (errors.length) { console.error(errors.map(error => `- ${error}`).join('\n')); process.exitCode = 1; }

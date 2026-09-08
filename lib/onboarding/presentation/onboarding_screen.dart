@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
@@ -14,6 +12,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart'
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -176,6 +175,8 @@ class OnboardingTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchStepHeader(
+      stepLabelBuilder: catchStepHeaderLabelBuilder(context.l10n),
+      compactStepLabelBuilder: catchStepHeaderCompactLabelBuilder(context.l10n),
       title: state.title,
       subtitle: state.subtitle,
       step: state.stepNumber,

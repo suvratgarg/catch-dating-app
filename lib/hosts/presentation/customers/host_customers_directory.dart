@@ -412,7 +412,7 @@ class HostCustomersDirectory extends StatelessWidget {
         ],
         if (state.loadMoreError != null) ...[
           gapH8,
-          CatchErrorState.fromError(
+          CatchLocalizedErrorState(
             state.loadMoreError!,
             context: AppErrorContext.club,
             mode: CatchErrorStateMode.compact,
@@ -446,7 +446,7 @@ class HostCustomersSummary extends StatelessWidget {
     onRetry: onRetry,
     initialLoadTimeout: null,
     loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
-    errorBuilder: (_, error, _) => CatchErrorState.fromError(
+    errorBuilder: (_, error, _) => CatchLocalizedErrorState(
       error,
       context: AppErrorContext.customers,
       mode: CatchErrorStateMode.compact,

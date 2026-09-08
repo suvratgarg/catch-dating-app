@@ -40,7 +40,7 @@ class HostClubsScreen extends ConsumerWidget {
               'host-organizer-auth-route-state',
             ),
             slivers: [
-              CatchSliverErrorState.fromError(
+              CatchLocalizedSliverErrorState(
                 error,
                 context: AppErrorContext.auth,
                 onRetry: onRetry,
@@ -91,7 +91,7 @@ class HostClubsScreen extends ConsumerWidget {
                   'host-organizer-data-route-state',
                 ),
                 slivers: [
-                  CatchSliverErrorState.fromError(
+                  CatchLocalizedSliverErrorState(
                     error,
                     context: AppErrorContext.club,
                     onRetry: onRetry,

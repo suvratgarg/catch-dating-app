@@ -3,10 +3,9 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_fonts.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -70,11 +69,15 @@ void main() {
 
       final catchFinder = find.byKey(WelcomeScene.catchWordKey);
       final catchTopLeft = tester.getTopLeft(catchFinder);
-      expect(catchTopLeft.dx, closeTo(CatchWelcomeTokens.welcomeReelCatchLeft, 0.1));
+      expect(
+        catchTopLeft.dx,
+        closeTo(CatchWelcomeTokens.welcomeReelCatchLeft, 0.1),
+      );
       expect(
         catchTopLeft.dy,
         closeTo(
-          CatchWelcomeTokens.welcomeReelTop + CatchWelcomeTokens.welcomeReelCatchFocusTop,
+          CatchWelcomeTokens.welcomeReelTop +
+              CatchWelcomeTokens.welcomeReelCatchFocusTop,
           0.1,
         ),
       );

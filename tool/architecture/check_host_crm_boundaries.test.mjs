@@ -94,7 +94,7 @@ test("flags saved-audience mutation outside Customers", () => {
 test("flags host-visible communication route pickers", () => {
   const findings = scanPresentationFile({
     relativePath: "lib/hosts/presentation/inbox/channel_picker.dart",
-    source: "CatchField.select<HostCommunicationRouteId>(items: routes)",
+    source: "CatchField<HostCommunicationRouteId>.select(items: routes)",
   });
   assert.ok(findings.some((item) => /server-resolved/u.test(item.reason)));
   assert.ok(findings.some((item) => /choose communication intent/u.test(item.reason)));

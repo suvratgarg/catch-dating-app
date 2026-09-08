@@ -1,29 +1,11 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
@@ -33,6 +15,7 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -159,6 +142,7 @@ class _HostApplicationsScreenState
             ),
             gapH16,
             CatchSearchField.expanded(
+              copy: catchSearchFieldCopy(context.l10n),
               key: const ValueKey('host-applications-search'),
               value: _query ?? '',
               contract: CatchContractConstraints
@@ -194,7 +178,7 @@ class _HostApplicationsScreenState
                   padding: EdgeInsets.zero,
                   children: const [CatchSkeletonRows(count: 6)],
                 ),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.applications,
                   onRetry: () => ref.invalidate(
@@ -244,7 +228,7 @@ class _HostApplicationsScreenState
                       ],
                       if (state.loadMoreError != null) ...[
                         gapH12,
-                        CatchErrorState.fromError(
+                        CatchLocalizedErrorState(
                           state.loadMoreError!,
                           context: AppErrorContext.applications,
                           mode: CatchErrorStateMode.compact,
@@ -376,6 +360,7 @@ class _HostApplicationImportSheet extends StatelessWidget {
             children: [
               for (final question in draft.questions)
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: question.label,
                   body: question.canonicalFieldId == null
                       ? context.l10n.hostApplicationsImportOrganizerField
@@ -386,6 +371,7 @@ class _HostApplicationImportSheet extends StatelessWidget {
           if (draft.truncatedRowCount > 0) ...[
             gapH12,
             CatchNotice(
+              dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
               notice: CatchNoticeData(
                 id: 'application-import-limit',
                 title: context.l10n.hostApplicationsImportLimit(

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.27.0
+version: 1.33.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -52,13 +52,39 @@ section under 120 lines.
 | Level | Name | Contents | Home today | Target home | May depend on |
 |---|---|---|---|---|---|
 | L0 | tokens | scale values, semantic roles | `packages/catch_tokens` | unchanged | Flutter SDK only |
-| L1 | foundations | theme wiring, typography, icons, motion | `lib/core/theme/**` | `packages/catch_ui` | L0 |
-| L2 | primitives | one visual job: text, surface, icon, gap, tap target | `lib/core/widgets/**` | `packages/catch_ui` | L0–L1 |
-| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
-| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/widgets/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L1 | foundations | theme wiring, typography, icons, motion | `packages/catch_ui/lib/src/foundations` | unchanged | L0 |
+| L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
+| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
+| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
+| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
+
+Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
+The package owns its branded fonts and licenses and depends only on Flutter,
+`catch_tokens`, Phosphor, and `skeletonizer` pinned to 2.1.3. Loading wrappers
+use Skeletonizer as their single engine for explicit shapes and real-layout
+skeletons, with shared token colors, timing, effect, reduced-motion handling,
+and loading semantics. The separate `shimmer` package is removed in the same
+migration. Engine imports remain internal to `catch_ui`. `AppTheme` remains
+an app adapter that adds the activity-domain palette to `CatchTheme`; it does
+not define another theme.
+The field API, form editors, constraints and input-bound policies live in
+`catch_ui`. Typed choices use named constructors such as
+`CatchField<T>.choices`; record configuration preserves const construction and
+one keyed widget identity. The one-file D6 budget exception belongs only to
+its constructor facade; state and renderers retain the ordinary size limit.
+App-generated schema constants supply their concrete paths and values; callers
+retain localized validation copy and save orchestration.
+`CatchLocalizedErrorState`, scaffold, sliver and inline adapters map app errors
+and inherited-locale copy onto the shared error family. Shared retry actions
+receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.
+`CatchTabViewportScope` owns route-neutral active-page and bottom-obstruction
+metrics for shared layouts. App tab identities and route selection stay in the
+app; anchored, floating, and absent bars keep their existing clearance rules.
+`CatchStatusStrip` and its publication scope own persistent header rendering;
+`CatchScreenScaffold` owns the Material surface, safe area and keyboard resize
+in the shared package. Connectivity and rehearsal state remain app callers.
 
 ### Placement decision tree
 
@@ -280,7 +306,7 @@ providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
-`lib/core/presentation/catch_async_value_adapter.dart`. That adapter preserves
+`lib/core/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
 the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
@@ -725,13 +751,13 @@ branch on medium or expanded layouts, but the route remains the selection
 authority and must preserve compact full-screen behavior.
 
 Bottom sheets must be opened through `showCatchBottomSheet` from
-`lib/core/widgets/catch_bottom_sheet.dart`. The helper presents on the root
+`packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart`. The helper presents on the root
 navigator by default, which keeps drawers above shell chrome. Do not call
 Flutter's raw `showModalBottomSheet` directly from production code unless this
 policy test is intentionally updated.
 
 Root-screen overlays that still coexist with the floating tab bar should use
-`AppShellActiveTab.bottomOverlayClearanceOf(context, minimum: ...)`; feature
+`CatchTabViewportScope.bottomOverlayClearanceOf(context, minimum: ...)`; feature
 code should not recompute the tab-bar height, safe-area subtraction, or platform
 floating inset. Root scroll views without tab chrome should end with a semantic
 terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
@@ -739,7 +765,7 @@ bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
 
-`AppShellBottomBarPlacement` is the shell-to-scroll-owner contract:
+`CatchTabViewportScopePlacement` is the shell-to-scroll-owner contract:
 `floating` publishes the complete physical obstruction and terminal padding
 consumes it; `anchored` means the scaffold already reduced the body viewport,
 so only the requested breathing room is added; `none` (and routes outside a
@@ -750,7 +776,7 @@ screens consume that contract through `CatchScrollTerminalPadding` or
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
 not by focus. While that inset is nonzero, bottom navigation is omitted, the
 consumer shell also omits its guest auth CTA, floating `extendBody` behavior is
-disabled, and `AppShellActiveTab.bottomOverlayInset` is zero. Floating shells
+disabled, and `CatchTabViewportScope.bottomOverlayInset` is zero. Floating shells
 keep the route body in the same stack position while removing only the bottom
 navigation sibling, so the focused editable element, text, cursor selection,
 and keyboard connection survive the inset transition. Medium and expanded
@@ -767,7 +793,7 @@ destinations and compact Host destinations keep the existing platform-aware
 bottom bar. Authenticated Host destinations additionally provide a medium rail
 and expanded sidebar. The scaffold selects among those supplied widgets from
 the available width and always publishes the resulting bottom obstruction
-through `AppShellActiveTab`:
+through `CatchTabViewportScope`:
 
 ```dart
 CatchAdaptiveTabScaffold(
@@ -780,7 +806,7 @@ CatchAdaptiveTabScaffold(
 ```
 
 Side navigation consumes horizontal layout space and therefore publishes
-`AppShellBottomBarPlacement.none` with zero bottom obstruction. Root scroll
+`CatchTabViewportScopePlacement.none` with zero bottom obstruction. Root scroll
 owners continue to use `CatchScrollTerminalPadding` or
 `CatchSliverTerminalPadding`; they never special-case tablet or desktop
 navigation. `AppShellNavigationBar` remains the sole destination adapter, so
@@ -805,8 +831,8 @@ widths; it does not scale typography, icons, cards, or spacing proportionally.
 | medium | `600–839` | labelled 96 px rail | one primary pane plus an optional persistent contextual pane; portrait remains touch-first and landscape may split |
 | expanded | `>= 840` | labelled 240 px sidebar | bounded workspace canvas; master-detail and multi-pane composition; pointer and keyboard affordances |
 
-The whole-window class comes only from `ScreenSize`. Feature components use
-`ComponentResponsiveBuilder` and a named local threshold when their own width,
+The whole-window class comes only from `CatchWindowSize`. Feature components use
+`CatchViewportBreakpoint` and a named local threshold when their own width,
 not the application window, determines a table, grid, preview, or control-row
 reflow. Very wide three-pane workspaces may add named local thresholds around
 1100 or 1280 logical pixels without adding a second global breakpoint system.
@@ -1041,7 +1067,7 @@ when the value names a repeated relationship; keep one-off component geometry in
 the component until reuse is real.
 
 `CatchBreakpoints` remains rejected for now. Whole-window responsive classes
-already live in `ScreenSize`, while local component reflow thresholds live in
+already live in `CatchWindowSize`, while local component reflow thresholds live in
 `ComponentBreakpoints`; collapsing those into the design-token namespace would
 blur window and component ownership. `CatchLayout` remains appropriate for
 content clamps such as `maxContentWidth`.
@@ -1137,7 +1163,7 @@ line height, gaps, padding, icons, or control height. Do not fix those by
 negative padding or feature-local nudges.
 
 Pinned bottom rows must not visually cover a collapsing title. Shared feature
-headers should use `CatchSliverHeader` from `lib/core/widgets/catch_top_bar.dart`
+headers should use `CatchSliverHeader` from `packages/catch_ui/lib/src/patterns/catch_sliver_header.dart`
 and its title-height contracts before adding local header math.
 
 ### Root Screens With A Primary Rail
@@ -1534,7 +1560,7 @@ Surface rules:
 | `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
 | `CatchInlineErrorState` | Section/card-level failure | Compact descriptor copy and retry when retryable. |
-| `CatchErrorBanner.fromError` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
+| `CatchLocalizedErrorBanner` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
 | `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
@@ -1555,7 +1581,7 @@ Rules:
 - Full-screen data errors use `CatchErrorScaffold` or `CatchErrorState`.
 - Sliver data errors use `CatchSliverErrorState`.
 - Section errors use `CatchInlineErrorState`.
-- Persistent mutation/form failures use `CatchErrorBanner.fromError` or
+- Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
   `CatchMutationErrorBanner`.
 - Transient action failures use `CatchMutationErrorListener(s)` or
   `showCatchErrorSnackBar`.
@@ -1765,11 +1791,11 @@ Candidate patterns:
 | Analytics error events | `lib/core/analytics/app_analytics.dart` |
 | Backend scanner | `tool/audit/backend_error_candidates.dart` |
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
-| Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
-| Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
-| Error banner | `lib/core/widgets/catch_error_banner.dart` |
-| Mutation helpers | `lib/core/widgets/mutation_error_util.dart` |
-| Mutation snackbar listener | `lib/core/widgets/catch_mutation_error_listener.dart` |
+| Branded error surfaces | `packages/catch_ui/lib/src/components/catch_error_state.dart` |
+| Branded error snackbar | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
+| Error banner | `packages/catch_ui/lib/src/components/catch_error_banner.dart` |
+| Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
+| Mutation snackbar listener | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` |
 | Global error handlers | `lib/main.dart` |
 
 ## Controller And View-Model Contract
@@ -2383,7 +2409,8 @@ Reference implementation:
 - `lib/core/presentation/app_shell.dart` and
   `lib/core/presentation/host_app_shell.dart` — semantic navigation destinations
   localized at render time;
-- `lib/core/widgets/catch_notice.dart` — semantic offline notice factory;
+- `lib/core/riverpod_ui/catch_notice_host.dart` — resolves notice dismiss copy
+  at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,
   `lib/events/presentation/event_detail_screen_state.dart`, and
@@ -2426,7 +2453,10 @@ is committed. An allowlist entry is only appropriate for a technical
 identifier, test/demo fixture, or user-authored value and must contain a narrow
 reason.
 
-The ownership gate covers more than direct `Text(...)` calls: copy-shaped
+The ownership gate scans both app `lib/` and `packages/catch_ui/lib/`.
+Shared components receive caller-localized strings and formatters; they never
+import the app catalog or introduce English defaults. The gate covers more than
+direct `Text(...)` calls: copy-shaped
 named arguments, default parameters and constructor initializers,
 presentation-state members, validation/share/status helpers, snackbar and
 confirmation helpers, and Event Success display-enum arguments are all
@@ -3386,7 +3416,7 @@ missing canonical evidence, and records zero inferred grants.
 Reference files:
 
 - `lib/clubs/shared/catch_organizer_poster.dart`
-- `lib/core/widgets/catch_person_polaroid.dart`
+- `packages/catch_ui/lib/src/components/catch_person_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/catch_profile_view.dart`
 - `design/components/catch.components.json`
@@ -3866,7 +3896,7 @@ Widget build(BuildContext context) {
   }
 
   if (vmAsync.hasError) {
-    return CatchErrorScaffold.fromError(
+    return CatchLocalizedErrorScaffold(
       vmAsync.error!,
       context: AppErrorContext.event,
       onRetry: () =>
@@ -3887,7 +3917,9 @@ Widget build(BuildContext context) {
 
 Reference files:
 
-- `lib/core/widgets/catch_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_screen_top_bar.dart`
+- `packages/catch_ui/lib/src/components/catch_screen_header_title.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
@@ -4162,7 +4194,8 @@ class CalendarEventSummary {
 
 Reference files:
 
-- `lib/core/forms/catch_form_descriptors.dart`
+- `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
+- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
@@ -4179,6 +4212,10 @@ owns labels, values, validation policy, and typed patch factories. The shared
 wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
+
+The descriptor family is shared, provider-free data. Its generic visitor retains
+each choice row's item type; the form list owns all row construction, schema
+assertions and editor keys inside `build`. Descriptors have no rendering methods.
 
 Text commit behavior is a form-section policy, not descriptor styling.
 `CatchFormRowList<P>` defaults to `CatchFormTextCommitMode.explicit`, which

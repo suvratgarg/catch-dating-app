@@ -35,10 +35,11 @@ source files and should not be hand-edited.
 
 ## Reusable UI library surface
 
-Import `package:catch_dating_app/catch_ui.dart` when consuming the reviewed
-Catch design-system API. The barrel exports semantic tokens, fields, sections,
-page and responsive composition, typed form descriptors, and supported family
-members. Renderer scopes, gutter ownership, interaction-plane plumbing, and
+Import `package:catch_ui/catch_ui.dart` for extracted shared UI and
+`package:catch_tokens/catch_tokens.dart` for semantic tokens. During Phase 3,
+schema-coupled fields, sections, root-header composition, and form descriptors
+still use their focused app imports. The unused app compatibility barrel has
+been retired. Renderer scopes, gutter ownership, interaction-plane plumbing, and
 contained focus surfaces remain implementation details even when Dart library
 boundaries require a public symbol in their defining file. The Catch UI analyzer
 plugin rejects feature-level construction of those internals and rejects

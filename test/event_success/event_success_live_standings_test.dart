@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -118,10 +118,7 @@ void main() {
         matching: find.byType(EditableText),
       );
       await tester.enterText(field, value.value);
-      expect(
-        tester.widget<EditableText>(field).controller.text,
-        value.value,
-      );
+      expect(tester.widget<EditableText>(field).controller.text, value.value);
     }
     await tester.pump();
     final saveButton = find.text('Save round for reveal');

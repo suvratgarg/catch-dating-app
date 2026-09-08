@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:a9954cec774351d9b6eb0f00a859220416cef6af021079ebbc3a06b3833faa2a",
-  "resolvedDigest": "sha256:7b45dfca1d798b45a54d4fa930516fd1ca7b89600aae6230fc5c0863f1170b2f",
+  "resolvedDigest": "sha256:17c93c45a32dacf8969ea9ed8d95491c0d279a9190c95dfa961a334c64efa9bd",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1569,7 +1569,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -1582,10 +1582,10 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorBanner",
-              "file": "lib/core/widgets/catch_error_banner.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
               "constructors": [
                 "CatchErrorBanner",
-                "CatchErrorBanner.fromError"
+                "CatchErrorBanner.withRetry"
               ]
             }
           },
@@ -1594,10 +1594,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -1617,7 +1616,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1630,7 +1629,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchSkeleton",
-              "file": "lib/core/widgets/catch_skeleton.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
               "constructors": [
                 "CatchSkeleton.card",
                 "CatchSkeleton.box",
@@ -1646,7 +1645,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -1660,7 +1659,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

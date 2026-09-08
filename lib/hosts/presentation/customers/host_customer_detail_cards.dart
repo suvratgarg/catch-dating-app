@@ -97,13 +97,13 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
         : context.l10n.hostCustomersPhone;
     final phonePlaceholder = widget.customer.contactDetailsEditable
         ? CatchField.defaultEmptyValueText(
-            context,
+            catchFieldCopy(context.l10n),
             context.l10n.hostCustomersPhone,
           )
         : context.l10n.hostCustomersNotSaved;
     final emailPlaceholder = widget.customer.contactDetailsEditable
         ? CatchField.defaultEmptyValueText(
-            context,
+            catchFieldCopy(context.l10n),
             context.l10n.hostCustomersEmail,
           )
         : context.l10n.hostCustomersNotSaved;
@@ -145,6 +145,10 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                     gapH12,
                   ],
                   CatchFieldActionBar(
+                    cancelLabel: context.l10n.coreCatchFieldLabelCancel,
+                    doneLabel: context.l10n.coreCatchFieldLabelDone,
+                    savingLabel: context.l10n.coreCatchFieldLabelSaving,
+
                     loading: _saving,
                     onCancel: _cancelEditing,
                     onSubmit: () => unawaited(_saveDetails()),
@@ -494,6 +498,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
           children: [
             if (customer.phoneE164 case final phone?)
               CatchField.action(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-customer-call'),
                 title: context.l10n.hostCustomersPhone,
                 body: phone,
@@ -502,6 +507,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
               ),
             if (customer.email case final email?)
               CatchField.action(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-customer-email'),
                 title: context.l10n.hostCustomersEmail,
                 body: email,
@@ -526,6 +532,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
           children: formRows.isEmpty
               ? [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     body: context.l10n.hostCustomersNoSubmittedInformation,
                     icon: CatchIcons.tabForms,
                   ),
@@ -681,6 +688,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
         if (revenue.coverage == HostCustomerRevenueCoverage.partial) ...[
           gapH12,
           CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.customers.revenue.partial',
               title: context.l10n.hostsHostAudienceCoveragePartial,
@@ -717,6 +725,7 @@ class HostCustomerRevenueBreakdown extends StatelessWidget {
           children: [
             if (!customer.events.any((event) => event.revenues.isNotEmpty))
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 body: context.l10n.hostCustomersSpendBreakdownUnavailable,
               ),
             for (final event in customer.events.where(
@@ -724,6 +733,7 @@ class HostCustomerRevenueBreakdown extends StatelessWidget {
             ))
               for (final amount in event.revenues)
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   title: event.displayName,
                   body: [
                     NumberFormat.simpleCurrency(

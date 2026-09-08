@@ -1,25 +1,20 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -152,7 +147,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       initialLoadTimeout: null,
       loadingBuilder: (_) => const CatchSkeletonRows(),
-      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
         mode: CatchErrorStateMode.compact,
@@ -188,7 +183,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
           );
         }
         if (savedAudiences.status == CatchAsyncStatus.error) {
-          return CatchErrorState.fromError(
+          return CatchLocalizedErrorState(
             savedAudiences.error!,
             context: AppErrorContext.customers,
             mode: CatchErrorStateMode.compact,
@@ -202,6 +197,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
         final audiences = savedAudiences.value?.audiences ?? const [];
         if (audiences.isEmpty) {
           return CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.sends.saved-audience-required',
               title: context.l10n.hostSavedAudiencesEmptyTitle,
@@ -220,6 +216,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceCampaignName,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadName,
@@ -228,7 +225,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 enabled: _campaign == null,
               ),
               gapH12,
-              CatchField.select<_HostCampaignMessageClass>(
+              CatchField<_HostCampaignMessageClass>.select(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceMessageType,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadMessageClass,
@@ -299,7 +297,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              CatchField.select<HostSavedAudience>(
+              CatchField<HostSavedAudience>.select(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostSavedAudienceFieldLabel,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
@@ -311,7 +310,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 onChanged: (value) => setState(() => _selectedAudience = value),
               ),
               gapH12,
-              CatchField.select<HostWhatsappTemplate>(
+              CatchField<HostWhatsappTemplate>.select(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceTemplate,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadTemplateId,
@@ -330,7 +330,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               ),
               if (_templateUsesInvite(template)) ...[
                 gapH12,
-                CatchField.select<Event>(
+                CatchField<Event>.select(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
                       .upsertOrganizerCampaignCallablePayloadEventId,
@@ -351,7 +352,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 ),
                 if (_selectedEvent case final event?) ...[
                   gapH12,
-                  CatchField.select<_HostInviteDestination>(
+                  CatchField<_HostInviteDestination>.select(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostAudienceInviteDestination,
                     contract: CatchContractConstraints
                         .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
@@ -377,6 +379,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 if (!_isInviteVariable(variable)) ...[
                   gapH12,
                   CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
                     title: variable,
                     contractExemption:
                         'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
@@ -514,6 +517,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     final now = DateTime.now();
     final initial = _scheduledAt ?? now.add(const Duration(hours: 1));
     final date = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: initial,
       firstDate: DateUtils.dateOnly(now),
@@ -522,6 +526,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     );
     if (date == null || !mounted) return;
     final time = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: TimeOfDay.fromDateTime(initial),
       title: context.l10n.hostSendsSchedule,
@@ -626,6 +631,7 @@ class HostCampaignReport extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchNotice(
+          dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'host.audience.campaign.${campaign.campaignId}',
             title: context.l10n.hostsHostAudienceCampaignStatus(

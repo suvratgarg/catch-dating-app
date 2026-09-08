@@ -1,11 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/motion/catch_transitions.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
@@ -13,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 const double _dateRailWidth = CatchLayout.eventDateRailWidth;
@@ -157,11 +154,17 @@ class EventDateRailCard extends StatelessWidget {
                     if (showAttendeeSignal && event.signedUpCount > 0) ...[
                       gapH8,
                       CatchPersonAvatarStack(
+                        countLabelBuilder: catchAvatarCountLabelBuilder(
+                          context.l10n,
+                        ),
                         items: const [],
                         totalCount: event.signedUpCount,
                         size: 24,
                         veiledCount: event.signedUpCount,
-                        activityKind: event.activityKind,
+                        veiledColors: ActivityPalette.resolve(
+                          context,
+                          event.activityKind,
+                        ).avatarColors,
                       ),
                     ],
                     gapH8,
@@ -220,7 +223,7 @@ class EventDateRailCard extends StatelessWidget {
           );
     final cardWithHero = heroTag == null
         ? card
-        : catchHeroSurface(tag: heroTag!, child: card);
+        : CatchHeroViewport(tag: heroTag!, child: card);
     return Semantics(
       container: true,
       button: onTap != null,

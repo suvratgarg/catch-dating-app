@@ -2,7 +2,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,11 +60,11 @@ void main() {
     await tester.tap(find.byTooltip('Share organizer'));
     await pumpFeatureUi(tester);
 
-    expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
+    expect(find.byKey(CatchShareCardSheet.cardPreviewKey), findsOneWidget);
     expect(find.byType(ClubShareCard), findsOneWidget);
     expect(find.text('Stride Social'), findsWidgets);
 
-    await tester.tap(find.byKey(RichShareCardSheetKeys.shareButton));
+    await tester.tap(find.byKey(CatchShareCardSheet.shareButtonKey));
     await tester.pump();
     await pumpFeatureUi(tester);
     await tester.runAsync(() async {

@@ -1,10 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
@@ -12,7 +10,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -131,6 +129,7 @@ class WhereStep extends ConsumerWidget {
                   : null,
               builder: (field) => CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.mapPicker,
                   title: context.l10n.hostsWhereStepLabelMeetingLocation,
                   body: startingPoint == null
@@ -146,6 +145,7 @@ class WhereStep extends ConsumerWidget {
               ),
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.meetingPoint,
               title: context.l10n.hostsWhereStepTitleLocationName,
               contract: CatchContractConstraints
@@ -169,6 +169,7 @@ class WhereStep extends ConsumerWidget {
               },
             ),
             CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: CreateEventFormKeys.locationDetails,
               title: context.l10n.hostsWhereStepTitleExtraDirections,
               contract: CatchContractConstraints
@@ -234,12 +235,10 @@ class HostSavedPlacesSection extends StatelessWidget {
       ),
       children: [
         if (loadError != null)
-          CatchErrorBanner.fromError(
-            loadError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(loadError!, context: AppErrorContext.event),
         for (final venue in venues)
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: venue.label,
             body: venue.meetingLocation.address ?? venue.meetingLocation.name,
             valueText: selectedVenueId == venue.venueId
@@ -250,6 +249,7 @@ class HostSavedPlacesSection extends StatelessWidget {
             onTap: saving ? null : () => onVenueSelected(venue),
           ),
         CatchField.action(
+          copy: catchFieldCopy(context.l10n),
           icon: CatchIcons.add,
           status: saving ? CatchFieldStatus.saving : CatchFieldStatus.idle,
           title: selectedVenueId == null
@@ -258,10 +258,7 @@ class HostSavedPlacesSection extends StatelessWidget {
           onTap: !canSave || saving ? null : onSave,
         ),
         if (saveError != null)
-          CatchErrorBanner.fromError(
-            saveError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(saveError!, context: AppErrorContext.event),
       ],
     );
   }

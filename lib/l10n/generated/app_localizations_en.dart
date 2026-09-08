@@ -4178,14 +4178,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String coreCatchSectionLayoutTextDisplaytitleCount({
-    required Object displayTitle,
-    required Object count,
-  }) {
-    return '$displayTitle · $count';
-  }
-
-  @override
   String get coreCatchStartupLoadingScreenBodyStartupLoadingIndicator =>
       'startup-loading-indicator';
 
@@ -4207,14 +4199,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required int total,
   }) {
     return '$clampedStep/$total';
-  }
-
-  @override
-  String coreCatchStepProgressTextValue1Totalsteps({
-    required Object value1,
-    required Object totalSteps,
-  }) {
-    return '$value1/$totalSteps';
   }
 
   @override
@@ -8483,7 +8467,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchFieldVisiblecopySelect => 'Select';
 
   @override
-  String get coreCatchOtpCodeFieldVisiblecopyOtpDigit => 'otp_digit';
+  String get coreCatchOtpCodeFieldSemanticLabel => 'One-time code';
 
   @override
   String get coreCatchSearchFieldVisiblecopyCloseSearch => 'Close search';

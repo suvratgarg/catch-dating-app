@@ -1,9 +1,10 @@
 import 'dart:ui' show SemanticsAction;
 
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,6 +23,7 @@ void main() {
           width: 320,
           child: SingleChildScrollView(
             child: CatchField.sortable(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: title,
               metadata: metadata,
               reorderHandle: const SizedBox.square(dimension: 44),
@@ -46,8 +48,13 @@ void main() {
     'CatchField const modes preserve public identity and state continuity',
     (tester) async {
       const key = ValueKey<String>('field-config-identity');
-      const row = CatchField.read(key: key, title: 'Profile');
-      const toggle = CatchField.toggle(
+      final row = CatchField.read(
+        copy: catchFieldCopy(AppLocalizationsEn()),
+        key: key,
+        title: 'Profile',
+      );
+      final toggle = CatchField.toggle(
+        copy: catchFieldCopy(AppLocalizationsEn()),
         key: key,
         title: 'Notifications',
         value: true,
@@ -77,6 +84,7 @@ void main() {
         SizedBox(
           width: 180,
           child: CatchField.read(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Availability window',
             valueText: 'Weeknights after work',
             icon: CatchIcons.schedule,
@@ -103,9 +111,13 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 160,
-          child: CatchField.content(title: title, body: body),
+          child: CatchField.content(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: title,
+            body: body,
+          ),
         ),
       ),
     );
@@ -144,9 +156,13 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 160,
-          child: CatchField.read(title: title, body: body),
+          child: CatchField.read(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: title,
+            body: body,
+          ),
         ),
       ),
     );
@@ -162,6 +178,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Capacity',
           body: '24 seats',
           initiallyOpen: true,
@@ -199,6 +216,7 @@ void main() {
       await tester.pumpWidget(
         _wrap(
           CatchField.control(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             key: fieldKey,
             title: 'Religion',
             body: 'Christian',
@@ -240,7 +258,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           body: 'English',
           values: const ['English', 'Hindi'],
@@ -297,6 +316,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
           control: const Text('Height control'),
@@ -322,7 +342,8 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           values: const ['English', 'Hindi'],
           itemLabel: (value) => value,
@@ -349,11 +370,16 @@ void main() {
         Column(
           children: [
             CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Hidden chevron',
               showChevron: false,
               onTap: () {},
             ),
-            const CatchField.nav(title: 'Visible chevron', showChevron: true),
+            CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Visible chevron',
+              showChevron: true,
+            ),
           ],
         ),
       ),
@@ -367,7 +393,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Religion',
           values: const ['Hindu', 'Muslim'],
           itemLabel: (value) => value,
@@ -399,6 +426,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.nav(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           icon: CatchIcons.personOutlined,
           title: 'Display name',
           body: 'Shown on your profile and event rosters',
@@ -432,6 +460,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Mobile number',
           controller: controller,
           readOnly: true,
@@ -454,7 +483,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.input(
+        CatchField.input(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Invite code',
           initialValue: 'TAKEN',
           errorText: 'Invite code is unavailable.',
@@ -494,6 +524,7 @@ void main() {
           SizedBox(
             width: 280,
             child: CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Availability window',
               valueText: 'Weeknights after work and weekend mornings',
               icon: CatchIcons.schedule,
@@ -527,6 +558,7 @@ void main() {
           child: SizedBox(
             width: 320,
             child: CatchField.nav(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Open profile',
               icon: CatchIcons.schedule,
               onTap: () {},
@@ -558,10 +590,24 @@ void main() {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchField.nav(title: 'Open profile', onTap: () => navTaps += 1),
-              const CatchField.nav(title: 'Unavailable profile'),
-              CatchField.add(title: 'Add prompt', onTap: () => addTaps += 1),
-              const CatchField.add(title: 'Prompt limit reached'),
+              CatchField.nav(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Open profile',
+                onTap: () => navTaps += 1,
+              ),
+              CatchField.nav(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Unavailable profile',
+              ),
+              CatchField.add(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Add prompt',
+                onTap: () => addTaps += 1,
+              ),
+              CatchField.add(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Prompt limit reached',
+              ),
             ],
           ),
         ),
@@ -605,6 +651,7 @@ void main() {
           SizedBox(
             width: 320,
             child: CatchField.inputActions(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Description',
               controller: controller,
               open: false,

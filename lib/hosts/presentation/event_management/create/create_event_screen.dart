@@ -6,15 +6,9 @@ import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
@@ -58,6 +52,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -349,6 +344,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(widget.now());
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: _selectedDate ?? today,
       firstDate: today,
@@ -369,6 +365,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   Future<void> _pickStartTime() async {
     final picked = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime:
           _selectedStartTime ??
@@ -1217,6 +1214,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
     final selected = await showCatchFormStepOverview(
+      fieldCopy: catchFieldCopy(context.l10n),
+      statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
       title: context.l10n.hostsCreateEventOverviewTitle,
       subtitle: context.l10n.hostsWizardOverviewSubtitle,
@@ -1330,6 +1329,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             expandSoloPrimary: true,
             body: _isReviewing
                 ? CatchFormReviewBody(
+                    fieldCopy: catchFieldCopy(context.l10n),
+                    statusLabelBuilder: catchFormStepStatusLabelBuilder(
+                      context.l10n,
+                    ),
                     message: context.l10n.hostsWizardReviewBody,
                     items: reviewState.items,
                     summaryItems: _reviewSummaryItems,

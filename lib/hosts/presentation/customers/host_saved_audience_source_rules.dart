@@ -30,10 +30,12 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
       return CatchFieldLanes.divided(
         children: [
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostAudienceSpend,
             body: context.l10n.hostAudienceSpendHelp,
           ),
-          CatchField.select<HostSavedAudienceAttendanceOperator>(
+          CatchField<HostSavedAudienceAttendanceOperator>.select(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostSavedAudienceAttendanceComparison,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
@@ -49,7 +51,8 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               if (value != null) onChanged(rule.copyWith(operator: value));
             },
           ),
-          CatchField.select<String>(
+          CatchField<String>.select(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-audience-spend-currency'),
             title: context.l10n.hostAudienceSpendCurrency,
             contract: CatchContractConstraints
@@ -68,6 +71,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-audience-spend-amount-${rule.currency}'),
             title: context.l10n.hostAudienceSpendAmount,
             contractExemption:
@@ -98,6 +102,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             },
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-audience-spend-days'),
             title: context.l10n.hostAudienceSpendDays,
             helperText: context.l10n.hostAudienceSpendDaysHelp,
@@ -129,21 +134,24 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
       final rule = predicate is HostSavedAudienceAttendedEvent
           ? predicate as HostSavedAudienceAttendedEvent
           : null;
-      return CatchField.select<HostAudienceSourceOption>(
-        title: context.l10n.hostAudienceRuleNamedEvent,
-        contract: CatchContractConstraints
-            .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
-        contractValue: (value) => value.id,
-        values: options.events,
-        itemLabel: (value) => value.title,
-        value: options.events.where((e) => e.id == rule?.eventId).firstOrNull,
-        enabled: enabled && options.events.isNotEmpty,
-        hintText: context.l10n.hostAudienceChooseEvent,
-        onChanged: (value) {
-          if (value != null) {
-            onChanged(HostSavedAudienceAttendedEvent(value.id));
-          }
-        },
+      return CatchFieldLanes.single(
+        child: CatchField<HostAudienceSourceOption>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostAudienceRuleNamedEvent,
+          contract: CatchContractConstraints
+              .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
+          contractValue: (value) => value.id,
+          values: options.events,
+          itemLabel: (value) => value.title,
+          value: options.events.where((e) => e.id == rule?.eventId).firstOrNull,
+          enabled: enabled && options.events.isNotEmpty,
+          hintText: context.l10n.hostAudienceChooseEvent,
+          onChanged: (value) {
+            if (value != null) {
+              onChanged(HostSavedAudienceAttendedEvent(value.id));
+            }
+          },
+        ),
       );
     }
     if (kind == HostAudienceSourceRuleKind.applicationStatus) {
@@ -152,51 +160,59 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
           : null;
       return Column(
         children: [
-          CatchField.select<HostAudienceSourceOption>(
-            title: context.l10n.hostAudienceChooseForm,
-            contract: CatchContractConstraints
-                .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsFormId,
-            contractValue: (value) => value.id,
-            values: options.forms,
-            itemLabel: (value) => value.title,
-            value: options.forms.where((f) => f.id == rule?.formId).firstOrNull,
-            enabled: enabled && options.forms.isNotEmpty,
-            hintText: context.l10n.hostAudienceChooseForm,
-            onChanged: (value) {
-              if (value != null) {
-                onChanged(
-                  HostSavedAudienceApplicationStatusRule(
-                    formId: value.id,
-                    reviewStatus:
-                        rule?.reviewStatus ??
-                        HostSavedAudienceApplicationStatus.submitted,
-                  ),
-                );
-              }
-            },
+          CatchFieldLanes.single(
+            child: CatchField<HostAudienceSourceOption>.select(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostAudienceChooseForm,
+              contract: CatchContractConstraints
+                  .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsFormId,
+              contractValue: (value) => value.id,
+              values: options.forms,
+              itemLabel: (value) => value.title,
+              value: options.forms
+                  .where((f) => f.id == rule?.formId)
+                  .firstOrNull,
+              enabled: enabled && options.forms.isNotEmpty,
+              hintText: context.l10n.hostAudienceChooseForm,
+              onChanged: (value) {
+                if (value != null) {
+                  onChanged(
+                    HostSavedAudienceApplicationStatusRule(
+                      formId: value.id,
+                      reviewStatus:
+                          rule?.reviewStatus ??
+                          HostSavedAudienceApplicationStatus.submitted,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
-          CatchField.select<HostSavedAudienceApplicationStatus>(
-            title: context.l10n.hostApplicationsReviewStatusFilter,
-            contract: CatchContractConstraints
-                .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
-            contractValue: (value) => value.name,
-            values: HostSavedAudienceApplicationStatus.values,
-            itemLabel: (value) =>
-                _audienceApplicationStatusLabel(context, value),
-            value:
-                rule?.reviewStatus ??
-                HostSavedAudienceApplicationStatus.submitted,
-            enabled: enabled && rule != null,
-            onChanged: (value) {
-              if (value != null && rule != null) {
-                onChanged(
-                  HostSavedAudienceApplicationStatusRule(
-                    formId: rule.formId,
-                    reviewStatus: value,
-                  ),
-                );
-              }
-            },
+          CatchFieldLanes.single(
+            child: CatchField<HostSavedAudienceApplicationStatus>.select(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostApplicationsReviewStatusFilter,
+              contract: CatchContractConstraints
+                  .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
+              contractValue: (value) => value.name,
+              values: HostSavedAudienceApplicationStatus.values,
+              itemLabel: (value) =>
+                  _audienceApplicationStatusLabel(context, value),
+              value:
+                  rule?.reviewStatus ??
+                  HostSavedAudienceApplicationStatus.submitted,
+              enabled: enabled && rule != null,
+              onChanged: (value) {
+                if (value != null && rule != null) {
+                  onChanged(
+                    HostSavedAudienceApplicationStatusRule(
+                      formId: rule.formId,
+                      reviewStatus: value,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ],
       );
@@ -214,58 +230,64 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
         .firstOrNull;
     return Column(
       children: [
-        CatchField.select<HostAudienceQuestionOption>(
-          key: const ValueKey('host-saved-audience-source-question'),
-          title: context.l10n.hostAudienceChooseQuestion,
-          helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
-          contract: CatchContractConstraints
-              .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
-          contractValue: (value) => value.questionId,
-          values: options.questions,
-          value: question,
-          itemLabel: (value) =>
-              '${value.formTitle} · v${value.version} · ${value.label}',
-          enabled: enabled && options.questions.isNotEmpty,
-          hintText: context.l10n.hostAudienceChooseQuestion,
-          onChanged: (value) {
-            final answer = value?.options.firstOrNull;
-            if (value != null && answer != null) {
-              onChanged(
-                HostSavedAudienceFormAnswer(
-                  formId: value.formId,
-                  versionId: value.versionId,
-                  questionId: value.questionId,
-                  value: answer.value,
-                ),
-              );
-            }
-          },
-        ),
-        if (question != null)
-          CatchField.select<HostAudienceAnswerOption>(
-            key: const ValueKey('host-saved-audience-source-answer'),
-            title: context.l10n.hostAudienceChooseAnswer,
-            contractExemption:
-                'Values come from the scoped immutable form version; '
-                'the callable validates the selected string or boolean again.',
-            values: question.options,
-            itemLabel: (value) => _audienceAnswerLabel(context, value),
-            value: question.options
-                .where((o) => o.value == rule?.value)
-                .firstOrNull,
-            enabled: enabled,
+        CatchFieldLanes.single(
+          child: CatchField<HostAudienceQuestionOption>.select(
+            copy: catchFieldCopy(context.l10n),
+            key: const ValueKey('host-saved-audience-source-question'),
+            title: context.l10n.hostAudienceChooseQuestion,
+            helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
+            contract: CatchContractConstraints
+                .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
+            contractValue: (value) => value.questionId,
+            values: options.questions,
+            value: question,
+            itemLabel: (value) =>
+                '${value.formTitle} · v${value.version} · ${value.label}',
+            enabled: enabled && options.questions.isNotEmpty,
+            hintText: context.l10n.hostAudienceChooseQuestion,
             onChanged: (value) {
-              if (value != null) {
+              final answer = value?.options.firstOrNull;
+              if (value != null && answer != null) {
                 onChanged(
                   HostSavedAudienceFormAnswer(
-                    formId: question.formId,
-                    versionId: question.versionId,
-                    questionId: question.questionId,
-                    value: value.value,
+                    formId: value.formId,
+                    versionId: value.versionId,
+                    questionId: value.questionId,
+                    value: answer.value,
                   ),
                 );
               }
             },
+          ),
+        ),
+        if (question != null)
+          CatchFieldLanes.single(
+            child: CatchField<HostAudienceAnswerOption>.select(
+              copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-saved-audience-source-answer'),
+              title: context.l10n.hostAudienceChooseAnswer,
+              contractExemption:
+                  'Values come from the scoped immutable form version; '
+                  'the callable validates the selected string or boolean again.',
+              values: question.options,
+              itemLabel: (value) => _audienceAnswerLabel(context, value),
+              value: question.options
+                  .where((o) => o.value == rule?.value)
+                  .firstOrNull,
+              enabled: enabled,
+              onChanged: (value) {
+                if (value != null) {
+                  onChanged(
+                    HostSavedAudienceFormAnswer(
+                      formId: question.formId,
+                      versionId: question.versionId,
+                      questionId: question.questionId,
+                      value: value.value,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
       ],
     );

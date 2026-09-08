@@ -86,7 +86,7 @@ class _HostApplicationDetailScreenState
           onRetry: _invalidateDetail,
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.applications,
             onRetry: _invalidateDetail,
@@ -165,6 +165,7 @@ class _HostApplicationDetailScreenState
                   CatchSection.fieldRows(
                     children: [
                       CatchField.read(
+                        copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostFormResponseSubmittedAt,
                         valueText: DateFormat.yMMMd().add_jm().format(
                           application.submittedAt,
@@ -172,6 +173,7 @@ class _HostApplicationDetailScreenState
                       ),
                       if (application.reviewedAt case final date?)
                         CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
                           title: hostApplicationStatusLabel(
                             context,
                             application.reviewStatus,
@@ -214,6 +216,7 @@ class _HostApplicationDetailScreenState
                           when application.reviewStatus !=
                               HostApplicationReviewStatus.approved)
                         CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
                           key: const ValueKey('host-application-open-person'),
                           title: context.l10n.hostApplicationOpenPerson,
                           onTap: () => context.pushNamed(
@@ -226,6 +229,7 @@ class _HostApplicationDetailScreenState
                         ),
                       if (application.sourceResponseId case final responseId?)
                         CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
                           title: context.l10n.hostApplicationOpenResponse,
                           onTap: () => context.pushNamed(
                             Routes.hostFormResponseDetailScreen.name,
@@ -251,6 +255,7 @@ class _HostApplicationDetailScreenState
                   gapH24,
                   CatchFieldLanes.single(
                     child: CatchField.control(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostApplicationReviewTitle,
                       contractExemption:
                           'Disclosure for review actions; the nested note uses the generated review payload binding.',
@@ -263,6 +268,7 @@ class _HostApplicationDetailScreenState
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             title: context.l10n.hostApplicationReviewNote,
                             inputHint:
                                 context.l10n.hostApplicationReviewNoteHint,

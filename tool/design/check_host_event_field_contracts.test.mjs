@@ -13,7 +13,7 @@ test("flags activity choice fields without itemAccent", () => {
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
     source: [
-      "CatchField.choices<ActivityKind>(",
+      "CatchField<ActivityKind>.choices(",
       "  values: ActivityKind.values,",
       "  itemLabel: (value) => value.label,",
       ")",
@@ -29,7 +29,7 @@ test("allows activity choice fields with itemAccent", () => {
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
     source: [
-      "CatchField.choices<PaceLevel>(",
+      "CatchField<PaceLevel>.choices(",
       "  values: PaceLevel.values,",
       "  itemAccent: (_) => activity.accent,",
       ")",
@@ -43,7 +43,7 @@ test("flags initially open event create fields", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-    source: "CatchField.choices<String>(initiallyOpen: true)",
+    source: "CatchField<String>.choices(initiallyOpen: true)",
   });
 
   assert.equal(findings.length, 1);
@@ -53,7 +53,7 @@ test("flags initially open event create fields", () => {
 test("flags event accordions seeded with an expanded field", () => {
   const findings = scanHostEventFieldSource({
     relativePath: "lib/hosts/presentation/edit_hosted_event_screen.dart",
-    source: "final accordion = CatchFieldAccordion(initialExpanded: 'pace');",
+    source: "final accordion = CatchAccordionController(initialExpanded: 'pace');",
   });
 
   assert.equal(findings.length, 1);
@@ -69,7 +69,7 @@ test("repository scan covers all Host Dart sources", () => {
   fs.mkdirSync(path.dirname(sourcePath), {recursive: true});
   fs.writeFileSync(
     sourcePath,
-    "CatchField.choices<ActivityKind>(itemAccent: (_) => accent)",
+    "CatchField<ActivityKind>.choices(itemAccent: (_) => accent)",
   );
 
   const result = scanHostEventFieldContracts({root});

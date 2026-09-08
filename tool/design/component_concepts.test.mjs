@@ -46,6 +46,14 @@ test("new core widgets require canonical names and component contracts", () => {
   );
 });
 
+test("package widgets retain canonical names and required contracts", () => {
+  assert.deepEqual(newWidgetPolicyIssues({
+    name: "Surface", file: "packages/catch_ui/lib/src/primitives/surface.dart",
+    visibility: "public",
+  }, {widgetbookCovered: true, catalogMentioned: true, componentContracted: false}),
+  ["noncanonical-core-widget-name", "missing-component-contract"]);
+});
+
 test("new private widgets remain a blocking destination", () => {
   assert.deepEqual(
     newWidgetPolicyIssues(
@@ -135,7 +143,7 @@ test("canonical and uncontracted public widgets cannot evade normalized collisio
   const rows = [
     {
       name: "CatchBadge",
-      file: "lib/core/widgets/catch_badge.dart",
+      file: "packages/catch_ui/lib/src/components/catch_badge.dart",
       classKind: "widget",
       visibility: "public",
       conceptRole: "concept",

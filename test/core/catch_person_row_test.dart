@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,6 +15,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: CatchPersonRow(
+            copy: catchPersonRowCopy(AppLocalizationsEn()),
             data: const CatchPersonRowData(
               name: 'Taylor',
               lastMessage: 'You matched!',
@@ -59,6 +60,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: CatchPersonRow(
+            copy: catchPersonRowCopy(AppLocalizationsEn()),
             data: const CatchPersonRowData(
               name: 'Taylor',
               lastMessage: 'See you at the event',
@@ -109,6 +111,7 @@ void main() {
             child: Align(
               alignment: Alignment.topLeft,
               child: CatchPersonRow(
+                copy: catchPersonRowCopy(AppLocalizationsEn()),
                 data: const CatchPersonRowData(
                   name: 'Taylor',
                   lastMessage: 'See you at the event',
@@ -159,9 +162,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: CatchPersonRow(
-            data: CatchPersonRowData(
+            copy: catchPersonRowCopy(AppLocalizationsEn()),
+            data: const CatchPersonRowData(
               name: 'Taylor',
               metaLine: '5:20 /km',
               contextLine: 'Sundowner 5K',

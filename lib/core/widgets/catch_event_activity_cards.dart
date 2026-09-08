@@ -1,14 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/motion/catch_transitions.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_ticket_surface.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Production event card backed by the shared activity visual schema.
@@ -57,12 +51,12 @@ class CatchEventCard extends StatelessWidget {
           final mediaHeight = constraints.hasBoundedWidth
               ? constraints.maxWidth * 10 / 16
               : 136.0; // fallback when unconstrained (should not happen)
-          final notchCenterY = mediaHeight + eventTicketDividerHeight / 2;
+          final notchCenterY = CatchLayout.eventTicketNotchCenterY(mediaHeight);
           return PhysicalShape(
-            clipper: EventTicketShapeClipper(
+            clipper: CatchTicketShapeClipper(
               cornerRadius: CatchRadius.lg,
-              notchRadius: eventTicketNotchRadius,
-              notchDepth: eventTicketNotchDepth,
+              notchRadius: CatchLayout.eventTicketNotchRadius,
+              notchDepth: CatchLayout.eventTicketNotchDepth,
               notchCenterY: notchCenterY,
             ),
             clipBehavior: Clip.antiAlias,
@@ -93,17 +87,17 @@ class CatchEventCard extends StatelessWidget {
                             left: CatchSpacing.s3,
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: EventStatusPill(
+                              child: CatchTicketStatusBadge(
                                 label: status,
                                 color: visual.accent,
-                                tone: EventStatusPillTone.dark,
+                                tone: CatchTicketStatusBadgeTone.dark,
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const EventTicketPerforatedDivider(),
+                  const CatchTicketPerforatedDivider(),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                       CatchSpacing.s4,
@@ -117,7 +111,7 @@ class CatchEventCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            EventClockMark(
+                            CatchTicketClock(
                               accent: visual.accent,
                               time:
                                   clockTime ?? _parseClockTimeLabel(timeLabel),
@@ -185,7 +179,7 @@ class CatchEventCard extends StatelessWidget {
     );
     return heroTag == null
         ? card
-        : catchHeroSurface(tag: heroTag!, child: card);
+        : CatchHeroViewport(tag: heroTag!, child: card);
   }
 }
 

@@ -1,12 +1,9 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +23,7 @@ void main() {
             builder: (context) => TextButton(
               onPressed: () async {
                 picked = await showCatchDatePicker(
+                  copy: catchDatePickerCopy(context.l10n),
                   context: context,
                   initialDate: DateTime(2026, 5, 12),
                   firstDate: DateTime(2026, 5),
@@ -63,6 +61,7 @@ void main() {
             builder: (context) => TextButton(
               onPressed: () async {
                 picked = await showCatchTimePicker(
+                  copy: catchTimePickerCopy(context.l10n),
                   context: context,
                   initialTime: const TimeOfDay(hour: 7, minute: 30),
                   title: 'Start time',
@@ -195,6 +194,7 @@ void main() {
             builder: (context) => TextButton(
               onPressed: () async {
                 result = await showCatchConfirmDialog(
+                  copy: catchDialogCopy(context.l10n),
                   context: context,
                   title: 'Remove host?',
                   message: 'This host will lose access.',

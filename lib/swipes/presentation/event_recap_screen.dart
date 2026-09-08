@@ -1,20 +1,9 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
@@ -25,6 +14,7 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen_state.da
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +64,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
         child: switch (screenState) {
           EventRecapLoading() => const EventRecapLoadingBody(),
           EventRecapError(:final error, :final retryIntent) =>
-            CatchErrorState.fromError(
+            CatchLocalizedErrorState(
               error,
               context: AppErrorContext.event,
               onRetry: () => _retry(retryIntent),
@@ -190,7 +180,7 @@ class EventRecapReadyBody extends StatelessWidget {
                   EventRecapProfileLookupStatus.loading =>
                     const VibeGridSkeleton(),
                   EventRecapProfileLookupStatus.error =>
-                    CatchInlineErrorState.fromError(
+                    CatchLocalizedInlineErrorState(
                       state.profileLookupError!,
                       context: AppErrorContext.profile,
                       onRetry: () => onRetryRosterProfiles(state.attendeeIds),
@@ -225,18 +215,18 @@ class VibeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      compact: (context) => _VibeGridLayout(
+    return CatchViewport(
+      compactBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 2,
       ),
-      medium: (context) => _VibeGridLayout(
+      mediumBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 3,
       ),
-      expanded: (context) => _VibeGridLayout(
+      expandedBuilder: (context) => _VibeGridLayout(
         rows: rows,
         onToggleVibe: onToggleVibe,
         crossAxisCount: 4,
@@ -376,10 +366,13 @@ class VibeGridSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      compact: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 2),
-      medium: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 3),
-      expanded: (context) => const _VibeGridSkeletonLayout(crossAxisCount: 4),
+    return CatchViewport(
+      compactBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 2),
+      mediumBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 3),
+      expandedBuilder: (context) =>
+          const _VibeGridSkeletonLayout(crossAxisCount: 4),
     );
   }
 }

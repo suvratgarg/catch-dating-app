@@ -10,23 +10,12 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -51,6 +40,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleto
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -443,7 +433,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                       if (screenState.hasSaveError)
                         CatchSection.plain(
                           padding: CatchInsets.fieldSectionChildTop,
-                          child: CatchErrorBanner.fromError(
+                          child: CatchLocalizedErrorBanner(
                             screenState.saveError!,
                             context: AppErrorContext.event,
                           ),
@@ -457,6 +447,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               .hostsEditHostedEventScreenLabelSchedule,
                           children: [
                             CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
                               key: CreateEventFormKeys.datePicker,
                               title: context
                                   .l10n
@@ -468,6 +459,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               ),
                             ),
                             CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
                               key: CreateEventFormKeys.timePicker,
                               title: context
                                   .l10n
@@ -480,6 +472,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               ),
                             ),
                             CatchField.stepper(
+                              copy: catchFieldCopy(context.l10n),
                               title: context
                                   .l10n
                                   .hostsEditHostedEventScreenLabelDuration,
@@ -516,6 +509,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             context.l10n.hostsEditHostedEventScreenLabelWhere,
                         children: [
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.meetingPoint,
                             title: context
                                 .l10n
@@ -544,6 +538,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 : null,
                           ),
                           CatchField.nav(
+                            copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.mapPicker,
                             title:
                                 context.l10n.hostsWhereStepLabelMeetingLocation,
@@ -564,6 +559,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 : null,
                           ),
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.locationDetails,
                             title: context
                                 .l10n
@@ -623,6 +619,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             .hostsEditHostedEventScreenLabelEventDetails,
                         children: [
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.name,
                             title: context
                                 .l10n
@@ -646,6 +643,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           ),
                           if (detailsFields.isDistanceBased) ...[
                             CatchField.input(
+                              copy: catchFieldCopy(context.l10n),
                               key: CreateEventFormKeys.distance,
                               title: context
                                   .l10n
@@ -690,7 +688,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 return null;
                               },
                             ),
-                            CatchField.choices<PaceLevel>(
+                            CatchField<PaceLevel>.choices(
+                              copy: catchFieldCopy(context.l10n),
                               title: context
                                   .l10n
                                   .hostsEventDetailsStepLabelPaceLevel,
@@ -717,6 +716,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             ),
                           ],
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.description,
                             title: context
                                 .l10n
@@ -798,6 +798,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
     final picked = await showCatchDatePicker(
+      copy: catchDatePickerCopy(context.l10n),
       context: context,
       initialDate: initialDate.isAfter(lastDate) ? lastDate : initialDate,
       firstDate: today,
@@ -818,6 +819,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   Future<void> _pickStartTime() async {
     if (_savePending) return;
     final picked = await showCatchTimePicker(
+      copy: catchTimePickerCopy(context.l10n),
       context: context,
       initialTime: _selectedStartTime,
       title: context.l10n.hostsEditHostedEventScreenTitleStartTime,
@@ -1193,6 +1195,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
       ),
       children: [
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: CreateEventFormKeys.capacity,
           title: context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
           contract: CatchContractConstraints
@@ -1206,6 +1209,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           validator: (value) => positiveRequiredValidator(value, context.l10n),
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: CreateEventFormKeys.price,
           title: context.l10n
               .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
@@ -1229,7 +1233,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             l10n: context.l10n,
           ),
         ),
-        CatchField.optionCards<EventAdmissionPreset>(
+        CatchField<EventAdmissionPreset>.optionCards(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
           contract: CatchContractConstraints
               .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat,
@@ -1248,6 +1253,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         ),
         if (state.showInviteCode)
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.inviteCode,
             title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
             contract: CatchContractConstraints
@@ -1273,6 +1279,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
         if (state.showCohortCapsToggle) ...[
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.cohortCapsToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
             contract:
@@ -1288,6 +1295,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             CatchSection.containedFieldRows(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.maxMen,
                   title: context
                       .l10n
@@ -1304,6 +1312,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       positiveOptionalValidator(value, context.l10n),
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.maxWomen,
                   title: context
                       .l10n
@@ -1324,6 +1333,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         ],
         if (state.showRequestToJoinCopy)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: state.admissionPreset.title(context.l10n),
             body:
                 context.l10n.hostsEditHostedEventScreenTextRequestsAppearInHost,
@@ -1332,6 +1342,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           ),
         if (state.showDynamicPricingToggle) ...[
           CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: CreateEventFormKeys.dynamicPricingToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
             contract: CatchContractConstraints
@@ -1345,6 +1356,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             CatchSection.containedFieldRows(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.dynamicPricingStep,
                   title: context.l10n
                       .hostsEditHostedEventScreenTitleStepCurrencycode(
@@ -1362,6 +1374,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       positiveRequiredValidator(value, context.l10n),
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.dynamicPricingMax,
                   title: context.l10n
                       .hostsEditHostedEventScreenTitleMaxCurrencycode(
@@ -1398,24 +1411,27 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               currencyCode: state.currencyCode,
             );
             if (priceInMinorUnits == 0) return const SizedBox.shrink();
-            return CatchField.optionCards<EventCancellationPolicyId>(
-              title: context
-                  .l10n
-                  .hostsEditHostedEventScreenLabelCancellationPolicy,
-              contract: CatchContractConstraints
-                  .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
-              contractValue: (value) => value.name,
-              values: EventCancellationPolicyId.values
-                  .where((value) => value.isApplicable)
-                  .toList(growable: false),
-              itemTitle: (policyId) => policyFor(policyId).title,
-              itemDescription: (policyId) =>
-                  policyFor(policyId).attendeeSummary,
-              selected: state.cancellationPolicyId.isApplicable
-                  ? state.cancellationPolicyId
-                  : EventCancellationPolicyId.standard,
-              onChanged: onCancellationPolicyChanged,
-              icon: CatchIcons.ruleOutlined,
+            return CatchFieldLanes.single(
+              child: CatchField<EventCancellationPolicyId>.optionCards(
+                copy: catchFieldCopy(context.l10n),
+                title: context
+                    .l10n
+                    .hostsEditHostedEventScreenLabelCancellationPolicy,
+                contract: CatchContractConstraints
+                    .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
+                contractValue: (value) => value.name,
+                values: EventCancellationPolicyId.values
+                    .where((value) => value.isApplicable)
+                    .toList(growable: false),
+                itemTitle: (policyId) => policyFor(policyId).title,
+                itemDescription: (policyId) =>
+                    policyFor(policyId).attendeeSummary,
+                selected: state.cancellationPolicyId.isApplicable
+                    ? state.cancellationPolicyId
+                    : EventCancellationPolicyId.standard,
+                onChanged: onCancellationPolicyChanged,
+                icon: CatchIcons.ruleOutlined,
+              ),
             );
           },
         ),
@@ -1436,6 +1452,7 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
       title: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenTextPolicyLocked,
           body: context
               .l10n
@@ -1444,6 +1461,7 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
           icon: CatchIcons.lockOutlineRounded,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelCapacity,
           valueText: context.l10n
               .hostsEditHostedEventScreenVisiblecopyCapacitylimit(
@@ -1452,6 +1470,7 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
           icon: CatchIcons.peopleOutline,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelPrice,
           valueText: event.isFree
               ? context.l10n.hostsEditHostedEventScreenVisiblecopyFree
@@ -1462,17 +1481,20 @@ class ReadOnlyHostedEventPolicyCard extends StatelessWidget {
           icon: CatchIcons.paymentsOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelAdmission,
           valueText: _admissionPresetFor(policy).title(context.l10n),
           icon: CatchIcons.howToRegOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelCancellation,
           valueText: policy.cancellationPolicy.title,
           icon: CatchIcons.ruleOutlined,
         ),
         if (policy.usesCrossPathsPairInventory)
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsEventPolicyStepTitleCrossPathsPairs,
             valueText:
                 '${policy.admissionPolicy.crossPathsPairInventory.reservedPairCapacity}',
@@ -1494,11 +1516,13 @@ class ReadOnlyHostedEventScheduleCard extends StatelessWidget {
       title: context.l10n.hostsEditHostedEventScreenLabelSchedule,
       children: [
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           title: event.shortDateLabel,
           body: event.timeRangeLabel,
           icon: CatchIcons.calendarTodayOutlined,
         ),
         CatchField.read(
+          copy: catchFieldCopy(context.l10n),
           body: context
               .l10n
               .hostsEditHostedEventScreenTextScheduleChangesAreBlocked,

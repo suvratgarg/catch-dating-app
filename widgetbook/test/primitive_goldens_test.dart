@@ -2,15 +2,18 @@ import 'dart:io';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_golden_test_core/widgetbook_golden_test_core.dart';
 import 'package:widgetbook_workspace/main.directories.g.dart';
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart';
+import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 import '../../test/goldens/support/golden_pump.dart';
+import '../../test/test_pump_helpers.dart';
 import 'support/triage_inventory.dart';
 
 // These ids select generated use cases; they do not redeclare component states.
@@ -51,13 +54,20 @@ Map<String, bool> _coreGoldenDesignations() {
   return {
     for (final row in _inventoryRows(inventory['cases']))
       if (row['typeFile'] is String &&
-          ((row['typeFile'] as String).startsWith('lib/core/widgets/')) &&
+          _isGoldenSource(row['typeFile'] as String) &&
           registrations.containsKey(_annotationKey(row)))
         registrations[_annotationKey(row)]!:
             (row['file'] as String).startsWith('widgetbook/lib/primitives/') ||
             (row['file'] as String).startsWith('widgetbook/lib/geometry/'),
   };
 }
+
+bool _isGoldenSource(String path) =>
+    path.startsWith('lib/core/widgets/') ||
+    path.startsWith('lib/core/riverpod_ui/') ||
+    path.startsWith('packages/catch_ui/lib/src/primitives/') ||
+    path.startsWith('packages/catch_ui/lib/src/components/') ||
+    path.startsWith('packages/catch_ui/lib/src/patterns/');
 
 String _corpusStem(String id) {
   final legacy = _referenceCases[id];
@@ -91,7 +101,7 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(coreGoldenIds, hasLength(249));
+    expect(coreGoldenIds, hasLength(335));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),
@@ -151,6 +161,45 @@ void main() {
       ),
     );
     expect(find.text('Catch'), findsOneWidget);
+  });
+  testWidgets('published notice survives golden motion and viewport settings', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(440, 1400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: TickerMode(
+              enabled: false,
+              child: Scaffold(
+                body: Builder(
+                  builder: (_) => WidgetbookFixtureScope(
+                    overrides: const [],
+                    child: WidgetbookCaseScope(
+                      key: UniqueKey(),
+                      builder: noticeProviderStates,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchNotice), findsOneWidget);
+    expect(find.text('Preferences saved'), findsOneWidget);
+
+    tester.view.physicalSize = const Size(440, 1000);
+    await pumpFeatureUi(tester);
+    expect(find.byType(CatchNotice), findsOneWidget);
   });
 }
 

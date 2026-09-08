@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_search_header_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 const double _hostInboxFilterHeight = CatchLayout.tabRailHeight;
@@ -78,6 +78,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
         ? widget.subtitle ?? l10n.hostInboxSubtitle
         : null;
     final search = CatchTopBarSearch(
+      copy: catchSearchFieldCopy(context.l10n),
       contract: CatchContractConstraints.mobileFormStateChatsInboxSearchQuery,
       enabled: widget.showSearchAction || searchActive,
       expanded: searchActive,

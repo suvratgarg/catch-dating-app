@@ -9,23 +9,11 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_master_detail_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_scaled_preferred_size.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -39,6 +27,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_whatsapp_thread_s
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -394,7 +383,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (uidState.hasError || clubsState.hasError) {
       final failed = uidState.hasError ? uidState : clubsState;
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(selectedClub?.id),
@@ -431,7 +420,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
     ];
     final failed = asyncStates.where((value) => value.hasError).firstOrNull;
     if (failed != null) {
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.chat,
         onRetry: () => onRetry(club.id),
@@ -534,7 +523,7 @@ class _HostCampaignWorkspaceSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     if (uidState.hasError || clubsState.hasError) {
       final failed = uidState.hasError ? uidState : clubsState;
-      return CatchSliverErrorState.fromError(
+      return CatchLocalizedSliverErrorState(
         failed.error!,
         context: AppErrorContext.club,
         onRetry: () => onRetry(selectedClub?.id),

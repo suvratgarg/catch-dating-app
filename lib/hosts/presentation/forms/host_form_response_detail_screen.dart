@@ -1,23 +1,11 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_action.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
@@ -25,6 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -78,7 +67,7 @@ class _HostFormResponseDetailScreenState
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.formResponses,
             onRetry: () => ref.invalidate(provider),
@@ -109,6 +98,7 @@ class _HostFormResponseDetailScreenState
                       ),
                       for (final asset in answer.assetDownloads)
                         CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
                           title: context.l10n.hostFormResponseDownloadFile(
                             fileName: asset.fileName,
                           ),
@@ -123,6 +113,7 @@ class _HostFormResponseDetailScreenState
               gapH24,
               CatchFieldLanes.single(
                 child: CatchField.control(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostAudienceSubmissionDetails,
                   contractExemption:
                       'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
@@ -285,6 +276,7 @@ class _HostFormResponseDetailScreenState
                     children: [
                       for (final field in preview.fields)
                         CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
                           title: field.label,
                           valueText:
                               field.value?.toString() ??
@@ -329,6 +321,7 @@ class _HostFormResponseDetailScreenState
                       children: [
                         for (final event in events)
                           CatchField.nav(
+                            copy: catchFieldCopy(context.l10n),
                             title: event.title,
                             body: AppTimeFormatters.dateTime(event.startTime),
                             onTap: () => Navigator.of(dialogContext).pop(event),
@@ -440,20 +433,24 @@ class _ResponseTechnicalDetails extends StatelessWidget {
   Widget build(BuildContext context) => CatchSection.fieldRows(
     children: [
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseIdentitySection,
         valueText: _identityKindLabel(context, detail.response.identityKind),
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseSource,
         valueText:
             detail.response.sourceLabel ??
             context.l10n.hostFormResponseDirectSource,
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseConsent,
         valueText: detail.consentVersion,
       ),
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormResponseCompletionTime,
         valueText: _duration(detail.completionMillis),
       ),
@@ -497,7 +494,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
       initialLoadTimeout: null,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const SizedBox.shrink(),
-      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,
         mode: CatchErrorStateMode.compact,
@@ -576,6 +573,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
       if (detail.applicationId case final id? when !submitted)
         CatchFieldLanes.single(
           child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostAudienceReviewApplication,
             onTap: () => context.pushNamed(
               Routes.hostApplicationDetailScreen.name,
@@ -588,6 +586,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
         if (detail.contactId case final id?)
           CatchFieldLanes.single(
             child: CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostApplicationOpenPerson,
               onTap: () => context.pushNamed(
                 Routes.hostCustomerDetailScreen.name,
@@ -602,6 +601,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
             ))
           CatchFieldLanes.single(
             child: CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-form-response-convert-crm'),
               title: context.l10n.hostFormConvertCrm,
               onTap: converting != null
@@ -616,6 +616,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
           ))
         CatchFieldLanes.single(
           child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormConvertAttendee,
             onTap: converting != null
                 ? null

@@ -43,6 +43,7 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-saved-audience-name'),
             title: context.l10n.hostSavedAudienceName,
             contract: CatchContractConstraints

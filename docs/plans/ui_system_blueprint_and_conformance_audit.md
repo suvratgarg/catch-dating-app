@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.7.0
+version: 1.11.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -345,9 +345,20 @@ Workspace gains two members (root `pubspec.yaml` `workspace:` list):
 packages/catch_tokens/   # generated primitive tokens + semantic token classes
                          # deps: flutter only
 packages/catch_ui/       # foundations, primitives, components, patterns
-                         # deps: flutter + catch_tokens (+ phosphor_flutter)
+                         # deps: flutter + catch_tokens + phosphor_flutter + skeletonizer 2.1.3
                          # NO riverpod, NO firebase, NO app package, NO feature types
 ```
+
+Loading uses one third-party engine: `skeletonizer` 2.1.3, the version already
+resolved by the app workspace. Remove the separate `shimmer` dependency when
+migrating the loading family. Both explicit placeholder shapes and skeletons
+of real widget compositions remain supported through Catch-owned APIs, using
+the same token colors, motion duration, shimmer effect, reduced-motion static
+fallback, and loading-semantics policy. Package consumers do not import the
+engine directly. This is a narrow presentation-only dependency exception;
+Riverpod, Firebase, app packages, and feature types remain excluded. The
+animation sweep change and reduced-motion correction require reviewed visual
+baselines; relocation-only pixel comparisons do not establish engine equivalence.
 
 Internal layout of `catch_ui` encodes the P3 ladder:
 
@@ -478,6 +489,16 @@ use-case monoliths (9,885-line `primitive_contract_use_cases.dart`,
 Phase 5 (repository by subdomain, screens by pane/workspace, `catch_tokens`
 by tier during Phase 2/3, use-case files by component family onto the
 Phase 1 shared harness).
+
+The `CatchField` constructor facade is one explicit file-size exception:
+`packages/catch_ui/lib/src/components/catch_field.dart` may contain at most
+1,150 lines. Its named const/factory constructors preserve supported mode
+arguments and one keyed widget identity; configuration records, pure property
+resolution, state and rendering remain in separate files within the ordinary
+800-line cap. The exception does not allow private Widget config subclasses or
+Widget-returning helper methods. Phase 5's source-size gate must encode this
+exact path and cap, seed an over-cap probe, and retain decrease-only protection.
+No other file inherits this exception.
 
 ### D7. Migration Protocol v2 (binding for every slice in this program and
 after it)
@@ -648,6 +669,9 @@ standard Flutter lints reject undeclared app imports. The workspace analyzer
 explicitly targets the package's `lib` source after a seeded probe demonstrated
 that directory-wide Flutter analysis could skip it.
 
+The owner closed the Phase 2 gate by approving PR #365 for merge and
+authorizing continuation. It merged as `8ba30b124288c4f36a7f39850d07a50bbc672fd6`.
+
 ### Phase 3 — `packages/catch_ui`
 
 Sub-slices, each independently gated by compiler + goldens:
@@ -668,6 +692,480 @@ DoD per slice: moved files deleted at origin; workspace analyze green;
 goldens unchanged or intentionally re-baselined with review; `catch_ui`
 pubspec contains no riverpod/firebase/app dependency (checked by a one-line
 manifest assertion, replacing the scanners it obsoletes).
+
+Phase 3a moves the font registry, semantic text styles, icon facade, motion
+helpers, and bundled font/license assets into `catch_ui/lib/src/foundations`.
+`CatchTheme` owns feature-neutral Material wiring; the app retains `AppTheme`
+as the activity-palette adapter. Branded styles use package-qualified font
+families, and the existing golden loader resolves the same bundled bytes.
+The package boundary permits only Flutter, `catch_tokens`, Phosphor, and the
+single loading engine pinned to `skeletonizer` 2.1.3 under D1; workspace analysis
+explicitly visits its library and test sources.
+
+Phase 3b moves the provider-free surface, control shell, row-press surface,
+text/icon atoms, gap values, image loading/grade/scrim, dividers, indicators,
+and focused sizing/reveal protocols into `catch_ui/src/primitives`. The image
+fallback has its own file. Motion render helpers become cataloged viewport
+widgets with the same transitions; each has a single owning file. Each original
+app file is deleted. Golden discovery
+counts both remaining app classes and extracted primitives, preserving every
+pre-move class and case instead of losing coverage at the package boundary.
+Components, patterns/adapters, entity materials, and final public-barrel cleanup
+remain the later Phase 3 sub-slices.
+
+Phase 3c begins with provider-free badges, icon actions, status displays, charts,
+record rows, section headers, and timestamp layout. These component bodies and
+caller-owned copy are preserved at their package home; original files are
+deleted and their exact corpus coverage follows the move. Buttons and index
+rows follow, with button label/loading anatomy in individual files. Share-card
+footers receive their existing localized brand label from app callers;
+step progress receives a caller-owned counter formatter. The latter has only
+catalog/test consumers, so its unused app-catalog entry is removed. The copy
+ownership gate scans the package as well as the app. Optional field labels and
+framework-error displays also receive resolved copy through the app presentation
+adapter, including screen-reader labels and the debug-details disclosure. Their
+public badge/disclosure anatomy has individual files. Provider-free bottom-sheet
+chrome, day headers, metadata rows, and metric strips retain their public APIs
+and layout behavior in individual package files. Hero backdrops and journey-step
+anatomy follow the same ownership rule. Number steppers receive explicit caller
+tooltips; their previous English defaults had no production consumers. The
+remaining l10n-coupled field/section/sheet families retain their later extraction
+work. Empty-state renderers and box/sliver placement also move into the package.
+The route-neutral `CatchTabViewportScope` owns inherited active-page and bottom-
+obstruction metrics; app tab identities remain app-side. Pattern discovery is
+included in the same corpus coverage and runner so moving a placement owner
+cannot remove its existing golden cases.
+Persistent status rendering/publication and the basic screen scaffold also move
+without changing their bodies. Their app state publishers and the root-header/
+scroll compositions remain at their current owners for the next pattern slices.
+Privacy badges receive their three translated visibility labels through the app
+copy adapter. Their fixed mode-to-icon pairing and single accessible label are
+preserved in the package; no app catalog is imported.
+The low-level text-entry primitive and code-input row/cell/caret visuals have
+individual package owners with unchanged bodies. Search and OTP keep app-side
+constraint validation and localization until their remaining D2 extraction.
+A direct text-input catalog matrix covers empty, populated and disabled states
+at both themes and text scale 2.0, retiring its former coverage waiver.
+Menus, their anchor/row owners, bottom docks, draggable sheet shells and inline
+message surfaces also move with unchanged bodies. Anchored menu placement gains
+direct top/bottom previews while retaining route-neutral obstruction metrics.
+The shared package enables the Catch analyzer plugin at its own analysis root.
+Exact foundation-definition and raw-control ownership follows the moved files;
+seeded package-neighbor probes prevent extraction from bypassing enforcement.
+Box viewport scrolling and bounded scene geometry move unchanged to the package.
+Direct short/overflow, scene-size/inset and master-detail breakpoint previews
+cover the four layouts and scene descriptor, retiring five waivers. Master-detail
+and adaptive master-detail now have individual package owners with the same
+route-body breakpoint, index width and divider. Their state-matrix and catalog
+references move with the source.
+The person polaroid is classified as L3 entity material: its API contains only
+widget/string/color/callback presentation inputs, so the unchanged renderer
+moves to the package. Distance rings retain their size negotiation and label
+behavior, with a registered viewport member replacing the private body and
+an individual file for the native-map-compatible edge label.
+Person avatars and their clipping, obscuring, initials, veil and stack anatomy
+also move into individual package files. App callers resolve activity colors
+through the existing palette and pass count-label formatters through the app
+copy adapter. Failed-image fallback, theme changes, rings, veils and stack
+ordering retain their existing behavior; the shared API has no activity model
+or app-localization dependency.
+
+AsyncValue box/sliver boundaries, their state translator, mutation-error listeners
+and mutation-message translation move to `lib/core/riverpod_ui`. Each public
+widget has its own file, preserving deadline/retry and pending-to-error behavior.
+The sliver boundary inlines its local error selection into the exhaustive build
+switch, resolving the private helper instead of carrying it across the move.
+The two provider-free skeleton placement helpers remain with their app-side
+layout dependencies in individual files until those patterns move. Golden
+discovery includes the Riverpod adapter root so relocation cannot remove its
+classes or designated cases. Notice queue/controller state and the app-level
+host also move to the Riverpod adapter root. The host keeps its bounded queue,
+priority/FIFO ordering, replacement-safe timers, gestures and accessibility
+behavior. Provider-free notice data, tones and rendering have individual package
+files; every caller supplies the existing localized dismiss label. The exact
+resolved-symbol placement lint and its alias/tear-off probes follow the host.
+
+Inline error-banner visuals and the canonical snackbar publisher move to the
+package. Retry banners require caller-resolved labels through `withRetry`.
+App-localized error mapping and mutation-state translation stay with the app
+adapters, preserving retry eligibility and inherited-locale updates. The former
+private localized banner is a public registered adapter with a direct preview.
+The raw-feedback lint follows only the exact package publisher; package-neighbor
+and retired-app-path probes reject bypasses.
+
+Action-menu controls, the status-bar preview, progress-cue state and horizontal
+rails also move to the package. Rail viewport and item rendering have named
+component files in the existing section family, replacing their private widget
+helpers. Direct previews cover bounded/intrinsic height and item/trailing-slot
+sizing. Existing item-width clamps, lazy scrolling, gutters and divider
+behavior are preserved. The rail scanner follows the package owner and scans
+package callers, with package-neighbor and retired-path negative probes.
+The host-row renderer is classified as L3 identity material and moves unchanged
+with caller-resolved avatar colors replacing its activity-domain input. The
+same accent still paints the verified mark; localized message copy and
+callback-owned affordances remain app inputs.
+Error content, terminal back actions and box/scaffold/sliver/inline placement
+move into individual shared files. Four public app adapters replace the private
+localized subclasses and resolve the existing error descriptor during build.
+Callers supply retry labels to shared renderers; locale changes, explicit
+recovery callbacks, secondary actions and placement behavior are preserved.
+The existing action-required lint also covers the app adapters, with seeded
+negative probes verified in CI.
+Person-row identity, chat/trailing, unread/new indicators and roster anatomy
+also have individual shared owners. App callers resolve typing and accessible
+unread/new labels through the existing copy adapter; directory rows retain their
+slot-only API. Count capping, unread emphasis, avatar shape, large-text stacking
+and press surfaces are preserved.
+The shared platform preference retains its iOS-only Cupertino decision. Bottom
+actions, their content/overlay, and tab navigation move with unchanged rendering
+and interaction bodies. The former private tab indicator becomes a registered
+member with a direct preview; geometry and gesture state stay with the tab bar.
+The bottom-action overlay also has a direct scrolling/safe-area preview while
+retaining its existing embedded coverage.
+Confirmation and form dialogs keep their distinct layouts in individual shared
+files. Typed dialog actions and picker toolbar copy are presentation inputs;
+app copy adapters resolve the existing translated defaults. The native picker
+sheet becomes a registered member of the sheet family with a direct date/time
+preview. iOS date clamping, cancellation and the Material picker paths retain
+their existing behavior.
+The window-size classification moves to `catch_tokens` as `CatchWindowSize`,
+retaining the 600/840 boundaries and removing the unused width aliases. Typed
+selection menus, sheets and adaptive triggers then move into individual shared
+component files. Callers keep their items, selected values, callbacks and
+trigger builders; direct previews cover the sheet and both adaptive triggers.
+
+Analytics metric tiles, their two-column grid and data-quality rows move with
+unchanged rendering into individual shared files. Typed display data requires
+caller-resolved partial/missing labels; app adapters use the existing translated
+copy. Separate metric and source-readiness concepts register their responsibilities,
+and a direct data-quality preview adds both-theme and large-text coverage.
+
+Ticket hero geometry, the notched outline and perforation are classified as L3
+entity material. They move into individual package files with presentation-neutral
+`CatchTicket*` names; callers use the existing geometry tokens directly and the
+feature barrel no longer exports the retired app owner. The ticket contract
+separates this material from domain-aware event cards and retains their rendering.
+
+Responsive renderers move as the L4 `CatchViewport` family: available-width
+selection, named local breakpoints and sliver cross-axis geometry. Builder slots
+are explicit, fallback order and boundary comparisons are preserved, and the
+unused grid-count helper is deleted. Feature-specific breakpoint values remain
+app policy; direct contract previews exercise boundaries, fallback and geometry.
+
+Share-card sheet rendering moves to the package with caller-owned capture keys,
+busy state, copy and button-context callbacks. `CatchSheetShare` remains
+app-side as the single PNG/platform-share adapter; its attribution, duplicate-
+press guard, disposal checks and localized failure handling are unchanged.
+The shared sheet has no external-share controller or app localization dependency.
+
+Exclusive disclosure state moves as `CatchAccordionController`; field visibility,
+gutter and interaction protocols have individual shared owners with unchanged
+behavior. App fields and section layouts consume the package scopes directly.
+Scope readers expose only obstruction, shape and outset values; the old
+widget-returning `maybeOf` helpers are deleted, retaining absence-sensitive
+section defaults and explicit-versus-resolved bleed.
+Direct production-consumer previews replace the six controller/scope coverage
+waivers; the event-entry scanner follows the controller rename with its seeded
+negative probe. Feature-level geometry construction remains prohibited.
+
+Page bodies, sliver bodies, terminal padding, section stacks/lists, responsive
+section pages and contained focus surfaces have individual package owners.
+The shared `CatchSectionTokens.twoColumnBreakpoint` preserves the 660-pixel local
+threshold. Responsive branch renderers are inlined; the reused page paint-plane
+helper becomes a registered internal widget with direct nested-gutter coverage
+and the same feature-placement restriction. Domain-aware section rendering and
+its field metadata inspection stay paired with the remaining field extraction.
+
+Form-step specifications, review items, status and readiness have individual
+shared pattern owners. Existing form-key/title helpers and readiness behavior
+are preserved; direct production-consumer previews replace the two nonvisual
+form-protocol coverage waivers. Feature wizard validation stays app-owned.
+
+Header action groups, title stacks, adaptive tab bars, action wrappers,
+collapsed titles and pinned sliver descriptors have individual package owners.
+The tab-label helpers become a registered component with the same text/child/icon
+precedence; direct previews cover selected/resting labels at both text scales.
+The unused icon-action alias is removed in favor of its existing canonical owner.
+Search configuration and the app top bars stay with their coupled field and
+localized-copy extraction.
+
+Pushed-route scaffolds, closed route-body descriptors, root-page bodies, page
+specifications and semantic page owners now live in the shared patterns layer.
+The page scroll widget keeps its controller and private state in one library;
+the route scaffold keeps its closed body renderer. Rendering, scroll retention,
+status publication and constructor vocabulary are preserved. Composition checks
+resolve the extracted canonical source identities and retain their negative
+constructor probe; direct previews mount the route and typed page protocols.
+
+Field lanes, row/content/support anatomy, focus outlines, bounded steppers,
+repeat targets, save controls, disclosure drawers and status rendering have
+individual shared component owners. Their private state and painters stay with
+the owning widgets. Callers supply the existing localized optional-field copy,
+action labels and saving/saved accessibility labels; the status enum and reduced-
+motion duration helper are shared, and field value typography belongs to
+`CatchTextStyles`. Schema-bound field configuration, choices, toggles and
+validation remain with the app field until their constraint boundary moves.
+Text validation now receives caller-resolved message formatters through
+`CatchFormValidationCopy`. The app adapter retains the same localized field and
+length arguments; explicit-validator precedence and constraint order are
+unchanged. The generated constraint type and runtime policy remain app-side.
+
+Individual option rendering, the presentation-only option descriptor and the
+variant vocabulary have shared component owners. Selected/disabled semantics,
+spoken labels, hit targets, summary wrapping and label/mono/operational rendering
+retain their bodies. The group controller and schema validation remain app-side;
+its existing catalog cases cover the extracted option model and item directly.
+
+The ticket clock and compact status badge are presentation-neutral entity
+material: their APIs accept time, color, text and rendering geometry. They move
+as `CatchTicketClock` and `CatchTicketStatusBadge`, retaining their existing
+event-card member identities and the status badge's keep-distinct decision.
+Their direct cases move into the primitive corpus with text scale 2.0 coverage;
+the activity stamp and backdrop retain their app-domain visual specification.
+
+Widgetbook already depends directly on `catch_ui` and retains the app dependency
+for feature previews. The unused app compatibility barrel is deleted after a
+whole-repository Dart directive scan found no import, export, or part references.
+Shared UI and token imports use their package entrypoints. Removing the temporary
+renderer exports from the shared barrel still follows the remaining app-side
+field, section, root-header, and form-owner moves.
+
+The form-review overview, review body, and sheet entrypoint receive their status
+label formatter from app callers. The app copy adapter resolves the existing
+Complete, Needs information, and Optional catalog strings; shared rendering no
+longer reads the app localization catalog for these labels. The widgets remain
+app-side until their schema-coupled field dependency moves.
+
+Step-header callers also supply the full and compact counter formatters, and
+identity-header callers supply the profile-action semantic label. Both headers
+retain their progress clamping, large-text switch, and interaction semantics
+without importing the app localization catalog. Their package move still follows
+the shared search-field dependency.
+
+Search fields and top-bar search configurations receive `CatchSearchFieldCopy`
+from their callers. The package owns the pure copy protocol; the app supplies
+its existing search, clear, and close translations. Explicit placeholders and
+trigger tooltips retain their precedence. The field and top-bar widgets remain
+app-side until the shared schema constraints and validation policy move.
+
+Chip-field callers supply the existing optional-field copy and a typed item-label
+formatter. The selector no longer imports the app catalog or requires the app
+`Labelled` interface; schema values, selected sets, callbacks, and rendering are
+preserved. Its package move still follows the schema policy and chip renderer.
+
+OTP callers supply the existing one-time-code accessibility label from the app
+catalog. Digit-key prefixes remain stable implementation identifiers; their
+former catalog key and allowlist entry are removed. Input formatting, autofill,
+submission, and visible cells retain their bodies without an app-copy import.
+
+Typed form descriptors receive caller-resolved validation formatters and choice
+labels. Their editors no longer import the app catalog or require `Labelled`;
+normalization, schema filtering, pending saves, explicit/on-blur confirmation,
+and typed patch factories retain their existing behavior. Shared field, section,
+and constraint dependencies still precede the pattern package move.
+
+Section callers resolve their optional lead accent from the app activity palette.
+The section owns the same lead/title-color precedence and joins caller-owned
+title/count values without importing app copy or activity types. Field geometry
+inspection remains app-side until `CatchField` moves.
+
+Chip activity recipes receive a presentation-only `CatchChipData` value. The
+app palette resolves its label, glyph, and pigments during caller builds; the
+renderer retains the approved soft/solid recipes, label overrides, interactions,
+and semantics. The chip remains app-side until schema constraints move.
+
+All field recipes receive `CatchFieldCopy` from their callers. The protocol
+bundles the existing optional-label and validation copy with action labels,
+status announcements, empty-value and selection prompts, and clear tooltips.
+The app adapter retains the existing locale-specific grammar and casing. Form
+lists pass the current copy through a newly built row scope; form-review widgets
+forward it explicitly. The field library no longer imports app localization or
+its copy adapter. Controllers, focus, selections, pending saves and rendering
+remain owned by the existing field implementation. The field's package move
+still follows the shared schema-constraint and validation-policy transaction.
+
+The thumbnail scrim renderer and its recipe enum have a shared component owner.
+Their existing event-card member identity, gradient colors and stops, pointer
+transparency, and public API are preserved. Photo selection, activity fallback,
+and event-domain values remain in the app thumbnail; the renderer imports only
+Flutter and shared tokens. Existing thumbnail and direct-scrim previews continue
+to cover the production implementation without new baselines.
+
+The root-header vocabulary also has shared owners: the primary-rail marker,
+root top-edge ownership, leading-control choices, and title typography roles.
+Their names, values, and type contracts are unchanged; the two feature adapters
+that previously obtained leading choices from the app top-bar library now import
+the shared package. Header rendering and schema-coupled search remain app-side
+until the constraint transaction permits their package move. The existing
+root-page preview passes its production controller rail through the shared
+marker type, so the interface retains direct golden coverage after leaving the
+rail file.
+
+The step-header source now uses `catch_step_header.dart`, matching its existing
+primary class under D5. The widget body is unchanged; caller imports, component
+metadata, and authored copy references use the new filename.
+
+Field, chip, search, section-header, and form-commit enums now have shared
+owners with unchanged values. Section-group descriptors, form-review summary
+items, row scopes, and save/error callback types also move as presentation-only
+contracts. The form list still owns accordion state and the caller still owns
+patch persistence; the shared row scope only carries those callbacks and the
+current field copy. A production form-list preview covers the scope under both
+commit modes, including an expanded editor and its collapsed sibling. The
+schema-coupled controls, section renderer, and form editors remain app-side
+until the constraint transaction allows their package move.
+
+The eight loading widgets move into individual shared pattern files. Explicit
+placeholder shapes and real-layout skeletons use one internal Skeletonizer effect
+configuration; the separate Shimmer package and all five old app libraries are
+removed. The existing shape geometry and public Catch APIs are preserved. Both
+paths stop animation under Reduce Motion and exclude placeholder semantics and
+pointer interaction; disabling real-layout skeletonization restores the content.
+The dependency gate pins Skeletonizer to 2.1.3 and rejects engine declarations
+in app packages. Loading motion and accessibility are verified at the rendered
+widget boundary, and affected visual baselines follow the approved D1 change.
+
+The 16-field `CatchContractFieldConstraints` value type and
+`CatchContractFieldPolicy` move into the shared component package. The schema
+generator imports the shared type when emitting app-owned field constants;
+the projected values and their lookup remain unchanged in the app. Runtime
+input bounds and validators retain their existing implementation and consume
+caller-supplied validation copy. This removes the schema import boundary that
+prevented the remaining field and form renderers from moving into `catch_ui`.
+
+The next component slice moves `CatchChip`, `CatchOptionCard`,
+`CatchOptionGroup`, `CatchOtpCodeField`, `CatchRangeSlider`, `CatchSearchField`,
+and `CatchToggle` into the shared package. Callers import app-generated schema
+values directly; the controls only accept the shared constraint type. The search
+trailing action is inlined at its sole call site, preserving its clear/close
+behavior while removing a private widget from the shared layer. Component
+contracts, localization ownership descriptions, and exact implementation-path
+checks follow the move; historical audit snapshots remain unchanged.
+
+`CatchChipField`, `CatchTabRail`, and `CatchTabControllerRail` now have individual
+shared component owners. Their selection, validation, platform minimum size,
+scaled geometry, and route-owned pager binding retain their existing bodies.
+Callers import the shared package; registry, screen-contract, catalog, and
+architecture references follow the move, and both old app libraries are deleted.
+
+Top-bar search configuration, screen top bars, route/identity top bars, and the
+step header also have individual shared component owners. Caller-owned copy,
+constraints and callbacks retain their APIs. Top-bar rendering inlines its
+private search lane and local render helpers into the owning build method,
+preserving the title, leading, trailing, search, safe-area and divider geometry.
+The two original app libraries are deleted; catalog, screen and copy-ownership
+references follow the move. The last schema-constant re-export is removed from
+the app field library, with its remaining consumers importing app-owned schema
+values directly. This prevents transitional widget exports from duplicating the
+explicit schema boundary.
+
+Root scaffolds and scroll views now have individual shared pattern owners.
+The closed header descriptor stays in the scroll owner’s Dart library in its
+own part file, preserving the private rendering protocol. The scaffold uses
+the existing public standard/full-bleed scroll constructors, so the obsolete
+private constructor is removed. Scrolling, pinned status/rail geometry, overlap,
+safe area and field obstruction retain their implementation. Constructor gates
+and their seeded negative fixture follow the two package owners. The status
+publication lint permits only the actual scroll renderer; retired app paths
+and the delegating root scaffold remain negative probes. A direct catalog matrix
+registers the scroll-only member and covers standard, full-bleed and pinned-rail
+panes under both themes and text scales.
+
+The field choice chip, toggle adapter, and trailing-slot renderer also have
+individual shared component owners. Their constructors, rendering, selection
+semantics, motion, and clear-target geometry are unchanged. The obsolete app
+lanes part is deleted. Existing direct previews and goldens continue to cover
+all three members.
+
+The section kicker becomes a cataloged shared member. All six section heading
+placements use the same extracted renderer, preserving title/count semantics,
+baseline alignment, and the existing separate trailing-action lane at large
+text scales. Its direct preview covers the previously private heading anatomy;
+the section's old helper is deleted.
+
+The canonical `CatchSection` and its private configuration records now live in
+the shared component package. Named const constructors and supported slots are
+preserved; widget slots are immutable fields, and all variant rendering belongs
+to `build`. `CatchSectionBody` owns child stacks and separator placement.
+`CatchFieldDividerGeometry` exposes only the direct field's numeric leading
+text inset, replacing the section's app-class dependency while preserving the
+fallback for unknown adapter rows. The old section libraries are deleted and
+callers, constructor ownership, schema metadata, and previews follow the move.
+
+The wrapping choice and explanatory option-card controls now have individual
+shared owners. Their selection callbacks and notification order are preserved;
+`CatchFieldChoicePickedNotification` carries the same presentation-only close
+request across the package boundary. The nearest field still owns the delay,
+saving guard, and controlled expansion callback. The old control part retains
+only field-state behavior, with both renderer declarations deleted there.
+
+`CatchFieldValueContent` owns the field caption, value, badge and supporting
+lanes. The four former helper call sites supply the same state, copy and trailing
+reservation; status and placeholder behavior use explicit enum axes. Caption
+styling is shared with the text-entry and select shells. The old render helper
+and redundant text-entry body helper are deleted.
+
+Field input suffixes now use `CatchFieldTrailing.inputSuffix`, preserving the
+native clear button and its fallback action/icon styling. A missing suffix
+remains null at the text-entry boundary. Leading slots, add rows, text-entry
+motion and custom trailing placement are inlined into their existing callers;
+fourteen private render helpers and the redundant action getter are deleted.
+The row body and trailing-state selection, underline chrome, select trigger,
+and configured-row wrapper render at their existing callers. Their precedence,
+null-slot allocation, form-state callbacks and widget tree remain unchanged.
+
+`CatchFieldSelectControl` owns selection-menu rendering, form validation and
+selected-value synchronization at its shared package home. `CatchField.select`
+keeps its typed caller API and supplies copy, choices, focus and menu controllers.
+The former select renderer and app-side form-state synchronization are deleted;
+the direct preview mounts production fields in empty, selected, compact,
+disabled and validation-error states.
+
+`CatchFieldSurface` owns active and pressed painting using the existing field
+geometry scope. The field retains pointer and keyboard handling, disclosure,
+semantics, and save orchestration. Rounded, section-clipped and full-bleed
+states share the original border, shadow, outset and animation behavior. Native
+text input now renders once inside its form owner; the duplicate private input
+helper is deleted. Selection updates normalize the live form value so deferred
+cleanup cannot erase a newly supplied selection. The field row now renders
+directly in its owning State's build method. Lifecycle, timers, focus and
+expansion behavior move unchanged into a non-rendering part; the private row
+renderer is deleted and both resulting files stay within D6.
+
+`CatchFieldTextEntry` replaces the final private rendering helper. It consumes
+its facade's immutable configuration plus explicit state handles; controllers,
+focus, dismissal and save orchestration stay with the field. Native rendering
+uses the existing `CatchTextInput` primitive, extended with editing and obscuring
+enum axes and platform input options. The text-entry member and its facade now live together in `catch_ui`, with
+non-Widget configuration records and named constructors. The library has no app
+imports.
+
+The typed form list and its four editors now have separate owning libraries.
+Each editor retains its State, controllers, validation and save behavior;
+descriptors retain typed construction and patch factories. The former combined
+file no longer declares a Widget or State, and every resulting file is below
+800 lines. These form owners now live in `catch_ui/src/patterns` alongside the field
+facade migration; persistence and localized copy remain caller-owned.
+
+The final form review body and step navigator have individual source owners
+and explicit registry membership. Their field rows, status labels, callbacks
+and scrolling are unchanged. Both now live in `catch_ui/src/patterns` with their original app files deleted.
+
+The seven typed form descriptors now live in the shared pattern package. A
+generic visitor preserves each choice type without rendering; the form list
+owns the same row constructors, schema assertions and stable editor keys in
+its build method. All seven former `buildRow` declarations and the old app
+descriptor file are deleted. A direct preview mounts all six descriptor modes
+through the production form list under both text-commit policies.
+
+The final field facade uses one `CatchField<T>` widget and private configuration
+records. Its four former static Widget helpers are real factory constructors;
+all generic callers use `CatchField<T>.choices`, `.optionCards`, or `.select`.
+The named const constructors preserve their defaults, and keyed mode changes
+retain State. All field parts, the typed form list and editors, and the form
+review/navigator now reside in the shared package. The old app-side field/form
+files are deleted. D6's owner-approved one-file exception ships with this move;
+all other moved field and form files remain within 800 lines.
 
 ### Phase 4 — One registry, binding grammar
 
@@ -708,6 +1206,12 @@ for `catch_async_requires_state_surface`; remaining 149 private widgets, 36
 helper methods, 21 raw decorations continue through the widget-consolidation
 worklog's K/R/D lanes (that spec keeps ownership; this program does not
 duplicate it); golden waivers burn to zero.
+
+Golden coverage now has zero waivers: the generated notice provider is exercised
+through its production controller and host, and scaled preferred-size geometry
+through the production scaffold, top bar and tab rail. These direct previews
+cover empty/published notices and direct/nested header reservation at both themes
+and text scales. The remaining conformance and consolidation lanes stay open.
 
 ### Work packet template (every Codex slice)
 

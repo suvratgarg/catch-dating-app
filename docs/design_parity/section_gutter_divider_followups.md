@@ -155,7 +155,7 @@ changes) — assert via existing screen tests where they exist.
 
 ## Item 4 — Token hygiene crumbs
 
-1. `lib/core/widgets/catch_horizontal_rail.dart` and
+1. `packages/catch_ui/lib/src/components/catch_horizontal_rail.dart` and
    `lib/core/widgets/catch_vertical_section.dart`: every horizontal
    `CatchSpacing.s5` that means "the app screen gutter" (defaults, literals,
    and the doc comments) becomes `CatchSpacing.screenPx`. Visual noop; these

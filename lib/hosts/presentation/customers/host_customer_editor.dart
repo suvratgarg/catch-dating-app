@@ -82,6 +82,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
               CatchResponsiveSectionItem(
                 child: CatchFieldLanes.single(
                   child: CatchField.control(
+                    copy: catchFieldCopy(context.l10n),
                     key: const ValueKey('host-add-customer-memory'),
                     title: context.l10n.hostCustomersInitialNote,
                     contractExemption:
@@ -98,6 +99,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                         Form(
                           key: _noteFormKey,
                           child: CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-add-customer-note'),
                             title: context.l10n.hostCustomersInitialNote,
                             contract: CatchContractConstraints
@@ -222,6 +224,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
     final fields = <Widget>[
       CatchFieldLanes.single(
         child: CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey(
             create ? 'host-add-customer-name' : 'host-customer-edit-name',
           ),
@@ -248,6 +251,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
       if (includeEndpoints) ...[
         CatchFieldLanes.single(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey(
               create ? 'host-add-customer-phone' : 'host-customer-edit-phone',
             ),
@@ -271,6 +275,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
         ),
         CatchFieldLanes.single(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey(
               create ? 'host-add-customer-email' : 'host-customer-edit-email',
             ),
@@ -294,6 +299,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
       ] else ...[
         CatchFieldLanes.single(
           child: CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-customer-phone-field'),
             title: readPhoneTitle ?? context.l10n.hostCustomersPhone,
             body: readPhone,
@@ -302,6 +308,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
         ),
         CatchFieldLanes.single(
           child: CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             key: const ValueKey('host-customer-email-field'),
             title: context.l10n.hostsHostAudienceContactEmail,
             body: readEmail,

@@ -43,18 +43,43 @@ class ExampleScreen {
     },
   );
 
-  test('analysis contexts own root, Consumer, and Host production sources', () {
+  test('analysis contexts own app and shared UI production sources', () {
     final failures = analysisContextMembershipFailures(
       root: Directory.current.absolute.path,
       relativePaths: const <String>[
         'lib/app.dart',
         'apps/consumer/lib/consumer_platform_app.dart',
         'apps/host/lib/host_platform_app.dart',
+        'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
       ],
     );
 
     expect(failures, isEmpty);
   });
+
+  test(
+    'only the exact package scaffold owns the Material construction',
+    () async {
+      const source =
+          'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart';
+      final root = Directory.current.absolute.path;
+      expect(
+        await resolveScaffoldOwnershipFailuresForFile(
+          root: root,
+          relativePath: source,
+        ),
+        isEmpty,
+      );
+      expect(
+        await resolveScaffoldOwnershipFailuresForFile(
+          root: root,
+          relativePath: source,
+          canonicalScaffoldPath: 'lib/core/widgets/catch_screen_scaffold.dart',
+        ),
+        contains(contains(screenScaffoldOwnershipCode)),
+      );
+    },
+  );
 
   group('resolved layout terminal traversal', () {
     late Directory fixtureRoot;

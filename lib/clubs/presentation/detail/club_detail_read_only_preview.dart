@@ -3,9 +3,9 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen_st
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,7 +39,7 @@ class ClubDetailReadOnlyPreviewSliver extends ConsumerWidget {
           presentationMode: ClubDetailPresentationMode.embeddedReadOnlyPreview,
         ),
       ),
-      error: (error, _) => CatchSliverErrorState.fromError(
+      error: (error, _) => CatchLocalizedSliverErrorState(
         error,
         context: AppErrorContext.club,
         fillRemaining: false,
@@ -49,6 +49,7 @@ class ClubDetailReadOnlyPreviewSliver extends ConsumerWidget {
       data: (viewModel) {
         if (viewModel == null) {
           return CatchSliverErrorState(
+            retryLabel: context.l10n.sharedActionTryAgain,
             title: context.l10n.clubsClubDetailScreenTitleClubNotFound,
             message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
             icon: CatchIcons.groupsOutlined,

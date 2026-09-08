@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -17,6 +16,7 @@ import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -137,9 +137,9 @@ void main() {
     expect(find.text('Profile'), findsNothing);
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.anchored,
+      CatchTabViewportScopePlacement.anchored,
     );
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 318);
@@ -148,13 +148,13 @@ void main() {
     expect(find.text('Continue with phone'), findsNothing);
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.none,
+      CatchTabViewportScopePlacement.none,
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomOverlayInset,
       0,
     );
@@ -164,9 +164,9 @@ void main() {
     expect(find.text('Continue with phone'), findsOneWidget);
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.anchored,
+      CatchTabViewportScopePlacement.anchored,
     );
 
     await tester.tap(find.text('Continue with phone'));
@@ -252,13 +252,13 @@ void main() {
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.anchored,
+      CatchTabViewportScopePlacement.anchored,
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomOverlayInset,
       0,
     );
@@ -275,13 +275,13 @@ void main() {
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.none,
+      CatchTabViewportScopePlacement.none,
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomOverlayInset,
       0,
     );
@@ -297,9 +297,9 @@ void main() {
     );
     expect(
       tester
-          .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+          .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
           .bottomBarPlacement,
-      AppShellBottomBarPlacement.anchored,
+      CatchTabViewportScopePlacement.anchored,
     );
   });
 
@@ -450,15 +450,15 @@ void main() {
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomOverlayInset,
         greaterThan(0),
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
-        AppShellBottomBarPlacement.floating,
+        CatchTabViewportScopePlacement.floating,
       );
 
       final editor = find.byKey(
@@ -476,9 +476,9 @@ void main() {
       expect(find.byType(AppShellNavigationBar), findsOneWidget);
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
-        AppShellBottomBarPlacement.floating,
+        CatchTabViewportScopePlacement.floating,
       );
 
       tester.view.viewInsets = const FakeViewPadding(bottom: 318);
@@ -501,15 +501,15 @@ void main() {
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomOverlayInset,
         0,
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
-        AppShellBottomBarPlacement.none,
+        CatchTabViewportScopePlacement.none,
       );
 
       tester.view.resetViewInsets();
@@ -517,15 +517,15 @@ void main() {
       expect(find.byType(AppShellNavigationBar), findsOneWidget);
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomOverlayInset,
         greaterThan(0),
       );
       expect(
         tester
-            .widget<AppShellActiveTab>(find.byType(AppShellActiveTab))
+            .widget<CatchTabViewportScope>(find.byType(CatchTabViewportScope))
             .bottomBarPlacement,
-        AppShellBottomBarPlacement.floating,
+        CatchTabViewportScopePlacement.floating,
       );
     } finally {
       debugDefaultTargetPlatformOverride = previousPlatformOverride;

@@ -1,12 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_flow.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Route-owned adaptive composition for Create Event.
@@ -37,13 +33,14 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ComponentResponsiveBuilder(
+    return CatchViewportBreakpoint(
       breakpoint: ComponentBreakpoints.hostCreateEventStepRailBreakpoint,
-      compact: (_) => CreateEventWorkspaceFrame(header: header, body: body),
-      expanded: (_) => ComponentResponsiveBuilder(
+      compactBuilder: (_) =>
+          CreateEventWorkspaceFrame(header: header, body: body),
+      expandedBuilder: (_) => CatchViewportBreakpoint(
         breakpoint:
             ComponentBreakpoints.hostCreateEventConsequencePaneBreakpoint,
-        compact: (_) => CreateEventWorkspaceFrame(
+        compactBuilder: (_) => CreateEventWorkspaceFrame(
           header: header,
           body: CreateEventSplitWorkspace(
             body: body,
@@ -55,7 +52,7 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
             showsConsequencePane: false,
           ),
         ),
-        expanded: (_) => CreateEventWorkspaceFrame(
+        expandedBuilder: (_) => CreateEventWorkspaceFrame(
           header: header,
           body: CreateEventSplitWorkspace(
             body: body,
@@ -203,6 +200,7 @@ class CreateEventStepRail extends StatelessWidget {
             children: [
               for (final item in steps)
                 CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: ValueKey('catch-form-step-overview-${item.index}'),
                   title: item.title,
                   body: _statusLabel(context, item.status),
@@ -249,6 +247,7 @@ class CreateEventConsequencePane extends StatelessWidget {
             children: [
               for (final item in items)
                 CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
                   title: item.label,
                   body: item.value,
                   bodyMaxLines: 4,

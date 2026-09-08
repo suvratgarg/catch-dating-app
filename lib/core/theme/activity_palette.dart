@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -78,6 +79,19 @@ class CatchActivity {
   Color get accent => swatch.accent;
   Color get deep => swatch.deep;
   Color get soft => swatch.soft;
+
+  /// Presentation-only content supplied to the shared chip renderer.
+  CatchChipData get chipData => CatchChipData(
+    label: label,
+    icon: glyph,
+    accent: accent,
+    deep: deep,
+    soft: soft,
+  );
+
+  /// Presentation-only colors supplied to shared avatar renderers.
+  CatchAvatarColors get avatarColors =>
+      CatchAvatarColors(accent: accent, deep: deep, soft: soft);
 }
 
 @immutable

@@ -5,24 +5,13 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -37,6 +26,7 @@ import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_insight_filter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -107,6 +97,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         key: const ValueKey<String>('host_event_guest_intake_field'),
         title: context.l10n.hostsOperationalRosterGuestIntakeTitle,
         body: context.l10n.hostsOperationalRosterGuestIntakeBody,
@@ -146,7 +137,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
             ),
             if (mutationError case final error?) ...[
               gapH12,
-              CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+              CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
             ],
             if (showsProviderSource) ...[
               gapH20,
@@ -311,7 +302,7 @@ class _HostOperationalRosterPanelState
             gapH12,
           ],
           if (_mutationError case final error?) ...[
-            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
             gapH12,
           ],
           if (_attendanceOutbox case final outbox?
@@ -329,7 +320,7 @@ class _HostOperationalRosterPanelState
               watchPendingEventRuntimeClaimsProvider(widget.eventId),
             ),
             loadingBuilder: (_) => const SizedBox.shrink(),
-            errorBuilder: (_, error, _) => CatchErrorBanner.fromError(
+            errorBuilder: (_, error, _) => CatchLocalizedErrorBanner(
               error,
               context: AppErrorContext.event,
               onRetry: () => ref.invalidate(
@@ -551,6 +542,7 @@ class _HostOperationalRosterPanelState
     final connection = _providerSetup?.asData?.value.mappedConnection;
     if (connection == null || _providerMutationPending) return;
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.hostsOperationalRosterProviderDisconnectTitle,
       message: context.l10n.hostsOperationalRosterProviderDisconnectBody,
@@ -747,6 +739,7 @@ class _HostOperationalRosterPanelState
                 children: [
                   for (final error in result.errors)
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostsOperationalRosterImportRowError(
                         row: error.rowId,
                       ),
@@ -960,6 +953,7 @@ class _HostOperationalAttendeeRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchPersonRow(
+          copy: catchPersonRowCopy(context.l10n),
           data: CatchPersonRowData(
             name: attendee.displayName,
             seed: attendee.id,
@@ -1239,16 +1233,19 @@ class _HostProviderSetupView extends StatelessWidget {
           CatchFieldLanes.divided(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterProviderAccount,
                 body: connection.externalAccountName,
                 icon: CatchIcons.linkOutlined,
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterProviderCoverage,
                 body: _providerCoverage(context, connection.capabilities),
                 icon: CatchIcons.groupsOutlined,
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterProviderLastSync,
                 body: mapping.lastSuccessfulSyncAt == null
                     ? context.l10n.hostsOperationalRosterProviderNeverSynced
@@ -1258,6 +1255,7 @@ class _HostProviderSetupView extends StatelessWidget {
                 icon: CatchIcons.refresh,
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterProviderLimits,
                 body: context.l10n.hostsOperationalRosterProviderLumaLimits,
                 icon: CatchIcons.infoOutline,
@@ -1407,6 +1405,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
         children: [
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsOperationalRosterProviderApiKey,
               contract: CatchContractConstraints
                   .listOrganizerLumaEventsCallablePayloadApiKey,
@@ -1421,7 +1420,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
           ),
           if (_error case final error?) ...[
             gapH12,
-            CatchErrorBanner.fromError(error, context: AppErrorContext.event),
+            CatchLocalizedErrorBanner(error, context: AppErrorContext.event),
           ],
         ],
       ),
@@ -1508,6 +1507,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
                           for (final indexed in choices.events.indexed) ...[
                             if (indexed.$1 > 0) const CatchDivider.fieldRow(),
                             CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
                               title: indexed.$2.name,
                               body: AppTimeFormatters.dateTime(
                                 indexed.$2.startAt.toLocal(),
@@ -1562,6 +1562,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
           CatchSection.fieldRows(
             children: [
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterForwardEmail,
                 body:
                     emailAlias ??
@@ -1577,6 +1578,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
                       ),
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsOperationalRosterForwardWhatsapp,
                 body: whatsappNumber == null || whatsappMessage == null
                     ? context.l10n.hostsOperationalRosterForwardNotAvailable
@@ -1637,6 +1639,7 @@ class _HostRuntimeClaimQueue extends StatelessWidget {
         gapH8,
         for (final indexed in claims.indexed)
           CatchPersonRow(
+            copy: catchPersonRowCopy(context.l10n),
             key: ValueKey('runtime-claim-${indexed.$2.uid}'),
             data: CatchPersonRowData(
               name: indexed.$2.displayName,
@@ -1911,6 +1914,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             CatchFieldLanes.divided(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host-roster-revenue-fallback'),
                   title:
                       context.l10n.hostsOperationalRosterRevenueFallbackAmount,
@@ -1941,6 +1945,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                   onChanged: (_) => setState(() {}),
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: const ValueKey('host-roster-revenue-currency'),
                   title: context.l10n.hostsOperationalRosterFieldCurrency,
                   contractExemption:
@@ -1995,6 +2000,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
               gapH12,
               for (final row in mapped.rows.take(3).indexed)
                 CatchPersonRow(
+                  copy: catchPersonRowCopy(context.l10n),
                   data: CatchPersonRowData(
                     name: row.$2.displayName,
                     metaLine: [
@@ -2056,6 +2062,7 @@ class _RosterMappingField extends StatelessWidget {
       onSelected: (option, _) => onChanged(option == -1 ? null : option),
       builder: (context, controller, _) => CatchFieldLanes.single(
         child: CatchField.nav(
+          copy: catchFieldCopy(context.l10n),
           title: _fieldCopy(context, field),
           body: samples.isEmpty ? null : samples.join(' · '),
           valueText: selectedValue == -1
@@ -2104,6 +2111,7 @@ class _HostManualAttendeeSheetState extends State<_HostManualAttendeeSheet> {
       child: CatchFieldLanes.divided(
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsOperationalRosterFieldName,
             contract: CatchContractConstraints
                 .importEventAttendeesCallablePayloadRowsItemsDisplayName,
@@ -2113,6 +2121,7 @@ class _HostManualAttendeeSheetState extends State<_HostManualAttendeeSheet> {
                 : null,
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsOperationalRosterFieldPhone,
             contract: CatchContractConstraints
                 .importEventAttendeesCallablePayloadRowsItemsPhone,
@@ -2120,6 +2129,7 @@ class _HostManualAttendeeSheetState extends State<_HostManualAttendeeSheet> {
             keyboardType: TextInputType.phone,
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsOperationalRosterFieldEmail,
             contract: CatchContractConstraints
                 .importEventAttendeesCallablePayloadRowsItemsEmail,

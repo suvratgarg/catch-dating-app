@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.325
-updated: 2026-08-13
+version: 0.2.326
+updated: 2026-09-07
 owner: product_design_parity
 status: active
 ---
@@ -628,7 +628,7 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   and `lib/clubs/presentation/detail/widgets/membership_button.dart`
   notification-toggle progress, Settings delete/sign-out mutation progress,
   `lib/core/widgets/catch_startup_loading_screen.dart` startup loading, and
-  `lib/core/widgets/catch_async_value_view.dart` core async primitive defaults.
+  `lib/core/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.
 
 ### Reference Export Queue
 

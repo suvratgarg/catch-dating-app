@@ -73,7 +73,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
       value: analyticsAsync,
       onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
       loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
-      errorBuilder: (_, error, _) => CatchErrorState.fromError(
+      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
@@ -388,6 +388,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
               // Composite exception: the disclosure reveals a complete
               // secondary analytics grid, not a scalar field choice.
               CatchField.control(
+                copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-analytics-more-metrics'),
                 title: context.l10n.hostsHostAnalyticsLabelMoreMetrics,
                 contractExemption:
@@ -426,6 +427,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                 switch (recommendation.kind) {
                   HostAnalyticsCoachRecommendationKind.attendance =>
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey('host-analytics-coach-attendance'),
                       title: context.l10n.hostsHostAnalyticsCoachAttendance,
                       titleMaxLines: 3,
@@ -434,6 +436,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     ),
                   HostAnalyticsCoachRecommendationKind.checkoutDropoff =>
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey(
                         'host-analytics-coach-checkout-dropoff',
                       ),
@@ -444,6 +447,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     ),
                   HostAnalyticsCoachRecommendationKind.demandCapacity =>
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey(
                         'host-analytics-coach-demand-capacity',
                       ),
@@ -456,6 +460,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     ),
                   HostAnalyticsCoachRecommendationKind.noRepeatAttendees =>
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       key: const ValueKey(
                         'host-analytics-coach-no-repeat-attendees',
                       ),
@@ -740,6 +745,7 @@ class HostAnalyticsEventList extends StatelessWidget {
               onTap: () => onOpenEventReport(event.eventId),
             ),
         CatchField.nav(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostAnalyticsLabelAllEvents,
           icon: CatchIcons.calendarMonthOutlined,
           onTap: onOpenAllEvents,
@@ -780,6 +786,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
           );
     return CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         key: ValueKey('host-analytics-event-${event.eventId}'),
         title: event.title,
         body: '$dateAndStatus\n$attendance',

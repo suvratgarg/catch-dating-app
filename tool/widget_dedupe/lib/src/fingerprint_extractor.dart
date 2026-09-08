@@ -8,7 +8,11 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
-const _tokenClassSources = ['packages/catch_tokens/lib', 'lib/core/theme'];
+const _tokenClassSources = [
+  'packages/catch_tokens/lib',
+  'packages/catch_ui/lib/src/foundations',
+  'lib/core/theme',
+];
 
 Map<String, Object?> extractFingerprints({
   required String repoRoot,
