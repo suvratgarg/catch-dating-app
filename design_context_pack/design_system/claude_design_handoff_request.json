@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "c8235f92a64b0b6fe9da3e31d283274020f63342ebca4b9f512624424d5564fb",
+  "sourceDigest": "1dc166d0695a7556911a096fea2b61e7732666ba0ebb9929272076b79e2496bb",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -34,10 +34,12 @@
         "on-dark",
         "privacy",
         "truncated",
-        "readable-status"
+        "readable-status",
+        "ticket-status",
+        "optional-field"
       ],
-      "supportedStatesDigest": "307015995a74b7d6adbd4da8066dfe03802cd7352fd3bc1e8ae21a796348ca7b",
-      "propsDigest": "6136231d9fe38c2b4aedd9a28686a3b604aefbf0fc5e133fcf96027d47d99796",
+      "supportedStatesDigest": "f960ec7c1065e6409902ec0b6d4e05ee2e73d57630ccaa2f69c6f5c30d27e6f7",
+      "propsDigest": "be6f4fad6593803721a4c9f2e558f7206a3517c41843815ce5913c9f56ac26ac",
       "tokens": [
         "layout.statusHorizontalPadding",
         "layout.statusVerticalPadding",

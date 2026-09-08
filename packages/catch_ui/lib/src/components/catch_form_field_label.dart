@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_form_field_optional_badge.dart';
+import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -109,10 +109,7 @@ class CatchFormFieldLabel extends StatelessWidget {
           ),
           if (showOptionalBadge) ...[
             const SizedBox(width: CatchSpacing.s2),
-            CatchFormFieldOptionalBadge(
-              label: copy.optionalLabel,
-              hasError: hasError,
-            ),
+            CatchBadge.optional(label: copy.optionalLabel, hasError: hasError),
           ],
         ],
       ),

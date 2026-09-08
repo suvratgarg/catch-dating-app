@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:45b028daf9cdc7992fea2782cda6d740323305baddf60a3d717d28b8ae7f3fdd",
+  "resolvedDigest": "sha256:7ab3e4cd798c9b0791301033029684e40ce5903f5ec283636db3b7ef736819ce",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1419,7 +1419,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },

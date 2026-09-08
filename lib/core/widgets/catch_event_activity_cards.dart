@@ -87,10 +87,10 @@ class CatchEventCard extends StatelessWidget {
                             left: CatchSpacing.s3,
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: CatchTicketStatusBadge(
+                              child: CatchBadge.ticketStatus(
                                 label: status,
                                 color: visual.accent,
-                                tone: CatchTicketStatusBadgeTone.dark,
+                                emphasis: CatchBadgeEmphasis.strong,
                               ),
                             ),
                           ),

@@ -69,7 +69,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.catchPrivate,
+                variant: CatchPrivacyBadgeVariant.catchPrivate,
               ),
             ],
           ),

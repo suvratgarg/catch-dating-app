@@ -17,14 +17,18 @@ class CatchCountBadge extends StatelessWidget {
     required Widget this._child,
     this.alignment = Alignment.topRight,
     this.offset = const Offset(-2, 2),
-  });
+  }) : semanticsLabel = null;
 
-  const CatchCountBadge.label({super.key, required this.count})
-    : _child = null,
-      alignment = Alignment.center,
-      offset = Offset.zero;
+  const CatchCountBadge.label({
+    super.key,
+    required this.count,
+    this.semanticsLabel,
+  }) : _child = null,
+       alignment = Alignment.center,
+       offset = Offset.zero;
 
   final int count;
+  final String? semanticsLabel;
   final Widget? _child;
   final AlignmentGeometry alignment;
   final Offset offset;
@@ -48,36 +52,48 @@ class CatchCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = _child;
-    if (count <= 0) return child ?? const SizedBox.shrink();
+    if (count <= 0 && child != null) return child;
 
     final t = CatchTokens.of(context);
-    final label = CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: t.primary,
-      borderColor: t.surface,
-      borderWidth: CatchLayout.countBadgeBorderWidth,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: CatchLayout.countBadgeMinExtent,
-          minHeight: CatchLayout.countBadgeMinExtent,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchLayout.countBadgeHorizontalPadding,
-            vertical: CatchLayout.countBadgeVerticalPadding,
-          ),
-          child: Center(
-            widthFactor: 1,
-            heightFactor: 1,
-            child: Text(
-              catchCountLabel(count),
-              style: CatchTextStyles.statusLabel(context, color: t.primaryInk),
+    final label = count <= 0
+        ? const SizedBox.shrink()
+        : CatchSurface(
+            radius: CatchRadius.pill,
+            backgroundColor: t.primary,
+            borderColor: t.surface,
+            borderWidth: CatchLayout.countBadgeBorderWidth,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: CatchLayout.countBadgeMinExtent,
+                minHeight: CatchLayout.countBadgeMinExtent,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchLayout.countBadgeHorizontalPadding,
+                  vertical: CatchLayout.countBadgeVerticalPadding,
+                ),
+                child: Center(
+                  widthFactor: 1,
+                  heightFactor: 1,
+                  child: Text(
+                    catchCountLabel(count),
+                    style: CatchTextStyles.statusLabel(
+                      context,
+                      color: t.primaryInk,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
-    );
-    if (child == null) return label;
+          );
+    if (child == null) {
+      return semanticsLabel == null
+          ? label
+          : Semantics(
+              label: semanticsLabel,
+              child: ExcludeSemantics(child: label),
+            );
+    }
 
     return Stack(
       clipBehavior: Clip.none,

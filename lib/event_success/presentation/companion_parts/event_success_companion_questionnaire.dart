@@ -84,7 +84,7 @@ class _CompatibilityQuestionnaireSectionState
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.catchPrivate,
+                variant: CatchPrivacyBadgeVariant.catchPrivate,
               ),
               CatchBadge(
                 label: rankingOn

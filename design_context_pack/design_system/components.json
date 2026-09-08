@@ -115,7 +115,9 @@
           "CatchBadge.onDark",
           "CatchBadge.onDarkStatus",
           "CatchBadge.privacy",
-          "CatchBadge.status"
+          "CatchBadge.status",
+          "CatchBadge.ticketStatus",
+          "CatchBadge.optional"
         ]
       },
       "design": {
@@ -236,6 +238,18 @@
             "type": "object",
             "required": false,
             "dartType": "IconData?"
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "default": "soft",
+            "dartType": "CatchBadgeEmphasis",
+            "values": [
+              "soft",
+              "strong"
+            ],
+            "notes": "Ticket-status constructor only; preserves its soft pigment and strong dark recipes."
           }
         ],
         "states": [
@@ -247,7 +261,9 @@
           "on-dark",
           "privacy",
           "truncated",
-          "readable-status"
+          "readable-status",
+          "ticket-status",
+          "optional-field"
         ],
         "slots": [],
         "tokens": [
@@ -277,21 +293,25 @@
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusIndicator",
-          "CatchInlineStatus",
+          "CatchStatusRow",
           "CatchTextStyles.statusLabel"
         ],
-        "goldens": [],
+        "goldens": [
+          "badge_recipe_family@1.0",
+          "badge_recipe_family@2.0"
+        ],
         "members": [
           {
             "id": "catch.badge.count_badge",
             "symbol": "CatchCountBadge",
-            "summary": "Anchored 99+ count marker that overlays a child icon or navigation glyph and hides when count is zero.",
+            "summary": "Anchored or standalone integer marker with zero hiding, 99+ clamping and optional caller-resolved spoken copy.",
             "states": [
               "hidden",
               "count",
               "99-boundary",
               "overflow-count",
-              "standalone"
+              "standalone",
+              "spoken-count"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_count_badge.dart",
             "governance": {
@@ -300,6 +320,15 @@
               "parentConceptId": "catch.badge",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.badge"
+            },
+            "level": "L3",
+            "roleNoun": "Badge",
+            "naming": {
+              "useCase": "Count",
+              "comparedWith": [
+                "catch.badge"
+              ],
+              "reason": "Typed integer overlays and standalone markers hide zero and clamp at 99+. This numeric contract is separate from arbitrary metadata strings; spoken copy can be supplied without another renderer."
             }
           },
           {
@@ -311,7 +340,8 @@
               "success",
               "warning",
               "danger",
-              "bordered"
+              "bordered",
+              "spoken-status"
             ],
             "file": "packages/catch_ui/lib/src/primitives/catch_status_indicator.dart",
             "governance": {
@@ -328,12 +358,12 @@
               "comparedWith": [
                 "catch.badge"
               ],
-              "reason": "A passive colored status mark has no text label, count or tap contract. The containing badge or row owns its label and accessible meaning."
+              "reason": "A passive colored status mark has no text or tap contract. The containing badge or row supplies accessible meaning, optionally through semanticsLabel on this single renderer."
             }
           },
           {
             "id": "catch.badge.inline_status",
-            "symbol": "CatchInlineStatus",
+            "symbol": "CatchStatusRow",
             "summary": "Quiet unboxed status made from a semantic status dot and wrapping supporting copy.",
             "states": [
               "neutral",
@@ -343,13 +373,22 @@
               "live",
               "scaled"
             ],
-            "file": "packages/catch_ui/lib/src/components/catch_inline_status.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_status_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
               "parentConceptId": "catch.badge",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.badge"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Status",
+              "comparedWith": [
+                "catch.badge"
+              ],
+              "reason": "An unboxed dot and wrapping supporting copy form one status row; compact Badge recipes have bounded containment and different typography."
             }
           }
         ],
@@ -373,7 +412,7 @@
           "Use for short factual labels only; long prose belongs in supporting text.",
           "Use activity accent overrides only when the badge meaning is activity-scoped.",
           "Use the named solid, live, and on-dark constructors; those fixed recipes are not generic tone values.",
-          "CatchCountBadge owns numeric overlays, while CatchInlineStatus owns quiet unboxed status."
+          "CatchCountBadge owns numeric overlays, while CatchStatusRow owns quiet unboxed status."
         ]
       },
       "governance": {
@@ -394,6 +433,11 @@
         "website": "StatusBadge",
         "admin": "StatusChip",
         "webui": "BadgeControl"
+      },
+      "level": "L3",
+      "roleNoun": "Badge",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -3642,23 +3686,6 @@
             }
           },
           {
-            "id": "catch.field.form_field_label.optional_badge",
-            "symbol": "CatchFormFieldOptionalBadge",
-            "file": "packages/catch_ui/lib/src/components/catch_form_field_optional_badge.dart",
-            "summary": "Direct optional-badge renderer used inside form field labels.",
-            "states": [
-              "default",
-              "error"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.accordion_controller",
             "symbol": "CatchAccordionController",
             "summary": "Exclusive inline editor state; screens own rendering and persistence.",
@@ -4410,9 +4437,9 @@
           },
           {
             "id": "catch.section.day_header_count",
-            "symbol": "CatchDaySectionHeaderCount",
-            "file": "packages/catch_ui/lib/src/components/catch_day_section_header_count.dart",
-            "summary": "Direct animated numeric count renderer used by CatchDaySectionHeader.",
+            "symbol": "CatchCountText",
+            "file": "packages/catch_ui/lib/src/components/catch_count_text.dart",
+            "summary": "Animated uncapped integer text for header totals, with resting output under reduced motion.",
             "states": [
               "single-digit",
               "double-digit",
@@ -4425,6 +4452,15 @@
               "parentConceptId": "catch.section",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Text",
+            "naming": {
+              "useCase": "Count",
+              "comparedWith": [
+                "catch.typography.mono_label"
+              ],
+              "reason": "Animated uncapped integer typography is consumed by chronological headers. MetadataText displays arbitrary caller text; CountBadge hides zero and clamps counts, which would lose the header total."
             }
           },
           {
@@ -8184,11 +8220,11 @@
             "notes": "Caller-resolved private-to-you, host-visible and Catch-private labels."
           },
           {
-            "name": "kind",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "privateToYou",
-            "dartType": "CatchPrivacyBadgeKind",
+            "dartType": "CatchPrivacyBadgeVariant",
             "values": [
               "privateToYou",
               "catchPrivate",
@@ -8212,7 +8248,7 @@
         ],
         "dartRoles": [
           "CatchBadge.privacy",
-          "CatchPrivacyBadgeKind",
+          "CatchPrivacyBadgeVariant",
           "AppLocalizations"
         ],
         "goldens": [],
@@ -8255,6 +8291,15 @@
       },
       "surfaces": {
         "flutter": "CatchPrivacyBadge"
+      },
+      "level": "L3",
+      "roleNoun": "Badge",
+      "naming": {
+        "useCase": "Privacy",
+        "comparedWith": [
+          "catch.badge"
+        ],
+        "reason": "Maps a typed visibility variant to caller-resolved copy and a fixed icon, then delegates all paint to CatchBadge.privacy. Generic badges do not own this visibility mapping."
       }
     },
     {
@@ -13722,40 +13767,6 @@
             }
           },
           {
-            "id": "catch.person_row.unread_count_pill",
-            "symbol": "CatchPersonUnreadCountPill",
-            "file": "packages/catch_ui/lib/src/components/catch_person_unread_count_pill.dart",
-            "summary": "Direct unread-count pill renderer used by chat rows.",
-            "states": [
-              "single",
-              "many",
-              "capped"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_row",
-              "parentConceptId": "catch.person_row",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_row"
-            }
-          },
-          {
-            "id": "catch.person_row.new_match_dot",
-            "symbol": "CatchPersonNewMatchDot",
-            "file": "packages/catch_ui/lib/src/components/catch_person_new_match_dot.dart",
-            "summary": "Direct new-match dot renderer used by chat rows.",
-            "states": [
-              "default"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_row",
-              "parentConceptId": "catch.person_row",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_row"
-            }
-          },
-          {
             "id": "catch.person_row.roster_layout",
             "symbol": "CatchPersonRosterLayout",
             "file": "packages/catch_ui/lib/src/components/catch_person_roster_layout.dart",
@@ -13965,7 +13976,7 @@
           "EventActivityVisualSpec",
           "EventActivityBackdrop",
           "CatchTicketClock",
-          "CatchTicketStatusBadge",
+          "CatchBadge.ticketStatus",
           "CatchTicketPerforatedDivider",
           "CatchSurface"
         ],
@@ -14041,24 +14052,6 @@
               "conceptId": "catch.event_card",
               "parentConceptId": "catch.event_card",
               "qualifier": "variant",
-              "decisionRef": "contract-family:catch.event_card"
-            }
-          },
-          {
-            "id": "catch.event_card.status_pill",
-            "symbol": "CatchTicketStatusBadge",
-            "file": "packages/catch_ui/lib/src/components/catch_ticket_status_badge.dart",
-            "summary": "Event-card status pill member for booked, nearby, waitlist, and other event state labels.",
-            "states": [
-              "light",
-              "dark",
-              "long-copy"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.event_card",
-              "parentConceptId": "catch.event_card",
-              "qualifier": "layout",
               "decisionRef": "contract-family:catch.event_card"
             }
           },

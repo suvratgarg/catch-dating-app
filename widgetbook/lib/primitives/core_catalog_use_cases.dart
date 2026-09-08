@@ -3042,11 +3042,11 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
               size: 42,
               centerDotRadius: 2,
             ),
-            CatchTicketStatusBadge(label: 'Going', color: visual.accent),
-            CatchTicketStatusBadge(
+            CatchBadge.ticketStatus(label: 'Going', color: visual.accent),
+            CatchBadge.ticketStatus(
               label: 'Full',
               color: visual.accent,
-              tone: CatchTicketStatusBadgeTone.dark,
+              emphasis: CatchBadgeEmphasis.strong,
             ),
           ],
         ),
@@ -3667,14 +3667,14 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDaySectionHeaderCount,
+  type: CatchCountText,
   path: '[Core catalog]/Sections',
 )
 Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookCatalogFrame(
-    title: 'CatchDaySectionHeaderCount',
+    title: 'CatchCountText',
     catalogId: 'core.widgets.catch_day_section_header.count',
     children: [
       _StateCard(
@@ -3682,9 +3682,9 @@ Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchDaySectionHeaderCount(count: 3),
+            const CatchCountText(count: 3),
             const SizedBox(width: CatchSpacing.s6),
-            CatchDaySectionHeaderCount(count: 12, color: t.primary),
+            CatchCountText(count: 12, color: t.primary),
           ],
         ),
       ),

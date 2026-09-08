@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:dd6f834f43878be855c4f57078c9096d17eece7d47774597b03cd70795422808",
+  "resolvedDigest": "sha256:5a9f7070b4d02f36c1d7a21f315bcde47ae022bff27f4b0b5dc2ea42454df595",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -894,7 +894,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },

@@ -94,7 +94,7 @@ class ExploreExternalEventRow extends StatelessWidget {
                   child: CatchMetadataText(state.sourceLabel, color: t.ink3),
                 ),
                 gapW8,
-                CatchTicketStatusBadge(
+                CatchBadge.ticketStatus(
                   label: state.statusLabel,
                   color: visual.accent,
                 ),

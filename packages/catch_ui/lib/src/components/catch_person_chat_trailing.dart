@@ -1,9 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_person_new_match_dot.dart';
+import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/components/catch_person_row_copy.dart';
 import 'package:catch_ui/src/components/catch_person_row_data.dart';
-import 'package:catch_ui/src/components/catch_person_unread_count_pill.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
 class CatchPersonChatTrailing extends StatelessWidget {
@@ -36,13 +36,16 @@ class CatchPersonChatTrailing extends StatelessWidget {
           ),
         if (hasUnread) ...[
           const SizedBox(height: CatchSpacing.micro6),
-          CatchPersonUnreadCountPill(
+          CatchCountBadge.label(
             count: data.unreadCount,
             semanticsLabel: copy.unreadCountLabel(data.unreadCount),
           ),
         ] else if (data.showFreshDot) ...[
           const SizedBox(height: CatchSpacing.micro6),
-          CatchPersonNewMatchDot(semanticsLabel: copy.newMatchLabel),
+          CatchStatusIndicator(
+            size: CatchSpacing.s2,
+            semanticsLabel: copy.newMatchLabel,
+          ),
         ],
       ],
     );

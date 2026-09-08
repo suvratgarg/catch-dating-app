@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:83bcd3c4c0bc484327767c0075b50e616522894c194a4f74fdc52cd76cf7b22e",
-  "resolvedDigest": "sha256:9850dda1384a0675794e54e73ba9041d7488f27c068526fa1842194f47cd364d",
+  "resolvedDigest": "sha256:13decd96922ec7edf092a10d4e3435932b07d9fc396828978dd0f6dce4bbb164",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5128,7 +5128,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },

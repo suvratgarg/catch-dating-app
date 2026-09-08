@@ -137,14 +137,14 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.text('TODAY'), findsOneWidget);
-    expect(find.byType(CatchDaySectionHeaderCount), findsOneWidget);
+    expect(find.byType(CatchCountText), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
 
     await tester.pumpWidget(
       _wrap(const CatchDaySectionHeader(label: 'Tomorrow')),
     );
 
-    expect(find.byType(CatchDaySectionHeaderCount), findsNothing);
+    expect(find.byType(CatchCountText), findsNothing);
   });
 
   testWidgets('CatchJourneySteps composes public step nodes', (tester) async {

@@ -89,7 +89,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 ),
                 CatchPrivacyBadge(
                   copy: catchPrivacyBadgeCopy(context.l10n),
-                  kind: CatchPrivacyBadgeKind.catchPrivate,
+                  variant: CatchPrivacyBadgeVariant.catchPrivate,
                 ),
               ],
             ),
@@ -308,7 +308,7 @@ class _FirstHelloMissionEditor extends StatelessWidget {
             ),
             CatchPrivacyBadge(
               copy: catchPrivacyBadgeCopy(context.l10n),
-              kind: CatchPrivacyBadgeKind.catchPrivate,
+              variant: CatchPrivacyBadgeVariant.catchPrivate,
             ),
           ],
         ),

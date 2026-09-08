@@ -50,7 +50,10 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: const Scaffold(
-          body: CatchPersonNewMatchDot(semanticsLabel: 'Nouvelle rencontre'),
+          body: CatchStatusIndicator(
+            size: CatchSpacing.s2,
+            semanticsLabel: 'Nouvelle rencontre',
+          ),
         ),
       ),
     );

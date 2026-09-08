@@ -4,28 +4,28 @@ import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
-enum CatchInlineStatusTone { neutral, success, warning, danger, live }
+enum CatchStatusRowTone { neutral, success, warning, danger, live }
 
 /// Quiet, unboxed status made from a semantic dot and supporting copy.
-class CatchInlineStatus extends StatelessWidget {
-  const CatchInlineStatus({
+class CatchStatusRow extends StatelessWidget {
+  const CatchStatusRow({
     super.key,
     required this.label,
-    this.tone = CatchInlineStatusTone.neutral,
+    this.tone = CatchStatusRowTone.neutral,
   });
 
   final String label;
-  final CatchInlineStatusTone tone;
+  final CatchStatusRowTone tone;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final color = switch (tone) {
-      CatchInlineStatusTone.neutral => t.ink3,
-      CatchInlineStatusTone.success => t.success,
-      CatchInlineStatusTone.warning => t.warning,
-      CatchInlineStatusTone.danger => t.danger,
-      CatchInlineStatusTone.live => t.primary,
+      CatchStatusRowTone.neutral => t.ink3,
+      CatchStatusRowTone.success => t.success,
+      CatchStatusRowTone.warning => t.warning,
+      CatchStatusRowTone.danger => t.danger,
+      CatchStatusRowTone.live => t.primary,
     };
 
     return LayoutBuilder(

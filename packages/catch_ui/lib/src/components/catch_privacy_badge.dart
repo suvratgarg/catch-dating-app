@@ -2,7 +2,7 @@ import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
 
-enum CatchPrivacyBadgeKind { privateToYou, hostCanSee, catchPrivate }
+enum CatchPrivacyBadgeVariant { privateToYou, hostCanSee, catchPrivate }
 
 /// Caller-resolved copy for the badge's fixed visibility concepts.
 @immutable
@@ -22,15 +22,15 @@ class CatchPrivacyBadge extends StatelessWidget {
   const CatchPrivacyBadge({
     super.key,
     required this.copy,
-    this.kind = CatchPrivacyBadgeKind.privateToYou,
+    this.variant = CatchPrivacyBadgeVariant.privateToYou,
   });
 
   final CatchPrivacyBadgeCopy copy;
-  final CatchPrivacyBadgeKind kind;
+  final CatchPrivacyBadgeVariant variant;
 
   @override
   Widget build(BuildContext context) {
-    final data = _PrivacyBadgeData.from(kind, copy);
+    final data = _PrivacyBadgeData.from(variant, copy);
 
     return Semantics(
       label: data.label,
@@ -48,19 +48,19 @@ class _PrivacyBadgeData {
   final IconData icon;
 
   static _PrivacyBadgeData from(
-    CatchPrivacyBadgeKind kind,
+    CatchPrivacyBadgeVariant variant,
     CatchPrivacyBadgeCopy copy,
   ) {
-    return switch (kind) {
-      CatchPrivacyBadgeKind.privateToYou => _PrivacyBadgeData(
+    return switch (variant) {
+      CatchPrivacyBadgeVariant.privateToYou => _PrivacyBadgeData(
         label: copy.privateToYouLabel,
         icon: CatchIcons.lockOutlineRounded,
       ),
-      CatchPrivacyBadgeKind.hostCanSee => _PrivacyBadgeData(
+      CatchPrivacyBadgeVariant.hostCanSee => _PrivacyBadgeData(
         label: copy.hostCanSeeLabel,
         icon: CatchIcons.visibilityOutlined,
       ),
-      CatchPrivacyBadgeKind.catchPrivate => _PrivacyBadgeData(
+      CatchPrivacyBadgeVariant.catchPrivate => _PrivacyBadgeData(
         label: copy.catchPrivateLabel,
         icon: CatchIcons.shieldOutlined,
       ),

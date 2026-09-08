@@ -19,7 +19,7 @@ Widget eventClockMarkState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Visual atom status',
-  type: CatchTicketStatusBadge,
+  type: CatchBadge,
   path: '[Events]/Tiles',
 )
 Widget eventStatusPillState(BuildContext context) {
@@ -27,11 +27,11 @@ Widget eventStatusPillState(BuildContext context) {
   return Wrap(
     spacing: CatchSpacing.s2,
     children: [
-      CatchTicketStatusBadge(label: 'Open', color: t.primary),
-      CatchTicketStatusBadge(
+      CatchBadge.ticketStatus(label: 'Open', color: t.primary),
+      CatchBadge.ticketStatus(
         label: 'Booked',
         color: t.success,
-        tone: CatchTicketStatusBadgeTone.dark,
+        emphasis: CatchBadgeEmphasis.strong,
       ),
     ],
   );

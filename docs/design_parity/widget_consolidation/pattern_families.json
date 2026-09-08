@@ -127,10 +127,10 @@
         {
           "id": "B4",
           "prompt": "How should the quiet unsaved state survive consolidation?",
-          "recommendation": "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
-          "selectedOption": "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
+          "recommendation": "Keep it unboxed as a future CatchStatusRow made from a status dot and supporting copy.",
+          "selectedOption": "Keep it unboxed as a future CatchStatusRow made from a status dot and supporting copy.",
           "options": [
-            "Keep it unboxed as a future CatchInlineStatus made from a status dot and supporting copy.",
+            "Keep it unboxed as a future CatchStatusRow made from a status dot and supporting copy.",
             "Convert it into an ordinary warning badge.",
             "Remove the dedicated unsaved treatment."
           ]
@@ -188,7 +188,7 @@
           "rationale": "Keep one dot ingredient for live, presence, and row-local semantic adapters."
         },
         {
-          "symbol": "CatchInlineStatus",
+          "symbol": "CatchStatusRow",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Use one unboxed status row for low-emphasis state, with a semantic dot, wrapping supporting copy, and no parallel pill chrome."
@@ -202,17 +202,17 @@
         },
         {
           "symbol": "CatchPersonNewMatchDot",
-          "disposition": "repair",
+          "disposition": "unify",
           "target": "CatchStatusIndicator",
-          "preview": "required",
-          "rationale": "Keep its localized new-match semantics as a row adapter while delegating the visual dot to CatchStatusIndicator."
+          "preview": "not-applicable",
+          "rationale": "The row supplies localized new-match copy and the eight-pixel size directly to the canonical status marker."
         },
         {
           "symbol": "CatchPersonUnreadCountPill",
-          "disposition": "repair",
-          "target": "CatchCountBadge",
-          "preview": "required",
-          "rationale": "Keep localized unread semantics at the row boundary while delegating count clamping and overlay chrome to the typed count contract."
+          "disposition": "unify",
+          "target": "CatchCountBadge.label",
+          "preview": "not-applicable",
+          "rationale": "The row already supplies localized unread copy. The numeric marker now accepts that copy directly and excludes its numeric child semantics; no separate Widget is needed."
         },
         {
           "symbol": "CatchCornerSash",
@@ -264,9 +264,9 @@
         {
           "symbol": "UnsavedChangesPill",
           "disposition": "unify",
-          "target": "CatchInlineStatus",
+          "target": "CatchStatusRow",
           "preview": "not-applicable",
-          "rationale": "Its intentionally quiet unboxed status now lives in CatchInlineStatus, so the feature-owned pill symbol and misleading name are retired."
+          "rationale": "Its intentionally quiet unboxed status now lives in CatchStatusRow, so the feature-owned pill symbol and misleading name are retired."
         }
       ]
     },
@@ -1041,6 +1041,65 @@
           "target": "CatchHeroViewport.ticket",
           "preview": "not-applicable",
           "rationale": "Only configured the existing Hero viewport; shared flight reveal now owns and disposes its curve."
+        }
+      ]
+    },
+    {
+      "id": "passive-badge-recipe-consolidation",
+      "title": "Passive badge recipes and numeric contracts",
+      "intent": "Share passive badge chrome and caller-supplied spoken labels while preserving uncapped count text, wrapping status rows and interactive actions as separate responsibilities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.badge",
+      "qualityReference": "CatchBadge",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None for existing badge recipes. Uncapped count text now settles immediately when reduced motion is enabled."
+      ],
+      "members": [
+        {
+          "symbol": "CatchBadge",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One metrics/palette renderer includes ticket-status and optional-field named recipes."
+        },
+        {
+          "symbol": "CatchCountBadge",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Typed counts hide zero, clamp 99+ and support caller-resolved spoken labels without another widget."
+        },
+        {
+          "symbol": "CatchStatusRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Quiet unboxed dot plus wrapping status copy remains a Row with an explicitly compared responsibility."
+        },
+        {
+          "symbol": "CatchCountText",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Uncapped changing integer text for header totals; badge clamping would discard meaning."
+        },
+        {
+          "symbol": "CatchPrivacyBadge",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Typed visibility-to-copy/icon mapping delegates paint to CatchBadge.privacy; Variant names its public enum axis."
+        },
+        {
+          "symbol": "CatchTicketStatusBadge",
+          "disposition": "unify",
+          "target": "CatchBadge.ticketStatus",
+          "preview": "not-applicable",
+          "rationale": "Ticket-specific paint is recipe data; caller keeps status copy and pigment."
+        },
+        {
+          "symbol": "CatchFormFieldOptionalBadge",
+          "disposition": "unify",
+          "target": "CatchBadge.optional",
+          "preview": "not-applicable",
+          "rationale": "Optional/error badge paint is recipe data; the field retains validation and localized copy."
         }
       ]
     }

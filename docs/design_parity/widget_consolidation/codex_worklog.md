@@ -70,6 +70,29 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Passive badge recipes and numeric contracts
+
+Owner-delegated source and rendered review: `passive-badge-recipe-consolidation`
+in the existing pattern families and decisions. Badge paint is shared through
+named recipes; the row supplies accessible copy directly to count/dot markers.
+
+- [x] Preserve all existing badge recipes, ticket soft/dark paint, optional/error
+  markers, count limits and eight-pixel new-match geometry against four original
+  images at both themes and text scales. Consecutive comparisons pass.
+- [x] Remove four duplicate Widgets and registry members. Fold their gallery
+  states into the canonical pages and migrate production callers directly.
+- [x] Rename quiet status to `CatchStatusRow`, uncapped animated totals to
+  `CatchCountText`, and the privacy adapter's enum axis to `Variant`.
+  Header totals settle immediately under reduced motion.
+- [x] Preserve caller-resolved spoken labels with no duplicate numeric speech;
+  focused accessibility tests pass. The affected primitive, person, event,
+  Explore and copy-boundary tests also pass. All 42 reviewed naming entries pass.
+- [x] Golden coverage is 310/310 surfaces, zero waivers; 1,051 registered cases
+  have zero unclassified entries. The shared package now has 221 public Widgets.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Reveal animation ownership
 
 Owner-delegated source and rendered review: `reveal-animation-canonical-viewport`

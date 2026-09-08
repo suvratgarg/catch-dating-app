@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:9443df0f83168ca5a019aede8202214cc5c9d2e6e663f6dd6bd648ddd7304abe",
+  "resolvedDigest": "sha256:fba4a1207d4e65863cae5ca3bf297281bf050c8e8bdf48cfaa59397453b72319",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -874,7 +874,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },

@@ -7,16 +7,18 @@ class CatchStatusIndicator extends StatelessWidget {
     this.color,
     this.size = CatchLayout.badgeMdDotExtent,
     this.borderColor,
+    this.semanticsLabel,
   });
 
   final Color? color;
   final double size;
   final Color? borderColor;
+  final String? semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
+    final dot = DecoratedBox(
       decoration: BoxDecoration(
         color: color ?? t.primary,
         shape: BoxShape.circle,
@@ -24,5 +26,11 @@ class CatchStatusIndicator extends StatelessWidget {
       ),
       child: SizedBox.square(dimension: size),
     );
+    return semanticsLabel == null
+        ? dot
+        : Semantics(
+            label: semanticsLabel,
+            child: ExcludeSemantics(child: dot),
+          );
   }
 }

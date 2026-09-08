@@ -231,7 +231,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
 
     expect(find.text('Instagram'), findsOneWidget);
-    expect(find.byType(CatchFormFieldOptionalBadge), findsOneWidget);
+    expect(find.byType(CatchBadge), findsOneWidget);
     expect(find.text('Optional'), findsOneWidget);
   });
 

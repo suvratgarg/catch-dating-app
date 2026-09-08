@@ -172,8 +172,44 @@ Widget catchBadgeContractStates(BuildContext context) {
       'privacy',
       'truncated',
       'readable-status',
+      'ticket-status',
+      'optional-field',
     ],
     children: [
+      _StateCard(
+        label: 'ticket-status / soft and strong',
+        child: _InlineWrap(
+          children: [
+            CatchBadge.ticketStatus(label: 'Going', color: t.primary),
+            CatchBadge.ticketStatus(
+              label: 'Full',
+              color: t.primary,
+              emphasis: CatchBadgeEmphasis.strong,
+            ),
+            SizedBox(
+              width: WidgetbookPreviewLayout.compactBadgeWidth,
+              child: CatchBadge.ticketStatus(
+                label: 'A long ticket status for narrow spaces',
+                color: t.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'optional-field / default and error',
+        child: _InlineWrap(
+          children: [
+            CatchBadge.optional(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+            ),
+            CatchBadge.optional(
+              label: context.l10n.coreCatchFormFieldLabelTextOptional,
+              hasError: true,
+            ),
+          ],
+        ),
+      ),
       const _StateCard(
         label: 'readable-status',
         child: _InlineWrap(
@@ -277,8 +313,23 @@ Widget catchCountBadgeContractStates(BuildContext context) {
       '99-boundary',
       'overflow-count',
       'standalone',
+      'spoken-count',
     ],
     children: [
+      _StateCard(
+        label: 'spoken-count / localized unread semantics',
+        child: _InlineWrap(
+          children: [
+            for (final count in [1, 12, 118])
+              CatchCountBadge.label(
+                count: count,
+                semanticsLabel: catchPersonRowCopy(
+                  context.l10n,
+                ).unreadCountLabel(count),
+              ),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'hidden',
         child: CatchCountBadge(
@@ -317,12 +368,12 @@ Widget catchCountBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchInlineStatus,
+  type: CatchStatusRow,
   path: '[Core primitives]/Status',
 )
 Widget catchInlineStatusContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchInlineStatus',
+    title: 'CatchStatusRow',
     contractId: 'catch.badge.inline_status',
     states: const ['neutral', 'success', 'warning', 'danger', 'live', 'scaled'],
     children: [
@@ -331,26 +382,26 @@ Widget catchInlineStatusContractStates(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchInlineStatus(label: 'Draft saved locally'),
+            CatchStatusRow(label: 'Draft saved locally'),
             gapH8,
-            CatchInlineStatus(
+            CatchStatusRow(
               label: 'Changes saved',
-              tone: CatchInlineStatusTone.success,
+              tone: CatchStatusRowTone.success,
             ),
             gapH8,
-            CatchInlineStatus(
+            CatchStatusRow(
               label: 'Unsaved changes',
-              tone: CatchInlineStatusTone.warning,
+              tone: CatchStatusRowTone.warning,
             ),
             gapH8,
-            CatchInlineStatus(
+            CatchStatusRow(
               label: 'Connection lost',
-              tone: CatchInlineStatusTone.danger,
+              tone: CatchStatusRowTone.danger,
             ),
             gapH8,
-            CatchInlineStatus(
+            CatchStatusRow(
               label: 'Updating live',
-              tone: CatchInlineStatusTone.live,
+              tone: CatchStatusRowTone.live,
             ),
           ],
         ),
@@ -363,9 +414,9 @@ Widget catchInlineStatusContractStates(BuildContext context) {
           ).copyWith(textScaler: const TextScaler.linear(2)),
           child: const SizedBox(
             width: WidgetbookPreviewLayout.scaledStatusWidth,
-            child: CatchInlineStatus(
+            child: CatchStatusRow(
               label: 'Unsaved changes with longer localized supporting copy',
-              tone: CatchInlineStatusTone.warning,
+              tone: CatchStatusRowTone.warning,
             ),
           ),
         ),
@@ -385,8 +436,22 @@ Widget catchStatusDotContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchStatusIndicator',
     contractId: 'catch.badge.status_dot',
-    states: const ['default', 'success', 'warning', 'danger', 'bordered'],
+    states: const [
+      'default',
+      'success',
+      'warning',
+      'danger',
+      'bordered',
+      'spoken-status',
+    ],
     children: [
+      _StateCard(
+        label: 'spoken-status / localized new-match semantics',
+        child: CatchStatusIndicator(
+          size: CatchSpacing.s2,
+          semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
+        ),
+      ),
       _StateCard(
         label: 'tones',
         child: _InlineWrap(
@@ -818,7 +883,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
           child: CatchAsyncValueView<String>(
             value: retrying,
             builder: (context, value) => Text(value),
-            loadingBuilder: (context) => const CatchInlineStatus(
+            loadingBuilder: (context) => const CatchStatusRow(
               label: 'Retrying without replaying the previous error',
             ),
           ),
@@ -867,7 +932,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
           value: const AsyncValue.loading(),
           builder: (context, value) => Text(value),
           loadingBuilder: (context) =>
-              const CatchInlineStatus(label: 'Custom loading state'),
+              const CatchStatusRow(label: 'Custom loading state'),
         ),
       ),
     ],
@@ -1977,35 +2042,6 @@ Widget catchChipContractStates(BuildContext context) {
                 ).chipData,
                 label: 'Strength training after work',
               ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchFormFieldOptionalBadge,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFormFieldOptionalBadgeContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchFormFieldOptionalBadge',
-    contractId: 'catch.field.form_field_label.optional_badge',
-    states: ['default', 'error'],
-    children: [
-      _StateCard(
-        label: 'badge states',
-        child: _InlineWrap(
-          children: [
-            CatchFormFieldOptionalBadge(
-              label: context.l10n.coreCatchFormFieldLabelTextOptional,
-            ),
-            CatchFormFieldOptionalBadge(
-              label: context.l10n.coreCatchFormFieldLabelTextOptional,
-              hasError: true,
             ),
           ],
         ),
@@ -5384,14 +5420,14 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
         label: 'catch-private',
         child: CatchPrivacyBadge(
           copy: catchPrivacyBadgeCopy(context.l10n),
-          kind: CatchPrivacyBadgeKind.catchPrivate,
+          variant: CatchPrivacyBadgeVariant.catchPrivate,
         ),
       ),
       _StateCard(
         label: 'host-visible',
         child: CatchPrivacyBadge(
           copy: catchPrivacyBadgeCopy(context.l10n),
-          kind: CatchPrivacyBadgeKind.hostCanSee,
+          variant: CatchPrivacyBadgeVariant.hostCanSee,
         ),
       ),
     ],
@@ -9589,68 +9625,6 @@ Widget catchPersonChatTrailingContractStates(BuildContext context) {
             lastMessage: 'You matched!',
             timestamp: '2m',
             showFreshDot: true,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchPersonUnreadCountPill,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchPersonUnreadCountPillContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchPersonUnreadCountPill',
-    contractId: 'catch.person_row.unread_count_pill',
-    states: const ['single', 'many', 'capped'],
-    children: [
-      _StateCard(
-        label: 'single',
-        child: CatchPersonUnreadCountPill(
-          semanticsLabel: catchPersonRowCopy(context.l10n).unreadCountLabel(1),
-          count: 1,
-        ),
-      ),
-      _StateCard(
-        label: 'many',
-        child: CatchPersonUnreadCountPill(
-          semanticsLabel: catchPersonRowCopy(context.l10n).unreadCountLabel(12),
-          count: 12,
-        ),
-      ),
-      _StateCard(
-        label: 'capped',
-        child: CatchPersonUnreadCountPill(
-          semanticsLabel: catchPersonRowCopy(
-            context.l10n,
-          ).unreadCountLabel(118),
-          count: 118,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchPersonNewMatchDot,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchPersonNewMatchDotContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchPersonNewMatchDot',
-    contractId: 'catch.person_row.new_match_dot',
-    states: const ['default'],
-    children: [
-      _StateCard(
-        label: 'default',
-        child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s6),
-          child: CatchPersonNewMatchDot(
-            semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
           ),
         ),
       ),

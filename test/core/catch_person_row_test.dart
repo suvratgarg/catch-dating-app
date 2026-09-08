@@ -38,7 +38,7 @@ void main() {
     expect(find.byType(CatchPersonAvatar), findsOneWidget);
     expect(find.byType(CatchPersonChatLayout), findsOneWidget);
     expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
-    expect(find.byType(CatchPersonNewMatchDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(
       tester
           .widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar))
@@ -88,7 +88,7 @@ void main() {
     expect(avatar.borderColor, tokens.primary);
     expect(find.byType(CatchPersonChatLayout), findsOneWidget);
     expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
-    expect(find.byType(CatchPersonUnreadCountPill), findsOneWidget);
+    expect(find.byType(CatchCountBadge), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(
       find.byWidgetPredicate(

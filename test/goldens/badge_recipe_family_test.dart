@@ -54,33 +54,30 @@ void main() {
                   ),
                   (
                     'ticket soft',
-                    CatchTicketStatusBadge(
+                    CatchBadge.ticketStatus(
                       label: 'Booked',
                       color: CatchTokens.of(context).primary,
                     ),
                   ),
                   (
                     'ticket dark',
-                    CatchTicketStatusBadge(
+                    CatchBadge.ticketStatus(
                       label: 'Booked',
                       color: CatchTokens.of(context).primary,
-                      tone: CatchTicketStatusBadgeTone.dark,
+                      emphasis: CatchBadgeEmphasis.strong,
                     ),
                   ),
                   (
                     'ticket long',
-                    CatchTicketStatusBadge(
+                    CatchBadge.ticketStatus(
                       label: 'A long ticket status for narrow spaces',
                       color: CatchTokens.of(context).danger,
                     ),
                   ),
-                  (
-                    'optional',
-                    const CatchFormFieldOptionalBadge(label: 'Optional'),
-                  ),
+                  ('optional', const CatchBadge.optional(label: 'Optional')),
                   (
                     'optional error',
-                    const CatchFormFieldOptionalBadge(
+                    const CatchBadge.optional(
                       label: 'Optional',
                       hasError: true,
                     ),
@@ -88,25 +85,25 @@ void main() {
                   for (final count in [0, 1, 99, 100])
                     (
                       'unread $count',
-                      CatchPersonUnreadCountPill(
+                      CatchCountBadge.label(
                         count: count,
                         semanticsLabel: '$count unread messages',
                       ),
                     ),
                   (
                     'new match',
-                    const CatchPersonNewMatchDot(semanticsLabel: 'New match'),
+                    const CatchStatusIndicator(
+                      size: CatchSpacing.s2,
+                      semanticsLabel: 'New match',
+                    ),
                   ),
-                  ('count text', const CatchDaySectionHeaderCount(count: 8)),
-                  (
-                    'uncapped text',
-                    const CatchDaySectionHeaderCount(count: 124),
-                  ),
+                  ('count text', const CatchCountText(count: 8)),
+                  ('uncapped text', const CatchCountText(count: 124)),
                   (
                     'quiet status',
-                    const CatchInlineStatus(
+                    const CatchStatusRow(
                       label: 'Up to date',
-                      tone: CatchInlineStatusTone.success,
+                      tone: CatchStatusRowTone.success,
                     ),
                   ),
                 ])

@@ -2,12 +2,9 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-class CatchDaySectionHeaderCount extends StatelessWidget {
-  const CatchDaySectionHeaderCount({
-    super.key,
-    required this.count,
-    this.color,
-  });
+/// Animated, uncapped numeric text for count-bearing headers.
+class CatchCountText extends StatelessWidget {
+  const CatchCountText({super.key, required this.count, this.color});
 
   final int count;
   final Color? color;
@@ -15,7 +12,9 @@ class CatchDaySectionHeaderCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: CatchMotion.base,
+      duration: MediaQuery.maybeOf(context)?.disableAnimations == true
+          ? Duration.zero
+          : CatchMotion.base,
       switchInCurve: CatchMotion.springCurve,
       switchOutCurve: CatchMotion.standardCurve,
       transitionBuilder: (child, animation) {

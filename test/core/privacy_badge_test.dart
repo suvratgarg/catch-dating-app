@@ -20,11 +20,11 @@ void main() {
               CatchPrivacyBadge(copy: copy),
               CatchPrivacyBadge(
                 copy: copy,
-                kind: CatchPrivacyBadgeKind.catchPrivate,
+                variant: CatchPrivacyBadgeVariant.catchPrivate,
               ),
               CatchPrivacyBadge(
                 copy: copy,
-                kind: CatchPrivacyBadgeKind.hostCanSee,
+                variant: CatchPrivacyBadgeVariant.hostCanSee,
               ),
             ],
           ),

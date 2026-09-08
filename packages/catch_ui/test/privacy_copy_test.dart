@@ -11,17 +11,17 @@ void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (kind, label, icon) in [
       (
-        CatchPrivacyBadgeKind.privateToYou,
+        CatchPrivacyBadgeVariant.privateToYou,
         copy.privateToYouLabel,
         CatchIcons.lockOutlineRounded,
       ),
       (
-        CatchPrivacyBadgeKind.hostCanSee,
+        CatchPrivacyBadgeVariant.hostCanSee,
         copy.hostCanSeeLabel,
         CatchIcons.visibilityOutlined,
       ),
       (
-        CatchPrivacyBadgeKind.catchPrivate,
+        CatchPrivacyBadgeVariant.catchPrivate,
         copy.catchPrivateLabel,
         CatchIcons.shieldOutlined,
       ),
@@ -37,7 +37,7 @@ void main() {
               home: Scaffold(
                 body: MediaQuery(
                   data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-                  child: CatchPrivacyBadge(copy: copy, kind: kind),
+                  child: CatchPrivacyBadge(copy: copy, variant: kind),
                 ),
               ),
             ),

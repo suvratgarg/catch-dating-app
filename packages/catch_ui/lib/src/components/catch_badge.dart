@@ -7,7 +7,19 @@ enum CatchBadgeTone { neutral, brand, success, warning, danger, gold, affinity }
 
 enum CatchBadgeSize { sm, md, action }
 
-enum _CatchBadgeRecipe { standard, solid, live, onDark, privacy, status }
+enum CatchBadgeEmphasis { soft, strong }
+
+enum _CatchBadgeRecipe {
+  standard,
+  solid,
+  live,
+  onDark,
+  privacy,
+  status,
+  ticketSoft,
+  ticketStrong,
+  optional,
+}
 
 /// Canonical small badge for compact, non-interactive metadata and status.
 ///
@@ -134,6 +146,39 @@ class CatchBadge extends StatelessWidget {
        borderColor = null,
        _recipe = _CatchBadgeRecipe.privacy;
 
+  /// Uppercase ticket status with a caller-supplied pigment or dark emphasis.
+  const CatchBadge.ticketStatus({
+    super.key,
+    required this.label,
+    required Color color,
+    CatchBadgeEmphasis emphasis = CatchBadgeEmphasis.soft,
+  }) : tone = CatchBadgeTone.neutral,
+       size = CatchBadgeSize.sm,
+       icon = null,
+       accentColor = color,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _functional = true,
+       _recipe = emphasis == CatchBadgeEmphasis.strong
+           ? _CatchBadgeRecipe.ticketStrong
+           : _CatchBadgeRecipe.ticketSoft;
+
+  /// Compact optional-field annotation with the field's validation feedback.
+  const CatchBadge.optional({
+    super.key,
+    required this.label,
+    bool hasError = false,
+  }) : tone = hasError ? CatchBadgeTone.danger : CatchBadgeTone.neutral,
+       size = CatchBadgeSize.sm,
+       icon = null,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null,
+       _functional = false,
+       _recipe = _CatchBadgeRecipe.optional;
+
   final String label;
   final CatchBadgeTone tone;
   final CatchBadgeSize size;
@@ -165,53 +210,58 @@ class CatchBadge extends StatelessWidget {
       builder: (context, constraints) {
         final labelWidget = Text(
           displayLabel,
-          maxLines: _recipe == _CatchBadgeRecipe.status ? null : 1,
-          overflow: _recipe == _CatchBadgeRecipe.status
-              ? TextOverflow.visible
-              : TextOverflow.ellipsis,
+          maxLines: metrics.singleLine ? 1 : null,
+          overflow: metrics.singleLine
+              ? TextOverflow.ellipsis
+              : TextOverflow.visible,
           style: metrics.textStyle(context, foreground),
         );
+        final content = Padding(
+          padding: metrics.padding,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: metrics.centerContent
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
+            children: [
+              if (_recipe == _CatchBadgeRecipe.live) ...[
+                CatchStatusIndicator(color: foreground, size: metrics.dotSize),
+                SizedBox(width: metrics.gap),
+              ],
+              if (icon != null) ...[
+                Icon(icon, size: metrics.iconSize, color: foreground),
+                SizedBox(width: metrics.gap),
+              ],
+              if (constraints.hasBoundedWidth)
+                Flexible(child: labelWidget)
+              else
+                labelWidget,
+            ],
+          ),
+        );
+        final decoration = BoxDecoration(
+          color: backgroundColor ?? palette.background,
+          borderRadius: BorderRadius.circular(metrics.radius),
+          border: metrics.bordered
+              ? Border.all(color: borderColor ?? palette.border)
+              : null,
+        );
+        final ticket =
+            _recipe == _CatchBadgeRecipe.ticketSoft ||
+            _recipe == _CatchBadgeRecipe.ticketStrong;
         return ConstrainedBox(
           constraints: BoxConstraints(minHeight: metrics.minHeight),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: backgroundColor ?? palette.background,
-              borderRadius: BorderRadius.circular(
-                _recipe == _CatchBadgeRecipe.status
-                    ? CatchRadius.sm
-                    : CatchRadius.pill,
-              ),
-              border: _recipe == _CatchBadgeRecipe.status
-                  ? null
-                  : Border.all(color: borderColor ?? palette.border),
-            ),
-            child: Padding(
-              padding: metrics.padding,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: metrics.centerContent
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.start,
-                children: [
-                  if (_recipe == _CatchBadgeRecipe.live) ...[
-                    CatchStatusIndicator(
-                      color: foreground,
-                      size: metrics.dotSize,
-                    ),
-                    SizedBox(width: metrics.gap),
-                  ],
-                  if (icon != null) ...[
-                    Icon(icon, size: metrics.iconSize, color: foreground),
-                    SizedBox(width: metrics.gap),
-                  ],
-                  if (constraints.hasBoundedWidth)
-                    Flexible(child: labelWidget)
-                  else
-                    labelWidget,
-                ],
-              ),
-            ),
-          ),
+          child: ticket
+              ? AnimatedContainer(
+                  duration:
+                      MediaQuery.maybeOf(context)?.disableAnimations == true
+                      ? Duration.zero
+                      : CatchMotion.fast,
+                  curve: CatchMotion.standardCurve,
+                  decoration: decoration,
+                  child: content,
+                )
+              : DecoratedBox(decoration: decoration, child: content),
         );
       },
     );
@@ -227,6 +277,9 @@ class _BadgeMetrics {
     required this.dotSize,
     required this.centerContent,
     required this.textStyle,
+    this.radius = CatchRadius.pill,
+    this.bordered = true,
+    this.singleLine = true,
   });
 
   final EdgeInsetsGeometry padding;
@@ -235,6 +288,9 @@ class _BadgeMetrics {
   final double iconSize;
   final double dotSize;
   final bool centerContent;
+  final double radius;
+  final bool bordered;
+  final bool singleLine;
   final TextStyle Function(BuildContext context, Color color) textStyle;
 
   static _BadgeMetrics from(
@@ -242,8 +298,50 @@ class _BadgeMetrics {
     required bool functional,
     required _CatchBadgeRecipe recipe,
   }) {
+    if (recipe == _CatchBadgeRecipe.ticketSoft ||
+        recipe == _CatchBadgeRecipe.ticketStrong) {
+      return _BadgeMetrics(
+        padding: EdgeInsets.symmetric(
+          horizontal: recipe == _CatchBadgeRecipe.ticketStrong
+              ? CatchSpacing.s3
+              : CatchSpacing.s2,
+          vertical: CatchSpacing.s1,
+        ),
+        minHeight: 0,
+        gap: 0,
+        iconSize: 0,
+        dotSize: 0,
+        centerContent: false,
+        bordered: false,
+        textStyle: (context, color) =>
+            CatchTextStyles.monoLabel(context, color: color),
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.optional) {
+      return _BadgeMetrics(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro6,
+          vertical: CatchSpacing.micro2,
+        ),
+        minHeight: 0,
+        gap: 0,
+        iconSize: 0,
+        dotSize: 0,
+        centerContent: false,
+        radius: CatchRadius.sm,
+        bordered: false,
+        singleLine: false,
+        textStyle: (context, color) => CatchTextStyles.supporting(
+          context,
+          color: color,
+        ).copyWith(fontWeight: FontWeight.w600),
+      );
+    }
     if (recipe == _CatchBadgeRecipe.status) {
       return _BadgeMetrics(
+        radius: CatchRadius.sm,
+        bordered: false,
+        singleLine: false,
         padding: const EdgeInsets.symmetric(
           horizontal: CatchRecordTokens.statusHorizontalPadding,
           vertical: CatchRecordTokens.statusVerticalPadding,
@@ -348,6 +446,27 @@ class _BadgePalette {
     required _CatchBadgeRecipe recipe,
     Color? accentColor,
   }) {
+    if (recipe == _CatchBadgeRecipe.ticketSoft ||
+        recipe == _CatchBadgeRecipe.ticketStrong) {
+      final strong = recipe == _CatchBadgeRecipe.ticketStrong;
+      return _BadgePalette(
+        background: strong
+            ? t.darkPillFill
+            : accentColor!.withValues(alpha: CatchOpacity.subtleFill),
+        foreground: strong ? t.darkPillInk : accentColor!,
+        border: Colors.transparent,
+      );
+    }
+    if (recipe == _CatchBadgeRecipe.optional) {
+      final error = tone == CatchBadgeTone.danger;
+      return _BadgePalette(
+        background: error
+            ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
+            : t.raised,
+        foreground: error ? t.danger : t.ink3,
+        border: Colors.transparent,
+      );
+    }
     if (recipe == _CatchBadgeRecipe.status) {
       final color = switch (tone) {
         CatchBadgeTone.neutral => t.ink2,

@@ -78,7 +78,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.hostCanSee,
+                variant: CatchPrivacyBadgeVariant.hostCanSee,
               ),
             ],
           ),

@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_day_section_header_count.dart';
+import 'package:catch_ui/src/components/catch_count_text.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -47,8 +47,7 @@ class CatchDaySectionHeader extends StatelessWidget {
               style: CatchTextStyles.kickerLg(context, color: t.primary),
             ),
           ),
-          if (count != null)
-            CatchDaySectionHeaderCount(count: count!, color: t.ink2),
+          if (count != null) CatchCountText(count: count!, color: t.ink2),
         ],
       ),
     );

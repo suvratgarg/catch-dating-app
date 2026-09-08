@@ -293,9 +293,9 @@ class _BadgeStatusFamily extends StatelessWidget {
               CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
               ClubHostRoleBadge(role: ClubHostRole.owner),
               EventSuccessMetricPill(label: 'Pacing', value: .78),
-              CatchInlineStatus(
+              CatchStatusRow(
                 label: 'Unsaved changes',
-                tone: CatchInlineStatusTone.warning,
+                tone: CatchStatusRowTone.warning,
               ),
             ],
           ),
@@ -316,7 +316,7 @@ class _BadgeStatusFamily extends StatelessWidget {
                 count: 124,
                 child: Icon(CatchIcons.notificationsOutlined),
               ),
-              CatchPersonUnreadCountPill(
+              CatchCountBadge.label(
                 semanticsLabel: catchPersonRowCopy(
                   context.l10n,
                 ).unreadCountLabel(12),
@@ -335,7 +335,8 @@ class _BadgeStatusFamily extends StatelessWidget {
             children: [
               const CatchStatusIndicator(),
               CatchStatusIndicator(color: tokens.warning),
-              CatchPersonNewMatchDot(
+              CatchStatusIndicator(
+                size: CatchSpacing.s2,
                 semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
               ),
             ],

@@ -6635,6 +6635,52 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:passive-badge-recipe-consolidation",
+      "patternFamilyId": "passive-badge-recipe-consolidation",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBadge",
+      "members": [
+        {
+          "name": "CatchTicketStatusBadge",
+          "action": "absorb",
+          "target": "CatchBadge.ticketStatus"
+        },
+        {
+          "name": "CatchFormFieldOptionalBadge",
+          "action": "absorb",
+          "target": "CatchBadge.optional"
+        },
+        {
+          "name": "CatchPersonUnreadCountPill",
+          "action": "absorb",
+          "target": "CatchCountBadge.label"
+        },
+        {
+          "name": "CatchPersonNewMatchDot",
+          "action": "absorb",
+          "target": "CatchStatusIndicator"
+        },
+        {
+          "name": "CatchInlineStatus",
+          "action": "absorb",
+          "target": "CatchStatusRow"
+        },
+        {
+          "name": "CatchDaySectionHeaderCount",
+          "action": "absorb",
+          "target": "CatchCountText"
+        },
+        {
+          "name": "CatchPrivacyBadge",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source review finds ticket-status and optional-field chrome differ only in metrics and palette; named recipes now share CatchBadge rendering. Unread and new-match wrappers receive fully resolved copy from their callers and add only semantics around existing count/dot renderers; their semantic exclusion moves into those renderers, preserving zero hiding, 99+ clamping, label semantics and dot dimensions. Delete four duplicate Widgets and registry members. A wrapping status Row remains distinct from contained Badge chrome. Uncapped animated count Text remains distinct from clamped badges and arbitrary metadata; its reduced-motion output now settles immediately. Keep the privacy adapter because it maps typed visibility to three caller-resolved labels/icons, and rename its enum axis to Variant. Count-bearing actions remain interactive and are not passive badges. Four original images at both text scales pass repeated comparisons; focused caller and accessibility tests pass. Prior repair dispositions for unread/new-match wrappers are superseded by this source-reviewed direct mount.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

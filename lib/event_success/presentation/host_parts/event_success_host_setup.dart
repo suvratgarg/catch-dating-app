@@ -256,11 +256,11 @@ class _SetupTabState extends State<SetupTab> {
         ),
         if (_isDirty && !setupFrozen) ...[
           gapH16,
-          CatchInlineStatus(
+          CatchStatusRow(
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTextUnsavedChanges,
-            tone: CatchInlineStatusTone.warning,
+            tone: CatchStatusRowTone.warning,
           ),
           gapH8,
         ],

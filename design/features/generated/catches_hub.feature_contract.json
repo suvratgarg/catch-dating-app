@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
-  "resolvedDigest": "sha256:59152a7fe95a57cef5ea540a2ca0f14a9e0e3b452ba9f1430031818bc5408e1b",
+  "resolvedDigest": "sha256:12124beae9b92ab35f37da807c6fbd25d96235e7842537239f27e98b4f64f3cf",
   "feature": {
     "id": "feature.catches_hub",
     "name": "Catches Hub",
@@ -760,7 +760,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },
