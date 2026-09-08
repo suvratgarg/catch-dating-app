@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.70.0
+version: 1.71.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -72,10 +72,31 @@ canonical Google RBM sender shape in `event_assistance_rcs.schema.json`.
 Generated TypeScript validators and Dart schema metadata share its agent,
 region, credential-version, purpose, approval, quote and queue-limit fields.
 The messaging provider union permits `googleRbm` only for `catchEventRcs`.
-This is an operational configuration contract, not a registered Firestore
-collection or provisioning endpoint. It grants no recipient, spending or
-dispatch authority. See `docs/event_success.md` for rendering and integration
-boundaries.
+The sender display name is now required and `eventAssistanceRcsSenders`
+references the same canonical configuration as a private Firestore collection.
+No public provisioning endpoint or live sender is created by this contract.
+It grants no recipient, spending or dispatch authority. See
+`docs/event_success.md` for rendering and integration boundaries.
+
+`event_assistance_rcs_consent.schema.json` owns independent RCS permission,
+exact consent receipts and preference views. The two App-Check-protected
+`getEventRcsPreference` / `setEventRcsPreference` callables require the roster's
+linked UID; a grant additionally verifies its signed phone claim. The reviewed
+hash binds sender identity, event name and captured window, subject and phone,
+attendee and Firestore source generations, and latest STOP. Caller-selected
+provider IDs, phone numbers or evidence timestamps are rejected.
+
+Private `eventAssistanceRcsPermissions` and `eventAssistanceRcsConsentReceipts`
+commit together. Granted and revoked records are a closed union; a grant
+requires explicit evidence and a matching immutable receipt, while initial
+withdrawal has null evidence. Exact request retries cannot reverse later
+decisions. Withdrawal preserves the original binding after phone, source or
+sender changes. Consent expires at the captured event end plus 24 hours, with
+the current event window rechecked by the shared transactional permission
+reader. STOP review hashes exclude START and unrelated observation revisions;
+a new STOP requires fresh review. No SMS/WhatsApp permission is reused or
+mutated. Direct client collection access remains denied. Guest-page UI,
+message-link withdrawal, dispatch integration and activation remain open.
 
 ### Event Assistance RCS Callback Evidence
 

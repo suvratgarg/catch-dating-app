@@ -50,6 +50,9 @@ export interface RenderedRcs {
 /** Reviewed configuration cannot grant consent, a spending debit or a send. */
 export function parseRcsConfig(value: unknown): RcsConfig {
   if (!validateEventAssistanceRcsConfig(value) ||
+      !value.displayName.trim() ||
+      Buffer.from(value.displayName, "utf8").toString("utf8") !==
+        value.displayName ||
       value.activation.validUntil <= value.activation.approvedAt ||
       value.quote.validUntil <= value.activation.approvedAt ||
       [value.senderId, value.agentId, value.credentialVersion,
@@ -62,12 +65,17 @@ export function parseRcsConfig(value: unknown): RcsConfig {
 
 export function rcsEndpointId(context: Grant["context"], attendeeId: string,
   phone: string): string {
-  if (!/^\+[1-9][0-9]{7,14}$/.test(phone) || /\s/.test(phone)) {
+  if (!rcsPhoneHash(phone)) {
     throw new Error("Invalid RCS recipient");
   }
   return "rcs-endpoint:" + operationContentHash([
     guestIdentity(context, attendeeId), phone,
   ]);
+}
+
+export function rcsPhoneHash(phone: unknown): string | null {
+  return typeof phone === "string" && /^\+[1-9][0-9]{7,14}$/.test(phone) &&
+    !/\s/.test(phone) ? createHash("sha256").update(phone).digest("hex") : null;
 }
 
 /** RFC 4122 UUIDv5 in the DNS namespace, derived from an outbox attempt. */

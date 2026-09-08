@@ -42,6 +42,7 @@ test("sender config preserves Google agent IDs and rejects malformed authority",
       "fixture-agent@rbm.goog");
     for (const change of [
       {provider: "gupshup"}, {agentId: "agent\n"}, {agentId: "agent/id"},
+      {displayName: " "}, {displayName: "\ud800"}, {displayName: ""},
       {agentId: "a".repeat(513)}, {region: "global"}, {revision: 0},
       {credentialVersion: "projects/fixture/secrets/rcs/versions/latest"},
       {recipientPrefixes: []}, {recipientPrefixes: ["+91", "+91"]},

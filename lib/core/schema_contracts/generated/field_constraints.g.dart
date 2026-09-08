@@ -20391,6 +20391,14 @@ abstract final class CatchContractConstraints {
     pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
   );
 
+  static const eventAssistanceRcsConfigDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsConfig.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceRcsConfigMaxQueueSeconds = CatchContractFieldConstraints(
     path: 'eventAssistanceRcsConfig.maxQueueSeconds',
     required: true,
@@ -26826,6 +26834,657 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.appliedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsConsentReceiptDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsConsentReceiptDocumentDecision = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.decision',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsConsentReceiptDocumentSenderHash = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsConsentReceiptDocumentSource = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.source',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentCurrentReceiptId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.currentReceiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentEvidenceAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPermissionDocumentEvidenceCopyVersion = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentEvidencePhoneVerifiedAt = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.phoneVerifiedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPermissionDocumentEvidenceReceiptId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentEvidenceReviewedStopHash = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.reviewedStopHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentEvidenceReviewHash = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentEvidenceSenderHash = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.evidence.senderHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPermissionDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const eventRcsPermissionDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPermissionDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsPermissionDocumentSenderAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.sender.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPermissionDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPreferenceCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPreferenceCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'senderUnavailable', 'subscriptionUnavailable', 'eventClosed', 'notAdmitted', 'verifyPhone'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewCanEnable = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.canEnable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewConsentText = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.consent.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewConsentVersion = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.consent.version',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewEventId = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPreferenceCallableResponseViewEventTitle = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.eventTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPreferenceCallableResponseViewPhoneLastFour = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.phoneLastFour',
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const eventRcsPreferenceCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewReviewHash = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsPreferenceCallableResponseViewSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.sender.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPreferenceCallableResponseViewSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventRcsPreferenceCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentActivationApprovalId = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.activation.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsSenderDocumentActivationApprovedAt = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.activation.approvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentActivationValidUntil = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.activation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsSenderDocumentAllowedPurposes = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.allowedPurposes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+    minItems: 1,
+    maxItems: 9,
+    uniqueItems: true,
+  );
+
+  static const eventRcsSenderDocumentAllowedPurposesItems = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.allowedPurposes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventRcsSenderDocumentCredentialVersion = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.credentialVersion',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^projects/[A-Za-z0-9-]+/secrets/[A-Za-z0-9_-]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const eventRcsSenderDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsSenderDocumentMaxQueueSeconds = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.maxQueueSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 10,
+    maximum: 3600,
+  );
+
+  static const eventRcsSenderDocumentProvider = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.provider',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsSenderDocumentQuoteCurrency = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.quote.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventRcsSenderDocumentQuoteMaxMicrosPerMessage = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.quote.maxMicrosPerMessage',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventRcsSenderDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.quote.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentQuoteValidUntil = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.quote.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentRecipientPrefixes = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.recipientPrefixes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const eventRcsSenderDocumentRecipientPrefixesItems = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.recipientPrefixes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{0,3}\$',
+  );
+
+  static const eventRcsSenderDocumentRegion = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.region',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['asia', 'europe', 'us'],
+  );
+
+  static const eventRcsSenderDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsSenderDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsSenderDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsSenderDocumentSenderIdentity = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.senderIdentity',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsSenderDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRcsSenderDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['inactive', 'ready', 'paused'],
   );
 
   static const eventRcsSubscriptionDocumentAgentId = CatchContractFieldConstraints(
@@ -37406,6 +38065,33 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventRcsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventRcsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventRcsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventRcsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventRcsPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'getEventRcsPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getEventRehearsalBootstrapCallablePayloadSessionId = CatchContractFieldConstraints(
@@ -70021,6 +70707,68 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const setEventRcsPreferenceCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventRcsPreferenceCallablePayloadDecisionCopyVersion = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.decision.copyVersion',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventRcsPreferenceCallablePayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.decision.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventRcsPreferenceCallablePayloadDecisionReviewHash = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.decision.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventRcsPreferenceCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventRcsPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.expectedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventRcsPreferenceCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const setEventRcsPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'setEventRcsPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId',
     maxLength: 180,
@@ -81299,6 +82047,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceRcsConfig.allowedPurposes': eventAssistanceRcsConfigAllowedPurposes,
     'eventAssistanceRcsConfig.allowedPurposes.items': eventAssistanceRcsConfigAllowedPurposesItems,
     'eventAssistanceRcsConfig.credentialVersion': eventAssistanceRcsConfigCredentialVersion,
+    'eventAssistanceRcsConfig.displayName': eventAssistanceRcsConfigDisplayName,
     'eventAssistanceRcsConfig.maxQueueSeconds': eventAssistanceRcsConfigMaxQueueSeconds,
     'eventAssistanceRcsConfig.provider': eventAssistanceRcsConfigProvider,
     'eventAssistanceRcsConfig.quote.currency': eventAssistanceRcsConfigQuoteCurrency,
@@ -82175,6 +82924,91 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventRcsConsentReceiptDocument.actorUid': eventRcsConsentReceiptDocumentActorUid,
+    'eventRcsConsentReceiptDocument.appliedRevision': eventRcsConsentReceiptDocumentAppliedRevision,
+    'eventRcsConsentReceiptDocument.attendeeGeneration': eventRcsConsentReceiptDocumentAttendeeGeneration,
+    'eventRcsConsentReceiptDocument.attendeeId': eventRcsConsentReceiptDocumentAttendeeId,
+    'eventRcsConsentReceiptDocument.context.eventId': eventRcsConsentReceiptDocumentContextEventId,
+    'eventRcsConsentReceiptDocument.context.mode': eventRcsConsentReceiptDocumentContextMode,
+    'eventRcsConsentReceiptDocument.context.organizerId': eventRcsConsentReceiptDocumentContextOrganizerId,
+    'eventRcsConsentReceiptDocument.createdAt': eventRcsConsentReceiptDocumentCreatedAt,
+    'eventRcsConsentReceiptDocument.decision': eventRcsConsentReceiptDocumentDecision,
+    'eventRcsConsentReceiptDocument.permissionHash': eventRcsConsentReceiptDocumentPermissionHash,
+    'eventRcsConsentReceiptDocument.receiptId': eventRcsConsentReceiptDocumentReceiptId,
+    'eventRcsConsentReceiptDocument.recipientEndpointId': eventRcsConsentReceiptDocumentRecipientEndpointId,
+    'eventRcsConsentReceiptDocument.requestHash': eventRcsConsentReceiptDocumentRequestHash,
+    'eventRcsConsentReceiptDocument.routeId': eventRcsConsentReceiptDocumentRouteId,
+    'eventRcsConsentReceiptDocument.schemaVersion': eventRcsConsentReceiptDocumentSchemaVersion,
+    'eventRcsConsentReceiptDocument.senderHash': eventRcsConsentReceiptDocumentSenderHash,
+    'eventRcsConsentReceiptDocument.senderId': eventRcsConsentReceiptDocumentSenderId,
+    'eventRcsConsentReceiptDocument.source': eventRcsConsentReceiptDocumentSource,
+    'eventRcsConsentReceiptDocument.sourceGeneration': eventRcsConsentReceiptDocumentSourceGeneration,
+    'eventRcsPermissionDocument.attendeeGeneration': eventRcsPermissionDocumentAttendeeGeneration,
+    'eventRcsPermissionDocument.attendeeId': eventRcsPermissionDocumentAttendeeId,
+    'eventRcsPermissionDocument.context.eventId': eventRcsPermissionDocumentContextEventId,
+    'eventRcsPermissionDocument.context.mode': eventRcsPermissionDocumentContextMode,
+    'eventRcsPermissionDocument.context.organizerId': eventRcsPermissionDocumentContextOrganizerId,
+    'eventRcsPermissionDocument.currentReceiptId': eventRcsPermissionDocumentCurrentReceiptId,
+    'eventRcsPermissionDocument.evidence.acceptedAt': eventRcsPermissionDocumentEvidenceAcceptedAt,
+    'eventRcsPermissionDocument.evidence.copyVersion': eventRcsPermissionDocumentEvidenceCopyVersion,
+    'eventRcsPermissionDocument.evidence.phoneVerifiedAt': eventRcsPermissionDocumentEvidencePhoneVerifiedAt,
+    'eventRcsPermissionDocument.evidence.receiptId': eventRcsPermissionDocumentEvidenceReceiptId,
+    'eventRcsPermissionDocument.evidence.reviewedStopHash': eventRcsPermissionDocumentEvidenceReviewedStopHash,
+    'eventRcsPermissionDocument.evidence.reviewHash': eventRcsPermissionDocumentEvidenceReviewHash,
+    'eventRcsPermissionDocument.evidence.senderHash': eventRcsPermissionDocumentEvidenceSenderHash,
+    'eventRcsPermissionDocument.expiresAt': eventRcsPermissionDocumentExpiresAt,
+    'eventRcsPermissionDocument.permissionId': eventRcsPermissionDocumentPermissionId,
+    'eventRcsPermissionDocument.phoneE164': eventRcsPermissionDocumentPhoneE164,
+    'eventRcsPermissionDocument.purpose': eventRcsPermissionDocumentPurpose,
+    'eventRcsPermissionDocument.recipientEndpointId': eventRcsPermissionDocumentRecipientEndpointId,
+    'eventRcsPermissionDocument.revision': eventRcsPermissionDocumentRevision,
+    'eventRcsPermissionDocument.routeId': eventRcsPermissionDocumentRouteId,
+    'eventRcsPermissionDocument.schemaVersion': eventRcsPermissionDocumentSchemaVersion,
+    'eventRcsPermissionDocument.sender.agentId': eventRcsPermissionDocumentSenderAgentId,
+    'eventRcsPermissionDocument.sender.displayName': eventRcsPermissionDocumentSenderDisplayName,
+    'eventRcsPermissionDocument.senderId': eventRcsPermissionDocumentSenderId,
+    'eventRcsPermissionDocument.sourceGeneration': eventRcsPermissionDocumentSourceGeneration,
+    'eventRcsPermissionDocument.status': eventRcsPermissionDocumentStatus,
+    'eventRcsPermissionDocument.subjectUid': eventRcsPermissionDocumentSubjectUid,
+    'eventRcsPermissionDocument.updatedAt': eventRcsPermissionDocumentUpdatedAt,
+    'eventRcsPreferenceCallableResponse.outcome': eventRcsPreferenceCallableResponseOutcome,
+    'eventRcsPreferenceCallableResponse.view.attendeeId': eventRcsPreferenceCallableResponseViewAttendeeId,
+    'eventRcsPreferenceCallableResponse.view.availability': eventRcsPreferenceCallableResponseViewAvailability,
+    'eventRcsPreferenceCallableResponse.view.canEnable': eventRcsPreferenceCallableResponseViewCanEnable,
+    'eventRcsPreferenceCallableResponse.view.consent.text': eventRcsPreferenceCallableResponseViewConsentText,
+    'eventRcsPreferenceCallableResponse.view.consent.version': eventRcsPreferenceCallableResponseViewConsentVersion,
+    'eventRcsPreferenceCallableResponse.view.eventId': eventRcsPreferenceCallableResponseViewEventId,
+    'eventRcsPreferenceCallableResponse.view.eventTitle': eventRcsPreferenceCallableResponseViewEventTitle,
+    'eventRcsPreferenceCallableResponse.view.expiresAt': eventRcsPreferenceCallableResponseViewExpiresAt,
+    'eventRcsPreferenceCallableResponse.view.phoneLastFour': eventRcsPreferenceCallableResponseViewPhoneLastFour,
+    'eventRcsPreferenceCallableResponse.view.preference': eventRcsPreferenceCallableResponseViewPreference,
+    'eventRcsPreferenceCallableResponse.view.reviewHash': eventRcsPreferenceCallableResponseViewReviewHash,
+    'eventRcsPreferenceCallableResponse.view.revision': eventRcsPreferenceCallableResponseViewRevision,
+    'eventRcsPreferenceCallableResponse.view.sender.displayName': eventRcsPreferenceCallableResponseViewSenderDisplayName,
+    'eventRcsPreferenceCallableResponse.view.senderId': eventRcsPreferenceCallableResponseViewSenderId,
+    'eventRcsPreferenceCallableResponse.view.serverTime': eventRcsPreferenceCallableResponseViewServerTime,
+    'eventRcsSenderDocument.activation.approvalId': eventRcsSenderDocumentActivationApprovalId,
+    'eventRcsSenderDocument.activation.approvedAt': eventRcsSenderDocumentActivationApprovedAt,
+    'eventRcsSenderDocument.activation.validUntil': eventRcsSenderDocumentActivationValidUntil,
+    'eventRcsSenderDocument.agentId': eventRcsSenderDocumentAgentId,
+    'eventRcsSenderDocument.allowedPurposes': eventRcsSenderDocumentAllowedPurposes,
+    'eventRcsSenderDocument.allowedPurposes.items': eventRcsSenderDocumentAllowedPurposesItems,
+    'eventRcsSenderDocument.credentialVersion': eventRcsSenderDocumentCredentialVersion,
+    'eventRcsSenderDocument.displayName': eventRcsSenderDocumentDisplayName,
+    'eventRcsSenderDocument.maxQueueSeconds': eventRcsSenderDocumentMaxQueueSeconds,
+    'eventRcsSenderDocument.provider': eventRcsSenderDocumentProvider,
+    'eventRcsSenderDocument.quote.currency': eventRcsSenderDocumentQuoteCurrency,
+    'eventRcsSenderDocument.quote.maxMicrosPerMessage': eventRcsSenderDocumentQuoteMaxMicrosPerMessage,
+    'eventRcsSenderDocument.quote.revision': eventRcsSenderDocumentQuoteRevision,
+    'eventRcsSenderDocument.quote.validUntil': eventRcsSenderDocumentQuoteValidUntil,
+    'eventRcsSenderDocument.recipientPrefixes': eventRcsSenderDocumentRecipientPrefixes,
+    'eventRcsSenderDocument.recipientPrefixes.items': eventRcsSenderDocumentRecipientPrefixesItems,
+    'eventRcsSenderDocument.region': eventRcsSenderDocumentRegion,
+    'eventRcsSenderDocument.revision': eventRcsSenderDocumentRevision,
+    'eventRcsSenderDocument.schemaVersion': eventRcsSenderDocumentSchemaVersion,
+    'eventRcsSenderDocument.senderId': eventRcsSenderDocumentSenderId,
+    'eventRcsSenderDocument.senderIdentity': eventRcsSenderDocumentSenderIdentity,
+    'eventRcsSenderDocument.status': eventRcsSenderDocumentStatus,
     'eventRcsSubscriptionDocument.agentId': eventRcsSubscriptionDocumentAgentId,
     'eventRcsSubscriptionDocument.endpointHash': eventRcsSubscriptionDocumentEndpointHash,
     'eventRcsSubscriptionDocument.lastStop.callbackId': eventRcsSubscriptionDocumentLastStopCallbackId,
@@ -83609,6 +84443,9 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceSmsWithdrawalCallablePayload.secret': getEventAssistanceSmsWithdrawalCallablePayloadSecret,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
+    'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
+    'getEventRcsPreferenceCallablePayload.eventId': getEventRcsPreferenceCallablePayloadEventId,
+    'getEventRcsPreferenceCallablePayload.senderId': getEventRcsPreferenceCallablePayloadSenderId,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
     'getEventRehearsalGuestBootstrapCallablePayload.clientInstanceId': getEventRehearsalGuestBootstrapCallablePayloadClientInstanceId,
     'getEventRehearsalGuestBootstrapCallablePayload.publicRehearsalId': getEventRehearsalGuestBootstrapCallablePayloadPublicRehearsalId,
@@ -88093,6 +88930,14 @@ abstract final class CatchContractConstraints {
     'setEventAttendeeAttendanceCallableResponse.changed': setEventAttendeeAttendanceCallableResponseChanged,
     'setEventAttendeeAttendanceCallableResponse.checkedIn': setEventAttendeeAttendanceCallableResponseCheckedIn,
     'setEventAttendeeAttendanceCallableResponse.replayed': setEventAttendeeAttendanceCallableResponseReplayed,
+    'setEventRcsPreferenceCallablePayload.attendeeId': setEventRcsPreferenceCallablePayloadAttendeeId,
+    'setEventRcsPreferenceCallablePayload.decision.copyVersion': setEventRcsPreferenceCallablePayloadDecisionCopyVersion,
+    'setEventRcsPreferenceCallablePayload.decision.kind': setEventRcsPreferenceCallablePayloadDecisionKind,
+    'setEventRcsPreferenceCallablePayload.decision.reviewHash': setEventRcsPreferenceCallablePayloadDecisionReviewHash,
+    'setEventRcsPreferenceCallablePayload.eventId': setEventRcsPreferenceCallablePayloadEventId,
+    'setEventRcsPreferenceCallablePayload.expectedRevision': setEventRcsPreferenceCallablePayloadExpectedRevision,
+    'setEventRcsPreferenceCallablePayload.requestId': setEventRcsPreferenceCallablePayloadRequestId,
+    'setEventRcsPreferenceCallablePayload.senderId': setEventRcsPreferenceCallablePayloadSenderId,
     'setEventSuccessAccountabilityResolutionCallablePayload.attendeeId': setEventSuccessAccountabilityResolutionCallablePayloadAttendeeId,
     'setEventSuccessAccountabilityResolutionCallablePayload.eventId': setEventSuccessAccountabilityResolutionCallablePayloadEventId,
     'setEventSuccessAccountabilityResolutionCallablePayload.resolution': setEventSuccessAccountabilityResolutionCallablePayloadResolution,

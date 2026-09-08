@@ -15,6 +15,45 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+{
+  "name": "EventRcsSenderDocument",
+  "source": "firestore/event_assistance_rcs_senders.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsSenderDocument.ts"
+},
+{
+  "name": "EventRcsPermissionDocument",
+  "source": "firestore/event_assistance_rcs_permissions.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsPermissionDocument.ts"
+},
+{
+  "name": "EventRcsConsentReceiptDocument",
+  "source": "firestore/event_assistance_rcs_consent_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsConsentReceiptDocument.ts"
+},
+{
+  "name": "GetEventRcsPreferenceCallablePayload",
+  "source": "callables/get_event_rcs_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventRcsPreferenceInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventRcsPreferenceInput.ts"
+  ]
+},
+{
+  "name": "SetEventRcsPreferenceCallablePayload",
+  "source": "callables/set_event_rcs_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/setEventRcsPreferenceInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/setEventRcsPreferenceInput.ts"
+  ]
+},
+{
+  "name": "EventRcsPreferenceCallableResponse",
+  "source": "callable_responses/event_rcs_preference_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsPreferenceOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventRcsPreferenceOutput.ts"
+  ]
+},
   {
     name: "EventRcsSubscriptionDocument",
     source: "firestore/event_assistance_rcs_subscriptions.schema.json",

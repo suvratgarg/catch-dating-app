@@ -5,6 +5,12 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventRcsSenderDocumentSchema} from "./schemas/eventRcsSenderDocument";
+export {eventRcsPermissionDocumentSchema} from "./schemas/eventRcsPermissionDocument";
+export {eventRcsConsentReceiptDocumentSchema} from "./schemas/eventRcsConsentReceiptDocument";
+export {getEventRcsPreferenceCallablePayloadSchema} from "./schemas/getEventRcsPreferenceInput";
+export {setEventRcsPreferenceCallablePayloadSchema} from "./schemas/setEventRcsPreferenceInput";
+export {eventRcsPreferenceCallableResponseSchema} from "./schemas/eventRcsPreferenceOutput";
 export {eventRcsSubscriptionDocumentSchema} from "./schemas/eventRcsSubscriptionDocument";
 export {eventAssistanceRcsCallbackDocumentSchema} from "./schemas/eventAssistanceRcsCallbackDocument";
 export {eventAssistanceRcsCallbackIdentityDocumentSchema} from "./schemas/eventAssistanceRcsCallbackIdentity";

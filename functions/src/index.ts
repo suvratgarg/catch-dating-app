@@ -80,6 +80,8 @@ export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";
+export {getEventRcsPreference, setEventRcsPreference} from
+  "./eventSuccess/operations/rcsPreferenceHandlers";
 export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
 export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from

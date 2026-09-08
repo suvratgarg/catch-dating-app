@@ -19,7 +19,8 @@ export const eventAssistanceRcsConfigSchema: Record<string, unknown> = {
     "activation",
     "quote",
     "maxQueueSeconds",
-    "allowedPurposes"
+    "allowedPurposes",
+    "displayName"
   ],
   "properties": {
     "schemaVersion": {
@@ -164,6 +165,11 @@ export const eventAssistanceRcsConfigSchema: Record<string, unknown> = {
           "followUp"
         ]
       }
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
     }
   },
   "title": "EventAssistanceRcsConfig"

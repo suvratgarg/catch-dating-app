@@ -44,4 +44,5 @@ export interface EventAssistanceRcsConfig {
     | "eventFinished"
     | "followUp"
   )[];
+  displayName: string;
 }

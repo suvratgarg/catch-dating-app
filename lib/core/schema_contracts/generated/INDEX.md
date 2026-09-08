@@ -12,6 +12,12 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventRcsSenderDocument | `firestore/event_assistance_rcs_senders.schema.json` | `functions/src/shared/generated/eventRcsSenderDocument.ts` |
+| EventRcsPermissionDocument | `firestore/event_assistance_rcs_permissions.schema.json` | `functions/src/shared/generated/eventRcsPermissionDocument.ts` |
+| EventRcsConsentReceiptDocument | `firestore/event_assistance_rcs_consent_receipts.schema.json` | `functions/src/shared/generated/eventRcsConsentReceiptDocument.ts` |
+| GetEventRcsPreferenceCallablePayload | `callables/get_event_rcs_preference_payload.schema.json` | `functions/src/shared/generated/getEventRcsPreferenceInput.ts` |
+| SetEventRcsPreferenceCallablePayload | `callables/set_event_rcs_preference_payload.schema.json` | `functions/src/shared/generated/setEventRcsPreferenceInput.ts` |
+| EventRcsPreferenceCallableResponse | `callable_responses/event_rcs_preference_response.schema.json` | `functions/src/shared/generated/eventRcsPreferenceOutput.ts` |
 | EventRcsSubscriptionDocument | `firestore/event_assistance_rcs_subscriptions.schema.json` | `functions/src/shared/generated/eventRcsSubscriptionDocument.ts` |
 | EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackDocument.ts` |
 | EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackIdentity.ts` |
@@ -646,6 +652,12 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventRcsSenderDocumentSchema` | EventRcsSenderDocument | `firestore/event_assistance_rcs_senders.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_sender_document.g.dart` |
+| `schemaEventRcsPermissionDocumentSchema` | EventRcsPermissionDocument | `firestore/event_assistance_rcs_permissions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_permission_document.g.dart` |
+| `schemaEventRcsConsentReceiptDocumentSchema` | EventRcsConsentReceiptDocument | `firestore/event_assistance_rcs_consent_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_consent_receipt_document.g.dart` |
+| `schemaGetEventRcsPreferenceCallablePayloadSchema` | GetEventRcsPreferenceCallablePayload | `callables/get_event_rcs_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rcs_preference_callable_payload.g.dart` |
+| `schemaSetEventRcsPreferenceCallablePayloadSchema` | SetEventRcsPreferenceCallablePayload | `callables/set_event_rcs_preference_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_event_rcs_preference_callable_payload.g.dart` |
+| `schemaEventRcsPreferenceCallableResponseSchema` | EventRcsPreferenceCallableResponse | `callable_responses/event_rcs_preference_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_preference_callable_response.g.dart` |
 | `schemaEventRcsSubscriptionDocumentSchema` | EventRcsSubscriptionDocument | `firestore/event_assistance_rcs_subscriptions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_subscription_document.g.dart` |
 | `schemaEventAssistanceRcsCallbackDocumentSchema` | EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_document.g.dart` |
 | `schemaEventAssistanceRcsCallbackIdentityDocumentSchema` | EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_identity_document.g.dart` |
@@ -1280,6 +1292,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventRcsPreferenceCallableRequest | GetEventRcsPreferenceCallablePayload | `callables/get_event_rcs_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rcs_preference_callable_request.g.dart` |
 | ListEventAssistanceCasesCallableRequest | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_assistance_cases_callable_request.g.dart` |
 | ResolveEventAssistanceCaseCallableRequest | ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `lib/core/schema_contracts/generated/callables/resolve_event_assistance_case_callable_request.g.dart` |
 | GetEventAssistanceHostGuestsCallableRequest | GetEventAssistanceHostGuestsCallablePayload | `callables/get_event_assistance_host_guests_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_host_guests_callable_request.g.dart` |
@@ -1526,6 +1539,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| SetEventRcsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceRuntimeConfigCallablePayload | cannot map field "command" (no type) |
 | SetEventAssistanceGroupStaffCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSettingCallablePayload | cannot map field "preference" (no type) |

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.64.0
+version: 1.65.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1492,15 +1492,59 @@ withheld. This restriction cannot undo a send that committed before it arrived.
 `readRcsSubscription` revalidates the snapshot and its immutable callback
 provenance inside the caller's transaction. Missing, corrupt or cross-recipient
 provenance fails closed. The record's absence is not consent. Event-specific
-permission APIs, fresh-consent review of this restriction, the actual dispatch
-reader, withdrawal links and retention cleanup remain implementation work.
+preference APIs and their shared permission reader now review this restriction
+as described below. The dispatch integration, withdrawal links and retention
+cleanup remain implementation work.
 No provider sender or network worker is activated by this projection.
+
+### RCS event consent
+
+`getEventRcsPreference` and `setEventRcsPreference` are App-Check-protected
+callables for the event attendee's linked Firebase UID. A grant requires the
+signed phone claim to match the roster, an admitted attendee, an eligible event
+and a ready, approved Catch sender covering the recipient prefix. The caller
+selects an explicit sender ID; the response exposes its display name, the event
+name and masked recipient number, never provider agent IDs or credentials.
+
+`eventAssistanceRcsPermissions` stores independent event-service permission;
+`eventAssistanceRcsConsentReceipts` proves the exact decision and resulting
+permission hash. Both bind the Firebase subject, phone, attendee creation
+generation and Firestore event/attendee source generations. Sender records in
+`eventAssistanceRcsSenders` use the canonical RCS configuration, now including
+the reviewed display name. Their existence is not audited live provisioning.
+
+The grant submits a revision, request ID, copy version and review hash. The
+review hash binds the displayed sender identity, participant, event name and
+window, source generations and latest STOP. Changes require a fresh review;
+clock passage, credential rotation and unrelated START observations do not
+invalidate it. A fresh grant must acknowledge the current STOP and follow its
+first storage time. START alone cannot restore event consent. Exact retries
+return current state and cannot reverse a later withdrawal or STOP.
+
+Permission and receipt commit atomically. Withdrawal preserves the originally
+bound phone, sender, generations and grant evidence even if current sender
+configuration, phone claim or receipt proof is unavailable. An initial opt-out
+creates a revoked record without inventing grant evidence. Permission cannot
+extend beyond the event end captured at grant plus 24 hours; current event
+timing is checked again before use.
+
+`readRcsMessagePermission` supplies the shared transactional consent check for
+planning and final dispatch. It requires the exact receipt, current recipient
+and source binding, unchanged provider agent, valid lifetime and current STOP
+provenance. Its allowed result contains a granted permission but no spending,
+sender-readiness, capability or send authority. Renaming the same provider
+agent preserves existing consent; a newly reviewed grant captures the updated
+name. Tests cover stale review hashes, source replacement, rollback, receipt
+tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
+preference UI, revocation-only message links, dispatch/worker integration and
+deployment remain open. No live sender is activated by these callables.
 
 ### RCS sender configuration and message rendering
 
 `event_assistance_rcs_config.schema.json` owns the reviewed Google RBM sender
 shape: agent and region, pinned credential version, recipient prefixes, allowed
 event-service purposes, approval window, price ceiling and maximum queue time.
+The configuration also owns the sender display name reviewed during consent.
 Google RBM is a canonical RCS binding only; it is not an SMS or WhatsApp provider.
 Agent IDs retain the provider's `@rbm.goog` form. This operational configuration
 schema does not provision a sender, grant recipient consent or debit a budget.
@@ -1562,9 +1606,10 @@ current route authority before deciding on SMS. Errors contain no provider body,
 phone, token or guest link. Tests inject transport; this adds no default network
 client, credential loader, Firebase export or activated sender. Canonical RCS
 sender configuration, rendering, callback persistence and conversation
-subscription observations are now present. Event-scoped RCS permission,
-callback domain consumers and dispatch integration remain required before
-activation.
+subscription observations are now present. Event-scoped RCS preference APIs
+and the shared permission check are implemented. Callback domain consumers,
+message-link withdrawal, dispatch integration and provider activation remain
+required before live use.
 
 ## Format Mapping And Wiring
 

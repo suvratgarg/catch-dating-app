@@ -4351,6 +4351,8 @@ describe("firestore.rules", () => {
         "eventAssistanceCaseReceipts",
         "eventAssistanceRcsCallbacks", "eventAssistanceRcsCallbackIdentities",
         "eventAssistanceRcsSubscriptions",
+        "eventAssistanceRcsSenders", "eventAssistanceRcsPermissions",
+        "eventAssistanceRcsConsentReceipts",
         "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
         "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
         "eventAssistanceSmsConsentReceipts",

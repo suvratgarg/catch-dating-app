@@ -22,6 +22,7 @@ const schemaEventAssistanceRcsConfigSchema = <String, Object?>{
     'quote',
     'maxQueueSeconds',
     'allowedPurposes',
+    'displayName',
   ],
   'properties': <String, Object?>{
     'schemaVersion': <String, Object?>{
@@ -166,6 +167,11 @@ const schemaEventAssistanceRcsConfigSchema = <String, Object?>{
           'followUp',
         ],
       },
+    },
+    'displayName': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
     },
   },
   'title': 'EventAssistanceRcsConfig',

@@ -537,6 +537,59 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventRcsSenderDocument {
+  schemaVersion: 1;
+  senderId: string;
+  revision: number;
+  provider: "googleRbm";
+  senderIdentity: "catchPlatform";
+  agentId: string;
+  region: "asia" | "europe" | "us";
+  status: "inactive" | "ready" | "paused";
+  credentialVersion: string;
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  recipientPrefixes: string[];
+  activation: {
+    approvalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  quote: {
+    revision: number;
+    currency: string;
+    maxMicrosPerMessage: number;
+    validUntil: number;
+  };
+  maxQueueSeconds: number;
+  /**
+   * @minItems 1
+   * @maxItems 9
+   */
+  allowedPurposes: (
+    | "joiningUpdate"
+    | "joiningInstructions"
+    | "planChanged"
+    | "guestRequirement"
+    | "assignmentChanged"
+    | "participationCheck"
+    | "eventCancelled"
+    | "eventFinished"
+    | "followUp"
+  )[];
+  displayName: string;
+}
+
+export interface EventRcsPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventRcsConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
 /**
  * Authenticated RCS subscription observations scoped to a provider agent and recipient endpoint, across events. Stop observations restrict event-service messages; subscribe requests never grant event consent. No automatic retention deletion.
  */

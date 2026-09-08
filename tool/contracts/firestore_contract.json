@@ -2094,6 +2094,50 @@
       ]
     },
     {
+      "id": "eventAssistanceRcsSenders",
+      "path": "eventAssistanceRcsSenders/{senderId}",
+      "rulesMatch": "/eventAssistanceRcsSenders/{senderId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance RCS provisioning",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
+      ]
+    },
+    {
+      "id": "eventAssistanceRcsPermissions",
+      "path": "eventAssistanceRcsPermissions/{permissionId}",
+      "rulesMatch": "/eventAssistanceRcsPermissions/{permissionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
+      ],
+      "exportedFunctions": [
+        "getEventRcsPreference",
+        "setEventRcsPreference"
+      ]
+    },
+    {
+      "id": "eventAssistanceRcsConsentReceipts",
+      "path": "eventAssistanceRcsConsentReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceRcsConsentReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "verified participant event-service preferences",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
+      ],
+      "exportedFunctions": [
+        "getEventRcsPreference",
+        "setEventRcsPreference"
+      ]
+    },
+    {
       "id": "eventAssistanceRcsSubscriptions",
       "path": "eventAssistanceRcsSubscriptions/{subscriptionId}",
       "rulesMatch": "/eventAssistanceRcsSubscriptions/{subscriptionId}",

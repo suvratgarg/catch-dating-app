@@ -13,6 +13,7 @@ export const rcsTestKeys: GuestLinkSigningKeys = {
 
 export function rcsTestConfig(): RcsConfig {
   return {schemaVersion: 1, senderId: "fixture-rcs", revision: 1,
+    displayName: "Catch event updates",
     provider: "googleRbm", senderIdentity: "catchPlatform",
     agentId: "fixture-agent@rbm.goog", region: "asia", status: "ready",
     credentialVersion: "projects/fixture/secrets/rcs/versions/1",

@@ -17,6 +17,36 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventRcsSenderDocument',
+    source: 'firestore/event_assistance_rcs_senders.schema.json',
+    schema: schemaEventRcsSenderDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsPermissionDocument',
+    source: 'firestore/event_assistance_rcs_permissions.schema.json',
+    schema: schemaEventRcsPermissionDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsConsentReceiptDocument',
+    source: 'firestore/event_assistance_rcs_consent_receipts.schema.json',
+    schema: schemaEventRcsConsentReceiptDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventRcsPreferenceCallablePayload',
+    source: 'callables/get_event_rcs_preference_payload.schema.json',
+    schema: schemaGetEventRcsPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SetEventRcsPreferenceCallablePayload',
+    source: 'callables/set_event_rcs_preference_payload.schema.json',
+    schema: schemaSetEventRcsPreferenceCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsPreferenceCallableResponse',
+    source: 'callable_responses/event_rcs_preference_response.schema.json',
+    schema: schemaEventRcsPreferenceCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRcsSubscriptionDocument',
     source: 'firestore/event_assistance_rcs_subscriptions.schema.json',
     schema: schemaEventRcsSubscriptionDocumentSchema,
@@ -3164,6 +3194,12 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventRcsSenderDocument': schemaEventRcsSenderDocumentSchema,
+  'EventRcsPermissionDocument': schemaEventRcsPermissionDocumentSchema,
+  'EventRcsConsentReceiptDocument': schemaEventRcsConsentReceiptDocumentSchema,
+  'GetEventRcsPreferenceCallablePayload': schemaGetEventRcsPreferenceCallablePayloadSchema,
+  'SetEventRcsPreferenceCallablePayload': schemaSetEventRcsPreferenceCallablePayloadSchema,
+  'EventRcsPreferenceCallableResponse': schemaEventRcsPreferenceCallableResponseSchema,
   'EventRcsSubscriptionDocument': schemaEventRcsSubscriptionDocumentSchema,
   'EventAssistanceRcsCallbackDocument': schemaEventAssistanceRcsCallbackDocumentSchema,
   'EventAssistanceRcsCallbackIdentityDocument': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
@@ -3796,6 +3832,12 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_rcs_senders.schema.json': schemaEventRcsSenderDocumentSchema,
+  'firestore/event_assistance_rcs_permissions.schema.json': schemaEventRcsPermissionDocumentSchema,
+  'firestore/event_assistance_rcs_consent_receipts.schema.json': schemaEventRcsConsentReceiptDocumentSchema,
+  'callables/get_event_rcs_preference_payload.schema.json': schemaGetEventRcsPreferenceCallablePayloadSchema,
+  'callables/set_event_rcs_preference_payload.schema.json': schemaSetEventRcsPreferenceCallablePayloadSchema,
+  'callable_responses/event_rcs_preference_response.schema.json': schemaEventRcsPreferenceCallableResponseSchema,
   'firestore/event_assistance_rcs_subscriptions.schema.json': schemaEventRcsSubscriptionDocumentSchema,
   'firestore/event_assistance_rcs_callbacks.schema.json': schemaEventAssistanceRcsCallbackDocumentSchema,
   'firestore/event_assistance_rcs_callback_identities.schema.json': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,

@@ -839,6 +839,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRcsSenders/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceRcsCallbackIdentities/{receiptKey} {
       allow read, write: if false;
     }
