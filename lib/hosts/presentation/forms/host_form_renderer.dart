@@ -1,13 +1,9 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class HostFormRenderer extends StatefulWidget {
@@ -126,6 +122,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.number:
         field = _HostFormSchemaBoundary(
           child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             initialValue: switch (answer) {
@@ -156,7 +153,8 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
           _ => <String>{},
         };
         field = _HostFormSchemaBoundary(
-          child: CatchField.choices<String>(
+          child: CatchField<String>.choices(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             contract: CatchContractConstraints
@@ -183,6 +181,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.acknowledgement:
         field = _HostFormSchemaBoundary(
           child: CatchField.toggle(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
@@ -196,6 +195,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.file:
         field = _HostFormSchemaBoundary(
           child: CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
@@ -208,6 +208,7 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.signature:
         field = _HostFormSchemaBoundary(
           child: CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('host-form-renderer-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,

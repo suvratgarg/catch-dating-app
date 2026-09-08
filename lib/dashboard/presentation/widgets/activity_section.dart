@@ -1,12 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
@@ -14,6 +8,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -79,7 +74,7 @@ class ActivitySection extends ConsumerWidget {
             sectionState is NotificationsAccessLoading) ...[
           const ActivitySectionSkeleton(count: 2),
         ] else if (sectionState is NotificationsAccessError) ...[
-          CatchInlineErrorState.fromError(
+          CatchLocalizedInlineErrorState(
             sectionState.error,
             context: AppErrorContext.auth,
             compact: true,
@@ -87,7 +82,7 @@ class ActivitySection extends ConsumerWidget {
           ),
         ] else if (sectionState is NotificationsActivityError) ...[
           if (sectionState.error case final error?)
-            CatchInlineErrorState.fromError(
+            CatchLocalizedInlineErrorState(
               error,
               context: AppErrorContext.dashboard,
               compact: true,
@@ -103,6 +98,7 @@ class ActivitySection extends ConsumerWidget {
             )
           else
             CatchInlineErrorState(
+              retryLabel: context.l10n.sharedActionTryAgain,
               title:
                   context.l10n.dashboardActivitySectionTitleActivityUnavailable,
               message: context
@@ -295,6 +291,7 @@ class NotificationRow extends StatelessWidget {
             ),
       child: CatchFieldLanes.single(
         child: CatchField.content(
+          copy: catchFieldCopy(context.l10n),
           icon: visual.icon,
           iconColor: visual.accent,
           title: title,

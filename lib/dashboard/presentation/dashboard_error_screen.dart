@@ -15,7 +15,7 @@ class DashboardErrorScreen extends StatelessWidget {
     return CatchRootScreenScaffold.standard(
       header: const SizedBox.shrink(),
       slivers: [
-        CatchSliverErrorState.fromError(
+        CatchLocalizedSliverErrorState(
           error,
           context: AppErrorContext.dashboard,
           onRetry: onRetry,

@@ -168,7 +168,12 @@ export function collectWidgetHelpers(
   classRanges,
   widgetTypeNames,
 ) {
-  const code = maskNonCode(source);
+  // A multiline `Widget Function(...)` alias is a type declaration, not a
+  // widget factory. Preserve offsets for both explicit and inferred helpers.
+  const code = maskNonCode(source).replaceAll(
+    /\btypedef\b[^;]*;/gu,
+    (declaration) => declaration.replaceAll(/[^\r\n]/gu, " "),
+  );
   const rows = [];
   const seen = new Set();
   const type =

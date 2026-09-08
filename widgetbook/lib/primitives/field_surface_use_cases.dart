@@ -1,0 +1,57 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
+
+@widgetbook.UseCase(
+  name: 'Interaction shapes and paint states',
+  type: CatchFieldSurface,
+  path: '[Core primitives]/Fields',
+)
+Widget fieldSurfaceStates(BuildContext context) {
+  const shapes = [
+    ('Rounded row', CatchFieldInteractionShape.roundedTile),
+    ('Inside a section', CatchFieldInteractionShape.sectionClipped),
+    ('Across the page', CatchFieldInteractionShape.fullBleedBand),
+  ];
+  const states = [
+    ('Idle', <WidgetState>{}),
+    ('Active', {WidgetState.selected}),
+    ('Pressed', {WidgetState.pressed}),
+    ('Active and pressed', {WidgetState.selected, WidgetState.pressed}),
+    ('Keyboard focus', {WidgetState.selected, WidgetState.focused}),
+    (
+      'Keyboard focus and pressed',
+      {WidgetState.selected, WidgetState.focused, WidgetState.pressed},
+    ),
+  ];
+  final copy = catchFieldCopy(context.l10n);
+  return WidgetbookCatalogFrame(
+    title: 'Field interaction surfaces',
+    catalogId: 'catch.field.surface',
+    children: [
+      for (final (label, shape) in shapes) ...[
+        Text(label, style: CatchTextStyles.headline(context)),
+        for (final (label, state) in states)
+          CatchFieldGeometryScope(
+            gutterOwnership: CatchFieldGutterOwnership.field,
+            interactionShape: shape,
+            interactionOutsets: EdgeInsets.zero,
+            child: CatchFieldSurface(
+              pressedOverlayKey: ValueKey((shape, label)),
+              states: state,
+              child: CatchFieldRow.standard(
+                content: CatchFieldValueContent(
+                  labelCopy: copy.label,
+                  label: label,
+                  value: 'Field content',
+                ),
+              ),
+            ),
+          ),
+      ],
+    ],
+  );
+}

@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
-import 'package:catch_tokens/catch_tokens.dart'
-    show CatchFieldTokens;
+import 'package:catch_tokens/catch_tokens.dart' show CatchFieldTokens;
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -115,41 +116,46 @@ class _ProfileInlineHeightEditorState
         : widget.isAddAffordance
         ? null
         : widget.value;
-    return CatchField.stepper(
-      icon: widget.icon,
-      title: widget.label,
-      contract: widget.contract,
-      body: body,
-      addable: widget.isAddAffordance,
-      tone: widget.isAddAffordance
-          ? CatchFieldTone.primary
-          : CatchFieldTone.normal,
-      open: widget.isExpanded,
-      onOpenChanged: (expanded) {
-        if (isSaving || expanded == widget.isExpanded) return;
-        widget.onTap();
-      },
-      isLoading: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: _errorMessage(),
-      value: _heightCm,
-      min: minimumHeightCm,
-      max: maximumHeightCm,
-      formatter: (value) => context.l10n
-          .userProfileInlineEditorHeightBodyHeightcmCm(heightCm: value.toInt()),
-      decreaseSemanticLabel:
-          context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
-      increaseSemanticLabel:
-          context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
-      onChanged: (value) {
-        _savedStatusTimer?.cancel();
-        setState(() {
-          _heightCm = value.toInt();
-          _status = CatchFieldStatus.idle;
-        });
-      },
-      onCancel: _cancel,
-      onSubmit: _submit,
+    return CatchFieldLanes.single(
+      child: CatchField.stepper(
+        copy: catchFieldCopy(context.l10n),
+        icon: widget.icon,
+        title: widget.label,
+        contract: widget.contract,
+        body: body,
+        addable: widget.isAddAffordance,
+        tone: widget.isAddAffordance
+            ? CatchFieldTone.primary
+            : CatchFieldTone.normal,
+        open: widget.isExpanded,
+        onOpenChanged: (expanded) {
+          if (isSaving || expanded == widget.isExpanded) return;
+          widget.onTap();
+        },
+        isLoading: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: _errorMessage(),
+        value: _heightCm,
+        min: minimumHeightCm,
+        max: maximumHeightCm,
+        formatter: (value) =>
+            context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
+              heightCm: value.toInt(),
+            ),
+        decreaseSemanticLabel:
+            context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
+        increaseSemanticLabel:
+            context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
+        onChanged: (value) {
+          _savedStatusTimer?.cancel();
+          setState(() {
+            _heightCm = value.toInt();
+            _status = CatchFieldStatus.idle;
+          });
+        },
+        onCancel: _cancel,
+        onSubmit: _submit,
+      ),
     );
   }
 

@@ -1,14 +1,12 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Shared room-layout setup used by Create Event and post-creation Host Setup.
@@ -44,6 +42,7 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
       return CatchSection.fieldRows(
         children: [
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsEventSuccessStepRoomLayoutWholeGroupTitle,
             body: context.l10n.hostsEventSuccessStepRoomLayoutWholeGroupBody,
           ),
@@ -62,16 +61,18 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
       children: [
         if (layoutsState.isLoading)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessRoomSetupLoadingTitle,
             body: context.l10n.eventSuccessRoomSetupLoadingBody,
           ),
         if (layoutsState.hasError)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             layoutsState.error!,
             context: AppErrorContext.event,
           ),
         for (final layout in layouts)
           CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
             title: layout.label,
             body: context.l10n.hostsEventSuccessStepRoomLayoutUnitCount(
               count: layout.units.length,
@@ -83,16 +84,14 @@ class EventSuccessRoomSetupSection extends StatelessWidget {
             onTap: enabled ? () => onSelected(layout.layoutId) : null,
           ),
         CatchField.add(
+          copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEventSuccessStepRoomLayoutCreate,
           onTap: enabled && !isSavingLayout
               ? () => _createLayout(context)
               : null,
         ),
         if (saveError != null)
-          CatchErrorBanner.fromError(
-            saveError!,
-            context: AppErrorContext.event,
-          ),
+          CatchLocalizedErrorBanner(saveError!, context: AppErrorContext.event),
       ],
     );
   }
@@ -156,6 +155,7 @@ class _EventSuccessLayoutAuthorSheetState
             CatchSection.fieldRows(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventSuccessStepRoomLayoutName,
                   contract: CatchContractConstraints
                       .upsertEventSuccessLayoutCallablePayloadLabel,
@@ -167,7 +167,8 @@ class _EventSuccessLayoutAuthorSheetState
                     }
                   },
                 ),
-                CatchField.select<EventSuccessLayoutShape>(
+                CatchField<EventSuccessLayoutShape>.select(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventSuccessStepRoomLayoutShape,
                   contract: CatchContractConstraints
                       .upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
@@ -180,6 +181,7 @@ class _EventSuccessLayoutAuthorSheetState
                   },
                 ),
                 CatchField.stepper(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventSuccessStepRoomLayoutUnits,
                   contract: unitListContract,
                   value: _unitCount,
@@ -195,6 +197,7 @@ class _EventSuccessLayoutAuthorSheetState
                   }),
                 ),
                 CatchField.stepper(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventSuccessStepRoomLayoutCapacity,
                   contract: capacityContract,
                   value: _unitCapacity,
@@ -210,6 +213,7 @@ class _EventSuccessLayoutAuthorSheetState
                       setState(() => _unitCapacity = value.toInt()),
                 ),
                 CatchField.stepper(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventSuccessStepRoomLayoutColumns,
                   contract: gridContract,
                   value: _columnCount,

@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
-import 'package:catch_tokens/catch_tokens.dart'
-    show CatchFieldTokens;
+import 'package:catch_tokens/catch_tokens.dart' show CatchFieldTokens;
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,38 +116,41 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.choices<T>(
-      icon: widget.icon,
-      title: widget.label,
-      contract: widget.contract,
-      contractValue: widget.contractValue,
-      emptyValueText: widget.emptyValueText,
-      addable: widget.isAddAffordance,
-      isOptional: widget.showOptionalLabel,
-      tone: widget.isAddAffordance || _selected == null
-          ? CatchFieldTone.primary
-          : CatchFieldTone.normal,
-      open: widget.isExpanded,
-      onOpenChanged: (expanded) {
-        if (isSaving || expanded == widget.isExpanded) return;
-        widget.onTap();
-      },
-      isLoading: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: _errorMessage(),
-      values: widget.values,
-      itemLabel: (value) => value.label,
-      selected: {?_selected},
-      allowEmptySelection: widget.allowEmptySelection,
-      onSelectionChanged: (selection) {
-        _savedStatusTimer?.cancel();
-        setState(() {
-          _selected = selection.isEmpty ? null : selection.first;
-          _status = CatchFieldStatus.idle;
-        });
-      },
-      onCancel: _cancel,
-      onSubmit: _submit,
+    return CatchFieldLanes.single(
+      child: CatchField<T>.choices(
+        copy: catchFieldCopy(context.l10n),
+        icon: widget.icon,
+        title: widget.label,
+        contract: widget.contract,
+        contractValue: widget.contractValue,
+        emptyValueText: widget.emptyValueText,
+        addable: widget.isAddAffordance,
+        isOptional: widget.showOptionalLabel,
+        tone: widget.isAddAffordance || _selected == null
+            ? CatchFieldTone.primary
+            : CatchFieldTone.normal,
+        open: widget.isExpanded,
+        onOpenChanged: (expanded) {
+          if (isSaving || expanded == widget.isExpanded) return;
+          widget.onTap();
+        },
+        isLoading: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: _errorMessage(),
+        values: widget.values,
+        itemLabel: (value) => value.label,
+        selected: {?_selected},
+        allowEmptySelection: widget.allowEmptySelection,
+        onSelectionChanged: (selection) {
+          _savedStatusTimer?.cancel();
+          setState(() {
+            _selected = selection.isEmpty ? null : selection.first;
+            _status = CatchFieldStatus.idle;
+          });
+        },
+        onCancel: _cancel,
+        onSubmit: _submit,
+      ),
     );
   }
 
@@ -277,39 +280,42 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.choices<T>(
-      icon: widget.icon,
-      title: widget.label,
-      contract: widget.contract,
-      contractValue: widget.contractValue,
-      emptyValueText: widget.emptyValueText,
-      addable: widget.isAddAffordance,
-      isOptional: widget.showOptionalLabel,
-      tone: widget.isAddAffordance || _selected.isEmpty
-          ? CatchFieldTone.primary
-          : CatchFieldTone.normal,
-      open: widget.isExpanded,
-      onOpenChanged: (expanded) {
-        if (isSaving || expanded == widget.isExpanded) return;
-        widget.onTap();
-      },
-      isLoading: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: _errorMessage(),
-      values: widget.values,
-      itemLabel: (value) => value.label,
-      selected: _selected,
-      multi: true,
-      allowEmptySelection: widget.allowEmptySelection,
-      onSelectionChanged: (selection) {
-        _savedStatusTimer?.cancel();
-        setState(() {
-          _selected = selection;
-          _status = CatchFieldStatus.idle;
-        });
-      },
-      onCancel: _cancel,
-      onSubmit: _submit,
+    return CatchFieldLanes.single(
+      child: CatchField<T>.choices(
+        copy: catchFieldCopy(context.l10n),
+        icon: widget.icon,
+        title: widget.label,
+        contract: widget.contract,
+        contractValue: widget.contractValue,
+        emptyValueText: widget.emptyValueText,
+        addable: widget.isAddAffordance,
+        isOptional: widget.showOptionalLabel,
+        tone: widget.isAddAffordance || _selected.isEmpty
+            ? CatchFieldTone.primary
+            : CatchFieldTone.normal,
+        open: widget.isExpanded,
+        onOpenChanged: (expanded) {
+          if (isSaving || expanded == widget.isExpanded) return;
+          widget.onTap();
+        },
+        isLoading: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: _errorMessage(),
+        values: widget.values,
+        itemLabel: (value) => value.label,
+        selected: _selected,
+        multi: true,
+        allowEmptySelection: widget.allowEmptySelection,
+        onSelectionChanged: (selection) {
+          _savedStatusTimer?.cancel();
+          setState(() {
+            _selected = selection;
+            _status = CatchFieldStatus.idle;
+          });
+        },
+        onCancel: _cancel,
+        onSubmit: _submit,
+      ),
     );
   }
 

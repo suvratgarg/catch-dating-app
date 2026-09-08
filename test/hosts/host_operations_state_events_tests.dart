@@ -272,12 +272,13 @@ void _registerHostOperationsStateEventsTests() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: CatchSection.fieldRows(
             title: 'Profile',
             first: true,
             children: [
               CatchField.nav(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Display name',
                 valueText: 'Suvrat',
                 icon: Icons.person_outline,

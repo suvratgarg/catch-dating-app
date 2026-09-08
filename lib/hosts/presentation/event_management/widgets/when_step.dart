@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/business_rules.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class WhenStep extends StatelessWidget {
@@ -51,6 +51,7 @@ class WhenStep extends StatelessWidget {
                   : null,
               builder: (field) => CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.datePicker,
                   title: context.l10n.hostsWhenStepLabelDate,
                   body: dateController.text.isEmpty
@@ -68,6 +69,7 @@ class WhenStep extends StatelessWidget {
                   : null,
               builder: (field) => CatchFieldLanes.single(
                 child: CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.timePicker,
                   title: context.l10n.hostsWhenStepLabelStartTime,
                   body: startTimeController.text.isEmpty
@@ -80,6 +82,7 @@ class WhenStep extends StatelessWidget {
               ),
             ),
             CatchField.stepper(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsWhenStepLabelDuration,
               contract:
                   CatchContractConstraints.mobileFormStateEventDurationMinutes,

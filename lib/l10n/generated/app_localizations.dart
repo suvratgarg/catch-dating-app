@@ -796,31 +796,31 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreCatchAdaptivePickerTextDone;
 
-  /// Product copy used by lib/core/widgets/catch_error_banner.dart (label).
+  /// Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Try again'**
   String get coreCatchErrorBannerLabelTryAgain;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (tooltip).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'field'**
   String get coreCatchFieldTooltipField;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get coreCatchFieldLabelCancel;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Done'**
   String get coreCatchFieldLabelDone;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (saving label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (saving label).
   ///
   /// In en, this message translates to:
   /// **'Saving…'**
@@ -844,7 +844,7 @@ abstract class AppLocalizations {
   /// **'Saved'**
   String get coreCatchFieldSemanticSaved;
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Optional'**
@@ -880,37 +880,37 @@ abstract class AppLocalizations {
   /// **'Enter a valid {field}'**
   String coreCatchFormValidationPattern({required String field});
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get coreCatchFrameworkErrorViewTextSomethingWentWrong;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Developer details'**
   String get coreCatchFrameworkErrorViewTextDeveloperDetails;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (Text).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Typing...'**
   String get coreCatchPersonRowTextTyping;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Unread chat'**
   String get coreCatchPersonRowLabelUnreadChat;
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'New match'**
   String get coreCatchPersonRowLabelNewMatch;
 
-  /// Product copy used by lib/core/widgets/catch_share_card_footer.dart (Text).
+  /// Brand footer copy supplied by chat, organizer, and event share-card callers.
   ///
   /// In en, this message translates to:
   /// **'CATCH'**
@@ -6947,13 +6947,13 @@ abstract class AppLocalizations {
   /// **'Block {name}?'**
   String coreBlockUserDialogTitleBlockName({required Object name});
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (tooltip).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Clear {value1}'**
   String coreCatchFieldTooltipClearValue1({required Object value1});
 
-  /// Product copy used by lib/core/widgets/catch_form_field_label.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label}, optional'**
@@ -6971,39 +6971,30 @@ abstract class AppLocalizations {
   /// **'New message'**
   String get notificationArrivalMessageTitle;
 
-  /// Product copy used by lib/core/widgets/catch_notice.dart (tooltip).
+  /// Product copy supplied by app callers to the shared CatchNotice dismiss control (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get coreCatchNoticeTooltipDismiss;
 
-  /// Product copy used by lib/core/widgets/catch_person_avatar.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).
   ///
   /// In en, this message translates to:
   /// **'+{count}'**
   String coreCatchPersonAvatarTextCount({required Object count});
 
-  /// Product copy used by lib/core/widgets/catch_person_row.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label} unread chats'**
   String coreCatchPersonRowLabelLabelUnreadChats({required Object label});
 
-  /// Product copy used by lib/core/widgets/catch_search_field.dart (tooltip).
+  /// Search-field tooltip supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Clear {placeholder}'**
   String coreCatchSearchFieldTooltipClearPlaceholder({
     required Object placeholder,
-  });
-
-  /// Product copy used by lib/core/widgets/catch_section_layout.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{displayTitle} · {count}'**
-  String coreCatchSectionLayoutTextDisplaytitleCount({
-    required Object displayTitle,
-    required Object count,
   });
 
   /// Product copy used by lib/core/widgets/catch_startup_loading_screen.dart (body).
@@ -7018,7 +7009,7 @@ abstract class AppLocalizations {
   /// **'startup-loading-delay'**
   String get coreCatchStartupLoadingScreenBodyStartupLoadingDelay;
 
-  /// Product copy used by lib/core/widgets/catch_step_flow_header.dart (Text).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for the shared wizard step counter.
   ///
   /// In en, this message translates to:
   /// **'STEP {clampedStep} OF {total}'**
@@ -7036,16 +7027,7 @@ abstract class AppLocalizations {
     required int total,
   });
 
-  /// Product copy used by lib/core/widgets/catch_step_progress.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}/{totalSteps}'**
-  String coreCatchStepProgressTextValue1Totalsteps({
-    required Object value1,
-    required Object totalSteps,
-  });
-
-  /// Product copy used by lib/core/widgets/catch_top_bar.dart (label).
+  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for shared identity-header semantics.
   ///
   /// In en, this message translates to:
   /// **'View {name} profile'**
@@ -10597,7 +10579,7 @@ abstract class AppLocalizations {
   /// **'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.'**
   String get coreBlockUserDialogMessageYouWillStopSeeing;
 
-  /// Product copy used by lib/core/widgets/catch_framework_error_view.dart (Text).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'This screen hit a temporary app error. Please go back or try again in a moment.'**
@@ -13446,19 +13428,19 @@ abstract class AppLocalizations {
     required Object countdownLabel,
   });
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select'**
   String get coreCatchFieldVisiblecopySelect;
 
-  /// Product copy used by lib/core/widgets/catch_otp_code_field.dart (visibleCopy).
+  /// Accessibility label for the one-time verification-code input, supplied by app callers.
   ///
   /// In en, this message translates to:
-  /// **'otp_digit'**
-  String get coreCatchOtpCodeFieldVisiblecopyOtpDigit;
+  /// **'One-time code'**
+  String get coreCatchOtpCodeFieldSemanticLabel;
 
-  /// Product copy used by lib/core/widgets/catch_search_field.dart (visibleCopy).
+  /// Search-field action copy supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Close search'**
@@ -16408,19 +16390,19 @@ abstract class AppLocalizations {
   /// **'Insights get sharper after more post-event profile views.'**
   String get userAnalyticsUserAnalyticsCopyBodyInsightsGetSharperAfter;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Private to you'**
   String get coreCatchPrivacyBadgeLabelPrivateToYou;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host can see'**
   String get coreCatchPrivacyBadgeLabelHostCanSee;
 
-  /// Product copy used by lib/core/widgets/catch_privacy_badge.dart (label).
+  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Catch private'**
@@ -17385,7 +17367,7 @@ abstract class AppLocalizations {
   /// **'Check the highlighted details and try again.'**
   String get coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select {toLowerCase}'**
@@ -17393,7 +17375,7 @@ abstract class AppLocalizations {
     required Object toLowerCase,
   });
 
-  /// Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Canonical empty editable-row copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add {fieldLabel}'**

@@ -1,12 +1,10 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef EventItineraryLocationPicker =
@@ -33,6 +31,7 @@ class EventItineraryEditor extends StatelessWidget {
       children: [
         for (final indexed in items.indexed)
           CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             key: ValueKey('create-event-itinerary-${indexed.$2.id}'),
             title: indexed.$2.title,
             body: context.l10n.hostsEventItineraryOffset(
@@ -43,6 +42,7 @@ class EventItineraryEditor extends StatelessWidget {
             onTap: () => _edit(context, indexed.$1, indexed.$2),
           ),
         CatchField.action(
+          copy: catchFieldCopy(context.l10n),
           key: const ValueKey('create-event-itinerary-add'),
           title: context.l10n.hostsEventItineraryAdd,
           body: context.l10n.hostsEventItineraryAddBody,
@@ -169,6 +169,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
             child: CatchSection.containedFieldRows(
               children: [
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.itineraryTitle,
                   title: context.l10n.hostsEventItineraryFieldTitle,
                   contract: CatchContractConstraints
@@ -178,6 +179,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   icon: CatchIcons.editNoteOutlined,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.itineraryOffset,
                   title: context.l10n.hostsEventItineraryFieldOffset,
                   contract: CatchContractConstraints
@@ -187,6 +189,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   icon: CatchIcons.scheduleOutlined,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.itineraryDuration,
                   title: context.l10n.hostsEventItineraryFieldDuration,
                   contract: CatchContractConstraints
@@ -197,6 +200,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   icon: CatchIcons.timerOutlined,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.itineraryDescription,
                   title: context.l10n.hostsEventItineraryFieldDescription,
                   contract: CatchContractConstraints
@@ -206,7 +210,8 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   isOptional: true,
                   icon: CatchIcons.descriptionOutlined,
                 ),
-                CatchField.choices<EventItineraryKind>(
+                CatchField<EventItineraryKind>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsEventItineraryFieldKind,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadItineraryItemsKind,
@@ -222,6 +227,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                 ),
                 if (defaultLocation != null && onPickLocation == null)
                   CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsEventItineraryUseMeetingPoint,
                     body: defaultLocation.name,
                     value: selectedLocation != null,
@@ -233,6 +239,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   ),
                 if (onPickLocation != null) ...[
                   CatchField.action(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsEventItineraryLocationTitle,
                     body:
                         selectedLocation?.name ??
@@ -250,6 +257,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   ),
                   if (selectedLocation != null)
                     CatchField.action(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.hostsEventItineraryLocationRemove,
                       body: selectedLocation!.name,
                       valueText: context.l10n.hostsEventItineraryDelete,

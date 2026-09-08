@@ -55,7 +55,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
             onRetry: () {

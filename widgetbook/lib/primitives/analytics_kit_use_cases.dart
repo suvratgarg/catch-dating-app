@@ -1,16 +1,15 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 const _tilePreviewWidth = CatchLayout.analyticsMetricPreviewWidth;
 const _gridPreviewWidth = CatchLayout.confirmDialogMaxWidth;
 
 final _readyAnalyticsMetric = CatchMetricCardData(
+  partialBadgeLabel: 'Partial',
+  missingBadgeLabel: 'Missing',
   icon: CatchIcons.visibilityOutlined,
   value: '12.4K',
   label: 'Profile views',
@@ -18,6 +17,8 @@ final _readyAnalyticsMetric = CatchMetricCardData(
 );
 
 final _partialAnalyticsMetric = CatchMetricCardData(
+  partialBadgeLabel: 'Partial',
+  missingBadgeLabel: 'Missing',
   icon: CatchIcons.confirmationNumberOutlined,
   value: '126',
   label: 'Bookings',
@@ -26,6 +27,8 @@ final _partialAnalyticsMetric = CatchMetricCardData(
 );
 
 final _missingAnalyticsMetric = CatchMetricCardData(
+  partialBadgeLabel: 'Partial',
+  missingBadgeLabel: 'Missing',
   icon: CatchIcons.accountBalanceWalletOutlined,
   value: '--',
   label: 'Revenue',
@@ -92,6 +95,37 @@ Widget catchAnalyticsMetricGridStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Ready, partial and missing data',
+  type: CatchAnalyticsDataQualityList,
+  path: '[Core primitives]/Analytics kit',
+)
+Widget catchAnalyticsDataQualityStates(
+  BuildContext context,
+) => const WidgetbookCatalogFrame(
+  title: 'Analytics data quality',
+  catalogId: 'catch.analytics_data_quality',
+  children: [
+    CatchAnalyticsDataQualityList(
+      rows: [
+        CatchDataQualityRowData(
+          status: CatchMetricStatus.ready,
+          detail: 'Attendance data is ready.',
+        ),
+        CatchDataQualityRowData(
+          status: CatchMetricStatus.partial,
+          detail: 'Recent bookings are still being counted.',
+        ),
+        CatchDataQualityRowData(
+          status: CatchMetricStatus.missing,
+          detail:
+              'Revenue is unavailable until a payment account is connected.',
+        ),
+      ],
+    ),
+  ],
+);
 
 @widgetbook.UseCase(
   name: 'Analytics composition',

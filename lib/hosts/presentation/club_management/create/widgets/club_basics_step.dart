@@ -2,13 +2,12 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class ClubBasicsStep extends StatelessWidget {
@@ -86,7 +85,8 @@ class ClubBasicsStep extends StatelessWidget {
             ),
             CatchSection.fieldRows(
               children: [
-                CatchField.choices<OrganizerType>(
+                CatchField<OrganizerType>.choices(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsOrganizerTypeLabel,
                   contract: CatchContractConstraints
                       .createClubCallablePayloadOrganizerType,
@@ -106,6 +106,7 @@ class ClubBasicsStep extends StatelessWidget {
                       : null,
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsClubBasicsStepTitleClubName,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadName,
@@ -133,35 +134,39 @@ class ClubBasicsStep extends StatelessWidget {
                             .l10n
                             .hostsClubBasicsStepVisiblecopyPleaseSelectACity
                       : null,
-                  builder: (field) => CatchField.choices<CityOption>(
-                    title: context.l10n.hostsClubBasicsStepTitleCity,
-                    contract: CatchContractConstraints
-                        .createClubCallablePayloadLocation,
-                    contractValue: (city) => city.effectiveMarketId,
-                    body: selectedCity?.label,
-                    icon: CatchIcons.locationCityOutlined,
-                    values: defaultCityOptions
-                        .where((city) => city.hostCreatable)
-                        .toList(growable: false),
-                    itemLabel: (city) => city.label,
-                    selected: selectedCity == null
-                        ? const <CityOption>{}
-                        : {selectedCity!},
-                    enabled: detailsEnabled,
-                    error: field.errorText,
-                    onSelectionChanged: detailsEnabled
-                        ? (selection) {
-                            final next = selection.isEmpty
-                                ? null
-                                : selection.single;
-                            field.didChange(next);
-                            field.validate();
-                            onCityChanged(next);
-                          }
-                        : null,
+                  builder: (field) => CatchFieldLanes.single(
+                    child: CatchField<CityOption>.choices(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostsClubBasicsStepTitleCity,
+                      contract: CatchContractConstraints
+                          .createClubCallablePayloadLocation,
+                      contractValue: (city) => city.effectiveMarketId,
+                      body: selectedCity?.label,
+                      icon: CatchIcons.locationCityOutlined,
+                      values: defaultCityOptions
+                          .where((city) => city.hostCreatable)
+                          .toList(growable: false),
+                      itemLabel: (city) => city.label,
+                      selected: selectedCity == null
+                          ? const <CityOption>{}
+                          : {selectedCity!},
+                      enabled: detailsEnabled,
+                      error: field.errorText,
+                      onSelectionChanged: detailsEnabled
+                          ? (selection) {
+                              final next = selection.isEmpty
+                                  ? null
+                                  : selection.single;
+                              field.didChange(next);
+                              field.validate();
+                              onCityChanged(next);
+                            }
+                          : null,
+                    ),
                   ),
                 ),
                 CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsClubBasicsStepTitleAreaNeighbourhood,
                   contract:
                       CatchContractConstraints.createClubCallablePayloadArea,

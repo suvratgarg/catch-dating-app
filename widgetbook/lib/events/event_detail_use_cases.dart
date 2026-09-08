@@ -7,19 +7,10 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_section.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -79,6 +70,7 @@ import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -993,6 +985,7 @@ Widget eventDetailHairlineListStates(BuildContext context) {
         child: HairlineList(
           itemCount: titles.length,
           itemBuilder: (context, index) => CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             icon: icons[index],
             iconColor: activity.deep,
             title: titles[index],
@@ -2895,40 +2888,6 @@ Widget eventMonthMarkerStates(BuildContext context) {
         hasEvent: false,
         enabled: false,
         onTap: _noop,
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Visual atom clock',
-  type: EventClockMark,
-  path: '[Events]/Tiles',
-)
-Widget eventClockMarkState(BuildContext context) {
-  return EventClockMark(
-    accent: CatchTokens.of(context).primary,
-    time: TimeOfDay.fromDateTime(_event.startTime),
-    size: 42,
-    centerDotRadius: 2,
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Visual atom status',
-  type: EventStatusPill,
-  path: '[Events]/Tiles',
-)
-Widget eventStatusPillState(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return Wrap(
-    spacing: CatchSpacing.s2,
-    children: [
-      EventStatusPill(label: 'Open', color: t.primary),
-      EventStatusPill(
-        label: 'Booked',
-        color: t.success,
-        tone: EventStatusPillTone.dark,
       ),
     ],
   );

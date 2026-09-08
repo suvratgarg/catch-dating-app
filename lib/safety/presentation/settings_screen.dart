@@ -3,21 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -31,6 +20,7 @@ import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -265,16 +255,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   children: [
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.safetySettingsScreenTitlePhoneNumber,
                       valueText: state.profile.phoneNumber,
                       icon: CatchIcons.phoneOutlined,
                     ),
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.safetySettingsScreenTitleEmail,
                       valueText: state.profile.email,
                       icon: CatchIcons.emailOutlined,
                     ),
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.reviewHistoryRow,
                       title:
                           context.l10n.safetySettingsScreenTitleReviewHistory,
@@ -289,6 +282,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.paymentHistoryRow,
                       title:
                           context.l10n.safetySettingsScreenTitlePaymentHistory,
@@ -303,6 +297,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.hostAppRow,
                       title: context.l10n.safetySettingsScreenTitleCatchHost,
                       valueText: context
@@ -320,6 +315,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onTap: operationPending ? null : _openHostApp,
                     ),
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.launchAccessRow,
                       title: context
                           .l10n
@@ -340,6 +336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: context.l10n.safetySettingsScreenTitleNotifications,
                   children: [
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.newCatchesSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsNewCatches,
@@ -356,6 +353,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.crossPathsInvitationsSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsCrossPathsInvitations,
@@ -373,6 +371,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.messagesSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsMessages,
@@ -387,6 +386,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.eventRemindersSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsEventReminders,
@@ -402,6 +402,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.eventStatusUpdatesSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsRunStatusUpdates,
@@ -418,6 +419,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.clubUpdatesSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsClubUpdates,
@@ -434,6 +436,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.weeklyDigestSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsWeeklyDigest,
@@ -462,6 +465,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   children: [
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.showInCrossPathsSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsShowInCrossPaths,
@@ -480,11 +484,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                     ),
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.safetySettingsScreenTitleBlockedUsers,
                       valueText: state.blockedAccounts.count?.toString(),
                       icon: CatchIcons.shieldOutlined,
                     ),
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.safetySettingsScreenTitleWhoCanSeeYou,
                       valueText: context
                           .l10n
@@ -492,6 +498,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       icon: CatchIcons.visibilityOutlined,
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.showOnMapSwitch,
                       contract: CatchContractConstraints
                           .updateUserProfilePatchPrefsShowOnMap,
@@ -507,6 +514,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     if (AppConfig.privacyPolicyUrl case final uri?)
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         key: SettingsKeys.privacyPolicyRow,
                         title:
                             context.l10n.safetySettingsScreenTitlePrivacyPolicy,
@@ -527,6 +535,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                       ),
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.deleteAccountRow,
                       title: context
                           .l10n
@@ -548,6 +557,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     if (AppConfig.helpUrl case final uri?)
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         key: SettingsKeys.helpSupportRow,
                         title:
                             context.l10n.safetySettingsScreenTitleHelpSupport,
@@ -571,6 +581,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     if (AppConfig.termsUrl case final uri?)
                       CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
                         key: SettingsKeys.termsRow,
                         title: context.l10n.safetySettingsScreenTitleTerms,
                         valueText: context.l10n.safetySettingsScreenBodyLegal,
@@ -591,6 +602,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                       ),
                     CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
                       title: context.l10n.safetySettingsScreenTitleVersion,
                       valueText: version,
                       icon: CatchIcons.infoOutline,
@@ -600,6 +612,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 CatchSection.fieldRows(
                   children: [
                     CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
                       key: SettingsKeys.signOutRow,
                       title: context.l10n.safetySettingsScreenTitleLogOut,
                       icon: CatchIcons.logoutRounded,
@@ -649,7 +662,7 @@ class AccountProfileStatus extends StatelessWidget {
     if (profile.isError) {
       return Padding(
         padding: CatchInsets.content,
-        child: CatchInlineErrorState.fromError(
+        child: CatchLocalizedInlineErrorState(
           profile.error!,
           compact: true,
           onRetry: onRetry,
@@ -701,7 +714,7 @@ class BlockedAccountsSection extends StatelessWidget {
             const BlockedAccountsSkeleton(),
           SettingsBlockedAccountsStatus.error => Padding(
             padding: CatchInsets.content,
-            child: CatchInlineErrorState.fromError(
+            child: CatchLocalizedInlineErrorState(
               state.error!,
               compact: true,
               onRetry: onRetry,
@@ -806,6 +819,7 @@ class BlockedAccountTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchPersonRow(
+      copy: catchPersonRowCopy(context.l10n),
       data: CatchPersonRowData(
         name: row.name,
         imageUrl: row.imageUrl,

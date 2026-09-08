@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -117,7 +117,7 @@ class _CatchConsumerBootstrapState extends State<CatchConsumerBootstrap> {
       if (_animationComplete && _initializationError != null) {
         subtreeKey = CatchConsumerBootstrap.failureKey;
         home = Builder(
-          builder: (context) => CatchErrorScaffold.fromError(
+          builder: (context) => CatchLocalizedErrorScaffold(
             _initializationError!,
             onRetry: _retry,
           ),
@@ -390,12 +390,12 @@ class _CatchConsumerBootScreenState extends State<CatchConsumerBootScreen>
                     final sceneWidth = size.width
                         .clamp(0, CatchWelcomeTokens.welcomeMaxWidth)
                         .toDouble();
-                    final catchLeft = CatchWelcomeTokens.welcomeReelCatchLeftForWidth(
-                      sceneWidth,
-                    );
-                    final rightInset = CatchWelcomeTokens.welcomeReelRightForWidth(
-                      sceneWidth,
-                    );
+                    final catchLeft =
+                        CatchWelcomeTokens.welcomeReelCatchLeftForWidth(
+                          sceneWidth,
+                        );
+                    final rightInset =
+                        CatchWelcomeTokens.welcomeReelRightForWidth(sceneWidth);
                     final catchTop = CatchWelcomeTokens.welcomeReelCatchTopFor(
                       media.padding,
                     );

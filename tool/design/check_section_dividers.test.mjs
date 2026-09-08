@@ -71,6 +71,21 @@ test("classifies loading skeleton dividers as low visual geometry", () => {
   assert.match(findings[0].reason, /loading skeleton/u);
 });
 
+test("retired ticket owner and shared ticket files do not exempt raw dividers", () => {
+  for (const relativePath of [
+    "lib/core/widgets/event_ticket_surface.dart",
+    "packages/catch_ui/lib/src/components/catch_ticket_perforated_divider.dart",
+    "packages/catch_ui/lib/src/components/ticket_neighbor.dart",
+  ]) {
+    const findings = scanSourceForSectionDividers({
+      relativePath,
+      source: "Widget build(BuildContext context) => Divider();",
+    });
+    assert.equal(findings.length, 1, relativePath);
+    assert.equal(findings[0].level, "medium", relativePath);
+  }
+});
+
 test("classifies dark hero divider token as low editorial chrome", () => {
   const findings = scanSourceForSectionDividers({
     relativePath: "lib/hosts/presentation/host_operations_screen.dart",

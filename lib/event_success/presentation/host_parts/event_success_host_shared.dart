@@ -127,6 +127,7 @@ class PlanSummary extends StatelessWidget {
     final ready = draft.status == EventSuccessSetupStatus.readyForLaunch;
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: draft.playbook.title,
         body: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthTools(
           length: draft.selectedModules.length,
@@ -159,6 +160,7 @@ class HostActivitySummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.content(
+        copy: catchFieldCopy(context.l10n),
         title: profile.formatLabel,
         body: profile.summary,
         valueText: profile.interactionModel.label,
@@ -186,6 +188,7 @@ class CompatibilitySignalHostCard extends StatelessWidget {
     return CatchSection.fieldRows(
       children: [
         CatchField.content(
+          copy: catchFieldCopy(context.l10n),
           title: context
               .l10n
               .eventSuccessEventSuccessHostSharedTextMatchClueQuestions,
@@ -238,6 +241,7 @@ class WingmanRequestsHostCard extends StatelessWidget {
       children: [
         if (activeRequests.isEmpty)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSharedTextNoHostHelpRequests,
@@ -282,6 +286,7 @@ class WingmanRequestHostRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchPersonRow(
+          copy: catchPersonRowCopy(context.l10n),
           data: CatchPersonRowData(
             name:
                 requester?.name ??

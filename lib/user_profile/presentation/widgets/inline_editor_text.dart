@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchTokens;
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -175,6 +175,7 @@ class _ProfileDirectTextEntryFieldState
               ));
     return CatchFieldLanes.single(
       child: CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         icon: widget.icon,
         title: widget.label,
         contract: widget.contract,
@@ -275,6 +276,7 @@ class ProfileInlineTextValue extends StatelessWidget {
 
     return CatchFieldLanes.single(
       child: CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         title: label,
         contract: contract,
         placeholder: placeholder ?? displayValue,

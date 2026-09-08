@@ -1,4 +1,6 @@
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 Future<bool?> showConfirmDangerDialog({
@@ -8,6 +10,7 @@ Future<bool?> showConfirmDangerDialog({
   required String confirmLabel,
 }) {
   return showCatchConfirmDialog(
+    copy: catchDialogCopy(context.l10n),
     context: context,
     title: title,
     message: message,

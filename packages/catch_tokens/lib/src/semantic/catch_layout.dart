@@ -777,6 +777,10 @@ abstract final class CatchLayout {
   static const double eventTicketDividerHeight = 20.0;
   static const double eventTicketNotchRadius = 10.0;
   static const double eventTicketNotchDepth = 8.0;
+
+  /// Center of the perforation below a ticket's media region.
+  static double eventTicketNotchCenterY(double mediaHeight) =>
+      mediaHeight + eventTicketDividerHeight / 2;
   static const double ticketPerforationStartOffset = 0.5;
   static const double ticketPerforationDashLength = 2.2;
   static const double ticketPerforationStride = 7.0;

@@ -4901,7 +4901,7 @@
           "action": "keep"
         },
         {
-          "name": "EventStatusPill",
+          "name": "CatchTicketStatusBadge",
           "action": "keep"
         },
         {

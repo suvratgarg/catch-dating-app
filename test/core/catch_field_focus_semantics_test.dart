@@ -1,9 +1,10 @@
 import 'dart:ui' show SemanticsAction;
 
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -110,6 +111,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Job title',
               controller: controller,
               focusNode: focusNode,
@@ -155,11 +157,13 @@ void main() {
           body: Column(
             children: [
               CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'First field',
                 controller: firstController,
                 focusNode: firstFocus,
               ),
               CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Second field',
                 controller: secondController,
                 focusNode: secondFocus,
@@ -201,6 +205,7 @@ void main() {
                   child: const Text('Before'),
                 ),
                 CatchField.toggle(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Show my pace',
                   value: true,
                   onChanged: (_) {},
@@ -357,7 +362,11 @@ void main() {
               child: CatchSection.fieldRows(
                 first: true,
                 children: [
-                  CatchField.nav(title: 'Reminder timing', onTap: () {}),
+                  CatchField.nav(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Reminder timing',
+                    onTap: () {},
+                  ),
                 ],
               ),
             ),
@@ -396,12 +405,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(
+          home: Scaffold(
             body: CatchField.control(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Religion',
               body: 'Christian',
               isOptional: true,
-              control: SizedBox(height: 80),
+              control: const SizedBox(height: 80),
             ),
           ),
         ),
@@ -442,7 +452,8 @@ void main() {
         MaterialApp(
           theme: AppTheme.dark,
           home: Scaffold(
-            body: CatchField.choices<String>(
+            body: CatchField<String>.choices(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Languages',
               values: const ['English', 'Hindi'],
               itemLabel: (value) => value,
@@ -469,7 +480,8 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchField.select<String>(
+          body: CatchField<String>.select(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],
             itemLabel: (value) => value,
@@ -493,12 +505,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: CatchField.control(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Religion',
             body: 'Christian',
             error: 'Choose a religion',
-            control: SizedBox(height: 80),
+            control: const SizedBox(height: 80),
           ),
         ),
       ),
@@ -529,6 +542,7 @@ void main() {
         home: Scaffold(
           body: StatefulBuilder(
             builder: (context, setState) => CatchField.inputActions(
+              copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Prompt',
               controller: controller,
               focusNode: focusNode,
@@ -595,6 +609,7 @@ void main() {
               builder: (context, setState) => Column(
                 children: [
                   CatchField.inputActions(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'First field',
                     controller: firstController,
                     focusNode: firstFocus,
@@ -609,6 +624,7 @@ void main() {
                     onSubmit: () {},
                   ),
                   CatchField.inputActions(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Second field',
                     controller: secondController,
                     focusNode: secondFocus,
@@ -690,6 +706,7 @@ Future<void> _pumpField(
       home: Scaffold(
         body: Center(
           child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Message',
             showLabel: false,
             inputHint: 'Message…',

@@ -1,0 +1,1 @@
+enum CatchFieldEmphasis { body, title }

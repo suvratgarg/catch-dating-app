@@ -6,8 +6,9 @@ import {fileURLToPath} from "node:url";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 
-const DEFAULT_SOURCE = "lib/core/widgets/catch_field.dart";
-const DEFAULT_SECTION_SOURCE = "lib/core/widgets/catch_section_layout.dart";
+const DEFAULT_SOURCE = "packages/catch_ui/lib/src/components/catch_field.dart";
+const DEFAULT_SECTION_SOURCE = "packages/catch_ui/lib/src/components/catch_section.dart";
+const DEFAULT_STATUS_SOURCE = "packages/catch_ui/lib/src/components/catch_field_status.dart";
 const DEFAULT_CONTRACTS = "design/components/catch.components.json";
 const DEFAULT_OUTPUT = "build/reports/field_facade_inventory.json";
 
@@ -135,14 +136,14 @@ export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {})
   const declarations = [
     ...extractDeclarations(
       source,
-      /\bconst\s+factory\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
-      "factory",
+      /\bconst\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "constructor",
       "CatchField",
     ),
     ...extractDeclarations(
       source,
-      /\bstatic\s+CatchField\s+([A-Za-z][A-Za-z0-9_]*)(?:<[^>{}()]+>)?\s*\(/gu,
-      "static-facade",
+      /\bfactory\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "factory",
       "CatchField",
     ),
   ].sort((left, right) => left.offset - right.offset);
@@ -200,13 +201,15 @@ export function extractCatchSectionContract(source) {
 export function buildFieldFacadeInventory({
   fieldSource,
   sectionSource,
+  statusSource,
   interactionContracts,
   sourcePath = DEFAULT_SOURCE,
   sectionSourcePath = DEFAULT_SECTION_SOURCE,
+  statusSourcePath = DEFAULT_STATUS_SOURCE,
 } = {}) {
   const facades = extractCatchFieldFacades(fieldSource);
   const section = extractCatchSectionContract(sectionSource);
-  const saveStates = extractEnumValues(fieldSource, "CatchFieldStatus");
+  const saveStates = extractEnumValues(statusSource, "CatchFieldStatus");
   const fieldContract = interactionContracts?.field_row;
   const sectionContract = interactionContracts?.field_section;
   if (!fieldContract || !sectionContract) {
@@ -241,6 +244,8 @@ export function buildFieldFacadeInventory({
       catchFieldApiSha256: sha256(JSON.stringify(facades)),
       catchSection: sectionSourcePath,
       catchSectionApiSha256: sha256(JSON.stringify(section)),
+      catchFieldStatus: statusSourcePath,
+      catchFieldStatusApiSha256: sha256(JSON.stringify(saveStates)),
       interactionContracts: DEFAULT_CONTRACTS,
     },
     summary: {
@@ -259,12 +264,14 @@ export function buildFieldFacadeInventory({
 export function buildFromRepo({repoRoot = process.cwd()} = {}) {
   const fieldSource = fs.readFileSync(path.resolve(repoRoot, DEFAULT_SOURCE), "utf8");
   const sectionSource = fs.readFileSync(path.resolve(repoRoot, DEFAULT_SECTION_SOURCE), "utf8");
+  const statusSource = fs.readFileSync(path.resolve(repoRoot, DEFAULT_STATUS_SOURCE), "utf8");
   const componentContracts = JSON.parse(
     fs.readFileSync(path.resolve(repoRoot, DEFAULT_CONTRACTS), "utf8"),
   );
   return buildFieldFacadeInventory({
     fieldSource,
     sectionSource,
+    statusSource,
     interactionContracts: componentContracts.interactionContracts,
   });
 }
@@ -351,7 +358,11 @@ function splitParameters(source) {
 function parseParameter(source) {
   const equalsIndex = source.indexOf("=");
   const declaration = (equalsIndex === -1 ? source : source.slice(0, equalsIndex)).trim();
-  const name = declaration.match(/([A-Za-z_][A-Za-z0-9_]*)\s*$/u)?.[1];
+  const fieldName = declaration.match(/([A-Za-z_][A-Za-z0-9_]*)\s*$/u)?.[1];
+  // Dart 3.12 exposes a private named initializing formal by its public name.
+  const name = /\bthis\._/u.test(declaration)
+    ? fieldName?.replace(/^_+/u, "")
+    : fieldName;
   if (!name) throw new Error(`Unable to parse CatchField parameter: ${source}`);
   return {
     name,

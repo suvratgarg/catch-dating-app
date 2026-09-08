@@ -5,15 +5,16 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
-import 'package:catch_dating_app/core/theme/catch_font_licenses.dart';
-import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -463,5 +464,10 @@ void _registerErrorHandlers(ErrorLogger errorLogger) {
   // Widget build failures should still look like Catch. Debug builds keep the
   // useful framework details, but the raw Flutter red screen should not leak
   // into the product shell.
-  ErrorWidget.builder = (details) => CatchFrameworkErrorView(details: details);
+  ErrorWidget.builder = (details) => Builder(
+    builder: (context) => CatchFrameworkErrorView(
+      copy: catchFrameworkErrorCopy(context.l10n),
+      details: details,
+    ),
+  );
 }

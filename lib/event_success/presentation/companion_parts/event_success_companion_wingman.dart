@@ -76,7 +76,10 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                   style: CatchTextStyles.titleL(context),
                 ),
               ),
-              const CatchPrivacyBadge(kind: CatchPrivacyBadgeKind.hostCanSee),
+              CatchPrivacyBadge(
+                copy: catchPrivacyBadgeCopy(context.l10n),
+                kind: CatchPrivacyBadgeKind.hostCanSee,
+              ),
             ],
           ),
           gapH4,
@@ -122,6 +125,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           StageSoftBand(
             child: CatchFieldLanes.single(
               child: CatchField.input(
+                copy: catchFieldCopy(context.l10n),
                 title: context
                     .l10n
                     .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,
@@ -145,6 +149,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               Padding(
                 padding: _wingmanCandidateRowGap,
                 child: CatchPersonRow(
+                  copy: catchPersonRowCopy(context.l10n),
                   data: CatchPersonRowData(
                     name: candidate.name,
                     imageUrl: candidate.primaryPhotoThumbnailUrl,

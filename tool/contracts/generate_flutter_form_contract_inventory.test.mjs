@@ -112,7 +112,7 @@ test("inventory includes bound and unbound product callsites", () => {
   );
   write(
     root,
-    "lib/core/widgets/catch_field.dart",
+    "packages/catch_ui/lib/src/components/catch_field.dart",
     "final ignored = CatchField.input(title: 'Definition');",
   );
 

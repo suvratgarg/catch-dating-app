@@ -429,7 +429,11 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
                 trailing: const CatchMetaEntry(label: '2.3 km'),
               ),
               gapH12,
-              const CatchField.read(title: 'Payment ID', body: 'pay_123'),
+              CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Payment ID',
+                body: 'pay_123',
+              ),
               gapH12,
               const CatchStatColumn(
                 value: '24',
@@ -858,6 +862,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFrameworkErrorView(
+          copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
           showDebugDetails: false,
         ),
@@ -900,6 +905,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     await tester.pumpWidget(
       _wrap(
         CatchFrameworkErrorView(
+          copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
         ),
       ),
@@ -918,7 +924,9 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchFrameworkErrorDebugDetails(
+        CatchFrameworkErrorDebugDetails(
+          label: AppLocalizationsEn()
+              .coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'debug exception details',
           initiallyExpanded: true,
         ),

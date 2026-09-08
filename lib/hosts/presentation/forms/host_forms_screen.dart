@@ -4,23 +4,14 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_selection_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
@@ -31,6 +22,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleto
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -122,7 +114,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             uidState.error!,
             context: AppErrorContext.auth,
             onRetry: () => ref.invalidate(uidProvider),
@@ -165,7 +157,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: [
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             clubsState.error!,
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(hostOperableClubsProvider(uid)),
@@ -222,6 +214,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               ]
             : const [],
         search: CatchTopBarSearch(
+          copy: catchSearchFieldCopy(context.l10n),
           value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
           contract: activeSearchIsForms
               ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
@@ -405,6 +398,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           };
           if (lifecycleAction == HostFormLifecycleAction.archive) {
             final confirmed = await showCatchConfirmDialog(
+              copy: catchDialogCopy(context.l10n),
               context: context,
               title: context.l10n.hostFormsArchiveConfirmTitle,
               message: context.l10n.hostFormsArchiveConfirmBody,
@@ -420,6 +414,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           return;
         case _HostFormRowAction.delete:
           final confirmed = await showCatchConfirmDialog(
+            copy: catchDialogCopy(context.l10n),
             context: context,
             title: context.l10n.hostFormsDeleteConfirmTitle,
             message: context.l10n.hostFormsDeleteConfirmBody,
@@ -533,7 +528,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   ref.invalidate(hostFormsDirectoryControllerProvider(request)),
               initialLoadTimeout: null,
               loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-              errorBuilder: (_, error, _) => CatchErrorState.fromError(
+              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,
                 mode: CatchErrorStateMode.compact,
@@ -621,7 +616,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     ],
                     if (state.loadMoreError case final error?) ...[
                       gapH12,
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,

@@ -1,14 +1,10 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Opens the route-specific composer for an organizer update to followers.
@@ -109,6 +105,7 @@ class _HostFollowerUpdateComposerSheetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchNotice(
+            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
             notice: CatchNoticeData(
               id: 'host.follower-update.${widget.club.id}',
               title: context.l10n.hostSendsFollowerUpdateChannel,
@@ -118,6 +115,7 @@ class _HostFollowerUpdateComposerSheetState
           gapH16,
           CatchFieldLanes.single(
             child: CatchField.input(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-follower-update-text'),
               title: context.l10n.hostsHostClubToolsTitleUpdate,
               contract: CatchContractConstraints

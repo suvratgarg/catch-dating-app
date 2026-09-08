@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:6da241c2669ea5491035e8718ae74b93ef8ce17ef79355f99feb150260d94853",
+  "resolvedDigest": "sha256:c5a844268934f9995340a34155477f9ffafcc2373c8bfd735ea46a5499a5e5f3",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1165,11 +1165,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",
@@ -1188,7 +1189,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchIconButton",
-              "file": "lib/core/widgets/catch_icon_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
               "constructors": [
                 "CatchIconButton",
                 "CatchIconButton.icon",
@@ -1201,7 +1202,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchOptionGroup",
-              "file": "lib/core/widgets/catch_option_group.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
               "constructors": [
                 "CatchOptionGroup"
               ]
@@ -1212,7 +1213,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchRangeSlider",
-              "file": "lib/core/widgets/catch_range_slider.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
               "constructors": [
                 "CatchRangeSlider"
               ]
@@ -1223,7 +1224,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchSection",
-              "file": "lib/core/widgets/catch_section_layout.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "constructors": [
                 "CatchSection.divided",
                 "CatchSection.fieldRows",
@@ -1239,7 +1240,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -1253,7 +1254,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

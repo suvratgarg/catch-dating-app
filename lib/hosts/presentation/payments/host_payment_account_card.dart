@@ -3,19 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef HostPaymentStartOnboarding =
@@ -145,11 +139,13 @@ class HostPaymentAccountCard extends StatelessWidget {
               CatchSection.fieldRows(
                 children: [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
                     valueText: _countryLabel(country),
                     icon: CatchIcons.locationOnOutlined,
                   ),
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     title: context
                         .l10n
                         .hostsHostPaymentAccountCardTitleDefaultCurrency,
@@ -270,17 +266,20 @@ class HostPaymentAccountContentCard extends StatelessWidget {
       ),
       children: [
         CatchField.content(
+          copy: catchFieldCopy(context.l10n),
           title: presentation.title,
           body: presentation.body,
           icon: CatchIcons.paymentsOutlined,
         ),
         if (account != null) ...[
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
             valueText: _countryLabel(account.country),
             icon: CatchIcons.locationOnOutlined,
           ),
           CatchField.read(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostPaymentAccountCardTitleDefaultCurrency,
             valueText: account.defaultCurrency.toUpperCase(),
             icon: CatchIcons.paymentsOutlined,
@@ -288,6 +287,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
         ],
         if (actionErrorMessage != null)
           CatchField.content(
+            copy: catchFieldCopy(context.l10n),
             title: presentation.title,
             body: actionErrorMessage!,
             icon: CatchIcons.errorOutlineRounded,
@@ -295,6 +295,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
           ),
         for (final provider in providers) ...[
           CatchField.action(
+            copy: catchFieldCopy(context.l10n),
             title: _providerTitle(context.l10n, provider),
             body: _providerBody(
               context.l10n,
@@ -318,6 +319,7 @@ class HostPaymentAccountContentCard extends StatelessWidget {
           ),
           if (accountFor(provider) != null)
             CatchField.action(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
               body: _providerTitle(context.l10n, provider),
               icon: CatchIcons.refreshRounded,
@@ -568,7 +570,8 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                 ),
                 gapH16,
                 CatchFieldLanes.single(
-                  child: CatchField.select<RazorpayHostBusinessType>(
+                  child: CatchField<RazorpayHostBusinessType>.select(
+                    copy: catchFieldCopy(context.l10n),
                     title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
                     contract: CatchContractConstraints
                         .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
@@ -740,6 +743,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                 CatchFieldLanes.divided(
                   children: [
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       title: l10n
                           .hostsHostPaymentAccountCardTitleStakeholderDirector,
                       contract: CatchContractConstraints
@@ -750,6 +754,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                           : (value) => setState(() => _isDirector = value),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       title: l10n
                           .hostsHostPaymentAccountCardTitleStakeholderExecutive,
                       contract: CatchContractConstraints
@@ -760,6 +765,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                           : (value) => setState(() => _isExecutive = value),
                     ),
                     CatchField.toggle(
+                      copy: catchFieldCopy(context.l10n),
                       title: l10n
                           .hostsHostPaymentAccountCardTitleAcceptRazorpayTerms,
                       body: l10n.hostsHostPaymentAccountCardBodyRazorpayTerms,
@@ -811,6 +817,7 @@ class _RazorpaySetupInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchFieldLanes.single(
       child: CatchField.input(
+        copy: catchFieldCopy(context.l10n),
         title: title,
         controller: controller,
         contract: contract,
@@ -874,7 +881,7 @@ class HostPaymentAccountErrorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchErrorState.fromError(
+          CatchLocalizedErrorState(
             error,
             context: AppErrorContext.payments,
             mode: CatchErrorStateMode.compact,

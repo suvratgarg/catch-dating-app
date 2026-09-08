@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,24 +12,38 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 360,
           child: CatchSection.containedFieldGroups(
             groups: [
               CatchSectionFieldGroup(
                 title: 'Continue',
                 children: [
-                  CatchField.read(title: 'Draft', body: 'Sunday social'),
-                  CatchField.read(title: 'Previous', body: 'Monday run'),
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Draft',
+                    body: 'Sunday social',
+                  ),
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Previous',
+                    body: 'Monday run',
+                  ),
                 ],
               ),
               CatchSectionFieldGroup(
                 title: 'Start new',
                 count: '2 PATHS',
-                trailing: Text('Choose one'),
+                trailing: const Text('Choose one'),
                 children: [
-                  CatchField.read(title: 'Catch bookings'),
-                  CatchField.read(title: 'Guest list'),
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Catch bookings',
+                  ),
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Guest list',
+                  ),
                 ],
               ),
             ],
@@ -96,14 +111,20 @@ void main() {
           width: 360,
           child: CatchSection.containedFieldGroups(
             groups: [
-              const CatchSectionFieldGroup(
+              CatchSectionFieldGroup(
                 title: 'Continue',
-                children: [CatchField.read(title: 'Draft')],
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Draft',
+                  ),
+                ],
               ),
               CatchSectionFieldGroup(
                 title: 'Start new',
                 children: [
                   CatchField.control(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Catch bookings',
                     open: true,
                     onOpenChanged: (_) {},
@@ -139,15 +160,20 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 320,
           child: CatchSection.containedFieldGroups(
             groups: [
               CatchSectionFieldGroup(
                 title: 'Start a completely new event',
                 count: '3 AVAILABLE PATHS',
-                trailing: Text('Choose one'),
-                children: [CatchField.read(title: 'Catch bookings')],
+                trailing: const Text('Choose one'),
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(AppLocalizationsEn()),
+                    title: 'Catch bookings',
+                  ),
+                ],
               ),
             ],
           ),

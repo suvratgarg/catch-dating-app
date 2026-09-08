@@ -4,9 +4,10 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
 
+const productionRoots = ["lib/", "packages/catch_ui/lib/"];
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const canonicalImplementationPaths = new Set([
-  "lib/core/widgets/catch_horizontal_rail.dart",
+  "packages/catch_ui/lib/src/components/catch_horizontal_rail.dart",
   "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
 ]);
 const railCallPattern = /\b(CatchHorizontalRail|ClubAvatarRail)\s*\(/gu;
@@ -46,7 +47,7 @@ export function scanRailContracts({root = repoRoot} = {}) {
 }
 
 export function scanSourceForRailContracts({relativePath, source}) {
-  if (!relativePath.startsWith("lib/")) {
+  if (!productionRoots.some((root) => relativePath.startsWith(root))) {
     return {findings: [], inventory: {fullBleedOptIns: 0, railCalls: 0}};
   }
   if (canonicalImplementationPaths.has(relativePath)) {
@@ -98,8 +99,10 @@ export function scanSourceForRailContracts({relativePath, source}) {
 
 function collectDartFiles(root) {
   const files = [];
-  const absolute = path.join(root, "lib");
-  if (fs.existsSync(absolute)) walk(absolute, files, root);
+  for (const sourceRoot of productionRoots) {
+    const absolute = path.join(root, sourceRoot);
+    if (fs.existsSync(absolute)) walk(absolute, files, root);
+  }
   return files.sort();
 }
 

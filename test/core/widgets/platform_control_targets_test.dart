@@ -1,23 +1,9 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
-import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
-import 'package:catch_dating_app/core/widgets/catch_row_press_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -328,6 +314,7 @@ void main() {
         await _pump(
           tester,
           CatchSearchField.expanding(
+            copy: catchSearchFieldCopy(AppLocalizationsEn()),
             key: _controlKey,
             tooltip: 'Search',
             expanded: false,
@@ -349,9 +336,13 @@ void main() {
         expect(opened, isTrue);
         await _pump(
           tester,
-          const SizedBox(
+          SizedBox(
             width: 300,
-            child: CatchSearchField(value: 'Old query', placeholder: 'Search'),
+            child: CatchSearchField(
+              copy: catchSearchFieldCopy(AppLocalizationsEn()),
+              value: 'Old query',
+              placeholder: 'Search',
+            ),
           ),
           scale: scale,
         );
@@ -381,6 +372,7 @@ void main() {
             SizedBox(
               width: 280,
               child: CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
                 key: _controlKey,
                 title: 'Public name',
                 controller: controller,
@@ -617,7 +609,11 @@ void main() {
                 CatchOption(value: 1, label: 'Later'),
               ],
             ),
-            CatchSearchField.expanding(expanded: false, onOpenSearch: () {}),
+            CatchSearchField.expanding(
+              copy: catchSearchFieldCopy(AppLocalizationsEn()),
+              expanded: false,
+              onOpenSearch: () {},
+            ),
           ],
         ),
       ),

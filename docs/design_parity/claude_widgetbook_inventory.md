@@ -419,7 +419,7 @@ Event cards:
 - `CatchEventTicketCard`
 - `EventActivityBackdrop`
 - `EventActivityStamp`
-- `EventTicketPerforatedDivider`
+- `CatchTicketPerforatedDivider`
 
 Feedback:
 
@@ -448,7 +448,7 @@ Inputs:
 
 Layout:
 
-- `ResponsiveBuilder`
+- `CatchViewport`
 
 Loading:
 
@@ -799,9 +799,9 @@ model as separate primitives.
 - `CatchVerticalSection`
 - `EventActivityBackdrop`
 - `EventActivityStamp`
-- `EventTicketPerforatedDivider`
+- `CatchTicketPerforatedDivider`
 - `ProfileInfoTile`
-- `ResponsiveBuilder`
+- `CatchViewport`
 
 ## Immediate Inventory Findings
 

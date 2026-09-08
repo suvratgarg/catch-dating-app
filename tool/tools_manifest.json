@@ -2170,7 +2170,8 @@
           "rejects an owner outside the registered layout family",
           "requires header-owned roots to declare their top edge",
           "analyzer rejects prefixed, aliased, direct, and indirect Scaffold ownership",
-          "analysis contexts own root, Consumer, and Host production sources"
+          "analysis contexts own app and shared UI production sources",
+          "only the exact package scaffold owns the Material construction"
         ]
       }
     },
@@ -4993,6 +4994,8 @@
       "impactPaths": [
         "design/tokens/**",
         "lib/core/theme/**",
+        "packages/catch_tokens/lib/**",
+        "packages/catch_ui/**",
         "tool/design_tokens.dart",
         "tool/design/test/platform_token_coverage.test.mjs",
         "test/core/catch_platform_tokens_test.dart",
@@ -5033,12 +5036,14 @@
       "impactPaths": [
         "design/tokens/**",
         "lib/core/theme/**",
+        "packages/catch_tokens/lib/**",
+        "packages/catch_ui/**",
         "lib/core/widgets/**",
         "test/core/widgets/platform_control_targets_test.dart",
         "test/core/platform_typography_test.dart",
         "test/core/widgets/catch_tab_bar_test.dart"
       ],
-      "command": "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart",
+      "command": "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart",
       "safety": "local-build-test",
       "status": "active",
       "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
@@ -5051,7 +5056,7 @@
         ]
       },
       "checks": [
-        "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart"
+        "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart"
       ],
       "role": "gate",
       "rules": [
@@ -5236,6 +5241,7 @@
         "node --check tool/design/component_concepts.mjs",
         "node --test tool/design/component_concepts.test.mjs",
         "node --check tool/design/check_component_contracts.mjs",
+        "node --test tool/design/check_component_contracts.test.mjs",
         "node tool/design/check_component_contracts.mjs"
       ],
       "role": "finder"

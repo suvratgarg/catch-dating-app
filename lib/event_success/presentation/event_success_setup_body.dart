@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -11,7 +9,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 typedef EventSuccessHostDraftUpdate =
@@ -129,6 +127,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
           children: [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('eventSuccessFormatFirst'),
               title: context.l10n.eventSuccessEventSuccessSetupBodyTitleFormat,
               body: draft.playbook.summary,
@@ -139,6 +138,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             ),
             ...widget.planLeadingRows,
             CatchField.inputActions(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent,
@@ -163,6 +163,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               onChanged: (_) => setState(() {}),
             ),
             CatchField.inputActions(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleMessageToAttendees,
@@ -192,7 +193,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               maxLines: 4,
               textInputAction: TextInputAction.newline,
             ),
-            CatchField.optionCards<EventSuccessConversationGraphConsentMode>(
+            CatchField<EventSuccessConversationGraphConsentMode>.optionCards(
+              copy: catchFieldCopy(context.l10n),
               key: const ValueKey('eventSuccessConversationGraphConsentMode'),
               title: context
                   .l10n
@@ -349,46 +351,50 @@ class EventSuccessModuleRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (questionnaire)
-          CatchField.optionCards<_QuestionnaireMode>(
-            key: ValueKey('eventSuccessModule-${module.id}'),
-            title: context
-                .l10n
-                .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-            contract: CatchContractConstraints
-                .mobileFormStateEventSuccessQuestionnaireMode,
-            contractValue: (value) => value.name,
-            values: _QuestionnaireMode.values,
-            itemTitle: (mode) => switch (mode) {
-              _QuestionnaireMode.off =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
-              _QuestionnaireMode.cluesOnly =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
-              _QuestionnaireMode.cluesAndPairing =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
-            },
-            itemDescription: (mode) => switch (mode) {
-              _QuestionnaireMode.off =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextOptionalPromptsAreOff,
-              _QuestionnaireMode.cluesOnly =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateRevealClues,
-              _QuestionnaireMode.cluesAndPairing =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
-            },
-            selected: _questionnaireMode(_draft),
-            enabled: _editable,
-            onChanged: _editable ? _onQuestionnaireModeChanged : null,
+          CatchFieldLanes.single(
+            child: CatchField<_QuestionnaireMode>.optionCards(
+              copy: catchFieldCopy(context.l10n),
+              key: ValueKey('eventSuccessModule-${module.id}'),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+              contract: CatchContractConstraints
+                  .mobileFormStateEventSuccessQuestionnaireMode,
+              contractValue: (value) => value.name,
+              values: _QuestionnaireMode.values,
+              itemTitle: (mode) => switch (mode) {
+                _QuestionnaireMode.off =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+                _QuestionnaireMode.cluesOnly =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
+                _QuestionnaireMode.cluesAndPairing =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
+              },
+              itemDescription: (mode) => switch (mode) {
+                _QuestionnaireMode.off =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextOptionalPromptsAreOff,
+                _QuestionnaireMode.cluesOnly =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAnswersCreateRevealClues,
+                _QuestionnaireMode.cluesAndPairing =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
+              },
+              selected: _questionnaireMode(_draft),
+              enabled: _editable,
+              onChanged: _editable ? _onQuestionnaireModeChanged : null,
+            ),
           )
         else
           CatchFieldLanes.single(
             child: CatchField.toggle(
+              copy: catchFieldCopy(context.l10n),
               key: ValueKey('eventSuccessModule-${module.id}'),
               title: module.title,
               contract: CatchContractConstraints
@@ -415,7 +421,8 @@ class EventSuccessModuleRows extends StatelessWidget {
             _draft.isModuleSelected(module.id))
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRotationConfig'),
-            child: CatchField.choices<int?>(
+            child: CatchField<int?>.choices(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
@@ -448,7 +455,8 @@ class EventSuccessModuleRows extends StatelessWidget {
             _draft.isModuleSelected(module.id))
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRevealConfig'),
-            child: CatchField.choices<int>(
+            child: CatchField<int>.choices(
+              copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,

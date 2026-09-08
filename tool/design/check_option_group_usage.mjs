@@ -6,7 +6,7 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const allowedProductionPaths = new Set([
-  "lib/core/widgets/catch_option_group.dart",
+  "packages/catch_ui/lib/src/components/catch_option_group.dart",
 ]);
 const directItemPattern =
   /\bCatchOptionGroupItem(?:\s*<[^>\n]+>)?\s*\(/gu;

@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,6 +48,7 @@ void main() {
                       child: SizedBox(
                         width: width,
                         child: CatchField.nav(
+                          copy: catchFieldCopy(AppLocalizationsEn()),
                           title: 'Event One',
                           body: '12 Jun · Completed\n20 booked · 16 attended',
                           valueText: '₹1,200',

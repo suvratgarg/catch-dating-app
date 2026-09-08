@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:0e1532d8a45368e704d9f5f7b8e20318f66ecf3573852bd57319e189743b39ad",
+  "resolvedDigest": "sha256:bd037f5c63932c7489b8c80e85c35e9f867782072b2079cf4219731ae9800fc0",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -1597,7 +1597,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchAsyncValueView",
-              "file": "lib/core/widgets/catch_async_value_view.dart",
+              "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
               "constructors": [
                 "CatchAsyncValueView"
               ]
@@ -1608,10 +1608,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -3178,7 +3177,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -3191,10 +3190,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -3214,7 +3212,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",

@@ -1,19 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
@@ -42,6 +36,7 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insig
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -593,21 +588,25 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 title: 'Running',
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.speedOutlined,
                     title: 'Pace range',
                     body: '9:00-9:00/km',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.straightenOutlined,
                     title: 'Preferred distances',
                     body: '5 km, 10 km, 21 km',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.directionsRunOutlined,
                     title: 'Why I event',
                     body: 'Weight loss',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.wbTwilightOutlined,
                     title: 'Favorite event times',
                     body: 'Early morning, Morning',
@@ -631,11 +630,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 first: true,
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.formatQuoteRounded,
                     title: 'A perfect event with me looks like...',
                     body: 'Catch me if you can',
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.formatQuoteRounded,
                     title: 'After an event, you can usually find me...',
                     body: 'ABCD',
@@ -660,11 +661,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 ),
                 children: [
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.shieldOutlined,
                     title: 'Blocked users',
                     valueText: '0',
                   ),
                   CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
                     icon: CatchIcons.visibilityOutlined,
                     title: 'Who can see you',
                     valueText: 'Runners on my events',
@@ -1010,11 +1013,13 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
                     UpdateUserProfilePatch(displayName: value as String),
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 icon: CatchIcons.cakeOutlined,
                 title: 'Date of birth',
                 body: '16/07/1994 (31 years)',
               ),
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 icon: CatchIcons.groupOutlined,
                 title: 'Gender',
                 body: 'Woman',
@@ -1378,7 +1383,8 @@ Widget profileChipPlaceholderStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Column(
             children: [
-              CatchField.choices<Language>(
+              CatchField<Language>.choices(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
                 itemLabel: (value) => value.label,
@@ -1386,7 +1392,8 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 multi: true,
                 onSelectionChanged: (_) {},
               ),
-              CatchField.choices<Language>(
+              CatchField<Language>.choices(
+                copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
                 itemLabel: (value) => value.label,
@@ -1512,7 +1519,7 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormRowListStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1521,7 +1528,7 @@ Widget catchFormRowListStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormTextRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1530,7 +1537,7 @@ Widget catchFormTextRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1539,7 +1546,7 @@ Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
@@ -1548,10 +1555,10 @@ Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormRangeRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview();
+  return _catchFormDescriptorPreview(context);
 }
 
-Widget _catchFormDescriptorPreview() {
+Widget _catchFormDescriptorPreview(BuildContext context) {
   return _ProfileCatalog(
     title: 'CatchFormRowList',
     contractId: 'catch.form.descriptors.prototype',
@@ -1559,9 +1566,11 @@ Widget _catchFormDescriptorPreview() {
       _StateCard(
         label:
             'read, explicit-confirm text, choice, multi-choice, and range rows',
-        child: _SectionFrame(
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.phoneChromeWidth,
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: CatchFormRowList<_WidgetbookFormPatch>(
+            fieldCopy: catchFieldCopy(context.l10n),
             title: 'About you',
             rows: [
               CatchFormReadRow<_WidgetbookFormPatch>(
@@ -1571,6 +1580,7 @@ Widget _catchFormDescriptorPreview() {
                 body: 'Verified',
               ),
               CatchFormTextRow<_WidgetbookFormPatch>(
+                validationCopy: catchFormValidationCopy(context.l10n),
                 id: 'name',
                 icon: CatchIcons.personOutlined,
                 label: 'Name',
@@ -1581,6 +1591,7 @@ Widget _catchFormDescriptorPreview() {
                 _WidgetbookFormPatch,
                 _WidgetbookFormOption
               >(
+                itemLabel: (value) => value.label,
                 id: 'city',
                 icon: CatchIcons.locationOnOutlined,
                 label: 'City',
@@ -1592,6 +1603,7 @@ Widget _catchFormDescriptorPreview() {
                 _WidgetbookFormPatch,
                 _WidgetbookFormOption
               >(
+                itemLabel: (value) => value.label,
                 id: 'communities',
                 icon: CatchIcons.groupsOutlined,
                 label: 'Communities',

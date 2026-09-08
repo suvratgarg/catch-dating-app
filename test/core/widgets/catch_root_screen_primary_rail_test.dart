@@ -1,15 +1,8 @@
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -94,9 +87,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      AppShellActiveTab(
+      CatchTabViewportScope(
         index: 0,
-        bottomBarPlacement: AppShellBottomBarPlacement.floating,
+        bottomBarPlacement: CatchTabViewportScopePlacement.floating,
         bottomOverlayInset: 96,
         child: _wrap(),
       ),
@@ -196,16 +189,17 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: const CatchRootScreenScaffold.withPrimaryRail(
+          home: CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.title(
               title: 'Forms',
               search: CatchTopBarSearch(
+                copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 placeholder: 'Search forms',
                 tooltip: 'Search forms',
               ),
             ),
-            primaryRail: _TestPrimaryRail(),
-            body: CatchRootScreenBody.single(
+            primaryRail: const _TestPrimaryRail(),
+            body: const CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('search-root-page'),

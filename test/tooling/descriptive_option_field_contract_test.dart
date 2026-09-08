@@ -21,7 +21,7 @@ void main() {
     ]) {
       expect(
         productionSource,
-        isNot(contains('CatchField.choices<$type>')),
+        isNot(contains('CatchField<$type>.choices')),
         reason: '$type has per-option descriptions and must use optionCards.',
       );
     }
@@ -34,7 +34,7 @@ void main() {
       isNot(
         matches(
           RegExp(
-            r'CatchField\.choices<bool>\s*\(\s*title:\s*value\.unitKind\.countLabel',
+            r'CatchField<bool>\.choices\s*\(\s*title:\s*value\.unitKind\.countLabel',
             multiLine: true,
           ),
         ),
@@ -47,12 +47,14 @@ void main() {
     ).readAsStringSync();
     expect(
       questionnaireEditor,
-      contains('CatchField.optionCards<String>('),
+      contains('CatchField<String>.optionCards('),
       reason: 'Question-set templates expose a subtitle per option.',
     );
 
     expect(
-      'CatchField.optionCards<'.allMatches(productionSource).length,
+      RegExp(
+        r'CatchField<[^>]+>\.optionCards',
+      ).allMatches(productionSource).length,
       greaterThanOrEqualTo(10),
       reason: 'The approved migration covers ten production selectors.',
     );

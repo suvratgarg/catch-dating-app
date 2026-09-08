@@ -40,6 +40,8 @@ void main() {
       ).absolute.path,
     );
 
+    expect(failures, hasLength(1));
+
     expect(
       failures,
       contains(

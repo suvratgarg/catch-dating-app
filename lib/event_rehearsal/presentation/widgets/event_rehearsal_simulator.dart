@@ -1,12 +1,8 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class EventRehearsalSimulator extends StatefulWidget {
@@ -57,6 +53,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
           title: context.l10n.hostEventRehearsalSimulationTitle,
           children: [
             CatchField.control(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostEventRehearsalSimulationTitle,
               body: canSimulate
                   ? context.l10n.hostEventRehearsalSimulationBody
@@ -99,6 +96,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
             title: context.l10n.hostEventRehearsalQaFaultsTitle,
             children: [
               CatchField.control(
+                copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostEventRehearsalQaFaultsTitle,
                 body: context.l10n.hostEventRehearsalQaFaultsBody,
                 icon: CatchIcons.scienceOutlined,
@@ -146,6 +144,7 @@ class _EventRehearsalActorPicker extends StatelessWidget {
     onSelected: (actorId, _) => onSelected(actorId),
     builder: (context, controller, _) => CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalChooseGuest,
         valueText: actors
             .where((actor) => actor.actorId == selectedActorId)
@@ -186,6 +185,7 @@ class _EventRehearsalBehaviorPicker extends StatelessWidget {
     onSelected: (behavior, _) => onSelected(behavior),
     builder: (context, controller, _) => CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalChooseIssue,
         valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
         onTap: !enabled
@@ -210,6 +210,7 @@ class _EventRehearsalApplyIssueField extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldLanes.single(
     child: CatchField.action(
+      copy: catchFieldCopy(context.l10n),
       title: context.l10n.hostEventRehearsalApplyIssue,
       icon: CatchIcons.playArrowRounded,
       onTap: enabled ? onApply : null,
@@ -242,6 +243,7 @@ class _EventRehearsalFaultPicker extends StatelessWidget {
     onSelected: (fault, _) => onSelected(fault),
     builder: (context, controller, _) => CatchFieldLanes.single(
       child: CatchField.nav(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalChooseFault,
         valueText: eventRehearsalFaultLabel(context.l10n, selected),
         onTap: !enabled
@@ -264,6 +266,7 @@ class EventRehearsalRosterSection extends StatelessWidget {
     title: context.l10n.hostEventRehearsalRosterTitle,
     children: [
       CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalRoomSummary(
           present: rehearsal.presentCount,
           total: rehearsal.actors.length,
@@ -296,6 +299,7 @@ class _EventRehearsalActorRow extends StatelessWidget {
     ];
     return CatchFieldLanes.single(
       child: CatchField.read(
+        copy: catchFieldCopy(context.l10n),
         title: actor.displayName,
         body: [
           eventRehearsalActorStatusLabel(context.l10n, actor.status),
@@ -327,6 +331,7 @@ class EventRehearsalRecapSection extends StatelessWidget {
     title: context.l10n.hostEventRehearsalRecapTitle,
     children: [
       CatchField.control(
+        copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostEventRehearsalRecapTitle,
         body: context.l10n.hostEventRehearsalRecapBody(
           actions: rehearsal.session.actionCount,
@@ -374,6 +379,7 @@ class EventRehearsalRecapSection extends StatelessWidget {
           children: [
             for (final action in rehearsal.actions.reversed.take(8))
               CatchField.read(
+                copy: catchFieldCopy(context.l10n),
                 title: eventRehearsalActionNameLabel(context.l10n, action.name),
                 body: context.l10n.hostEventRehearsalActionRevision(
                   kind: eventRehearsalActionKindLabel(

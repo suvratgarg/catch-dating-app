@@ -161,3 +161,33 @@ test("keeps generated public Catch classes in the denominator", () => {
     /CatchGeneratedProvider.*missing registered/u,
   );
 });
+
+
+for (const layer of ["primitives", "components", "patterns"]) {
+  test(`preserves coverage when ${layer} move across the package boundary`, () => {
+    const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
+      "lib/core/widgets/", `packages/catch_ui/lib/src/${layer}/`,
+    ));
+    const result = validate(moved);
+    assert.deepEqual(result.failures, []);
+    assert.equal(result.surfaceCount, 3);
+    assert.equal(result.coveredCount, 3);
+    assert.equal(result.designatedCaseCount, 2);
+    moved.inventory.generated.pop();
+    assert.match(validate(moved).failures.join("\n"), /CatchIndirect.*missing registered/u);
+  });
+}
+
+// Moving a Riverpod adapter must preserve both coverage and its failure signal.
+test("preserves adapter coverage at the app Riverpod boundary", () => {
+  const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
+    "lib/core/widgets/", "lib/core/riverpod_ui/",
+  ));
+  const result = validate(moved);
+  assert.deepEqual(result.failures, []);
+  assert.equal(result.surfaceCount, 3);
+  assert.equal(result.coveredCount, 3);
+  assert.equal(result.designatedCaseCount, 2);
+  moved.inventory.generated.pop();
+  assert.match(validate(moved).failures.join("\n"), /CatchIndirect.*missing registered/u);
+});

@@ -22,16 +22,13 @@ import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.da
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -301,6 +298,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ],
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+          identitySemanticLabel: context.l10n
+              .coreCatchTopBarLabelViewNameProfile(name: chatState.name),
           identityName: chatState.name,
           identityPhotoUrl: chatState.photoUrl,
           onIdentityTap: chatState.profileNavigationEnabled
@@ -341,7 +340,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               Expanded(
                 child: authError != null
-                    ? CatchErrorState.fromError(
+                    ? CatchLocalizedErrorState(
                         authError,
                         context: AppErrorContext.auth,
                         onRetry: () => ref.invalidate(uidProvider),

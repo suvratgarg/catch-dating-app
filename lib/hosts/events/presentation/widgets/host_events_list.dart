@@ -1,18 +1,9 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
-import 'package:catch_dating_app/core/widgets/catch_record_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_screen_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -23,6 +14,7 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -257,13 +249,13 @@ class HostEventsTimelinePage extends StatelessWidget
             (sections.isEmpty && loadingMore))
           const SliverToBoxAdapter(child: CatchSkeletonRows(count: 4))
         else if (state.status == HostEventsWorkspaceStatus.error)
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             state.error!,
             context: AppErrorContext.event,
             onRetry: onRetryEvents,
           )
         else if (sections.isEmpty && pageError != null)
-          CatchSliverErrorState.fromError(
+          CatchLocalizedSliverErrorState(
             pageError,
             context: AppErrorContext.event,
             onRetry: onRetryPage,
@@ -306,7 +298,7 @@ class HostEventsTimelinePage extends StatelessWidget
                     ],
                   ),
                 if (pageError != null)
-                  CatchInlineErrorState.fromError(
+                  CatchLocalizedInlineErrorState(
                     pageError,
                     context: AppErrorContext.event,
                     onRetry: onRetryPage,

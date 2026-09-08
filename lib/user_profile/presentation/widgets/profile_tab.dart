@@ -1,15 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
@@ -23,6 +18,7 @@ import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -124,12 +120,12 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
   static const _promptCardPadding = EdgeInsets.only(top: CatchSpacing.micro10);
   static const _promptAddPadding = EdgeInsets.only(top: CatchSpacing.s1);
 
-  late final CatchFieldAccordion _fieldAccordion;
+  late final CatchAccordionController _fieldAccordion;
 
   @override
   void initState() {
     super.initState();
-    _fieldAccordion = CatchFieldAccordion()
+    _fieldAccordion = CatchAccordionController()
       ..addListener(_handleAccordionChanged);
   }
 
@@ -259,6 +255,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             ],
           ),
           CatchFormRowList<UpdateUserProfilePatch>(
+            fieldCopy: catchFieldCopy(context.l10n),
             title: context.l10n.userProfileProfileTabTitleAboutYou,
             // Preserve the existing Consumer interaction until its product
             // migration to explicit confirmation is reviewed separately.

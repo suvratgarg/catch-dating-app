@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
-  "resolvedDigest": "sha256:9d846e7d341c7f3eed0acc4ac8e4d5f9ea34d6db78f31237c6fe0c5fac8cd437",
+  "resolvedDigest": "sha256:1d1a774855cf0447611f41ba2437ee7c105477273daec1e0ac5a8a9295e53a5b",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -898,7 +898,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchButton",
-              "file": "lib/core/widgets/catch_button.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_button.dart",
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
@@ -911,7 +911,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchEmptyState",
-              "file": "lib/core/widgets/catch_empty_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "constructors": [
                 "CatchEmptyState"
               ]
@@ -922,10 +922,9 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchErrorState",
-              "file": "lib/core/widgets/catch_error_state.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
               "constructors": [
-                "CatchErrorState",
-                "CatchErrorState.fromError"
+                "CatchErrorState"
               ]
             }
           },
@@ -934,7 +933,7 @@
             "kind": "primitive",
             "dart": {
               "symbol": "CatchSurface",
-              "file": "lib/core/widgets/catch_surface.dart",
+              "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
@@ -948,7 +947,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchTopBar",
-              "file": "lib/core/widgets/catch_top_bar.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
                 "CatchTopBar"
               ]

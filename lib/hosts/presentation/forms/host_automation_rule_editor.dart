@@ -145,7 +145,7 @@ class _HostAutomationRuleEditorState
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (_error case final error?) ...[
-                      CatchErrorState.fromError(
+                      CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.forms,
                         mode: CatchErrorStateMode.compact,
@@ -167,6 +167,7 @@ class _HostAutomationRuleEditorState
                       title: l.hostAudienceAutomationWhen,
                       children: [
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: const ValueKey('automation-name'),
                           title: l.hostAutomationName,
                           contract: CatchContractConstraints
@@ -174,7 +175,8 @@ class _HostAutomationRuleEditorState
                           controller: _name,
                           enabled: !_busy,
                         ),
-                        CatchField.select<HostFormAutomationTrigger>(
+                        CatchField<HostFormAutomationTrigger>.select(
+                          copy: catchFieldCopy(context.l10n),
                           title: l.hostAutomationTrigger,
                           contract: CatchContractConstraints
                               .createOrganizerFormAutomationCallablePayloadTrigger,
@@ -212,7 +214,8 @@ class _HostAutomationRuleEditorState
                           },
                         ),
                         if (_trigger != HostFormAutomationTrigger.eventAttended)
-                          CatchField.select<String>(
+                          CatchField<String>.select(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationForm,
                             contractExemption:
                                 'The empty selection represents the nullable formId for any application form; required response triggers are checked before saving.',
@@ -238,9 +241,13 @@ class _HostAutomationRuleEditorState
                             }),
                           ),
                         if (formRequired && source.forms.isEmpty)
-                          CatchField.read(title: l.hostAutomationNoForm),
+                          CatchField.read(
+                            copy: catchFieldCopy(context.l10n),
+                            title: l.hostAutomationNoForm,
+                          ),
                         if (_trigger == HostFormAutomationTrigger.eventAttended)
-                          CatchField.select<String>(
+                          CatchField<String>.select(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationEvent,
                             contractExemption:
                                 'Empty selection maps to nullable triggerEventId; event IDs come from the authorized organizer source options.',
@@ -264,6 +271,7 @@ class _HostAutomationRuleEditorState
                                 setState(() => _eventId = v == '' ? null : v),
                           ),
                         CatchField.input(
+                          copy: catchFieldCopy(context.l10n),
                           key: const ValueKey('automation-delay'),
                           title: l.hostAutomationDelay,
                           contractExemption:
@@ -282,10 +290,12 @@ class _HostAutomationRuleEditorState
                         if (_trigger ==
                             HostFormAutomationTrigger.answerMatches) ...[
                           CatchField.read(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationQuestion,
                             body: l.hostAutomationQuestionHelp,
                           ),
-                          CatchField.select<HostAudienceQuestionOption>(
+                          CatchField<HostAudienceQuestionOption>.select(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationQuestion,
                             contractExemption:
                                 'Question IDs are selected from the current published version; server validation binds the condition to that version.',
@@ -303,7 +313,8 @@ class _HostAutomationRuleEditorState
                                     },
                             ),
                           ),
-                          CatchField.select<HostAudienceAnswerOption>(
+                          CatchField<HostAudienceAnswerOption>.select(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationAnswer,
                             contractExemption:
                                 'Typed boolean or choice values come from the selected published question.',
@@ -333,7 +344,8 @@ class _HostAutomationRuleEditorState
                         key: ValueKey(action.id),
                         title: l.hostAudienceAutomationThen,
                         children: [
-                          CatchField.select<HostFormAutomationActionKind>(
+                          CatchField<HostFormAutomationActionKind>.select(
+                            copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationAction,
                             contract: CatchContractConstraints
                                 .createOrganizerFormAutomationCallablePayloadActionsItemsKind,
@@ -350,7 +362,8 @@ class _HostAutomationRuleEditorState
                           ),
                           if (action.kind ==
                               HostFormAutomationActionKind.addOrganizerTag)
-                            CatchField.select<String>(
+                            CatchField<String>.select(
+                              copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationTag,
                               contract: CatchContractConstraints
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsTagId,
@@ -370,7 +383,8 @@ class _HostAutomationRuleEditorState
                             ),
                           if (action.kind ==
                               HostFormAutomationActionKind.proposeEventAttendee)
-                            CatchField.select<String>(
+                            CatchField<String>.select(
+                              copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationEvent,
                               contract: CatchContractConstraints
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsEventId,
@@ -391,10 +405,12 @@ class _HostAutomationRuleEditorState
                           if (action.kind ==
                               HostFormAutomationActionKind.signedWebhook) ...[
                             CatchField.read(
+                              copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationWebhook,
                               body: l.hostAutomationWebhookHelp,
                             ),
                             CatchField.input(
+                              copy: catchFieldCopy(context.l10n),
                               key: ValueKey('automation-url-${action.id}'),
                               title: l.hostAutomationWebhookUrl,
                               contract: CatchContractConstraints
@@ -408,6 +424,7 @@ class _HostAutomationRuleEditorState
                                   : l.hostAutomationUrlInvalid,
                             ),
                             CatchField.input(
+                              copy: catchFieldCopy(context.l10n),
                               key: ValueKey('automation-secret-${action.id}'),
                               title: l.hostAutomationWebhookSecret,
                               contractExemption:
@@ -433,6 +450,7 @@ class _HostAutomationRuleEditorState
                           if (action.kind ==
                               HostFormAutomationActionKind.campaignHandoff) ...[
                             CatchField.read(
+                              copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationMessage,
                               body: l.hostAutomationDraftHelp,
                             ),
@@ -442,7 +460,8 @@ class _HostAutomationRuleEditorState
                               onRetry: () => ref.invalidate(messagesProvider),
                               builder: (context, page) => CatchFieldLanes.divided(
                                 children: [
-                                  CatchField.select<HostCampaignSendSummary>(
+                                  CatchField<HostCampaignSendSummary>.select(
+                                    copy: catchFieldCopy(context.l10n),
                                     title: l.hostAutomationDraft,
                                     contract: CatchContractConstraints
                                         .createOrganizerFormAutomationCallablePayloadActionsItemsCampaignId,
@@ -465,17 +484,19 @@ class _HostAutomationRuleEditorState
                                   ),
                                   if (page.messages.isEmpty)
                                     CatchField.read(
+                                      copy: catchFieldCopy(context.l10n),
                                       title: l.hostAutomationDraftsEmpty,
                                     ),
                                   if (action.campaignId != null)
                                     CatchField.read(
+                                      copy: catchFieldCopy(context.l10n),
                                       title: l.hostAutomationCurrentDraft,
                                       valueText: action.loadingMessage
                                           ? l.hostFormAutomationRunning
                                           : '${l.hostAutomationConfigured} · v${action.campaignRevision ?? 0}',
                                     ),
                                   if (page.error case final error?)
-                                    CatchErrorState.fromError(
+                                    CatchLocalizedErrorState(
                                       error,
                                       context: AppErrorContext.forms,
                                       mode: CatchErrorStateMode.compact,
@@ -525,6 +546,7 @@ class _HostAutomationRuleEditorState
                     CatchSection.fieldRows(
                       children: [
                         CatchField.toggle(
+                          copy: catchFieldCopy(context.l10n),
                           title: l.hostAutomationEnabled,
                           contract: CatchContractConstraints
                               .createOrganizerFormAutomationCallablePayloadEnabled,

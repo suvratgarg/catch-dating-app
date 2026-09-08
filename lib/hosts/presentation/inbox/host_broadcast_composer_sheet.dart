@@ -1,21 +1,16 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_notice.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
-import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -145,6 +140,7 @@ class _HostBroadcastComposerSheetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CatchNotice(
+                dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
                 notice: CatchNoticeData(
                   id: 'host.inbox.catch-announcement',
                   title: context.l10n.hostSendsCatchAnnouncementChannel,
@@ -213,6 +209,7 @@ class _HostBroadcastComposerSheetState
               gapH20,
               CatchFieldLanes.single(
                 child: CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
                   title:
                       context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
                   contract: CatchContractConstraints

@@ -5,15 +5,11 @@
   "allowedFindings": [
     {
       "path": "test/chats/chat_screen_test.dart",
-      "maxLines": 2083
-    },
-    {
-      "path": "test/core/widgets/catch_field/input_test.dart",
-      "maxLines": 1286
+      "maxLines": 2081
     },
     {
       "path": "test/events/event_detail_widgets_test.dart",
-      "maxLines": 2186
+      "maxLines": 2180
     },
     {
       "path": "test/explore/explore_view_model_test.dart",
@@ -21,11 +17,11 @@
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",
-      "maxLines": 1494
+      "maxLines": 1485
     },
     {
       "path": "test/onboarding/onboarding_widgets_test.dart",
-      "maxLines": 1435
+      "maxLines": 1434
     }
   ]
 }

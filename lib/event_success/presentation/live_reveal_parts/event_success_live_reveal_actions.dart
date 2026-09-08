@@ -143,6 +143,7 @@ class HostRevealActions extends StatelessWidget {
     Future<void> Function(int roundIndex) action,
   ) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.eventSuccessLiveControlPublishRevealTitle,
       message: context.l10n.eventSuccessLiveControlPublishRevealMessage(
@@ -162,6 +163,7 @@ class HostRevealActions extends StatelessWidget {
     Future<void> Function(int roundIndex, int countdownSeconds) action,
   ) async {
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.eventSuccessLiveControlStartCountdownTitle,
       message: context.l10n.eventSuccessLiveControlStartCountdownMessage(

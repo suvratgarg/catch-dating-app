@@ -1,11 +1,6 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
@@ -14,6 +9,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -213,7 +209,8 @@ class PromptField extends StatelessWidget {
     return CatchSection.containedFieldRows(
       key: ValueKey('onboarding-prompt-card-$index'),
       children: [
-        CatchField.choices<String>(
+        CatchField<String>.choices(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('onboarding-prompt-question-$index'),
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
@@ -232,6 +229,7 @@ class PromptField extends StatelessWidget {
           enabled: enabled,
         ),
         CatchField.input(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('onboarding-prompt-answer-$index'),
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
           contract: CatchContractConstraints.profilePromptAnswerAnswer,

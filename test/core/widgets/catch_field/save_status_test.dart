@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +14,7 @@ void main() {
       Future<void> pumpStatus(CatchFieldStatus status) => tester.pumpWidget(
         _wrap(
           CatchField.control(
+            copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Religion',
             body: 'Christian',
             status: status,
@@ -51,6 +52,7 @@ void main() {
     }) => tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
           open: open,
@@ -164,6 +166,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.toggle(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Show my pace',
           value: true,
           status: CatchFieldStatus.saving,
@@ -205,6 +208,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchField.control(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
           isLoading: true,
@@ -235,7 +239,11 @@ void main() {
           StatefulBuilder(
             builder: (context, setState) {
               update = setState;
-              return CatchField.read(title: 'Club name', status: status);
+              return CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Club name',
+                status: status,
+              );
             },
           ),
         ),
@@ -304,7 +312,11 @@ void main() {
           child: StatefulBuilder(
             builder: (context, setState) {
               update = setState;
-              return CatchField.read(title: 'Club name', status: status);
+              return CatchField.read(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                title: 'Club name',
+                status: status,
+              );
             },
           ),
         ),
@@ -345,7 +357,11 @@ void main() {
         StatefulBuilder(
           builder: (context, setState) {
             update = setState;
-            return CatchField.read(title: 'Club name', status: status);
+            return CatchField.read(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Club name',
+              status: status,
+            );
           },
         ),
       ),
@@ -387,7 +403,11 @@ void main() {
         StatefulBuilder(
           builder: (context, setState) {
             update = setState;
-            return CatchField.read(title: 'Club name', status: status);
+            return CatchField.read(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Club name',
+              status: status,
+            );
           },
         ),
       ),
@@ -414,7 +434,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchField.nav(
+        CatchField.nav(
+          copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Club name',
           error: 'Could not save',
           status: CatchFieldStatus.saved,

@@ -1,27 +1,17 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -65,7 +55,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
-          errorBuilder: (_, error, _) => CatchErrorState.fromError(
+          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
             onRetry: () => ref.invalidate(provider),
@@ -77,7 +67,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                 value: ref.watch(editorProvider),
                 onRetry: () => ref.read(editorProvider.notifier).reload(),
                 loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
-                errorBuilder: (_, error, _) => CatchErrorState.fromError(
+                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.forms,
                   mode: CatchErrorStateMode.compact,
@@ -153,12 +143,14 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               CatchSection.fieldRows(
                 children: [
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostAudienceShowQr,
                     icon: CatchIcons.qrCode2Outlined,
                     emphasis: CatchFieldEmphasis.title,
                     onTap: () => _showQr(assets),
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: _creatingLink
                         ? context.l10n.hostAudienceCreatingLink
                         : context.l10n.hostFormCreateTrackedLink,
@@ -167,6 +159,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     onTap: _creatingLink ? null : _createTrackedLink,
                   ),
                   CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostFormEmbed,
                     icon: CatchIcons.languageOutlined,
                     emphasis: CatchFieldEmphasis.title,
@@ -367,6 +360,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
       child: CatchSection.containedFieldRows(
         children: [
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormTrackedLinkLabel,
             controller: label,
             contract: CatchContractConstraints
@@ -375,6 +369,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
             textInputAction: TextInputAction.next,
           ),
           CatchField.input(
+            copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormTrackedLinkSource,
             controller: source,
             contract: CatchContractConstraints

@@ -43,23 +43,13 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_explore_card.dart';
@@ -250,6 +240,7 @@ import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -2634,7 +2625,7 @@ Widget _clubDetailMutationCapture({
     body: Column(
       children: [
         if (mutationError != null)
-          CatchErrorBanner.fromError(
+          CatchLocalizedErrorBanner(
             mutationError,
             context: AppErrorContext.club,
             onRetry: () {},
@@ -6378,7 +6369,7 @@ class _ChatShareCardCapture extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: CatchShareCardSheet(
+          child: CatchSheetShare(
             card: ChatShareCard(
               messages: MatchesChatSurfaceFixtures.conversationMessages,
               currentUid: MatchesChatSurfaceFixtures.viewerUid,
@@ -15990,16 +15981,29 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
       ..._hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-      uidProvider.overrideWithValue(const AsyncData<String?>(HostOperationsFixtures.hostUid)),
-      hostOperableClubsProvider(HostOperationsFixtures.hostUid).overrideWithValue(
-        AsyncData<List<Club>>([HostOperationsFixtures.primaryClub])),
-      hostFormsDirectoryControllerProvider.overrideWith2((_) => _CaptureHostFormsDirectoryController()),
-      hostFormResponsesControllerProvider.overrideWith2((_) => _AudienceCaptureResponses()),
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(HostOperationsFixtures.hostUid),
+      ),
+      hostOperableClubsProvider(
+        HostOperationsFixtures.hostUid,
+      ).overrideWithValue(
+        AsyncData<List<Club>>([HostOperationsFixtures.primaryClub]),
+      ),
+      hostFormsDirectoryControllerProvider.overrideWith2(
+        (_) => _CaptureHostFormsDirectoryController(),
+      ),
+      hostFormResponsesControllerProvider.overrideWith2(
+        (_) => _AudienceCaptureResponses(),
+      ),
     ],
     builder: (_) => _HostRoutedShellCapture(
-      initialLocation: '/host/audience?view=responses', activeIndex: 2,
-      child: HostFormsScreen(initialOrganizerId: HostOperationsFixtures.primaryClub.id,
-        initialResponses: true)),
+      initialLocation: '/host/audience?view=responses',
+      activeIndex: 2,
+      child: HostFormsScreen(
+        initialOrganizerId: HostOperationsFixtures.primaryClub.id,
+        initialResponses: true,
+      ),
+    ),
     includeOverlays: true,
   ),
   ScreenCaptureEntry(

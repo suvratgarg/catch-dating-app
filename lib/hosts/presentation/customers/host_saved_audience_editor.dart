@@ -39,7 +39,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorState.fromError(
+          child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,
             onRetry: () =>
@@ -60,7 +60,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorState.fromError(
+              child: CatchLocalizedErrorState(
                 StateError(context.l10n.hostSavedAudienceNotFound),
                 context: AppErrorContext.customers,
                 onRetry: () =>
@@ -176,6 +176,7 @@ class _HostSavedAudienceEditorFormState
                         title: context.l10n.hostSavedAudienceDetails,
                         children: [
                           CatchField.input(
+                            copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-saved-audience-name'),
                             title: context.l10n.hostSavedAudienceName,
                             contract: CatchContractConstraints
@@ -188,7 +189,8 @@ class _HostSavedAudienceEditorFormState
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
                           ),
-                          CatchField.select<HostSavedAudienceMembershipMode>(
+                          CatchField<HostSavedAudienceMembershipMode>.select(
+                            copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-saved-audience-mode'),
                             title: context.l10n.hostAudienceMembershipMode,
                             contractExemption:
@@ -214,7 +216,8 @@ class _HostSavedAudienceEditorFormState
                             },
                           ),
                           if (!_static)
-                            CatchField.select<HostSavedAudienceJoin>(
+                            CatchField<HostSavedAudienceJoin>.select(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey('host-saved-audience-join'),
                               title: context.l10n.hostSavedAudienceMatch,
                               contract: CatchContractConstraints
@@ -270,6 +273,7 @@ class _HostSavedAudienceEditorFormState
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.add(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-add-rule',
                               ),
@@ -339,7 +343,7 @@ class _HostSavedAudienceEditorFormState
                               style: CatchTextStyles.recordTitle(context),
                             ),
                             gapH8,
-                            CatchErrorState.fromError(
+                            CatchLocalizedErrorState(
                               error,
                               context: AppErrorContext.customers,
                               onRetry: _busy ? null : _refreshPreview,
@@ -357,6 +361,7 @@ class _HostSavedAudienceEditorFormState
                           ),
                           children: [
                             CatchField.read(
+                              copy: catchFieldCopy(context.l10n),
                               title: context.l10n.hostSavedAudiencePeople,
                               body: _savedAudienceDirectoryBody(
                                 context,
@@ -364,6 +369,7 @@ class _HostSavedAudienceEditorFormState
                               ),
                             ),
                             CatchField.action(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-refresh-preview',
                               ),
@@ -378,6 +384,7 @@ class _HostSavedAudienceEditorFormState
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.action(
+                              copy: catchFieldCopy(context.l10n),
                               key: const ValueKey(
                                 'host-saved-audience-archive',
                               ),
@@ -502,6 +509,7 @@ class _HostSavedAudienceEditorFormState
     final audience = _audience;
     if (_busy || audience == null) return;
     final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
       context: context,
       title: context.l10n.hostSavedAudienceArchiveTitle,
       message: context.l10n.hostSavedAudienceArchiveBody,
@@ -576,7 +584,8 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               onPressed: enabled ? onRemove : null,
             ),
       children: [
-        CatchField.select<_AudienceRuleKind>(
+        CatchField<_AudienceRuleKind>.select(
+          copy: catchFieldCopy(context.l10n),
           key: ValueKey('host-saved-audience-rule-type-$number'),
           title: context.l10n.hostSavedAudienceRuleType,
           contract: CatchContractConstraints
@@ -612,7 +621,8 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.computedSegment => [
-            CatchField.select<HostAudienceSegment>(
+            CatchField<HostAudienceSegment>.select(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceSegment,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
@@ -630,7 +640,8 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.manualTag => [
-            CatchField.select<HostCustomerManualTag>(
+            CatchField<HostCustomerManualTag>.select(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceTag,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
@@ -650,7 +661,8 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.attendanceCount => [
-            CatchField.select<HostSavedAudienceAttendanceOperator>(
+            CatchField<HostSavedAudienceAttendanceOperator>.select(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceAttendanceComparison,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
@@ -669,6 +681,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               },
             ),
             CatchField.stepper(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceEventsAttended,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventCount,
@@ -685,6 +698,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.lastSeenWithinDays => [
             CatchField.stepper(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceLastSeenWithin,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsDays,
@@ -699,6 +713,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           ],
           _AudienceRuleKind.campaignReachable => [
             CatchField.read(
+              copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceManagedReach,
               body: context.l10n.hostSavedAudienceManagedReachBody,
             ),
