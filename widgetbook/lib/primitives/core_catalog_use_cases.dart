@@ -855,17 +855,17 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketHeroViewport,
+  type: CatchHeroViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchTicketHeroCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'Ticket hero viewport',
+    title: 'CatchHeroViewport.ticket',
     catalogId: 'core.motion.catch_ticket_hero',
     children: [
       _StateCard(
         label: 'ticket hero wrapper',
-        child: CatchTicketHeroViewport(
+        child: CatchHeroViewport.ticket(
           prefix: 'event',
           id: 'widgetbook-ticket',
           child: CatchSurface.card(
@@ -882,12 +882,12 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMapRevealViewport,
+  type: CatchRevealViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'Map reveal viewport',
+    title: 'CatchRevealViewport.stationary',
     catalogId: 'core.motion.catch_map_reveal_transition',
     children: [
       for (final reducedMotion in [false, true])
@@ -899,7 +899,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
             ).copyWith(disableAnimations: reducedMotion),
             child: SizedBox(
               height: CatchLayout.distanceRingDefaultSize,
-              child: CatchMapRevealViewport(
+              child: CatchRevealViewport.stationary(
                 animation: const AlwaysStoppedAnimation<double>(0.58),
                 child: CatchSurface.card(
                   child: Center(

@@ -284,7 +284,7 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchFadeScaleViewport(animation: animation, child: child),
+        CatchRevealViewport(animation: animation, child: child),
   );
 }
 
@@ -296,7 +296,7 @@ Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return CatchMapRevealViewport(animation: animation, child: child);
+      return CatchRevealViewport.stationary(animation: animation, child: child);
     },
   );
 }
@@ -318,7 +318,7 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchFadeScaleViewport(animation: animation, child: child),
+        CatchRevealViewport(animation: animation, child: child),
   );
 }
 

@@ -995,6 +995,54 @@
           "rationale": "Same renderer with thumbnail gradient stops; event data is absent from this primitive."
         }
       ]
+    },
+    {
+      "id": "reveal-animation-canonical-viewport",
+      "title": "Canonical reveal animation viewport",
+      "intent": "Share curve ownership for reveal recipes and absorb ticket flight configuration into the existing Hero contract.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.motion_viewport",
+      "qualityReference": "CatchRevealViewport",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None with motion enabled. Reduced motion now exposes resting content for content and ticket-flight reveals, matching stationary media."
+      ],
+      "members": [
+        {
+          "symbol": "CatchRevealViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns one derived animation lifetime for content, stationary media and flight recipes; the caller retains its clock."
+        },
+        {
+          "symbol": "CatchHeroViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns shared-element identity, transparent Material and gesture flights; its ticket constructor supplies the existing tag and shuttle recipe."
+        },
+        {
+          "symbol": "CatchFadeScaleViewport",
+          "disposition": "unify",
+          "target": "CatchRevealViewport",
+          "preview": "not-applicable",
+          "rationale": "Content reveal is a recipe of the shared curve-owning renderer."
+        },
+        {
+          "symbol": "CatchMapRevealViewport",
+          "disposition": "unify",
+          "target": "CatchRevealViewport.stationary",
+          "preview": "not-applicable",
+          "rationale": "Preserves the native-view-safe paper veil without a second animation lifetime."
+        },
+        {
+          "symbol": "CatchTicketHeroViewport",
+          "disposition": "unify",
+          "target": "CatchHeroViewport.ticket",
+          "preview": "not-applicable",
+          "rationale": "Only configured the existing Hero viewport; shared flight reveal now owns and disposes its curve."
+        }
+      ]
     }
   ]
 }

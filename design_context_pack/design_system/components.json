@@ -16685,19 +16685,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Production viewports are rendered at fixed animation poses through the shared Widgetbook golden harness."
       },
-      "name": "CatchFadeScaleViewport",
+      "name": "CatchRevealViewport",
       "status": "active",
       "kind": "primitive",
-      "summary": "Route and shared-element motion viewports preserve child layout and shared flight behavior.",
+      "summary": "Owns the derived animation lifetime and reveal effects for route content, stationary native media and shared-element flight content.",
       "dart": {
-        "symbol": "CatchFadeScaleViewport",
-        "file": "packages/catch_ui/lib/src/primitives/catch_fade_scale_viewport.dart",
+        "symbol": "CatchRevealViewport",
+        "file": "packages/catch_ui/lib/src/primitives/catch_reveal_viewport.dart",
         "constructors": [
-          "CatchFadeScaleViewport"
+          "CatchRevealViewport",
+          "CatchRevealViewport.stationary",
+          "CatchRevealViewport.flight"
         ]
       },
       "surfaces": {
-        "flutter": "CatchFadeScaleViewport"
+        "flutter": "CatchRevealViewport"
       },
       "design": {
         "figma": {
@@ -16728,12 +16730,27 @@
             "type": "widget",
             "dartType": "Widget",
             "required": true
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "dartType": "CatchRevealViewportVariant",
+            "required": false,
+            "default": "content",
+            "values": [
+              "content",
+              "stationaryMedia",
+              "flight"
+            ]
           }
         ],
         "states": [
           "initial",
           "mid-transition",
-          "settled"
+          "settled",
+          "mid-reveal",
+          "reduced-motion",
+          "flight"
         ],
         "slots": [
           "child"
@@ -16744,14 +16761,17 @@
           "CatchMotion.easeInCubicCurve",
           "CatchMotion.springCurve"
         ],
-        "goldens": [],
+        "goldens": [
+          "reveal_viewport_family.forward",
+          "reveal_viewport_family.reverse"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
             "policy": "Child layout remains unconstrained by the transition viewport and preserves the active text scale."
           },
           "reducedMotion": {
-            "policy": "Map reveal removes its veil when animations are disabled; other viewports retain their existing route-owned animation policy."
+            "policy": "Reveal effects render the resting child directly when animations are disabled. Route controllers and shared-element navigation remain owned by their callers."
           },
           "themes": [
             "light",
@@ -16760,30 +16780,15 @@
         },
         "members": [
           {
-            "id": "catch.motion_viewport.map_reveal",
-            "symbol": "CatchMapRevealViewport",
-            "file": "packages/catch_ui/lib/src/primitives/catch_map_reveal_viewport.dart",
-            "summary": "Reveals a stationary map beneath a token-colored paper veil.",
-            "states": [
-              "mid-reveal",
-              "reduced-motion"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.motion_viewport",
-              "parentConceptId": "catch.motion_viewport",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.motion_viewport"
-            }
-          },
-          {
             "id": "catch.motion_viewport.hero",
             "symbol": "CatchHeroViewport",
             "file": "packages/catch_ui/lib/src/primitives/catch_hero_viewport.dart",
-            "summary": "Owns transparent Material chrome and gesture-enabled Hero flights.",
+            "summary": "Shared-element identity and transparent Hero flights, with a deterministic ticket tag and shared spring-effect recipe.",
             "states": [
               "resting",
-              "transparent-material"
+              "transparent-material",
+              "shared-tag",
+              "ticket-flight"
             ],
             "governance": {
               "conceptRole": "member",
@@ -16791,23 +16796,15 @@
               "parentConceptId": "catch.motion_viewport",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.motion_viewport"
-            }
-          },
-          {
-            "id": "catch.motion_viewport.ticket_hero",
-            "symbol": "CatchTicketHeroViewport",
-            "file": "packages/catch_ui/lib/src/primitives/catch_ticket_hero_viewport.dart",
-            "summary": "Shares deterministic prefix/id tags and spring-backed ticket flights.",
-            "states": [
-              "resting",
-              "shared-tag"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.motion_viewport",
-              "parentConceptId": "catch.motion_viewport",
-              "qualifier": "recipe",
-              "decisionRef": "contract-family:catch.motion_viewport"
+            },
+            "level": "L2",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "Hero",
+              "comparedWith": [
+                "catch.motion_viewport"
+              ],
+              "reason": "Owns shared-element tags, transparent Material and gesture-enabled Hero flights. The ticket constructor supplies the tag and delegates spring scale to RevealViewport; the parent owns Animation-driven effects without navigation identity."
             }
           }
         ]
@@ -16830,8 +16827,17 @@
           "catch.surface"
         ],
         "notes": [
-          "Callers own route state, animation lifetimes, Hero tags, and child content."
+          "Callers own route state, input Animation/controller lifetime, Hero tags and child content. RevealViewport owns and disposes its derived CurvedAnimation."
         ]
+      },
+      "level": "L2",
+      "roleNoun": "Viewport",
+      "naming": {
+        "useCase": "Reveal",
+        "comparedWith": [
+          "catch.motion_viewport.hero"
+        ],
+        "reason": "Owns effects driven by a caller-supplied Animation, including stationary-media reveal and flight scale. HeroViewport owns shared-element identity, gesture-enabled flight and optional shuttle selection; its ticket recipe delegates the effect here."
       }
     },
     {

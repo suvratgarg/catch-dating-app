@@ -55,13 +55,17 @@ Widget _pose(BuildContext context, String recipe, Animation<double> animation) {
     ),
   );
   if (recipe == 'content') {
-    return CatchFadeScaleViewport(animation: animation, child: child);
+    return CatchRevealViewport(animation: animation, child: child);
   }
   if (recipe == 'stationary') {
-    return CatchMapRevealViewport(animation: animation, child: child);
+    return CatchRevealViewport.stationary(animation: animation, child: child);
   }
-  final ticket = CatchTicketHeroViewport(prefix: 'test', id: '1', child: child);
-  final hero = ticket.build(context) as CatchHeroViewport;
+  final ticket = CatchHeroViewport.ticket(
+    prefix: 'test',
+    id: '1',
+    child: child,
+  );
+  final hero = ticket;
   return hero.flightShuttleBuilder!(
     context,
     animation,

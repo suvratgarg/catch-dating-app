@@ -10066,28 +10066,46 @@ class _NotificationFrame extends StatelessWidget {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFadeScaleViewport,
+  type: CatchRevealViewport,
   path: '[Core primitives]/Motion',
 )
 Widget catchMotionViewportContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'Motion viewport',
     contractId: 'catch.motion_viewport',
-    states: const ['initial', 'mid-transition', 'settled'],
+    states: const [
+      'initial',
+      'mid-transition',
+      'settled',
+      'mid-reveal',
+      'reduced-motion',
+      'flight',
+    ],
     children: [
       for (final pose in const [
-        ('initial', 0.0),
-        ('mid-transition', 0.5),
-        ('settled', 1.0),
+        ('initial', CatchRevealViewportVariant.content, 0.0, false),
+        ('mid-transition', CatchRevealViewportVariant.content, 0.5, false),
+        ('settled', CatchRevealViewportVariant.content, 1.0, false),
+        ('mid-reveal', CatchRevealViewportVariant.stationaryMedia, 0.5, false),
+        ('reduced-motion', CatchRevealViewportVariant.content, 0.0, true),
+        ('flight', CatchRevealViewportVariant.flight, 0.5, false),
       ])
         _StateCard(
           label: pose.$1,
-          child: CatchFadeScaleViewport(
-            animation: AlwaysStoppedAnimation<double>(pose.$2),
-            child: CatchSurface.card(
-              child: Text(
-                'Route content',
-                style: CatchTextStyles.bodyM(context),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: pose.$4),
+            child: SizedBox(
+              height: CatchSpacing.s16 * 2,
+              width: double.infinity,
+              child: CatchRevealViewport(
+                variant: pose.$2,
+                animation: AlwaysStoppedAnimation<double>(pose.$3),
+                child: CatchSurface.card(
+                  child: Text(
+                    'Route content',
+                    style: CatchTextStyles.bodyM(context),
+                  ),
+                ),
               ),
             ),
           ),

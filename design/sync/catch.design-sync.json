@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "3b2eb0e30d97b44b587d1ddbc84dd0358fd4d0694283b1d7f433d8f427fd5f1d",
+  "sourceDigest": "c8235f92a64b0b6fe9da3e31d283274020f63342ebca4b9f512624424d5564fb",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3b2eb0e30d97b44b587d1ddbc84dd0358fd4d0694283b1d7f433d8f427fd5f1d",
-    "contractDigest": "3b2eb0e30d97b44b587d1ddbc84dd0358fd4d0694283b1d7f433d8f427fd5f1d"
+    "digest": "c8235f92a64b0b6fe9da3e31d283274020f63342ebca4b9f512624424d5564fb",
+    "contractDigest": "c8235f92a64b0b6fe9da3e31d283274020f63342ebca4b9f512624424d5564fb"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "815d997e491fc34a3ec5895e5b5cfdc66dd5bad8b2de22c72e7c5438b03bf8e7",
+    "handoffRequestDigest": "d9edd2f172b57699f015efb97aa819bbcbea275714ed6807d59f99169b958b70",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 302,
+    "publicClassCount": 300,
     "conceptCount": 71,
-    "memberCount": 213,
-    "membersPerConcept": 3,
+    "memberCount": 211,
+    "membersPerConcept": 2.97,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 71,
-      "member": 213,
+      "member": 211,
       "screen": 15
     },
     "collisionCount": 38,
@@ -320,10 +320,8 @@
       {
         "key": "catch.motion_viewport",
         "symbols": [
-          "CatchFadeScaleViewport",
           "CatchHeroViewport",
-          "CatchMapRevealViewport",
-          "CatchTicketHeroViewport"
+          "CatchRevealViewport"
         ]
       },
       {
@@ -2961,8 +2959,8 @@
       "contractId": "catch.motion_viewport",
       "conceptRole": "concept",
       "conceptId": "catch.motion_viewport",
-      "dartSymbol": "CatchFadeScaleViewport",
-      "dartFile": "packages/catch_ui/lib/src/primitives/catch_fade_scale_viewport.dart",
+      "dartSymbol": "CatchRevealViewport",
+      "dartFile": "packages/catch_ui/lib/src/primitives/catch_reveal_viewport.dart",
       "figmaName": "Catch/MotionViewport",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2978,8 +2976,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "ad6f3a8238e305c03b24c952344437e9f57fd0c13f53cdfa688587b8dc3fe5d6",
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "05e946a595ccb1309353c9496a58cea22a5a484f52a2b8f8acd1b4d805701f36",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2987,7 +2985,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "MotionViewport",
       "claudeAllowed": true,
-      "contractDigest": "6026d0fead6b8cea660d94953a546d3ce79e2c82cf5af541751fe4b7f3593620"
+      "contractDigest": "b457ddcad8ddceca737db59e91818bebb2943567197a63271f0864c11958569b"
     },
     {
       "contractId": "catch.timestamped_message",

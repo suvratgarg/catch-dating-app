@@ -1601,22 +1601,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Motion',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMapRevealViewport',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMapRevealTransitionCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTicketHeroViewport',
+            name: 'CatchHeroViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchTicketHeroCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRevealViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchMapRevealTransitionCatalogStates,
               ),
             ],
           ),
@@ -3477,7 +3477,18 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Motion',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFadeScaleViewport',
+            name: 'CatchHeroViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Transparent hero material',
+                builder:
+                    _widgetbook_workspace_primitives_layout_motion_use_cases
+                        .heroViewportStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRevealViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -3489,18 +3500,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Resting and transition poses',
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
-                        .fadeScaleStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchHeroViewport',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Transparent hero material',
-                builder:
-                    _widgetbook_workspace_primitives_layout_motion_use_cases
-                        .heroViewportStates,
+                        .revealViewportStates,
               ),
             ],
           ),

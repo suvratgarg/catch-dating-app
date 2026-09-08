@@ -6604,6 +6604,37 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:reveal-animation-canonical-viewport",
+      "patternFamilyId": "reveal-animation-canonical-viewport",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchRevealViewport",
+      "members": [
+        {
+          "name": "CatchFadeScaleViewport",
+          "action": "absorb",
+          "target": "CatchRevealViewport"
+        },
+        {
+          "name": "CatchMapRevealViewport",
+          "action": "absorb",
+          "target": "CatchRevealViewport.stationary"
+        },
+        {
+          "name": "CatchTicketHeroViewport",
+          "action": "absorb",
+          "target": "CatchHeroViewport.ticket"
+        },
+        {
+          "name": "CatchHeroViewport",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Three source wrappers shared external animation inputs and derived curves, while the ticket wrapper only configured the existing Hero. One Stateful reveal renderer now owns the curve and releases it on input replacement and unmount. A regression first reproduced growing status-listener counts in both former route wrappers and now passes. Four forward/reverse pose images captured from original implementations with motion explicitly enabled remain unchanged in two consecutive comparisons. Reduced motion consistently exposes resting content; this is an accepted accessibility correction for content and flight recipes. Preserve stationary native media, veil geometry, curve selection, ticket tag, transparent Material and gesture-flight behavior. Shared-element identity remains a separate Hero responsibility.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

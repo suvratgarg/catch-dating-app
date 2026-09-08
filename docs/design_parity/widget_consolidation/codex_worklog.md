@@ -70,6 +70,28 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Reveal animation ownership
+
+Owner-delegated source and rendered review: `reveal-animation-canonical-viewport`
+in the existing pattern families and decisions. `CatchRevealViewport` owns
+content, stationary-media and flight curves; `CatchHeroViewport.ticket` absorbs
+the configuration-only ticket wrapper.
+
+- [x] Capture original forward/reverse poses with motion explicitly enabled;
+  four images remain unchanged in two consecutive comparisons.
+- [x] Reproduce growing status-listener counts on rebuild in both former route
+  wrappers, then verify one listener through rebuild, input replacement and
+  disposal. Five lifecycle, accessibility and golden tests pass twice.
+- [x] Respect reduced motion across all reveal recipes. Content and flight now
+  expose resting content, matching the existing stationary-media behavior.
+- [x] Eleven gallery/enumeration tests pass twice across five motion pages;
+  the existing map regression also passes. All 37 reviewed naming entries pass.
+  Whole-corpus coverage is 314/314 surfaces with zero waivers and zero
+  unclassified cases. Full derived gates remain pending for the phase.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Inherited context roles
 
 Source review of all six shared inherited publishers distinguishes geometry,

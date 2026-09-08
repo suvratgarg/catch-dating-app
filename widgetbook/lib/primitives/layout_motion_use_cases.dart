@@ -48,10 +48,10 @@ Widget pagerFocusStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Resting and transition poses',
-  type: CatchFadeScaleViewport,
+  type: CatchRevealViewport,
   path: '[Core primitives]/Motion',
 )
-Widget fadeScaleStates(BuildContext context) => WidgetbookCatalogFrame(
+Widget revealViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Fade and scale viewport',
   catalogId: 'catch.motion_viewport.fade_scale',
   children: [
@@ -64,12 +64,15 @@ Widget fadeScaleStates(BuildContext context) => WidgetbookCatalogFrame(
             color: CatchTokens.of(context).ink2,
           ),
           gapH8,
-          CatchFadeScaleViewport(
-            animation: AlwaysStoppedAnimation<double>(value),
-            child: CatchSurface.card(
-              child: Text(
-                'Route content',
-                style: CatchTextStyles.bodyM(context),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: false),
+            child: CatchRevealViewport(
+              animation: AlwaysStoppedAnimation<double>(value),
+              child: CatchSurface.card(
+                child: Text(
+                  'Route content',
+                  style: CatchTextStyles.bodyM(context),
+                ),
               ),
             ),
           ),
