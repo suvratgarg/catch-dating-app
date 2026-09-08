@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.23.0
+version: 3.24.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -454,8 +454,7 @@ Widgetbook callers.
 | `CatchViewportBreakpoint` | `packages/catch_ui/lib/src/patterns/catch_viewport_breakpoint.dart:10` | Selects a component layout below or at/above a caller-owned local-width threshold. Feature-specific ComponentBreakpoints remain app policy. |
 | `CatchViewportSliver` | `packages/catch_ui/lib/src/patterns/catch_viewport_sliver.dart:10` | Supplies local sliver cross-axis width and its Material size class without reading global window metrics. |
 | `CatchViewportGeometry` | `packages/catch_ui/lib/src/patterns/catch_viewport_geometry.dart:4` | Immutable width and size-class descriptor delivered to the sliver builder. |
-| `CatchButtonLabel` | `packages/catch_ui/lib/src/components/catch_button_label.dart` | Direct label+icon row for `CatchButton`. Preserves the provided font size: command/CTA labels wrap naturally, while bounded selection labels use one line with ellipsis. Neither path shrinks text. |
-| `CatchButtonLoadingDots` | `packages/catch_ui/lib/src/components/catch_button_loading_dots.dart` | Three-dot loading renderer shown during `CatchButton`'s loading state. Uses the button foreground color with canonical loading-dot opacity stops. |
+| `CatchButtonContentRow` | `packages/catch_ui/lib/src/components/catch_button_content_row.dart` | Direct label+icon row for `CatchButton`. Preserves the provided font size: command/CTA labels wrap naturally, while bounded selection labels use one line with ellipsis. Neither path shrinks text. |
 | `CatchToggle` | `packages/catch_ui/lib/src/components/catch_toggle.dart` | Low-level handoff switch leaf. The standalone form retains its 46×28 visual track; `CatchToggle.field` renders the 44×26 field visual track. Both reserve platform-sized hit/focus targets around those unchanged visuals. Both own animated track/knob/disabled state, toggled semantics, Enter/Space activation, and immediate focus-visible chrome without adding a second focus target to `CatchField.toggle`. Row-shaped settings/policy controls should use `CatchField.toggle`; use `CatchToggle` directly only for standalone non-field controls. |
 
 ---

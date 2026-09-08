@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_button_label.dart';
-import 'package:catch_ui/src/components/catch_button_loading_dots.dart';
+import 'package:catch_ui/src/components/catch_button_content_row.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -238,11 +238,11 @@ class _CatchButtonState extends State<CatchButton> {
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
-                ? CatchButtonLoadingDots(color: palette.foreground)
-                : CatchButtonLabel(
+                ? CatchLoadingIndicator.dots(color: palette.foreground)
+                : CatchButtonContentRow(
                     label: widget.label,
                     color: palette.foreground,
-                    icon: widget.icon,
+                    leading: widget.icon,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
                     allowMultiline: !widget._selection,

@@ -6895,6 +6895,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:button-content-loading-recipes",
+      "patternFamilyId": "button-content-loading-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchLoadingIndicator",
+      "members": [
+        {
+          "name": "CatchButtonLoadingDots",
+          "action": "absorb",
+          "target": "CatchLoadingIndicator.dots"
+        },
+        {
+          "name": "CatchButtonLabel",
+          "action": "absorb",
+          "target": "CatchButtonContentRow"
+        }
+      ],
+      "rationale": "Button loading dots express the same indeterminate activity contract as the circular loading indicator. Consolidate the static three-dot recipe into CatchLoadingIndicator.dots, preserving dimensions, opacity sequence and the existing stable key. Remove the former Widget and button-family member registration. Name the noninteractive icon/text arrangement CatchButtonContentRow and use the approved leading slot. CatchButton continues to own focus, gestures, busy disabling and switching. Original normal/scaled light/dark images and primitive behavior tests preserve the existing rendering; this is a helper consolidation, not completion of the wider Button/IconAction API review.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

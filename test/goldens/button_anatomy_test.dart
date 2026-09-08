@@ -38,12 +38,12 @@ void main() {
                 isLoading: true,
                 variant: CatchButtonVariant.secondary,
               ),
-              const CatchButtonLoadingDots(color: Colors.blue),
-              CatchButtonLabel(
+              const CatchLoadingIndicator.dots(color: Colors.blue),
+              CatchButtonContentRow(
                 label: 'A longer label that must wrap without shrinking',
                 color: Theme.of(context).colorScheme.onSurface,
                 textStyle: CatchTextStyles.control(context),
-                icon: const Icon(Icons.check),
+                leading: const Icon(Icons.check),
                 fullWidth: true,
                 allowMultiline: true,
               ),

@@ -777,7 +777,7 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchLoadingIndicator',
     contractId: 'catch.loading_indicator',
-    states: const ['default', 'small', 'tinted'],
+    states: const ['default', 'small', 'tinted', 'dots-primary', 'dots-light'],
     children: [
       const _StateCard(
         label: 'default',
@@ -801,6 +801,14 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
           dimension: WidgetbookPreviewLayout.loadingIndicatorExtent,
           child: CatchLoadingIndicator(color: t.primary),
         ),
+      ),
+      _StateCard(
+        label: 'dots-primary',
+        child: CatchLoadingIndicator.dots(color: t.primary),
+      ),
+      const _StateCard(
+        label: 'dots-light',
+        child: CatchLoadingIndicator.dots(color: CatchTokens.editorialWhite),
       ),
     ],
   );
@@ -1735,7 +1743,7 @@ Widget catchButtonContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchButtonLabel,
+  type: CatchButtonContentRow,
   path: '[Core primitives]/Actions',
 )
 Widget catchButtonLabelContractStates(BuildContext context) {
@@ -1743,7 +1751,7 @@ Widget catchButtonLabelContractStates(BuildContext context) {
   final textStyle = CatchTextStyles.buttonMd(context);
 
   return _ContractScreen(
-    title: 'CatchButtonLabel',
+    title: 'CatchButtonContentRow',
     contractId: 'catch.button.label',
     states: const ['label', 'with-icon', 'full-width'],
     children: [
@@ -1751,15 +1759,15 @@ Widget catchButtonLabelContractStates(BuildContext context) {
         label: 'label / icon',
         child: _InlineWrap(
           children: [
-            CatchButtonLabel(
+            CatchButtonContentRow(
               label: 'Continue',
               color: t.primary,
               textStyle: textStyle,
             ),
-            CatchButtonLabel(
+            CatchButtonContentRow(
               label: 'Add to calendar',
               color: t.ink,
-              icon: Icon(CatchIcons.calendarAdd),
+              leading: Icon(CatchIcons.calendarAdd),
               textStyle: textStyle,
             ),
           ],
@@ -1769,10 +1777,10 @@ Widget catchButtonLabelContractStates(BuildContext context) {
         label: 'full-width bounded label',
         child: SizedBox(
           width: WidgetbookPreviewLayout.fullWidthButtonWidth,
-          child: CatchButtonLabel(
+          child: CatchButtonContentRow(
             label: 'Very long call to action label',
             color: t.primary,
-            icon: Icon(CatchIcons.sparkle),
+            leading: Icon(CatchIcons.sparkle),
             fullWidth: true,
             textStyle: textStyle,
           ),
@@ -1784,23 +1792,22 @@ Widget catchButtonLabelContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchButtonLoadingDots,
+  type: CatchLoadingIndicator,
   path: '[Core primitives]/Actions',
 )
 Widget catchButtonLoadingDotsContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
-  return _ContractScreen(
-    title: 'CatchButtonLoadingDots',
-    contractId: 'catch.button.loading_dots',
-    states: const ['primary', 'light'],
+  return WidgetbookCatalogFrame(
+    title: 'CatchLoadingIndicator.dots',
+    catalogId: 'core.widgets.catch_loading_indicator',
     children: [
       _StateCard(
         label: 'dot tones',
         child: _InlineWrap(
           children: [
-            CatchButtonLoadingDots(color: t.primary),
-            const CatchButtonLoadingDots(color: CatchTokens.editorialWhite),
+            CatchLoadingIndicator.dots(color: t.primary),
+            const CatchLoadingIndicator.dots(color: CatchTokens.editorialWhite),
           ],
         ),
       ),

@@ -801,9 +801,9 @@
           },
           {
             "id": "catch.button.label",
-            "symbol": "CatchButtonLabel",
-            "file": "packages/catch_ui/lib/src/components/catch_button_label.dart",
-            "summary": "Direct button label renderer for icon, loading, and typography composition.",
+            "symbol": "CatchButtonContentRow",
+            "file": "packages/catch_ui/lib/src/components/catch_button_content_row.dart",
+            "summary": "Button content row with optional leading media, centered label and natural-height wrapping; interaction and busy state remain Button-owned.",
             "states": [
               "label",
               "with-icon",
@@ -815,23 +815,15 @@
               "parentConceptId": "catch.button",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.button"
-            }
-          },
-          {
-            "id": "catch.button.loading_dots",
-            "symbol": "CatchButtonLoadingDots",
-            "file": "packages/catch_ui/lib/src/components/catch_button_loading_dots.dart",
-            "summary": "Direct loading-dot renderer used inside loading buttons.",
-            "states": [
-              "primary",
-              "light"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.button",
-              "parentConceptId": "catch.button",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.button"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "ButtonContent",
+              "comparedWith": [
+                "catch.button"
+              ],
+              "reason": "Owns the leading-media and centered-label arrangement inside a button. It has no gesture, focus or busy-state ownership; it is content anatomy of the Button concept."
             }
           }
         ],
@@ -876,6 +868,11 @@
         "website": "Button",
         "admin": "AdminButton",
         "webui": "ButtonControl"
+      },
+      "level": "L3",
+      "roleNoun": "Button",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -4884,12 +4881,13 @@
       "name": "CatchLoadingIndicator",
       "status": "active",
       "kind": "primitive",
-      "summary": "Indeterminate progress indicator for unknown, compact, or one-off work where content-shaped placeholders are not useful.",
+      "summary": "Indeterminate progress feedback with circular and static inline-dot recipes for unknown or compact work.",
       "dart": {
         "symbol": "CatchLoadingIndicator",
         "file": "packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart",
         "constructors": [
-          "CatchLoadingIndicator"
+          "CatchLoadingIndicator",
+          "CatchLoadingIndicator.dots"
         ]
       },
       "design": {
@@ -4914,7 +4912,7 @@
             "name": "strokeWidth",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double"
           },
           {
             "name": "color",
@@ -4926,13 +4924,16 @@
         "states": [
           "default",
           "small",
-          "tinted"
+          "tinted",
+          "dots-primary",
+          "dots-light"
         ],
         "slots": [],
         "tokens": [],
         "dartRoles": [
           "CircularProgressIndicator",
-          "Center"
+          "Center",
+          "CatchLoadingIndicatorVariant"
         ],
         "goldens": [],
         "accessibility": {
@@ -4953,7 +4954,8 @@
         "allowedChildren": [],
         "notes": [
           "Use for tiny inline operations, platform or plugin waits, and unknown one-off work.",
-          "Use catch.skeleton when the eventual content layout is known."
+          "Use catch.skeleton when the eventual content layout is known.",
+          "The dots recipe keeps button loading feedback motion-independent and preserves its compact three-dot dimensions. The button owns disabling its action while busy."
         ]
       },
       "governance": {
@@ -4979,7 +4981,7 @@
         "comparedWith": [
           "catch.page_dots"
         ],
-        "reason": "Indeterminate activity feedback delegates Flutter progress rendering; page indicators display a selected index within a finite set."
+        "reason": "Indeterminate activity feedback uses a circular progress recipe or static inline dots. Page indicators display a selected index within a finite set; loading has no selected page or known total."
       }
     },
     {

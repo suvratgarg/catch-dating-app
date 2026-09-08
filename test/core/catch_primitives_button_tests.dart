@@ -49,8 +49,8 @@ void _registerCatchPrimitivesButtonTests() {
       tester.getSize(find.byKey(const ValueKey('large-text-button'))).height,
       greaterThan(CatchSpacing.s12),
     );
-    final label = tester.widget<CatchButtonLabel>(
-      find.byType(CatchButtonLabel),
+    final label = tester.widget<CatchButtonContentRow>(
+      find.byType(CatchButtonContentRow),
     );
     expect(label.allowMultiline, isTrue);
     expect(tester.takeException(), isNull);

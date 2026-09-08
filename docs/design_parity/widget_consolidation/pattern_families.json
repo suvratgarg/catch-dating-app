@@ -1507,6 +1507,47 @@
           "rationale": "Distinct completeness status, warning badge/chrome and explanatory caption."
         }
       ]
+    },
+    {
+      "id": "button-content-loading-recipes",
+      "title": "Button content anatomy and shared loading feedback",
+      "intent": "Use one indeterminate-loading component and name button content by its layout responsibility.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.button + catch.loading_indicator",
+      "qualityReference": "CatchLoadingIndicator",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve button typography, media spacing, text wrapping, disabled behavior, static dot dimensions/opacities and circular progress rendering."
+      ],
+      "members": [
+        {
+          "symbol": "CatchLoadingIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Named circular and static-dot recipes share indeterminate activity meaning."
+        },
+        {
+          "symbol": "CatchButtonLoadingDots",
+          "disposition": "unify",
+          "target": "CatchLoadingIndicator.dots",
+          "preview": "not-applicable",
+          "rationale": "Static busy feedback differs by presentation, not by ownership or feature identity."
+        },
+        {
+          "symbol": "CatchButtonLabel",
+          "disposition": "unify",
+          "target": "CatchButtonContentRow",
+          "preview": "not-applicable",
+          "rationale": "Leading media and label form button row anatomy, with interaction owned by CatchButton."
+        },
+        {
+          "symbol": "CatchButtonContentRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "A content row is reusable button anatomy without becoming another button implementation."
+        }
+      ]
     }
   ]
 }

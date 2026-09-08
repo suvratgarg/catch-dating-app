@@ -1,13 +1,13 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class CatchButtonLabel extends StatelessWidget {
-  const CatchButtonLabel({
+class CatchButtonContentRow extends StatelessWidget {
+  const CatchButtonContentRow({
     super.key,
     required this.label,
     required this.color,
     required this.textStyle,
-    this.icon,
+    this.leading,
     this.gap = CatchSpacing.micro6,
     this.fullWidth = false,
     this.allowMultiline = false,
@@ -15,7 +15,7 @@ class CatchButtonLabel extends StatelessWidget {
 
   final String label;
   final Color color;
-  final Widget? icon;
+  final Widget? leading;
   final double gap;
   final bool fullWidth;
   final bool allowMultiline;
@@ -23,7 +23,7 @@ class CatchButtonLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconWidget = icon;
+    final iconWidget = leading;
     final labelWidget = Text(
       label,
       maxLines: allowMultiline ? null : 1,

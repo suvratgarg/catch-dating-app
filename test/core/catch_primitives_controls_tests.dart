@@ -212,8 +212,15 @@ void _registerCatchPrimitivesControlsTests() {
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
         240,
       );
-      expect(find.byType(CatchButtonLabel), findsOneWidget);
-      expect(find.byType(CatchButtonLoadingDots), findsOneWidget);
+      expect(find.byType(CatchButtonContentRow), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.dots,
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Join event'));
       await tester.pump();
