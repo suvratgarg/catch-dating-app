@@ -70,6 +70,24 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Canonical empty and error states
+
+Owner-delegated source and rendered review: `empty-error-canonical-states`.
+The primary states now own their renderers; typed mode/variant arguments cover
+inline and compact presentations without forwarding-only public Widgets.
+
+- [x] Delete four duplicate Widgets, migrate callers and remove their registry
+  members and redundant gallery pages. Root, sliver and localization adapters
+  retain their distinct placement and dependency contracts.
+- [x] Standardize recovery slots as `actions`; preserve single-action geometry
+  and retry behavior. Three focused tests exercise multiple actions at scale 2.
+- [x] Pass 140 existing primitive and localized-error tests. Preserve the
+  original gallery images in two comparisons, then pass all 24 affected
+  gallery/enumeration tests twice after canonical page renames.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Passive badge recipes and numeric contracts
 
 Owner-delegated source and rendered review: `passive-badge-recipe-consolidation`

@@ -135,7 +135,7 @@ void main() {
     await _pumpSettings(tester, container);
 
     expect(find.text('Unavailable'), findsNWidgets(2));
-    expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
+    expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
   });
 
   testWidgets('preference switches write through SettingsController', (

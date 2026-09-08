@@ -1141,7 +1141,7 @@
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical success-empty-state composition for stacked or inline empty content, optional icon, optional action, and optional contained surface.",
+      "summary": "Canonical successful-empty content with typed stacked/inline variants, responsive containment and caller-owned actions.",
       "dart": {
         "symbol": "CatchEmptyState",
         "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
@@ -1186,10 +1186,11 @@
             "dartType": "String?"
           },
           {
-            "name": "action",
-            "type": "widget",
+            "name": "actions",
+            "type": "list",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "List<Widget>",
+            "notes": "Defaults to an empty action list."
           },
           {
             "name": "surface",
@@ -1210,11 +1211,11 @@
             ]
           },
           {
-            "name": "layout",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "stacked",
-            "dartType": "CatchEmptyStateLayout",
+            "dartType": "CatchEmptyStateVariant",
             "values": [
               "stacked",
               "inline"
@@ -1232,8 +1233,8 @@
         ],
         "slots": [
           {
-            "name": "action",
-            "kind": "optional-action-widget",
+            "name": "actions",
+            "kind": "action-widgets",
             "allowedComponents": [
               "catch.button",
               "catch.button.text"
@@ -1252,7 +1253,7 @@
         ],
         "dartRoles": [
           "CatchIconTileVariant",
-          "CatchEmptyStateLayout",
+          "CatchEmptyStateVariant",
           "CatchSurface",
           "CatchTextStyles.sectionTitle",
           "CatchTextStyles.bodyS",
@@ -1260,24 +1261,6 @@
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.empty_state.content",
-            "symbol": "CatchEmptyStateContent",
-            "file": "packages/catch_ui/lib/src/components/catch_empty_state_content.dart",
-            "summary": "Direct empty-state content renderer for title, message, action, and layout variants.",
-            "states": [
-              "stacked",
-              "inline",
-              "with-action"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.empty_state",
-              "parentConceptId": "catch.empty_state",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.empty_state"
-            }
-          },
           {
             "id": "catch.empty_state.state_viewport",
             "symbol": "CatchStateViewport",
@@ -1331,6 +1314,15 @@
               "parentConceptId": "catch.empty_state",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.empty_state"
+            },
+            "level": "L4",
+            "roleNoun": "EmptyState",
+            "naming": {
+              "useCase": "Sliver",
+              "comparedWith": [
+                "catch.empty_state"
+              ],
+              "reason": "Consumes the sliver placement protocol and bottom-overlay clearance, delegating successful-empty content to CatchEmptyState. A box state cannot be supplied directly to a sliver list."
             }
           }
         ],
@@ -1355,7 +1347,7 @@
         ],
         "notes": [
           "Use only for genuinely empty successful data states, not load failures.",
-          "Use CatchErrorState or CatchInlineErrorState for error branches with retry."
+          "Use CatchErrorState or CatchErrorState for error branches with retry."
         ]
       },
       "governance": {
@@ -1376,6 +1368,11 @@
         "website": "EmptyState",
         "admin": "EmptyState",
         "webui": "EmptyStateControl"
+      },
+      "level": "L3",
+      "roleNoun": "EmptyState",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -1391,7 +1388,7 @@
       "name": "CatchErrorState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical cardless app-facing recovery-content family for full-screen, inline, compact, scaffold, sliver, and icon-only placements.",
+      "summary": "Canonical cardless error content with typed full-screen, inline and compact modes, caller-resolved copy, retry and additional actions.",
       "dart": {
         "symbol": "CatchErrorState",
         "file": "packages/catch_ui/lib/src/components/catch_error_state.dart",
@@ -1449,10 +1446,11 @@
             "dartType": "String?"
           },
           {
-            "name": "secondaryAction",
-            "type": "widget",
+            "name": "actions",
+            "type": "list",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "List<Widget>",
+            "notes": "Defaults to an empty action list."
           },
           {
             "name": "mode",
@@ -1480,8 +1478,8 @@
         ],
         "slots": [
           {
-            "name": "secondaryAction",
-            "kind": "optional-action-widget",
+            "name": "actions",
+            "kind": "action-widgets",
             "allowedComponents": [
               "catch.button"
             ],
@@ -1544,6 +1542,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L4a",
+            "roleNoun": "ErrorState",
+            "naming": {
+              "useCase": "Localized",
+              "comparedWith": [
+                "catch.error_state"
+              ],
+              "reason": "Accepts an app error object and error context, resolves inherited-locale copy and icon, then mounts the provider-free error renderer. Inline and compact are Mode values of this same adapter."
             }
           },
           {
@@ -1562,6 +1569,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L4a",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": "LocalizedError",
+              "comparedWith": [
+                "catch.error_state.scaffold"
+              ],
+              "reason": "Accepts app errors and resolves locale-aware descriptors before composing a root error scaffold. The provider-free scaffold requires already resolved strings."
             }
           },
           {
@@ -1580,24 +1596,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
-            }
-          },
-          {
-            "id": "catch.error_state.localized_inline_error_state",
-            "symbol": "CatchLocalizedInlineErrorState",
-            "file": "lib/core/riverpod_ui/catch_localized_inline_error_state.dart",
-            "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
-            "states": [
-              "mapped-error",
-              "with-retry",
-              "secondary-action"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.error_state",
-              "parentConceptId": "catch.error_state",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L4a",
+            "roleNoun": "ErrorState",
+            "naming": {
+              "useCase": "LocalizedSliver",
+              "comparedWith": [
+                "catch.error_state.localized_error_state"
+              ],
+              "reason": "Adds app-error mapping to the sliver placement contract. The localized box adapter cannot satisfy a sliver parent; both delegate rendering to the same error content."
             }
           },
           {
@@ -1617,6 +1624,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L4",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": "Error",
+              "comparedWith": [
+                "catch.error_state"
+              ],
+              "reason": "Composes a complete root error page with standalone scaffold, safe area and optional background. It delegates content and actions to CatchErrorState, which owns no scaffold."
             }
           },
           {
@@ -1636,25 +1652,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
-            }
-          },
-          {
-            "id": "catch.error_state.inline",
-            "symbol": "CatchInlineErrorState",
-            "file": "packages/catch_ui/lib/src/components/catch_inline_error_state.dart",
-            "summary": "Cardless inline section placement adapter for retryable failures when the rest of the screen remains usable.",
-            "states": [
-              "inline",
-              "compact",
-              "from-error",
-              "with-retry"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.error_state",
-              "parentConceptId": "catch.error_state",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L4",
+            "roleNoun": "ErrorState",
+            "naming": {
+              "useCase": "Sliver",
+              "comparedWith": [
+                "catch.error_state"
+              ],
+              "reason": "Consumes a sliver parent with fill-remaining or box-adapter placement. Error copy, retry and paint remain in CatchErrorState; the render protocol makes this distinct from its box modes."
             }
           },
           {
@@ -1692,25 +1698,6 @@
               "conceptId": "catch.error_state",
               "parentConceptId": "catch.error_state",
               "qualifier": "variant",
-              "decisionRef": "contract-family:catch.error_state"
-            }
-          },
-          {
-            "id": "catch.error_state.error_body",
-            "symbol": "CatchErrorBody",
-            "file": "packages/catch_ui/lib/src/components/catch_error_body.dart",
-            "summary": "Direct cardless branded error-body renderer used by error placement adapters; parent sections own containment.",
-            "states": [
-              "full-screen",
-              "inline",
-              "compact",
-              "secondary-action"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.error_state",
-              "parentConceptId": "catch.error_state",
-              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.error_state"
             }
           }
@@ -1756,6 +1743,11 @@
       },
       "surfaces": {
         "flutter": "CatchErrorState"
+      },
+      "level": "L3",
+      "roleNoun": "ErrorState",
+      "naming": {
+        "useCase": ""
       }
     },
     {

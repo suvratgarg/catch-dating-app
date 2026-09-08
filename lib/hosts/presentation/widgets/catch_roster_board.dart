@@ -423,7 +423,7 @@ class CatchRosterTable extends StatelessWidget {
         if (showEmpty) {
           return CatchEmptyState(
             surface: true,
-            layout: CatchEmptyStateLayout.inline,
+            variant: CatchEmptyStateVariant.inline,
             icon: CatchIcons.group,
             title: emptyTitle,
             message: emptyMessage,

@@ -1,1 +1,0 @@
-enum CatchEmptyStateLayout { stacked, inline }

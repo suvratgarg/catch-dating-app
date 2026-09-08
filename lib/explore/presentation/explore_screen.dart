@@ -815,11 +815,13 @@ class ExploreScreenEmptyState extends StatelessWidget {
               cityLabel: state.cityLabel,
             ),
             message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
-            action: CatchButton(
-              label: context.l10n.exploreExploreScreenLabelChangeCity,
-              icon: Icon(CatchIcons.locationOnOutlined),
-              onPressed: onChangeCity,
-            ),
+            actions: [
+              CatchButton(
+                label: context.l10n.exploreExploreScreenLabelChangeCity,
+                icon: Icon(CatchIcons.locationOnOutlined),
+                onPressed: onChangeCity,
+              ),
+            ],
           ),
         ),
       ),
@@ -830,7 +832,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
             message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
-            action: action,
+            actions: [?action],
           ),
         ),
       ),
@@ -843,7 +845,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
             message: context
                 .l10n
                 .exploreExploreScreenMessageTryAnotherClubNeighborhood,
-            action: action,
+            actions: [?action],
           ),
         ),
       ),
@@ -854,7 +856,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
             message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
-            action: action,
+            actions: [?action],
           ),
         ),
       ),

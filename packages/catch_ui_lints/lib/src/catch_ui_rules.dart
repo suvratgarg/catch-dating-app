@@ -648,7 +648,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawErrorSurface = LintCode(
     'catch_no_raw_error_surface',
-    'Use CatchErrorState/CatchSliverErrorState/CatchInlineErrorState instead of a raw Center(Text(...)) failure surface.',
+    'Use CatchErrorState with an appropriate mode, or CatchSliverErrorState, instead of a raw Center(Text(...)) failure surface.',
     severity: DiagnosticSeverity.INFO,
   );
 

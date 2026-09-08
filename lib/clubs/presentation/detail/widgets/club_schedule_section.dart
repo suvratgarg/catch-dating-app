@@ -69,7 +69,7 @@ class ClubScheduleSection extends StatelessWidget {
                 message: context
                     .l10n
                     .clubsClubScheduleSectionMessageFutureEventsWillAppear,
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
               ),
             ),
           )

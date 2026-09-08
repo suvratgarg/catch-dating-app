@@ -83,7 +83,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                 builder: (context, list) {
                   if (list.members.isEmpty) {
                     return CatchEmptyState(
-                      layout: CatchEmptyStateLayout.inline,
+                      variant: CatchEmptyStateVariant.inline,
                       icon: CatchIcons.groupsOutlined,
                       title: context.l10n.hostsEventStaffEmptyTitle,
                       message: context.l10n.hostsEventStaffEmptyMessage,

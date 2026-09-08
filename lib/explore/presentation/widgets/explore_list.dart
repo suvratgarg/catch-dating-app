@@ -111,15 +111,17 @@ class ExploreListEmptyState extends ConsumerWidget {
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.exploreExploreListTitleNoClubsMatchThis,
             message: context.l10n.exploreExploreListMessageClearTheSearchOr,
-            action: ExploreClearAction(
-              clearSearch: true,
-              clearFilters: true,
-              icon: CatchIcons.closeRounded,
-              onClearSearch: () =>
-                  ref.read(exploreSearchQueryProvider.notifier).clear(),
-              onClearFilters: () =>
-                  ref.read(exploreFiltersProvider.notifier).clear(),
-            ),
+            actions: [
+              ExploreClearAction(
+                clearSearch: true,
+                clearFilters: true,
+                icon: CatchIcons.closeRounded,
+                onClearSearch: () =>
+                    ref.read(exploreSearchQueryProvider.notifier).clear(),
+                onClearFilters: () =>
+                    ref.read(exploreFiltersProvider.notifier).clear(),
+              ),
+            ],
           ),
         ),
       );
@@ -134,13 +136,15 @@ class ExploreListEmptyState extends ConsumerWidget {
             message: context
                 .l10n
                 .exploreExploreListMessageTryAnotherClubNeighborhood,
-            action: ExploreClearAction(
-              clearSearch: true,
-              clearFilters: false,
-              icon: CatchIcons.closeRounded,
-              onClearSearch: () =>
-                  ref.read(exploreSearchQueryProvider.notifier).clear(),
-            ),
+            actions: [
+              ExploreClearAction(
+                clearSearch: true,
+                clearFilters: false,
+                icon: CatchIcons.closeRounded,
+                onClearSearch: () =>
+                    ref.read(exploreSearchQueryProvider.notifier).clear(),
+              ),
+            ],
           ),
         ),
       );
@@ -153,13 +157,15 @@ class ExploreListEmptyState extends ConsumerWidget {
             icon: CatchIcons.groupsOutlined,
             title: context.l10n.exploreExploreListTitleNoClubsMatchThese,
             message: context.l10n.exploreExploreListMessageClearOneOrMore,
-            action: ExploreClearAction(
-              clearSearch: false,
-              clearFilters: true,
-              icon: CatchIcons.closeRounded,
-              onClearFilters: () =>
-                  ref.read(exploreFiltersProvider.notifier).clear(),
-            ),
+            actions: [
+              ExploreClearAction(
+                clearSearch: false,
+                clearFilters: true,
+                icon: CatchIcons.closeRounded,
+                onClearFilters: () =>
+                    ref.read(exploreFiltersProvider.notifier).clear(),
+              ),
+            ],
           ),
         ),
       );

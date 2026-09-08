@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
@@ -74,18 +74,18 @@ class ActivitySection extends ConsumerWidget {
             sectionState is NotificationsAccessLoading) ...[
           const ActivitySectionSkeleton(count: 2),
         ] else if (sectionState is NotificationsAccessError) ...[
-          CatchLocalizedInlineErrorState(
+          CatchLocalizedErrorState(
             sectionState.error,
             context: AppErrorContext.auth,
-            compact: true,
+            mode: CatchErrorStateMode.compact,
             onRetry: onRetry,
           ),
         ] else if (sectionState is NotificationsActivityError) ...[
           if (sectionState.error case final error?)
-            CatchLocalizedInlineErrorState(
+            CatchLocalizedErrorState(
               error,
               context: AppErrorContext.dashboard,
-              compact: true,
+              mode: CatchErrorStateMode.compact,
               onRetry:
                   onRetry ??
                   (uid == null
@@ -97,14 +97,14 @@ class ActivitySection extends ConsumerWidget {
                         }),
             )
           else
-            CatchInlineErrorState(
+            CatchErrorState(
               retryLabel: context.l10n.sharedActionTryAgain,
               title:
                   context.l10n.dashboardActivitySectionTitleActivityUnavailable,
               message: context
                   .l10n
                   .dashboardActivitySectionMessageCouldNotLoadActivity,
-              compact: true,
+              mode: CatchErrorStateMode.compact,
               onRetry:
                   onRetry ??
                   (uid == null

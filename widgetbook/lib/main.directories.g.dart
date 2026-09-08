@@ -727,11 +727,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_error_state_adapter_use_cases
                         .localizedErrorStateCases,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchLocalizedInlineErrorState',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Mapped inline and compact failures',
                 builder:
@@ -1012,6 +1007,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchErrorState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchInlineErrorStateCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFrameworkErrorDebugDetails',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1028,16 +1033,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchFrameworkErrorViewCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchInlineErrorState',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchInlineErrorStateCatalogStates,
               ),
             ],
           ),
@@ -2579,17 +2574,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchEmptyStateContent',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchEmptyStateContentContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchErrorBackAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2597,17 +2581,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_error_state_adapter_use_cases
                         .errorBackActionCases,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchErrorBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchErrorBodyContractStates,
               ),
             ],
           ),

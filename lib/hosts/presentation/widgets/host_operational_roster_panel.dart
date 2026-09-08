@@ -357,7 +357,7 @@ class _HostOperationalRosterPanelState
             builder: (context, attendees) {
               if (attendees.isEmpty) {
                 return CatchEmptyState(
-                  layout: CatchEmptyStateLayout.inline,
+                  variant: CatchEmptyStateVariant.inline,
                   icon: CatchIcons.groupsOutlined,
                   title: context.l10n.hostsOperationalRosterEmptyTitle,
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
@@ -397,7 +397,7 @@ class _HostOperationalRosterPanelState
                   ],
                   if (filteredAttendees.isEmpty)
                     CatchEmptyState(
-                      layout: CatchEmptyStateLayout.inline,
+                      variant: CatchEmptyStateVariant.inline,
                       icon: CatchIcons.searchOffRounded,
                       title: context
                           .l10n
@@ -1482,7 +1482,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
         ),
         child: choices.events.isEmpty
             ? CatchEmptyState(
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
                 icon: CatchIcons.calendarMonthOutlined,
                 title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
                 message:

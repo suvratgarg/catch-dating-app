@@ -55,7 +55,7 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
                       context.l10n.crossPathsInvitationScreenUnavailableTitle,
                   message:
                       context.l10n.crossPathsInvitationScreenUnavailableBody,
-                  secondaryAction: const CatchErrorBackAction(),
+                  actions: [const CatchErrorBackAction()],
                 )
               : _InvitationDetail(invitation: invitation),
         ),
@@ -76,7 +76,7 @@ class _InvitationDetail extends ConsumerWidget {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
         message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-        secondaryAction: const CatchErrorBackAction(),
+        actions: [const CatchErrorBackAction()],
       );
     }
     final otherUid = invitation.senderUid == uid
@@ -115,7 +115,7 @@ class _InvitationDetail extends ConsumerWidget {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
         message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-        secondaryAction: const CatchErrorBackAction(),
+        actions: [const CatchErrorBackAction()],
       );
     }
     return _InvitationDetailBody(

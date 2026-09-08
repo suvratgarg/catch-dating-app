@@ -78,14 +78,14 @@ class HostEventManageRouteScreen extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context
                     .l10n
                     .hostsHostEventManageRouteScreenTitleEventNotFound,
                 message: context
                     .l10n
                     .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: [const CatchErrorBackAction()],
               ),
             ),
           );
@@ -100,7 +100,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
               divider: scrolledUnder,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context
                     .l10n
                     .hostsHostEventManageRouteScreenTitleActionUnavailable,
@@ -108,7 +108,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                     .l10n
                     .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
                 icon: CatchIcons.blockRounded,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: [const CatchErrorBackAction()],
               ),
             ),
           );

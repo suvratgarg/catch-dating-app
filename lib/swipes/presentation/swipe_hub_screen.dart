@@ -301,11 +301,13 @@ class CatchesHubEmptyState extends StatelessWidget {
             icon: CatchIcons.directionsRunRounded,
             title: context.l10n.swipesSwipeHubScreenTitleNoActiveCatches,
             message: context.l10n.swipesSwipeHubScreenMessageBookAGroupEvent,
-            action: CatchButton(
-              label: context.l10n.swipesSwipeHubScreenLabelFindAnEvent,
-              onPressed: onFindEvent,
-              variant: CatchButtonVariant.secondary,
-            ),
+            actions: [
+              CatchButton(
+                label: context.l10n.swipesSwipeHubScreenLabelFindAnEvent,
+                onPressed: onFindEvent,
+                variant: CatchButtonVariant.secondary,
+              ),
+            ],
           ),
           gapH18,
           CatchSurface(

@@ -210,7 +210,7 @@ void main() {
       );
 
       expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      final body = tester.widget<CatchErrorBody>(find.byType(CatchErrorBody));
+      final body = tester.widget<CatchErrorState>(find.byType(CatchErrorState));
       expect(body.onRetry, isNotNull);
     });
 

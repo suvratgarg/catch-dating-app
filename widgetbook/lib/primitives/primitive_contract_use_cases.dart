@@ -552,11 +552,13 @@ Widget catchErrorStateContractStates(BuildContext context) {
           message: 'Your changes are still local.',
           mode: CatchErrorStateMode.inline,
           onRetry: _noop,
-          secondaryAction: CatchButton(
-            label: 'Dismiss',
-            variant: CatchButtonVariant.secondary,
-            onPressed: _noop,
-          ),
+          actions: [
+            CatchButton(
+              label: 'Dismiss',
+              variant: CatchButtonVariant.secondary,
+              onPressed: _noop,
+            ),
+          ],
         ),
       ),
       _StateCard(
@@ -589,66 +591,6 @@ Widget catchErrorStateContractStates(BuildContext context) {
         ),
       ),
       const _StateCard(label: 'icon', child: CatchIconTile.error()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchErrorBody,
-  path: '[Core primitives]/Feedback',
-)
-Widget catchErrorBodyContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchErrorBody',
-    contractId: 'catch.error_state.error_body',
-    states: const ['full-screen', 'inline', 'compact', 'secondary-action'],
-    children: [
-      _StateCard(
-        label: 'full-screen',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchErrorBody(
-            retryLabel: context.l10n.sharedActionTryAgain,
-            title: 'Unable to load events',
-            message: 'Check your connection and try again.',
-            onRetry: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'inline',
-        child: CatchErrorBody(
-          retryLabel: context.l10n.sharedActionTryAgain,
-          title: 'Section failed',
-          message: 'The recommendations rail could not refresh.',
-          mode: CatchErrorStateMode.inline,
-          onRetry: _noop,
-        ),
-      ),
-      const _StateCard(
-        label: 'compact',
-        child: CatchErrorBody(
-          title: 'Not available',
-          message: 'This event is no longer open.',
-          mode: CatchErrorStateMode.compact,
-        ),
-      ),
-      _StateCard(
-        label: 'secondary-action',
-        child: CatchErrorBody(
-          retryLabel: context.l10n.sharedActionTryAgain,
-          title: 'Could not save',
-          message: 'Your changes are still local.',
-          mode: CatchErrorStateMode.inline,
-          onRetry: _noop,
-          secondaryAction: CatchButton(
-            label: 'Dismiss',
-            variant: CatchButtonVariant.secondary,
-            onPressed: _noop,
-          ),
-        ),
-      ),
     ],
   );
 }
@@ -1297,7 +1239,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
           icon: CatchIcons.search,
           title: 'No matches',
           message: 'Try widening your filters.',
-          layout: CatchEmptyStateLayout.inline,
+          variant: CatchEmptyStateVariant.inline,
         ),
       ),
       _StateCard(
@@ -1323,7 +1265,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
           icon: CatchIcons.eventOutlined,
           title: 'No events yet',
           message: 'Follow a host to see upcoming plans.',
-          action: CatchButton(label: 'Explore hosts', onPressed: _noop),
+          actions: [CatchButton(label: 'Explore hosts', onPressed: _noop)],
         ),
       ),
       const _StateCard(
@@ -1333,60 +1275,6 @@ Widget catchEmptyStateContractStates(BuildContext context) {
       const _StateCard(
         label: 'message-only',
         child: CatchEmptyState(message: 'Try changing your filters.'),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchEmptyStateContent,
-  path: '[Core primitives]/Feedback',
-)
-Widget catchEmptyStateContentContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final titleStyle = CatchTextStyles.sectionTitle(context);
-  final messageStyle = CatchTextStyles.supporting(context, color: t.ink2);
-
-  return _ContractScreen(
-    title: 'CatchEmptyStateContent',
-    contractId: 'catch.empty_state.content',
-    states: const ['stacked', 'inline', 'with-action'],
-    children: [
-      _StateCard(
-        label: 'stacked',
-        child: CatchEmptyStateContent(
-          layout: CatchEmptyStateLayout.stacked,
-          icon: CatchIcons.eventOutlined,
-          title: 'No events yet',
-          message: 'Follow a host to see upcoming plans.',
-          titleStyle: titleStyle,
-          messageStyle: messageStyle,
-        ),
-      ),
-      _StateCard(
-        label: 'inline',
-        child: CatchEmptyStateContent(
-          layout: CatchEmptyStateLayout.inline,
-          icon: CatchIcons.search,
-          title: 'No matches',
-          message: 'Try widening your filters.',
-          titleStyle: titleStyle,
-          messageStyle: messageStyle,
-        ),
-      ),
-      _StateCard(
-        label: 'with-action',
-        child: CatchEmptyStateContent(
-          layout: CatchEmptyStateLayout.stacked,
-          icon: CatchIcons.eventOutlined,
-          iconVariant: CatchIconTileVariant.bubble,
-          title: 'No events yet',
-          message: 'Follow a host to see upcoming plans.',
-          action: CatchButton(label: 'Explore hosts', onPressed: _noop),
-          titleStyle: titleStyle,
-          messageStyle: messageStyle,
-        ),
       ),
     ],
   );

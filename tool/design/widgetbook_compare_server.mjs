@@ -1599,7 +1599,7 @@ function buildCandidates() {
       tags: ["feedback", "error"],
       names: [
         "CatchErrorState",
-        "CatchInlineErrorState",
+        "CatchErrorState",
         "CatchSliverErrorState",
         "CatchFrameworkErrorView",
         "CatchErrorScaffold",

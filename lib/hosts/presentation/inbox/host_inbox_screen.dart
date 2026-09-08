@@ -569,10 +569,12 @@ class _HostAuthRequiredSliver extends StatelessWidget {
       icon: CatchIcons.lockOutlineRounded,
       title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
       message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-      action: CatchButton(
-        label: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-        onPressed: () => context.go(Routes.authScreen.path),
-      ),
+      actions: [
+        CatchButton(
+          label: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+          onPressed: () => context.go(Routes.authScreen.path),
+        ),
+      ],
     ),
   );
 }

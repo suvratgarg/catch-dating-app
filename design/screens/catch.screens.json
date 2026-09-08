@@ -2497,7 +2497,7 @@
           "id": "event_feed_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedInlineErrorState inside the feed sliver.",
+          "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedErrorState (inline/compact mode) inside the feed sliver.",
           "previewIds": [
             "ExploreEventsSection/Feed states"
           ],
@@ -3542,7 +3542,7 @@
           "id": "recommendations_error",
           "kind": "error",
           "status": "captured",
-          "source": "Recommendation load failures render CatchLocalizedInlineErrorState with AppErrorContext.dashboard and retry invalidation.",
+          "source": "Recommendation load failures render CatchLocalizedErrorState (inline/compact mode) with AppErrorContext.dashboard and retry invalidation.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -4219,7 +4219,7 @@
           "id": "data_load_error",
           "kind": "error",
           "status": "captured",
-          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedInlineErrorState with retry invalidation.",
+          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedErrorState (inline/compact mode) with retry invalidation.",
           "nextAction": "Event, profile, participation, and plan failures are captured; add assignment, rotation, wingman, and candidate error captures if those branches diverge visually.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -4497,7 +4497,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedInlineErrorState; event_success_companion_offline captures an offline-mapped plan load failure.",
+          "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedErrorState (inline/compact mode); event_success_companion_offline captures an offline-mapped plan load failure.",
           "nextAction": "Define companion-specific offline copy only if product wants copy that diverges from the shared app error catalogue, and add assignment/wingman offline captures when runtime-stage fixtures expand.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -14093,7 +14093,7 @@
           "id": "attendance_error",
           "kind": "error",
           "status": "captured",
-          "source": "Attendance view-model errors render CatchLocalizedInlineErrorState with retry invalidating event, participation, and attendance providers.",
+          "source": "Attendance view-model errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating event, participation, and attendance providers.",
           "nextAction": "Add branded attendance error and offline captures for setup/live/report modes.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14141,7 +14141,7 @@
           "id": "attendee_profiles_error",
           "kind": "error",
           "status": "captured",
-          "source": "Profile lookup errors render CatchLocalizedInlineErrorState and retry attendeeProfilesProvider.",
+          "source": "Profile lookup errors render CatchLocalizedErrorState (inline/compact mode) and retry attendeeProfilesProvider.",
           "nextAction": "Add capture/preview for profile fetch failure and offline-looking profile errors.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14263,7 +14263,7 @@
           "id": "live_event_success_plan_error",
           "kind": "error",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps saved-plan failures to CatchInlineErrorState with Event Success plan retry intent.",
+          "source": "EventSuccessHostSectionState maps saved-plan failures to CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14283,7 +14283,7 @@
           "id": "live_event_success_plan_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline saved-plan failures through CatchInlineErrorState with Event Success plan retry intent.",
+          "source": "EventSuccessHostSectionState maps offline saved-plan failures through CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14549,7 +14549,7 @@
           "id": "report_scorecard_error",
           "kind": "error",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps scorecard failures to CatchInlineErrorState with scorecard retry intent.",
+          "source": "EventSuccessHostSectionState maps scorecard failures to CatchErrorState (inline/compact mode) with scorecard retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14569,7 +14569,7 @@
           "id": "report_scorecard_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline scorecard failures through CatchInlineErrorState with scorecard retry intent while the saved Event Success plan remains available.",
+          "source": "EventSuccessHostSectionState maps offline scorecard failures through CatchErrorState (inline/compact mode) with scorecard retry intent while the saved Event Success plan remains available.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14606,7 +14606,7 @@
           "id": "private_access_error",
           "kind": "error",
           "status": "captured",
-          "source": "_HostPrivateAccessCard errors render CatchLocalizedInlineErrorState with retry invalidating watchEventPrivateAccessProvider.",
+          "source": "_HostPrivateAccessCard errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating watchEventPrivateAccessProvider.",
           "nextAction": "Add private-access error and offline captures with invite-only event policy fixtures.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14620,7 +14620,7 @@
           "id": "private_access_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedInlineErrorState with retry.",
+          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedErrorState (inline/compact mode) with retry.",
           "nextAction": "Captured by host_manage_private_access_offline; continue only if private-access offline copy diverges from the shared mapped offline error.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -20993,7 +20993,7 @@
           "id": "profile_lookup_error",
           "kind": "error",
           "status": "captured",
-          "source": "A failed batched public-profile lookup renders CatchInlineErrorState with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+          "source": "A failed batched public-profile lookup renders CatchErrorState (inline/compact mode) with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
           "captureIds": [
             "event_recap_profile_lookup_error"
           ],
@@ -23210,7 +23210,7 @@
           "id": "activity_error",
           "kind": "error",
           "status": "captured",
-          "source": "ActivitySection renders CatchInlineErrorState with retry invalidation when notification loading fails.",
+          "source": "ActivitySection renders CatchErrorState (inline/compact mode) with retry invalidation when notification loading fails.",
           "captureIds": [
             "notifications_activity_error"
           ],
@@ -24366,7 +24366,7 @@
           "id": "blocked_accounts_loading_error",
           "kind": "loading",
           "status": "captured",
-          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedInlineErrorState with retry on failure.",
+          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedErrorState (inline/compact mode) with retry on failure.",
           "captureIds": [
             "settings_blocked_loading",
             "settings_blocked_error"

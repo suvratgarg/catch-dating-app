@@ -1,6 +1,73 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesAsyncFeedbackTests() {
+  for (final variant in CatchEmptyStateVariant.values) {
+    testWidgets(
+      'empty state action list reflows and activates both commands: $variant',
+      (tester) async {
+        final pressed = <String>[];
+        await tester.pumpWidget(
+          _wrap(
+            SizedBox(
+              width: 300,
+              child: CatchEmptyState(
+                variant: variant,
+                title: 'No results',
+                actions: [
+                  CatchButton(
+                    label: 'Explore',
+                    onPressed: () => pressed.add('explore'),
+                  ),
+                  CatchButton(
+                    label: 'Change filters',
+                    onPressed: () => pressed.add('filters'),
+                  ),
+                ],
+              ),
+            ),
+            textScale: 2,
+          ),
+        );
+        await tester.tap(find.text('Explore'));
+        await tester.tap(find.text('Change filters'));
+        expect(pressed, ['explore', 'filters']);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('error state keeps retry and every additional recovery command', (
+    tester,
+  ) async {
+    final pressed = <String>[];
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchErrorState(
+            title: 'Could not load',
+            message: 'Try again.',
+            mode: CatchErrorStateMode.compact,
+            retryLabel: 'Retry',
+            onRetry: () => pressed.add('retry'),
+            actions: [
+              CatchButton(
+                label: 'Go back',
+                onPressed: () => pressed.add('back'),
+              ),
+              CatchButton(label: 'Help', onPressed: () => pressed.add('help')),
+            ],
+          ),
+        ),
+        textScale: 2,
+      ),
+    );
+    for (final label in ['Retry', 'Go back', 'Help']) {
+      await tester.tap(find.text(label));
+    }
+    expect(pressed, ['retry', 'back', 'help']);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('CatchDetailHeroBackdrop composes fallback and scrim renderers', (
     tester,
   ) async {
@@ -640,13 +707,13 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
           icon: CatchIcons.search,
           title: 'Nothing here yet',
           message: 'Try another filter or check back soon.',
-          action: CatchButton(label: 'Browse events', onPressed: () {}),
+          actions: [CatchButton(label: 'Browse events', onPressed: () {})],
         ),
       ),
     );
 
     expect(find.byType(CatchSurface), findsNothing);
-    expect(find.byType(CatchEmptyStateContent), findsOneWidget);
+    expect(find.byType(CatchEmptyState), findsOneWidget);
     expect(find.byType(CatchIconTile), findsOneWidget);
 
     final icon = tester.widget<Icon>(find.byIcon(CatchIcons.search));

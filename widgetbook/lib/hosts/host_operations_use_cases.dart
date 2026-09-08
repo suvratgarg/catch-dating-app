@@ -2420,11 +2420,13 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       title: 'No clubs yet',
       message: 'Create a club to start hosting events.',
       padding: EdgeInsets.zero,
-      action: CatchButton(
-        label: 'Create club',
-        icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-        onPressed: () {},
-      ),
+      actions: [
+        CatchButton(
+          label: 'Create club',
+          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          onPressed: () {},
+        ),
+      ],
     ),
     'HostOrganizerAvatar' => HostOrganizerAvatar(
       club: club.copyWith(
@@ -2478,11 +2480,13 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create a club to publish events, manage attendees, and run Event Success.',
             padding: EdgeInsets.zero,
-            action: CatchButton(
-              label: 'Create club',
-              icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-              onPressed: () {},
-            ),
+            actions: [
+              CatchButton(
+                label: 'Create club',
+                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                onPressed: () {},
+              ),
+            ],
           ),
         ),
       ),
@@ -2494,24 +2498,26 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
             padding: EdgeInsets.zero,
-            action: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchButton(
-                  label: 'New event',
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                  onPressed: () {},
-                ),
-                CatchButton(
-                  label: 'Events',
-                  variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
-                  onPressed: () {},
-                ),
-              ],
-            ),
+            actions: [
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchButton(
+                    label: 'New event',
+                    icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                    onPressed: () {},
+                  ),
+                  CatchButton(
+                    label: 'Events',
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -2523,12 +2529,14 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create a professional host identity before editing profile details.',
             padding: EdgeInsets.zero,
-            action: CatchButton(
-              label: 'Create host profile',
-              icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-              isLoading: true,
-              onPressed: null,
-            ),
+            actions: [
+              CatchButton(
+                label: 'Create host profile',
+                icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                isLoading: true,
+                onPressed: null,
+              ),
+            ],
           ),
         ),
       ),

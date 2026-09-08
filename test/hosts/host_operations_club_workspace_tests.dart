@@ -252,7 +252,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       expect(find.text('Saket Run Club'), findsNothing);
       expect(
         find.ancestor(
-          of: find.byType(CatchErrorBody),
+          of: find.byType(CatchErrorState),
           matching: find.byType(Center),
         ),
         findsNothing,
@@ -419,7 +419,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.text('No upcoming events'), findsOneWidget);
     final emptyState = find.byType(CatchEmptyState);
-    final content = find.byType(CatchEmptyStateContent);
+    final content = find.byType(CatchEmptyState);
     expect(find.byType(CatchSliverStateViewport), findsOneWidget);
     expect(
       find.ancestor(of: emptyState, matching: find.byType(Center)),

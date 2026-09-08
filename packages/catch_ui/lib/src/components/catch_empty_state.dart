@@ -1,21 +1,22 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_empty_state_content.dart';
-import 'package:catch_ui/src/components/catch_empty_state_types.dart';
+import 'package:catch_ui/src/components/catch_empty_state_variant.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
+/// Canonical successful-empty content with bounded and inline layout.
 class CatchEmptyState extends StatelessWidget {
   const CatchEmptyState({
     super.key,
     this.icon,
     this.title,
     this.message,
-    this.action,
+    this.actions = const [],
     this.surface = false,
     this.iconVariant = CatchIconTileVariant.plain,
-    this.layout = CatchEmptyStateLayout.stacked,
+    this.variant = CatchEmptyStateVariant.stacked,
     this.iconSize,
     this.iconContainerSize,
     this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
@@ -26,10 +27,10 @@ class CatchEmptyState extends StatelessWidget {
   final IconData? icon;
   final String? title;
   final String? message;
-  final Widget? action;
+  final List<Widget> actions;
   final bool surface;
   final CatchIconTileVariant iconVariant;
-  final CatchEmptyStateLayout layout;
+  final CatchEmptyStateVariant variant;
   final double? iconSize;
   final double? iconContainerSize;
   final EdgeInsetsGeometry padding;
@@ -41,22 +42,91 @@ class CatchEmptyState extends StatelessWidget {
     final t = CatchTokens.of(context);
     final content = LayoutBuilder(
       builder: (context, constraints) {
-        final child = CatchEmptyStateContent(
-          layout: layout,
-          icon: icon,
-          iconVariant: iconVariant,
-          iconSize: iconSize,
-          iconContainerSize: iconContainerSize,
-          title: title,
-          message: message,
-          action: action,
-          titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
-          messageStyle:
-              messageStyle ??
-              (layout == CatchEmptyStateLayout.stacked
-                  ? CatchTextStyles.bodyS(context, color: t.ink2)
-                  : CatchTextStyles.supporting(context, color: t.ink2)),
-        );
+        final effectiveTitleStyle =
+            titleStyle ?? CatchTextStyles.sectionTitle(context);
+        final effectiveMessageStyle =
+            messageStyle ??
+            (variant == CatchEmptyStateVariant.stacked
+                ? CatchTextStyles.bodyS(context, color: t.ink2)
+                : CatchTextStyles.supporting(context, color: t.ink2));
+        final iconData = icon;
+        final titleText = title;
+        final messageText = message;
+        final actionWidget = switch (actions.length) {
+          0 => null,
+          1 => actions.single,
+          _ => Wrap(
+            alignment: variant == CatchEmptyStateVariant.inline
+                ? WrapAlignment.start
+                : WrapAlignment.center,
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: actions,
+          ),
+        };
+
+        final child = switch (variant) {
+          CatchEmptyStateVariant.stacked => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (iconData != null)
+                CatchIconTile.empty(
+                  icon: iconData,
+                  variant: iconVariant,
+                  iconSize: iconSize,
+                  size: iconContainerSize,
+                ),
+              if (_hasText(titleText)) ...[
+                if (iconData != null) gapH12,
+                Text(
+                  titleText!,
+                  style: effectiveTitleStyle,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (_hasText(messageText)) ...[
+                if (_hasText(titleText))
+                  gapH6
+                else if (iconData != null)
+                  gapH12,
+                Text(
+                  messageText!,
+                  style: effectiveMessageStyle,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (actionWidget != null) ...[gapH16, actionWidget],
+            ],
+          ),
+          CatchEmptyStateVariant.inline => Row(
+            children: [
+              if (iconData != null) ...[
+                CatchIconTile.empty(
+                  icon: iconData,
+                  variant: iconVariant,
+                  iconSize: iconSize,
+                  size: iconContainerSize ?? 44,
+                ),
+                gapW12,
+              ],
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_hasText(titleText))
+                      Text(titleText!, style: effectiveTitleStyle),
+                    if (_hasText(messageText)) ...[
+                      if (_hasText(titleText)) gapH4,
+                      Text(messageText!, style: effectiveMessageStyle),
+                    ],
+                    if (actionWidget != null) ...[gapH12, actionWidget],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        };
 
         final constrainedChild = constraints.hasBoundedWidth
             ? SizedBox(width: constraints.maxWidth, child: child)
@@ -79,3 +149,5 @@ class CatchEmptyState extends StatelessWidget {
     return CatchSurface(padding: padding, borderColor: t.line, child: content);
   }
 }
+
+bool _hasText(String? value) => value != null && value.isNotEmpty;

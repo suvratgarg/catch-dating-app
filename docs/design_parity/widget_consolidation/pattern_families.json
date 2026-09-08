@@ -1102,6 +1102,85 @@
           "rationale": "Optional/error badge paint is recipe data; the field retains validation and localized copy."
         }
       ]
+    },
+    {
+      "id": "empty-error-canonical-states",
+      "title": "Empty and error states with typed placement",
+      "intent": "Own each feedback renderer once; select compact or inline presentation through typed modes and retain root, sliver and localization protocols at their owning layer.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.error_state",
+      "qualityReference": "CatchErrorState",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None for existing states. The actions list adds support for multiple caller-owned recovery commands."
+      ],
+      "members": [
+        {
+          "symbol": "CatchErrorState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One renderer owns full-screen, inline and compact modes."
+        },
+        {
+          "symbol": "CatchEmptyState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One renderer owns stacked and inline variants, including bounded scrolling."
+        },
+        {
+          "symbol": "CatchSliverErrorState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Sliver protocol retains fillRemaining viewport ownership."
+        },
+        {
+          "symbol": "CatchErrorScaffold",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Root placement retains safe-area and scaffold ownership."
+        },
+        {
+          "symbol": "CatchSliverEmptyState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Sliver protocol retains scroll-fill and bottom-obstruction ownership."
+        },
+        {
+          "symbol": "CatchLocalizedErrorState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "App adapter resolves error descriptors in the inherited locale and delegates rendering."
+        },
+        {
+          "symbol": "CatchErrorBody",
+          "disposition": "unify",
+          "target": "CatchErrorState",
+          "preview": "not-applicable",
+          "rationale": "Rendering or parameter-forwarding duplicates an existing state contract; typed modes preserve its presentation."
+        },
+        {
+          "symbol": "CatchInlineErrorState",
+          "disposition": "unify",
+          "target": "CatchErrorState",
+          "preview": "not-applicable",
+          "rationale": "Rendering or parameter-forwarding duplicates an existing state contract; typed modes preserve its presentation."
+        },
+        {
+          "symbol": "CatchEmptyStateContent",
+          "disposition": "unify",
+          "target": "CatchEmptyState",
+          "preview": "not-applicable",
+          "rationale": "Rendering or parameter-forwarding duplicates an existing state contract; typed modes preserve its presentation."
+        },
+        {
+          "symbol": "CatchLocalizedInlineErrorState",
+          "disposition": "unify",
+          "target": "CatchLocalizedErrorState",
+          "preview": "not-applicable",
+          "rationale": "Rendering or parameter-forwarding duplicates an existing state contract; typed modes preserve its presentation."
+        }
+      ]
     }
   ]
 }

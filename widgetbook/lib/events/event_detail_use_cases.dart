@@ -3562,7 +3562,7 @@ class _HiddenSectionState extends StatelessWidget {
     return CatchEmptyState(
       title: 'Hidden',
       message: message,
-      layout: CatchEmptyStateLayout.inline,
+      variant: CatchEmptyStateVariant.inline,
       surface: true,
     );
   }

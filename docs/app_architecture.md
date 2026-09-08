@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.34.0
+version: 1.35.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1356,7 +1356,7 @@ empty, retry, stale data, and mutation failure are handled.
 |---|---|---|
 | Full-screen initial load | Screen | `CatchAsyncValueView`, `CatchErrorScaffold`, or typed screen-state adapter |
 | Sliver initial load | Screen/sliver body | `CatchAsyncValueSliver`, `CatchSliverErrorState`, or typed sliver adapter |
-| Section-level load | Section widget or view model | `CatchInlineErrorState`, section skeleton, section retry |
+| Section-level load | Section widget or view model | `CatchErrorState` in inline/compact mode, section skeleton, section retry |
 | Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
 | Mutation/action failure | Screen or section | `CatchMutationErrorBanner`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
@@ -1429,13 +1429,19 @@ here.
 The error primitive family separates visual content, placement adapters, and
 delivery channels:
 
-- `CatchErrorState` owns app-facing branded error content through one resolved
-  descriptor and one shared, cardless body renderer. Full-screen, inline, and
-  compact modes never invent a new fill or outline; they inherit containment
+- `CatchErrorState` owns one cardless error renderer with caller-resolved copy.
+  `CatchLocalizedErrorState` maps app error objects through the inherited locale.
+  Both use `CatchErrorStateMode` for placement within their owning content.
+  Full-screen, inline, and compact modes never invent a new fill or outline; they inherit containment
   from the route or section that owns the failed content.
-- `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
-  are placement adapters for root, sliver, and section errors. Every adapter
-  supports the same primary retry and optional secondary-action contract.
+- `CatchErrorScaffold` and `CatchSliverErrorState` adapt the root-page and
+  sliver protocols. Section errors use the inline/compact modes of
+  `CatchErrorState`; app-error adapters use the corresponding localized APIs.
+  Every form supports primary retry and an `actions` list for additional recovery.
+- `CatchEmptyState` renders successful empty results. `CatchEmptyStateVariant`
+  selects stacked or inline content; `CatchSliverEmptyState` owns sliver placement.
+  Their `actions` list shares the same slot spelling while empty results retain
+  their distinct meaning and layout.
 - `CatchErrorBackAction` is the canonical route-exit action when retry would
   be dishonest or impossible.
 - `CatchBanner.error` is the persistent inline mutation/form error channel.
@@ -1559,7 +1565,7 @@ Surface rules:
 |---|---|---|
 | `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
-| `CatchInlineErrorState` | Section/card-level failure | Compact descriptor copy and retry when retryable. |
+| `CatchErrorState` in inline/compact mode | Section/card-level failure | Compact descriptor copy and retry when retryable. |
 | `CatchLocalizedErrorBanner` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
@@ -1580,7 +1586,8 @@ Rules:
   or vendor/plugin objects.
 - Full-screen data errors use `CatchErrorScaffold` or `CatchErrorState`.
 - Sliver data errors use `CatchSliverErrorState`.
-- Section errors use `CatchInlineErrorState`.
+- Section errors use `CatchErrorState` with an inline or compact mode. Use
+  `CatchLocalizedErrorState` when the input is an app error object.
 - Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
   `CatchMutationErrorBanner`.
 - Transient action failures use `CatchMutationErrorListener(s)` or

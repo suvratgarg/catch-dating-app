@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -44,7 +43,7 @@ Widget localizedErrorScaffoldCases(BuildContext context) =>
           height: 480,
           child: CatchLocalizedErrorScaffold(
             const PermissionException('Access denied.'),
-            secondaryAction: CatchErrorBackAction(onPressed: () {}),
+            actions: [CatchErrorBackAction(onPressed: () {})],
           ),
         ),
       ],
@@ -78,18 +77,20 @@ Widget localizedSliverErrorStateCases(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Mapped inline and compact failures',
-  type: CatchLocalizedInlineErrorState,
+  type: CatchLocalizedErrorState,
   path: '[Core adapters]/Feedback',
 )
 Widget localizedInlineErrorStateCases(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Localized inline error',
-      catalogId: 'catch.error_state.localized_inline_error_state',
+      catalogId: 'catch.error_state.localized_error_state.modes',
       children: [
         for (final compact in [false, true])
-          CatchLocalizedInlineErrorState(
+          CatchLocalizedErrorState(
             const ValidationException('Invalid details.'),
-            compact: compact,
+            mode: (compact)
+                ? CatchErrorStateMode.compact
+                : CatchErrorStateMode.inline,
             onRetry: () {},
           ),
       ],

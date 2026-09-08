@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_empty_state.dart';
-import 'package:catch_ui/src/components/catch_empty_state_types.dart';
+import 'package:catch_ui/src/components/catch_empty_state_variant.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_state_viewport.dart';
 import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +12,9 @@ class CatchSliverEmptyState extends StatelessWidget {
     this.icon,
     this.title,
     this.message,
-    this.action,
+    this.actions = const [],
     this.iconVariant = CatchIconTileVariant.plain,
-    this.layout = CatchEmptyStateLayout.stacked,
+    this.variant = CatchEmptyStateVariant.stacked,
     this.iconSize,
     this.iconContainerSize,
     this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
@@ -26,9 +26,9 @@ class CatchSliverEmptyState extends StatelessWidget {
   final IconData? icon;
   final String? title;
   final String? message;
-  final Widget? action;
+  final List<Widget> actions;
   final CatchIconTileVariant iconVariant;
-  final CatchEmptyStateLayout layout;
+  final CatchEmptyStateVariant variant;
   final double? iconSize;
   final double? iconContainerSize;
   final EdgeInsetsGeometry padding;
@@ -44,9 +44,9 @@ class CatchSliverEmptyState extends StatelessWidget {
         icon: icon,
         title: title,
         message: message,
-        action: action,
+        actions: actions,
         iconVariant: iconVariant,
-        layout: layout,
+        variant: variant,
         iconSize: iconSize,
         iconContainerSize: iconContainerSize,
         padding: padding,

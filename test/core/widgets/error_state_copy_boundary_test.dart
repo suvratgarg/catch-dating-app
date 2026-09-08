@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
@@ -93,7 +92,9 @@ void main() {
         await tester.pumpWidget(
           _frame(placement, adapter, locale: const Locale('en')),
         );
-        final body = tester.widget<CatchErrorBody>(find.byType(CatchErrorBody));
+        final body = tester.widget<CatchErrorState>(
+          find.byType(CatchErrorState),
+        );
         expect(body.icon, CatchIcons.refreshRounded);
         await tester.tap(find.text('Recharger'));
         await tester.tap(find.text('Retour'));
@@ -140,13 +141,14 @@ Widget _sharedError(
     retryLabel: retryLabel,
     onRetry: onRetry,
   ),
-  'inline' => CatchInlineErrorState(
+  'inline' => CatchErrorState(
     title: 'Indisponible',
     message: 'Veuillez réessayer.',
     retryLabel: retryLabel,
     onRetry: onRetry,
+    mode: CatchErrorStateMode.inline,
   ),
-  'body' => CatchErrorBody(
+  'body' => CatchErrorState(
     title: 'Indisponible',
     message: 'Veuillez réessayer.',
     retryLabel: retryLabel,
@@ -173,28 +175,29 @@ Widget _localizedError(
     onRetry: onRetry,
     retryLabel: retryLabel,
     icon: icon,
-    secondaryAction: secondaryAction,
+    actions: [?secondaryAction],
   ),
   'sliver' => CatchLocalizedSliverErrorState(
     error,
     onRetry: onRetry,
     retryLabel: retryLabel,
     icon: icon,
-    secondaryAction: secondaryAction,
+    actions: [?secondaryAction],
   ),
-  'inline' => CatchLocalizedInlineErrorState(
+  'inline' => CatchLocalizedErrorState(
     error,
     onRetry: onRetry,
     retryLabel: retryLabel,
     icon: icon,
-    secondaryAction: secondaryAction,
+    actions: [?secondaryAction],
+    mode: CatchErrorStateMode.inline,
   ),
   _ => CatchLocalizedErrorState(
     error,
     onRetry: onRetry,
     retryLabel: retryLabel,
     icon: icon,
-    secondaryAction: secondaryAction,
+    actions: [?secondaryAction],
   ),
 };
 

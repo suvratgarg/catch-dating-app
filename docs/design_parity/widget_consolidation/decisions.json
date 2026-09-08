@@ -6681,6 +6681,38 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:empty-error-canonical-states",
+      "patternFamilyId": "empty-error-canonical-states",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchErrorState",
+      "members": [
+        {
+          "name": "CatchErrorBody",
+          "action": "absorb",
+          "target": "CatchErrorState"
+        },
+        {
+          "name": "CatchInlineErrorState",
+          "action": "absorb",
+          "target": "CatchErrorState"
+        },
+        {
+          "name": "CatchEmptyStateContent",
+          "action": "absorb",
+          "target": "CatchEmptyState"
+        },
+        {
+          "name": "CatchLocalizedInlineErrorState",
+          "action": "absorb",
+          "target": "CatchLocalizedErrorState"
+        }
+      ],
+      "rationale": "CatchErrorBody and CatchEmptyStateContent only supply the owning states with their renderers. InlineErrorState and its localized peer only forward a typed mode. Move rendering into the canonical states and remove all four Widgets and registry members. Error mode preserves full-screen, inline and compact output; EmptyState layout becomes its Variant axis. Use an actions list on both families and their root/sliver/localized adapters, retaining the existing one-action geometry and retry behavior. Original gallery images remain unchanged in consecutive comparisons. Separate sliver, root and localized contracts retain their protocol and dependency boundaries. The prior K3 example treating inline forwarding as necessary API ergonomics is superseded by this reviewed typed-mode contract.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

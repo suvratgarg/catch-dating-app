@@ -132,7 +132,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             child: CatchErrorState(
               title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
               message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
-              secondaryAction: const CatchErrorBackAction(),
+              actions: [const CatchErrorBackAction()],
             ),
           ),
         );
@@ -577,7 +577,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         child: CatchErrorState(
           title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
           message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: [const CatchErrorBackAction()],
         ),
       ),
     );

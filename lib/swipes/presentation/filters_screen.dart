@@ -170,12 +170,14 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                       message: context
                           .l10n
                           .userProfileProfileScreenMessageFinishOnboardingOrSign,
-                      action: CatchButton(
-                        label: context.l10n.sharedActionTryAgain,
-                        onPressed: () =>
-                            ref.invalidate(watchUserProfileProvider),
-                        icon: Icon(CatchIcons.refreshRounded),
-                      ),
+                      actions: [
+                        CatchButton(
+                          label: context.l10n.sharedActionTryAgain,
+                          onPressed: () =>
+                              ref.invalidate(watchUserProfileProvider),
+                          icon: Icon(CatchIcons.refreshRounded),
+                        ),
+                      ],
                     ),
                   );
                 }

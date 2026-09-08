@@ -255,11 +255,11 @@ class ReviewsPreviewSection extends StatelessWidget {
                     : context
                           .l10n
                           .reviewsReviewsSectionMessageReviewsFromAttendeesWill),
-            action: emptyAction,
+            actions: [?emptyAction],
             surface: emptyPresentation == ReviewsEmptyPresentation.contained,
-            layout: emptyPresentation == ReviewsEmptyPresentation.standalone
-                ? CatchEmptyStateLayout.stacked
-                : CatchEmptyStateLayout.inline,
+            variant: emptyPresentation == ReviewsEmptyPresentation.standalone
+                ? CatchEmptyStateVariant.stacked
+                : CatchEmptyStateVariant.inline,
             iconSize: emptyPresentation == ReviewsEmptyPresentation.standalone
                 ? CatchIcon.tile
                 : CatchIcon.row,

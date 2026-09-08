@@ -760,7 +760,7 @@ void main() {
       expect(find.text('No general inquiries'), findsOneWidget);
 
       final emptyState = find.byType(CatchEmptyState);
-      final content = find.byType(CatchEmptyStateContent);
+      final content = find.byType(CatchEmptyState);
       expect(find.byType(CatchSliverStateViewport), findsOneWidget);
       expect(
         find.ancestor(of: emptyState, matching: find.byType(Center)),

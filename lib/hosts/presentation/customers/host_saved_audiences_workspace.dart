@@ -153,7 +153,7 @@ class _HostSavedAudiencesDirectoryState
                                 _membership == _HostSavedAudienceMembership.all
                             ? context.l10n.hostSavedAudiencesEmptyBody
                             : context.l10n.hostSavedAudiencesSearchEmptyBody,
-                        layout: CatchEmptyStateLayout.inline,
+                        variant: CatchEmptyStateVariant.inline,
                       ),
                     ]
                   : [

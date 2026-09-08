@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -269,12 +269,14 @@ class HostEventsTimelinePage extends StatelessWidget
             message: upcoming
                 ? state.emptyBody(context.l10n)
                 : context.l10n.hostEventsPastEmptyBody,
-            action: upcoming
-                ? CatchButton(
-                    label: context.l10n.hostsHostEventsListLabelNewEvent,
-                    onPressed: onCreateEvent,
-                  )
-                : null,
+            actions: [
+              ?upcoming
+                  ? CatchButton(
+                      label: context.l10n.hostsHostEventsListLabelNewEvent,
+                      onPressed: onCreateEvent,
+                    )
+                  : null,
+            ],
           )
         else
           SliverToBoxAdapter(
@@ -298,10 +300,11 @@ class HostEventsTimelinePage extends StatelessWidget
                     ],
                   ),
                 if (pageError != null)
-                  CatchLocalizedInlineErrorState(
+                  CatchLocalizedErrorState(
                     pageError,
                     context: AppErrorContext.event,
                     onRetry: onRetryPage,
+                    mode: CatchErrorStateMode.inline,
                   )
                 else if (hasMore)
                   Align(

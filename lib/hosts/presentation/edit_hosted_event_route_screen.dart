@@ -62,13 +62,13 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title:
                 context.l10n.hostsEditHostedEventRouteScreenTitleEventNotFound,
             message: context
                 .l10n
                 .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
-            secondaryAction: const CatchErrorBackAction(),
+            actions: [const CatchErrorBackAction()],
           ),
         ),
       ),
@@ -79,7 +79,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title: context
                 .l10n
                 .hostsEditHostedEventRouteScreenTitleActionUnavailable,
@@ -87,7 +87,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
                 .l10n
                 .hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
             icon: CatchIcons.blockRounded,
-            secondaryAction: const CatchErrorBackAction(),
+            actions: [const CatchErrorBackAction()],
           ),
         ),
       ),

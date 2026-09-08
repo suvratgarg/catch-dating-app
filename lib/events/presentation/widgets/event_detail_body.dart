@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -293,10 +293,10 @@ class EventCompanionEntry extends StatelessWidget {
       EventDetailCompanionStatus.loading => EventDetailCompanionSkeleton(
         surfaceStyle: surfaceStyle,
       ),
-      EventDetailCompanionStatus.error => CatchLocalizedInlineErrorState(
+      EventDetailCompanionStatus.error => CatchLocalizedErrorState(
         state.error!,
         onRetry: onRetry,
-        compact: true,
+        mode: CatchErrorStateMode.compact,
       ),
       EventDetailCompanionStatus.available => EventDetailCalloutCard(
         leadingIcon: CatchIcons.autoAwesomeOutlined,
@@ -359,10 +359,10 @@ class EventDetailHostsSection extends StatelessWidget {
       case EventDetailHostStatus.loading:
         return EventDetailHostsSkeleton(surfaceStyle: surfaceStyle);
       case EventDetailHostStatus.error:
-        return CatchLocalizedInlineErrorState(
+        return CatchLocalizedErrorState(
           state.error!,
           onRetry: onRetry,
-          compact: true,
+          mode: CatchErrorStateMode.compact,
         );
       case EventDetailHostStatus.content:
         final style = surfaceStyle;

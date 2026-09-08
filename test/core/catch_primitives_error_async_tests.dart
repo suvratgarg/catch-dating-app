@@ -20,7 +20,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
     expect(find.textContaining('StackTrace'), findsNothing);
 
@@ -47,11 +47,11 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await pumpMode(CatchErrorStateMode.inline);
     expect(find.byType(CatchSurface), findsNothing);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
 
     await pumpMode(CatchErrorStateMode.compact);
     expect(find.byType(CatchSurface), findsNothing);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
   });
 
   testWidgets('CatchErrorState honors an explicit recovery callback', (
@@ -89,9 +89,10 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchLocalizedInlineErrorState(
+        CatchLocalizedErrorState(
           const PermissionException('Unavailable.'),
-          secondaryAction: alternateAction(),
+          actions: [alternateAction()],
+          mode: CatchErrorStateMode.inline,
         ),
       ),
     );
@@ -103,7 +104,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
         theme: AppTheme.light,
         home: CatchLocalizedErrorScaffold(
           const PermissionException('Unavailable.'),
-          secondaryAction: alternateAction(),
+          actions: [alternateAction()],
         ),
       ),
     );
@@ -118,7 +119,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
             slivers: [
               CatchLocalizedSliverErrorState(
                 const PermissionException('Unavailable.'),
-                secondaryAction: alternateAction(),
+                actions: [alternateAction()],
               ),
             ],
           ),
@@ -148,7 +149,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     expect(find.text('Messages unavailable'), findsOneWidget);
     expect(find.text('Unable to load messages.'), findsOneWidget);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
   });
 
   testWidgets(
@@ -178,7 +179,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       final scaffold = find.byKey(const ValueKey('box-state-scaffold'));
       final offset =
-          tester.getCenter(find.byType(CatchEmptyStateContent)).dy -
+          tester.getCenter(find.byType(CatchEmptyState)).dy -
           tester.getCenter(scaffold).dy;
       expect(offset, closeTo(-50, 1));
     },
@@ -216,7 +217,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       final emptyOffset = await pumpState(
         const CatchSliverEmptyState(title: 'Nothing here'),
-        find.byType(CatchEmptyStateContent),
+        find.byType(CatchEmptyState),
       );
       expect(emptyOffset, closeTo(-50, 1));
 
@@ -225,7 +226,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           title: 'Unavailable',
           message: 'Try again later.',
         ),
-        find.byType(CatchErrorBody),
+        find.byType(CatchErrorState),
       );
       expect(errorOffset, closeTo(-50, 1));
     },

@@ -202,13 +202,15 @@ class _HostEventsRouteScaffoldState
           icon: CatchIcons.groupsOutlined,
           title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
           message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-          action: CatchButton(
-            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-            size: CatchButtonSize.sm,
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              size: CatchButtonSize.sm,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ],
         ),
       ],
     );

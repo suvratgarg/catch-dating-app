@@ -9,7 +9,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -116,7 +116,7 @@ class _HostEventParticipantsPanelState
       ),
       errorBuilder: (_, error, _) => Padding(
         padding: CatchInsets.content,
-        child: CatchLocalizedInlineErrorState(
+        child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
           onRetry: () {
@@ -124,6 +124,7 @@ class _HostEventParticipantsPanelState
             ref.invalidate(watchEventParticipationsForEventProvider(eventId));
             ref.invalidate(attendanceSheetViewModelProvider(eventId));
           },
+          mode: CatchErrorStateMode.inline,
         ),
       ),
       builder: (context, viewModel) {
@@ -547,10 +548,11 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
       ),
       HostParticipantProfilesLookupStatus.error => Padding(
         padding: CatchInsets.content,
-        child: CatchLocalizedInlineErrorState(
+        child: CatchLocalizedErrorState(
           profileLookupState.error!,
           context: AppErrorContext.event,
           onRetry: widget.onRetryProfiles,
+          mode: CatchErrorStateMode.inline,
         ),
       ),
     };
@@ -848,7 +850,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 icon: CatchIcons.groupsOutlined,
                 title: rosterState.emptyTitle,
                 message: rosterState.emptyMessage,
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
                 surface: true,
                 padding: CatchInsets.content,
               )
@@ -1149,10 +1151,11 @@ class _HostEventCheckInQrPanelState
             ),
             error: (error, _) => SizedBox(
               width: CatchLayout.eventSuccessVenueQrErrorMaxWidth,
-              child: CatchLocalizedInlineErrorState(
+              child: CatchLocalizedErrorState(
                 error,
                 onRetry: () =>
                     ref.invalidate(eventVenueSessionProvider(widget.event.id)),
+                mode: CatchErrorStateMode.inline,
               ),
             ),
           ),

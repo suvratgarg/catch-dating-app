@@ -165,13 +165,15 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               icon: CatchIcons.groupsOutlined,
               title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
               message: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
-              action: CatchButton(
-                label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
-                icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                size: CatchButtonSize.sm,
-                onPressed: () =>
-                    context.pushNamed(Routes.hostCreateClubScreen.name),
-              ),
+              actions: [
+                CatchButton(
+                  label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                  size: CatchButtonSize.sm,
+                  onPressed: () =>
+                      context.pushNamed(Routes.hostCreateClubScreen.name),
+                ),
+              ],
             ),
           ],
         ),

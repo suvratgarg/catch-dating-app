@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_error_body.dart';
+import 'package:catch_ui/src/components/catch_error_state.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class CatchErrorScaffold extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel,
-    this.secondaryAction,
+    this.actions = const [],
     this.icon = CatchIcons.errorOutlineRounded,
     this.backgroundColor,
   }) : assert(
@@ -25,7 +25,7 @@ class CatchErrorScaffold extends StatelessWidget {
 
   /// Caller-resolved label, required when [onRetry] is supplied.
   final String? retryLabel;
-  final Widget? secondaryAction;
+  final List<Widget> actions;
   final IconData icon;
   final Color? backgroundColor;
 
@@ -33,13 +33,13 @@ class CatchErrorScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchScreenScaffold.standalone(
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
-      body: CatchErrorBody(
+      body: CatchErrorState(
         title: title,
         message: message,
         icon: icon,
         onRetry: onRetry,
         retryLabel: retryLabel,
-        secondaryAction: secondaryAction,
+        actions: actions,
       ),
     );
   }

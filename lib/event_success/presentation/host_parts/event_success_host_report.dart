@@ -168,7 +168,7 @@ class _EventSuccessReportEmptyState extends StatelessWidget {
       icon: icon,
       title: title,
       message: message,
-      layout: CatchEmptyStateLayout.inline,
+      variant: CatchEmptyStateVariant.inline,
       padding: EdgeInsets.zero,
     ),
   );

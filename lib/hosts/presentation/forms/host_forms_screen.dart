@@ -548,13 +548,15 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     message: unfiltered
                         ? context.l10n.hostFormsEmptyBody
                         : context.l10n.hostFormsNoMatchesBody,
-                    action: unfiltered
-                        ? CatchButton(
-                            label: context.l10n.hostFormsCreate,
-                            size: CatchButtonSize.sm,
-                            onPressed: onCreate,
-                          )
-                        : null,
+                    actions: [
+                      ?unfiltered
+                          ? CatchButton(
+                              label: context.l10n.hostFormsCreate,
+                              size: CatchButtonSize.sm,
+                              onPressed: onCreate,
+                            )
+                          : null,
+                    ],
                   );
                 }
                 return Column(
@@ -821,12 +823,14 @@ class HostFormsNoOrganizer extends StatelessWidget {
           icon: CatchIcons.descriptionOutlined,
           title: context.l10n.hostFormsNoOrganizerTitle,
           message: context.l10n.hostFormsNoOrganizerBody,
-          action: CatchButton(
-            label: context.l10n.hostFormsCreateOrganizer,
-            size: CatchButtonSize.sm,
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostFormsCreateOrganizer,
+              size: CatchButtonSize.sm,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ],
         ),
       ],
     );

@@ -168,7 +168,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
               top: false,
               child: CatchEmptyState(
                 surface: true,
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
                 icon: emptyHasDistance
                     ? CatchIcons.nearMeOutlined
                     : CatchIcons.tune,
@@ -186,47 +186,51 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                     : context
                           .l10n
                           .exploreExploreMapScreenMessageChangeFiltersToBringEventsBack,
-                action: !emptyHasRecoveryAction
-                    ? null
-                    : Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s2,
-                        children: [
-                          if (widerEmptyFilter != null &&
-                              widerEmptyDistanceKm != null)
-                            CatchButton(
-                              label: context.l10n
-                                  .exploreExploreMapScreenActionExpandToDistance(
-                                    distanceKm: widerEmptyDistanceKm,
+                actions: [
+                  ?!emptyHasRecoveryAction
+                      ? null
+                      : Wrap(
+                          spacing: CatchSpacing.s2,
+                          runSpacing: CatchSpacing.s2,
+                          children: [
+                            if (widerEmptyFilter != null &&
+                                widerEmptyDistanceKm != null)
+                              CatchButton(
+                                label: context.l10n
+                                    .exploreExploreMapScreenActionExpandToDistance(
+                                      distanceKm: widerEmptyDistanceKm,
+                                    ),
+                                size: CatchButtonSize.sm,
+                                onPressed: () => unawaited(
+                                  _applyDistanceFilter(widerEmptyFilter),
+                                ),
+                              ),
+                            if (emptyHasDistance)
+                              CatchButton(
+                                label: context
+                                    .l10n
+                                    .exploreExploreMapScreenActionShowAll,
+                                size: CatchButtonSize.sm,
+                                variant: CatchButtonVariant.secondary,
+                                onPressed: () => unawaited(
+                                  _applyDistanceFilter(
+                                    ExploreDistanceFilter.any,
                                   ),
-                              size: CatchButtonSize.sm,
-                              onPressed: () => unawaited(
-                                _applyDistanceFilter(widerEmptyFilter),
+                                ),
+                              )
+                            else if (filters.hasActiveFilters)
+                              CatchButton(
+                                label: context
+                                    .l10n
+                                    .exploreExploreScreenLabelClearFilters,
+                                size: CatchButtonSize.sm,
+                                onPressed: () => ref
+                                    .read(exploreFiltersProvider.notifier)
+                                    .clear(),
                               ),
-                            ),
-                          if (emptyHasDistance)
-                            CatchButton(
-                              label: context
-                                  .l10n
-                                  .exploreExploreMapScreenActionShowAll,
-                              size: CatchButtonSize.sm,
-                              variant: CatchButtonVariant.secondary,
-                              onPressed: () => unawaited(
-                                _applyDistanceFilter(ExploreDistanceFilter.any),
-                              ),
-                            )
-                          else if (filters.hasActiveFilters)
-                            CatchButton(
-                              label: context
-                                  .l10n
-                                  .exploreExploreScreenLabelClearFilters,
-                              size: CatchButtonSize.sm,
-                              onPressed: () => ref
-                                  .read(exploreFiltersProvider.notifier)
-                                  .clear(),
-                            ),
-                        ],
-                      ),
+                          ],
+                        ),
+                ],
               ),
             ),
           );

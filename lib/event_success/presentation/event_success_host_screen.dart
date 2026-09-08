@@ -966,7 +966,7 @@ class EventSuccessHostResourceError extends StatelessWidget {
       EventSuccessHostRetryIntent.spatialLayout =>
         context.l10n.eventSuccessHostResourceRoomLayout,
     };
-    return CatchInlineErrorState(
+    return CatchErrorState(
       title: context.l10n.eventSuccessHostResourceUnavailableTitle(
         resource: resource,
       ),
@@ -974,7 +974,9 @@ class EventSuccessHostResourceError extends StatelessWidget {
       icon: descriptor.icon,
       retryLabel: descriptor.retryLabel,
       onRetry: onRetry,
-      compact: compact,
+      mode: (compact)
+          ? CatchErrorStateMode.compact
+          : CatchErrorStateMode.inline,
     );
   }
 }

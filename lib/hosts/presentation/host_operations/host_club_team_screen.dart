@@ -69,7 +69,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
                 context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,

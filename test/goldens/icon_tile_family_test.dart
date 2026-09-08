@@ -45,7 +45,7 @@ void main() {
                 title: 'No matches yet',
                 message: 'Try a different filter.',
               ),
-              const CatchErrorBody(
+              const CatchErrorState(
                 title: 'Could not load',
                 message: 'Try again shortly.',
                 mode: CatchErrorStateMode.compact,

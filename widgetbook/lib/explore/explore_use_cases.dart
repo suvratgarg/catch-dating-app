@@ -1756,7 +1756,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           message:
               'Try another city from the location control, or create the first '
               'club when you are ready to host.',
-          action: _secondaryAction('Try another city'),
+          actions: [_secondaryAction('Try another city')],
         ),
       ),
       _StateCard(
@@ -1765,7 +1765,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           icon: CatchIcons.groupsOutlined,
           title: 'No clubs match this search',
           message: 'Try another club, neighborhood, host, or tag.',
-          action: _secondaryAction('Clear search'),
+          actions: [_secondaryAction('Clear search')],
         ),
       ),
       _StateCard(
@@ -1775,7 +1775,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'No clubs match these filters',
           message:
               'Clear one or more filters to bring nearby clubs back into view.',
-          action: _secondaryAction('Clear filters'),
+          actions: [_secondaryAction('Clear filters')],
         ),
       ),
       _StateCard(
@@ -1785,7 +1785,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'No clubs match this search',
           message:
               'Clear the search or filters to bring nearby clubs back into view.',
-          action: _secondaryAction('Clear search and filters'),
+          actions: [_secondaryAction('Clear search and filters')],
         ),
       ),
       _StateCard(
@@ -1795,7 +1795,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'Explore is offline',
           message:
               'Check your connection and try again to reload clubs and events.',
-          action: _secondaryAction('Retry'),
+          actions: [_secondaryAction('Retry')],
         ),
       ),
     ],

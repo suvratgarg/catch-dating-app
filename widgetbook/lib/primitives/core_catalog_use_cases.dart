@@ -1766,7 +1766,7 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
                 icon: CatchIcons.eventBusyOutlined,
                 title: 'Nothing scheduled',
                 message: 'Create an event to start filling this list.',
-                action: CatchButton(label: 'New event', onPressed: _noop),
+                actions: [CatchButton(label: 'New event', onPressed: _noop)],
               ),
             ],
           ),
@@ -1778,29 +1778,30 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchInlineErrorState,
+  type: CatchErrorState,
   path: '[Core catalog]/Feedback',
 )
 Widget catchInlineErrorStateCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchInlineErrorState',
-    catalogId: 'core.widgets.catch_inline_error_state',
+    title: 'CatchErrorState',
+    catalogId: 'core.widgets.catch_error_state.inline',
     children: [
       _StateCard(
         label: 'regular / compact',
         child: Column(
           children: [
-            CatchInlineErrorState(
+            CatchErrorState(
               retryLabel: context.l10n.sharedActionTryAgain,
               title: 'Could not save',
               message: 'Your changes are still local.',
               onRetry: _noop,
+              mode: CatchErrorStateMode.inline,
             ),
             gapH12,
-            const CatchInlineErrorState(
+            const CatchErrorState(
               title: 'Unavailable',
               message: 'Try again later.',
-              compact: true,
+              mode: CatchErrorStateMode.compact,
             ),
           ],
         ),

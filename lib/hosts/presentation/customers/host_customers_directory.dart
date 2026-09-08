@@ -74,10 +74,13 @@ class HostCustomersNoOrganizer extends StatelessWidget {
         icon: CatchIcons.groupsOutlined,
         title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
         message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-        action: CatchButton(
-          label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-          onPressed: () => context.pushNamed(Routes.hostCreateClubScreen.name),
-        ),
+        actions: [
+          CatchButton(
+            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+            onPressed: () =>
+                context.pushNamed(Routes.hostCreateClubScreen.name),
+          ),
+        ],
       ),
     ],
   );
@@ -386,7 +389,7 @@ class HostCustomersDirectory extends StatelessWidget {
                 ? context.l10n.hostCustomersNoResults
                 : context.l10n.hostCustomersEmpty,
             message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
-            layout: CatchEmptyStateLayout.inline,
+            variant: CatchEmptyStateVariant.inline,
           )
         else
           CatchSection.divided(

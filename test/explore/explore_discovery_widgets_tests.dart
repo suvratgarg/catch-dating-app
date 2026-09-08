@@ -634,7 +634,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     ]);
 
     expect(find.text('Social run'), findsWidgets);
-    expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
+    expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
   });
 
   testWidgets('ExploreDiscoveryCoverHeader CTA delegates featured item', (

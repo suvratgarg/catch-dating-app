@@ -92,7 +92,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           divider: scrolledUnder,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
                 context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,

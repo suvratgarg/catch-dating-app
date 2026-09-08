@@ -56,11 +56,11 @@ class HostEventOperatorScreen extends ConsumerWidget {
               leadingType: CatchTopBarLeading.back,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,
                 icon: CatchIcons.eventBusyOutlined,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: [const CatchErrorBackAction()],
               ),
             ),
           );

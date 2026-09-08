@@ -318,12 +318,14 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
           icon: CatchIcons.groupsOutlined,
           title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
           message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-          action: CatchButton(
-            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-            size: CatchButtonSize.sm,
-            onPressed: onCreateOrganizer,
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              size: CatchButtonSize.sm,
+              onPressed: onCreateOrganizer,
+            ),
+          ],
         ),
       ],
     );
