@@ -537,6 +537,28 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventRcsWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+  sourceGeneration: string;
+  agentId: string;
+}
+
 export interface EventRcsSenderDocument {
   schemaVersion: 1;
   senderId: string;

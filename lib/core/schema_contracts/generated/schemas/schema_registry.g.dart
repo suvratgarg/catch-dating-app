@@ -17,6 +17,26 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventRcsWithdrawalGrantDocument',
+    source: 'firestore/event_assistance_rcs_withdrawal_grants.schema.json',
+    schema: schemaEventRcsWithdrawalGrantDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventRcsWithdrawalCallablePayload',
+    source: 'callables/get_event_rcs_withdrawal_payload.schema.json',
+    schema: schemaGetEventRcsWithdrawalCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'WithdrawEventRcsCallablePayload',
+    source: 'callables/withdraw_event_rcs_payload.schema.json',
+    schema: schemaWithdrawEventRcsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsWithdrawalCallableResponse',
+    source: 'callable_responses/event_rcs_withdrawal_response.schema.json',
+    schema: schemaEventRcsWithdrawalCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRcsSenderDocument',
     source: 'firestore/event_assistance_rcs_senders.schema.json',
     schema: schemaEventRcsSenderDocumentSchema,
@@ -3194,6 +3214,10 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventRcsWithdrawalGrantDocument': schemaEventRcsWithdrawalGrantDocumentSchema,
+  'GetEventRcsWithdrawalCallablePayload': schemaGetEventRcsWithdrawalCallablePayloadSchema,
+  'WithdrawEventRcsCallablePayload': schemaWithdrawEventRcsCallablePayloadSchema,
+  'EventRcsWithdrawalCallableResponse': schemaEventRcsWithdrawalCallableResponseSchema,
   'EventRcsSenderDocument': schemaEventRcsSenderDocumentSchema,
   'EventRcsPermissionDocument': schemaEventRcsPermissionDocumentSchema,
   'EventRcsConsentReceiptDocument': schemaEventRcsConsentReceiptDocumentSchema,
@@ -3832,6 +3856,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_rcs_withdrawal_grants.schema.json': schemaEventRcsWithdrawalGrantDocumentSchema,
+  'callables/get_event_rcs_withdrawal_payload.schema.json': schemaGetEventRcsWithdrawalCallablePayloadSchema,
+  'callables/withdraw_event_rcs_payload.schema.json': schemaWithdrawEventRcsCallablePayloadSchema,
+  'callable_responses/event_rcs_withdrawal_response.schema.json': schemaEventRcsWithdrawalCallableResponseSchema,
   'firestore/event_assistance_rcs_senders.schema.json': schemaEventRcsSenderDocumentSchema,
   'firestore/event_assistance_rcs_permissions.schema.json': schemaEventRcsPermissionDocumentSchema,
   'firestore/event_assistance_rcs_consent_receipts.schema.json': schemaEventRcsConsentReceiptDocumentSchema,

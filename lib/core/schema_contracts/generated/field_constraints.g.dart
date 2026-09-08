@@ -26836,15 +26836,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const eventRcsConsentReceiptDocumentActorUid = CatchContractFieldConstraints(
-    path: 'eventRcsConsentReceiptDocument.actorUid',
-    maxLength: 160,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
-  );
-
   static const eventRcsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
     path: 'eventRcsConsentReceiptDocument.appliedRevision',
     required: true,
@@ -26905,6 +26896,13 @@ abstract final class CatchContractConstraints {
     path: 'eventRcsConsentReceiptDocument.decision',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRcsConsentReceiptDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventRcsConsentReceiptDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
   );
 
   static const eventRcsConsentReceiptDocumentPermissionHash = CatchContractFieldConstraints(
@@ -27566,6 +27564,180 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalCallableResponse.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['read', 'applied', 'replayed', 'conflict'],
+  );
+
+  static const eventRcsWithdrawalCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalCallableResponseViewPreference = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalCallableResponse.view.preference',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled', 'expired'],
+  );
+
+  static const eventRcsWithdrawalCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalGrantDocumentAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsWithdrawalGrantDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalGrantDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentIssuedAt = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.issuedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalGrantDocumentLinkId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentPermissionRevisionAtIssue = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.permissionRevisionAtIssue',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsWithdrawalGrantDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsWithdrawalGrantDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsWithdrawalGrantDocumentSubjectUid = CatchContractFieldConstraints(
+    path: 'eventRcsWithdrawalGrantDocument.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRehearsalActionDocumentActorId = CatchContractFieldConstraints(
@@ -38092,6 +38264,20 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventRcsWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'getEventRcsWithdrawalCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const getEventRcsWithdrawalCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'getEventRcsWithdrawalCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
   static const getEventRehearsalBootstrapCallablePayloadSessionId = CatchContractFieldConstraints(
@@ -79199,6 +79385,37 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
+  static const withdrawEventRcsCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'withdrawEventRcsCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const withdrawEventRcsCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'withdrawEventRcsCallablePayload.linkId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const withdrawEventRcsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawEventRcsCallablePayload.requestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const withdrawEventRcsCallablePayloadSecret = CatchContractFieldConstraints(
+    path: 'withdrawEventRcsCallablePayload.secret',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
   static const withdrawEventWhatsappCallablePayloadExpectedRevision = CatchContractFieldConstraints(
     path: 'withdrawEventWhatsappCallablePayload.expectedRevision',
     required: true,
@@ -82924,7 +83141,6 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
-    'eventRcsConsentReceiptDocument.actorUid': eventRcsConsentReceiptDocumentActorUid,
     'eventRcsConsentReceiptDocument.appliedRevision': eventRcsConsentReceiptDocumentAppliedRevision,
     'eventRcsConsentReceiptDocument.attendeeGeneration': eventRcsConsentReceiptDocumentAttendeeGeneration,
     'eventRcsConsentReceiptDocument.attendeeId': eventRcsConsentReceiptDocumentAttendeeId,
@@ -82933,6 +83149,7 @@ abstract final class CatchContractConstraints {
     'eventRcsConsentReceiptDocument.context.organizerId': eventRcsConsentReceiptDocumentContextOrganizerId,
     'eventRcsConsentReceiptDocument.createdAt': eventRcsConsentReceiptDocumentCreatedAt,
     'eventRcsConsentReceiptDocument.decision': eventRcsConsentReceiptDocumentDecision,
+    'eventRcsConsentReceiptDocument.linkId': eventRcsConsentReceiptDocumentLinkId,
     'eventRcsConsentReceiptDocument.permissionHash': eventRcsConsentReceiptDocumentPermissionHash,
     'eventRcsConsentReceiptDocument.receiptId': eventRcsConsentReceiptDocumentReceiptId,
     'eventRcsConsentReceiptDocument.recipientEndpointId': eventRcsConsentReceiptDocumentRecipientEndpointId,
@@ -83020,6 +83237,28 @@ abstract final class CatchContractConstraints {
     'eventRcsSubscriptionDocument.schemaVersion': eventRcsSubscriptionDocumentSchemaVersion,
     'eventRcsSubscriptionDocument.subscriptionId': eventRcsSubscriptionDocumentSubscriptionId,
     'eventRcsSubscriptionDocument.updatedAt': eventRcsSubscriptionDocumentUpdatedAt,
+    'eventRcsWithdrawalCallableResponse.outcome': eventRcsWithdrawalCallableResponseOutcome,
+    'eventRcsWithdrawalCallableResponse.view.expiresAt': eventRcsWithdrawalCallableResponseViewExpiresAt,
+    'eventRcsWithdrawalCallableResponse.view.preference': eventRcsWithdrawalCallableResponseViewPreference,
+    'eventRcsWithdrawalCallableResponse.view.revision': eventRcsWithdrawalCallableResponseViewRevision,
+    'eventRcsWithdrawalCallableResponse.view.serverTime': eventRcsWithdrawalCallableResponseViewServerTime,
+    'eventRcsWithdrawalGrantDocument.agentId': eventRcsWithdrawalGrantDocumentAgentId,
+    'eventRcsWithdrawalGrantDocument.attendeeGeneration': eventRcsWithdrawalGrantDocumentAttendeeGeneration,
+    'eventRcsWithdrawalGrantDocument.attendeeId': eventRcsWithdrawalGrantDocumentAttendeeId,
+    'eventRcsWithdrawalGrantDocument.context.eventId': eventRcsWithdrawalGrantDocumentContextEventId,
+    'eventRcsWithdrawalGrantDocument.context.mode': eventRcsWithdrawalGrantDocumentContextMode,
+    'eventRcsWithdrawalGrantDocument.context.organizerId': eventRcsWithdrawalGrantDocumentContextOrganizerId,
+    'eventRcsWithdrawalGrantDocument.expiresAt': eventRcsWithdrawalGrantDocumentExpiresAt,
+    'eventRcsWithdrawalGrantDocument.guestGrantHash': eventRcsWithdrawalGrantDocumentGuestGrantHash,
+    'eventRcsWithdrawalGrantDocument.issuedAt': eventRcsWithdrawalGrantDocumentIssuedAt,
+    'eventRcsWithdrawalGrantDocument.linkId': eventRcsWithdrawalGrantDocumentLinkId,
+    'eventRcsWithdrawalGrantDocument.permissionId': eventRcsWithdrawalGrantDocumentPermissionId,
+    'eventRcsWithdrawalGrantDocument.permissionRevisionAtIssue': eventRcsWithdrawalGrantDocumentPermissionRevisionAtIssue,
+    'eventRcsWithdrawalGrantDocument.recipientEndpointId': eventRcsWithdrawalGrantDocumentRecipientEndpointId,
+    'eventRcsWithdrawalGrantDocument.schemaVersion': eventRcsWithdrawalGrantDocumentSchemaVersion,
+    'eventRcsWithdrawalGrantDocument.senderId': eventRcsWithdrawalGrantDocumentSenderId,
+    'eventRcsWithdrawalGrantDocument.sourceGeneration': eventRcsWithdrawalGrantDocumentSourceGeneration,
+    'eventRcsWithdrawalGrantDocument.subjectUid': eventRcsWithdrawalGrantDocumentSubjectUid,
     'eventRehearsalActionDocument.actorId': eventRehearsalActionDocumentActorId,
     'eventRehearsalActionDocument.actorUid': eventRehearsalActionDocumentActorUid,
     'eventRehearsalActionDocument.clientActionId': eventRehearsalActionDocumentClientActionId,
@@ -84446,6 +84685,8 @@ abstract final class CatchContractConstraints {
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
     'getEventRcsPreferenceCallablePayload.eventId': getEventRcsPreferenceCallablePayloadEventId,
     'getEventRcsPreferenceCallablePayload.senderId': getEventRcsPreferenceCallablePayloadSenderId,
+    'getEventRcsWithdrawalCallablePayload.linkId': getEventRcsWithdrawalCallablePayloadLinkId,
+    'getEventRcsWithdrawalCallablePayload.secret': getEventRcsWithdrawalCallablePayloadSecret,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
     'getEventRehearsalGuestBootstrapCallablePayload.clientInstanceId': getEventRehearsalGuestBootstrapCallablePayloadClientInstanceId,
     'getEventRehearsalGuestBootstrapCallablePayload.publicRehearsalId': getEventRehearsalGuestBootstrapCallablePayloadPublicRehearsalId,
@@ -90113,6 +90354,10 @@ abstract final class CatchContractConstraints {
     'withdrawEventAssistanceSmsCallablePayload.linkId': withdrawEventAssistanceSmsCallablePayloadLinkId,
     'withdrawEventAssistanceSmsCallablePayload.requestId': withdrawEventAssistanceSmsCallablePayloadRequestId,
     'withdrawEventAssistanceSmsCallablePayload.secret': withdrawEventAssistanceSmsCallablePayloadSecret,
+    'withdrawEventRcsCallablePayload.expectedRevision': withdrawEventRcsCallablePayloadExpectedRevision,
+    'withdrawEventRcsCallablePayload.linkId': withdrawEventRcsCallablePayloadLinkId,
+    'withdrawEventRcsCallablePayload.requestId': withdrawEventRcsCallablePayloadRequestId,
+    'withdrawEventRcsCallablePayload.secret': withdrawEventRcsCallablePayloadSecret,
     'withdrawEventWhatsappCallablePayload.expectedRevision': withdrawEventWhatsappCallablePayloadExpectedRevision,
     'withdrawEventWhatsappCallablePayload.linkId': withdrawEventWhatsappCallablePayloadLinkId,
     'withdrawEventWhatsappCallablePayload.requestId': withdrawEventWhatsappCallablePayloadRequestId,

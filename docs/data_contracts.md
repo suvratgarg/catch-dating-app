@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.71.0
+version: 1.72.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -95,8 +95,19 @@ sender changes. Consent expires at the captured event end plus 24 hours, with
 the current event window rechecked by the shared transactional permission
 reader. STOP review hashes exclude START and unrelated observation revisions;
 a new STOP requires fresh review. No SMS/WhatsApp permission is reused or
-mutated. Direct client collection access remains denied. Guest-page UI,
-message-link withdrawal, dispatch integration and activation remain open.
+mutated. Direct client collection access remains denied.
+
+The same canonical contract now owns `WithdrawalGrant`, `WithdrawalView` and a
+closed `messageLink` revoke-only receipt variant with a null actor. Private
+`eventAssistanceRcsWithdrawalGrants` binds the original source generations,
+subject, endpoint and agent. Transactional preparation verifies the persisted
+guest grant and exact permission/receipt before staging immutable issuance. The
+App-Check-protected bearer callables `getEventRcsWithdrawal` / `withdrawEventRcs`
+expose only recorded preference and lifetime; revision checks and immutable
+receipts fence old requests. Withdrawal works after instructions expire without
+restoring read/reply access, and does not depend on current event/roster/sender
+records. Retain its referenced guest grant through the independent withdrawal
+lifetime. Guest-page UI, dispatch integration and activation remain open.
 
 ### Event Assistance RCS Callback Evidence
 

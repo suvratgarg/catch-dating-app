@@ -546,3 +546,6 @@ export {setEventAssistanceCheckpointCloseout} from
   "./eventSuccess/operations/checkpointCloseoutHandlers";
 export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
   "./eventSuccess/operations/checkpointHandlers";
+
+export {getEventRcsWithdrawal, withdrawEventRcs} from
+  "./eventSuccess/operations/rcsWithdrawalHandlers";

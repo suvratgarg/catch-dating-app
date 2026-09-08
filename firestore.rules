@@ -843,6 +843,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRcsWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceRcsPermissions/{permissionId} {
       allow read, write: if false;
     }

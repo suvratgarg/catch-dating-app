@@ -16,6 +16,35 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "EventRcsWithdrawalGrantDocument",
+  "source": "firestore/event_assistance_rcs_withdrawal_grants.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsWithdrawalGrantDocument.ts"
+},
+{
+  "name": "GetEventRcsWithdrawalCallablePayload",
+  "source": "callables/get_event_rcs_withdrawal_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventRcsWithdrawalInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventRcsWithdrawalInput.ts"
+  ]
+},
+{
+  "name": "WithdrawEventRcsCallablePayload",
+  "source": "callables/withdraw_event_rcs_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/withdrawEventRcsInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/withdrawEventRcsInput.ts"
+  ]
+},
+{
+  "name": "EventRcsWithdrawalCallableResponse",
+  "source": "callable_responses/event_rcs_withdrawal_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsWithdrawalOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventRcsWithdrawalOutput.ts"
+  ]
+},
+{
   "name": "EventRcsSenderDocument",
   "source": "firestore/event_assistance_rcs_senders.schema.json",
   "typeOutput": "functions/src/shared/generated/eventRcsSenderDocument.ts"

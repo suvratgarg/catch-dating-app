@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.65.0
+version: 1.66.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1493,8 +1493,8 @@ withheld. This restriction cannot undo a send that committed before it arrived.
 provenance inside the caller's transaction. Missing, corrupt or cross-recipient
 provenance fails closed. The record's absence is not consent. Event-specific
 preference APIs and their shared permission reader now review this restriction
-as described below. The dispatch integration, withdrawal links and retention
-cleanup remain implementation work.
+as described below. Dispatch integration and retention cleanup remain
+implementation work.
 No provider sender or network worker is activated by this projection.
 
 ### RCS event consent
@@ -1536,8 +1536,43 @@ sender-readiness, capability or send authority. Renaming the same provider
 agent preserves existing consent; a newly reviewed grant captures the updated
 name. Tests cover stale review hashes, source replacement, rollback, receipt
 tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
-preference UI, revocation-only message links, dispatch/worker integration and
-deployment remain open. No live sender is activated by these callables.
+preference UI, dispatch/worker integration and deployment remain open. No live
+sender is activated by these callables.
+
+### RCS message-link withdrawal
+
+`getEventRcsWithdrawal` and `withdrawEventRcs` are App-Check-protected bearer
+callables with network and credential rate limits. They accept only the original
+message link and secret; withdrawal additionally requires a revision and request
+ID. They do not require sign-in or authorize opt-in. The response contains only
+the recorded event preference, revision and lifetime, without guest, phone, event
+or provider identity. The preference is not a delivery-readiness assessment.
+
+`eventAssistanceRcsWithdrawalGrants` binds the original permission, event and
+attendee source generations, Firebase subject, recipient endpoint and provider
+agent. `prepareRcsWithdrawal` verifies the exact persisted permission, consent
+receipt and guest grant, then stages immutable issuance in its caller transaction
+so a future dispatch can commit them together. Retries preserve the original
+lifetime. A longer consent window requires a new link; an old distributed bearer
+cannot silently acquire a longer lifetime. This preparation is not a dispatch
+permit and does not replace source, STOP, sender, capability or budget checks.
+
+The link can withdraw through its own captured consent lifetime even after the
+joining instructions expire or current event, roster and sender records vanish.
+The referenced guest grant must be retained until that withdrawal lifetime ends.
+A revoked or replaced guest grant is rejected, and expired read/reply access is
+never restored. Changed permission generations, subject, endpoint or provider
+agent invalidate the old link; same-agent renaming preserves it.
+
+Withdrawal atomically preserves the original grant evidence, revokes only RCS
+event consent, and creates a `messageLink` receipt with a null actor and a
+revoke-only decision. Revision checks and immutable request receipts prevent
+replays or stale reviews from reversing newer consent. A fresh reviewed request
+can withdraw a subsequent grant for the same identity. No event, attendance,
+SMS/WhatsApp consent, conversation subscription or provider delivery state is
+changed. Tests include real Firestore concurrent issuance, duplicate withdrawals
+and a withdrawal racing renewed consent. The guest-page control, dispatch owner
+and live deployment remain integration work.
 
 ### RCS sender configuration and message rendering
 
@@ -1607,9 +1642,10 @@ phone, token or guest link. Tests inject transport; this adds no default network
 client, credential loader, Firebase export or activated sender. Canonical RCS
 sender configuration, rendering, callback persistence and conversation
 subscription observations are now present. Event-scoped RCS preference APIs
-and the shared permission check are implemented. Callback domain consumers,
-message-link withdrawal, dispatch integration and provider activation remain
-required before live use.
+and the shared permission check are implemented, together with message-link
+withdrawal APIs and transactional issuance preparation. Callback domain consumers,
+guest-page controls, dispatch integration and provider activation remain required
+before live use.
 
 ## Format Mapping And Wiring
 

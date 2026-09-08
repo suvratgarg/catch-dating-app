@@ -56,4 +56,32 @@ export type EventRcsConsentReceiptDocument =
       copyHash: null;
       reviewHash: null;
       reviewedStopHash: null;
+    }
+  | {
+      schemaVersion: 1;
+      receiptId: string;
+      requestHash: string;
+      context: {
+        mode: "live";
+        organizerId: string;
+        eventId: string;
+      };
+      attendeeId: string;
+      attendeeGeneration: string;
+      sourceGeneration: string;
+      actorUid: null;
+      senderId: string;
+      senderHash: string;
+      routeId: "catchEventRcs";
+      recipientEndpointId: string;
+      source: "messageLink";
+      permissionHash: string;
+      appliedRevision: number;
+      createdAt: number;
+      decision: "revoke";
+      copyVersion: null;
+      copyHash: null;
+      reviewHash: null;
+      reviewedStopHash: null;
+      linkId: string;
     };

@@ -2118,7 +2118,9 @@
       ],
       "exportedFunctions": [
         "getEventRcsPreference",
-        "setEventRcsPreference"
+        "setEventRcsPreference",
+        "getEventRcsWithdrawal",
+        "withdrawEventRcs"
       ]
     },
     {
@@ -2134,7 +2136,9 @@
       ],
       "exportedFunctions": [
         "getEventRcsPreference",
-        "setEventRcsPreference"
+        "setEventRcsPreference",
+        "getEventRcsWithdrawal",
+        "withdrawEventRcs"
       ]
     },
     {
@@ -2475,6 +2479,22 @@
       "write": "server only",
       "exportedFunctions": [
         "resolveEventAssistanceAccountability"
+      ]
+    },
+    {
+      "id": "eventAssistanceRcsWithdrawalGrants",
+      "path": "eventAssistanceRcsWithdrawalGrants/{linkId}",
+      "rulesMatch": "/eventAssistanceRcsWithdrawalGrants/{linkId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service RCS dispatch and withdrawal",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Private revocation-only binding for the original event, source generations, subject, endpoint and RCS agent. Dispatch preparation stages immutable creation with the caller transaction. Retain the referenced guest grant through this independent withdrawal lifetime."
+      ],
+      "exportedFunctions": [
+        "getEventRcsWithdrawal",
+        "withdrawEventRcs"
       ]
     }
   ]
