@@ -93,8 +93,8 @@ class _EventSuccessModuleConsolidationPrototypeState
           child: ListView(
             padding: CatchInsets.pageBody,
             children: [
-              const CatchScreenHeaderTitle.block(
-                eyebrow: 'PHASE 4 PROTOTYPE',
+              const CatchScreenHeader.block(
+                kicker: 'PHASE 4 PROTOTYPE',
                 title: 'Live event guide',
                 subtitle: 'Owner review only · not wired to production',
               ),

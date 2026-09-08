@@ -757,8 +757,22 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.byType(CatchSheetDragIndicator), findsOneWidget);
-    expect(find.byType(CatchPlainSheetHeader), findsOneWidget);
-    expect(find.byType(CatchBrandedSheetHeader), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSheetHeader &&
+            widget.variant == CatchSheetHeaderVariant.plain,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSheetHeader &&
+            widget.variant == CatchSheetHeaderVariant.branded,
+      ),
+      findsNothing,
+    );
     expect(find.text('Filters'), findsOneWidget);
     expect(find.text('Tune what shows up first.'), findsOneWidget);
     expect(find.widgetWithText(CatchBadge, '2'), findsOneWidget);
@@ -783,8 +797,22 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.byType(CatchSheetDragIndicator), findsNothing);
-    expect(find.byType(CatchPlainSheetHeader), findsNothing);
-    expect(find.byType(CatchBrandedSheetHeader), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSheetHeader &&
+            widget.variant == CatchSheetHeaderVariant.plain,
+      ),
+      findsNothing,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSheetHeader &&
+            widget.variant == CatchSheetHeaderVariant.branded,
+      ),
+      findsOneWidget,
+    );
     final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));
     expect(glyph.size, CatchLayout.sheetGlyphIconSize);
     expect(glyph.color, CatchTokens.editorialLight.primaryInk);

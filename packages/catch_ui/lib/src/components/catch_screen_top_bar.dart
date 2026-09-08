@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_icon_button.dart';
-import 'package:catch_ui/src/components/catch_screen_header_title.dart';
+import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
@@ -227,9 +227,9 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
     return CatchTopBar(
-      titleWidget: CatchScreenHeaderTitle(
+      titleWidget: CatchScreenHeader(
         title: title,
-        eyebrow: eyebrow,
+        kicker: eyebrow,
         subtitle: subtitle,
         actions: largeText ? actions : const <Widget>[],
         titleMaxLines: titleMaxLines,

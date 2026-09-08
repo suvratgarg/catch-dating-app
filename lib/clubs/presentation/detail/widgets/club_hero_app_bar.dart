@@ -113,7 +113,7 @@ class ClubHeroAppBar extends StatelessWidget {
           centerTitle: false,
           titleSpacing: 0,
           leadingWidth: CatchSpacing.s16,
-          title: CatchCollapsedSliverTitle(
+          title: CatchCollapsedHeaderTitle(
             title: club.name,
             textKey: ValueKey(
               context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,

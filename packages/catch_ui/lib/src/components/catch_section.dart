@@ -9,7 +9,7 @@ import 'package:catch_ui/src/components/catch_section_body_mode.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_focus_surface.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
-import 'package:catch_ui/src/components/catch_section_kicker.dart';
+import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
@@ -376,12 +376,12 @@ class CatchSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (hasHeader) ...[
-            CatchSectionKicker(
-              text: hasTitle ? displayTitle : null,
+            CatchSectionHeader.kicker(
+              title: hasTitle ? displayTitle : null,
               count: hasCount ? displayCount : null,
               trailing: sectionTrailing,
               color: effectiveTitleColor,
-              variant: fieldRows
+              textVariant: fieldRows
                   ? CatchKickerTextVariant.fieldSection
                   : CatchKickerTextVariant.md,
             ),
@@ -453,12 +453,12 @@ class CatchSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CatchSectionKicker(
-                      text: hasTitle ? displayTitle : null,
+                    CatchSectionHeader.kicker(
+                      title: hasTitle ? displayTitle : null,
                       count: hasCount ? displayCount : null,
                       trailing: sectionTrailing,
                       color: titleColor ?? t.ink2,
-                      variant: CatchKickerTextVariant.fieldSection,
+                      textVariant: CatchKickerTextVariant.fieldSection,
                     ),
                     const SizedBox(height: CatchFieldTokens.sectionRuleGap),
                     const CatchDivider.section(),
@@ -481,12 +481,12 @@ class CatchSection extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          CatchSectionKicker(
-                            text: group.title.trim(),
+                          CatchSectionHeader.kicker(
+                            title: group.title.trim(),
                             count: group.count?.toString().trim(),
                             trailing: group.trailing,
                             color: t.ink2,
-                            variant: CatchKickerTextVariant.fieldSection,
+                            textVariant: CatchKickerTextVariant.fieldSection,
                           ),
                           const SizedBox(
                             height: CatchFieldTokens.sectionRuleGap,
@@ -552,8 +552,8 @@ class CatchSection extends StatelessWidget {
                                       color: titleColor ?? t.ink,
                                     ),
                                   )
-                                : CatchSectionKicker(
-                                    text: displayTitle,
+                                : CatchSectionHeader.kicker(
+                                    title: displayTitle,
                                     count: count,
                                     color: titleColor ?? t.ink,
                                   ),
@@ -625,12 +625,12 @@ class CatchSection extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                       horizontal: CatchFieldTokens.rowHorizontalPadding,
                     ),
-                    child: CatchSectionKicker(
-                      text: hasTitle ? displayTitle : null,
+                    child: CatchSectionHeader.kicker(
+                      title: hasTitle ? displayTitle : null,
                       count: hasCount ? displayCount : null,
                       trailing: sectionTrailing,
                       color: titleColor ?? t.ink2,
-                      variant: CatchKickerTextVariant.fieldSection,
+                      textVariant: CatchKickerTextVariant.fieldSection,
                     ),
                   ),
                   SizedBox(height: bodyGap),

@@ -56,8 +56,8 @@ final class CatchRootScreenHeader {
   Widget _build(BuildContext context) {
     if (_kind == _CatchRootScreenHeaderKind.custom) return _header!;
     if (_search == null) {
-      return CatchScreenHeaderTitle.block(
-        eyebrow: _eyebrow,
+      return CatchScreenHeader.block(
+        kicker: _eyebrow,
         title: _title!,
         subtitle: _subtitle,
         leading: _leading,

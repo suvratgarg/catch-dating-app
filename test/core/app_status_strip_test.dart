@@ -24,7 +24,7 @@ void main() {
           GoRoute(
             path: '/',
             builder: (context, state) => CatchRootScreenScaffold.standard(
-              header: const CatchScreenHeaderTitle.block(title: 'Today'),
+              header: const CatchScreenHeader.block(title: 'Today'),
               slivers: const [SliverToBoxAdapter(child: Text('Root content'))],
             ),
           ),

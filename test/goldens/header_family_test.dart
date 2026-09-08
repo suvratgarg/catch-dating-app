@@ -32,29 +32,29 @@ void main() {
                 heavy: true,
               ),
               const SizedBox(height: 24),
-              CatchSectionKicker(
-                text: 'Guests',
+              CatchSectionHeader.kicker(
+                title: 'Guests',
                 count: 24,
                 color: CatchTokens.of(context).ink,
                 trailing: const Text('View all'),
               ),
               const SizedBox(height: 24),
-              const CatchPlainSheetHeader(
+              const CatchSheetHeader(
                 title: 'Choose a time',
                 subtitle: 'Guests see your local time',
                 trailing: Icon(Icons.close),
               ),
               const SizedBox(height: 24),
-              const CatchBrandedSheetHeader(
+              const CatchSheetHeader.branded(
                 glyph: Icons.event,
                 title: 'Choose a time',
                 subtitle: 'Guests see your local time',
                 trailing: Icon(Icons.close),
               ),
               const SizedBox(height: 24),
-              const CatchScreenHeaderTitle.block(
+              const CatchScreenHeader.block(
                 title: 'Your events',
-                eyebrow: 'This week',
+                kicker: 'This week',
                 subtitle: 'Everything you are planning',
                 leading: Icon(Icons.event),
                 actions: [Text('Create'), Icon(Icons.add)],
@@ -66,7 +66,7 @@ void main() {
                   minExtent: 64,
                   maxExtent: 240,
                   currentExtent: extent,
-                  child: const CatchCollapsedSliverTitle(title: 'Event title'),
+                  child: const CatchCollapsedHeaderTitle(title: 'Event title'),
                 ),
                 const SizedBox(height: 24),
               ],

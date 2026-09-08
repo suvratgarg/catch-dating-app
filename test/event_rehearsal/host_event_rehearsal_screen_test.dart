@@ -44,7 +44,7 @@ void main() {
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.byType(CatchScreenHeaderTitle), findsNothing);
+    expect(find.byType(CatchScreenHeader), findsNothing);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
     expect(
       find.textContaining('No real guests, messages, payments'),

@@ -8,39 +8,39 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Heading count and trailing states',
-  type: CatchSectionKicker,
+  type: CatchSectionHeader,
   path: '[Core primitives]/Sections',
 )
 Widget sectionKickerStates(BuildContext context) {
   final tokens = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
     title: 'Section heading anatomy',
-    catalogId: 'catch.section.kicker',
+    catalogId: 'catch.section.header.kicker',
     children: [
-      CatchSectionKicker(text: 'Your details', color: tokens.ink),
-      CatchSectionKicker(text: 'Guests', count: 24, color: tokens.ink),
-      CatchSectionKicker(
-        text: 'Upcoming events',
+      CatchSectionHeader.kicker(title: 'Your details', color: tokens.ink),
+      CatchSectionHeader.kicker(title: 'Guests', count: 24, color: tokens.ink),
+      CatchSectionHeader.kicker(
+        title: 'Upcoming events',
         color: tokens.ink,
         trailing: CatchTextButton(label: 'View all', onPressed: () {}),
       ),
-      CatchSectionKicker(
-        text: 'Team members',
+      CatchSectionHeader.kicker(
+        title: 'Team members',
         count: 12,
         color: tokens.ink,
         trailing: CatchTextButton(label: 'Manage', onPressed: () {}),
       ),
-      CatchSectionKicker(text: null, count: 8, color: tokens.ink),
-      CatchSectionKicker(
-        text: null,
+      CatchSectionHeader.kicker(title: null, count: 8, color: tokens.ink),
+      CatchSectionHeader.kicker(
+        title: null,
         color: tokens.ink,
         trailing: CatchTextButton(label: 'Edit', onPressed: () {}),
       ),
-      CatchSectionKicker(
-        text: 'Notification preferences',
+      CatchSectionHeader.kicker(
+        title: 'Notification preferences',
         count: 4,
         color: tokens.ink2,
-        variant: CatchKickerTextVariant.fieldSection,
+        textVariant: CatchKickerTextVariant.fieldSection,
       ),
     ],
   );

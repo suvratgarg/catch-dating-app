@@ -23,15 +23,15 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchScreenHeader(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
-  "CatchScreenHeaderTitle",
-  "CatchScreenHeaderTitle.block",
+  "CatchScreenHeader",
+  "CatchScreenHeader.block",
   "CatchScreenTopBar",
   "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
+  /\b(CatchScreenHeader(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
@@ -75,8 +75,8 @@ const manualHeaderRoleOwners = new Map([
   [
     "screen",
     new Set([
-      "CatchScreenHeaderTitle",
-      "CatchScreenHeaderTitle.block",
+      "CatchScreenHeader",
+      "CatchScreenHeader.block",
       "CatchScreenTopBar",
       "CatchRootScreenHeader.title",
     ]),
@@ -1524,7 +1524,7 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
   }
   rootTextScaleOverridePattern.lastIndex = 0;
 
-  const geometryPattern = surface.owner.startsWith("CatchScreenHeaderTitle")
+  const geometryPattern = surface.owner.startsWith("CatchScreenHeader")
     ? /\bpadding\s*:/u
     : /\b(?:contentPadding|height)\s*:/u;
   if (ownerCalls.some((call) => geometryPattern.test(call))) {

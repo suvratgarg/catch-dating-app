@@ -70,6 +70,26 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Header recipes and behavior boundaries
+
+Owner-delegated source and rendered review: `header-canonical-recipes`.
+Section kicker and plain/branded sheet variations use named constructors;
+screen assembly and collapse-triggered title behavior receive distinct roles.
+
+- [x] Preserve four original images at both text scales and three collapse
+  poses. Consecutive comparisons pass with unchanged typography and geometry.
+- [x] Delete two duplicate Widgets and registry members, and migrate every
+  caller without aliases. The proposal fixture only updates its production
+  header API call; proposal content and disposition remain unchanged.
+- [x] Pass 20 focused header/sheet tests, 18 golden/status-strip geometry tests,
+  all 17 family gallery/enumeration tests twice, and 49 navigation-chrome probes
+  with a zero-finding live contract check.
+- [x] Keep all 299 shared surfaces covered; 1,049 registered cases have zero
+  unclassified entries. All 59 reviewed naming entries pass.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Canonical skeleton recipes
 
 Owner-delegated source and rendered review: `skeleton-canonical-recipes`.

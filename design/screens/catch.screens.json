@@ -5244,8 +5244,8 @@
               "file": "lib/swipes/presentation/swipe_hub_screen.dart",
               "symbol": "SwipeHubScreen"
             },
-            "currentOwner": "CatchScreenHeaderTitle.block",
-            "targetOwner": "CatchScreenHeaderTitle.block",
+            "currentOwner": "CatchScreenHeader.block",
+            "targetOwner": "CatchScreenHeader.block",
             "dependencies": [
               "catch.surface"
             ],
@@ -5254,7 +5254,7 @@
               "text_scale_2",
               "light_dark"
             ],
-            "migration": "The retained historical screen source delegates root title typography and geometry to CatchScreenHeaderTitle.block; runtime /catches redirects to Dashboard.",
+            "migration": "The retained historical screen source delegates root title typography and geometry to CatchScreenHeader.block; runtime /catches redirects to Dashboard.",
             "previewIds": [
               "SwipeHubScreen/Screen states"
             ]
@@ -15457,7 +15457,7 @@
       },
       "topBar": {
         "role": "shell",
-        "expression": "CatchScreenHeaderTitle.block + CatchScreenTopBar",
+        "expression": "CatchScreenHeader.block + CatchScreenTopBar",
         "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
         "reason": "The Audience destination uses People, Audiences, Forms, and Responses peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer, audience, and form editors own compact back titles."
       },

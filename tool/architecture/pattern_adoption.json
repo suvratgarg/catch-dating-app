@@ -296,24 +296,24 @@
       "prototypeFiles": [
         "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "packages/catch_ui/lib/src/components/catch_screen_top_bar.dart",
-        "packages/catch_ui/lib/src/components/catch_screen_header_title.dart",
+        "packages/catch_ui/lib/src/components/catch_screen_header.dart",
         "test/core/catch_top_bar_test.dart",
         "widgetbook/lib/primitives/core_catalog_use_cases.dart"
       ],
       "adopters": [
         {
           "path": "packages/catch_ui/lib/src/components/catch_screen_top_bar.dart",
-          "role": "reference CatchScreenTopBar implementation composing CatchScreenHeaderTitle for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
+          "role": "reference CatchScreenTopBar implementation composing CatchScreenHeader for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
           "status": "aligned"
         },
         {
           "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
-          "role": "Home tab sliver title uses CatchScreenHeaderTitle.block with compact root-screen padding and notification action slot",
+          "role": "Home tab sliver title uses CatchScreenHeader.block with compact root-screen padding and notification action slot",
           "status": "aligned"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_header.dart",
-          "role": "Explore browse and no-cover discovery headers use CatchScreenHeaderTitle/CatchScreenTopBar with city picker leading slot and shared expanding search",
+          "role": "Explore browse and no-cover discovery headers use CatchScreenHeader/CatchScreenTopBar with city picker leading slot and shared expanding search",
           "status": "aligned"
         },
         {
@@ -328,12 +328,12 @@
         },
         {
           "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
-          "role": "HostTodayHeader gives every Today branch one scroll-owned CatchScreenHeaderTitle.block root header while HostTodayBody retains terminal shell padding",
+          "role": "HostTodayHeader gives every Today branch one scroll-owned CatchScreenHeader.block root header while HostTodayBody retains terminal shell padding",
           "status": "aligned"
         },
         {
           "path": "lib/hosts/events/presentation/host_events_screen.dart",
-          "role": "Host Events route delegates title ownership to CatchScreenHeaderTitle while its organizer section supplies the adaptive primary create action",
+          "role": "Host Events route delegates title ownership to CatchScreenHeader while its organizer section supplies the adaptive primary create action",
           "status": "aligned"
         },
         {
@@ -348,12 +348,12 @@
         },
         {
           "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "role": "Dashboard header review state now mounts CatchScreenHeaderTitle instead of a one-off DashboardHeaderContent wrapper",
+          "role": "Dashboard header review state now mounts CatchScreenHeader instead of a one-off DashboardHeaderContent wrapper",
           "status": "aligned"
         },
         {
           "path": "widgetbook/lib/profiles/profile_use_cases.dart",
-          "role": "Profile header review states now mount CatchScreenHeaderTitle instead of a one-off ProfileTitle wrapper",
+          "role": "Profile header review states now mount CatchScreenHeader instead of a one-off ProfileTitle wrapper",
           "status": "aligned"
         }
       ],
@@ -361,12 +361,12 @@
         {
           "symbol": "DashboardHeaderContent",
           "path": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeader."
         },
         {
           "symbol": "ProfileTitle",
           "path": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeaderTitle."
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeader."
         }
       ],
       "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep consumer and Host root destinations aligned. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
@@ -380,7 +380,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh"
       ],
-      "notes": "This pattern separates the 32px root headline hierarchy from compact route chrome while both use Archivo through distinct semantic roles. CatchScreenHeaderTitle owns headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
+      "notes": "This pattern separates the 32px root headline hierarchy from compact route chrome while both use Archivo through distinct semantic roles. CatchScreenHeader owns headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
     },
     {
       "id": "ARCH-ROUTE-CHROME-001",

@@ -87,11 +87,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
     );
     expect(editBody.layout, CatchScreenBodyLayout.standard);
-    final loadedHeader = tester.widget<CatchScreenHeaderTitle>(
+    final loadedHeader = tester.widget<CatchScreenHeader>(
       find.byWidgetPredicate(
         (widget) =>
-            widget is CatchScreenHeaderTitle &&
-            widget.title == 'Saket Run Club',
+            widget is CatchScreenHeader && widget.title == 'Saket Run Club',
       ),
     );
     expect(loadedHeader.eyebrow, isNull);

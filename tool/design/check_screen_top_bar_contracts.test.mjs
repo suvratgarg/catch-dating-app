@@ -821,7 +821,7 @@ test("discovers a canonical root HeaderContent surface", () => {
         source: `
           class ExploreBrowseHeaderContent extends StatelessWidget {
             Widget build(BuildContext context) =>
-              CatchScreenHeaderTitle.block(title: 'Explore');
+              CatchScreenHeader.block(title: 'Explore');
           }
         `,
       },
@@ -1003,7 +1003,7 @@ function workspaceContract() {
   };
 }
 
-function rootSurface({owner = "CatchScreenHeaderTitle.block"} = {}) {
+function rootSurface({owner = "CatchScreenHeader.block"} = {}) {
   return {
     path: "lib/root/root_header.dart",
     symbol: "RootHeader",
@@ -1026,7 +1026,7 @@ function fixtureRoot({
   extraSource,
   rootSource = `
     class RootHeader {
-      Widget build() => CatchScreenHeaderTitle.block(title: 'Home');
+      Widget build() => CatchScreenHeader.block(title: 'Home');
     }
   `,
   rootSurface: configuredRootSurface = rootSurface(),

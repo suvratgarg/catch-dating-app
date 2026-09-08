@@ -241,7 +241,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
-    final headerRect = tester.getRect(find.byType(CatchScreenHeaderTitle));
+    final headerRect = tester.getRect(find.byType(CatchScreenHeader));
     final emptyRect = tester.getRect(find.byType(CatchEmptyState));
     final noteRect = tester.getRect(find.byType(CatchSurface));
     final emptyBodyRect = emptyRect.expandToInclude(noteRect);

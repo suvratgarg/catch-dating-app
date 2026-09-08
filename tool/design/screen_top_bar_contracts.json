@@ -12,7 +12,7 @@
       "branchKey": "keys.dashboard",
       "routeName": "Routes.dashboardScreen.name",
       "surfaces": [
-        {"path": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/dashboard/presentation/dashboard_home_screen.dart", "symbol": "DashboardHomeScreen", "owner": "CatchScreenHeader.block"}
       ]
     },
     {
@@ -40,14 +40,14 @@
       "branchKey": "keys.hostToday",
       "routeName": "Routes.hostTodayScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayHeader", "owner": "CatchScreenHeaderTitle.block"}
+        {"path": "lib/hosts/today/presentation/widgets/host_today_body.dart", "symbol": "HostTodayHeader", "owner": "CatchScreenHeader.block"}
       ]
     },
     {
       "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "surfaces": [
-        {"path": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsRouteScaffold", "owner": "CatchScreenHeaderTitle.block"},
+        {"path": "lib/hosts/events/presentation/host_events_screen.dart", "symbol": "HostEventsRouteScaffold", "owner": "CatchScreenHeader.block"},
         {"path": "lib/hosts/events/presentation/widgets/host_events_list.dart", "symbol": "_HostEventsClubSectionState", "owner": "CatchRootScreenHeader.title"}
       ]
     },

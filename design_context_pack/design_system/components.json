@@ -4348,28 +4348,13 @@
             "id": "catch.section.header",
             "symbol": "CatchSectionHeader",
             "file": "packages/catch_ui/lib/src/components/catch_section_header.dart",
-            "summary": "Standard section title row with optional trailing action, uppercase, heavy, and custom padding/style states.",
+            "summary": "Section heading with standard and kicker recipes, optional count and trailing actions, retaining each recipe's typography and responsive layout.",
             "states": [
               "plain",
               "uppercase",
               "heavy",
               "trailing",
-              "custom-padding"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.section",
-              "parentConceptId": "catch.section",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.section"
-            }
-          },
-          {
-            "id": "catch.section.kicker",
-            "symbol": "CatchSectionKicker",
-            "file": "packages/catch_ui/lib/src/components/catch_section_kicker.dart",
-            "summary": "Section-owned heading, count and trailing-action anatomy. Retains header semantics, baseline alignment and the separate trailing lane at large text scales.",
-            "states": [
+              "custom-padding",
               "title-only",
               "title-count",
               "title-trailing",
@@ -4383,8 +4368,17 @@
               "conceptRole": "member",
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
-              "qualifier": "anatomy",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Owns a section heading with optional count and responsive trailing action; this is heading anatomy of the Section concept, not a free-standing typography primitive."
             }
           },
           {
@@ -4425,6 +4419,15 @@
               "parentConceptId": "catch.section",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "DaySection",
+              "comparedWith": [
+                "catch.section.header"
+              ],
+              "reason": "Chronological feed heading owns sticky background and uncapped animated integer count through a persistent-header delegate; ordinary section headings do not own that scroll presentation."
             }
           },
           {
@@ -6120,10 +6123,10 @@
             }
           },
           {
-            "id": "catch.sheet.plain_header",
-            "symbol": "CatchPlainSheetHeader",
-            "file": "packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart",
-            "summary": "Direct plain sheet-header renderer for title, subtitle, badge, and trailing content.",
+            "id": "catch.sheet.header",
+            "symbol": "CatchSheetHeader",
+            "file": "packages/catch_ui/lib/src/components/catch_sheet_header.dart",
+            "summary": "Sheet title, subtitle and trailing content with plain and branded-glyph named recipes.",
             "states": [
               "title-subtitle",
               "trailing",
@@ -6135,24 +6138,15 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.sheet"
-            }
-          },
-          {
-            "id": "catch.sheet.branded_header",
-            "symbol": "CatchBrandedSheetHeader",
-            "file": "packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart",
-            "summary": "Direct branded sheet-header renderer with glyph, title, subtitle, badge, and trailing content.",
-            "states": [
-              "title-subtitle",
-              "trailing",
-              "title-only"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.sheet",
-              "parentConceptId": "catch.sheet",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Sheet",
+              "comparedWith": [
+                "catch.sheet"
+              ],
+              "reason": "Owns the sheet title/subtitle and trailing slot, with glyph and plain recipes sharing one renderer. Sheet sizing and dismissal remain on the parent."
             }
           },
           {
@@ -7849,7 +7843,7 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchScreenHeaderTitle",
+          "CatchScreenHeader",
           "CatchScreenTopBar",
           "CatchLayout.topBarHeight",
           "CatchLayout.topBarLargeHeight",
@@ -7862,7 +7856,7 @@
           "CatchTextStyles.routeTitle",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
-          "CatchCollapsedSliverTitle",
+          "CatchCollapsedHeaderTitle",
           "CatchIconAction",
           "CatchTopBarPrimaryAction",
           "CatchTopBarMenuAction",
@@ -7873,8 +7867,8 @@
         "members": [
           {
             "id": "catch.top_bar.screen_header_title",
-            "symbol": "CatchScreenHeaderTitle",
-            "file": "packages/catch_ui/lib/src/components/catch_screen_header_title.dart",
+            "symbol": "CatchScreenHeader",
+            "file": "packages/catch_ui/lib/src/components/catch_screen_header.dart",
             "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
             "states": [
               "title",
@@ -7889,13 +7883,22 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.top_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Screen",
+              "comparedWith": [
+                "catch.top_bar"
+              ],
+              "reason": "Composes a screen title, kicker, subtitle, leading and action lanes that reflow at large text; a HeaderTitle only draws the title."
             }
           },
           {
             "id": "catch.top_bar.screen_top_bar",
             "symbol": "CatchScreenTopBar",
             "file": "packages/catch_ui/lib/src/components/catch_screen_top_bar.dart",
-            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeaderTitle inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
+            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeader inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
             "states": [
               "root-title",
               "with-subtitle",
@@ -7914,7 +7917,7 @@
           },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
-            "symbol": "CatchCollapsedSliverTitle",
+            "symbol": "CatchCollapsedHeaderTitle",
             "summary": "Toolbar title that fades in only after a flexible sliver header collapses.",
             "states": [
               "collapsed",
@@ -7929,7 +7932,16 @@
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.top_bar"
             },
-            "file": "packages/catch_ui/lib/src/components/catch_collapsed_sliver_title.dart"
+            "file": "packages/catch_ui/lib/src/components/catch_collapsed_header_title.dart",
+            "level": "L3",
+            "roleNoun": "HeaderTitle",
+            "naming": {
+              "useCase": "Collapsed",
+              "comparedWith": [
+                "catch.top_bar"
+              ],
+              "reason": "Reveals a toolbar title from inherited flexible-header collapse progress; it owns no screen header/action layout and returns a box title, not a sliver."
+            }
           },
           {
             "id": "catch.top_bar.menu_action",
@@ -8084,7 +8096,7 @@
         ],
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
-          "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Use CatchScreenHeader or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
           "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
           "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
           "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
@@ -11737,6 +11749,15 @@
       },
       "surfaces": {
         "flutter": "CatchStepHeader"
+      },
+      "level": "L3",
+      "roleNoun": "Header",
+      "naming": {
+        "useCase": "Step",
+        "comparedWith": [
+          "catch.section.header"
+        ],
+        "reason": "Owns step/total clamping, accessible counter actions and progress rendering around navigation chrome; ordinary section headings have no flow-progress behavior."
       }
     },
     {

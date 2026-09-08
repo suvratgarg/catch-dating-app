@@ -502,18 +502,18 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Header content',
-  type: CatchScreenHeaderTitle,
+  type: CatchScreenHeader,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardHeaderContentReview(BuildContext context) {
   return _DashboardCatalog(
-    title: 'CatchScreenHeaderTitle',
+    title: 'CatchScreenHeader',
     contractId: 'dashboard.home.header_content',
     children: [
       _StateCard(
         label: 'copy only',
         child: const _DashboardPrimitiveFrame(
-          child: CatchScreenHeaderTitle.block(
+          child: CatchScreenHeader.block(
             title: 'Good evening, Subrath',
             actions: [],
             padding: CatchInsets.screenTitleBlockCompact,
@@ -523,7 +523,7 @@ Widget dashboardHeaderContentReview(BuildContext context) {
       _StateCard(
         label: 'notification action',
         child: _DashboardPrimitiveFrame(
-          child: CatchScreenHeaderTitle.block(
+          child: CatchScreenHeader.block(
             title: 'Three plans ready',
             padding: CatchInsets.screenTitleBlockCompact,
             actions: [

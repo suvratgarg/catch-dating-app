@@ -328,12 +328,12 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Profile title',
-  type: CatchScreenHeaderTitle,
+  type: CatchScreenHeader,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileTitleStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchScreenHeaderTitle',
+    title: 'CatchScreenHeader',
     contractId: 'section.profile.self.title',
     children: [
       _StateCard(
@@ -341,7 +341,7 @@ Widget profileTitleStates(BuildContext context) {
         child: const _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: _ProfileHeaderRouterFrame(
-            child: CatchScreenHeaderTitle.block(
+            child: CatchScreenHeader.block(
               title: 'Your profile',
               actions: [ProfileSettingsButton()],
             ),
@@ -2193,7 +2193,7 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
     return CustomScrollView(
       slivers: [
         ...CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
+          title: const CatchScreenHeader.block(
             title: 'Your profile',
             actions: [ProfileSettingsButton()],
           ),

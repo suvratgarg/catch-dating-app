@@ -3457,7 +3457,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Navigation',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchCollapsedSliverTitle',
+            name: 'CatchCollapsedHeaderTitle',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -3991,7 +3991,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionKicker',
+            name: 'CatchSectionHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Heading count and trailing states',
@@ -4115,21 +4115,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchBrandedSheetHeader',
+            name: 'CatchSheetHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
+                name: 'Branded header states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchBrandedSheetHeaderContractStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchPlainSheetHeader',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
+                name: 'Plain header states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchPlainSheetHeaderContractStates,
@@ -6278,7 +6273,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard home',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScreenHeaderTitle',
+            name: 'CatchScreenHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header content',
@@ -10656,7 +10651,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchScreenHeaderTitle',
+                name: 'CatchScreenHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile title',

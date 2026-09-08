@@ -3,8 +3,8 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Toolbar title that appears only after a flexible sliver header collapses.
-class CatchCollapsedSliverTitle extends StatelessWidget {
-  const CatchCollapsedSliverTitle({
+class CatchCollapsedHeaderTitle extends StatelessWidget {
+  const CatchCollapsedHeaderTitle({
     super.key,
     required this.title,
     this.textKey,

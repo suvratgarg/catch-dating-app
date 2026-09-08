@@ -65,7 +65,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
           elevation: 0,
           centerTitle: false,
           titleSpacing: 0,
-          title: CatchCollapsedSliverTitle(
+          title: CatchCollapsedHeaderTitle(
             title: event.title,
             textKey: ValueKey(
               context

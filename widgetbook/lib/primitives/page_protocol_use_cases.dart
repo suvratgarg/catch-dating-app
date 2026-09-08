@@ -62,7 +62,7 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
         child: CatchScreenScaffold.workspace(
           body: fullBleed
               ? CatchRootScreenScrollView.fullBleed(
-                  header: const CatchScreenHeaderTitle.block(
+                  header: const CatchScreenHeader.block(
                     title: 'Full-bleed pane',
                     titleMaxLines: 2,
                     padding: CatchInsets.screenTitleBlock,
@@ -80,7 +80,7 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
                   ],
                 )
               : CatchRootScreenScrollView.standard(
-                  header: const CatchScreenHeaderTitle.block(
+                  header: const CatchScreenHeader.block(
                     title: 'Standard pane',
                     padding: CatchInsets.screenTitleBlock,
                   ),

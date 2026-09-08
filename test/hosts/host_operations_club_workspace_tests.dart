@@ -764,9 +764,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
-      tester
-          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
-          .eyebrow,
+      tester.widget<CatchScreenHeader>(find.byType(CatchScreenHeader)).eyebrow,
       isNull,
     );
     expect(

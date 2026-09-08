@@ -2,8 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
-import 'package:catch_ui/src/components/catch_branded_sheet_header.dart';
-import 'package:catch_ui/src/components/catch_plain_sheet_header.dart';
+import 'package:catch_ui/src/components/catch_sheet_header.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
 import 'package:flutter/material.dart';
@@ -135,12 +134,12 @@ class CatchBottomSheetScaffold extends StatelessWidget {
             ],
             if (hasHeader)
               glyph == null
-                  ? CatchPlainSheetHeader(
+                  ? CatchSheetHeader(
                       title: title,
                       subtitle: subtitle,
                       trailing: right,
                     )
-                  : CatchBrandedSheetHeader(
+                  : CatchSheetHeader.branded(
                       glyph: glyph!,
                       title: title,
                       subtitle: subtitle,

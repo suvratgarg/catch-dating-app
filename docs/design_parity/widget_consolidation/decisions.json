@@ -6760,6 +6760,51 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:header-canonical-recipes",
+      "patternFamilyId": "header-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionHeader",
+      "members": [
+        {
+          "name": "CatchSectionKicker",
+          "action": "absorb",
+          "target": "CatchSectionHeader.kicker"
+        },
+        {
+          "name": "CatchPlainSheetHeader",
+          "action": "absorb",
+          "target": "CatchSheetHeader"
+        },
+        {
+          "name": "CatchBrandedSheetHeader",
+          "action": "absorb",
+          "target": "CatchSheetHeader.branded"
+        },
+        {
+          "name": "CatchScreenHeaderTitle",
+          "action": "absorb",
+          "target": "CatchScreenHeader"
+        },
+        {
+          "name": "CatchCollapsedSliverTitle",
+          "action": "absorb",
+          "target": "CatchCollapsedHeaderTitle"
+        },
+        {
+          "name": "CatchDaySectionHeader",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The section kicker owns the same section-heading responsibility with a count/trailing recipe, so it becomes CatchSectionHeader.kicker with title and textVariant arguments. Plain and branded sheet headers differ only by glyph, alignment and text metrics; CatchSheetHeader and its branded constructor share rendering. Delete two duplicate Widgets and registry members. Screen-header assembly owns multiple lanes and uses the Header role; the collapse-triggered title uses HeaderTitle because it only reacts to inherited collapse progress. Keep chronological sticky headers and step-progress headers for their distinct behavior. Four original images cover both text scales, both themes and three collapse poses. Source callers, navigation-chrome contracts and Widgetbook cases move with the APIs. The proposal fixture only updates its production-header call; its proposal content and disposition remain unchanged.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

@@ -1264,6 +1264,92 @@
           "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
         }
       ]
+    },
+    {
+      "id": "header-canonical-recipes",
+      "title": "Canonical heading recipes and distinct header behavior",
+      "intent": "Bring visual heading variations under section and sheet contracts, and preserve explicitly reviewed screen, scroll and progress responsibilities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.section + catch.sheet + catch.top_bar + catch.step_header",
+      "qualityReference": "CatchSectionHeader",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve title/counter/action geometry, typography, heading semantics, large-text reflow and collapse opacity."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSectionHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Standard and kicker recipes own section-heading layout, count and trailing actions."
+        },
+        {
+          "symbol": "CatchSheetHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One sheet-heading renderer preserves plain and branded glyph recipes."
+        },
+        {
+          "symbol": "CatchScreenHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Responsive screen title/kicker/subtitle/leading/action assembly is a Header responsibility."
+        },
+        {
+          "symbol": "CatchCollapsedHeaderTitle",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "An individual toolbar title reacts to inherited flexible-header collapse progress."
+        },
+        {
+          "symbol": "CatchDaySectionHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Chronological section headings own sticky background and uncapped animated counts."
+        },
+        {
+          "symbol": "CatchStepHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Step progress owns clamping, counter interaction and a progress hairline around navigation chrome."
+        },
+        {
+          "symbol": "CatchSectionKicker",
+          "disposition": "unify",
+          "target": "CatchSectionHeader.kicker",
+          "preview": "not-applicable",
+          "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        },
+        {
+          "symbol": "CatchPlainSheetHeader",
+          "disposition": "unify",
+          "target": "CatchSheetHeader",
+          "preview": "not-applicable",
+          "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        },
+        {
+          "symbol": "CatchBrandedSheetHeader",
+          "disposition": "unify",
+          "target": "CatchSheetHeader.branded",
+          "preview": "not-applicable",
+          "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        },
+        {
+          "symbol": "CatchScreenHeaderTitle",
+          "disposition": "unify",
+          "target": "CatchScreenHeader",
+          "preview": "not-applicable",
+          "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        },
+        {
+          "symbol": "CatchCollapsedSliverTitle",
+          "disposition": "unify",
+          "target": "CatchCollapsedHeaderTitle",
+          "preview": "not-applicable",
+          "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        }
+      ]
     }
   ]
 }

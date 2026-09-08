@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.36.0
+version: 1.37.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1234,7 +1234,7 @@ the Preview slivers.
 
 | Surface | Direction |
 |---|---|
-| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: CatchScreenHeaderTitle.block(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
+| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: CatchScreenHeader.block(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
 | Explore | Keep sliver-native. This remains the strongest mixed event/club discovery pattern. |
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
@@ -2303,6 +2303,12 @@ or implementation technique cannot justify a second shared implementation.
   on `CatchSkeleton`; recipe configuration remains private and const-capable.
   `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
   render-sliver placement protocols. They do not select asynchronous state.
+  Header owns a heading assembly with optional supporting copy, count or
+  actions; HeaderTitle owns the title itself. Section and sheet presentation
+  recipes use `CatchSectionHeader.kicker` and `CatchSheetHeader.branded`.
+  Screen, chronological sticky-feed and step-progress headers retain their
+  independently consumed layout or behavior. `CatchCollapsedHeaderTitle`
+  reacts to inherited header-collapse progress without owning the sliver.
 - **Files.** Snake case of the primary public class; suffix vocabulary
   `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
   `_service`, `_providers`, or a role-noun widget suffix. One primary public
@@ -3050,7 +3056,7 @@ Box, sliver, and section variants all publish the same shell obstruction to
 expanding fields.
 
 The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
-Archivo at 20/700/1.16, while the root `CatchScreenHeaderTitle` remains Archivo
+Archivo at 20/700/1.16, while the root `CatchScreenHeader` remains Archivo
 at the larger headline scale. Route and workspace screens pass semantic
 `title`, title-case `eyebrow` (untracked `monoLabel`) or uppercase `kicker`,
 `subtitle`, and `titleMaxLines` inputs; a feature-local `titleWidget` or raw
@@ -3090,7 +3096,7 @@ The same gate consumes `tool/design/root_screen_composition_contracts.json` and
 must report every consumer and Host root-screen branch; a zero-root pass is
 invalid. That manifest classifies shell branches only. Exact title ownership is
 registered against the title primitive (`CatchRootScreenHeader.title`,
-`CatchScreenHeaderTitle.block`, or `CatchScreenTopBar`), never against the
+`CatchScreenHeader.block`, or `CatchScreenTopBar`), never against the
 layout scaffold that happens to carry it.
 
 Full-screen editors that must cover persistent shell navigation declare their
@@ -3940,7 +3946,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_top_bar.dart`
 - `packages/catch_ui/lib/src/components/catch_screen_top_bar.dart`
-- `packages/catch_ui/lib/src/components/catch_screen_header_title.dart`
+- `packages/catch_ui/lib/src/components/catch_screen_header.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
@@ -3948,15 +3954,15 @@ Reference files:
 
 Use this pattern for root tab screens and root-like shell destinations whose
 screen title should read as Catch voice/head typography. The title text routes
-through `CatchScreenHeaderTitle`, which uses `CatchTextStyles.headline`
+through `CatchScreenHeader`, which uses `CatchTextStyles.headline`
 (Archivo) for the primary title, optional mono kicker and supporting subtitle
 roles, and explicit leading/action slots. Sliver screens pass
-`CatchScreenHeaderTitle.block(...)` into `CatchSliverHeader.title`; app-bar
+`CatchScreenHeader.block(...)` into `CatchSliverHeader.title`; app-bar
 screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
 search, leading, action, safe-area, and padding configuration.
 
 The app-bar wrapper's preferred size must reserve the same title, eyebrow,
-subtitle, and action line counts that `CatchScreenHeaderTitle` renders. At a
+subtitle, and action line counts that `CatchScreenHeader` renders. At a
 text scale of 1.5 or greater the supporting subtitle may use two lines, so
 `CatchScreenTopBar.heightFor` must budget two scaled supporting line heights.
 Keep this invariant in the shared primitive and its focused widget test rather
@@ -3978,9 +3984,9 @@ utility screens. It shares the Archivo family but remains a separate compact
 hierarchy from the 32px root headline.
 
 ```dart
-const CatchScreenHeaderTitle.block({
+const CatchScreenHeader.block({
   required this.title,
-  this.eyebrow,
+  this.kicker,
   this.subtitle,
   this.leading,
   this.actions = const <Widget>[],
@@ -4000,9 +4006,9 @@ Widget build(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (eyebrow != null) ...[
+            if (kicker != null) ...[
               Text(
-                eyebrow!,
+                kicker!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.kicker(context, color: t.ink3),
@@ -4038,9 +4044,9 @@ Widget build(BuildContext context) {
 @override
 Widget build(BuildContext context) {
   return CatchTopBar(
-    titleWidget: CatchScreenHeaderTitle(
+    titleWidget: CatchScreenHeader(
       title: title,
-      eyebrow: eyebrow,
+      kicker: eyebrow,
       subtitle: subtitle,
     ),
     large: false,

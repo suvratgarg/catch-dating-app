@@ -259,14 +259,14 @@ void main() {
     },
   );
 
-  testWidgets('CatchScreenHeaderTitle supports reviewed two-line titles', (
+  testWidgets('CatchScreenHeader supports reviewed two-line titles', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(
-          body: CatchScreenHeaderTitle.block(
+          body: CatchScreenHeader.block(
             title: 'Good evening, Mira',
             titleMaxLines: 2,
           ),
@@ -351,16 +351,14 @@ void main() {
     expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
   });
 
-  testWidgets('CatchScreenHeaderTitle uses the same action group', (
-    tester,
-  ) async {
+  testWidgets('CatchScreenHeader uses the same action group', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(
           body: SizedBox(
             width: 390,
-            child: CatchScreenHeaderTitle(
+            child: CatchScreenHeader(
               title: 'Your profile',
               actions: [
                 SizedBox.square(

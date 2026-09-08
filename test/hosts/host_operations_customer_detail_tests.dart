@@ -412,7 +412,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final header = find.byType(CatchScreenHeaderTitle);
+    final header = find.byType(CatchScreenHeader);
     final titleFinder = find.descendant(
       of: header,
       matching: find.text('Audience'),

@@ -5,11 +5,11 @@ import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
 
 /// Root-screen title stack shared by the main tabs and root-like app bars.
-class CatchScreenHeaderTitle extends StatelessWidget {
-  const CatchScreenHeaderTitle({
+class CatchScreenHeader extends StatelessWidget {
+  const CatchScreenHeader({
     super.key,
     required this.title,
-    this.eyebrow,
+    this.kicker,
     this.subtitle,
     this.leading,
     this.actions = const <Widget>[],
@@ -21,10 +21,10 @@ class CatchScreenHeaderTitle extends StatelessWidget {
     this.backgroundColor,
   });
 
-  const CatchScreenHeaderTitle.block({
+  const CatchScreenHeader.block({
     super.key,
     required this.title,
-    this.eyebrow,
+    this.kicker,
     this.subtitle,
     this.leading,
     this.actions = const <Widget>[],
@@ -36,7 +36,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   }) : material = true;
 
   final String title;
-  final String? eyebrow;
+  final String? kicker;
   final String? subtitle;
   final Widget? leading;
   final List<Widget> actions;
@@ -50,7 +50,7 @@ class CatchScreenHeaderTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final hasEyebrow = eyebrow != null && eyebrow!.isNotEmpty;
+    final hasKicker = kicker != null && kicker!.isNotEmpty;
     final hasSubtitle = subtitle != null && subtitle!.isNotEmpty;
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
 
@@ -58,9 +58,9 @@ class CatchScreenHeaderTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hasEyebrow) ...[
+        if (hasKicker) ...[
           Text(
-            eyebrow!,
+            kicker!,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: CatchTextStyles.kicker(context, color: t.ink3),

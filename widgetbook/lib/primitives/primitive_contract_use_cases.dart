@@ -5257,12 +5257,12 @@ Widget catchMenuContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchCollapsedSliverTitle,
+  type: CatchCollapsedHeaderTitle,
   path: '[Core primitives]/Navigation',
 )
 Widget catchCollapsedSliverTitleContractStates(BuildContext context) {
   return const _ContractScreen(
-    title: 'CatchCollapsedSliverTitle',
+    title: 'CatchCollapsedHeaderTitle',
     contractId: 'catch.top_bar.collapsed_sliver_title',
     states: ['collapsed', 'mid-scroll', 'expanded', 'no-settings'],
     children: [
@@ -7252,26 +7252,26 @@ Widget catchSheetContractStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchPlainSheetHeader,
+  name: 'Plain header states',
+  type: CatchSheetHeader,
   path: '[Core primitives]/Sheets and footers',
 )
 Widget catchPlainSheetHeaderContractStates(BuildContext context) {
   return const _ContractScreen(
-    title: 'CatchPlainSheetHeader',
-    contractId: 'catch.sheet.plain_header',
+    title: 'CatchSheetHeader',
+    contractId: 'catch.sheet.header',
     states: ['title-subtitle', 'trailing', 'title-only'],
     children: [
       _StateCard(
         label: 'title-subtitle',
-        child: CatchPlainSheetHeader(
+        child: CatchSheetHeader(
           title: 'Invite guests',
           subtitle: 'Share this event with people who fit the format.',
         ),
       ),
       _StateCard(
         label: 'trailing',
-        child: CatchPlainSheetHeader(
+        child: CatchSheetHeader(
           title: 'Filters',
           subtitle: 'Tune what shows up first.',
           trailing: CatchBadge(label: '2', tone: CatchBadgeTone.gold),
@@ -7279,26 +7279,26 @@ Widget catchPlainSheetHeaderContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'title-only',
-        child: CatchPlainSheetHeader(title: 'Embedded sheet'),
+        child: CatchSheetHeader(title: 'Embedded sheet'),
       ),
     ],
   );
 }
 
 @widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchBrandedSheetHeader,
+  name: 'Branded header states',
+  type: CatchSheetHeader,
   path: '[Core primitives]/Sheets and footers',
 )
 Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchBrandedSheetHeader',
-    contractId: 'catch.sheet.branded_header',
+    title: 'CatchSheetHeader.branded',
+    contractId: 'catch.sheet.header',
     states: const ['title-subtitle', 'trailing', 'title-only'],
     children: [
       _StateCard(
         label: 'title-subtitle',
-        child: CatchBrandedSheetHeader(
+        child: CatchSheetHeader.branded(
           glyph: CatchIcons.sparkle,
           title: 'Good fit',
           subtitle: 'Guests will see this before joining.',
@@ -7306,7 +7306,7 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'trailing',
-        child: CatchBrandedSheetHeader(
+        child: CatchSheetHeader.branded(
           glyph: CatchIcons.hostBadge,
           title: 'Set up payouts',
           subtitle: 'Powered by Stripe',
@@ -7315,7 +7315,7 @@ Widget catchBrandedSheetHeaderContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'title-only',
-        child: CatchBrandedSheetHeader(
+        child: CatchSheetHeader.branded(
           glyph: CatchIcons.settingsOutlined,
           title: 'Sheet settings',
         ),
@@ -10224,7 +10224,7 @@ class _CollapsedTitleFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    Widget titleWidget = CatchCollapsedSliverTitle(title: title);
+    Widget titleWidget = CatchCollapsedHeaderTitle(title: title);
 
     final extent = currentExtent;
     if (extent != null) {

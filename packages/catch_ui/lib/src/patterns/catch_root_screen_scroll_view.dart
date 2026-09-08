@@ -4,7 +4,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_option_group_variant.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
-import 'package:catch_ui/src/components/catch_screen_header_title.dart';
+import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_status_strip.dart';
 import 'package:catch_ui/src/components/catch_status_strip_scope.dart';

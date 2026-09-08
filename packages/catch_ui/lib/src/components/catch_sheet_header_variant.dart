@@ -1,0 +1,1 @@
+enum CatchSheetHeaderVariant { plain, branded }

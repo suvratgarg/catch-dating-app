@@ -44,8 +44,8 @@ class SwipeHubScreen extends ConsumerWidget {
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeaderTitle.block(
-        eyebrow: context.l10n.swipesSwipeHubScreenTitleCatches,
+      header: CatchScreenHeader.block(
+        kicker: context.l10n.swipesSwipeHubScreenTitleCatches,
         title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
         actions: [
           CatchIconTile(

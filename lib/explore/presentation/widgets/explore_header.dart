@@ -52,10 +52,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     );
 
     if (!chrome.showSearchAction) {
-      return CatchScreenHeaderTitle.block(
-        leading: cityPicker,
-        title: chrome.title,
-      );
+      return CatchScreenHeader.block(leading: cityPicker, title: chrome.title);
     }
 
     return CatchScreenTopBar(

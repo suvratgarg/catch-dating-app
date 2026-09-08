@@ -49,7 +49,7 @@ class HostEventsScreen extends ConsumerWidget {
 
     return switch (routeState.status) {
       HostEventsRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        header: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         slivers: [
@@ -64,7 +64,7 @@ class HostEventsScreen extends ConsumerWidget {
         ],
       ),
       HostEventsRouteStatus.loading => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        header: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         slivers: const [
@@ -74,7 +74,7 @@ class HostEventsScreen extends ConsumerWidget {
         ],
       ),
       HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        header: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         slivers: [
@@ -194,7 +194,7 @@ class _HostEventsRouteScaffoldState
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeaderTitle.block(
+      header: CatchScreenHeader.block(
         title: context.l10n.hostsHostEventsListTextEvents,
       ),
       slivers: [
