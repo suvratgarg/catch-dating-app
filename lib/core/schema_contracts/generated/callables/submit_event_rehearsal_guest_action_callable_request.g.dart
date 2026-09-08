@@ -12,17 +12,26 @@ final class SubmitEventRehearsalGuestActionCallableRequest {
     required this.slotToken,
     required this.clientActionId,
     required this.action,
+    this.messageId,
+    this.intentRevision,
+    this.choiceId,
   });
 
   final String publicRehearsalId;
   final String slotToken;
   final String clientActionId;
   final String action;
+  final String? messageId;
+  final int? intentRevision;
+  final String? choiceId;
 
   Map<String, Object?> toJson() => {
     'publicRehearsalId': publicRehearsalId,
     'slotToken': slotToken,
     'clientActionId': clientActionId,
     'action': action,
+    'messageId': ?messageId,
+    'intentRevision': ?intentRevision,
+    'choiceId': ?choiceId,
   };
 }

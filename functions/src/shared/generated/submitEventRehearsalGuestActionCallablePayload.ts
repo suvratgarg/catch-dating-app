@@ -15,5 +15,9 @@ export interface SubmitEventRehearsalGuestActionCallablePayload {
     | "optOut"
     | "optIn"
     | "askForHelp"
-    | "completePrompt";
+    | "completePrompt"
+    | "respondToAssistance";
+  messageId?: string;
+  intentRevision?: number;
+  choiceId?: string;
 }

@@ -219,6 +219,190 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "assistance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intention",
+        "latestMessageId"
+      ],
+      "properties": {
+        "intention": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "unknown"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "claimedEta"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "onMyWay"
+                },
+                "claimedEta": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "UTC milliseconds."
+                    },
+                    {
+                      "type": "null",
+                      "const": null
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "target"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "joinLater"
+                },
+                "target": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "notComing"
+                }
+              }
+            }
+          ]
+        },
+        "latestMessageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

@@ -66,4 +66,38 @@ export interface EventRehearsalActorDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  assistance?: {
+    intention:
+      | {
+          kind: "unknown";
+        }
+      | {
+          kind: "onMyWay";
+          claimedEta: number | null;
+        }
+      | {
+          kind: "joinLater";
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }
+      | {
+          kind: "notComing";
+        };
+    latestMessageId: string | null;
+  };
 }

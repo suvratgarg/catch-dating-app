@@ -6,7 +6,7 @@ import {mergeConfirmedDeliveryState, ConfirmedDeliveryState} from
   "../eventSuccess/operations/deliveryReceiptState";
 import {evaluateOutbox, MessageRecord, newMessageRecord, OutboxFacts,
   parseMessageRecord} from "../eventSuccess/operations/messageOutbox";
-import {buildLateJoinMessageIntent, GuestChoiceSubmission,
+import {buildRehearsalJoiningInstruction, GuestChoiceSubmission,
   LateJoinMessageOptions, prepareDeliveryAttempt, ResolvedGuestScope,
   resolveGuestChoice} from "../eventSuccess/operations/messageProtocol";
 import {sameMessageContext} from "../eventSuccess/operations/messagingPolicy";
@@ -31,7 +31,7 @@ export function prepareRehearsalLateJoin(input: LateJoinInput,
   expected: PracticeContext, options: LateJoinMessageOptions) {
   requireContext(input.context, expected);
   const decision = evaluateLateJoin(input);
-  const intent = buildLateJoinMessageIntent(input, options);
+  const intent = buildRehearsalJoiningInstruction(input, options);
   return {decision,
     message: intent ? newMessageRecord(intent, input.now) : null};
 }

@@ -119,6 +119,20 @@ export function buildLateJoinMessageIntent(
 export type LateJoinAutomation = NonNullable<Extract<MessageIntent,
   {kind: "joiningUpdate"}>["automation"]>;
 
+/** Keep practice instructions current while outreach waits. */
+export function buildRehearsalJoiningInstruction(input: LateJoinInput,
+  options: LateJoinMessageOptions): MessageIntent | null {
+  if (input.context.mode !== "rehearsal") {
+    throw new Error("Practice instruction requires a rehearsal context");
+  }
+  const decision = evaluateLateJoin(input);
+  if (decision.kind !== "update" || input.setting.kind !== "enabled" ||
+      input.setting.authority !== "executeWithinPolicy") return null;
+  const intent = buildJoiningIntent(input, options, decision);
+  return parseMessageIntent({...intent, intentId: "message:" +
+    operationContentHash({...intent, createdAt: 0})});
+}
+
 /** Refresh the guest page while outreach is throttled, with a dispatch gate. */
 export function buildLateJoinInstructionIntent(input: LateJoinInput,
   options: LateJoinMessageOptions, automation: LateJoinAutomation) {

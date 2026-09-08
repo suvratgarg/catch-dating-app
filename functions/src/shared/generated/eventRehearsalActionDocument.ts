@@ -27,4 +27,5 @@ export interface EventRehearsalActionDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  requestHash?: string;
 }

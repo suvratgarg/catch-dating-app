@@ -236,6 +236,7 @@ export 'event_rehearsal_bootstrap_callable_response.g.dart';
 export 'event_rehearsal_document.g.dart';
 export 'event_rehearsal_guest_bootstrap_callable_response.g.dart';
 export 'event_rehearsal_guest_view_document.g.dart';
+export 'event_rehearsal_message_document.g.dart';
 export 'event_rehearsal_reproduction_callable_response.g.dart';
 export 'event_roster_handoff_document.g.dart';
 export 'event_runtime_access.g.dart';

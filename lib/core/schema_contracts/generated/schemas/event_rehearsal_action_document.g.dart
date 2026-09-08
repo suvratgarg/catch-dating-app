@@ -120,5 +120,10 @@ const schemaEventRehearsalActionDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'requestHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

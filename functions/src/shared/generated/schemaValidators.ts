@@ -230,6 +230,7 @@ export {validateEventSuccessPresenceDocument} from "./validators/eventSuccessPre
 export {validateEventLivePositionDocument} from "./validators/eventLivePositionDocument";
 export {validateEventSuccessLateArrivalDocument} from "./validators/eventSuccessLateArrivalDocument";
 export {validateEventRehearsalDocument} from "./validators/eventRehearsalDocument";
+export {validateEventRehearsalMessageDocument} from "./validators/eventRehearsalMessageDocument";
 export {validateEventRehearsalActorDocument} from "./validators/eventRehearsalActorDocument";
 export {validateEventRehearsalActionDocument} from "./validators/eventRehearsalActionDocument";
 export {validateEventRehearsalGuestViewDocument} from "./validators/eventRehearsalGuestViewDocument";

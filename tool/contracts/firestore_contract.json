@@ -509,7 +509,7 @@
         "expireEventRehearsals"
       ],
       "migrationNotes": [
-        "Actors are seed-derived synthetic identities with no UID, phone, email, booking, payment, match, message, or production attendee reference."
+        "Actors are seed-derived synthetic identities with no UID, phone, email, booking, payment, match, production message, or production attendee reference."
       ]
     },
     {
@@ -2531,6 +2531,29 @@
       "write": "server only",
       "migrationNotes": [
         "Immutable processing outcome commits with its delivery or guest action effect, bound to the authenticated inbox evidence."
+      ]
+    },
+    {
+      "id": "eventRehearsalMessages",
+      "path": "eventRehearsalMessages/{messageDocumentId}",
+      "rulesMatch": "/eventRehearsalMessages/{messageDocumentId}",
+      "typescriptInterface": "EventRehearsalMessageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
+      "owner": "event rehearsal callables",
+      "read": "server only; synthetic actor-scoped callable projections",
+      "write": "server only; message and guest effect share the rehearsal transaction",
+      "exportedFunctions": [
+        "controlEventRehearsal",
+        "submitEventRehearsalGuestAction",
+        "resetEventRehearsal",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "At most one message is created per counted rehearsal action. Reset and expiry delete the bounded synthetic message history. No live outbox document or provider binding is written."
       ]
     }
   ]

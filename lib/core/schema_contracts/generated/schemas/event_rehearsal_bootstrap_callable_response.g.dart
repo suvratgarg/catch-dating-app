@@ -642,6 +642,336 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
               'null',
             ],
           },
+          'assistance': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'intention',
+              'latestMessageId',
+            ],
+            'properties': <String, Object?>{
+              'intention': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'unknown',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'claimedEta',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'onMyWay',
+                      },
+                      'claimedEta': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                            'maximum': 9007199254740991,
+                            'description': 'UTC milliseconds.',
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                            'const': null,
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'target',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'joinLater',
+                      },
+                      'target': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'placeId',
+                              'lateEntry',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'type': 'string',
+                                'const': 'fixedPlace',
+                              },
+                              'placeId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 160,
+                                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                              },
+                              'lateEntry': <String, Object?>{
+                                'type': 'string',
+                                'enum': <Object?>[
+                                  'allowed',
+                                  'hostDecision',
+                                  'closed',
+                                ],
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'itineraryId',
+                              'stopId',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'type': 'string',
+                                'const': 'itineraryStop',
+                              },
+                              'itineraryId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              'stopId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'routeId',
+                              'groupId',
+                              'checkpointId',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'type': 'string',
+                                'const': 'groupCheckpoint',
+                              },
+                              'routeId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              'groupId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 160,
+                                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                              },
+                              'checkpointId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'notComing',
+                      },
+                    },
+                  },
+                ],
+              },
+              'latestMessageId': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^outbox:[a-f0-9]{64}\$',
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+            },
+          },
+          'assistanceMessage': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'messageId',
+                  'intentId',
+                  'intentRevision',
+                  'text',
+                  'choices',
+                  'lifecycle',
+                  'expiresAt',
+                  'canRespond',
+                  'responseChoiceId',
+                ],
+                'properties': <String, Object?>{
+                  'messageId': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^outbox:[a-f0-9]{64}\$',
+                  },
+                  'intentId': <String, Object?>{
+                    'type': 'string',
+                  },
+                  'intentRevision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 9007199254740991,
+                  },
+                  'text': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 2000,
+                  },
+                  'choices': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 20,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'choiceId',
+                        'label',
+                      ],
+                      'properties': <String, Object?>{
+                        'choiceId': <String, Object?>{
+                          'type': 'string',
+                        },
+                        'label': <String, Object?>{
+                          'type': 'string',
+                          'maxLength': 80,
+                        },
+                      },
+                    },
+                  },
+                  'lifecycle': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'active',
+                      'cancelled',
+                      'superseded',
+                      'responded',
+                    ],
+                  },
+                  'expiresAt': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                  'canRespond': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'responseChoiceId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'assistanceDelivery': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'conflictingEvidence',
+                  'attempts',
+                ],
+                'properties': <String, Object?>{
+                  'conflictingEvidence': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'attempts': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 6,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'attemptId',
+                        'routeId',
+                        'status',
+                      ],
+                      'properties': <String, Object?>{
+                        'attemptId': <String, Object?>{
+                          'type': 'string',
+                        },
+                        'routeId': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'catchEventSms',
+                            'catchEventRcs',
+                            'organizerEventWhatsapp',
+                          ],
+                        },
+                        'status': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'notDispatched',
+                            'reserved',
+                            'unknown',
+                            'accepted',
+                            'delivered',
+                            'read',
+                            'failed',
+                            'revoked',
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
         },
       },
     },
@@ -1312,6 +1642,336 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
           'type': <Object?>[
             'string',
             'null',
+          ],
+        },
+        'assistance': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'intention',
+            'latestMessageId',
+          ],
+          'properties': <String, Object?>{
+            'intention': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'unknown',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'claimedEta',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'onMyWay',
+                    },
+                    'claimedEta': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 9007199254740991,
+                          'description': 'UTC milliseconds.',
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                          'const': null,
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'target',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'joinLater',
+                    },
+                    'target': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'placeId',
+                            'lateEntry',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'fixedPlace',
+                            },
+                            'placeId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                            },
+                            'lateEntry': <String, Object?>{
+                              'type': 'string',
+                              'enum': <Object?>[
+                                'allowed',
+                                'hostDecision',
+                                'closed',
+                              ],
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'itineraryId',
+                            'stopId',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'itineraryStop',
+                            },
+                            'itineraryId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'stopId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'routeId',
+                            'groupId',
+                            'checkpointId',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'groupCheckpoint',
+                            },
+                            'routeId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'groupId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                            },
+                            'checkpointId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'notComing',
+                    },
+                  },
+                },
+              ],
+            },
+            'latestMessageId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^outbox:[a-f0-9]{64}\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'assistanceMessage': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'messageId',
+                'intentId',
+                'intentRevision',
+                'text',
+                'choices',
+                'lifecycle',
+                'expiresAt',
+                'canRespond',
+                'responseChoiceId',
+              ],
+              'properties': <String, Object?>{
+                'messageId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^outbox:[a-f0-9]{64}\$',
+                },
+                'intentId': <String, Object?>{
+                  'type': 'string',
+                },
+                'intentRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'text': <String, Object?>{
+                  'type': 'string',
+                  'maxLength': 2000,
+                },
+                'choices': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 20,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'choiceId',
+                      'label',
+                    ],
+                    'properties': <String, Object?>{
+                      'choiceId': <String, Object?>{
+                        'type': 'string',
+                      },
+                      'label': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 80,
+                      },
+                    },
+                  },
+                },
+                'lifecycle': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'active',
+                    'cancelled',
+                    'superseded',
+                    'responded',
+                  ],
+                },
+                'expiresAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'canRespond': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'responseChoiceId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'assistanceDelivery': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'conflictingEvidence',
+                'attempts',
+              ],
+              'properties': <String, Object?>{
+                'conflictingEvidence': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'attempts': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 6,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'attemptId',
+                      'routeId',
+                      'status',
+                    ],
+                    'properties': <String, Object?>{
+                      'attemptId': <String, Object?>{
+                        'type': 'string',
+                      },
+                      'routeId': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'catchEventSms',
+                          'catchEventRcs',
+                          'organizerEventWhatsapp',
+                        ],
+                      },
+                      'status': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'notDispatched',
+                          'reserved',
+                          'unknown',
+                          'accepted',
+                          'delivered',
+                          'read',
+                          'failed',
+                          'revoked',
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
           ],
         },
       },

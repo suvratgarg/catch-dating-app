@@ -130,8 +130,11 @@ export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
 export type EventRehearsalGuestBootstrap =
   EventRehearsalGuestBootstrapCallableResponse;
-export type EventRehearsalGuestAction =
-  SubmitEventRehearsalGuestActionCallablePayload["action"];
+// Single-step controls. An assistance reply also needs its message and choice.
+export type EventRehearsalGuestAction = Exclude<
+  SubmitEventRehearsalGuestActionCallablePayload["action"],
+  "respondToAssistance"
+>;
 export type EventSuccessConversationGraph =
   GetEventSuccessConversationGraphCallableResponse;
 export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;

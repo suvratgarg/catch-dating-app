@@ -117,6 +117,11 @@ export const eventRehearsalActionDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

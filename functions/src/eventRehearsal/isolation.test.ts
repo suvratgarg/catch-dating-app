@@ -12,12 +12,15 @@ const forbiddenLiveCollections = [
   "matches",
   "chats",
   "eventSuccessPlans",
+  "eventAssistanceMessages",
+  "eventAssistanceGuests",
   "users",
   "profiles",
 ] as const;
 
 test("rehearsal backend contains no live-domain collection seam", () => {
-  const source = ["engine.ts", "handlers.ts", "assistanceMessages.ts"]
+  const source = ["engine.ts", "handlers.ts", "assistanceMessages.ts",
+    "assistanceRuntime.ts", "assistanceTransactions.ts"]
     .map((file) =>
       readFileSync(resolve(process.cwd(), "src/eventRehearsal", file), "utf8")
     ).join("\n");

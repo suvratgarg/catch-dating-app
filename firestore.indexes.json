@@ -1578,7 +1578,25 @@
     {"collectionGroup": "organizerApplications", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerFormResponses", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerContactOrigins", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "sourceKind", "mode": "ASCENDING"}]},
-    {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]}
+    {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]},
+    {
+      "collectionGroup": "eventRehearsalMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "sessionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "record.intent.context.clockId",
+          "order": "ASCENDING"
+        }
+      ]
+    }
   ],
   "fieldOverrides": [
     {

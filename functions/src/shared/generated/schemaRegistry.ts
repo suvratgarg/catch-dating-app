@@ -230,6 +230,7 @@ export {eventSuccessPresenceDocumentSchema} from "./schemas/eventSuccessPresence
 export {eventLivePositionDocumentSchema} from "./schemas/eventLivePositionDocument";
 export {eventSuccessLateArrivalDocumentSchema} from "./schemas/eventSuccessLateArrivalDocument";
 export {eventRehearsalDocumentSchema} from "./schemas/eventRehearsalDocument";
+export {eventRehearsalMessageDocumentSchema} from "./schemas/eventRehearsalMessageDocument";
 export {eventRehearsalActorDocumentSchema} from "./schemas/eventRehearsalActorDocument";
 export {eventRehearsalActionDocumentSchema} from "./schemas/eventRehearsalActionDocument";
 export {eventRehearsalGuestViewDocumentSchema} from "./schemas/eventRehearsalGuestViewDocument";

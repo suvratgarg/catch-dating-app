@@ -11,6 +11,7 @@ import {
 } from "../shared/callableOptions";
 import type {
   EventDocument,
+  OrganizerDocument,
   EventRehearsalActionDocument,
   EventRehearsalActorDocument,
   EventRehearsalDocument,
@@ -100,6 +101,14 @@ import {
   rehearsalActorConnectionState,
   resolveRehearsalControl,
 } from "./engine";
+
+import {operationContentHash} from "../operations/durableActions";
+import {isOrganizerManager} from "../shared/organizerHosts";
+import {applyPracticeHostCommand, applyPracticeGuestReply} from
+  "./assistanceTransactions";
+import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
+  readPracticeMessage,
+  rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -256,7 +265,11 @@ export async function controlEventRehearsalHandler(
       "host",
       data.clientActionId
     ));
-  if ((await actionRef.get()).exists) {
+  const requestHash = operationContentHash([uid, data]);
+  const previous = await actionRef.get();
+  if (previous.exists) {
+    requireAssistanceReceipt(previous, requestHash,
+      data.action === "assistance");
     return hostProjection(db, data.sessionId, authorized, request);
   }
   await maybeApplyActionFault(db, data.sessionId, authorized);
@@ -266,7 +279,11 @@ export async function controlEventRehearsalHandler(
       tx.get(actorQuery),
       tx.get(actionRef),
     ]);
-    if (actionSnap.exists) return;
+    if (actionSnap.exists) {
+      requireAssistanceReceipt(actionSnap, requestHash,
+        data.action === "assistance");
+      return;
+    }
     const session = requireSession(sessionSnap);
     assertActionCapacity(session);
     assertCurrentRevision(session, data.expectedRevision);
@@ -275,6 +292,41 @@ export async function controlEventRehearsalHandler(
         "resource-exhausted",
         "Rehearsal roster is too large."
       );
+    }
+    if (data.action === "assistance") {
+      const command = data.assistance!;
+      const organizerSnap = await tx.get(db.collection("organizers")
+        .doc(session.organizerId));
+      const organizer = requireDoc<OrganizerDocument>(organizerSnap,
+        "OrganizerDocument");
+      if (!isOrganizerManager(organizer, uid)) {
+        throw new HttpsError("permission-denied", "Host authority changed.");
+      }
+      const target = actorSnaps.docs.find((doc) =>
+        doc.data().actorId === command.actorId);
+      if (!target) {
+        throw new HttpsError("not-found",
+          "Practice guest not found.");
+      }
+      const actor = requireDoc<EventRehearsalActorDocument>(target,
+        "EventRehearsalActorDocument");
+      if (actor.sessionId !== data.sessionId) {
+        throw new HttpsError("failed-precondition",
+          "Practice actor scope changed.");
+      }
+      const next = await applyPracticeHostCommand(db, tx, session, actor,
+        command);
+      const now = admin.firestore.Timestamp.now();
+      tx.set(target.ref, {...next, updatedAt: now});
+      tx.update(sessionRef, {runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid,
+        actorId: actor.actorId,
+        kind: "control", name: "assistance:" + command.kind, requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
     }
     const resolved = resolveControlOrThrow(session, data);
     const now = admin.firestore.Timestamp.now();
@@ -324,6 +376,7 @@ export async function controlEventRehearsalHandler(
       actorId: null,
       kind: "control",
       name: data.action,
+      requestHash,
       runtimeRevision: nextRevision,
       virtualNow,
       createdAt: now,
@@ -654,14 +707,10 @@ export async function getEventRehearsalGuestBootstrapHandler(
   await db.collection(guestViews).doc(
     guestViewDocumentId(resolved.id, view.slotId)
   ).update({lastSeenAt: admin.firestore.Timestamp.now()});
-  return rehearsalGuestProjection(
-    resolved.session,
-    requireDoc<EventRehearsalActorDocument>(
-      actorSnap,
-      "EventRehearsalActorDocument"
-    ),
-    view.slotToken
-  );
+  const actor = requireDoc<EventRehearsalActorDocument>(actorSnap,
+    "EventRehearsalActorDocument");
+  return rehearsalGuestProjection(resolved.session, actor, view.slotToken,
+    await actorPracticeMessage(db, resolved.session, actor));
 }
 
 /** Applies a guest action only to the slot's synthetic actor. */
@@ -690,6 +739,7 @@ export async function submitEventRehearsalGuestActionHandler(
       `guest-${slotId}`,
       data.clientActionId
     ));
+  const requestHash = operationContentHash([resolved.id, slotId, data]);
   let actorId: string | null = null;
   await db.runTransaction(async (tx) => {
     const [sessionSnap, viewSnap, actionSnap] = await Promise.all([
@@ -697,7 +747,8 @@ export async function submitEventRehearsalGuestActionHandler(
       tx.get(viewRef),
       tx.get(actionRef),
     ]);
-    if (actionSnap.exists) return;
+    if (actionSnap.exists && data.action !== "respondToAssistance" &&
+        !actionSnap.get("requestHash")) return;
     const session = requireSession(sessionSnap);
     if (session.publicRehearsalId !== data.publicRehearsalId) {
       throw new HttpsError(
@@ -707,6 +758,10 @@ export async function submitEventRehearsalGuestActionHandler(
     }
     const view = requireGuestViewSnapshot(viewSnap, data.slotToken);
     actorId = view.actorId;
+    if (actionSnap.exists) {
+      requireAssistanceReceipt(actionSnap, requestHash, true);
+      return;
+    }
     const actorRef = db.collection(actors)
       .doc(actorDocumentId(resolved.id, view.actorId));
     const actorSnap = await tx.get(actorRef);
@@ -727,7 +782,19 @@ export async function submitEventRehearsalGuestActionHandler(
     );
     const now = admin.firestore.Timestamp.now();
     const nextRevision = session.runtimeRevision + 1;
-    tx.set(actorRef, applyRehearsalGuestAction(actor, data.action, now));
+    if (actor.sessionId !== resolved.id || actor.actorId !== view.actorId) {
+      throw new HttpsError("failed-precondition",
+        "Practice actor scope changed.");
+    }
+    const nextActor = data.action === "respondToAssistance" ?
+      await applyPracticeGuestReply(db, tx, session, actor, {
+        messageId: data.messageId!, intentRevision: data.intentRevision!,
+        choiceId: data.choiceId!, requestId: data.clientActionId,
+        actionId: "practice:" + operationContentHash([
+          resolved.id, slotId, data.clientActionId])}) :
+      applyRehearsalGuestAction(actor,
+        data.action, now);
+    tx.set(actorRef, {...nextActor, lastActionAt: now, updatedAt: now});
     tx.update(sessionRef, {
       runtimeRevision: nextRevision,
       actionCount: session.actionCount + 1,
@@ -740,6 +807,7 @@ export async function submitEventRehearsalGuestActionHandler(
       actorId: actor.actorId,
       kind: "guest",
       name: data.action,
+      requestHash,
       runtimeRevision: nextRevision,
       virtualNow: session.virtualNow,
       createdAt: now,
@@ -758,14 +826,10 @@ export async function submitEventRehearsalGuestActionHandler(
   }
   const actorSnap = await db.collection(actors)
     .doc(actorDocumentId(resolved.id, actorId)).get();
-  return rehearsalGuestProjection(
-    latest,
-    requireDoc<EventRehearsalActorDocument>(
-      actorSnap,
-      "EventRehearsalActorDocument"
-    ),
-    data.slotToken
-  );
+  const actor = requireDoc<EventRehearsalActorDocument>(actorSnap,
+    "EventRehearsalActorDocument");
+  return rehearsalGuestProjection(latest, actor, data.slotToken,
+    await actorPracticeMessage(db, latest, actor));
 }
 
 /** Completes a rehearsal through the Host-control lifecycle invariant. */
@@ -1126,6 +1190,18 @@ async function hostProjection(
     db.collection(actions).where("sessionId", "==", sessionId)
       .limit(REHEARSAL_MAX_ACTIONS).get(),
   ]);
+  const actorValues = actorSnaps.docs.map((doc) =>
+    requireDoc<EventRehearsalActorDocument>(doc,
+      "EventRehearsalActorDocument"));
+  const messageRefs = actorValues.filter((actor) =>
+    actor.assistance?.latestMessageId)
+    .map((actor) =>
+      db.collection(rehearsalMessages).doc(practiceMessageDocumentId(
+        sessionId, actor.assistance!.latestMessageId!)));
+  const messageSnaps = messageRefs.length ?
+    await db.getAll(...messageRefs) : [];
+  const messageValues = new Map(messageSnaps.map((snap) => [snap.id,
+    snap.data()]));
   const movementSimulation = rehearsalMovementProjection(session);
   return {
     session: {
@@ -1150,11 +1226,11 @@ async function hostProjection(
       faultId: session.faultId,
       expiresAtMillis: session.expiresAt.toMillis(),
     },
-    actors: actorSnaps.docs.map((doc) => {
-      const actor = requireDoc<EventRehearsalActorDocument>(
-        doc,
-        "EventRehearsalActorDocument"
-      );
+    actors: actorValues.map((actor) => {
+      const messageId = actor.assistance?.latestMessageId;
+      const message = messageId ? readPracticeMessage(messageValues.get(
+        practiceMessageDocumentId(sessionId, messageId)), session,
+      actor) : null;
       return {
         actorId: actor.actorId,
         displayName: actor.displayName,
@@ -1168,6 +1244,10 @@ async function hostProjection(
         promptCompleted: actor.promptCompleted,
         layoutUnitId: actor.layoutUnitId,
         confirmedLayoutUnitId: actor.confirmedLayoutUnitId,
+        ...(actor.assistance ? {assistance: actor.assistance,
+          assistanceDelivery: practiceDeliveryView(message),
+          assistanceMessage: practiceMessageView(session, actor,
+            message)} : {}),
       };
     }).sort((a, b) => a.actorId.localeCompare(b.actorId)),
     actions: actionSnaps.docs.map((doc) => {
@@ -1192,7 +1272,8 @@ async function hostProjection(
 export function rehearsalGuestProjection(
   session: EventRehearsalDocument,
   actor: EventRehearsalActorDocument,
-  slotToken: string
+  slotToken: string,
+  message: PracticeMessage | null = null
 ): EventRehearsalGuestBootstrapCallableResponse {
   const movementSimulation = rehearsalMovementProjection(session);
   return {
@@ -1221,6 +1302,8 @@ export function rehearsalGuestProjection(
       optedOut: actor.optedOut,
       helpRequested: actor.helpRequested,
       promptCompleted: actor.promptCompleted,
+      ...(actor.assistance ? {assistance: actor.assistance,
+        assistanceMessage: practiceMessageView(session, actor, message)} : {}),
     },
   };
 }
@@ -1466,6 +1549,7 @@ async function deleteSessionChildren(
     deleteBySession(db, actors, sessionId),
     deleteBySession(db, actions, sessionId),
     deleteBySession(db, guestViews, sessionId),
+    deleteBySession(db, rehearsalMessages, sessionId),
   ]);
 }
 
@@ -1474,12 +1558,32 @@ async function deleteBySession(
   collection: string,
   sessionId: string
 ): Promise<void> {
-  const snaps = await db.collection(collection)
-    .where("sessionId", "==", sessionId).limit(500).get();
-  if (snaps.empty) return;
-  const batch = db.batch();
-  for (const doc of snaps.docs) batch.delete(doc.ref);
-  await batch.commit();
+  for (;;) {
+    const snaps = await db.collection(collection)
+      .where("sessionId", "==", sessionId).limit(500).get();
+    if (snaps.empty) return;
+    const batch = db.batch();
+    for (const doc of snaps.docs) batch.delete(doc.ref);
+    await batch.commit();
+  }
+}
+
+async function actorPracticeMessage(db: Firestore,
+  session: EventRehearsalDocument,
+  actor: EventRehearsalActorDocument): Promise<PracticeMessage | null> {
+  const id = actor.assistance?.latestMessageId;
+  if (!id) return null;
+  const snap = await db.collection(rehearsalMessages).doc(
+    practiceMessageDocumentId(actor.sessionId, id)).get();
+  return readPracticeMessage(snap.data(), session, actor);
+}
+
+function requireAssistanceReceipt(snapshot: FirebaseFirestore.DocumentSnapshot,
+  requestHash: string, required: boolean) {
+  const saved = snapshot.get("requestHash");
+  if ((required || saved) && saved !== requestHash) {
+    throw new HttpsError("aborted", "Practice request identity changed.");
+  }
 }
 
 function actionDocument(

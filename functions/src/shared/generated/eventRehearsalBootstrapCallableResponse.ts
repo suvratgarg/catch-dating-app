@@ -192,6 +192,76 @@ export interface EventRehearsalBootstrapCallableResponse {
     promptCompleted: boolean;
     layoutUnitId: string | null;
     confirmedLayoutUnitId: string | null;
+    assistance?: {
+      intention:
+        | {
+            kind: "unknown";
+          }
+        | {
+            kind: "onMyWay";
+            claimedEta: number | null;
+          }
+        | {
+            kind: "joinLater";
+            target:
+              | {
+                  kind: "fixedPlace";
+                  placeId: string;
+                  lateEntry: "allowed" | "hostDecision" | "closed";
+                }
+              | {
+                  kind: "itineraryStop";
+                  itineraryId: string;
+                  stopId: string;
+                }
+              | {
+                  kind: "groupCheckpoint";
+                  routeId: string;
+                  groupId: string;
+                  checkpointId: string;
+                };
+          }
+        | {
+            kind: "notComing";
+          };
+      latestMessageId: string | null;
+    };
+    assistanceMessage?: {
+      messageId: string;
+      intentId: string;
+      intentRevision: number;
+      text: string;
+      /**
+       * @maxItems 20
+       */
+      choices: {
+        choiceId: string;
+        label: string;
+      }[];
+      lifecycle: "active" | "cancelled" | "superseded" | "responded";
+      expiresAt: number;
+      canRespond: boolean;
+      responseChoiceId: string | null;
+    } | null;
+    assistanceDelivery?: {
+      conflictingEvidence: boolean;
+      /**
+       * @maxItems 6
+       */
+      attempts: {
+        attemptId: string;
+        routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+        status:
+          | "notDispatched"
+          | "reserved"
+          | "unknown"
+          | "accepted"
+          | "delivered"
+          | "read"
+          | "failed"
+          | "revoked";
+      }[];
+    } | null;
   }[];
   /**
    * @maxItems 500

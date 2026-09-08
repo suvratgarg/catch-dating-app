@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.81.0
-updated: 2026-09-08
+version: 1.82.0
+updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -732,7 +732,7 @@ provider account/version before Event Assistance activates it.
 
 ### Event Dress Rehearsal Isolation Contract
 
-Event rehearsal is a separate bounded domain with four callable-owned,
+Event rehearsal is a separate bounded domain with five callable-owned,
 server-only collections:
 
 | Collection | Purpose | Limits and authority |
@@ -741,13 +741,14 @@ server-only collections:
 | `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
+| `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
 copy a bounded title, location, duration, and supported playbook shape after
 verifying organizer authority. No rehearsal handler may write a production
-collection. Firestore rules deny every direct client read and write to the four
+collection. Firestore rules deny every direct client read and write to the five
 collections; App-Check-protected callables own all Host access.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
@@ -762,9 +763,21 @@ motion/low-bandwidth faults require internal/admin authorization; behavioral
 scenarios remain available to an ordinary organizer manager.
 
 The public guest response contains only a practice banner, safe session fields,
-one synthetic actor, and a slot token. `clientInstanceId` stabilizes retries in
-one browser; the server derives and stores only deterministic hashes. It never
+one synthetic actor, its optional sanitized joining instruction, and a slot
+token. `clientInstanceId` stabilizes retries in one browser; the server derives
+and stores only deterministic hashes. It never
 uses Firebase Auth, OTP, attendee claims, or a production roster.
+
+Practice assistance commands and new guest-action receipts bind the request
+contents to their idempotency key. A changed retry is rejected; replay of a new
+guest receipt still requires the current slot token. The guest response and
+its intention/help effect commit atomically, without changing attendance.
+Actor assistance state stores only intention and the latest practice message
+id; counters and cooldown derive from complete message history. The composite
+history query includes session, actor and clock generation. Reset invalidates
+that generation and deletes messages; cleanup drains bounded batches so older
+remnants cannot survive a page limit. The Host projection additionally exposes
+simulated attempts; the guest projection excludes delivery internals.
 
 ### Event Success Moment Presentation Contract
 

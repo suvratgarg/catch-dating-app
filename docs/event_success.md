@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.77.0
+version: 1.78.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -115,8 +115,9 @@ The existing legacy `disconnected` actor status is still readable; its prior
 attendance cannot be recovered, and reconnect alone cannot manufacture arrival.
 An explicit arrival action restores that physical fact. Host and guest callable
 projections carry connection state separately, with native attention counts and
-the guest connection notice retaining that distinction. The new assistance
-policy/command rehearsal adapter remains separate integration work.
+the guest connection notice retaining that distinction. Late-join rehearsal
+commands now use the transaction adapter described below; other assistance
+families still require rehearsal integration.
 
 Scheduled rehearsal behaviors now resolve their guests against the configured
 2–50-person roster. Existing guest indices remain stable when present; roles
@@ -140,11 +141,33 @@ backoff and attempt limits. Duplicate replies and receipts retain their prior
 result; conflicting delivery evidence requires Host review. Practice messages,
 attempts and responses require the same rehearsal, virtual event and clock,
 and reject live sender bindings and response sources. An intention response
-does not check anyone in. The caller owns the virtual clock and must commit
-the returned message and its guest effect atomically in rehearsal storage.
-These transitions have no persistence, provider or credential port. Session
-fact assembly, transaction wiring, coach controls and Host/guest presentation
-remain unfinished; this module does not enable them or any real delivery.
+does not check anyone in. These pure transitions have no persistence, provider
+or credential port.
+
+The existing `controlEventRehearsal` callable now accepts typed assistance
+commands to publish a joining instruction, simulate dispatch and record a
+subsequent delivery receipt. The Host supplies an explicit practice policy,
+confirmed departure, joining guidance, permitted routes and retry limits.
+Venue, itinerary-stop and group-checkpoint destinations use the same canonical
+policy. The adapter rebuilds attendance, participation, intention and time
+from the synthetic actor and virtual clock. Complete bounded message history
+uses the same projection as live late-join evaluation. Published instructions
+can refresh after the outreach cap is reached; dispatch separately rechecks
+that cap, cooldown and current actor state.
+
+Practice records live only in `eventRehearsalMessages`. A guest's
+`respondToAssistance` action validates the current anonymous slot and commits
+the message response and synthetic intention/help effect in one transaction.
+Host authorization and runtime revision are rechecked at mutation time.
+Request hashes reject changed retries. Message identities and history queries
+include the rehearsal clock generation, so reset cannot reuse an old run's
+message. Reset and expiry remove practice history in bounded batches.
+Host bootstrap exposes sanitized instructions and simulated attempt status;
+guest bootstrap exposes only that actor's instruction and response choices.
+
+This integrates backend fact assembly, storage and guest effects. Native and
+web presentation, setup/coach plan assembly and automatic evaluation on clock
+or actor changes remain unfinished. No real sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,

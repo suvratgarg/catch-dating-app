@@ -4409,6 +4409,7 @@ describe("firestore.rules", () => {
         "eventRehearsalActors",
         "eventRehearsalActions",
         "eventRehearsalGuestViews",
+        "eventRehearsalMessages",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "practice-1"], {sessionId: "practice-1"});

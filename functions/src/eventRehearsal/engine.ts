@@ -161,6 +161,8 @@ export function resolveRehearsalControl(
 ): RehearsalControlResult {
   const currentMillis = session.virtualNow.toMillis();
   switch (action) {
+  case "assistance":
+    throw new Error("Assistance commands require their rehearsal transaction.");
   case "markReady":
     assertStatus(session.status, ["draft", "ready"], action);
     return result("ready", session.activeStepIndex, currentMillis);
@@ -372,6 +374,8 @@ export function applyRehearsalGuestAction(
   now: FirebaseFirestore.Timestamp
 ): EventRehearsalActorDocument {
   switch (action) {
+  case "respondToAssistance":
+    throw new Error("Assistance replies require their rehearsal transaction.");
   case "checkIn":
   case "confirmArrival":
     return applyRehearsalBehavior(actor, "arrive", [], now);
