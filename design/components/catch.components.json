@@ -16890,6 +16890,15 @@
       },
       "surfaces": {
         "flutter": "CatchTimestampedMessageText"
+      },
+      "level": "L3",
+      "roleNoun": "Text",
+      "naming": {
+        "useCase": "TimestampedMessage",
+        "comparedWith": [
+          "catch.typography.mono_label"
+        ],
+        "reason": "Measures two caller-styled text runs at the active text scale to place a timestamp beside the last message line or below it. MetadataText styles one compact factual label; it does not own two-run fitting, baseline alignment or message wrapping."
       }
     },
     {
