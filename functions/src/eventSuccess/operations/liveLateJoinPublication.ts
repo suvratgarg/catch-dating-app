@@ -12,6 +12,7 @@ import {assistanceMessageId, parseMessageRecord} from "./messageOutbox";
 import {buildLateJoinInstructionIntent, LateJoinMessageOptions} from
   "./messageProtocol";
 import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
+import {destinationAllowed} from "./lateJoin";
 
 export type LateJoinPublicationScope = LateJoinSourceScope &
   {episodeId: string};
@@ -36,10 +37,16 @@ export async function prepareLiveLateJoinPublication(db: Firestore,
   if (evaluation.input.guest.episodeId !== scope.episodeId) {
     return {kind: "episodeChanged" as const};
   }
+  // The full event configuration was verified above. Its optional choices can
+  // span different groups; each guest only sees their current approved plan.
+  const laterChoices = evaluation.runtimeConfiguration ?
+    options.laterChoices?.filter((choice) => destinationAllowed(
+      evaluation.input.policy.destination, choice.target)) :
+    options.laterChoices;
   const candidate = buildLateJoinInstructionIntent(evaluation.input, {
     occurrenceId: "lateJoin", deliveryPolicy: options.deliveryPolicy,
     permittedRoutes: options.routes.map((r) => r.routeId),
-    ...(options.laterChoices ? {laterChoices: options.laterChoices} : {}),
+    ...(laterChoices ? {laterChoices} : {}),
   }, {...evaluation.binding, kind: "lateJoin",
     policyVersion: ASSISTANCE_POLICY_VERSION,
     routes: [...options.routes], responseDeadline: options.responseDeadline,

@@ -23,7 +23,7 @@ import {prepareRosterWorkEnqueue, runtimeRosterInput} from
   "./rosterWorkEnqueue";
 import {RuntimeContext, RUNTIME_CONFIGS, RUNTIME_CONFIG_RECEIPTS,
   parseRuntimeConfig, runtimeConfigId, runtimeConfigSource,
-  runtimeConfigStatus} from "./runtimeConfigRecords";
+  runtimeConfigStatus, validRuntimeConfiguration} from "./runtimeConfigRecords";
 
 /** Saves permission and its roster job; never infers participation or sends. */
 export class EventAssistanceRuntimeConfigStore {
@@ -39,7 +39,9 @@ export class EventAssistanceRuntimeConfigStore {
   }
 
   async set(actorUid: string, input: unknown): Promise<Response> {
-    if (!validateSetEventAssistanceRuntimeConfigCallablePayload(input)) {
+    if (!validateSetEventAssistanceRuntimeConfigCallablePayload(input) ||
+        input.command.kind === "configure" &&
+        !validRuntimeConfiguration(input.command.configuration)) {
       throw new HttpsError("invalid-argument", "Invalid automation setup.");
     }
     const requestHash = operationContentHash([actorUid, input]);

@@ -22,6 +22,16 @@ export const RUNTIME_CONFIG_RECEIPTS = "eventAssistanceRuntimeConfigReceipts";
 export type RuntimeUnavailable = "missing" | "paused" |
   "configurationChanged" | "sourceChanged" | "expired" | "eventClosed";
 
+/** Prevent ambiguous routes and colliding guest-response identities. */
+export function validRuntimeConfiguration(c: RuntimeConfiguration): boolean {
+  const choices = c.options.laterChoices ?? [];
+  return new Set(c.options.routes.map((r) => r.routeId)).size ===
+    c.options.routes.length && (c.options.responseDeadline === null ||
+      c.options.responseDeadline <= c.expiresAt) &&
+    new Set(choices.map((choice) => operationContentHash(choice.target)))
+      .size === choices.length;
+}
+
 export function runtimeConfigId(context: RuntimeContext): string {
   guestIdentity(context, "scope");
   return "runtime:lateJoin:" + operationContentHash(context);
@@ -36,9 +46,7 @@ export function parseRuntimeConfig(value: unknown, context: RuntimeContext,
     throw invalidSource();
   }
   const c = value.configuration;
-  if (c && (new Set(c.options.routes.map((r) => r.routeId)).size !==
-      c.options.routes.length || (c.options.responseDeadline !== null &&
-        c.options.responseDeadline > c.expiresAt))) throw invalidSource();
+  if (c && !validRuntimeConfiguration(c)) throw invalidSource();
   return value;
 }
 

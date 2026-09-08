@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.76.0
+version: 1.77.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -532,6 +532,22 @@ behavior, while runtime configuration selects ordered sender routes, explicit
 response deadline, retry policy, optional later joining choices, work expiry
 and evaluation limit. A ready provider, consent or enabled policy is not implied
 by saving the configuration. Other workflow executors remain unimplemented.
+
+The Host client now has typed runtime configuration, callable reads/writes,
+account-scoped review state and a configure/pause editor. It preserves sender
+order, nullable response deadlines and optional choices for fixed places,
+itinerary stops and group checkpoints. Configure and pause remain explicit
+decisions; the editor freezes an in-flight request, reuses it after uncertain
+results and requires fresh review after conflicts or account changes. A replay
+shows the current saved state, including a newer pause. Screen composition and
+rehearsal integration remain separate work.
+
+Runtime options cover the whole event. After verifying the complete saved
+configuration, publication includes only later joining choices allowed by that
+guest's current policy. Choices for another group no longer prevent publication;
+the saved configuration and its dispatch authority remain unchanged. Duplicate
+channels, duplicate joining targets and deadlines beyond expiry are rejected
+before a configuration write. Record reads enforce the same invariants.
 
 The command is a strict configure/pause union. Both operations re-read manager
 authority and the reviewed event source, check the runtime revision and commit
