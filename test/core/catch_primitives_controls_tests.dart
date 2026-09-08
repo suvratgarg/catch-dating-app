@@ -1010,40 +1010,36 @@ void _registerCatchPrimitivesControlsTests() {
     expect(nextValue, isTrue);
   });
 
-  testWidgets(
-    'CatchOtpCodeField renders visible digits over one hidden input',
-    (tester) async {
-      final controller = TextEditingController();
-      addTearDown(controller.dispose);
+  testWidgets('CatchCodeInput renders visible digits over one hidden input', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
 
-      await tester.pumpWidget(
-        _wrap(
-          StatefulBuilder(
-            builder: (context, setState) => CatchOtpCodeField(
-              semanticsLabel:
-                  AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
-              inputKey: const ValueKey('otp-input'),
-              controller: controller,
-              autofocus: true,
-              onChanged: (_) => setState(() {}),
-              onSubmitted: (_) {},
-            ),
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchCodeInput(
+            semanticsLabel:
+                AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
+            inputKey: const ValueKey('otp-input'),
+            controller: controller,
+            autofocus: true,
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) {},
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.enterText(
-        find.byKey(const ValueKey('otp-input')),
-        '1234567',
-      );
-      await tester.pump();
+    await tester.enterText(find.byKey(const ValueKey('otp-input')), '1234567');
+    await tester.pump();
 
-      expect(controller.text, '123456');
-      expect(find.byType(CatchCodeInputRow), findsOneWidget);
-      expect(find.byType(CatchCodeInputCell), findsNWidgets(6));
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('6'), findsOneWidget);
-      expect(find.text('7'), findsNothing);
-    },
-  );
+    expect(controller.text, '123456');
+    expect(find.byType(CatchCodeInputRow), findsOneWidget);
+    expect(find.byType(CatchCodeDigitSurface), findsNWidgets(6));
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('6'), findsOneWidget);
+    expect(find.text('7'), findsNothing);
+  });
 }

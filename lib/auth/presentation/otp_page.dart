@@ -223,13 +223,15 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               style: CatchTextStyles.fieldLabel(context, color: t.ink),
             ),
             gapH8,
-            CatchOtpCodeField(
+            CatchCodeInput(
               semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
               inputKey: AuthFormKeys.otpField,
               contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
               controller: _otpController,
               autofocus: viewState.shouldAutofocus,
-              hasError: verifyError != null,
+              status: verifyError != null
+                  ? CatchCodeInputStatus.error
+                  : CatchCodeInputStatus.ready,
               height: CatchLayout.authOtpDigitHeight,
               gap: CatchLayout.authOtpDigitGap,
               onSubmitted: _submit,
@@ -309,7 +311,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           gutter: false,
         ),
         gapH28,
-        CatchOtpCodeField(
+        CatchCodeInput(
           semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
           inputKey: AuthFormKeys.otpField,
           contract: CatchContractConstraints.mobileFormStateAuthOtpCode,

@@ -303,7 +303,7 @@
           "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
           "options": [
             "Enforce 44px outside the documented 40px app-bar navigation exception.",
-            "Allow 36–40px wherever the visual circle is compact."
+            "Allow 36\u201340px wherever the visual circle is compact."
           ]
         },
         {
@@ -663,6 +663,68 @@
           "target": "CatchIconButton",
           "preview": "required",
           "rationale": "Retains overlay/inline reaction palettes and pending semantics while delegating rendering to CatchIconButton."
+        }
+      ]
+    },
+    {
+      "id": "code-entry-canonical-input",
+      "title": "Canonical code entry and visual anatomy",
+      "intent": "One real editable code-input contract with shared visual anatomy; a display-only forwarding wrapper must not displace the platform input as the canonical API.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.code_input",
+      "qualityReference": "CatchCodeInput",
+      "decisionSource": "owner-delegated:2026-09-08 Phase 4 source review and canonicalization",
+      "acceptedVisualDelta": [
+        "Preserve production digit geometry, typography, colors, keys, error borders, and caret treatment at light/dark and text scales 1.0/2.0; the pre-refactor code_input_family goldens pin these states.",
+        "Visible digits follow direct controller updates without requiring a parent rebuild; paste, exact-length filtering, autofill, submission, and localized semantics remain intact.",
+        "Widgetbook headings follow the canonical API names; visual-only previews mount the existing row anatomy directly."
+      ],
+      "members": [
+        {
+          "symbol": "CatchCodeInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Replace its unused display-only forwarding implementation with the platform editing contract previously named CatchOtpCodeField; preserve the established code-input concept identity."
+        },
+        {
+          "symbol": "CatchOtpCodeField",
+          "disposition": "unify",
+          "target": "CatchCodeInput",
+          "preview": "not-applicable",
+          "rationale": "Its platform-input implementation becomes the canonical Input API; the old Field name is deleted and both authentication construction sites migrate."
+        },
+        {
+          "symbol": "CatchCodeInputRow",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Keep the direct display-only row anatomy and move all six former wrapper previews to it."
+        },
+        {
+          "symbol": "CatchCodeInputCell",
+          "disposition": "unify",
+          "target": "CatchCodeDigitSurface",
+          "preview": "not-applicable",
+          "rationale": "Rename the token-painted digit cell to its Surface role; keep its rendering and consolidate validation state in CatchCodeInputStatus."
+        },
+        {
+          "symbol": "CatchCodeDigitSurface",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "One digit surface owns boundary, text, and insertion-indicator placement as code-entry anatomy."
+        },
+        {
+          "symbol": "CatchCodeInputCaret",
+          "disposition": "unify",
+          "target": "CatchCodeCaretIndicator",
+          "preview": "not-applicable",
+          "rationale": "Express the insertion caret through the closed Indicator role without changing its paint."
+        },
+        {
+          "symbol": "CatchCodeCaretIndicator",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "The explicit code-caret use case distinguishes insertion position from progress/loading indicators."
         }
       ]
     }

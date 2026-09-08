@@ -91,7 +91,7 @@ test("inventory includes bound and unbound product callsites", () => {
         placeholder: 'Search',
         tooltip: 'Search',
       );
-      final otp = CatchOtpCodeField(
+      final otp = CatchCodeInput(
         contract: otpContract,
         controller: controller,
         onChanged: onChanged,

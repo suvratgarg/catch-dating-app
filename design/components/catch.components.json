@@ -2834,6 +2834,15 @@
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L2",
+            "roleNoun": "Input",
+            "naming": {
+              "useCase": "Text",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Owns the platform editable text value, focus, and keyboard; the Field parent owns labeling, supporting content, validation layout, and form composition."
             }
           },
           {
@@ -10060,14 +10069,14 @@
     },
     {
       "id": "catch.code_input",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchCodeInput",
       "status": "active",
-      "kind": "primitive",
-      "summary": "Static one-time-code visual row for handoff previews and externally managed code-entry state.",
+      "kind": "composite",
+      "summary": "Editable one-time-code input with synchronized digit surfaces, exact-length filtering, paste, SMS autofill, caller-resolved semantics, and submission callbacks.",
       "dart": {
         "symbol": "CatchCodeInput",
         "file": "packages/catch_ui/lib/src/components/catch_code_input.dart",
@@ -10098,14 +10107,8 @@
             "type": "number",
             "required": false,
             "default": 6,
-            "dartType": "int"
-          },
-          {
-            "name": "value",
-            "type": "string",
-            "required": false,
-            "default": "",
-            "dartType": "String"
+            "dartType": "int?",
+            "notes": "Exact contract length takes precedence; otherwise length defaults to six."
           },
           {
             "name": "active",
@@ -10131,6 +10134,67 @@
             "type": "number",
             "required": false,
             "dartType": "double"
+          },
+          {
+            "name": "controller",
+            "type": "object",
+            "required": true,
+            "dartType": "TextEditingController",
+            "notes": "Owns the editable value. Visual cells listen directly, including programmatic edits."
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<String>"
+          },
+          {
+            "name": "onSubmitted",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<String>"
+          },
+          {
+            "name": "autofocus",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "required": false,
+            "default": "ready",
+            "dartType": "CatchCodeInputStatus",
+            "values": [
+              "ready",
+              "error"
+            ]
+          },
+          {
+            "name": "contract",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchContractFieldConstraints?"
+          },
+          {
+            "name": "contractExemption",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "inputKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
           }
         ],
         "states": [
@@ -10139,7 +10203,8 @@
           "active-caret",
           "complete",
           "custom-length",
-          "no-caret"
+          "no-caret",
+          "error"
         ],
         "slots": [],
         "tokens": [
@@ -10154,32 +10219,12 @@
         "dartRoles": [
           "CatchTextStyles.code",
           "CatchLayout.otpDigitHeight",
-          "CatchLayout.otpDigitGap",
-          "CatchOtpCodeField"
+          "CatchLayout.otpDigitGap"
         ],
-        "goldens": [],
+        "goldens": [
+          "code_input_family"
+        ],
         "members": [
-          {
-            "id": "catch.code_input.otp_code_field",
-            "symbol": "CatchOtpCodeField",
-            "file": "packages/catch_ui/lib/src/components/catch_otp_code_field.dart",
-            "summary": "Real one-time-code input with caller-resolved accessibility copy and stable digit keys, composing visual cells over one hidden platform TextField.",
-            "states": [
-              "empty",
-              "partial",
-              "active-caret",
-              "complete",
-              "autofocus",
-              "submitted"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.code_input",
-              "parentConceptId": "catch.code_input",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.code_input"
-            }
-          },
           {
             "id": "catch.code_input.row",
             "symbol": "CatchCodeInputRow",
@@ -10195,13 +10240,22 @@
               "conceptId": "catch.code_input",
               "parentConceptId": "catch.code_input",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.code_input"
+              "decisionRef": "pattern-family:code-entry-canonical-input"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "CodeInput",
+              "comparedWith": [
+                "catch.code_input"
+              ],
+              "reason": "Display-only verification cells with explicit value and key prefix; the parent adds the platform editing contract."
             }
           },
           {
             "id": "catch.code_input.cell",
-            "symbol": "CatchCodeInputCell",
-            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart",
+            "symbol": "CatchCodeDigitSurface",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_digit_surface.dart",
             "summary": "Direct single code-input cell renderer.",
             "states": [
               "digit",
@@ -10212,14 +10266,23 @@
               "conceptRole": "member",
               "conceptId": "catch.code_input",
               "parentConceptId": "catch.code_input",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.code_input"
+              "qualifier": "anatomy",
+              "decisionRef": "pattern-family:code-entry-canonical-input"
+            },
+            "level": "L2",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "CodeDigit",
+              "comparedWith": [
+                "catch.code_input"
+              ],
+              "reason": "Paints one digit boundary, validation state, and insertion position; it owns no text editing or collection layout."
             }
           },
           {
             "id": "catch.code_input.caret",
-            "symbol": "CatchCodeInputCaret",
-            "file": "packages/catch_ui/lib/src/primitives/catch_code_input_caret.dart",
+            "symbol": "CatchCodeCaretIndicator",
+            "file": "packages/catch_ui/lib/src/primitives/catch_code_caret_indicator.dart",
             "summary": "Direct active-caret renderer used inside code-input cells.",
             "states": [
               "default",
@@ -10229,8 +10292,17 @@
               "conceptRole": "member",
               "conceptId": "catch.code_input",
               "parentConceptId": "catch.code_input",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.code_input"
+              "qualifier": "anatomy",
+              "decisionRef": "pattern-family:code-entry-canonical-input"
+            },
+            "level": "L2",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "CodeCaret",
+              "comparedWith": [
+                "catch.code_input"
+              ],
+              "reason": "Indicates an insertion position inside an empty verification cell; it has no progress or loading behavior."
             }
           }
         ],
@@ -10251,12 +10323,13 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use CatchOtpCodeField for real platform text input; it composes this visual primitive over one hidden TextField.",
-          "CatchOtpCodeField is the platform input member of catch.code_input; CatchCodeInput remains the pure visual row."
+          "CatchCodeInput is the editable production contract. CatchCodeInputRow mounts display-only visual cells directly.",
+          "The preview-only forwarding wrapper and former CatchOtpCodeField name are removed; no compatibility alias remains.",
+          "Use CatchCodeInputStatus for validation appearance; caret and autofocus remain independent interaction options."
         ]
       },
       "governance": {
-        "role": "atom",
+        "role": "composition",
         "canonicalFamily": "catch.code_input",
         "publicApi": true,
         "stateOwnership": "local-ui-only",
@@ -10266,10 +10339,20 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.code_input"
+        "conceptId": "catch.code_input",
+        "decisionRef": "pattern-family:code-entry-canonical-input"
       },
       "surfaces": {
         "flutter": "CatchCodeInput"
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Code",
+        "comparedWith": [
+          "catch.field.text_input"
+        ],
+        "reason": "Fixed-length digits and SMS one-time-code behavior compose the shared text input; the display-only row remains anatomy, not a second editable input."
       }
     },
     {

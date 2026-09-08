@@ -2,8 +2,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Token-styled insertion caret used inside code input cells.
-class CatchCodeInputCaret extends StatelessWidget {
-  const CatchCodeInputCaret({super.key, this.color});
+class CatchCodeCaretIndicator extends StatelessWidget {
+  const CatchCodeCaretIndicator({super.key, this.color});
 
   final Color? color;
 

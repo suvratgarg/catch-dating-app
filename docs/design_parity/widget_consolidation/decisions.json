@@ -6390,6 +6390,40 @@
       "decidedBy": "owner-authorized -> codex",
       "date": "2026-09-02",
       "status": "executed-screen-composition-completion"
+    },
+    {
+      "clusterId": "pattern-family:code-entry-canonical-input",
+      "patternFamilyId": "code-entry-canonical-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchCodeInput",
+      "members": [
+        {
+          "name": "CatchCodeInput",
+          "action": "keep"
+        },
+        {
+          "name": "CatchOtpCodeField",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchCodeInputRow",
+          "action": "keep"
+        },
+        {
+          "name": "CatchCodeInputCell",
+          "action": "absorb",
+          "target": "CatchCodeDigitSurface"
+        },
+        {
+          "name": "CatchCodeInputCaret",
+          "action": "absorb",
+          "target": "CatchCodeCaretIndicator"
+        }
+      ],
+      "rationale": "Source review found that the old CatchCodeInput only forwarded to CatchCodeInputRow and had no production construction sites, while CatchOtpCodeField owned filtering, exact contract length, SMS autofill, paste, submission, and accessible text entry. The editable implementation now owns CatchCodeInput; display-only states mount the existing row directly. Digit surface and caret indicator remain explicit anatomy with their own closed roles. Controller listening repairs stale visible digits after programmatic updates without changing the pinned state rendering. CatchCodeInputStatus replaces validation booleans across this family while caret and focus remain independent.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

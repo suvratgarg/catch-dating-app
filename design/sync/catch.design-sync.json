@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc",
+  "sourceDigest": "00f8be8facef350bc57ce6958cb8eceb9eda02ac18bb29fc768ac44b98839545",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc",
-    "contractDigest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc"
+    "digest": "00f8be8facef350bc57ce6958cb8eceb9eda02ac18bb29fc768ac44b98839545",
+    "contractDigest": "00f8be8facef350bc57ce6958cb8eceb9eda02ac18bb29fc768ac44b98839545"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "db35c7a345c3a06d767741169a5d03b3ec40efcd29b6416ef5f5cb0fb7dfccdd",
+    "handoffRequestDigest": "3f362fd165bb5e2ea30d2681aadf5133ecc5623d7fcd7a4dd5125a0d23d576b5",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 309,
+    "publicClassCount": 308,
     "conceptCount": 72,
-    "memberCount": 219,
-    "membersPerConcept": 3.04,
+    "memberCount": 218,
+    "membersPerConcept": 3.03,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 219,
+      "member": 218,
       "screen": 15
     },
     "collisionCount": 39,
@@ -147,11 +147,10 @@
       {
         "key": "catch.code_input",
         "symbols": [
+          "CatchCodeCaretIndicator",
+          "CatchCodeDigitSurface",
           "CatchCodeInput",
-          "CatchCodeInputCaret",
-          "CatchCodeInputCell",
-          "CatchCodeInputRow",
-          "CatchOtpCodeField"
+          "CatchCodeInputRow"
         ]
       },
       {
@@ -983,7 +982,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "5597280fd7bcf8f8c0d6019ac6f9e57991c985dc9e979795e4b4f575019a0595"
+      "contractDigest": "e6aad9bc5054be0c78a1e2eefaddaa116575a861d7fe47cd3d6b2a830291ff91"
     },
     {
       "contractId": "catch.section",
@@ -1870,8 +1869,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "482fb5109ff374259e60d2228d11ce2bb6ce52a7444ff7e73edf4f376460ca64",
+      "figmaExpectedPropertyCount": 10,
+      "figmaExpectedPropertyDigest": "f7657e453e6f522e0bc6561db754e49ca67edb0e813b0cf06ac624facad4e45e",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1879,7 +1878,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "CodeInput",
       "claudeAllowed": true,
-      "contractDigest": "46269de3a0f0dfc25a12dc71cf9fd059040bb7d76e867bced53d48f652ebac31"
+      "contractDigest": "2d471bfe9d94c090290ba988f7d99fb87b32896323d3802beb1af3c55a096b80"
     },
     {
       "contractId": "catch.option_group",

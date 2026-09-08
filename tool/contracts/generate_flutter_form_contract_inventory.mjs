@@ -109,7 +109,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: () => "topBarSearch",
     },
     {
-      expression: /CatchOtpCodeField\s*\(/g,
+      expression: /CatchCodeInput\s*\(/g,
       symbol: () => "otpCodeField",
     },
     {

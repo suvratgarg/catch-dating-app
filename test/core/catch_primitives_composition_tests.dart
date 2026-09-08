@@ -1,16 +1,18 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesCompositionTests() {
-  testWidgets('CatchCodeInput renders handoff cells and active caret', (
+  testWidgets('CatchCodeInputRow renders handoff cells and active caret', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchCodeInput(length: 4, value: '12', active: 3, height: 72),
+        const CatchCodeInputRow(length: 4, value: '12', active: 3, height: 72),
       ),
     );
 
-    final tokens = CatchTokens.of(tester.element(find.byType(CatchCodeInput)));
+    final tokens = CatchTokens.of(
+      tester.element(find.byType(CatchCodeInputRow)),
+    );
     final activeCellFinder = find.byKey(const ValueKey('code_digit_3'));
     final activeContainerFinder = find.descendant(
       of: activeCellFinder,
@@ -21,8 +23,8 @@ void _registerCatchPrimitivesCompositionTests() {
     final border = decoration.border! as Border;
 
     expect(find.byType(CatchCodeInputRow), findsOneWidget);
-    expect(find.byType(CatchCodeInputCell), findsNWidgets(4));
-    expect(find.byType(CatchCodeInputCaret), findsOneWidget);
+    expect(find.byType(CatchCodeDigitSurface), findsNWidgets(4));
+    expect(find.byType(CatchCodeCaretIndicator), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
     expect(
@@ -38,7 +40,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(border.top.width, 1.5);
     expect(
       find.descendant(
-        of: find.byType(CatchCodeInput),
+        of: find.byType(CatchCodeInputRow),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is SizedBox && widget.width == CatchLayout.otpDigitGap,

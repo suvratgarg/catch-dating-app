@@ -70,6 +70,36 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Code-entry canonicalization
+
+Owner-delegated source review: `code-entry-canonical-input` in
+`pattern_families.json` and `decisions.json`. The editable input replaces the
+preview-only forwarding implementation under `CatchCodeInput`; visual-only
+callers mount `CatchCodeInputRow` directly.
+
+- [x] Remove `CatchOtpCodeField` and migrate both authentication call sites.
+- [x] Name digit and caret anatomy by Surface and Indicator roles; replace
+  validation booleans with `CatchCodeInputStatus`.
+- [x] Keep programmatic controller changes and controller replacement in sync
+  without a parent rebuild; preserve paste, autofill, submission, and semantics.
+- [x] Update registry, form scanner, generated Widgetbook, and gallery identities.
+- [x] Compare the four pre-refactor production images at both text scales and
+  themes twice consecutively; no image changed. Five behavior tests, two
+  primitive tests, seven authentication tests, and ten Widgetbook golden tests
+  passed; the Widgetbook comparisons also passed twice consecutively.
+- [ ] Complete the workspace analyzer and full derived CI gates with Phase 4.
+  Analyzer/lint-plugin execution remains CI-only on this machine.
+
+Focused commands: `flutter test test/core/forms/otp_code_copy_test.dart`;
+`flutter test test/core/catch_primitives_test.dart --name CatchCode`;
+`flutter test test/auth/presentation/auth_screen_test.dart --name 'OTP|Host reveals'`;
+`flutter test test/goldens/code_input_family_test.dart`; and, in Widgetbook,
+`flutter test test/primitive_goldens_test.dart --name /CatchCode`. Flutter runs
+are serialized. This is one family within Phase 4, not completion of the
+shared API naming sweep or the UI-system program.
+
+---
+
 ## WO-001 — Slice-1 cleanup (branch `claude/widget-consolidation-slice-1`)
 
 Slice 1 (stats→CatchStatColumn, headers→CatchSectionHeader+subtitle, icon

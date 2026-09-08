@@ -1,15 +1,16 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_code_input_caret.dart';
+import 'package:catch_ui/src/primitives/catch_code_caret_indicator.dart';
+import 'package:catch_ui/src/primitives/catch_code_input_status.dart';
 import 'package:flutter/material.dart';
 
 /// Token-styled verification-code cell.
-class CatchCodeInputCell extends StatelessWidget {
-  const CatchCodeInputCell({
+class CatchCodeDigitSurface extends StatelessWidget {
+  const CatchCodeDigitSurface({
     super.key,
     required this.digit,
     required this.isActive,
-    this.hasError = false,
+    this.status = CatchCodeInputStatus.ready,
     this.showCaret = true,
     this.height = CatchLayout.otpDigitHeight,
     this.textStyle,
@@ -17,7 +18,7 @@ class CatchCodeInputCell extends StatelessWidget {
 
   final String digit;
   final bool isActive;
-  final bool hasError;
+  final CatchCodeInputStatus status;
   final bool showCaret;
   final double height;
   final TextStyle? textStyle;
@@ -36,7 +37,7 @@ class CatchCodeInputCell extends StatelessWidget {
         color: tokens.surface,
         borderRadius: BorderRadius.circular(CatchRadius.interactiveTile),
         border:
-            (hasError
+            (status == CatchCodeInputStatus.error
                     ? CatchBorder.resolve(tokens, CatchBorderRole.danger)
                     : isActive
                     ? CatchBorder.resolve(
@@ -50,7 +51,7 @@ class CatchCodeInputCell extends StatelessWidget {
       child: digit.isNotEmpty
           ? Text(digit, style: digitStyle)
           : isActive && showCaret
-          ? CatchCodeInputCaret(color: tokens.ink)
+          ? CatchCodeCaretIndicator(color: tokens.ink)
           : null,
     );
   }

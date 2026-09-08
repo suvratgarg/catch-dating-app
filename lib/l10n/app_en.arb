@@ -15579,7 +15579,7 @@
     "description": "Accessibility label for the one-time verification-code input, supplied by app callers.",
     "x-audience": "shared",
     "x-owner": "product",
-    "x-surface": "core.widgets.catch_otp_code_field"
+    "x-surface": "core.widgets.catch_code_input"
   },
   "coreCatchSearchFieldVisiblecopyCloseSearch": "Close search",
   "@coreCatchSearchFieldVisiblecopyCloseSearch": {

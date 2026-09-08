@@ -1177,6 +1177,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Inputs',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchCodeInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchCodeInputCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchControlShell',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1193,16 +1203,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchFormFieldLabelCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchOtpCodeField',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchOtpCodeFieldCatalogStates,
               ),
             ],
           ),
@@ -2916,6 +2916,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Inputs',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchCodeCaretIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchCodeCaretIndicatorContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchCodeDigitSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchCodeDigitSurfaceContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchCodeInput',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2923,28 +2945,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchCodeInputContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchCodeInputCaret',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeInputCaretContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchCodeInputCell',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeInputCellContractStates,
               ),
             ],
           ),

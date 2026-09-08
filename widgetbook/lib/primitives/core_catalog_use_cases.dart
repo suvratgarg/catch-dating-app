@@ -46,6 +46,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../preview_layout_contracts.dart';
 import '../support/widgetbook_harness.dart';
+import 'code_input_demo.dart';
 
 const _choices = <_Choice>[
   _Choice('Social run'),
@@ -439,15 +440,18 @@ Widget catchTextButtonCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchOtpCodeField,
+  type: CatchCodeInput,
   path: '[Core catalog]/Inputs',
 )
-Widget catchOtpCodeFieldCatalogStates(BuildContext context) {
+Widget catchCodeInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchOtpCodeField',
-    catalogId: 'core.widgets.catch_otp_code_field',
+    title: 'CatchCodeInput',
+    catalogId: 'core.widgets.catch_code_input',
     children: const [
-      _StateCard(label: 'editable platform input', child: _OtpCodeFieldDemo()),
+      _StateCard(
+        label: 'editable platform input',
+        child: WidgetbookCodeInputDemo(value: '48'),
+      ),
     ],
   );
 }
@@ -4450,39 +4454,6 @@ class _SearchFieldExpansionDemoState extends State<_SearchFieldExpansionDemo> {
         onOpenSearch: () => setState(() => _open = true),
         onCloseSearch: () => setState(() => _open = false),
       ),
-    );
-  }
-}
-
-class _OtpCodeFieldDemo extends StatefulWidget {
-  const _OtpCodeFieldDemo();
-
-  @override
-  State<_OtpCodeFieldDemo> createState() => _OtpCodeFieldDemoState();
-}
-
-class _OtpCodeFieldDemoState extends State<_OtpCodeFieldDemo> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: '48');
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchOtpCodeField(
-      semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
-      controller: _controller,
-      onChanged: (_) => setState(() {}),
-      onSubmitted: (_) {},
     );
   }
 }

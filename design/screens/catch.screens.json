@@ -18435,7 +18435,7 @@
           "id": "otp_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchOtpCodeField, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
+          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchCodeInput, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
           "previewIds": [
             "AuthScreen/Screen states",
             "OtpPage/OTP entry states"

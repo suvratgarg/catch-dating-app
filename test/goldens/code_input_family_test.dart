@@ -23,29 +23,29 @@ void main() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchOtpCodeField(
+              CatchCodeInput(
                 controller: partial,
                 semanticsLabel: 'Partial code',
                 onChanged: (_) {},
                 onSubmitted: (_) {},
               ),
               const SizedBox(height: 24),
-              CatchOtpCodeField(
+              CatchCodeInput(
                 controller: complete,
                 semanticsLabel: 'Complete code',
                 onChanged: (_) {},
                 onSubmitted: (_) {},
               ),
               const SizedBox(height: 24),
-              CatchOtpCodeField(
+              CatchCodeInput(
                 controller: error,
                 semanticsLabel: 'Invalid code',
-                hasError: true,
+                status: CatchCodeInputStatus.error,
                 onChanged: (_) {},
                 onSubmitted: (_) {},
               ),
               const SizedBox(height: 24),
-              const CatchCodeInput(
+              const CatchCodeInputRow(
                 length: 4,
                 value: '12',
                 active: 3,

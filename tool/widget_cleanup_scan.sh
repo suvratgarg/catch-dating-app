@@ -226,7 +226,7 @@ scan_raw_text_inputs() {
     --glob '!packages/catch_ui/lib/src/components/catch_field.dart' \
     --glob '!lib/core/widgets/catch_field_*.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_search_field.dart' \
-    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -333,7 +333,7 @@ scan_raw_text_styles() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])TextStyle\(' \
     lib/core/widgets lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_top_bar.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"

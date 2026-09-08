@@ -196,6 +196,9 @@
         "kind": {
           "enum": ["primitive", "composite", "pattern", "screen-contract"]
         },
+        "level": {"$ref": "#/$defs/componentLevel"},
+        "roleNoun": {"$ref": "#/$defs/roleNoun"},
+        "naming": {"$ref": "#/$defs/widgetNaming"},
         "summary": {
           "type": "string",
           "minLength": 1
@@ -742,6 +745,9 @@
       "required": ["id", "symbol", "summary", "states", "governance"],
       "additionalProperties": false,
       "properties": {
+        "level": {"$ref": "#/$defs/componentLevel"},
+        "roleNoun": {"$ref": "#/$defs/roleNoun"},
+        "naming": {"$ref": "#/$defs/widgetNaming"},
         "id": {
           "type": "string",
           "pattern": "^catch\\.[a-z0-9_.-]+$"
