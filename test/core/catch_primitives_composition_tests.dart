@@ -617,70 +617,62 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(taps, 1);
   });
 
-  testWidgets(
-    'CatchPersonAvatar renders activity-context initials and dim states',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          Wrap(
-            children: [
-              CatchPersonAvatar(
-                size: 48,
-                name: 'Social run',
-                colors: ActivityPalette.light
-                    .getActivity(ActivityKind.socialRun)
-                    .avatarColors,
-                initials: 'SR',
-                borderWidth: 2,
-              ),
-              CatchPersonAvatar(
-                size: 44,
-                name: 'Pickleball',
-                colors: ActivityPalette.light
-                    .getActivity(ActivityKind.pickleball)
-                    .avatarColors,
-                initials: 'PB',
-                dim: true,
-              ),
-            ],
-          ),
+  testWidgets('CatchAvatar renders activity-context initials and dim states', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        Wrap(
+          children: [
+            CatchAvatar(
+              size: 48,
+              name: 'Social run',
+              colors: ActivityPalette.light
+                  .getActivity(ActivityKind.socialRun)
+                  .avatarColors,
+              initials: 'SR',
+              borderWidth: 2,
+            ),
+            CatchAvatar(
+              size: 44,
+              name: 'Pickleball',
+              colors: ActivityPalette.light
+                  .getActivity(ActivityKind.pickleball)
+                  .avatarColors,
+              initials: 'PB',
+              dim: true,
+            ),
+          ],
         ),
-      );
+      ),
+    );
 
-      expect(find.text('SR'), findsOneWidget);
-      expect(find.text('PB'), findsOneWidget);
-      expect(find.byType(CatchPersonAvatarShell), findsNWidgets(2));
-      expect(find.byType(CatchAvatarInitialsSurface), findsNWidgets(2));
-      expect(CatchPersonAvatar.initialsOf('Social run'), 'SR');
-    },
-  );
+    expect(find.text('SR'), findsOneWidget);
+    expect(find.text('PB'), findsOneWidget);
+    expect(find.byType(CatchAvatarViewport), findsNWidgets(4));
+    expect(find.byType(CatchAvatarInitialsSurface), findsNWidgets(2));
+    expect(CatchAvatar.initialsOf('Social run'), 'SR');
+  });
+
+  testWidgets('CatchAvatar composes obscured initials fallback renderers', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchAvatar(size: 48, name: 'Private guest', obscured: true)),
+    );
+
+    expect(find.text('PG'), findsOneWidget);
+    expect(find.byType(CatchAvatarViewport), findsNWidgets(2));
+    expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
+    expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
+  });
 
   testWidgets(
-    'CatchPersonAvatar composes obscured initials fallback renderers',
+    'CatchAvatar keeps activity fallback when a supplied logo fails',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          const CatchPersonAvatar(
-            size: 48,
-            name: 'Private guest',
-            obscured: true,
-          ),
-        ),
-      );
-
-      expect(find.text('PG'), findsOneWidget);
-      expect(find.byType(CatchPersonAvatarShell), findsOneWidget);
-      expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
-      expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'CatchPersonAvatar keeps activity fallback when a supplied logo fails',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          CatchPersonAvatar(
+          CatchAvatar(
             size: 48,
             name: 'Sea Face Social',
             imageUrl: 'assets/fixtures/does-not-exist.png',
@@ -727,7 +719,7 @@ void _registerCatchPrimitivesCompositionTests() {
 
     expect(find.text('AS'), findsOneWidget);
     expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
-    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(2));
+    expect(find.byType(CatchAvatar), findsNWidgets(4));
     expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
   });

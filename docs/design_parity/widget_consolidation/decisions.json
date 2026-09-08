@@ -7183,6 +7183,33 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:canonical-avatar-recipes",
+      "patternFamilyId": "canonical-avatar-recipes",
+      "decision": "consolidate-renderer-and-repair",
+      "canonicalSymbol": "CatchAvatar",
+      "members": [
+        {
+          "name": "CatchPersonAvatar",
+          "action": "rename",
+          "target": "CatchAvatar"
+        },
+        {
+          "name": "CatchVeiledPersonAvatar",
+          "action": "absorb",
+          "target": "CatchAvatar.veiled"
+        },
+        {
+          "name": "CatchPersonAvatarShell",
+          "action": "rename-and-share",
+          "target": "CatchAvatarViewport"
+        }
+      ],
+      "rationale": "Source and rendered review show one identity-image responsibility, including the existing activity and count variants. The veiled renderer duplicates the parent clipping/ring frame and becomes a recipe. The seeded glyph-layout probe finds wrapping and clipped bounds before repair, including three-line localized count copy. Share a bounded label viewport across initials and count content, retain full semantic copy, and keep each old fill and image/fallback operation. Replace the nonconforming Shape axis and the third constructor boolean with AvatarVariant and AvatarStatus; migrate syntax-selected arguments and delete the old exports.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

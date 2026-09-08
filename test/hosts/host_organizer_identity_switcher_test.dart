@@ -65,7 +65,7 @@ void main() {
 
     await _pumpAvatar(tester, clubWithLogo);
 
-    var art = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
+    var art = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
     expect(art.imageUrl, logoPath);
     expect(art.initials, 'SF');
     expect(
@@ -75,7 +75,7 @@ void main() {
 
     await _pumpAvatar(tester, buildClub(name: 'Long Table Club'));
 
-    art = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
+    art = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
     expect(art.imageUrl, isNull);
     expect(art.initials, 'LT');
     expect(

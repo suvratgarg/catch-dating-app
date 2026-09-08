@@ -296,7 +296,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
         body: host.role == ClubHostRole.owner
             ? context.l10n.clubsClubIdentityAtomsLabelOwner
             : context.l10n.clubsClubIdentityAtomsLabelHost,
-        leading: CatchPersonAvatar(
+        leading: CatchAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
           size: 42,

@@ -2214,7 +2214,7 @@ Widget catchRowPressSurfaceContractStates(BuildContext context) {
       _StateCard(
         label: 'chat-row',
         child: previewRow(
-          leading: const CatchPersonAvatar(name: 'Taylor Kim', size: 48),
+          leading: const CatchAvatar(name: 'Taylor Kim', size: 48),
           title: 'Taylor Kim',
           body: 'See you at the event',
           trailing: '2M',
@@ -9144,14 +9144,14 @@ Widget catchCoverStoryContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchPersonAvatar,
+  type: CatchAvatar,
   path: '[Core primitives]/People',
 )
 Widget catchPersonAvatarContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchPersonAvatar',
+    title: 'CatchAvatar',
     contractId: 'catch.person_avatar',
     states: const [
       'photo',
@@ -9163,11 +9163,13 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       'obscured',
       'square',
       'count',
+      'veiled-run',
+      'veiled-dinner',
     ],
     children: [
       const _StateCard(
         label: 'photo',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 56,
           name: 'Aanya Rao',
           imageUrl: 'https://example.invalid/avatar-aanya.jpg',
@@ -9175,11 +9177,11 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'fallback-initials',
-        child: CatchPersonAvatar(size: 56, name: 'Dev Malhotra'),
+        child: CatchAvatar(size: 56, name: 'Dev Malhotra'),
       ),
       _StateCard(
         label: 'activity-context',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 56,
           name: 'Run club',
           initials: 'RC',
@@ -9191,7 +9193,7 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'activity-dim',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 56,
           name: 'Dinner',
           initials: 'DN',
@@ -9204,7 +9206,7 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'ring',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 64,
           name: 'Mira Shah',
           borderWidth: CatchStroke.avatarRing,
@@ -9213,34 +9215,54 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'status-dot',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 56,
           name: 'Noor Khan',
-          showStatusDot: true,
+          status: CatchAvatarStatus.online,
         ),
       ),
       const _StateCard(
         label: 'obscured',
-        child: CatchPersonAvatar(
-          size: 56,
-          name: 'Private guest',
-          obscured: true,
-        ),
+        child: CatchAvatar(size: 56, name: 'Private guest', obscured: true),
       ),
       const _StateCard(
         label: 'square',
-        child: CatchPersonAvatar(
+        child: CatchAvatar(
           size: 56,
           name: 'Host team',
-          shape: CatchPersonAvatarShape.square,
+          variant: CatchAvatarVariant.square,
         ),
       ),
       _StateCard(
         label: 'count',
-        child: CatchPersonAvatar.count(
+        child: CatchAvatar.count(
           countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
           size: 48,
           count: 19,
+        ),
+      ),
+      _StateCard(
+        label: 'veiled-run',
+        child: CatchAvatar.veiled(
+          size: 48,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.socialRun,
+          ).avatarColors,
+          borderWidth: CatchStroke.avatarRing,
+          borderColor: t.surface,
+        ),
+      ),
+      _StateCard(
+        label: 'veiled-dinner',
+        child: CatchAvatar.veiled(
+          size: 48,
+          colors: ActivityPalette.resolve(
+            context,
+            ActivityKind.dinner,
+          ).avatarColors,
+          borderWidth: CatchStroke.avatarRing,
+          borderColor: t.surface,
         ),
       ),
     ],
@@ -9249,30 +9271,44 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchPersonAvatarShell,
+  type: CatchAvatarViewport,
   path: '[Core primitives]/People',
 )
 Widget catchPersonAvatarShellContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchPersonAvatarShell',
+    title: 'CatchAvatarViewport',
     contractId: 'catch.person_avatar.shell',
-    states: const ['circle', 'square'],
+    states: const ['circle', 'square', 'label-fit'],
     children: [
       _StateCard(
         label: 'circle',
-        child: CatchPersonAvatarShell(
+        child: CatchAvatarViewport(
           size: 56,
           child: ColoredBox(color: t.primarySoft),
         ),
       ),
       _StateCard(
         label: 'square',
-        child: CatchPersonAvatarShell(
+        child: CatchAvatarViewport(
           size: 56,
-          shape: CatchPersonAvatarShape.square,
+          variant: CatchAvatarVariant.square,
           child: ColoredBox(color: t.raised),
+        ),
+      ),
+      _StateCard(
+        label: 'label-fit',
+        child: CatchAvatarViewport.label(
+          size: 56,
+          child: Text(
+            '+199',
+            style: CatchTextStyles.avatarCount(
+              context,
+              size: 56 * CatchLayout.avatarCountFontScale,
+              color: t.ink2,
+            ),
+          ),
         ),
       ),
     ],
@@ -9299,47 +9335,6 @@ Widget catchObscuredAvatarContentContractStates(BuildContext context) {
           child: CatchObscuredAvatarContent(
             child: ColoredBox(color: t.primarySoft),
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchVeiledPersonAvatar,
-  path: '[Core primitives]/People',
-)
-Widget catchVeiledPersonAvatarContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchVeiledPersonAvatar',
-    contractId: 'catch.person_avatar.veiled',
-    states: const ['run', 'dinner'],
-    children: [
-      _StateCard(
-        label: 'run',
-        child: CatchVeiledPersonAvatar(
-          size: 48,
-          colors: ActivityPalette.resolve(
-            context,
-            ActivityKind.socialRun,
-          ).avatarColors,
-          borderWidth: CatchStroke.avatarRing,
-          borderColor: t.surface,
-        ),
-      ),
-      _StateCard(
-        label: 'dinner',
-        child: CatchVeiledPersonAvatar(
-          size: 48,
-          colors: ActivityPalette.resolve(
-            context,
-            ActivityKind.dinner,
-          ).avatarColors,
-          borderWidth: CatchStroke.avatarRing,
-          borderColor: t.surface,
         ),
       ),
     ],
@@ -9585,7 +9580,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
               timestamp: '3h',
               unreadCount: 1,
               isFresh: true,
-              avatarShape: CatchPersonAvatarShape.square,
+              avatarShape: CatchAvatarVariant.square,
             ),
             showFreshBackground: false,
             onTap: _noop,

@@ -36,10 +36,10 @@ class HostOrganizerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final rawLogoUrl = club.logoPhotoUrl?.trim();
-    return CatchPersonAvatar(
+    return CatchAvatar(
       size: size,
       name: club.name,
-      initials: CatchPersonAvatar.initialsOf(club.name),
+      initials: CatchAvatar.initialsOf(club.name),
       imageUrl: rawLogoUrl?.isNotEmpty == true ? rawLogoUrl : null,
       colors: ActivityPalette.resolve(
         context,

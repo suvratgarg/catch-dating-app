@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -63,7 +63,7 @@ class CatchHostRow extends StatelessWidget {
       padding: EdgeInsets.only(top: divider ? CatchSpacing.s3 : 0),
       child: Row(
         children: [
-          CatchPersonAvatar(
+          CatchAvatar(
             name: name,
             imageUrl: imageUrl,
             size: CatchSpacing.s10,

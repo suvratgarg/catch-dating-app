@@ -3589,6 +3589,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'People',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAvatar',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchPersonAvatarContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchAvatarColors',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3610,29 +3621,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchObscuredAvatarContent',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchObscuredAvatarContentContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonAvatar',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPersonAvatarContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonAvatarShell',
+            name: 'CatchAvatarViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -3643,13 +3632,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchVeiledPersonAvatar',
+            name: 'CatchObscuredAvatarContent',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchVeiledPersonAvatarContractStates,
+                        .catchObscuredAvatarContentContractStates,
               ),
             ],
           ),

@@ -84,11 +84,9 @@ void main() {
           ),
         ),
       );
-      final avatar = tester.widget<CatchPersonAvatar>(
-        find.byType(CatchPersonAvatar),
-      );
+      final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
       expect(avatar.name, 'Ananya Rao');
-      expect(avatar.shape, CatchPersonAvatarShape.circle);
+      expect(avatar.variant, CatchAvatarVariant.circle);
       expect(avatar.size, CatchLayout.noticeIconExtent);
       expect(find.text('AR'), findsOneWidget);
       expect(find.byIcon(CatchIcons.infoOutlineRounded), findsNothing);
@@ -118,7 +116,7 @@ void main() {
       ),
     );
     expect(
-      tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar)).imageUrl,
+      tester.widget<CatchAvatar>(find.byType(CatchAvatar)).imageUrl,
       identity.imageUrl,
     );
   });

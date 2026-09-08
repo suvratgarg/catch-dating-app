@@ -76,7 +76,7 @@ void main() {
           expect(tester.getTopLeft(find.text('Underlying route')), before);
           expect(find.text('Open'), findsNothing);
           expect(find.byIcon(CatchIcons.closeRounded), findsNothing);
-          expect(find.byType(CatchPersonAvatar), findsOneWidget);
+          expect(find.byType(CatchAvatar), findsOneWidget);
           await tester.tap(find.text('You and Ananya matched.'));
           await tester.pump();
           expect(opened, 1);

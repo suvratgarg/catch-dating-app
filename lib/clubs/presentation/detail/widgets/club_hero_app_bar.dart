@@ -352,7 +352,7 @@ class ClubHeroModule extends StatelessWidget {
                   ),
                 ),
                 gapW12,
-                CatchPersonAvatar(
+                CatchAvatar(
                   key: const ValueKey('club-detail-hero-logo-seal'),
                   size: CatchSpacing.s16,
                   name: club.name,

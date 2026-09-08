@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/components/catch_person_avatar_shape.dart';
+import 'package:catch_ui/src/components/catch_avatar_variant.dart';
 
 /// View-model for a single person row.
 ///
@@ -21,7 +21,7 @@ class CatchPersonRowData {
     this.unreadCount = 0,
     this.isFresh = false,
     this.showFreshDot = false,
-    this.avatarShape = CatchPersonAvatarShape.circle,
+    this.avatarShape = CatchAvatarVariant.circle,
   });
 
   final String name;
@@ -53,5 +53,5 @@ class CatchPersonRowData {
   final bool showFreshDot;
 
   /// Avatar shape for row variants such as host inquiries.
-  final CatchPersonAvatarShape avatarShape;
+  final CatchAvatarVariant avatarShape;
 }

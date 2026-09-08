@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials.dart';
+import 'package:catch_ui/src/components/catch_avatar_viewport.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -76,7 +77,8 @@ class CatchAvatarInitialsSurface extends StatelessWidget {
           ),
         if (activity) CustomPaint(painter: _ActivityAvatarTexturePainter()),
         if (label.isNotEmpty)
-          Center(
+          CatchAvatarViewport.label(
+            size: size,
             child: Text(
               label,
               style: CatchTextStyles.avatarInitials(

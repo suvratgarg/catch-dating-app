@@ -2309,7 +2309,7 @@
           "CatchNoticeQueue",
           "CatchNoticeController",
           "CatchNoticeHost",
-          "CatchPersonAvatar",
+          "CatchAvatar",
           "CatchPersonAvatarItem",
           "CatchSurface",
           "CatchButton",
@@ -2360,7 +2360,7 @@
         "notes": [
           "Use for ambient app-level notices that float above existing content.",
           "Persistent offline and rehearsal context uses CatchStatusStrip in the canonical screen header, never this overlay host.",
-          "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchPersonAvatar's circular image/initials fallback.",
+          "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchAvatar's circular image/initials fallback.",
           "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
           "Use CatchErrorBanner for inline persistent form/section failures and CatchErrorState for blocking data-load failures."
         ]
@@ -8160,7 +8160,7 @@
           "CatchIconAction.navSize",
           "CatchSearchField",
           "CatchKickerText",
-          "CatchPersonAvatar",
+          "CatchAvatar",
           "CatchTextStyles.headline",
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.routeTitle",
@@ -9891,7 +9891,7 @@
           "CatchTextStyles.mono",
           "CatchBadge",
           "CatchButton",
-          "CatchPersonAvatar"
+          "CatchAvatar"
         ],
         "goldens": [],
         "accessibility": {
@@ -13144,22 +13144,23 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchPersonAvatar",
+      "name": "CatchAvatar",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical person/avatar bubble for photos, deterministic initials, activity-context fallback, rings, status dots, obscured states, square host shapes, and overflow counts.",
+      "summary": "Canonical avatar for photos, initials, activity identity, veils and localized overflow counts, with one clipping/ring owner and bounded labels.",
       "dart": {
-        "symbol": "CatchPersonAvatar",
-        "file": "packages/catch_ui/lib/src/components/catch_person_avatar.dart",
+        "symbol": "CatchAvatar",
+        "file": "packages/catch_ui/lib/src/components/catch_avatar.dart",
         "constructors": [
-          "CatchPersonAvatar",
-          "CatchPersonAvatar.count"
+          "CatchAvatar",
+          "CatchAvatar.count",
+          "CatchAvatar.veiled"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/PersonAvatar",
+          "componentName": "Catch/Avatar",
           "componentUrl": null
         },
         "codeConnect": {
@@ -13168,7 +13169,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "PersonAvatar",
+          "handoffName": "Avatar",
           "allowed": true
         }
       },
@@ -13213,11 +13214,15 @@
             "dartType": "Color?"
           },
           {
-            "name": "showStatusDot",
-            "type": "bool",
+            "name": "status",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "none",
+            "dartType": "CatchAvatarStatus",
+            "values": [
+              "none",
+              "online"
+            ]
           },
           {
             "name": "obscured",
@@ -13227,11 +13232,11 @@
             "dartType": "bool"
           },
           {
-            "name": "shape",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "circle",
-            "dartType": "CatchPersonAvatarShape",
+            "dartType": "CatchAvatarVariant",
             "values": [
               "circle",
               "square"
@@ -13256,14 +13261,14 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(int)?",
-            "notes": "Required by CatchPersonAvatar.count and CatchPersonAvatarStack; formats the actual overflow count using caller-owned copy."
+            "notes": "Required by CatchAvatar.count and CatchPersonAvatarStack; formats the actual overflow count using caller-owned copy."
           },
           {
             "name": "count",
             "type": "number",
             "required": false,
             "dartType": "int",
-            "notes": "Only available through CatchPersonAvatar.count."
+            "notes": "Only available through CatchAvatar.count."
           }
         ],
         "states": [
@@ -13275,7 +13280,9 @@
           "status-dot",
           "obscured",
           "square",
-          "count"
+          "count",
+          "veiled-run",
+          "veiled-dinner"
         ],
         "slots": [],
         "tokens": [
@@ -13334,19 +13341,29 @@
           },
           {
             "id": "catch.person_avatar.shell",
-            "symbol": "CatchPersonAvatarShell",
-            "file": "packages/catch_ui/lib/src/components/catch_person_avatar_shell.dart",
-            "summary": "Direct person-avatar shell renderer for shape, image, fallback, and adornment composition.",
+            "symbol": "CatchAvatarViewport",
+            "file": "packages/catch_ui/lib/src/components/catch_avatar_viewport.dart",
+            "summary": "Shared circle/rounded-square clipping and an inscribed label viewport that fits full glyph bounds without wrapping.",
             "states": [
               "circle",
-              "square"
+              "square",
+              "label-fit"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.person_avatar",
               "parentConceptId": "catch.person_avatar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.person_avatar"
+              "qualifier": "layout",
+              "decisionRef": "pattern-family:canonical-avatar-recipes"
+            },
+            "level": "L3",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "Avatar",
+              "comparedWith": [
+                "catch.person_avatar"
+              ],
+              "reason": "The parent Avatar chooses photo, initials, count or veil content and owns its ring and status. This member owns only the clipping geometry and bounded label allocation, shared by initials and count recipes."
             }
           },
           {
@@ -13356,23 +13373,6 @@
             "summary": "Direct obscured-avatar content renderer.",
             "states": [
               "default"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_avatar",
-              "parentConceptId": "catch.person_avatar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.person_avatar"
-            }
-          },
-          {
-            "id": "catch.person_avatar.veiled",
-            "symbol": "CatchVeiledPersonAvatar",
-            "file": "packages/catch_ui/lib/src/components/catch_veiled_person_avatar.dart",
-            "summary": "Direct veiled-avatar renderer for obscured people in stacks and cards.",
-            "states": [
-              "run",
-              "dinner"
             ],
             "governance": {
               "conceptRole": "member",
@@ -13417,7 +13417,7 @@
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+            "policy": "Keep full initials and count copy on one line within the fixed avatar frame. Inherited text scaling applies until the inscribed label viewport must scale down to preserve all glyphs; the full text remains available to semantics."
           },
           "reducedMotion": {
             "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
@@ -13431,8 +13431,9 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Do not reintroduce ActivityAvatar as a separate contract; activity-context fallback is part of CatchPersonAvatar.",
-          "Avatar stacks are composition members of catch.person_avatar rather than a separate avatar family."
+          "Do not reintroduce ActivityAvatar as a separate contract; activity-context fallback is part of CatchAvatar.",
+          "Avatar stacks are composition members of catch.person_avatar rather than a separate avatar family.",
+          "Use CatchAvatar.veiled for anonymous roster slots; it shares the same clipping and ring renderer as all other avatar recipes."
         ]
       },
       "governance": {
@@ -13446,10 +13447,16 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.person_avatar"
+        "conceptId": "catch.person_avatar",
+        "decisionRef": "pattern-family:canonical-avatar-recipes"
       },
       "surfaces": {
-        "flutter": "CatchPersonAvatar"
+        "flutter": "CatchAvatar"
+      },
+      "level": "L3",
+      "roleNoun": "Avatar",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -13829,9 +13836,9 @@
         "dartRoles": [
           "CatchPersonRowData",
           "CatchPersonRowCopy",
-          "CatchPersonAvatar",
+          "CatchAvatar",
           "CatchBadge",
-          "CatchPersonAvatarShape",
+          "CatchAvatarVariant",
           "CatchTextStyles.name",
           "CatchTextStyles.supporting",
           "CatchTextStyles.recordContext",
@@ -15833,7 +15840,7 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
-          "CatchPersonAvatar",
+          "CatchAvatar",
           "CatchRowPressSurface",
           "CatchIconAction",
           "CatchAvatarColors"

@@ -3696,36 +3696,32 @@ Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
 Widget catchPersonAvatarCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchPersonAvatar',
+    title: 'CatchAvatar',
     catalogId: 'core.widgets.catch_person_avatar',
     children: [
       _StateCard(
         label: 'fallback / ring / status / obscured / square / count',
         child: _InlineWrap(
           children: [
-            const CatchPersonAvatar(size: 48, name: 'Aarav Kapoor'),
-            CatchPersonAvatar(
+            const CatchAvatar(size: 48, name: 'Aarav Kapoor'),
+            CatchAvatar(
               size: 56,
               name: 'Riya Shah',
               borderWidth: 3,
               borderColor: t.primary,
             ),
-            const CatchPersonAvatar(
+            const CatchAvatar(
               size: 48,
               name: 'Maya Patel',
-              showStatusDot: true,
+              status: CatchAvatarStatus.online,
             ),
-            const CatchPersonAvatar(
-              size: 48,
-              name: 'Hidden Guest',
-              obscured: true,
-            ),
-            const CatchPersonAvatar(
+            const CatchAvatar(size: 48, name: 'Hidden Guest', obscured: true),
+            const CatchAvatar(
               size: 48,
               name: 'Host Team',
-              shape: CatchPersonAvatarShape.square,
+              variant: CatchAvatarVariant.square,
             ),
-            CatchPersonAvatar(
+            CatchAvatar(
               size: 48,
               name: 'Social run',
               initials: 'SR',
@@ -3734,7 +3730,7 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
                 ActivityKind.socialRun,
               ).avatarColors,
             ),
-            CatchPersonAvatar(
+            CatchAvatar(
               size: 48,
               name: 'Dinner',
               initials: 'DN',
@@ -3744,7 +3740,7 @@ Widget catchPersonAvatarCatalogStates(BuildContext context) {
               ).avatarColors,
               dim: true,
             ),
-            CatchPersonAvatar.count(
+            CatchAvatar.count(
               size: 48,
               count: 8,
               countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),

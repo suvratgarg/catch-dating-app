@@ -377,7 +377,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
           padding: CatchInsets.cardContent,
           child: Column(
             children: [
-              CatchPersonAvatar(
+              CatchAvatar(
                 size: CatchSpacing.s16,
                 name: profile.displayName,
                 imageUrl: profile.avatarUrl,

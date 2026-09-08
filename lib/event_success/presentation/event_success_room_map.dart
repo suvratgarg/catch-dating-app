@@ -544,7 +544,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
     ];
     final identity = Row(
       children: [
-        CatchPersonAvatar(
+        CatchAvatar(
           size: CatchLayout.avatarIdentityExtent,
           name: profile?.name ?? assignment.displayTitle,
           imageUrl: profile?.primaryPhotoThumbnailUrl,
@@ -975,7 +975,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
         : confirmed
         ? t.success
         : t.primary;
-    return CatchPersonAvatar(
+    return CatchAvatar(
       size: extent,
       name: profile?.name ?? assignment.displayTitle,
       imageUrl: profile?.primaryPhotoThumbnailUrl,

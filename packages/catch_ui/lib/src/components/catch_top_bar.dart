@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
 import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
@@ -280,7 +280,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                       padding: CatchInsets.controlVerticalTight,
                       child: Row(
                         children: [
-                          CatchPersonAvatar(
+                          CatchAvatar(
                             size: 36,
                             name: identityName,
                             imageUrl: widget.identityPhotoUrl,

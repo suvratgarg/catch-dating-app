@@ -1966,6 +1966,55 @@
           "rationale": "Preserve name-derived or explicit initials, deterministic quiet tone and empty-name behavior through the default recipe."
         }
       ]
+    },
+    {
+      "id": "canonical-avatar-recipes",
+      "title": "One avatar with shared frame and complete labels",
+      "intent": "Use one identity image contract for photo, initials, activity, count and veiled roster recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.person_avatar",
+      "qualityReference": "CatchAvatar",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "Initials and count labels now center their natural font bounds and fit on one line inside the shared label viewport. This removes wrapping and clipping while preserving their complete copy at text scales 1.0 and 2.0; ordinary glyph rasterization can shift slightly as centering uses those full bounds.",
+        "Retain existing fills, caller colors, texture, dimming, image-failure selection, border rings, circular/rounded-square clips, online dots and veiled glyphs."
+      ],
+      "members": [
+        {
+          "symbol": "CatchAvatar",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The existing owner already handles person, activity and count identities. Person is not a separate implementation distinction. Absorb the veiled recipe into the same content selection, viewport and ring path; expose its silhouette and online state through closed Variant and Status axes."
+        },
+        {
+          "symbol": "CatchAvatarViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One avatar frame clips image content and fits label content. The label recipe is shared by initials and counts, preventing duplicated sizing policy and clipped glyphs."
+        },
+        {
+          "symbol": "CatchPersonAvatar",
+          "disposition": "unify",
+          "target": "CatchAvatar",
+          "preview": "not-applicable",
+          "rationale": "Rename the existing primary to its unqualified Avatar role; keep the contract id and all caller-owned data."
+        },
+        {
+          "symbol": "CatchVeiledPersonAvatar",
+          "disposition": "unify",
+          "target": "CatchAvatar",
+          "preview": "not-applicable",
+          "rationale": "The anonymous-person glyph is a named recipe, not a second avatar frame or ring renderer."
+        },
+        {
+          "symbol": "CatchPersonAvatarShell",
+          "disposition": "unify",
+          "target": "CatchAvatarViewport",
+          "preview": "not-applicable",
+          "rationale": "Name the existing bounded clipping operation as the parent-owned Viewport; extend it with label fitting shared by initials and count."
+        }
+      ]
     }
   ]
 }

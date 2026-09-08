@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_notice_data.dart';
 import 'package:catch_ui/src/components/catch_notice_tone.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
@@ -58,7 +58,7 @@ class CatchNotice extends StatelessWidget {
         child: Row(
           children: [
             if (person != null)
-              CatchPersonAvatar(
+              CatchAvatar(
                 size: CatchLayout.noticeIconExtent,
                 name: person.name,
                 imageUrl: person.imageUrl,

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4",
+  "sourceDigest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4",
-    "contractDigest": "7577b9b63afdaf0511c115d619786c2154e3063748e28b32b0a4466e9b24e7e4"
+    "digest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83",
+    "contractDigest": "61789333d8ae7299a78ebf27e7168954ef796fab68bce8e1a169cf7af87cfc83"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "bd7aace14de586180956e7d6ff9ec552720af5538571500811138b89660d67b8",
+    "handoffRequestDigest": "83a081263241e74d67ae5ac81ce0017d7e3a398f0d21227d444a9d06897e8266",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 268,
+    "publicClassCount": 267,
     "conceptCount": 69,
-    "memberCount": 181,
-    "membersPerConcept": 2.62,
+    "memberCount": 180,
+    "membersPerConcept": 2.61,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 181,
+      "member": 180,
       "screen": 15
     },
     "collisionCount": 36,
@@ -329,13 +329,12 @@
       {
         "key": "catch.person_avatar",
         "symbols": [
+          "CatchAvatar",
           "CatchAvatarColors",
           "CatchAvatarInitialsSurface",
+          "CatchAvatarViewport",
           "CatchObscuredAvatarContent",
-          "CatchPersonAvatar",
-          "CatchPersonAvatarShell",
-          "CatchPersonAvatarStack",
-          "CatchVeiledPersonAvatar"
+          "CatchPersonAvatarStack"
         ]
       },
       {
@@ -2277,9 +2276,9 @@
       "contractId": "catch.person_avatar",
       "conceptRole": "concept",
       "conceptId": "catch.person_avatar",
-      "dartSymbol": "CatchPersonAvatar",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_person_avatar.dart",
-      "figmaName": "Catch/PersonAvatar",
+      "dartSymbol": "CatchAvatar",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_avatar.dart",
+      "figmaName": "Catch/Avatar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -2295,15 +2294,15 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 11,
-      "figmaExpectedPropertyDigest": "550dd568262484aea0bbcc19ace6a1f3acf9e7006f29712681a873bcd070d45c",
+      "figmaExpectedPropertyDigest": "28a42e9b4d8a370319f42f0b3c87ecca07849083ca80b270b6231c62a35dbab3",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "PersonAvatar",
+      "claudeHandoffName": "Avatar",
       "claudeAllowed": true,
-      "contractDigest": "c99a35d53e9a287fc7330fb988fa477436e726a79f3292a1290b14f74b2518dd"
+      "contractDigest": "ab0094ac5ab1fe4d90b6496bd3aa93e70d53e64f72345fb7e396d40b136560a7"
     },
     {
       "contractId": "catch.record_row",

@@ -112,7 +112,7 @@ class ClubHostRow extends StatelessWidget {
 
     final row = Row(
       children: [
-        CatchPersonAvatar(
+        CatchAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
           size: CatchSpacing.s10,

@@ -333,7 +333,7 @@ class ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CatchPersonAvatar(name: review.reviewerName, size: 32),
+              CatchAvatar(name: review.reviewerName, size: 32),
               gapW8,
               Expanded(
                 child: Column(
@@ -420,7 +420,7 @@ class ReviewOwnerResponseBlock extends StatelessWidget {
         children: [
           Row(
             children: [
-              CatchPersonAvatar(
+              CatchAvatar(
                 name: response.hostName,
                 imageUrl: response.hostAvatarUrl,
                 size: 24,

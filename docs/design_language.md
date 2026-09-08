@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.16.0
+version: 1.17.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -404,7 +404,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 - Notice identity is supplied by its feature adapter through `CatchNoticeData`:
   localized title/message, semantic tone, optional icon, optional
   `CatchPersonAvatarItem`, and an optional theme-derived `accentColor`. A person
-  replaces the status glyph and reuses `CatchPersonAvatar` for circular photos
+  replaces the status glyph and reuses `CatchAvatar` for circular photos
   and initials fallback. The shared notice still owns typography, icon/avatar
   extent, spacing, surface and tint derivation. Do not create separate visual
   match/message widgets merely to change copy, identity or color. A color

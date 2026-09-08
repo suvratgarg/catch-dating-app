@@ -1126,7 +1126,7 @@ function buildCandidates() {
     recommended: "catch.person_row",
     previewNames: [
       "CatchPersonRow",
-      "CatchPersonAvatar",
+      "CatchAvatar",
       "CatchPersonAvatarStack",
     ],
     priority: "P0",
@@ -1414,7 +1414,7 @@ function buildCandidates() {
     reason:
       "The stack composes person avatars with veiling and overflow rules. Decide whether it belongs under one avatar contract or stays a separate people-list primitive.",
     recommended: "catch.person_avatar",
-    left: findFirst(byName, "CatchPersonAvatar"),
+    left: findFirst(byName, "CatchAvatar"),
     right: findFirst(byName, "CatchPersonAvatarStack"),
     priority: "P1",
     tags: ["avatar", "people"],
@@ -1642,7 +1642,7 @@ function buildCandidates() {
       id: "app-avatar-stack-family",
       title: "Avatar stack and rail family",
       reason:
-        "People stacks and avatar rails should compose CatchPersonAvatar with shared overlap, count, veil, and compact-density rules.",
+        "People stacks and avatar rails should compose CatchAvatar with shared overlap, count, veil, and compact-density rules.",
       recommended: "catch.person_avatar_stack",
       tags: ["avatar", "people"],
       names: [
@@ -1656,11 +1656,11 @@ function buildCandidates() {
       id: "app-person-avatar-family",
       title: "Person avatar family",
       reason:
-        "Host/club avatar widgets should use CatchPersonAvatar variants instead of reimplementing initials, photo fallback, ring, and dim states.",
+        "Host/club avatar widgets should use CatchAvatar variants instead of reimplementing initials, photo fallback, ring, and dim states.",
       recommended: "catch.person_avatar",
       tags: ["avatar", "people"],
       names: [
-        "CatchPersonAvatar",
+        "CatchAvatar",
         "ClubHostAvatar",
         "HostTodayAvatarDot",
         "ClubHostIdentityLine",

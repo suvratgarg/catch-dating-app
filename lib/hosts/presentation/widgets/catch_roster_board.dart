@@ -225,7 +225,7 @@ class CatchRosterRow extends StatelessWidget {
               flex: 5,
               child: Row(
                 children: [
-                  CatchPersonAvatar(
+                  CatchAvatar(
                     size: CatchLayout.rosterRowAvatarExtent,
                     name: person,
                     imageUrl: imageUrl,

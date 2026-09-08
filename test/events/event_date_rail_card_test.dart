@@ -135,6 +135,12 @@ void main() {
     expect(stack.items, isEmpty);
     expect(stack.totalCount, 5);
     expect(stack.veiledCount, 5);
-    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(4));
+    final avatars = find.descendant(
+      of: find.byType(CatchPersonAvatarStack),
+      matching: find.byType(CatchAvatar),
+    );
+    expect(avatars, findsNWidgets(5));
+    expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(4));
+    expect(find.text('+1'), findsOneWidget);
   });
 }

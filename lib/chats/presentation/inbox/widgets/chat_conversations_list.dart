@@ -50,8 +50,8 @@ class ChatConversationsList extends StatelessWidget {
               isFresh: unreadCount > 0 || isNew,
               showFreshDot: unreadCount == 0 && isNew,
               avatarShape: preview.match.isClubHostInquiry
-                  ? CatchPersonAvatarShape.square
-                  : CatchPersonAvatarShape.circle,
+                  ? CatchAvatarVariant.square
+                  : CatchAvatarVariant.circle,
             ),
             avatarSize: CatchLayout.chatListAvatarExtent,
             padding: CatchInsets.chatListTileVertical,

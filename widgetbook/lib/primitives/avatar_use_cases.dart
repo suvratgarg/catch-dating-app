@@ -24,13 +24,8 @@ Widget avatarCallerColors(BuildContext context) {
         spacing: CatchSpacing.s4,
         runSpacing: CatchSpacing.s3,
         children: [
-          CatchPersonAvatar(size: 64, name: 'Asha Shah', colors: colors),
-          CatchPersonAvatar(
-            size: 64,
-            name: 'Asha Shah',
-            colors: colors,
-            dim: true,
-          ),
+          CatchAvatar(size: 64, name: 'Asha Shah', colors: colors),
+          CatchAvatar(size: 64, name: 'Asha Shah', colors: colors, dim: true),
           CatchPersonAvatarStack(
             items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
             totalCount: 8,

@@ -146,8 +146,8 @@ void _registerHostOperationsCustomersTests() {
 
     final name = tester.widget<Text>(find.text('Ananya Rao'));
     final metadata = tester.widget<Text>(find.textContaining('8 events'));
-    final avatar = tester.widget<CatchPersonAvatar>(
-      find.descendant(of: row, matching: find.byType(CatchPersonAvatar)),
+    final avatar = tester.widget<CatchAvatar>(
+      find.descendant(of: row, matching: find.byType(CatchAvatar)),
     );
     expect(avatar.size, CatchSpacing.s10);
     expect(tester.getSize(row).height, greaterThanOrEqualTo(72));

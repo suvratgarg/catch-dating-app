@@ -4,45 +4,21 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials_surface.dart';
+import 'package:catch_ui/src/components/catch_avatar_variant.dart';
+import 'package:catch_ui/src/components/catch_avatar_viewport.dart';
 import 'package:catch_ui/src/components/catch_obscured_avatar_content.dart';
-import 'package:catch_ui/src/components/catch_person_avatar_shape.dart';
-import 'package:catch_ui/src/components/catch_person_avatar_shell.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_network_image.dart';
 import 'package:flutter/material.dart';
 
-/// Circular avatar used across roster lists, chat threads, swipe cards, and
-/// the match modal.
-///
-/// **Photo state**: if [imageUrl] is supplied it is loaded via
-/// [CatchNetworkImage]; otherwise a deterministic gradient placeholder is
-/// rendered from [name].
-///
-/// **Border ring**: set [borderWidth] > 0 and [borderColor] to render a
-/// coloured ring — white (2 px) for stacked rows, orange for match state.
-///
-/// **Status dot**: pass [showStatusDot] = true to render a 9 px green dot at
-/// the bottom-right (online indicator).
-///
-/// **Overflow bubble**: use the named constructor [CatchPersonAvatar.count] to show
-/// a caller-labelled count bubble instead of a photo (end of a stacked avatar row).
-///
-/// Usage:
-/// ```dart
-/// // Ordinary avatar
-/// CatchPersonAvatar(size: 40, name: 'Riya', imageUrl: user.photoUrl)
-///
-/// // Stacked (white border)
-/// CatchPersonAvatar(size: 32, name: 'Riya', borderWidth: 2, borderColor: Colors.white)
-///
-/// // Match ring
-/// CatchPersonAvatar(size: 72, name: 'Riya', borderWidth: 3, borderColor: t.primary)
-///
-/// // Overflow
-/// CatchPersonAvatar.count(size: 32, count: 19, countLabelBuilder: countLabelBuilder)
-/// ```
-class CatchPersonAvatar extends StatelessWidget {
-  const CatchPersonAvatar({
+enum CatchAvatarStatus { none, online }
+
+/// Canonical avatar for photos, initials, activity identity, counts and veils.
+/// Callers own names, image URLs, count copy and activity colors. This component
+/// owns fallback selection, the clipping frame, ring and optional online dot.
+class CatchAvatar extends StatelessWidget {
+  const CatchAvatar({
     super.key,
     required this.size,
     this.name = '',
@@ -50,32 +26,50 @@ class CatchPersonAvatar extends StatelessWidget {
     this.initials,
     this.borderWidth = 0,
     this.borderColor,
-    this.showStatusDot = false,
+    this.status = CatchAvatarStatus.none,
     this.obscured = false,
-    this.shape = CatchPersonAvatarShape.circle,
+    this.variant = CatchAvatarVariant.circle,
     this.colors,
     this.dim = false,
   }) : _count = null,
-       countLabelBuilder = null;
+       countLabelBuilder = null,
+       _veiled = false;
 
-  /// Overflow avatar — formats [count] with caller-owned copy instead of a photo.
-  const CatchPersonAvatar.count({
+  /// A count bubble with caller-owned formatting, including localization.
+  const CatchAvatar.count({
     super.key,
     required this.size,
-    // Keep the public argument as `count`; `this._count` would expose a
-    // private-looking parameter name to callers.
     required int count,
     required String Function(int) this.countLabelBuilder,
     this.borderWidth = 0,
     this.borderColor,
   }) : _count = count,
+       _veiled = false,
        name = '',
        imageUrl = null,
        initials = null,
-       showStatusDot = false,
+       status = CatchAvatarStatus.none,
        obscured = false,
-       shape = CatchPersonAvatarShape.circle,
+       variant = CatchAvatarVariant.circle,
        colors = null,
+       dim = false;
+
+  /// A caller-colored anonymous slot in a hidden roster.
+  const CatchAvatar.veiled({
+    super.key,
+    required this.size,
+    required CatchAvatarColors this.colors,
+    required this.borderWidth,
+    required Color this.borderColor,
+  }) : _veiled = true,
+       _count = null,
+       countLabelBuilder = null,
+       name = '',
+       imageUrl = null,
+       initials = null,
+       status = CatchAvatarStatus.none,
+       obscured = false,
+       variant = CatchAvatarVariant.circle,
        dim = false;
 
   final double size;
@@ -83,16 +77,15 @@ class CatchPersonAvatar extends StatelessWidget {
   final String? imageUrl;
   final String? initials;
   final double borderWidth;
-
-  /// The ring / stacking border colour. Defaults to transparent when null.
   final Color? borderColor;
-  final bool showStatusDot;
+  final CatchAvatarStatus status;
   final bool obscured;
-  final CatchPersonAvatarShape shape;
+  final CatchAvatarVariant variant;
   final CatchAvatarColors? colors;
   final bool dim;
   final String Function(int)? countLabelBuilder;
   final int? _count;
+  final bool _veiled;
 
   static String initialsOf(String value) => catchAvatarInitialsOf(value);
 
@@ -100,24 +93,31 @@ class CatchPersonAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final innerSize = size - borderWidth * 2;
-
-    Widget avatar;
-
-    if (_count != null) {
-      // Overflow bubble — quiet raised fill with secondary ink.
-      avatar = CatchPersonAvatarShell(
-        size: innerSize,
-        shape: shape,
-        child: ColoredBox(
-          color: t.raised,
-          child: Center(
-            child: Text(
-              countLabelBuilder!(_count),
-              style: CatchTextStyles.avatarCount(
-                context,
-                size: innerSize * 0.30,
-                color: t.ink2,
-              ),
+    final Widget content;
+    if (_veiled) {
+      content = ColoredBox(
+        color: colors!.soft,
+        child: Center(
+          child: Icon(
+            CatchIcons.personOutlined,
+            size: innerSize * CatchLayout.avatarVeilGlyphScale,
+            color: colors!.deep.withValues(
+              alpha: CatchOpacity.avatarFallbackGlyph,
+            ),
+          ),
+        ),
+      );
+    } else if (_count != null) {
+      content = ColoredBox(
+        color: t.raised,
+        child: CatchAvatarViewport.label(
+          size: innerSize,
+          child: Text(
+            countLabelBuilder!(_count),
+            style: CatchTextStyles.avatarCount(
+              context,
+              size: innerSize * CatchLayout.avatarCountFontScale,
+              color: t.ink2,
             ),
           ),
         ),
@@ -138,21 +138,13 @@ class CatchPersonAvatar extends StatelessWidget {
                 dim: dim,
               ),
       );
-      avatar = CatchPersonAvatarShell(
-        size: innerSize,
-        shape: shape,
-        child: obscured ? CatchObscuredAvatarContent(child: image) : image,
-      );
+      content = obscured ? CatchObscuredAvatarContent(child: image) : image;
     } else if (colors != null) {
-      avatar = CatchPersonAvatarShell(
+      content = CatchAvatarInitialsSurface.activity(
+        colors: colors!,
+        initials: initials ?? catchAvatarInitialsOf(name),
         size: innerSize,
-        shape: shape,
-        child: CatchAvatarInitialsSurface.activity(
-          colors: colors!,
-          initials: initials ?? catchAvatarInitialsOf(name),
-          size: innerSize,
-          dim: dim,
-        ),
+        dim: dim,
       );
     } else {
       final placeholder = CatchAvatarInitialsSurface(
@@ -160,25 +152,25 @@ class CatchPersonAvatar extends StatelessWidget {
         initials: initials,
         size: innerSize,
       );
-      avatar = CatchPersonAvatarShell(
-        size: innerSize,
-        shape: shape,
-        child: obscured
-            ? CatchObscuredAvatarContent(child: placeholder)
-            : placeholder,
-      );
+      content = obscured
+          ? CatchObscuredAvatarContent(child: placeholder)
+          : placeholder;
     }
 
-    // Wrap with border ring if requested
+    Widget avatar = CatchAvatarViewport(
+      size: innerSize,
+      variant: variant,
+      child: content,
+    );
     if (borderWidth > 0) {
       avatar = Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
-          shape: shape == CatchPersonAvatarShape.circle
+          shape: variant == CatchAvatarVariant.circle
               ? BoxShape.circle
               : BoxShape.rectangle,
-          borderRadius: shape == CatchPersonAvatarShape.square
+          borderRadius: variant == CatchAvatarVariant.square
               ? BorderRadius.circular(CatchRadius.md)
               : null,
           color: borderColor ?? Colors.transparent,
@@ -187,10 +179,7 @@ class CatchPersonAvatar extends StatelessWidget {
         child: avatar,
       );
     }
-
-    if (!showStatusDot) return avatar;
-
-    // Online status dot (bottom-right)
+    if (status != CatchAvatarStatus.online) return avatar;
     return SizedBox(
       width: size,
       height: size,

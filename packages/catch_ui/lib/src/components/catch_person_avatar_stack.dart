@@ -1,8 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/components/catch_person_avatar_item.dart';
-import 'package:catch_ui/src/components/catch_veiled_person_avatar.dart';
 import 'package:flutter/material.dart';
 
 class CatchPersonAvatarStack extends StatelessWidget {
@@ -48,7 +47,7 @@ class CatchPersonAvatarStack extends StatelessWidget {
     final overflow = count - visibleCount;
     final avatars = <Widget>[
       for (final item in shown)
-        CatchPersonAvatar(
+        CatchAvatar(
           size: size,
           name: item.name,
           imageUrl: item.imageUrl,
@@ -58,14 +57,14 @@ class CatchPersonAvatarStack extends StatelessWidget {
           obscured: obscured,
         ),
       for (var i = 0; i < shownVeiledCount; i++)
-        CatchVeiledPersonAvatar(
+        CatchAvatar.veiled(
           size: size,
           colors: veiledColors!,
           borderWidth: borderWidth,
           borderColor: borderColor ?? CatchTokens.of(context).surface,
         ),
       if (showOverflowCount && overflow > 0)
-        CatchPersonAvatar.count(
+        CatchAvatar.count(
           size: size,
           count: overflow,
           countLabelBuilder: countLabelBuilder,

@@ -34,9 +34,7 @@ void main() {
       ),
     );
 
-    final avatar = tester.widget<CatchPersonAvatar>(
-      find.byType(CatchPersonAvatar),
-    );
+    final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
     expect(avatar.size, CatchSpacing.s10);
     final colors = ActivityPalette.light.getActivity(ActivityKind.socialRun);
     expect(avatar.colors?.accent, colors.accent);
@@ -87,9 +85,7 @@ void main() {
             ),
           ),
         );
-        final avatar = tester.widget<CatchPersonAvatar>(
-          find.byType(CatchPersonAvatar),
-        );
+        final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
         expect(avatar.colors, same(colors));
         final mark = tester.widget<Icon>(find.byIcon(CatchIcons.sealCheck));
         expect(mark.color, colors.accent);

@@ -39,11 +39,11 @@ void main() {
       expect(find.text('AS'), findsOneWidget);
       expect(find.text('3 invités'), findsOneWidget);
       expect(find.text('+3'), findsNothing);
-      final veil = tester.widget<CatchVeiledPersonAvatar>(
-        find.byType(CatchVeiledPersonAvatar),
-      );
+      final veil = tester
+          .widgetList<CatchAvatar>(find.byType(CatchAvatar))
+          .singleWhere((avatar) => identical(avatar.colors, colors));
       expect(veil.colors, same(colors));
-      expect(find.byType(CatchPersonAvatar), findsNWidgets(2));
+      expect(find.byType(CatchAvatar), findsNWidgets(3));
       expect(tester.takeException(), isNull);
     },
   );
@@ -52,7 +52,7 @@ void main() {
     'app activity colors follow theme changes through image fallback',
     (tester) async {
       final content = Builder(
-        builder: (context) => CatchPersonAvatar(
+        builder: (context) => CatchAvatar(
           size: 64,
           name: 'Social run',
           imageUrl: 'assets/fixtures/does-not-exist.png',

@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_person_chat_layout.dart';
 import 'package:catch_ui/src/components/catch_person_chat_trailing.dart';
 import 'package:catch_ui/src/components/catch_person_roster_layout.dart';
@@ -110,11 +110,11 @@ class CatchPersonRow extends StatelessWidget {
               ExcludeSemantics(
                 child: MediaQuery.withClampedTextScaling(
                   maxScaleFactor: 1,
-                  child: CatchPersonAvatar(
+                  child: CatchAvatar(
                     size: avatarSize,
                     name: data.name,
                     imageUrl: data.imageUrl,
-                    shape: data.avatarShape,
+                    variant: data.avatarShape,
                   ),
                 ),
               ),
@@ -192,13 +192,13 @@ class CatchPersonRow extends StatelessWidget {
         trailing != null && MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final identity = Row(
       children: [
-        CatchPersonAvatar(
+        CatchAvatar(
           size: avatarSize,
           name: data.name,
           imageUrl: data.imageUrl,
           borderWidth: data.isFresh ? CatchStroke.underline : 0,
           borderColor: data.isFresh ? t.primary : null,
-          shape: data.avatarShape,
+          variant: data.avatarShape,
         ),
         gapW12,
         Expanded(

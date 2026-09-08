@@ -77,11 +77,11 @@ class ClubPostHomeCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchPersonAvatar(
+          CatchAvatar(
             size: CatchLayout.avatarRowExtent,
             name: clubName,
             imageUrl: club?.logoPhotoUrl,
-            shape: CatchPersonAvatarShape.square,
+            variant: CatchAvatarVariant.square,
           ),
           gapW12,
           Expanded(

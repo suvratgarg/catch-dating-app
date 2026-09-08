@@ -78,7 +78,7 @@ void main() {
         find.byKey(const ValueKey('club-detail-hero-logo-seal')),
         findsOneWidget,
       );
-      expect(find.byType(CatchPersonAvatar), findsOneWidget);
+      expect(find.byType(CatchAvatar), findsOneWidget);
       expect(find.byType(CatchOrganizerPoster), findsNothing);
       expect(find.byType(OrganizerPosterArtwork), findsNothing);
       expect(find.text('Stride Social'), findsOneWidget);

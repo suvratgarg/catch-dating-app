@@ -120,7 +120,7 @@ void main() {
                 'avatar': rect(
                   find.descendant(
                     of: finder,
-                    matching: find.byType(CatchPersonAvatar),
+                    matching: find.byType(CatchAvatar),
                   ),
                 ),
                 'nameLine': rect(
