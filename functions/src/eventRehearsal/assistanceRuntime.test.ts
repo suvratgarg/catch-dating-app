@@ -9,6 +9,7 @@ import type {EventRehearsalDocument as Session} from
 import {FakeFirestore} from "../operations/testFirestore";
 import {buildRehearsalActors, applyRehearsalBehavior} from "./engine";
 import {applyPracticeHostCommand, applyPracticeGuestReply,
+  applyPracticeAutomations,
   PracticeCommand} from "./assistanceTransactions";
 import {PracticePlan, PracticeMessage, practiceMessageView,
   readPracticeMessage, rehearsalMessages} from "./assistanceRuntime";
@@ -99,8 +100,18 @@ function setup() {
     session.virtualNow = Timestamp.fromMillis(
       session.virtualNow.toMillis() + minutes * 60000);
   };
-  return {fake, session, host, message, reply, advance,
-    actor: () => actor, behavior: (behavior: "arrive" | "leaveEarly") => {
+  const evaluate = async () => {
+    [actor] = await db.runTransaction(async (tx) => {
+      const next = await applyPracticeAutomations(db, tx, session, [actor]);
+      tx.set(actorRef, next[0]);
+      return next;
+    });
+    return actor;
+  };
+  return {fake, session, host, message, reply, advance, evaluate,
+    actor: () => actor, resetActor: () => {
+      actor = buildRehearsalActors("practice-1", 2, 1, session.virtualNow)[0];
+    }, behavior: (behavior: "arrive" | "leaveEarly") => {
       actor = applyRehearsalBehavior(actor, behavior, [], session.virtualNow);
     }};
 }
@@ -269,6 +280,8 @@ test("a reset epoch ignores messages left by an older run", async () => {
   await h.host({kind: "publish", plan});
   const old = h.message().record.messageId;
   h.session.setupRevision += 1;
+  // Real reset rebuilds the roster as well as advancing the clock generation.
+  h.resetActor();
   await h.host({kind: "publish", plan});
   assert.notEqual(h.message().record.messageId, old);
   await h.reply("on-my-way");
@@ -425,4 +438,296 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   assert.equal(newRun.session.runtimeRevision, 2);
   assert.equal(newRun.session.actionCount, 1);
   assert.ok(newRun.actors[0].assistanceMessage);
+});
+
+test("automation advances fallback once per transition", async () => {
+  const h = setup();
+  await h.host({kind: "configureAutomation",
+    plan: practicePlan(h.session.virtualNow.toMillis()), outcomes: [
+      {kind: "failed", classification: "technical"}, {kind: "delivered"}]});
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
+  assert.equal(h.actor().assistanceAutomation?.evaluation?.delivery.kind,
+    "wait");
+  await h.evaluate();
+  assert.equal(h.message().record.attempts.length, 1);
+  h.advance(1);
+  await h.evaluate();
+  assert.deepEqual(h.message().record.attempts.map((a) =>
+    a.mode === "rehearsal" && a.routeId),
+  ["organizerEventWhatsapp", "catchEventSms"]);
+  assert.equal(h.actor().assistanceAutomation?.evaluation?.delivery.kind,
+    "delivered");
+  h.advance(30);
+  await h.evaluate();
+  assert.equal(h.message().record.attempts.length, 2);
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 2);
+});
+
+test("automation uncertainty requires a confirmed receipt before fallback",
+  async () => {
+    const h = setup();
+    await h.host({kind: "configureAutomation",
+      plan: practicePlan(h.session.virtualNow.toMillis()), outcomes: [
+        {kind: "unknown", reason: "timeout"}, {kind: "delivered"}]});
+    h.advance(10);
+    await h.evaluate();
+    assert.equal(h.message().record.attempts.length, 1);
+    assert.equal(h.actor().assistanceAutomation?.evaluation?.delivery.kind,
+      "reconcile");
+    await h.host({kind: "receipt", messageId: h.message().record.messageId,
+      attemptId: h.message().record.attempts[0].attemptId,
+      outcome: {kind: "failed", classification: "technical"}});
+    assert.equal(h.message().record.attempts.length, 1);
+    h.advance(1);
+    await h.evaluate();
+    assert.equal(h.message().record.attempts.length, 2);
+    assert.equal(h.actor().assistanceAutomation?.status, "enabled");
+  });
+
+test("arrival and intentions stop automation with separate attendance",
+  async () => {
+    for (const response of ["arrive", "on-my-way", "not-coming"] as const) {
+      const h = setup();
+      await h.host({kind: "configureAutomation",
+        plan: practicePlan(h.session.virtualNow.toMillis()), outcomes: [
+          {kind: "failed", classification: "technical"}, {kind: "delivered"}]});
+      if (response === "arrive") {
+        h.behavior("arrive");
+        await h.evaluate();
+      } else await h.reply(response);
+      h.advance(10);
+      await h.evaluate();
+      assert.equal(h.message().record.attempts.length, 1);
+      assert.equal(h.actor().status,
+        response === "arrive" ? "present" : "expected");
+      assert.equal(h.message().record.lifecycle,
+        response === "arrive" ? "cancelled" : "responded");
+    }
+  });
+
+test("pause retains the script cursor; manual publish pauses it", async () => {
+  const h = setup();
+  const plan = practicePlan(h.session.virtualNow.toMillis());
+  await h.host({kind: "configureAutomation", plan, outcomes: [
+    {kind: "failed", classification: "technical"}, {kind: "delivered"}]});
+  await h.host({kind: "pauseAutomation"});
+  h.advance(1);
+  await h.evaluate();
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
+  await h.host({kind: "resumeAutomation"});
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 2);
+  const revised = {...plan, guidance: {...plan.guidance, revision: 2,
+    materialKey: "second-stop", text: "Meet us at the next stop."}};
+  await h.host({kind: "publish", plan: revised});
+  assert.equal(h.actor().assistanceAutomation?.status, "paused");
+  h.advance(10);
+  await h.evaluate();
+  assert.equal(h.message().plan.guidance.materialKey, "second-stop");
+  assert.equal(h.message().record.attempts.length, 0);
+  await assert.rejects(h.host({kind: "resumeAutomation"}),
+    {code: "failed-precondition"});
+});
+
+test("held plans, caps and exhausted scripts cannot invent simulated sends",
+  async () => {
+    const h = setup();
+    const plan = practicePlan(h.session.virtualNow.toMillis());
+    await h.host({kind: "configureAutomation", plan: {...plan,
+      departureConfirmed: false}, outcomes: [{kind: "delivered"}]});
+    h.advance(10);
+    await h.evaluate();
+    assert.equal(h.message(), undefined);
+    assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 0);
+    assert.deepEqual(h.actor().assistanceAutomation?.evaluation?.policy,
+      {kind: "wait", reason: "departureUnconfirmed"});
+    await h.host({kind: "configureAutomation", plan: {...plan,
+      policy: {...plan.policy, maxMessagesPerEpisode: 0}},
+    outcomes: [{kind: "delivered"}]});
+    assert.equal(h.message().record.attempts.length, 0);
+    await h.host({kind: "configureAutomation", plan,
+      outcomes: [{kind: "failed", classification: "technical"}]});
+    h.advance(1);
+    await h.evaluate();
+    assert.equal(h.message().record.attempts.length, 1);
+    assert.equal(h.actor().assistanceAutomation?.evaluation?.delivery.kind,
+      "scriptExhausted");
+  });
+
+test("reconfigured instructions retain the episode cooldown", async () => {
+  const h = setup();
+  const plan = practicePlan(h.session.virtualNow.toMillis());
+  await h.host({kind: "configureAutomation", plan,
+    outcomes: [{kind: "delivered"}]});
+  const old = h.message();
+  const revised = {...plan, guidance: {...plan.guidance, revision: 2,
+    materialKey: "second-stop", text: "Meet at the next stop."}};
+  await h.host({kind: "configureAutomation", plan: revised,
+    outcomes: [{kind: "delivered"}]});
+  assert.equal(h.message().record.attempts.length, 0);
+  assert.equal(h.fake.entries().filter(([p]) =>
+    p.startsWith(rehearsalMessages + "/"))
+    .map(([, v]) => v as unknown as PracticeMessage)
+    .find((m) => m.record.messageId === old.record.messageId)?.record.lifecycle,
+  "superseded");
+  h.advance(6);
+  await h.evaluate();
+  assert.equal(h.message().record.attempts.length, 1);
+});
+
+test("deadlines, completion and reset hold automation", async () => {
+  const h = setup();
+  const plan = practicePlan(h.session.virtualNow.toMillis());
+  plan.policy.unanswered = "hostReviewAtDeadline";
+  plan.responseDeadline = h.session.virtualNow.toMillis() + 60000;
+  await h.host({kind: "configureAutomation", plan,
+    outcomes: [{kind: "accepted"}]});
+  h.advance(2);
+  await h.evaluate();
+  assert.equal(h.actor().assistanceAutomation?.evaluation?.policy?.kind,
+    "hostDecision");
+  assert.equal(practiceMessageView(h.session, h.actor(),
+    h.message())?.canRespond, false);
+  h.session.status = "complete";
+  await h.evaluate();
+  assert.equal(h.actor().assistanceAutomation?.evaluation?.policy?.kind,
+    "cancelled");
+  assert.equal(h.message().record.lifecycle, "cancelled");
+  h.session.setupRevision++;
+  await h.evaluate();
+  assert.deepEqual(h.actor().assistanceAutomation?.evaluation?.delivery,
+    {kind: "hostDecision", reason: "historyUnavailable"});
+});
+
+test("failed commits preserve script and attempt history", async () => {
+  const h = setup();
+  const command = {kind: "configureAutomation" as const,
+    plan: practicePlan(h.session.virtualNow.toMillis()),
+    outcomes: [{kind: "delivered" as const}]};
+  h.fake.failNextCommit = true;
+  await assert.rejects(h.host(command), /transaction interruption/u);
+  assert.equal(h.actor().assistanceAutomation, undefined);
+  assert.equal(h.fake.entries().length, 0);
+  await h.host(command);
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
+  assert.equal(h.message().record.attempts.length, 1);
+});
+
+test("unusable history holds automation and preserves an arrival", async () => {
+  const h = setup();
+  await h.host({kind: "configureAutomation",
+    plan: practicePlan(h.session.virtualNow.toMillis()),
+    outcomes: [{kind: "delivered"}]});
+  const message = h.message();
+  h.fake.write(rehearsalMessages + "/invalid-identity", {...message});
+  h.behavior("arrive");
+  await h.evaluate();
+  assert.equal(h.actor().status, "present");
+  assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
+  assert.deepEqual(h.actor().assistanceAutomation?.evaluation?.delivery,
+    {kind: "hostDecision", reason: "historyUnavailable"});
+});
+
+test("Firestore automates a 50-guest rehearsal in the existing callables", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST,
+}, async () => {
+  const {readFileSync} = await import("node:fs");
+  const {createHash, randomUUID} = await import("node:crypto");
+  const {practiceContext} = await import("./assistanceRuntime.js");
+  const {controlEventRehearsalHandler, injectEventRehearsalBehaviorHandler,
+    submitEventRehearsalGuestActionHandler, resetEventRehearsalHandler} =
+      await import("./handlers.js");
+  if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
+  const db = admin.firestore();
+  const id = randomUUID();
+  const session = {...practiceSession(), actorCount: 50};
+  session.organizerId = "practice-owner-" + id;
+  session.clubId = session.organizerId;
+  session.publicRehearsalId = "public-" + id;
+  const fixture = JSON.parse(readFileSync(
+    "../contracts/fixtures/valid/club_doc.json", "utf8"));
+  const schema = JSON.parse(readFileSync(
+    "../contracts/firestore/organizers.schema.json", "utf8"));
+  await db.collection("organizers").doc(session.organizerId).set({
+    ...Object.fromEntries(Object.entries(fixture).filter(([k]) =>
+      k in schema.properties)), followerCount: 0,
+    organizerPhotos: [], organizerType: "community"});
+  const sessionRef = db.collection("eventRehearsals").doc(id);
+  const actors = buildRehearsalActors(id, 50, 1, session.virtualNow);
+  const plan = practicePlan(session.virtualNow.toMillis());
+  const outcomes = [{kind: "failed" as const,
+    classification: "technical" as const}, {kind: "delivered" as const}];
+  const batch = db.batch();
+  batch.set(sessionRef, session);
+  for (const actor of actors) {
+    batch.set(db.collection("eventRehearsalActors")
+      .doc(id + "_" + actor.actorId), {...actor,
+      assistanceAutomation: {clockId: practiceContext(session, actor).clockId,
+        status: "enabled", plan, outcomes, nextOutcomeIndex: 0,
+        evaluation: null}});
+  }
+  await batch.commit();
+  const request = (data: unknown) => ({data,
+    auth: {uid: "host-1", token: {}}}) as
+    Parameters<typeof controlEventRehearsalHandler>[0];
+  const configured = await controlEventRehearsalHandler(request({
+    sessionId: id, expectedRevision: 1, expectedSetupRevision: 0,
+    clientActionId: randomUUID(), action: "assistance",
+    assistance: {kind: "configureAutomation", actorId: actors[0].actorId,
+      plan, outcomes: [{kind: "unknown", reason: "timeout"},
+        {kind: "delivered"}]}}));
+  const advance = {sessionId: id,
+    expectedRevision: configured.session.runtimeRevision,
+    clientActionId: randomUUID(), action: "advanceClock", minutes: 1};
+  const first = await controlEventRehearsalHandler(request(advance));
+  assert.equal(first.actors.length, 50);
+  assert.ok(first.actors.every((actor) =>
+    actor.assistanceDelivery?.attempts.length === 1));
+  const replay = await controlEventRehearsalHandler(request(advance));
+  assert.equal(replay.session.runtimeRevision, first.session.runtimeRevision);
+  assert.ok(replay.actors.every((actor) =>
+    actor.assistanceAutomation?.nextOutcomeIndex === 1));
+  const second = await controlEventRehearsalHandler(request({...advance,
+    expectedRevision: first.session.runtimeRevision,
+    clientActionId: randomUUID()}));
+  assert.equal(second.actors[0].assistanceDelivery?.attempts.length, 1);
+  assert.ok(second.actors.slice(1).every((actor) =>
+    actor.assistanceDelivery?.attempts.length === 2));
+  const present = await injectEventRehearsalBehaviorHandler(request({
+    sessionId: id, expectedRevision: second.session.runtimeRevision,
+    clientActionId: randomUUID(), actorId: actors[2].actorId,
+    behavior: "arrive", faultId: "none"}));
+  assert.equal(present.actors[2].assistanceMessage?.lifecycle, "cancelled");
+  assert.equal(present.actors[2].assistanceAutomation?.evaluation?.policy?.kind,
+    "resolved");
+  const slotId = "a".repeat(24);
+  const slotToken = slotId + "_" + "b".repeat(40);
+  await db.collection("eventRehearsalGuestViews").doc(id + "_" + slotId).set({
+    sessionId: id, slotId, actorId: actors[1].actorId,
+    tokenHash: createHash("sha256").update(slotToken).digest("hex"),
+    createdAt: session.createdAt, lastSeenAt: session.createdAt,
+    expiresAt: session.expiresAt});
+  const guest = await submitEventRehearsalGuestActionHandler(request({
+    publicRehearsalId: session.publicRehearsalId, slotToken,
+    clientActionId: randomUUID(), action: "checkIn"}));
+  assert.equal(guest.actor.status, "present");
+  assert.equal(guest.actor.assistanceMessage?.lifecycle, "cancelled");
+  assert.equal("assistanceAutomation" in guest.actor, false);
+  const current = (await sessionRef.get()).data()!;
+  await controlEventRehearsalHandler(request({
+    sessionId: id, expectedRevision: current.runtimeRevision,
+    clientActionId: randomUUID(), action: "complete"}));
+  const records = await db.collection(rehearsalMessages)
+    .where("sessionId", "==", id).get();
+  assert.equal(records.size, 50);
+  assert.ok(records.docs.every((doc) => doc.get("record.lifecycle") ===
+    "cancelled"));
+  await resetEventRehearsalHandler(request({sessionId: id, fork: false,
+    seed: null}));
+  const resetActors = await db.collection("eventRehearsalActors")
+    .where("sessionId", "==", id).get();
+  assert.equal(resetActors.size, 50);
+  assert.ok(resetActors.docs.every((doc) =>
+    !doc.get("assistanceAutomation")));
+  assert.equal((await db.collection(rehearsalMessages)
+    .where("sessionId", "==", id).get()).empty, true);
 });

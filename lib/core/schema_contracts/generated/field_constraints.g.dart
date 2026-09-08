@@ -28654,6 +28654,452 @@ abstract final class CatchContractConstraints {
     pattern: '^outbox:[a-f0-9]{64}\$',
   );
 
+  static const eventRehearsalActorDocumentAssistanceAutomationClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryAttemptIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.attemptIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 6,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryAttemptIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.attemptIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.kind',
+    required: true,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryNotBefore = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.notBefore',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationNextOutcomeIndex = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.nextOutcomeIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 6,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationOutcomes = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.outcomes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 6,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsClassification = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['timeout', 'connectionLost', 'workerInterrupted'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanDepartureConfirmed = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.departureConfirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceText = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoices = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedCheckpointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedCheckpointIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedStopIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedStopIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedStopIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedStopIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanPolicyUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.policy.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanRoutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanRoutesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.routes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'paused'],
+  );
+
   static const eventRehearsalActorDocumentConfirmedLayoutUnitId = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.confirmedLayoutUnitId',
     maxLength: 40,
@@ -28925,6 +29371,452 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistance.latestMessageId',
     valueTypes: <String>['string'],
     pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryAttemptIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.attemptIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryAttemptIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.attemptIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryNotBefore = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.notBefore',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationNextOutcomeIndex = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.nextOutcomeIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsClassification = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['timeout', 'connectionLost', 'workerInterrupted'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDepartureConfirmed = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.departureConfirmed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceMaterialKey = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.materialKey',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceText = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.text',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoices = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedCheckpointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedCheckpointIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedStopIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedStopIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedStopIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedStopIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'paused'],
   );
 
   static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttempts = CatchContractFieldConstraints(
@@ -85824,6 +86716,64 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.assistance.intention.target.routeId': eventRehearsalActorDocumentAssistanceIntentionTargetRouteId,
     'eventRehearsalActorDocument.assistance.intention.target.stopId': eventRehearsalActorDocumentAssistanceIntentionTargetStopId,
     'eventRehearsalActorDocument.assistance.latestMessageId': eventRehearsalActorDocumentAssistanceLatestMessageId,
+    'eventRehearsalActorDocument.assistanceAutomation.clockId': eventRehearsalActorDocumentAssistanceAutomationClockId,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.at': eventRehearsalActorDocumentAssistanceAutomationEvaluationAt,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.attemptIds': eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryAttemptIds,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.attemptIds.items': eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryAttemptIdsItems,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.kind': eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryKind,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.notBefore': eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryNotBefore,
+    'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.reason': eventRehearsalActorDocumentAssistanceAutomationEvaluationDeliveryReason,
+    'eventRehearsalActorDocument.assistanceAutomation.nextOutcomeIndex': eventRehearsalActorDocumentAssistanceAutomationNextOutcomeIndex,
+    'eventRehearsalActorDocument.assistanceAutomation.outcomes': eventRehearsalActorDocumentAssistanceAutomationOutcomes,
+    'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.classification': eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsClassification,
+    'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.kind': eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsKind,
+    'eventRehearsalActorDocument.assistanceAutomation.outcomes.items.reason': eventRehearsalActorDocumentAssistanceAutomationOutcomesItemsReason,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.maxAttempts': eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMaxAttempts,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMaxAttemptsPerRoute,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.deliveryPolicy.minimumRetrySeconds': eventRehearsalActorDocumentAssistanceAutomationPlanDeliveryPolicyMinimumRetrySeconds,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.departureConfirmed': eventRehearsalActorDocumentAssistanceAutomationPlanDepartureConfirmed,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.checkpointId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationCheckpointId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.groupId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationGroupId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.itineraryId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationItineraryId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.kind': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationKind,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.lateEntry': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationLateEntry,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.placeId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationPlaceId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.routeId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationRouteId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.destination.stopId': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceDestinationStopId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.materialKey': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceMaterialKey,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.revision': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceRevision,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.text': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceText,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.guidance.validUntil': eventRehearsalActorDocumentAssistanceAutomationPlanGuidanceValidUntil,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoices,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.label': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsLabel,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.checkpointId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetCheckpointId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.groupId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetGroupId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.itineraryId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetItineraryId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.kind': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetKind,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.lateEntry': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetLateEntry,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.placeId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetPlaceId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.routeId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetRouteId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.laterChoices.items.target.stopId': eventRehearsalActorDocumentAssistanceAutomationPlanLaterChoicesItemsTargetStopId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.cutoff.at': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyCutoffAt,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.cutoff.kind': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyCutoffKind,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.groupId': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationGroupId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.itineraryId': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationItineraryId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.kind': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationKind,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.lateEntry': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationLateEntry,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedCheckpointIds': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIds,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedCheckpointIds.items': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIdsItems,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedStopIds': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedStopIds,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.permittedStopIds.items': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPermittedStopIdsItems,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.placeId': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationPlaceId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.destination.routeId': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyDestinationRouteId,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.maxMessagesPerEpisode': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyMaxMessagesPerEpisode,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.minimumMinutesBetweenMessages': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyMinimumMinutesBetweenMessages,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.unanswered': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyUnanswered,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.policy.updateOn': eventRehearsalActorDocumentAssistanceAutomationPlanPolicyUpdateOn,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.responseDeadline': eventRehearsalActorDocumentAssistanceAutomationPlanResponseDeadline,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.routes': eventRehearsalActorDocumentAssistanceAutomationPlanRoutes,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.routes.items': eventRehearsalActorDocumentAssistanceAutomationPlanRoutesItems,
+    'eventRehearsalActorDocument.assistanceAutomation.status': eventRehearsalActorDocumentAssistanceAutomationStatus,
     'eventRehearsalActorDocument.confirmedLayoutUnitId': eventRehearsalActorDocumentConfirmedLayoutUnitId,
     'eventRehearsalActorDocument.connectionState': eventRehearsalActorDocumentConnectionState,
     'eventRehearsalActorDocument.createdAt._nanoseconds': eventRehearsalActorDocumentCreatedAtNanoseconds,
@@ -85863,6 +86813,64 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.assistance.intention.target.routeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceIntentionTargetRouteId,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistance.intention.target.stopId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceIntentionTargetStopId,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistance.latestMessageId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceLatestMessageId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.clockId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationClockId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.at': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationAt,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.attemptIds': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryAttemptIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.attemptIds.items': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryAttemptIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.notBefore': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryNotBefore,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.reason': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationEvaluationDeliveryReason,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.nextOutcomeIndex': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationNextOutcomeIndex,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomes,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.classification': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsClassification,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.outcomes.items.reason': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationOutcomesItemsReason,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.maxAttempts': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMaxAttempts,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMaxAttemptsPerRoute,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.deliveryPolicy.minimumRetrySeconds': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDeliveryPolicyMinimumRetrySeconds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.departureConfirmed': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanDepartureConfirmed,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.checkpointId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.groupId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationGroupId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.itineraryId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationItineraryId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.lateEntry': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationLateEntry,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.placeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationPlaceId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.routeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationRouteId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.destination.stopId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceDestinationStopId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.materialKey': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceMaterialKey,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.revision': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceRevision,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.text': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceText,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.guidance.validUntil': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanGuidanceValidUntil,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoices,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.label': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.checkpointId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.groupId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetGroupId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.itineraryId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetItineraryId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.lateEntry': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetLateEntry,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.placeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetPlaceId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.routeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetRouteId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.laterChoices.items.target.stopId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanLaterChoicesItemsTargetStopId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.cutoff.at': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyCutoffAt,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.cutoff.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyCutoffKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.groupId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationGroupId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.itineraryId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationItineraryId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.lateEntry': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationLateEntry,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedCheckpointIds': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedCheckpointIds.items': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedCheckpointIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedStopIds': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedStopIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.permittedStopIds.items': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPermittedStopIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.placeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationPlaceId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.destination.routeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyDestinationRouteId,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.maxMessagesPerEpisode': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyMaxMessagesPerEpisode,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.minimumMinutesBetweenMessages': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyMinimumMinutesBetweenMessages,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.unanswered': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyUnanswered,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.policy.updateOn': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanPolicyUpdateOn,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.responseDeadline': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanResponseDeadline,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutes,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes.items': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutesItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.status': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationStatus,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceDelivery.attempts': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttempts,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceDelivery.attempts.items.attemptId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttemptsItemsAttemptId,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceDelivery.attempts.items.routeId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttemptsItemsRouteId,

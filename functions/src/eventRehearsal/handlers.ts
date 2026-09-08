@@ -104,7 +104,8 @@ import {
 
 import {operationContentHash} from "../operations/durableActions";
 import {isOrganizerManager} from "../shared/organizerHosts";
-import {applyPracticeHostCommand, applyPracticeGuestReply} from
+import {applyPracticeHostCommand, applyPracticeGuestReply,
+  applyPracticeAutomations} from
   "./assistanceTransactions";
 import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
   readPracticeMessage,
@@ -295,15 +296,9 @@ export async function controlEventRehearsalHandler(
         "Rehearsal roster is too large."
       );
     }
+    await requireCurrentHostAuthority(db, tx, session, uid);
     if (data.action === "assistance") {
       const command = data.assistance!;
-      const organizerSnap = await tx.get(db.collection("organizers")
-        .doc(session.organizerId));
-      const organizer = requireDoc<OrganizerDocument>(organizerSnap,
-        "OrganizerDocument");
-      if (!isOrganizerManager(organizer, uid)) {
-        throw new HttpsError("permission-denied", "Host authority changed.");
-      }
       const target = actorSnaps.docs.find((doc) =>
         doc.data().actorId === command.actorId);
       if (!target) {
@@ -336,15 +331,6 @@ export async function controlEventRehearsalHandler(
       resolved.virtualNowMillis
     );
     const nextRevision = session.runtimeRevision + 1;
-    tx.update(sessionRef, {
-      status: resolved.status,
-      activeStepIndex: resolved.activeStepIndex,
-      virtualNow,
-      runtimeRevision: nextRevision,
-      actionCount: session.actionCount + 1,
-      updatedAt: now,
-      completedAt: resolved.status === "complete" ? now : null,
-    });
     const actorDocuments = actorSnaps.docs.map((doc) => ({
       ref: doc.ref,
       value: requireDoc<EventRehearsalActorDocument>(
@@ -365,9 +351,22 @@ export async function controlEventRehearsalHandler(
       resolved.virtualNowMillis,
       session.actorCount
     ) : [];
-    const nextActors = applyRehearsalCues(actorDocuments.map((actor) =>
-      actorAtMoment(actor.value, momentForStep(resolved.activeStepIndex), now)
-    ), cues, now);
+    const nextSession = {...session, status: resolved.status,
+      activeStepIndex: resolved.activeStepIndex, virtualNow,
+      runtimeRevision: nextRevision};
+    const nextActors = await applyPracticeAutomations(db, tx, nextSession,
+      applyRehearsalCues(actorDocuments.map((actor) =>
+        actorAtMoment(actor.value, momentForStep(resolved.activeStepIndex), now)
+      ), cues, now));
+    tx.update(sessionRef, {
+      status: resolved.status,
+      activeStepIndex: resolved.activeStepIndex,
+      virtualNow,
+      runtimeRevision: nextRevision,
+      actionCount: session.actionCount + 1,
+      updatedAt: now,
+      completedAt: resolved.status === "complete" ? now : null,
+    });
     for (const [index, actor] of actorDocuments.entries()) {
       tx.set(actor.ref, nextActors[index]);
     }
@@ -438,6 +437,7 @@ export async function injectEventRehearsalBehaviorHandler(
     if (actionSnap.exists) return;
     assertActionCapacity(session);
     assertCurrentRevision(session, data.expectedRevision);
+    await requireCurrentHostAuthority(db, tx, session, uid);
     if (data.behavior && !["running", "paused"].includes(session.status)) {
       throw new HttpsError(
         "failed-precondition",
@@ -459,7 +459,7 @@ export async function injectEventRehearsalBehaviorHandler(
         actorSnap,
         "EventRehearsalActorDocument"
       );
-      tx.set(actorRef, applyRehearsalBehavior(
+      const changedActor = applyRehearsalBehavior(
         actor,
         data.behavior,
         actorSnaps.docs.map((doc) =>
@@ -469,7 +469,10 @@ export async function injectEventRehearsalBehaviorHandler(
           ).actorId
         ),
         now
-      ));
+      );
+      const [nextActor] = await applyPracticeAutomations(db, tx,
+        {...session, runtimeRevision: nextRevision}, [changedActor]);
+      tx.set(actorRef, nextActor);
     }
     tx.update(sessionRef, {
       faultId: data.faultId,
@@ -528,6 +531,7 @@ export async function controlEventRehearsalSpatialHandler(
     const session = requireSession(sessionSnap);
     assertActionCapacity(session);
     assertCurrentRevision(session, data.expectedRevision);
+    await requireCurrentHostAuthority(db, tx, session, uid);
     if (!["running", "paused"].includes(session.status)) {
       throw new HttpsError(
         "failed-precondition",
@@ -560,6 +564,8 @@ export async function controlEventRehearsalSpatialHandler(
       );
     }
     const nextRevision = session.runtimeRevision + 1;
+    [nextActor] = await applyPracticeAutomations(db, tx,
+      {...session, runtimeRevision: nextRevision}, [nextActor]);
     tx.set(actorRef, nextActor);
     tx.update(sessionRef, {
       runtimeRevision: nextRevision,
@@ -788,14 +794,15 @@ export async function submitEventRehearsalGuestActionHandler(
       throw new HttpsError("failed-precondition",
         "Practice actor scope changed.");
     }
+    const nextSession = {...session, runtimeRevision: nextRevision};
     const nextActor = data.action === "respondToAssistance" ?
-      await applyPracticeGuestReply(db, tx, session, actor, {
+      await applyPracticeGuestReply(db, tx, nextSession, actor, {
         messageId: data.messageId!, intentRevision: data.intentRevision!,
         choiceId: data.choiceId!, requestId: data.clientActionId,
         actionId: "practice:" + operationContentHash([
           resolved.id, slotId, data.clientActionId])}) :
-      applyRehearsalGuestAction(actor,
-        data.action, now);
+      (await applyPracticeAutomations(db, tx, nextSession,
+        [applyRehearsalGuestAction(actor, data.action, now)]))[0];
     tx.set(actorRef, {...nextActor, lastActionAt: now, updatedAt: now});
     tx.update(sessionRef, {
       runtimeRevision: nextRevision,
@@ -1146,6 +1153,18 @@ function sampleSetup(): RehearsalSetup {
   };
 }
 
+async function requireCurrentHostAuthority(db: Firestore,
+  tx: FirebaseFirestore.Transaction, session: EventRehearsalDocument,
+  uid: string): Promise<void> {
+  const snapshot = await tx.get(db.collection("organizers")
+    .doc(session.organizerId));
+  const organizer = requireDoc<OrganizerDocument>(snapshot,
+    "OrganizerDocument");
+  if (!isOrganizerManager(organizer, uid)) {
+    throw new HttpsError("permission-denied", "Host authority changed.");
+  }
+}
+
 async function requireHostSession(
   db: Firestore,
   sessionId: string,
@@ -1247,6 +1266,9 @@ async function hostProjection(
         promptCompleted: actor.promptCompleted,
         layoutUnitId: actor.layoutUnitId,
         confirmedLayoutUnitId: actor.confirmedLayoutUnitId,
+        ...(actor.assistanceAutomation ? {
+          assistanceAutomation: actor.assistanceAutomation,
+        } : {}),
         ...(actor.assistance ? {assistance: actor.assistance,
           assistanceDelivery: practiceDeliveryView(message),
           assistanceMessage: practiceMessageView(session, actor,

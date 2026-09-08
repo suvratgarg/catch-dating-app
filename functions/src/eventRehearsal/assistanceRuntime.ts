@@ -20,6 +20,11 @@ import {prepareRehearsalLateJoin} from "./assistanceMessages";
 
 export type {PracticeMessage};
 export type PracticePlan = PracticeMessage["plan"];
+export class PracticeHistoryUnavailable extends HttpsError {
+  constructor() {
+    super("failed-precondition", "Practice message history needs review.");
+  }
+}
 export const rehearsalMessages = "eventRehearsalMessages";
 export const practiceState = (actor: Actor): NonNullable<Actor["assistance"]> =>
   actor.assistance ?? {intention: {kind: "unknown"}, latestMessageId: null};
@@ -56,7 +61,7 @@ export function practiceInput(session: Session, actor: Actor,
   records.map((m) => readPracticeMessage(m, session, actor).record), now,
   current?.record.intent);
   if (history.kind !== "ready") {
-    fail("Practice history needs review: " + history.reason);
+    throw new PracticeHistoryUnavailable();
   }
   const end = session.virtualStartedAt.toMillis() +
     session.setup.durationMinutes * 60000;
@@ -118,8 +123,7 @@ export function readPracticeMessage(value: unknown, session: Session,
 }
 
 /** Publish a practice message only from an explicit Host-reviewed plan. */
-export function publishPracticeMessage(session: Session, actor: Actor,
-  plan: PracticePlan, history: readonly PracticeMessage[]) {
+export function requirePracticePlan(session: Session, plan: PracticePlan) {
   const now = session.virtualNow.toMillis();
   const end = session.virtualStartedAt.toMillis() +
     session.setup.durationMinutes * 60000;
@@ -130,6 +134,12 @@ export function publishPracticeMessage(session: Session, actor: Actor,
         (plan.laterChoices ?? []).length) {
     fail("Review the practice plan and window.");
   }
+}
+
+export function publishPracticeMessage(session: Session, actor: Actor,
+  plan: PracticePlan, history: readonly PracticeMessage[]) {
+  requirePracticePlan(session, plan);
+  const now = session.virtualNow.toMillis();
   const input = practiceInput(session, actor, plan, history);
   const prepared = prepareRehearsalLateJoin(input, practiceContext(session,
     actor), {

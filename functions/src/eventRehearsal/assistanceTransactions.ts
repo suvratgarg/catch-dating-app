@@ -5,14 +5,18 @@ import type {EventRehearsalDocument as Session,
   "../shared/generated/firestoreAdminTypes";
 import type {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
+import {operationContentHash as hash} from "../operations/durableActions";
 import {MAX_LATE_JOIN_HISTORY} from
   "../eventSuccess/operations/lateJoinHistoryProjection";
 import {dispatchRehearsalMessage, recordRehearsalMessageOutcome,
   respondToRehearsalMessage} from "./assistanceMessages";
 import {practiceContext, practiceEpisode, practiceFacts,
   practiceMessageDocumentId, practiceState, publishPracticeMessage,
-  readPracticeMessage, rehearsalMessages, PracticeMessage} from
-  "./assistanceRuntime";
+  readPracticeMessage, rehearsalMessages, PracticeMessage,
+  PracticeHistoryUnavailable} from "./assistanceRuntime";
+import {configurePracticeAutomation, evaluatePracticeAutomation,
+  pausePracticeAutomation, unavailablePracticeAutomation,
+  PracticeAutomationResult} from "./assistanceAutomation";
 
 export type PracticeCommand = NonNullable<
   ControlEventRehearsalCallablePayload["assistance"]>;
@@ -25,19 +29,64 @@ async function readHistory(db: Firestore, tx: Transaction, session: Session,
     .where("record.intent.context.clockId", "==",
       practiceContext(session, actor).clockId)
     .limit(MAX_LATE_JOIN_HISTORY + 1));
+  // Transport errors above remain transaction failures. Invalid stored history
+  // below can hold automation without rolling back an independent check-in.
   if (snapshots.size > MAX_LATE_JOIN_HISTORY) {
-    throw new HttpsError("resource-exhausted",
-      "Reset this practice message history.");
+    throw new PracticeHistoryUnavailable();
   }
-  return snapshots.docs.map((snap) => {
-    const value = readPracticeMessage(snap.data(), session, actor);
-    if (snap.id !== practiceMessageDocumentId(actor.sessionId,
-      value.record.messageId)) {
-      throw new HttpsError("failed-precondition",
-        "Practice message identity changed.");
+  try {
+    const history = snapshots.docs.map((snap) => {
+      const value = readPracticeMessage(snap.data(), session, actor);
+      if (snap.id !== practiceMessageDocumentId(actor.sessionId,
+        value.record.messageId)) throw new Error("Practice identity changed");
+      return value;
+    });
+    const currentId = practiceState(actor).latestMessageId;
+    if (currentId && !history.some((m) => m.record.messageId === currentId)) {
+      throw new Error("Practice history omitted its current message");
     }
-    return value;
-  });
+    return history;
+  } catch {
+    throw new PracticeHistoryUnavailable();
+  }
+}
+
+function persistMessages(db: Firestore, tx: Transaction, session: Session,
+  actor: Actor, before: readonly PracticeMessage[],
+  after: readonly PracticeMessage[]) {
+  const originals = new Map(before.map((m) => [m.record.messageId, m]));
+  for (const message of after) {
+    readPracticeMessage(message, session, actor);
+    const original = originals.get(message.record.messageId);
+    if (original && hash(original) === hash(message)) continue;
+    const ref = db.collection(rehearsalMessages).doc(
+      practiceMessageDocumentId(actor.sessionId, message.record.messageId));
+    if (original) tx.set(ref, message);
+    else tx.create(ref, message);
+  }
+}
+
+/** All actor histories are read before any writes in the parent transaction. */
+export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
+  session: Session, actors: readonly Actor[]): Promise<Actor[]> {
+  const changes = await Promise.all(actors.map(async (actor) => {
+    if (actor.assistanceAutomation?.status !== "enabled") {
+      return {before: [], result: {actor, messages: []}};
+    }
+    try {
+      const before = await readHistory(db, tx, session, actor);
+      return {before, result: evaluatePracticeAutomation(session, actor,
+        before)};
+    } catch (error) {
+      if (!(error instanceof PracticeHistoryUnavailable)) throw error;
+      return {before: [],
+        result: unavailablePracticeAutomation(session, actor)};
+    }
+  }));
+  for (const {before, result} of changes) {
+    persistMessages(db, tx, session, result.actor, before, result.messages);
+  }
+  return changes.map(({result}) => result.actor);
 }
 
 /** Called before any writes in the existing Host rehearsal transaction. */
@@ -49,37 +98,59 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     throw new HttpsError("failed-precondition",
       "Practice command is unavailable.");
   }
+  if (command.kind === "pauseAutomation") {
+    return pausePracticeAutomation(session, actor);
+  }
   const history = await readHistory(db, tx, session, actor);
-  if (command.kind === "publish") {
-    const next = publishPracticeMessage(session, actor, command.plan, history);
-    const ref = db.collection(rehearsalMessages).doc(
-      practiceMessageDocumentId(actor.sessionId,
-        next.message.record.messageId));
-    if (!next.exists) tx.create(ref, next.message);
-    return next.actor;
+  let next: PracticeAutomationResult;
+  if (command.kind === "configureAutomation") {
+    next = configurePracticeAutomation(session, actor, command.plan,
+      command.outcomes, history);
+  } else if (command.kind === "resumeAutomation") {
+    if (!actor.assistanceAutomation) {
+      throw new HttpsError("failed-precondition",
+        "Configure practice assistance first.");
+    }
+    const current = history.find((m) => m.record.messageId ===
+      practiceState(actor).latestMessageId);
+    if (current &&
+        hash(current.plan) !== hash(actor.assistanceAutomation.plan)) {
+      throw new HttpsError("failed-precondition",
+        "Review the practice plan before resuming automation.");
+    }
+    next = evaluatePracticeAutomation(session, {...actor,
+      assistanceAutomation: {...actor.assistanceAutomation,
+        status: "enabled"}}, history);
+  } else if (command.kind === "publish") {
+    const published = publishPracticeMessage(session, actor, command.plan,
+      history);
+    next = {actor: pausePracticeAutomation(session, published.actor),
+      messages: published.exists ? history : [...history, published.message]};
+  } else {
+    const message = history.find((m) =>
+      m.record.messageId === command.messageId);
+    if (!message) {
+      throw new HttpsError("not-found",
+        "Practice message not found.");
+    }
+    const context = practiceContext(session, actor);
+    const now = session.virtualNow.toMillis();
+    const result = command.kind === "dispatch" ? dispatchRehearsalMessage({
+      context, record: message.record, now, outcome: command.outcome,
+      facts: practiceFacts(session, actor, message, history)}) :
+      recordRehearsalMessageOutcome({context, record: message.record,
+        now, attemptId: command.attemptId, outcome: command.outcome});
+    const messages = history.map((m) => m === message ?
+      {...message, record: result.record} : m);
+    next = command.kind === "dispatch" ?
+      {actor: pausePracticeAutomation(session, actor), messages} :
+      evaluatePracticeAutomation(session, actor, messages);
   }
-  const message = history.find((m) => m.record.messageId === command.messageId);
-  if (!message) {
-    throw new HttpsError("not-found",
-      "Practice message not found.");
-  }
-  const context = practiceContext(session, actor);
-  const now = session.virtualNow.toMillis();
-  const result = command.kind === "dispatch" ? dispatchRehearsalMessage({
-    context, record: message.record, now, outcome: command.outcome,
-    facts: practiceFacts(session, actor, message, history)}) :
-    recordRehearsalMessageOutcome({context, record: message.record,
-      now, attemptId: command.attemptId, outcome: command.outcome});
-  const next = {...message, record: result.record};
-  readPracticeMessage(next, session, actor);
-  tx.set(db.collection(rehearsalMessages).doc(
-    practiceMessageDocumentId(actor.sessionId, next.record.messageId)), next);
-  return actor;
+  persistMessages(db, tx, session, next.actor, history, next.messages);
+  return next.actor;
 }
 
-/**
- * The parent authenticates the anonymous slot and commits the returned actor.
- */
+/** The parent authenticates the guest slot and commits the actor. */
 export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
   session: Session, actor: Actor, submission: {
     messageId: string; intentRevision: number; choiceId: string;
@@ -113,11 +184,13 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     throw new HttpsError("failed-precondition",
       "Unsupported practice response.");
   }
-  tx.set(db.collection(rehearsalMessages).doc(
-    practiceMessageDocumentId(actor.sessionId, message.record.messageId)),
-  {...message, record: result.record});
-  return {...actor, assistance: {...practiceState(actor),
+  const changedActor = {...actor, assistance: {...practiceState(actor),
     intention: effect.kind === "joinIntent" ? effect.intention :
       practiceState(actor).intention},
   helpRequested: actor.helpRequested || effect.kind === "requestHelp"};
+  const messages = history.map((m) => m === message ?
+    {...message, record: result.record} : m);
+  const next = evaluatePracticeAutomation(session, changedActor, messages);
+  persistMessages(db, tx, session, next.actor, history, next.messages);
+  return next.actor;
 }

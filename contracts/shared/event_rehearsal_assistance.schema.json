@@ -298,6 +298,67 @@
               ]
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "plan",
+            "outcomes"
+          ],
+          "properties": {
+            "kind": {
+              "const": "configureAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "plan": {
+              "$ref": "#/definitions/plan"
+            },
+            "outcomes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "$ref": "#/definitions/outcome"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pauseAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resumeAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            }
+          }
         }
       ],
       "type": "object"
@@ -427,6 +488,268 @@
               }
             }
           }
+        }
+      }
+    },
+    "automationDelivery": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "paused"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "notApplicable"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "scriptExhausted"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "stop"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "responded",
+                "cancelled",
+                "superseded",
+                "expired",
+                "eventClosed",
+                "permissionRevoked",
+                "guestPresent",
+                "guestDeclined",
+                "notAdmitted",
+                "hostStopped",
+                "participationInactive"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attemptIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "delivered"
+            },
+            "attemptIds": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attemptIds",
+            "notBefore"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reconcile"
+            },
+            "attemptIds": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string"
+              }
+            },
+            "notBefore": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "refreshFacts"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "eventFactsStale",
+                "routeFactsStale"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "notBefore",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "wait"
+            },
+            "notBefore": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "const": "retryBackoff"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "hostDecision"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "noEligibleRoute",
+                "attemptLimit",
+                "policyRejected",
+                "recipientNeedsReview",
+                "providerOwnsFallback",
+                "conflictingDeliveryEvidence",
+                "historyUnavailable"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "automationEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "policy",
+        "delivery"
+      ],
+      "properties": {
+        "at": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/LateJoinEvaluation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery": {
+          "$ref": "#/definitions/automationDelivery"
+        }
+      }
+    },
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "status",
+        "plan",
+        "outcomes",
+        "nextOutcomeIndex",
+        "evaluation"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "paused"
+          ]
+        },
+        "plan": {
+          "$ref": "#/definitions/plan"
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/definitions/outcome"
+          }
+        },
+        "nextOutcomeIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "evaluation": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/automationEvaluation"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }

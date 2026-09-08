@@ -111191,6 +111191,1226 @@ export const eventRehearsalActorDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "assistanceAutomation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "status",
+        "plan",
+        "outcomes",
+        "nextOutcomeIndex",
+        "evaluation"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "paused"
+          ]
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy",
+            "guidance",
+            "departureConfirmed",
+            "responseDeadline",
+            "routes",
+            "deliveryPolicy"
+          ],
+          "properties": {
+            "policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "destination",
+                "cutoff",
+                "maxMessagesPerEpisode",
+                "minimumMinutesBetweenMessages",
+                "updateOn",
+                "unanswered"
+              ],
+              "properties": {
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "permittedStopIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "permittedStopIds": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 1000,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "uniqueItems": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "permittedCheckpointIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "permittedCheckpointIds": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 1000,
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "uniqueItems": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "cutoff": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "eventEnd"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "at"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "time"
+                        },
+                        "at": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991,
+                          "description": "UTC milliseconds."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "maxMessagesPerEpisode": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "minimumMinutesBetweenMessages": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1440
+                },
+                "updateOn": {
+                  "type": "string",
+                  "const": "materialGuidanceChange"
+                },
+                "unanswered": {
+                  "type": "string",
+                  "enum": [
+                    "keepUnknownUntilCutoff",
+                    "hostReviewAtDeadline"
+                  ]
+                }
+              }
+            },
+            "guidance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "destination",
+                "materialKey",
+                "text",
+                "validUntil"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "materialKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                }
+              }
+            },
+            "departureConfirmed": {
+              "type": "boolean"
+            },
+            "responseDeadline": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "routes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "catchEventSms",
+                  "catchEventRcs",
+                  "organizerEventWhatsapp"
+                ]
+              }
+            },
+            "deliveryPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "maxAttempts",
+                "maxAttemptsPerRoute",
+                "minimumRetrySeconds"
+              ],
+              "properties": {
+                "maxAttempts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "maxAttemptsPerRoute": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                },
+                "minimumRetrySeconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3600
+                }
+              }
+            },
+            "laterChoices": {
+              "type": "array",
+              "maxItems": 17,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "target"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "target": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "placeId",
+                          "lateEntry"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "fixedPlace"
+                          },
+                          "placeId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "lateEntry": {
+                            "type": "string",
+                            "enum": [
+                              "allowed",
+                              "hostDecision",
+                              "closed"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "itineraryId",
+                          "stopId"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "itineraryStop"
+                          },
+                          "itineraryId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "stopId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "routeId",
+                          "groupId",
+                          "checkpointId"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "groupCheckpoint"
+                          },
+                          "routeId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "groupId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "checkpointId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "policy": {
+                "properties": {
+                  "unanswered": {
+                    "const": "hostReviewAtDeadline"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "responseDeadline": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "delivered",
+                      "read",
+                      "revoked"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "classification"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "failed"
+                  },
+                  "classification": {
+                    "type": "string",
+                    "enum": [
+                      "technical",
+                      "policy",
+                      "suppressed",
+                      "invalidRecipient"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "reason"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "unknown"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "timeout",
+                      "connectionLost",
+                      "workerInterrupted"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "nextOutcomeIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "evaluation": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "at",
+                "policy",
+                "delivery"
+              ],
+              "properties": {
+                "at": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "policy": {
+                  "anyOf": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "resolved"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "joined",
+                                "declined"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "cancelled"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "eventClosed",
+                                "notAdmitted",
+                                "policyDisabled",
+                                "participationInactive"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "expired"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "cutoff",
+                                "lateEntryClosed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "wait"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "departureUnconfirmed",
+                                "attendanceUnknown",
+                                "guidanceUnavailable",
+                                "throttled",
+                                "unchanged",
+                                "participationUnknown"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason",
+                            "guidance"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "hostDecision"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "unreachable",
+                                "entryDecision",
+                                "missingInformation"
+                              ]
+                            },
+                            "guidance": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "required": [
+                                    "revision",
+                                    "destination",
+                                    "materialKey",
+                                    "text",
+                                    "validUntil"
+                                  ],
+                                  "properties": {
+                                    "revision": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "Nonnegative safe integer revision."
+                                    },
+                                    "destination": {
+                                      "anyOf": [
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "placeId",
+                                            "lateEntry"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "fixedPlace"
+                                            },
+                                            "placeId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 160,
+                                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                            },
+                                            "lateEntry": {
+                                              "type": "string",
+                                              "enum": [
+                                                "allowed",
+                                                "hostDecision",
+                                                "closed"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "itineraryId",
+                                            "stopId"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "itineraryStop"
+                                            },
+                                            "itineraryId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            },
+                                            "stopId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "routeId",
+                                            "groupId",
+                                            "checkpointId"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "groupCheckpoint"
+                                            },
+                                            "routeId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            },
+                                            "groupId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 160,
+                                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                            },
+                                            "checkpointId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "materialKey": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "text": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "validUntil": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "null",
+                                  "const": null
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "guidance",
+                            "messageKey",
+                            "shouldSend",
+                            "nextEvaluationAt"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "update"
+                            },
+                            "guidance": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "revision",
+                                "destination",
+                                "materialKey",
+                                "text",
+                                "validUntil"
+                              ],
+                              "properties": {
+                                "revision": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991,
+                                  "description": "Nonnegative safe integer revision."
+                                },
+                                "destination": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "placeId",
+                                        "lateEntry"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "fixedPlace"
+                                        },
+                                        "placeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "lateEntry": {
+                                          "type": "string",
+                                          "enum": [
+                                            "allowed",
+                                            "hostDecision",
+                                            "closed"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "itineraryId",
+                                        "stopId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "itineraryStop"
+                                        },
+                                        "itineraryId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "stopId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "kind",
+                                        "routeId",
+                                        "groupId",
+                                        "checkpointId"
+                                      ],
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "const": "groupCheckpoint"
+                                        },
+                                        "routeId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "groupId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 160,
+                                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                        },
+                                        "checkpointId": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                "materialKey": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "text": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "validUntil": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991,
+                                  "description": "UTC milliseconds."
+                                }
+                              }
+                            },
+                            "messageKey": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "shouldSend": {
+                              "type": "boolean"
+                            },
+                            "nextEvaluationAt": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "delivery": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "paused"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "notApplicable"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "scriptExhausted"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "stop"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "responded",
+                            "cancelled",
+                            "superseded",
+                            "expired",
+                            "eventClosed",
+                            "permissionRevoked",
+                            "guestPresent",
+                            "guestDeclined",
+                            "notAdmitted",
+                            "hostStopped",
+                            "participationInactive"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "attemptIds"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "delivered"
+                        },
+                        "attemptIds": {
+                          "type": "array",
+                          "maxItems": 6,
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "attemptIds",
+                        "notBefore"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "reconcile"
+                        },
+                        "attemptIds": {
+                          "type": "array",
+                          "maxItems": 6,
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "notBefore": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "refreshFacts"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "eventFactsStale",
+                            "routeFactsStale"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "notBefore",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "wait"
+                        },
+                        "notBefore": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "reason": {
+                          "const": "retryBackoff"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "hostDecision"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "noEligibleRoute",
+                            "attemptLimit",
+                            "policyRejected",
+                            "recipientNeedsReview",
+                            "providerOwnsFallback",
+                            "conflictingDeliveryEvidence",
+                            "historyUnavailable"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };
@@ -144030,6 +145250,1225 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                 "type": "null"
               }
             ]
+          },
+          "assistanceAutomation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "clockId",
+              "status",
+              "plan",
+              "outcomes",
+              "nextOutcomeIndex",
+              "evaluation"
+            ],
+            "properties": {
+              "clockId": {
+                "type": "string",
+                "pattern": "^clock:[a-f0-9]{64}$"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "enabled",
+                  "paused"
+                ]
+              },
+              "plan": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "policy",
+                  "guidance",
+                  "departureConfirmed",
+                  "responseDeadline",
+                  "routes",
+                  "deliveryPolicy"
+                ],
+                "properties": {
+                  "policy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "destination",
+                      "cutoff",
+                      "maxMessagesPerEpisode",
+                      "minimumMinutesBetweenMessages",
+                      "updateOn",
+                      "unanswered"
+                    ],
+                    "properties": {
+                      "destination": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "placeId",
+                              "lateEntry"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "fixedPlace"
+                              },
+                              "placeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "lateEntry": {
+                                "type": "string",
+                                "enum": [
+                                  "allowed",
+                                  "hostDecision",
+                                  "closed"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "itineraryId",
+                              "permittedStopIds"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "itineraryStop"
+                              },
+                              "itineraryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "permittedStopIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 1000,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "uniqueItems": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "routeId",
+                              "groupId",
+                              "permittedCheckpointIds"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "groupCheckpoint"
+                              },
+                              "routeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "permittedCheckpointIds": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 1000,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "uniqueItems": true
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "cutoff": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "eventEnd"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "at"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "time"
+                              },
+                              "at": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991,
+                                "description": "UTC milliseconds."
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "maxMessagesPerEpisode": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "minimumMinutesBetweenMessages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1440
+                      },
+                      "updateOn": {
+                        "type": "string",
+                        "const": "materialGuidanceChange"
+                      },
+                      "unanswered": {
+                        "type": "string",
+                        "enum": [
+                          "keepUnknownUntilCutoff",
+                          "hostReviewAtDeadline"
+                        ]
+                      }
+                    }
+                  },
+                  "guidance": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "revision",
+                      "destination",
+                      "materialKey",
+                      "text",
+                      "validUntil"
+                    ],
+                    "properties": {
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991,
+                        "description": "Nonnegative safe integer revision."
+                      },
+                      "destination": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "placeId",
+                              "lateEntry"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "fixedPlace"
+                              },
+                              "placeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "lateEntry": {
+                                "type": "string",
+                                "enum": [
+                                  "allowed",
+                                  "hostDecision",
+                                  "closed"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "itineraryId",
+                              "stopId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "itineraryStop"
+                              },
+                              "itineraryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "stopId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "routeId",
+                              "groupId",
+                              "checkpointId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "groupCheckpoint"
+                              },
+                              "routeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "checkpointId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "materialKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "validUntil": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991,
+                        "description": "UTC milliseconds."
+                      }
+                    }
+                  },
+                  "departureConfirmed": {
+                    "type": "boolean"
+                  },
+                  "responseDeadline": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "routes": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "catchEventSms",
+                        "catchEventRcs",
+                        "organizerEventWhatsapp"
+                      ]
+                    }
+                  },
+                  "deliveryPolicy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "maxAttempts",
+                      "maxAttemptsPerRoute",
+                      "minimumRetrySeconds"
+                    ],
+                    "properties": {
+                      "maxAttempts": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 6
+                      },
+                      "maxAttemptsPerRoute": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3
+                      },
+                      "minimumRetrySeconds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3600
+                      }
+                    }
+                  },
+                  "laterChoices": {
+                    "type": "array",
+                    "maxItems": 17,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "label",
+                        "target"
+                      ],
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "target": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "placeId",
+                                "lateEntry"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "fixedPlace"
+                                },
+                                "placeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "lateEntry": {
+                                  "type": "string",
+                                  "enum": [
+                                    "allowed",
+                                    "hostDecision",
+                                    "closed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "itineraryId",
+                                "stopId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "itineraryStop"
+                                },
+                                "itineraryId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "stopId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "routeId",
+                                "groupId",
+                                "checkpointId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "groupCheckpoint"
+                                },
+                                "routeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "groupId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "checkpointId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "policy": {
+                      "properties": {
+                        "unanswered": {
+                          "const": "hostReviewAtDeadline"
+                        }
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "responseDeadline": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "outcomes": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 6,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "accepted",
+                            "delivered",
+                            "read",
+                            "revoked"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "classification"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "failed"
+                        },
+                        "classification": {
+                          "type": "string",
+                          "enum": [
+                            "technical",
+                            "policy",
+                            "suppressed",
+                            "invalidRecipient"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "unknown"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "timeout",
+                            "connectionLost",
+                            "workerInterrupted"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "nextOutcomeIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 6
+              },
+              "evaluation": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "at",
+                      "policy",
+                      "delivery"
+                    ],
+                    "properties": {
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "policy": {
+                        "anyOf": [
+                          {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "reason"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "resolved"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "enum": [
+                                      "joined",
+                                      "declined"
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "reason"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "cancelled"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "enum": [
+                                      "eventClosed",
+                                      "notAdmitted",
+                                      "policyDisabled",
+                                      "participationInactive"
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "reason"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "expired"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "enum": [
+                                      "cutoff",
+                                      "lateEntryClosed"
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "reason"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "wait"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "enum": [
+                                      "departureUnconfirmed",
+                                      "attendanceUnknown",
+                                      "guidanceUnavailable",
+                                      "throttled",
+                                      "unchanged",
+                                      "participationUnknown"
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "reason",
+                                  "guidance"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "hostDecision"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "enum": [
+                                      "unreachable",
+                                      "entryDecision",
+                                      "missingInformation"
+                                    ]
+                                  },
+                                  "guidance": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                          "revision",
+                                          "destination",
+                                          "materialKey",
+                                          "text",
+                                          "validUntil"
+                                        ],
+                                        "properties": {
+                                          "revision": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991,
+                                            "description": "Nonnegative safe integer revision."
+                                          },
+                                          "destination": {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "placeId",
+                                                  "lateEntry"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "fixedPlace"
+                                                  },
+                                                  "placeId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 160,
+                                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                  },
+                                                  "lateEntry": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                      "allowed",
+                                                      "hostDecision",
+                                                      "closed"
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "itineraryId",
+                                                  "stopId"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "itineraryStop"
+                                                  },
+                                                  "itineraryId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  },
+                                                  "stopId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "routeId",
+                                                  "groupId",
+                                                  "checkpointId"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "groupCheckpoint"
+                                                  },
+                                                  "routeId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  },
+                                                  "groupId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 160,
+                                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                  },
+                                                  "checkpointId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "materialKey": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "text": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "validUntil": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991,
+                                            "description": "UTC milliseconds."
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "null",
+                                        "const": null
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "kind",
+                                  "guidance",
+                                  "messageKey",
+                                  "shouldSend",
+                                  "nextEvaluationAt"
+                                ],
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "const": "update"
+                                  },
+                                  "guidance": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "revision",
+                                      "destination",
+                                      "materialKey",
+                                      "text",
+                                      "validUntil"
+                                    ],
+                                    "properties": {
+                                      "revision": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991,
+                                        "description": "Nonnegative safe integer revision."
+                                      },
+                                      "destination": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "required": [
+                                              "kind",
+                                              "placeId",
+                                              "lateEntry"
+                                            ],
+                                            "properties": {
+                                              "kind": {
+                                                "type": "string",
+                                                "const": "fixedPlace"
+                                              },
+                                              "placeId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 160,
+                                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                              },
+                                              "lateEntry": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "allowed",
+                                                  "hostDecision",
+                                                  "closed"
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "required": [
+                                              "kind",
+                                              "itineraryId",
+                                              "stopId"
+                                            ],
+                                            "properties": {
+                                              "kind": {
+                                                "type": "string",
+                                                "const": "itineraryStop"
+                                              },
+                                              "itineraryId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              },
+                                              "stopId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "required": [
+                                              "kind",
+                                              "routeId",
+                                              "groupId",
+                                              "checkpointId"
+                                            ],
+                                            "properties": {
+                                              "kind": {
+                                                "type": "string",
+                                                "const": "groupCheckpoint"
+                                              },
+                                              "routeId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              },
+                                              "groupId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 160,
+                                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                              },
+                                              "checkpointId": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "materialKey": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      },
+                                      "validUntil": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991,
+                                        "description": "UTC milliseconds."
+                                      }
+                                    }
+                                  },
+                                  "messageKey": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 2000
+                                  },
+                                  "shouldSend": {
+                                    "type": "boolean"
+                                  },
+                                  "nextEvaluationAt": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "delivery": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "paused"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "notApplicable"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "scriptExhausted"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "stop"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "responded",
+                                  "cancelled",
+                                  "superseded",
+                                  "expired",
+                                  "eventClosed",
+                                  "permissionRevoked",
+                                  "guestPresent",
+                                  "guestDeclined",
+                                  "notAdmitted",
+                                  "hostStopped",
+                                  "participationInactive"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "attemptIds"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "delivered"
+                              },
+                              "attemptIds": {
+                                "type": "array",
+                                "maxItems": 6,
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "attemptIds",
+                              "notBefore"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "reconcile"
+                              },
+                              "attemptIds": {
+                                "type": "array",
+                                "maxItems": 6,
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "notBefore": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "refreshFacts"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "eventFactsStale",
+                                  "routeFactsStale"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "notBefore",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "wait"
+                              },
+                              "notBefore": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "reason": {
+                                "const": "retryBackoff"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "hostDecision"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "noEligibleRoute",
+                                  "attemptLimit",
+                                  "policyRejected",
+                                  "recipientNeedsReview",
+                                  "providerOwnsFallback",
+                                  "conflictingDeliveryEvidence",
+                                  "historyUnavailable"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
           }
         }
       }
@@ -145038,6 +147477,1225 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
               "type": "null"
             }
           ]
+        },
+        "assistanceAutomation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clockId",
+            "status",
+            "plan",
+            "outcomes",
+            "nextOutcomeIndex",
+            "evaluation"
+          ],
+          "properties": {
+            "clockId": {
+              "type": "string",
+              "pattern": "^clock:[a-f0-9]{64}$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "paused"
+              ]
+            },
+            "plan": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "policy",
+                "guidance",
+                "departureConfirmed",
+                "responseDeadline",
+                "routes",
+                "deliveryPolicy"
+              ],
+              "properties": {
+                "policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "destination",
+                    "cutoff",
+                    "maxMessagesPerEpisode",
+                    "minimumMinutesBetweenMessages",
+                    "updateOn",
+                    "unanswered"
+                  ],
+                  "properties": {
+                    "destination": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "permittedStopIds"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "permittedStopIds": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 1000,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "permittedCheckpointIds"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "permittedCheckpointIds": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 1000,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "cutoff": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "eventEnd"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "at"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "time"
+                            },
+                            "at": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991,
+                              "description": "UTC milliseconds."
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxMessagesPerEpisode": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "minimumMinutesBetweenMessages": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1440
+                    },
+                    "updateOn": {
+                      "type": "string",
+                      "const": "materialGuidanceChange"
+                    },
+                    "unanswered": {
+                      "type": "string",
+                      "enum": [
+                        "keepUnknownUntilCutoff",
+                        "hostReviewAtDeadline"
+                      ]
+                    }
+                  }
+                },
+                "guidance": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "destination",
+                    "materialKey",
+                    "text",
+                    "validUntil"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Nonnegative safe integer revision."
+                    },
+                    "destination": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "stopId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "stopId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "checkpointId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "checkpointId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "materialKey": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "validUntil": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "UTC milliseconds."
+                    }
+                  }
+                },
+                "departureConfirmed": {
+                  "type": "boolean"
+                },
+                "responseDeadline": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "routes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "catchEventSms",
+                      "catchEventRcs",
+                      "organizerEventWhatsapp"
+                    ]
+                  }
+                },
+                "deliveryPolicy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "maxAttempts",
+                    "maxAttemptsPerRoute",
+                    "minimumRetrySeconds"
+                  ],
+                  "properties": {
+                    "maxAttempts": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 6
+                    },
+                    "maxAttemptsPerRoute": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 3
+                    },
+                    "minimumRetrySeconds": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 3600
+                    }
+                  }
+                },
+                "laterChoices": {
+                  "type": "array",
+                  "maxItems": 17,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "label",
+                      "target"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "target": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "placeId",
+                              "lateEntry"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "fixedPlace"
+                              },
+                              "placeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "lateEntry": {
+                                "type": "string",
+                                "enum": [
+                                  "allowed",
+                                  "hostDecision",
+                                  "closed"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "itineraryId",
+                              "stopId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "itineraryStop"
+                              },
+                              "itineraryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "stopId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "routeId",
+                              "groupId",
+                              "checkpointId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "groupCheckpoint"
+                              },
+                              "routeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "checkpointId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "policy": {
+                    "properties": {
+                      "unanswered": {
+                        "const": "hostReviewAtDeadline"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "responseDeadline": {
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "outcomes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "accepted",
+                          "delivered",
+                          "read",
+                          "revoked"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "classification"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "failed"
+                      },
+                      "classification": {
+                        "type": "string",
+                        "enum": [
+                          "technical",
+                          "policy",
+                          "suppressed",
+                          "invalidRecipient"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unknown"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "timeout",
+                          "connectionLost",
+                          "workerInterrupted"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "nextOutcomeIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            },
+            "evaluation": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "at",
+                    "policy",
+                    "delivery"
+                  ],
+                  "properties": {
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "policy": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "reason"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "resolved"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "joined",
+                                    "declined"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "reason"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "cancelled"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "eventClosed",
+                                    "notAdmitted",
+                                    "policyDisabled",
+                                    "participationInactive"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "reason"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "expired"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "cutoff",
+                                    "lateEntryClosed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "reason"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "wait"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "departureUnconfirmed",
+                                    "attendanceUnknown",
+                                    "guidanceUnavailable",
+                                    "throttled",
+                                    "unchanged",
+                                    "participationUnknown"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "reason",
+                                "guidance"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "hostDecision"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "enum": [
+                                    "unreachable",
+                                    "entryDecision",
+                                    "missingInformation"
+                                  ]
+                                },
+                                "guidance": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "revision",
+                                        "destination",
+                                        "materialKey",
+                                        "text",
+                                        "validUntil"
+                                      ],
+                                      "properties": {
+                                        "revision": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 9007199254740991,
+                                          "description": "Nonnegative safe integer revision."
+                                        },
+                                        "destination": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "additionalProperties": false,
+                                              "required": [
+                                                "kind",
+                                                "placeId",
+                                                "lateEntry"
+                                              ],
+                                              "properties": {
+                                                "kind": {
+                                                  "type": "string",
+                                                  "const": "fixedPlace"
+                                                },
+                                                "placeId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 160,
+                                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                },
+                                                "lateEntry": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "allowed",
+                                                    "hostDecision",
+                                                    "closed"
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "type": "object",
+                                              "additionalProperties": false,
+                                              "required": [
+                                                "kind",
+                                                "itineraryId",
+                                                "stopId"
+                                              ],
+                                              "properties": {
+                                                "kind": {
+                                                  "type": "string",
+                                                  "const": "itineraryStop"
+                                                },
+                                                "itineraryId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 2000
+                                                },
+                                                "stopId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 2000
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "type": "object",
+                                              "additionalProperties": false,
+                                              "required": [
+                                                "kind",
+                                                "routeId",
+                                                "groupId",
+                                                "checkpointId"
+                                              ],
+                                              "properties": {
+                                                "kind": {
+                                                  "type": "string",
+                                                  "const": "groupCheckpoint"
+                                                },
+                                                "routeId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 2000
+                                                },
+                                                "groupId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 160,
+                                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                },
+                                                "checkpointId": {
+                                                  "type": "string",
+                                                  "minLength": 1,
+                                                  "maxLength": 2000
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        "materialKey": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "text": {
+                                          "type": "string",
+                                          "minLength": 1,
+                                          "maxLength": 2000
+                                        },
+                                        "validUntil": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 9007199254740991,
+                                          "description": "UTC milliseconds."
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "null",
+                                      "const": null
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "guidance",
+                                "messageKey",
+                                "shouldSend",
+                                "nextEvaluationAt"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "update"
+                                },
+                                "guidance": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "required": [
+                                    "revision",
+                                    "destination",
+                                    "materialKey",
+                                    "text",
+                                    "validUntil"
+                                  ],
+                                  "properties": {
+                                    "revision": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "Nonnegative safe integer revision."
+                                    },
+                                    "destination": {
+                                      "anyOf": [
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "placeId",
+                                            "lateEntry"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "fixedPlace"
+                                            },
+                                            "placeId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 160,
+                                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                            },
+                                            "lateEntry": {
+                                              "type": "string",
+                                              "enum": [
+                                                "allowed",
+                                                "hostDecision",
+                                                "closed"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "itineraryId",
+                                            "stopId"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "itineraryStop"
+                                            },
+                                            "itineraryId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            },
+                                            "stopId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "object",
+                                          "additionalProperties": false,
+                                          "required": [
+                                            "kind",
+                                            "routeId",
+                                            "groupId",
+                                            "checkpointId"
+                                          ],
+                                          "properties": {
+                                            "kind": {
+                                              "type": "string",
+                                              "const": "groupCheckpoint"
+                                            },
+                                            "routeId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            },
+                                            "groupId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 160,
+                                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                            },
+                                            "checkpointId": {
+                                              "type": "string",
+                                              "minLength": 1,
+                                              "maxLength": 2000
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "materialKey": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "text": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 2000
+                                    },
+                                    "validUntil": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991,
+                                      "description": "UTC milliseconds."
+                                    }
+                                  }
+                                },
+                                "messageKey": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "shouldSend": {
+                                  "type": "boolean"
+                                },
+                                "nextEvaluationAt": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 9007199254740991
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "delivery": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "paused"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "notApplicable"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "scriptExhausted"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "stop"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "responded",
+                                "cancelled",
+                                "superseded",
+                                "expired",
+                                "eventClosed",
+                                "permissionRevoked",
+                                "guestPresent",
+                                "guestDeclined",
+                                "notAdmitted",
+                                "hostStopped",
+                                "participationInactive"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "attemptIds"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "delivered"
+                            },
+                            "attemptIds": {
+                              "type": "array",
+                              "maxItems": 6,
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "attemptIds",
+                            "notBefore"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "reconcile"
+                            },
+                            "attemptIds": {
+                              "type": "array",
+                              "maxItems": 6,
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "notBefore": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "refreshFacts"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "eventFactsStale",
+                                "routeFactsStale"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "notBefore",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "wait"
+                            },
+                            "notBefore": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "reason": {
+                              "const": "retryBackoff"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "reason"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "hostDecision"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "noEligibleRoute",
+                                "attemptLimit",
+                                "policyRejected",
+                                "recipientNeedsReview",
+                                "providerOwnsFallback",
+                                "conflictingDeliveryEvidence",
+                                "historyUnavailable"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
         }
       }
     },
@@ -146281,6 +149939,627 @@ export const controlEventRehearsalCallablePayloadSchema = {
                   }
                 }
               ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "plan",
+            "outcomes"
+          ],
+          "properties": {
+            "kind": {
+              "const": "configureAutomation"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "plan": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "policy",
+                "guidance",
+                "departureConfirmed",
+                "responseDeadline",
+                "routes",
+                "deliveryPolicy"
+              ],
+              "properties": {
+                "policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "destination",
+                    "cutoff",
+                    "maxMessagesPerEpisode",
+                    "minimumMinutesBetweenMessages",
+                    "updateOn",
+                    "unanswered"
+                  ],
+                  "properties": {
+                    "destination": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "permittedStopIds"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "permittedStopIds": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 1000,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "permittedCheckpointIds"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "permittedCheckpointIds": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 1000,
+                              "items": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "uniqueItems": true
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "cutoff": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "eventEnd"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "at"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "time"
+                            },
+                            "at": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991,
+                              "description": "UTC milliseconds."
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "maxMessagesPerEpisode": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "minimumMinutesBetweenMessages": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1440
+                    },
+                    "updateOn": {
+                      "type": "string",
+                      "const": "materialGuidanceChange"
+                    },
+                    "unanswered": {
+                      "type": "string",
+                      "enum": [
+                        "keepUnknownUntilCutoff",
+                        "hostReviewAtDeadline"
+                      ]
+                    }
+                  }
+                },
+                "guidance": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "destination",
+                    "materialKey",
+                    "text",
+                    "validUntil"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Nonnegative safe integer revision."
+                    },
+                    "destination": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "stopId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "stopId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "checkpointId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "checkpointId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "materialKey": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "validUntil": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "UTC milliseconds."
+                    }
+                  }
+                },
+                "departureConfirmed": {
+                  "type": "boolean"
+                },
+                "responseDeadline": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "routes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "catchEventSms",
+                      "catchEventRcs",
+                      "organizerEventWhatsapp"
+                    ]
+                  }
+                },
+                "deliveryPolicy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "maxAttempts",
+                    "maxAttemptsPerRoute",
+                    "minimumRetrySeconds"
+                  ],
+                  "properties": {
+                    "maxAttempts": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 6
+                    },
+                    "maxAttemptsPerRoute": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 3
+                    },
+                    "minimumRetrySeconds": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 3600
+                    }
+                  }
+                },
+                "laterChoices": {
+                  "type": "array",
+                  "maxItems": 17,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "label",
+                      "target"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "target": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "placeId",
+                              "lateEntry"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "fixedPlace"
+                              },
+                              "placeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "lateEntry": {
+                                "type": "string",
+                                "enum": [
+                                  "allowed",
+                                  "hostDecision",
+                                  "closed"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "itineraryId",
+                              "stopId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "itineraryStop"
+                              },
+                              "itineraryId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "stopId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "routeId",
+                              "groupId",
+                              "checkpointId"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "groupCheckpoint"
+                              },
+                              "routeId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "checkpointId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "policy": {
+                    "properties": {
+                      "unanswered": {
+                        "const": "hostReviewAtDeadline"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "responseDeadline": {
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "outcomes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "accepted",
+                          "delivered",
+                          "read",
+                          "revoked"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "classification"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "failed"
+                      },
+                      "classification": {
+                        "type": "string",
+                        "enum": [
+                          "technical",
+                          "policy",
+                          "suppressed",
+                          "invalidRecipient"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unknown"
+                      },
+                      "reason": {
+                        "type": "string",
+                        "enum": [
+                          "timeout",
+                          "connectionLost",
+                          "workerInterrupted"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pauseAutomation"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resumeAutomation"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
             }
           }
         }

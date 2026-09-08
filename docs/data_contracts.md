@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.84.0
+version: 1.85.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -65,6 +65,16 @@ duration to bound expiry; advancing the virtual clock cannot extend the event
 window. Older Host responses without the anchor remain readable, but cannot
 assemble a new instruction until a current bootstrap supplies it. The guest
 bootstrap shape is unchanged.
+
+`eventRehearsalActors.assistanceAutomation` is optional, callable-owned and
+private to Host bootstrap. It stores the clock generation, enabled/paused state,
+explicit plan, bounded simulated-outcome script, cursor and typed policy/delivery
+evaluation. Guest projections omit the recipe. Automation commands use the
+existing assistance generation/revision/request fences. Current-time evaluation
+shares the parent actor transaction; failed or duplicate transitions cannot
+consume another script item or create another attempt. Reset removes recipes
+by rebuilding the synthetic roster. These additions have no live sender or
+provider binding.
 
 ### Event Assistance Transaction Boundary
 

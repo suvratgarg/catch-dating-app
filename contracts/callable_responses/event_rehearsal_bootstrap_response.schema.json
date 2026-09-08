@@ -203,6 +203,9 @@
               "type": "null"
             }
           ]
+        },
+        "assistanceAutomation": {
+          "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/automation"
         }
       }
     },

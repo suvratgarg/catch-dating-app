@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.83.0
+version: 1.84.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -224,10 +224,34 @@ elapsed time cannot restart that window. Material identity follows the target,
 text and expiry, so unrelated clock or runtime revisions do not manufacture a
 new instruction. Assembly never changes attendance or dispatches a message.
 
-This integrates backend fact assembly, storage, guest effects, the guest
-web reply flow and the native typed command/data and plan assembly boundaries.
-Native Host presentation, setup/coach wiring and automatic evaluation on clock
-or actor changes remain unfinished. No real sender or delivery is enabled.
+The rehearsal backend also supports explicit `configureAutomation`,
+`pauseAutomation` and `resumeAutomation` commands. Configuration saves a private
+actor-scoped plan and a script of one to six simulated delivery outcomes.
+Clock/lifecycle controls, injected behavior, Room placement, guest actions and
+receipts reevaluate enabled recipes through the canonical late-join and outbox
+policies. Every actor history is read before writes; the script cursor,
+messages, actor state and parent action receipt commit together. At most one
+scripted attempt is consumed per transition. Clock jumps use the final observed
+actor state, without inventing sends at missed historical times.
+
+Uncertain delivery holds fallback until confirmed evidence arrives. Backoff,
+outreach caps, deadlines and exhausted scripts remain explicit evaluation
+states. Arrival and decline stop outreach; intention replies retain independent
+attendance. Manual publish or dispatch pauses the recipe, while resume retains
+its script cursor and bounded attempt history. Reconfiguration supersedes an
+obsolete instruction without resetting episode outreach limits. Invalid history
+holds automatic assistance for review without discarding an independent
+physical actor change. Host clock, behavior and placement transactions recheck
+current organizer authority before they can run assistance. Host bootstrap
+exposes the saved recipe and typed evaluation; guest bootstrap excludes them.
+Reset rebuilds actors without recipes and deletes rehearsal message history.
+
+This integrates backend fact assembly, storage, guest effects, automatic
+reevaluation, the guest web reply flow and the native typed command/data and
+plan assembly boundaries. Native automation commands/views, Host presentation
+and setup/coach wiring remain unfinished. The simulation advances through
+existing rehearsal actions; it does not run a wall-clock scheduler. No real
+sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,
