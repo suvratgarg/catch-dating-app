@@ -32,7 +32,7 @@ const canonicalRootOwners = new Set([
 ]);
 const topBarActionOwnerPattern =
   /\b(CatchScreenHeader(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
-const directPillActionPattern = /\bCatchButton\s*\(/u;
+const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
   /\b(?:TextScaler\.|textScaler\s*:)/gu;
@@ -229,7 +229,7 @@ function checkTopBarActionFamilies({root, findings}) {
         message:
           `${match[1]} receives CatchButton as a direct top-bar action. ` +
           "Use CatchTopBarPrimaryAction, CatchIconAction, " +
-          "CatchTopBarTextAction, or CatchTopBarMenuAction so top-bar " +
+          "CatchButton.text, or CatchTopBarMenuAction so top-bar " +
           "geometry and compact behavior stay canonical.",
       });
     }

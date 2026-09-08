@@ -8118,7 +8118,7 @@
           "CatchIconAction",
           "CatchTopBarPrimaryAction",
           "CatchTopBarMenuAction",
-          "CatchTopBarTextAction",
+          "CatchButton.text",
           "CatchTopBarTabBar"
         ],
         "goldens": [],
@@ -8259,24 +8259,6 @@
             "file": "packages/catch_ui/lib/src/components/catch_top_bar_tab_bar.dart"
           },
           {
-            "id": "catch.top_bar.text_action",
-            "symbol": "CatchTopBarTextAction",
-            "summary": "Top-bar-scoped text action wrapper that composes CatchButton.text with route-chrome color defaults.",
-            "states": [
-              "default",
-              "disabled",
-              "custom-color"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.top_bar"
-            },
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar_text_action.dart"
-          },
-          {
             "id": "catch.top_bar.action_group",
             "symbol": "CatchTopBarActionGroup",
             "file": "packages/catch_ui/lib/src/components/catch_top_bar_action_group.dart",
@@ -8358,10 +8340,11 @@
           "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
           "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
           "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
-          "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
+          "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; use CatchButton.text for native text actions, and never pass a pill-style CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
-          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets."
+          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
+          "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors."
         ]
       },
       "governance": {

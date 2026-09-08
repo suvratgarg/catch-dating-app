@@ -21,13 +21,13 @@ class CatchTopBarActionGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(() {
       for (final action in actions) {
-        if (action is! CatchButton) continue;
+        if (action is! CatchButton || action.isTextAction) continue;
         throw FlutterError.fromParts([
           ErrorSummary('CatchButton cannot be a direct top-bar action.'),
           ErrorDescription(
             'Use CatchTopBarPrimaryAction for a primary action that compacts '
             'to an icon, CatchIconAction for an icon-only action, '
-            'CatchTopBarTextAction for a semantic text action, or '
+            'CatchButton.text for a semantic text action, or '
             'CatchTopBarMenuAction for overflow actions.',
           ),
         ]);

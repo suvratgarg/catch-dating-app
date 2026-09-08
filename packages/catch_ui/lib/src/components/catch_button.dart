@@ -257,6 +257,9 @@ class CatchButton extends StatefulWidget {
   final Size minimumSize;
   final EdgeInsetsGeometry padding;
 
+  /// Whether this recipe is a text action suitable for a compact action row.
+  bool get isTextAction => _text;
+
   bool get isLoading => status == CatchButtonStatus.loading;
 
   /// Activity pigment for a primary button, paired to white unless overridden.

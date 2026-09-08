@@ -1560,7 +1560,7 @@ class _FiltersContentCapture extends StatelessWidget {
           onPressed: _noopFiltersTap,
         ),
         actions: [
-          CatchTopBarTextAction(
+          CatchButton.text(
             key: SwipeKeys.resetFiltersButton,
             label: 'Reset',
             onPressed: saving ? null : _noopFiltersTap,

@@ -99,7 +99,7 @@ class _HostCustomerDetailScreenState
                   null) ...[
             if (MediaQuery.textScalerOf(context).scale(1) <
                 CatchRecordTokens.largeTextBreakpoint)
-              CatchTopBarTextAction(
+              CatchButton.text(
                 key: const ValueKey('host-customer-message'),
                 label: context.l10n.hostCustomersWhatsappMessage,
                 onPressed: _openingConversation

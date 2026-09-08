@@ -514,7 +514,7 @@ void main() {
           ),
           showBackButton: false,
           actions: [
-            CatchTopBarTextAction(label: 'Save', onPressed: () => saved = true),
+            CatchButton.text(label: 'Save', onPressed: () => saved = true),
           ],
         ),
       ),
@@ -536,9 +536,7 @@ void main() {
         CatchTopBar(
           title: 'Activity',
           showBackButton: false,
-          actions: [
-            CatchTopBarTextAction(label: 'Mark all read', onPressed: () {}),
-          ],
+          actions: [CatchButton.text(label: 'Mark all read', onPressed: () {})],
         ),
         textScale: 2,
       ),
@@ -607,7 +605,7 @@ void main() {
           leadingType: CatchTopBarLeading.close,
           onBack: () => closed = true,
           actions: [
-            CatchTopBarTextAction(label: 'Done', onPressed: () => done = true),
+            CatchButton.text(label: 'Done', onPressed: () => done = true),
           ],
           surface: true,
         ),

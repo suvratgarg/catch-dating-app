@@ -7011,6 +7011,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toolbar-text-button-recipe",
+      "patternFamilyId": "toolbar-text-button-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton",
+      "members": [
+        {
+          "name": "CatchTopBarTextAction",
+          "action": "absorb",
+          "target": "CatchButton.text"
+        }
+      ],
+      "rationale": "Delete the exact delegation wrapper and use CatchButton.text at its callers. Preserve omitted callbacks as disabled actions. The action row recognizes the immutable text-recipe marker; other Button recipes still fail its geometry guard. Source enforcement now probes both a permitted text recipe and a rejected named floating recipe, preventing constructor spelling from bypassing the same existing restriction.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

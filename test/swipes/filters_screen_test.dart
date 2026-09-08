@@ -253,9 +253,7 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchTopBarTextAction>(
-            find.byKey(SwipeKeys.resetFiltersButton),
-          )
+          .widget<CatchButton>(find.byKey(SwipeKeys.resetFiltersButton))
           .onPressed,
       isNull,
     );

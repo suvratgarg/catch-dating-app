@@ -306,6 +306,28 @@ test("flags a direct pill hidden behind a local top-bar action list", () => {
   assert.ok(hasFinding(result, "top-bar-direct-pill-action"));
 });
 
+test("accepts the canonical text recipe in top-bar actions", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchScreenTopBar(
+      title: 'Events',
+      actions: [CatchButton.text(label: 'Done', onPressed: save)],
+    ));`,
+    contract: screenContract(),
+  });
+  assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
+});
+
+test("flags named pill recipes in top-bar actions", () => {
+  const root = fixtureRoot({
+    source: `Scaffold(appBar: CatchScreenTopBar(
+      title: 'Events',
+      actions: [CatchButton.floating(label: 'Map', onPressed: showMap)],
+    ));`,
+    contract: screenContract(),
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), "top-bar-direct-pill-action"));
+});
+
 test("accepts the canonical adaptive primary top-bar action", () => {
   const root = fixtureRoot({
     source: `Scaffold(

@@ -118,7 +118,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               onPressed: saving ? null : () => context.pop(),
             ),
             actions: [
-              CatchTopBarTextAction(
+              CatchButton.text(
                 key: SwipeKeys.resetFiltersButton,
                 label: context.l10n.swipesFiltersScreenLabelReset,
                 onPressed: onReset,

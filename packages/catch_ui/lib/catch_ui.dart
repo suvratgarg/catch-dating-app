@@ -192,7 +192,6 @@ export 'src/components/catch_top_bar_primary_action.dart';
 export 'src/components/catch_top_bar_search.dart';
 export 'src/components/catch_top_bar_tab_bar.dart';
 export 'src/components/catch_top_bar_tab_label.dart';
-export 'src/components/catch_top_bar_text_action.dart';
 export 'src/components/catch_top_bar_title_role.dart';
 export 'src/components/catch_veiled_person_avatar.dart';
 export 'src/components/catch_vertical_section.dart';

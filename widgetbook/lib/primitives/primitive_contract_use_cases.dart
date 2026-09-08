@@ -5310,7 +5310,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             leadingActionVariant: CatchIconActionVariant.plain,
             onBack: _noop,
             actions: [
-              CatchTopBarTextAction(label: 'Preview', onPressed: _noop),
+              CatchButton.text(label: 'Preview', onPressed: _noop),
               CatchTopBarMenuAction<String>(
                 tooltip: 'Form actions',
                 variant: CatchIconActionVariant.plain,
@@ -5344,7 +5344,7 @@ Widget catchTopBarContractStates(BuildContext context) {
           child: CatchTopBar(
             title: 'Preview',
             allowContentHeightExpansion: true,
-            actions: [CatchTopBarTextAction(label: 'Done', onPressed: _noop)],
+            actions: [CatchButton.text(label: 'Done', onPressed: _noop)],
           ),
         ),
       ),

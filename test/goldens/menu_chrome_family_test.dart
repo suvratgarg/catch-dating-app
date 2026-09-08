@@ -27,7 +27,7 @@ void main() {
                     icon: CatchIcons.add,
                     onPressed: _noop,
                   ),
-                  const CatchTopBarTextAction(label: 'Done', onPressed: _noop),
+                  const CatchButton.text(label: 'Done', onPressed: _noop),
                   const CatchTopBarMenuAction<String>(
                     tooltip: 'More',
                     items: [

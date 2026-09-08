@@ -158,7 +158,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
-          CatchTopBarTextAction(
+          CatchButton.text(
             label: context.l10n.eventsCalendarScreenLabelToday,
             onPressed: () => _selectDate(topBarToday),
             foregroundColor: t.ink,

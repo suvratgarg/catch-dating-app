@@ -55,7 +55,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
           divider: scrolledUnder,
           actions: [
             if (state.showMarkAllReadAction)
-              CatchTopBarTextAction(
+              CatchButton.text(
                 label: state.markAllReadLabel(context.l10n),
                 onPressed: state.canMarkAllRead
                     ? () => unawaited(

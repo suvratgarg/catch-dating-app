@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.28.0
+version: 3.29.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -261,7 +261,6 @@ Widgetbook callers.
 | `CatchTopBarMenuAction<T>` | `packages/catch_ui/lib/src/components/catch_top_bar_menu_action.dart:7` | Overflow menu action for `CatchTopBar`. Delegates to `CatchActionMenu`, so top-bar overflow actions open the shared handoff `CatchMenu` panel from an `IconBtn`. |
 | `CatchIconAction` | `packages/catch_ui/lib/src/components/catch_icon_action.dart` | Canonical icon-only action with raw-child, glyph, counted and toolbar recipes, shared focus and pointer feedback, typed status/emphasis, optional live announcements and platform target allocation. The toolbar recipe preserves the navigation glyph and required tooltip. |
 | `CatchTopBarPrimaryAction` | `packages/catch_ui/lib/src/components/catch_top_bar_primary_action.dart` | Compact layouts use a plain CatchIconAction with tooltip semantics; wider layouts use a small labelled CatchButton with the same callback. |
-| `CatchTopBarTextAction` | `packages/catch_ui/lib/src/components/catch_top_bar_text_action.dart` | Top-bar text action with caller-owned label/callback and primary-color default. |
 | `CatchStepHeader` | `packages/catch_ui/lib/src/components/catch_step_header.dart` | Handoff `StepHeader`: wizard scaffold header composed from a compact 80 px large `CatchTopBar`, optional kicker/subtitle, configurable back/close leading action, top-right mono step counter or custom trailing status, and a 2px progress hairline. The counter aligns with the title lane when no kicker is present and becomes a labelled 44 px step-overview action when `onStepOverview` is supplied. |
 | `CatchFormStepSpec` | `packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart` | Wizard step title, validation key and optional-step presentation metadata. |
 | `CatchFormStepStatus` | `packages/catch_ui/lib/src/patterns/catch_form_step_status.dart` | Complete, needs-information and optional review statuses. |

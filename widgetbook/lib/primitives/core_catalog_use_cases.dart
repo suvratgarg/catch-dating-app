@@ -1059,7 +1059,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchTopBarTextAction(label: 'Done', onPressed: _noop),
+            CatchButton.text(label: 'Done', onPressed: _noop),
             CatchTopBarMenuAction<String>(
               tooltip: 'More',
               onSelected: _ignoreString,
@@ -1208,27 +1208,27 @@ Widget catchIconActionCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarTextAction,
+  name: 'Toolbar text states',
+  type: CatchButton,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarTextActionCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarTextAction',
-    catalogId: 'core.widgets.catch_top_bar_text_action',
+    title: 'CatchButton.text',
+    catalogId: 'core.widgets.catch_button',
     children: [
       _StateCard(
         label: 'primary / neutral / disabled',
         child: _InlineWrap(
           children: [
-            CatchTopBarTextAction(label: 'Done', onPressed: _noop),
-            CatchTopBarTextAction(
+            CatchButton.text(label: 'Done', onPressed: _noop),
+            CatchButton.text(
               label: 'Skip',
               foregroundColor: t.ink2,
               onPressed: _noop,
             ),
-            const CatchTopBarTextAction(label: 'Disabled', onPressed: null),
+            const CatchButton.text(label: 'Disabled', onPressed: null),
           ],
         ),
       ),

@@ -170,12 +170,12 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
     final header = CatchRootScreenHeader.title(
       title: 'Root page',
       actions: [
-        CatchTopBarTextAction(
+        CatchButton.text(
           label: 'Save',
           onPressed: () =>
               setState(() => _savedOffset = _scroll.captureOffset()),
         ),
-        CatchTopBarTextAction(
+        CatchButton.text(
           label: 'Restore',
           onPressed: _savedOffset == null
               ? null
