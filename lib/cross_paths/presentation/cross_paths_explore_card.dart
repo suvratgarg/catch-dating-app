@@ -108,7 +108,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
               onTap: widget.onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null
-                  ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
+                  ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
                   : CatchNetworkImage(primaryPhotoUrl),
               kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
               name: '$firstName, ${profile.age}',
@@ -284,7 +284,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const CatchBottomSheetGrabber(),
+                  const CatchSheetDragIndicator(),
                   gapH8,
                   Row(
                     children: [

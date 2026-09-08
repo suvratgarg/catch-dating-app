@@ -97,7 +97,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               gapH16,
               CatchFieldLanes.custom(
-                child: CatchControlShell(
+                child: CatchControlSurface(
                   enabled: viewState.requestControlsEnabled,
                   padding: EdgeInsets.zero,
                   child: Row(
@@ -399,7 +399,7 @@ class CountryCodeSelector extends StatelessWidget {
       height: CatchField.mdControlHeight,
       child: embedded
           ? IgnorePointer(ignoring: !enabled, child: picker)
-          : CatchControlShell(
+          : CatchControlSurface(
               enabled: enabled,
               padding: EdgeInsets.zero,
               child: picker,

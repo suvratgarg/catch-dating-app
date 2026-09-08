@@ -333,8 +333,8 @@ class _BadgeStatusFamily extends StatelessWidget {
             runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const CatchStatusDot(),
-              CatchStatusDot(color: tokens.warning),
+              const CatchStatusIndicator(),
+              CatchStatusIndicator(color: tokens.warning),
               CatchPersonNewMatchDot(
                 semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
               ),

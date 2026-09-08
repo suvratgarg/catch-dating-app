@@ -7,7 +7,7 @@ import 'package:catch_ui/src/components/catch_field_status_indicator.dart';
 import 'package:catch_ui/src/components/catch_toggle_input.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_control_shell.dart';
+import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchFieldTrailing extends StatelessWidget {

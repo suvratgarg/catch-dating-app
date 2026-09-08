@@ -182,7 +182,7 @@
           "rationale": "Keep this as the intended feature-adapter boundary: it maps owner/host domain state into CatchBadge without inventing chrome."
         },
         {
-          "symbol": "CatchStatusDot",
+          "symbol": "CatchStatusIndicator",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Keep one dot ingredient for live, presence, and row-local semantic adapters."
@@ -196,16 +196,16 @@
         {
           "symbol": "ActivityDot",
           "disposition": "unify",
-          "target": "CatchStatusDot",
+          "target": "CatchStatusIndicator",
           "preview": "not-applicable",
           "rationale": "The Explore activity dot is a color-mapped use of the same dot renderer and should not retain a parallel surface implementation."
         },
         {
           "symbol": "CatchPersonNewMatchDot",
           "disposition": "repair",
-          "target": "CatchStatusDot",
+          "target": "CatchStatusIndicator",
           "preview": "required",
-          "rationale": "Keep its localized new-match semantics as a row adapter while delegating the visual dot to CatchStatusDot."
+          "rationale": "Keep its localized new-match semantics as a row adapter while delegating the visual dot to CatchStatusIndicator."
         },
         {
           "symbol": "CatchPersonUnreadCountPill",
@@ -901,6 +901,63 @@
           "target": "CatchIconTile.error",
           "preview": "not-applicable",
           "rationale": "The branded error medallion shares circular icon paint; its named recipe retains default sizing, palette and centering."
+        }
+      ]
+    },
+    {
+      "id": "primitive-role-boundaries",
+      "title": "Primitive roles and typed control status",
+      "intent": "Name passive indicators, containment and local viewport protocols by their distinct jobs; preserve all control-state precedence while reducing independent booleans.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.control_shell",
+      "qualityReference": "CatchControlSurface",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production; gallery labels follow canonical names."
+      ],
+      "members": [
+        {
+          "symbol": "CatchControlSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Externally supplied validation/focus status and enabled state own control paint with stable minimum extents."
+        },
+        {
+          "symbol": "CatchSheetDragIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Passive sheet drag cue; containing sheet owns gestures."
+        },
+        {
+          "symbol": "CatchImageFallbackSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Placeholder paint and glyph; Image owns loading and errors."
+        },
+        {
+          "symbol": "CatchPageIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Finite page/index feedback, distinct from indeterminate loading."
+        },
+        {
+          "symbol": "CatchStatusIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Passive status mark, with meaning supplied by the containing badge or row."
+        },
+        {
+          "symbol": "CatchFractionalViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Local fractional width capped independently of page layout."
+        },
+        {
+          "symbol": "CatchPagerFocusViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Stops focus reveal propagation at a horizontal pager page."
         }
       ]
     }

@@ -53,7 +53,7 @@ class MessageBubble extends StatelessWidget {
         children: [
           if (!isMe) gapW4,
           Flexible(
-            child: CatchFractionalMaxWidth(
+            child: CatchFractionalViewport(
               fraction: CatchLayout.chatBubbleMaxWidthFraction,
               maxWidth: CatchLayout.chatBubbleMaxWidth,
               alignment: isMe

@@ -55,7 +55,7 @@ void main() {
       ),
     );
     expect(find.bySemanticsLabel('Nouvelle rencontre'), findsOneWidget);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
   });
 
   testWidgets('app copy follows inherited locale and retains count semantics', (

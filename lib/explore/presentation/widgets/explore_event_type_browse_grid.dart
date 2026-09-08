@@ -218,7 +218,7 @@ class ActivityTypeRow extends StatelessWidget {
           ),
       title: visual.label,
       titleStyle: CatchTextStyles.titleL(context, color: foreground),
-      leading: CatchStatusDot(
+      leading: CatchStatusIndicator(
         color: visual.accent,
         size: CatchLayout.eventTypeIndexDotSize,
       ),

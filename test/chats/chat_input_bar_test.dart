@@ -87,9 +87,9 @@ void main() {
     final beforeSend = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
     expect(
       tester
-          .widget<CatchControlShell>(find.byKey(ChatInputBar.pillKey))
-          .focused,
-      isFalse,
+          .widget<CatchControlSurface>(find.byKey(ChatInputBar.pillKey))
+          .status,
+      CatchControlSurfaceStatus.resting,
     );
 
     await tester.tap(find.byKey(ChatInputBar.fieldLaneKey));
@@ -97,9 +97,9 @@ void main() {
 
     expect(
       tester
-          .widget<CatchControlShell>(find.byKey(ChatInputBar.pillKey))
-          .focused,
-      isTrue,
+          .widget<CatchControlSurface>(find.byKey(ChatInputBar.pillKey))
+          .status,
+      CatchControlSurfaceStatus.focused,
     );
     expect(tester.getRect(find.byKey(ChatInputBar.pillKey)), beforePill);
     expect(

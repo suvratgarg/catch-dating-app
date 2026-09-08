@@ -1182,7 +1182,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchControlShell',
+            name: 'CatchControlSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1636,7 +1636,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPageDots',
+            name: 'CatchPageIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1846,16 +1846,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomSheetGrabber',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchBottomSheetGrabberCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchDraggableSheetShell',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1887,6 +1877,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Sharing state',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchShareCardSheetSharingState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSheetDragIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchBottomSheetGrabberCatalogStates,
               ),
             ],
           ),
@@ -2933,7 +2933,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchControlShell',
+            name: 'CatchControlSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -3190,7 +3190,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Layout',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFractionalMaxWidth',
+            name: 'CatchFractionalViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Fraction and absolute cap',
@@ -3201,7 +3201,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPagerFocusBoundary',
+            name: 'CatchPagerFocusViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editable pager content',
@@ -3359,6 +3359,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchImageFallbackSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchNetworkImageFallbackContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchNetworkImage',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3366,17 +3377,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchNetworkImageContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchNetworkImageFallback',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNetworkImageFallbackContractStates,
               ),
             ],
           ),
@@ -3543,7 +3543,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPageDots',
+            name: 'CatchPageIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -4272,7 +4272,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchStatusDot',
+            name: 'CatchStatusIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',

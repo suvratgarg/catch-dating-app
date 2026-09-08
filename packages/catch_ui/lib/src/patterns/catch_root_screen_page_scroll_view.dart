@@ -3,7 +3,7 @@ import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
 import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
-import 'package:catch_ui/src/primitives/catch_pager_focus_boundary.dart';
+import 'package:catch_ui/src/primitives/catch_pager_focus_viewport.dart';
 import 'package:flutter/material.dart';
 
 /// Inner scroll owner for one page of `CatchRootScreenScaffold`.
@@ -174,7 +174,7 @@ class _CatchRootScreenPageScrollViewState
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return CatchPagerFocusBoundary(
+    return CatchPagerFocusViewport(
       child: Builder(
         builder: (context) {
           _effectiveController =

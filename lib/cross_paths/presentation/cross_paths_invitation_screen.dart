@@ -160,7 +160,7 @@ class _InvitationDetailBody extends ConsumerWidget {
         CatchResponsiveSectionItem(
           child: CatchPersonPolaroid(
             media: photo == null
-                ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
+                ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
                 : CatchNetworkImage(photo),
             kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
             name: '${profile.name}, ${profile.age}',

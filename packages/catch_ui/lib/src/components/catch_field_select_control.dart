@@ -12,7 +12,7 @@ import 'package:catch_ui/src/components/catch_field_value_content_status.dart';
 import 'package:catch_ui/src/components/catch_menu_anchor.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_control_shell.dart';
+import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -92,9 +92,9 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
   @override
   Widget build(BuildContext context) {
     final controlSize = switch (widget.size) {
-      CatchFieldSize.floating => CatchControlSize.floating,
-      CatchFieldSize.compact => CatchControlSize.compact,
-      CatchFieldSize.md => CatchControlSize.md,
+      CatchFieldSize.floating => CatchControlSurfaceSize.floating,
+      CatchFieldSize.compact => CatchControlSurfaceSize.compact,
+      CatchFieldSize.md => CatchControlSurfaceSize.md,
     };
     final rowConstraints = widget.showLabel
         ? const BoxConstraints()

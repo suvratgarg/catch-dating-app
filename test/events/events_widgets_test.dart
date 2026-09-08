@@ -96,7 +96,7 @@ void main() {
       expect(find.text('75 min'), findsOneWidget);
       expect(
         tester
-            .getSize(find.widgetWithText(CatchControlShell, 'Select a date'))
+            .getSize(find.widgetWithText(CatchControlSurface, 'Select a date'))
             .height,
         CatchControlMetrics.mdMinHeight,
       );
@@ -1156,10 +1156,10 @@ class _TestPickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchControlShell(
+    return CatchControlSurface(
       onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      tone: CatchControlSurfaceTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSurfaceSize.md),
       semanticButton: true,
       child: Row(
         children: [

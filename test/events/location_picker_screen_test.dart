@@ -51,7 +51,7 @@ void main() {
             ? 44.0
             : 48.0;
         expect(
-          CatchControlMetrics.minHeight(CatchControlSize.floating),
+          CatchControlMetrics.minHeight(CatchControlSurfaceSize.floating),
           targetExtent,
         );
         expect(searchFieldSize.height, targetExtent);

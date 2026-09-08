@@ -303,7 +303,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const CatchBottomSheetGrabber(),
+            const CatchSheetDragIndicator(),
             gapH16,
             Align(
               alignment: Alignment.centerLeft,

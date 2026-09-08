@@ -4,8 +4,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_branded_sheet_header.dart';
 import 'package:catch_ui/src/components/catch_plain_sheet_header.dart';
-import 'package:catch_ui/src/primitives/catch_bottom_sheet_grabber.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
 import 'package:flutter/material.dart';
 
 Future<T?> showCatchBottomSheet<T>({
@@ -130,7 +130,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (grabber) ...[
-              const CatchBottomSheetGrabber(),
+              const CatchSheetDragIndicator(),
               const SizedBox(height: CatchLayout.sheetGrabberBottomMargin),
             ],
             if (hasHeader)

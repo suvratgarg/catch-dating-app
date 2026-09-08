@@ -6,7 +6,7 @@ import 'package:catch_ui/src/components/catch_search_field_copy.dart';
 import 'package:catch_ui/src/components/catch_search_field_mode.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_control_shell.dart';
+import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:catch_ui/src/primitives/catch_text_input.dart';
 import 'package:flutter/material.dart';
@@ -432,12 +432,16 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
     return Semantics(
       label: widget.semanticLabel ?? placeholder,
       textField: true,
-      child: CatchControlShell(
-        size: CatchControlSize.compact,
-        shape: CatchControlShape.pill,
-        tone: CatchControlTone.raised,
+      child: CatchControlSurface(
+        status: _focusNode.hasFocus
+            ? CatchControlSurfaceStatus.focused
+            : CatchControlSurfaceStatus.resting,
+
+        size: CatchControlSurfaceSize.compact,
+        variant: CatchControlSurfaceVariant.pill,
+        tone: CatchControlSurfaceTone.raised,
         enabled: widget.enabled,
-        focused: _focusNode.hasFocus,
+
         padding: const EdgeInsets.only(
           left: CatchSpacing.s4,
           right: CatchSpacing.s2,

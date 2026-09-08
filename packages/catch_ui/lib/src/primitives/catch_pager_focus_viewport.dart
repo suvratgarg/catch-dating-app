@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 /// Stops descendant focus/caret reveal requests at a horizontal pager page.
-class CatchPagerFocusBoundary extends SingleChildRenderObjectWidget {
-  const CatchPagerFocusBoundary({super.key, required super.child});
+class CatchPagerFocusViewport extends SingleChildRenderObjectWidget {
+  const CatchPagerFocusViewport({super.key, required super.child});
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _RenderCatchPagerFocusBoundary();
+    return _RenderCatchPagerFocusViewport();
   }
 }
 
-class _RenderCatchPagerFocusBoundary extends RenderProxyBox {
+class _RenderCatchPagerFocusViewport extends RenderProxyBox {
   @override
   void showOnScreen({
     RenderObject? descendant,

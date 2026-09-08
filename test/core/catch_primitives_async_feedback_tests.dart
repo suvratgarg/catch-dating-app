@@ -689,7 +689,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchBottomSheetGrabber), findsOneWidget);
+    expect(find.byType(CatchSheetDragIndicator), findsOneWidget);
     expect(find.byType(CatchPlainSheetHeader), findsOneWidget);
     expect(find.byType(CatchBrandedSheetHeader), findsNothing);
     expect(find.text('Filters'), findsOneWidget);
@@ -715,7 +715,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchBottomSheetGrabber), findsNothing);
+    expect(find.byType(CatchSheetDragIndicator), findsNothing);
     expect(find.byType(CatchPlainSheetHeader), findsNothing);
     expect(find.byType(CatchBrandedSheetHeader), findsOneWidget);
     final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));

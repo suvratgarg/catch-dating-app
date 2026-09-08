@@ -643,7 +643,7 @@ void main() {
     );
 
     expect(find.text(error), findsOneWidget);
-    expect(find.byType(CatchControlShell), findsNothing);
+    expect(find.byType(CatchControlSurface), findsNothing);
 
     final label = tester.widget<Text>(find.text('Invite code'));
     expect(label.style?.color, CatchTokens.editorialLight.danger);

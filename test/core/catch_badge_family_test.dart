@@ -23,7 +23,7 @@ void main() {
     expect(find.text('Ready soon'), findsOneWidget);
     expect(find.text('READY SOON'), findsOneWidget);
     expect(find.text('LIVE NOW'), findsOneWidget);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
   });
 
   testWidgets('live badge owns its fill and dot recipe', (tester) async {
@@ -38,7 +38,7 @@ void main() {
         );
 
     expect(badgeDecoration.color, CatchTokens.light.primary);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(find.text('LIVE NOW'), findsOneWidget);
   });
 
@@ -146,7 +146,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(find.byType(DecoratedBox), findsOneWidget);
     final text = tester.widget<Text>(
       find.text('Unsaved changes with long localized copy'),
@@ -154,7 +154,7 @@ void main() {
     expect(text.maxLines, isNull);
     expect(text.overflow, isNull);
     expect(
-      tester.getSize(find.byType(CatchStatusDot)),
+      tester.getSize(find.byType(CatchStatusIndicator)),
       const Size.square(CatchIcon.unsavedDot),
     );
     expect(
@@ -167,10 +167,10 @@ void main() {
   testWidgets('status dot preserves the reviewed seven-pixel default', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchStatusDot()));
+    await tester.pumpWidget(_wrap(const CatchStatusIndicator()));
 
     expect(
-      tester.getSize(find.byType(CatchStatusDot)),
+      tester.getSize(find.byType(CatchStatusIndicator)),
       const Size.square(CatchLayout.badgeMdDotExtent),
     );
   });

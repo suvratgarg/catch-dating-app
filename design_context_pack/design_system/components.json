@@ -276,7 +276,7 @@
           "CatchIcon.sm",
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
-          "CatchStatusDot",
+          "CatchStatusIndicator",
           "CatchInlineStatus",
           "CatchTextStyles.statusLabel"
         ],
@@ -304,7 +304,7 @@
           },
           {
             "id": "catch.badge.status_dot",
-            "symbol": "CatchStatusDot",
+            "symbol": "CatchStatusIndicator",
             "summary": "Dot-only status marker used inside rows, badges, and presence-style metadata.",
             "states": [
               "default",
@@ -313,13 +313,22 @@
               "danger",
               "bordered"
             ],
-            "file": "packages/catch_ui/lib/src/primitives/catch_status_dot.dart",
+            "file": "packages/catch_ui/lib/src/primitives/catch_status_indicator.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.badge",
               "parentConceptId": "catch.badge",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.badge"
+            },
+            "level": "L2",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "Status",
+              "comparedWith": [
+                "catch.badge"
+              ],
+              "reason": "A passive colored status mark has no text label, count or tap contract. The containing badge or row owns its label and accessible meaning."
             }
           },
           {
@@ -4931,6 +4940,15 @@
       },
       "surfaces": {
         "flutter": "CatchLoadingIndicator"
+      },
+      "level": "L2",
+      "roleNoun": "Indicator",
+      "naming": {
+        "useCase": "Loading",
+        "comparedWith": [
+          "catch.page_dots"
+        ],
+        "reason": "Indeterminate activity feedback delegates Flutter progress rendering; page indicators display a selected index within a finite set."
       }
     },
     {
@@ -5973,7 +5991,7 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
-          "CatchBottomSheetGrabber",
+          "CatchSheetDragIndicator",
           "CatchDraggableSheetShell",
           "CatchShareCardSheet",
           "CatchBadge",
@@ -6005,8 +6023,8 @@
           },
           {
             "id": "catch.sheet.grabber",
-            "symbol": "CatchBottomSheetGrabber",
-            "file": "packages/catch_ui/lib/src/primitives/catch_bottom_sheet_grabber.dart",
+            "symbol": "CatchSheetDragIndicator",
+            "file": "packages/catch_ui/lib/src/primitives/catch_sheet_drag_indicator.dart",
             "summary": "Centered sheet drag affordance used by bottom-sheet and draggable-sheet shells.",
             "states": [
               "default",
@@ -6019,6 +6037,15 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L2",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "SheetDrag",
+              "comparedWith": [
+                "catch.sheet"
+              ],
+              "reason": "A passive drag affordance cues sheet interaction. The containing Sheet owns drag behavior, dismissal, content and semantics."
             }
           },
           {
@@ -6882,15 +6909,15 @@
         "vehicle": "plugin",
         "probeSeed": "BorderRadius.circular(12)"
       },
-      "name": "CatchControlShell",
+      "name": "CatchControlSurface",
       "status": "active",
       "kind": "primitive",
-      "summary": "Shared one-line control chrome for fields, selects, steppers, search controls, and compact picker triggers.",
+      "summary": "Token-backed control containment with stable sizing, typed validation/focus status, disabled fill and optional button semantics.",
       "dart": {
-        "symbol": "CatchControlShell",
-        "file": "packages/catch_ui/lib/src/primitives/catch_control_shell.dart",
+        "symbol": "CatchControlSurface",
+        "file": "packages/catch_ui/lib/src/primitives/catch_control_surface.dart",
         "constructors": [
-          "CatchControlShell"
+          "CatchControlSurface"
         ]
       },
       "design": {
@@ -6922,7 +6949,7 @@
             "type": "enum",
             "required": false,
             "default": "md",
-            "dartType": "CatchControlSize",
+            "dartType": "CatchControlSurfaceSize",
             "values": [
               "floating",
               "compact",
@@ -6930,11 +6957,11 @@
             ]
           },
           {
-            "name": "shape",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "rounded",
-            "dartType": "CatchControlShape",
+            "dartType": "CatchControlSurfaceVariant",
             "values": [
               "rounded",
               "pill"
@@ -6945,7 +6972,7 @@
             "type": "enum",
             "required": false,
             "default": "surface",
-            "dartType": "CatchControlTone",
+            "dartType": "CatchControlSurfaceTone",
             "values": [
               "surface",
               "raised"
@@ -6956,20 +6983,6 @@
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "hasError",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "focused",
-            "type": "bool",
-            "required": false,
-            "default": false,
             "dartType": "bool"
           },
           {
@@ -6984,6 +6997,18 @@
             "required": false,
             "default": false,
             "dartType": "bool"
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "required": false,
+            "default": "resting",
+            "dartType": "CatchControlSurfaceStatus",
+            "values": [
+              "resting",
+              "focused",
+              "error"
+            ]
           }
         ],
         "states": [
@@ -7014,16 +7039,19 @@
         ],
         "dartRoles": [
           "CatchControlMetrics",
-          "CatchControlSize",
-          "CatchControlShape",
-          "CatchControlTone",
+          "CatchControlSurfaceSize",
+          "CatchControlSurfaceVariant",
+          "CatchControlSurfaceTone",
           "CatchBorder.interactive",
           "CatchBorderRole.focus",
           "CatchBorderRole.danger",
           "CatchElevation.focusRing",
-          "CatchStroke.hairline"
+          "CatchStroke.hairline",
+          "CatchControlSurfaceStatus"
         ],
-        "goldens": [],
+        "goldens": [
+          "primitive_roles"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -7063,7 +7091,17 @@
         "conceptId": "catch.control_shell"
       },
       "surfaces": {
-        "flutter": "CatchControlShell"
+        "flutter": "CatchControlSurface"
+      },
+      "level": "L2",
+      "roleNoun": "Surface",
+      "naming": {
+        "useCase": "Control",
+        "comparedWith": [
+          "catch.surface",
+          "catch.row_press_surface"
+        ],
+        "reason": "Owns minimum interactive extents, stable focus/error borders, a disabled fill and optional button semantics. General surfaces own unconstrained containment; row press surfaces own hover, keyboard and press interaction."
       }
     },
     {
@@ -7178,8 +7216,8 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
-          "CatchControlShell",
-          "CatchControlTone.raised",
+          "CatchControlSurface",
+          "CatchControlSurfaceTone.raised",
           "CatchControlMetrics.stepperIconExtent",
           "CatchTextStyles.numericLarge",
           "CatchIcons.removeRounded",
@@ -8661,8 +8699,8 @@
           },
           {
             "id": "catch.screen_body.fractional_max_width",
-            "symbol": "CatchFractionalMaxWidth",
-            "file": "packages/catch_ui/lib/src/primitives/catch_fractional_max_width.dart",
+            "symbol": "CatchFractionalViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_fractional_viewport.dart",
             "summary": "Caps a local content fraction without measuring the parent imperatively.",
             "states": [
               "half-width",
@@ -8674,12 +8712,21 @@
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L2",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "Fractional",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Constrains a child to a fraction of its local lane capped by an absolute maximum; it neither chooses a page layout nor reads window breakpoints."
             }
           },
           {
             "id": "catch.screen_body.pager_focus_boundary",
-            "symbol": "CatchPagerFocusBoundary",
-            "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart",
+            "symbol": "CatchPagerFocusViewport",
+            "file": "packages/catch_ui/lib/src/primitives/catch_pager_focus_viewport.dart",
             "summary": "Preserves inner caret reveal while preventing horizontal pager leakage.",
             "states": [
               "editable-content",
@@ -8691,6 +8738,15 @@
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L2",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "PagerFocus",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Intercepts descendant showOnScreen propagation at a horizontal pager page while preserving the inner scrollables response; page-body layout remains with its parent."
             }
           },
           {
@@ -9953,8 +10009,8 @@
         "members": [
           {
             "id": "catch.network_image.fallback",
-            "symbol": "CatchNetworkImageFallback",
-            "file": "packages/catch_ui/lib/src/primitives/catch_network_image_fallback.dart",
+            "symbol": "CatchImageFallbackSurface",
+            "file": "packages/catch_ui/lib/src/primitives/catch_image_fallback_surface.dart",
             "summary": "Direct branded image fallback renderer used by network and asset image loading failures.",
             "states": [
               "default",
@@ -9967,6 +10023,15 @@
               "parentConceptId": "catch.network_image",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.network_image"
+            },
+            "level": "L2",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "ImageFallback",
+              "comparedWith": [
+                "catch.network_image"
+              ],
+              "reason": "Owns only the placeholder fill and glyph when no usable image exists. The parent Image owns network/asset loading, cache sizing and failure detection."
             }
           }
         ],
@@ -10963,7 +11028,7 @@
           "theme.light.color.surface"
         ],
         "dartRoles": [
-          "CatchControlShell",
+          "CatchControlSurface",
           "CatchSearchFieldMode",
           "CatchSearchFieldCopy",
           "CatchTextStyles.bodyM",
@@ -12366,15 +12431,15 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchPageDots",
+      "name": "CatchPageIndicator",
       "status": "active",
       "kind": "primitive",
       "summary": "Compact page/progress dot indicator with selected-width emphasis, semantic label support, and motion-token transitions.",
       "dart": {
-        "symbol": "CatchPageDots",
-        "file": "packages/catch_ui/lib/src/primitives/catch_page_dots.dart",
+        "symbol": "CatchPageIndicator",
+        "file": "packages/catch_ui/lib/src/primitives/catch_page_indicator.dart",
         "constructors": [
-          "CatchPageDots"
+          "CatchPageIndicator"
         ]
       },
       "design": {
@@ -12490,7 +12555,16 @@
         "conceptId": "catch.page_dots"
       },
       "surfaces": {
-        "flutter": "CatchPageDots"
+        "flutter": "CatchPageIndicator"
+      },
+      "level": "L2",
+      "roleNoun": "Indicator",
+      "naming": {
+        "useCase": "Page",
+        "comparedWith": [
+          "catch.loading_indicator"
+        ],
+        "reason": "Displays a finite page count and selected index with caller-supplied semantics. Loading feedback communicates indeterminate work; it has no selected page."
       }
     },
     {
@@ -13422,6 +13496,16 @@
       },
       "surfaces": {
         "flutter": "CatchRowPressSurface"
+      },
+      "level": "L2",
+      "roleNoun": "Surface",
+      "naming": {
+        "useCase": "RowPress",
+        "comparedWith": [
+          "catch.control_shell",
+          "catch.surface"
+        ],
+        "reason": "Owns row hover/press/focus state and keyboard activation while inheriting row geometry; control surfaces own sized input containment and externally supplied validation state."
       }
     },
     {

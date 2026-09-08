@@ -560,11 +560,11 @@ class CatchFieldTextEntry extends StatelessWidget {
     return const BoxConstraints();
   }
 
-  CatchControlSize get _controlSize {
+  CatchControlSurfaceSize get _controlSize {
     return switch (field.size) {
-      CatchFieldSize.floating => CatchControlSize.floating,
-      CatchFieldSize.compact => CatchControlSize.compact,
-      CatchFieldSize.md => CatchControlSize.md,
+      CatchFieldSize.floating => CatchControlSurfaceSize.floating,
+      CatchFieldSize.compact => CatchControlSurfaceSize.compact,
+      CatchFieldSize.md => CatchControlSurfaceSize.md,
     };
   }
 

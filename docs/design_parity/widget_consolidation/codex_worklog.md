@@ -70,6 +70,26 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Primitive roles and typed control status
+
+Owner-delegated source and rendered review: `primitive-role-boundaries` in the
+existing pattern families and decisions. Seven APIs now spell their Indicator,
+Surface or Viewport role explicitly. Control size/tone/variant enums carry the
+canonical component prefix, and control validation/focus is one typed status.
+
+- [x] Preserve every enabled/error/focus combination, disabled fill, focus shadow
+  and stable geometry against four pre-change production images; consecutive
+  comparisons pass. Six pure renames are byte-identical after symbol substitution.
+- [x] Migrate all direct callers, source paths, exports, tests and registry refs.
+  The layout, control-target and golden batch passes 136 tests; the event/badge
+  integration files pass 33 tests. The chat focus test asserts the new typed status.
+- [x] Regenerate Widgetbook and compare its renamed pages at both text scales:
+  19 gallery/enumeration tests pass twice. All 28 reviewed naming entries validate.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+  Analyzer/plugin execution remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Canonical icon presentation
 
 Owner-delegated source and rendered review: `icon-presentation-canonical-tile`

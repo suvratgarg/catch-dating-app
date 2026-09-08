@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_status_dot.dart';
+import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
 enum CatchBadgeTone { neutral, brand, success, warning, danger, gold, affinity }
@@ -194,7 +194,10 @@ class CatchBadge extends StatelessWidget {
                     : MainAxisAlignment.start,
                 children: [
                   if (_recipe == _CatchBadgeRecipe.live) ...[
-                    CatchStatusDot(color: foreground, size: metrics.dotSize),
+                    CatchStatusIndicator(
+                      color: foreground,
+                      size: metrics.dotSize,
+                    ),
                     SizedBox(width: metrics.gap),
                   ],
                   if (icon != null) ...[

@@ -3,11 +3,13 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-enum CatchControlSize { floating, compact, md }
+enum CatchControlSurfaceSize { floating, compact, md }
 
-enum CatchControlShape { rounded, pill }
+enum CatchControlSurfaceVariant { rounded, pill }
 
-enum CatchControlTone { surface, raised }
+enum CatchControlSurfaceTone { surface, raised }
+
+enum CatchControlSurfaceStatus { resting, focused, error }
 
 abstract final class CatchControlMetrics {
   static const double floatingMinHeight = CatchSpacing.s11;
@@ -18,18 +20,18 @@ abstract final class CatchControlMetrics {
   static const double mdIconExtent = mdMinHeight;
   static const double stepperIconExtent = CatchSpacing.s11;
 
-  static double minHeight(CatchControlSize size) =>
+  static double minHeight(CatchControlSurfaceSize size) =>
       math.max(CatchPlatformTokens.minimumInteractiveExtent, switch (size) {
-        CatchControlSize.floating => floatingMinHeight,
-        CatchControlSize.compact => compactMinHeight,
-        CatchControlSize.md => mdMinHeight,
+        CatchControlSurfaceSize.floating => floatingMinHeight,
+        CatchControlSurfaceSize.compact => compactMinHeight,
+        CatchControlSurfaceSize.md => mdMinHeight,
       });
 
-  static double iconExtent(CatchControlSize size) =>
+  static double iconExtent(CatchControlSurfaceSize size) =>
       math.max(CatchPlatformTokens.minimumInteractiveExtent, switch (size) {
-        CatchControlSize.floating => floatingIconExtent,
-        CatchControlSize.compact => compactIconExtent,
-        CatchControlSize.md => mdIconExtent,
+        CatchControlSurfaceSize.floating => floatingIconExtent,
+        CatchControlSurfaceSize.compact => compactIconExtent,
+        CatchControlSurfaceSize.md => mdIconExtent,
       });
 
   static BoxConstraints squareConstraints(double extent) => BoxConstraints(
@@ -39,61 +41,61 @@ abstract final class CatchControlMetrics {
     maxHeight: math.max(extent, CatchPlatformTokens.minimumInteractiveExtent),
   );
 
-  static double radius(CatchControlShape shape) => switch (shape) {
+  static double radius(CatchControlSurfaceVariant shape) => switch (shape) {
     // Boxed inputs use the design-system interactive-tile radius (12), not sm.
-    CatchControlShape.rounded => CatchRadius.interactiveTile,
-    CatchControlShape.pill => CatchRadius.pill,
+    CatchControlSurfaceVariant.rounded => CatchRadius.interactiveTile,
+    CatchControlSurfaceVariant.pill => CatchRadius.pill,
   };
 
-  static EdgeInsets contentPadding(CatchControlSize size) => switch (size) {
-    CatchControlSize.floating => const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.s3,
-    ),
-    CatchControlSize.compact => const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.s3,
-    ),
-    CatchControlSize.md => const EdgeInsets.symmetric(
-      horizontal: CatchSpacing.micro14,
-    ),
-  };
-
-  static EdgeInsets textFieldContentPadding(CatchControlSize size) =>
+  static EdgeInsets contentPadding(CatchControlSurfaceSize size) =>
       switch (size) {
-        CatchControlSize.floating => const EdgeInsets.symmetric(
+        CatchControlSurfaceSize.floating => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
         ),
-        CatchControlSize.compact => const EdgeInsets.symmetric(
+        CatchControlSurfaceSize.compact => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
         ),
-        CatchControlSize.md => const EdgeInsets.symmetric(
+        CatchControlSurfaceSize.md => const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro14,
+        ),
+      };
+
+  static EdgeInsets textFieldContentPadding(CatchControlSurfaceSize size) =>
+      switch (size) {
+        CatchControlSurfaceSize.floating => const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+        ),
+        CatchControlSurfaceSize.compact => const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+        ),
+        CatchControlSurfaceSize.md => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.micro14,
           vertical: CatchSpacing.micro14,
         ),
       };
 }
 
-class CatchControlShell extends StatelessWidget {
-  const CatchControlShell({
+/// Token-backed control containment with stable geometry across visual states.
+class CatchControlSurface extends StatelessWidget {
+  const CatchControlSurface({
     super.key,
     required this.child,
-    this.size = CatchControlSize.md,
-    this.shape = CatchControlShape.rounded,
-    this.tone = CatchControlTone.surface,
+    this.size = CatchControlSurfaceSize.md,
+    this.variant = CatchControlSurfaceVariant.rounded,
+    this.tone = CatchControlSurfaceTone.surface,
     this.enabled = true,
-    this.hasError = false,
-    this.focused = false,
+    this.status = CatchControlSurfaceStatus.resting,
     this.padding,
     this.onTap,
     this.semanticButton = false,
   });
 
   final Widget child;
-  final CatchControlSize size;
-  final CatchControlShape shape;
-  final CatchControlTone tone;
+  final CatchControlSurfaceSize size;
+  final CatchControlSurfaceVariant variant;
+  final CatchControlSurfaceTone tone;
   final bool enabled;
-  final bool hasError;
-  final bool focused;
+  final CatchControlSurfaceStatus status;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
   final bool semanticButton;
@@ -101,14 +103,14 @@ class CatchControlShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final radius = BorderRadius.circular(CatchControlMetrics.radius(shape));
+    final radius = BorderRadius.circular(CatchControlMetrics.radius(variant));
     final border = CatchBorder.interactive(
       t,
-      hasError
+      status == CatchControlSurfaceStatus.error
           ? CatchInteractiveBorderState.error
           : !enabled
           ? CatchInteractiveBorderState.disabled
-          : focused
+          : status == CatchControlSurfaceStatus.focused
           ? CatchInteractiveBorderState.focused
           : CatchInteractiveBorderState.resting,
     );
@@ -126,7 +128,7 @@ class CatchControlShell extends StatelessWidget {
       decoration: BoxDecoration(
         color: _fillColor(t),
         borderRadius: radius,
-        boxShadow: focused && !hasError
+        boxShadow: status == CatchControlSurfaceStatus.focused
             ? CatchElevation.focusRing(t)
             : CatchElevation.none,
       ),
@@ -153,8 +155,8 @@ class CatchControlShell extends StatelessWidget {
   Color _fillColor(CatchTokens t) {
     if (!enabled) return t.raised;
     return switch (tone) {
-      CatchControlTone.surface => t.surface,
-      CatchControlTone.raised => t.raised,
+      CatchControlSurfaceTone.surface => t.surface,
+      CatchControlSurfaceTone.raised => t.raised,
     };
   }
 }

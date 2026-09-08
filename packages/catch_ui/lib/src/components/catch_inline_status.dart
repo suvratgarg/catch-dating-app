@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_status_dot.dart';
+import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
 enum CatchInlineStatusTone { neutral, success, warning, danger, live }
@@ -37,7 +37,7 @@ class CatchInlineStatus extends StatelessWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchStatusDot(color: color, size: CatchIcon.unsavedDot),
+            CatchStatusIndicator(color: color, size: CatchIcon.unsavedDot),
             gapW6,
             if (constraints.hasBoundedWidth) Flexible(child: copy) else copy,
           ],

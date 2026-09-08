@@ -2,8 +2,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
 
-class CatchNetworkImageFallback extends StatelessWidget {
-  const CatchNetworkImageFallback({
+class CatchImageFallbackSurface extends StatelessWidget {
+  const CatchImageFallbackSurface({
     super.key,
     this.backgroundColor,
     this.iconColor,

@@ -811,7 +811,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
     await tester.pump();
 
-    expect(find.byType(CatchNetworkImageFallback), findsOneWidget);
+    expect(find.byType(CatchImageFallbackSurface), findsOneWidget);
     expect(find.byIcon(CatchIcons.imageOutlined), findsOneWidget);
   });
 }

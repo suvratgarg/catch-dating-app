@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class CatchPageDots extends StatelessWidget {
-  const CatchPageDots({
+class CatchPageIndicator extends StatelessWidget {
+  const CatchPageIndicator({
     super.key,
     required this.selectedIndex,
     required this.itemCount,

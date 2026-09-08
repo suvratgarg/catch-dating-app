@@ -376,14 +376,14 @@ Widget catchInlineStatusContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchStatusDot,
+  type: CatchStatusIndicator,
   path: '[Core primitives]/Status',
 )
 Widget catchStatusDotContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchStatusDot',
+    title: 'CatchStatusIndicator',
     contractId: 'catch.badge.status_dot',
     states: const ['default', 'success', 'warning', 'danger', 'bordered'],
     children: [
@@ -391,16 +391,16 @@ Widget catchStatusDotContractStates(BuildContext context) {
         label: 'tones',
         child: _InlineWrap(
           children: [
-            const CatchStatusDot(),
-            CatchStatusDot(color: t.success),
-            CatchStatusDot(color: t.warning),
-            CatchStatusDot(color: t.danger),
+            const CatchStatusIndicator(),
+            CatchStatusIndicator(color: t.success),
+            CatchStatusIndicator(color: t.warning),
+            CatchStatusIndicator(color: t.danger),
           ],
         ),
       ),
       _StateCard(
         label: 'bordered',
-        child: CatchStatusDot(
+        child: CatchStatusIndicator(
           color: t.primary,
           size: 10,
           borderColor: t.surface,
@@ -1007,7 +1007,7 @@ Widget catchIndexRowContractStates(BuildContext context) {
         child: CatchIndexRow(
           title: 'Social run',
           selected: true,
-          leading: CatchStatusDot(color: t.accent),
+          leading: CatchStatusIndicator(color: t.accent),
           trailing: const Text('12'),
           onTap: _noop,
         ),
@@ -4207,7 +4207,7 @@ Widget catchIconTileContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchControlShell,
+  type: CatchControlSurface,
   path: '[Core primitives]/Inputs',
 )
 Widget catchControlShellContractStates(BuildContext context) {
@@ -4215,9 +4215,9 @@ Widget catchControlShellContractStates(BuildContext context) {
 
   Widget shell({
     required String label,
-    CatchControlSize size = CatchControlSize.md,
-    CatchControlShape shape = CatchControlShape.rounded,
-    CatchControlTone tone = CatchControlTone.surface,
+    CatchControlSurfaceSize size = CatchControlSurfaceSize.md,
+    CatchControlSurfaceVariant shape = CatchControlSurfaceVariant.rounded,
+    CatchControlSurfaceTone tone = CatchControlSurfaceTone.surface,
     bool enabled = true,
     bool hasError = false,
     bool focused = false,
@@ -4226,13 +4226,18 @@ Widget catchControlShellContractStates(BuildContext context) {
   }) {
     return SizedBox(
       width: WidgetbookPreviewLayout.controlShellWidth,
-      child: CatchControlShell(
+      child: CatchControlSurface(
+        status: hasError
+            ? CatchControlSurfaceStatus.error
+            : focused
+            ? CatchControlSurfaceStatus.focused
+            : CatchControlSurfaceStatus.resting,
+
         size: size,
-        shape: shape,
+        variant: shape,
         tone: tone,
         enabled: enabled,
-        hasError: hasError,
-        focused: focused,
+
         onTap: onTap,
         semanticButton: semanticButton,
         child: Text(
@@ -4244,7 +4249,7 @@ Widget catchControlShellContractStates(BuildContext context) {
   }
 
   return _ContractScreen(
-    title: 'CatchControlShell',
+    title: 'CatchControlSurface',
     contractId: 'catch.control_shell',
     states: const [
       'surface-md',
@@ -4264,16 +4269,16 @@ Widget catchControlShellContractStates(BuildContext context) {
         label: 'raised-compact',
         child: shell(
           label: 'Compact raised',
-          size: CatchControlSize.compact,
-          tone: CatchControlTone.raised,
+          size: CatchControlSurfaceSize.compact,
+          tone: CatchControlSurfaceTone.raised,
         ),
       ),
       _StateCard(
         label: 'pill',
         child: shell(
           label: 'Pill trigger',
-          size: CatchControlSize.compact,
-          shape: CatchControlShape.pill,
+          size: CatchControlSurfaceSize.compact,
+          shape: CatchControlSurfaceVariant.pill,
         ),
       ),
       _StateCard(
@@ -6255,14 +6260,14 @@ Widget catchNetworkImageContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchNetworkImageFallback,
+  type: CatchImageFallbackSurface,
   path: '[Core primitives]/Media',
 )
 Widget catchNetworkImageFallbackContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchNetworkImageFallback',
+    title: 'CatchImageFallbackSurface',
     contractId: 'catch.network_image.fallback',
     states: const ['default', 'custom-icon', 'custom-color'],
     children: [
@@ -6270,14 +6275,14 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
         label: 'default',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.networkFallbackExtent,
-          child: CatchNetworkImageFallback(),
+          child: CatchImageFallbackSurface(),
         ),
       ),
       _StateCard(
         label: 'custom-icon',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.networkFallbackExtent,
-          child: CatchNetworkImageFallback(
+          child: CatchImageFallbackSurface(
             icon: CatchIcons.photoLibraryOutlined,
           ),
         ),
@@ -6286,7 +6291,7 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
         label: 'custom-color',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.networkFallbackExtent,
-          child: CatchNetworkImageFallback(
+          child: CatchImageFallbackSurface(
             backgroundColor: t.primarySoft,
             iconColor: t.primary,
           ),
@@ -7918,12 +7923,12 @@ Widget catchCountPillContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchPageDots,
+  type: CatchPageIndicator,
   path: '[Core primitives]/Navigation',
 )
 Widget catchPageDotsContractStates(BuildContext context) {
   return const _ContractScreen(
-    title: 'CatchPageDots',
+    title: 'CatchPageIndicator',
     contractId: 'catch.page_dots',
     states: [
       'first-selected',
@@ -7934,15 +7939,15 @@ Widget catchPageDotsContractStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'first-selected',
-        child: CatchPageDots(selectedIndex: 0, itemCount: 4),
+        child: CatchPageIndicator(selectedIndex: 0, itemCount: 4),
       ),
       _StateCard(
         label: 'middle-selected',
-        child: CatchPageDots(selectedIndex: 2, itemCount: 4),
+        child: CatchPageIndicator(selectedIndex: 2, itemCount: 4),
       ),
       _StateCard(
         label: 'semantic-label',
-        child: CatchPageDots(
+        child: CatchPageIndicator(
           selectedIndex: 1,
           itemCount: 3,
           semanticLabel: 'Page 2 of 3',
@@ -7950,7 +7955,7 @@ Widget catchPageDotsContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'custom-size',
-        child: CatchPageDots(
+        child: CatchPageIndicator(
           selectedIndex: 1,
           itemCount: 3,
           selectedWidth: 32,

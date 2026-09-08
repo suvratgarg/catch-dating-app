@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/primitives/catch_bottom_sheet_grabber.dart';
+import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
 import 'package:flutter/material.dart';
 
 class CatchDraggableSheetShell extends StatelessWidget {
@@ -41,7 +41,7 @@ class CatchDraggableSheetShell extends StatelessWidget {
                   top: CatchSpacing.s2,
                   bottom: CatchSpacing.s1,
                 ),
-                child: CatchBottomSheetGrabber(
+                child: CatchSheetDragIndicator(
                   width: CatchLayout.sheetGrabberWideWidth,
                   height: CatchLayout.sheetGrabberTallHeight,
                 ),

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 /// The inner alignment loosens the fractional box's tight constraint before
 /// applying the cap, preserving the smaller of the two limits without a
 /// build-time measurement.
-class CatchFractionalMaxWidth extends StatelessWidget {
-  const CatchFractionalMaxWidth({
+class CatchFractionalViewport extends StatelessWidget {
+  const CatchFractionalViewport({
     super.key,
     required this.fraction,
     required this.maxWidth,

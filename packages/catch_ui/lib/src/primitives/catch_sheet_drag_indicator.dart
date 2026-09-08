@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class CatchBottomSheetGrabber extends StatelessWidget {
-  const CatchBottomSheetGrabber({
+class CatchSheetDragIndicator extends StatelessWidget {
+  const CatchSheetDragIndicator({
     super.key,
     this.width = CatchLayout.sheetGrabberWidth,
     this.height = CatchLayout.sheetGrabberHeight,

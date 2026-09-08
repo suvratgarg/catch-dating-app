@@ -6,7 +6,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Fraction and absolute cap',
-  type: CatchFractionalMaxWidth,
+  type: CatchFractionalViewport,
   path: '[Core primitives]/Layout',
 )
 Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
@@ -14,7 +14,7 @@ Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.fractional_max_width',
   children: [
     for (final fraction in [0.5, 1.0])
-      CatchFractionalMaxWidth(
+      CatchFractionalViewport(
         fraction: fraction,
         maxWidth: 280,
         child: CatchSurface.card(
@@ -29,14 +29,14 @@ Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Editable pager content',
-  type: CatchPagerFocusBoundary,
+  type: CatchPagerFocusViewport,
   path: '[Core primitives]/Layout',
 )
 Widget pagerFocusStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Pager focus boundary',
   catalogId: 'catch.screen_body.pager_focus_boundary',
   children: const [
-    CatchPagerFocusBoundary(
+    CatchPagerFocusViewport(
       child: CatchSurface.card(
         child: TextField(
           decoration: InputDecoration(labelText: 'Pager message'),

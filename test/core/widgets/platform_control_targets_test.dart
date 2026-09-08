@@ -112,9 +112,9 @@ void main() {
       enabled: activate != null,
       onRemove: () => activate?.call(),
     ),
-    'compact control shell': (activate) => CatchControlShell(
+    'compact control shell': (activate) => CatchControlSurface(
       key: _controlKey,
-      size: CatchControlSize.compact,
+      size: CatchControlSurfaceSize.compact,
       semanticButton: true,
       enabled: activate != null,
       onTap: activate,

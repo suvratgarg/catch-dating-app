@@ -6535,6 +6535,53 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:primitive-role-boundaries",
+      "patternFamilyId": "primitive-role-boundaries",
+      "decision": "retain-distinct-with-canonical-names",
+      "canonicalSymbol": "CatchControlSurface",
+      "members": [
+        {
+          "name": "CatchBottomSheetGrabber",
+          "action": "absorb",
+          "target": "CatchSheetDragIndicator"
+        },
+        {
+          "name": "CatchNetworkImageFallback",
+          "action": "absorb",
+          "target": "CatchImageFallbackSurface"
+        },
+        {
+          "name": "CatchPageDots",
+          "action": "absorb",
+          "target": "CatchPageIndicator"
+        },
+        {
+          "name": "CatchStatusDot",
+          "action": "absorb",
+          "target": "CatchStatusIndicator"
+        },
+        {
+          "name": "CatchFractionalMaxWidth",
+          "action": "absorb",
+          "target": "CatchFractionalViewport"
+        },
+        {
+          "name": "CatchPagerFocusBoundary",
+          "action": "absorb",
+          "target": "CatchPagerFocusViewport"
+        },
+        {
+          "name": "CatchControlShell",
+          "action": "absorb",
+          "target": "CatchControlSurface"
+        }
+      ],
+      "rationale": "Source comparison distinguishes passive status/page/drag indicators, image-fallback paint, local width/focus viewport protocols and interactive control containment. Six renamed primitives retain byte-identical source after symbol substitution. CatchControlSurface replaces four booleans with enabled, semanticButton and a typed resting/focused/error status, preserving error-first border precedence, disabled fill, focused shadow and minimum extents. Control shape becomes its Variant axis; size and tone use the canonical component prefix. All callers migrate without aliases. Four pinned production images include every enabled/error/focus combination and remain unchanged. The row-press surface retains its separate hover/keyboard/press ownership; no general surface or indicator implementation is duplicated.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

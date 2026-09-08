@@ -517,29 +517,34 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchControlShell,
+  type: CatchControlSurface,
   path: '[Core catalog]/Inputs',
 )
 Widget catchControlShellCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   Widget shell({
     required String label,
-    CatchControlSize size = CatchControlSize.md,
-    CatchControlShape shape = CatchControlShape.rounded,
-    CatchControlTone tone = CatchControlTone.surface,
+    CatchControlSurfaceSize size = CatchControlSurfaceSize.md,
+    CatchControlSurfaceVariant shape = CatchControlSurfaceVariant.rounded,
+    CatchControlSurfaceTone tone = CatchControlSurfaceTone.surface,
     bool enabled = true,
     bool hasError = false,
     bool focused = false,
   }) {
     return SizedBox(
       width: WidgetbookPreviewLayout.controlShellWidth,
-      child: CatchControlShell(
+      child: CatchControlSurface(
+        status: hasError
+            ? CatchControlSurfaceStatus.error
+            : focused
+            ? CatchControlSurfaceStatus.focused
+            : CatchControlSurfaceStatus.resting,
+
         size: size,
-        shape: shape,
+        variant: shape,
         tone: tone,
         enabled: enabled,
-        hasError: hasError,
-        focused: focused,
+
         child: Text(
           label,
           style: CatchTextStyles.fieldLabel(context, color: t.ink),
@@ -549,7 +554,7 @@ Widget catchControlShellCatalogStates(BuildContext context) {
   }
 
   return WidgetbookCatalogFrame(
-    title: 'CatchControlShell',
+    title: 'CatchControlSurface',
     catalogId: 'core.widgets.catch_control_shell',
     children: [
       _StateCard(
@@ -559,9 +564,9 @@ Widget catchControlShellCatalogStates(BuildContext context) {
             shell(label: 'Regular field'),
             shell(
               label: 'Compact pill',
-              size: CatchControlSize.compact,
-              shape: CatchControlShape.pill,
-              tone: CatchControlTone.raised,
+              size: CatchControlSurfaceSize.compact,
+              shape: CatchControlSurfaceVariant.pill,
+              tone: CatchControlSurfaceTone.raised,
             ),
             shell(label: 'Focused', focused: true),
             shell(label: 'Error', hasError: true),
@@ -1367,21 +1372,21 @@ Widget catchTabDockCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchPageDots,
+  type: CatchPageIndicator,
   path: '[Core catalog]/Navigation',
 )
 Widget catchPageDotsCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchPageDots',
+    title: 'CatchPageIndicator',
     catalogId: 'core.widgets.catch_page_dots',
     children: [
       _StateCard(
         label: 'selected positions',
         child: Column(
           children: [
-            CatchPageDots(selectedIndex: 0, itemCount: 4),
+            CatchPageIndicator(selectedIndex: 0, itemCount: 4),
             SizedBox(height: CatchSpacing.s3),
-            CatchPageDots(selectedIndex: 2, itemCount: 4),
+            CatchPageIndicator(selectedIndex: 2, itemCount: 4),
           ],
         ),
       ),
@@ -3366,21 +3371,21 @@ Widget catchBottomActionContentCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchBottomSheetGrabber,
+  type: CatchSheetDragIndicator,
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchBottomSheetGrabber',
+    title: 'CatchSheetDragIndicator',
     catalogId: 'core.widgets.catch_bottom_sheet_grabber',
     children: [
       _StateCard(
         label: 'default / wide',
         child: Column(
           children: [
-            CatchBottomSheetGrabber(),
+            CatchSheetDragIndicator(),
             SizedBox(height: CatchSpacing.s4),
-            CatchBottomSheetGrabber(
+            CatchSheetDragIndicator(
               width: WidgetbookPreviewLayout.catalogSheetGrabberWidth,
               height: WidgetbookPreviewLayout.catalogSheetGrabberHeight,
             ),

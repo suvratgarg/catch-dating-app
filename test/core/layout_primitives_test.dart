@@ -14,7 +14,7 @@ void main() {
           alignment: Alignment.topLeft,
           child: SizedBox(
             width: laneWidth,
-            child: const CatchFractionalMaxWidth(
+            child: const CatchFractionalViewport(
               fraction: 0.8,
               maxWidth: 300,
               child: SizedBox(key: childKey, width: 500, height: 20),

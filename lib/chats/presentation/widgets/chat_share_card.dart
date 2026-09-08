@@ -193,7 +193,7 @@ class ShareCardBubble extends StatelessWidget {
         alignment: isMe
             ? AlignmentDirectional.centerEnd
             : AlignmentDirectional.centerStart,
-        child: CatchFractionalMaxWidth(
+        child: CatchFractionalViewport(
           fraction: CatchLayout.chatBubbleMaxWidthFraction,
           maxWidth: CatchLayout.chatBubbleMaxWidth,
           alignment: isMe

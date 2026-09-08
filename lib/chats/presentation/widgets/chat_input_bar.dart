@@ -132,13 +132,17 @@ class _ChatComposer extends StatelessWidget {
               radius: CatchRadius.pill,
               boxShadow: CatchElevation.raised,
               padding: EdgeInsets.zero,
-              child: CatchControlShell(
+              child: CatchControlSurface(
+                status: !hardDisabled && focusNode.hasFocus
+                    ? CatchControlSurfaceStatus.focused
+                    : CatchControlSurfaceStatus.resting,
+
                 key: ChatInputBar.pillKey,
-                size: CatchControlSize.floating,
-                shape: CatchControlShape.pill,
+                size: CatchControlSurfaceSize.floating,
+                variant: CatchControlSurfaceVariant.pill,
                 enabled: !hardDisabled,
-                focused: !hardDisabled && focusNode.hasFocus,
-                // CatchControlShell reserves the emphasis-stroke footprint.
+
+                // CatchControlSurface reserves the emphasis-stroke footprint.
                 // Subtract that reserve so the visible outer inset stays s2.
                 padding: const EdgeInsets.all(
                   CatchLayout.chatInputInnerPadding,

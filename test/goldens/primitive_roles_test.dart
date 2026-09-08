@@ -24,17 +24,22 @@ void main() {
                 for (final enabled in [true, false])
                   for (final hasError in [false, true])
                     for (final focused in [false, true])
-                      CatchControlShell(
+                      CatchControlSurface(
+                        status: hasError
+                            ? CatchControlSurfaceStatus.error
+                            : focused
+                            ? CatchControlSurfaceStatus.focused
+                            : CatchControlSurfaceStatus.resting,
+
                         enabled: enabled,
-                        hasError: hasError,
-                        focused: focused,
+
                         child: Text('Enabled $enabled · error $hasError'),
                       ),
-                const CatchBottomSheetGrabber(),
-                const CatchPageDots(selectedIndex: 1, itemCount: 4),
-                const Align(child: CatchStatusDot()),
-                const SizedBox(height: 64, child: CatchNetworkImageFallback()),
-                CatchFractionalMaxWidth(
+                const CatchSheetDragIndicator(),
+                const CatchPageIndicator(selectedIndex: 1, itemCount: 4),
+                const Align(child: CatchStatusIndicator()),
+                const SizedBox(height: 64, child: CatchImageFallbackSurface()),
+                CatchFractionalViewport(
                   fraction: 0.7,
                   maxWidth: 180,
                   child: ColoredBox(
@@ -42,7 +47,7 @@ void main() {
                     child: const SizedBox(height: 32, width: double.infinity),
                   ),
                 ),
-                const CatchPagerFocusBoundary(child: Text('Page content')),
+                const CatchPagerFocusViewport(child: Text('Page content')),
               ],
             ),
           ),

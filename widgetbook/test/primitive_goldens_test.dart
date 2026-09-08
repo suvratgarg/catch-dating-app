@@ -22,12 +22,12 @@ const _referenceCases = <String, String>{
   'Core catalog/Typography/CatchMetadataText/Catalog states': 'mono_label',
   'Core catalog/Typography/CatchSectionHeaderTitle/Catalog states':
       'section_label',
-  'Core catalog/Inputs/CatchControlShell/Catalog states': 'control_shell',
+  'Core catalog/Inputs/CatchControlSurface/Catalog states': 'control_shell',
   'Core catalog/Navigation/CatchStepProgress/Catalog states': 'step_progress',
-  'Core catalog/Navigation/CatchPageDots/Catalog states': 'page_dots',
+  'Core catalog/Navigation/CatchPageIndicator/Catalog states': 'page_dots',
   'Core catalog/Data display/CatchStatColumn/Catalog states': 'stat_column',
   'Core catalog/Data display/CatchMetaDotRow/Catalog states': 'meta_dot_row',
-  'Core catalog/Sheets and footers/CatchBottomSheetGrabber/Catalog states':
+  'Core catalog/Sheets and footers/CatchSheetDragIndicator/Catalog states':
       'bottom_sheet_grabber',
   'Core catalog/Icon atoms/CatchIconTile/Catalog states': 'icon_tile',
 };

@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/primitives/catch_status_dot.dart';
+import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
 class CatchPersonNewMatchDot extends StatelessWidget {
@@ -12,7 +12,7 @@ class CatchPersonNewMatchDot extends StatelessWidget {
     return Semantics(
       label: semanticsLabel,
       child: ExcludeSemantics(
-        child: CatchStatusDot(
+        child: CatchStatusIndicator(
           color: CatchTokens.of(context).primary,
           size: CatchSpacing.s2,
         ),

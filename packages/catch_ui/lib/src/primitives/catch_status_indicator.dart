@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class CatchStatusDot extends StatelessWidget {
-  const CatchStatusDot({
+class CatchStatusIndicator extends StatelessWidget {
+  const CatchStatusIndicator({
     super.key,
     this.color,
     this.size = CatchLayout.badgeMdDotExtent,

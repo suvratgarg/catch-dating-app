@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_control_shell.dart';
+import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:flutter/material.dart';
 
 class CatchNumberStepper extends StatelessWidget {
@@ -51,10 +51,10 @@ class CatchNumberStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchControlShell(
-      tone: CatchControlTone.raised,
+    return CatchControlSurface(
+      tone: CatchControlSurfaceTone.raised,
       enabled: enabled,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      padding: CatchControlMetrics.contentPadding(CatchControlSurfaceSize.md),
       child: Row(
         children: [
           IconButton(
