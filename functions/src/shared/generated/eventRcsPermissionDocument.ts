@@ -38,6 +38,10 @@ export type EventRcsPermissionDocument =
         senderHash: string;
         reviewedStopHash: null | string;
       };
+      /**
+       * Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.
+       */
+      subscriptionId: string;
     }
   | {
       schemaVersion: 1;
@@ -74,4 +78,8 @@ export type EventRcsPermissionDocument =
         senderHash: string;
         reviewedStopHash: null | string;
       };
+      /**
+       * Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.
+       */
+      subscriptionId: string;
     };

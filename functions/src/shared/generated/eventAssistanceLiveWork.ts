@@ -35,6 +35,7 @@ export interface EventAssistanceLiveWork {
         }
       | {
           routeId: "catchEventRcs";
+          senderId: string;
         }
     )[];
     responseDeadline: number | null;

@@ -1380,6 +1380,10 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                       'organizerWhatsappEndpointStops',
                       'organizerContactChannelStates',
                       'eventStaffGrants',
+                      'eventAssistanceRcsPermissions',
+                      'eventAssistanceRcsSenders',
+                      'eventAssistanceRcsBudgets',
+                      'eventAssistanceRcsSubscriptions',
                     ],
                   },
                   'documentId': <String, Object?>{
@@ -1512,6 +1516,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                         'enum': <Object?>[
                           'catchEventSms',
                           'organizerEventWhatsapp',
+                          'catchEventRcs',
                         ],
                       },
                       'senderId': <String, Object?>{
@@ -1544,6 +1549,24 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                       'recipientEndpointId': <String, Object?>{
                         'type': 'string',
                         'pattern': '^whatsapp:[a-f0-9]{64}\$',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'subscriptionId',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'rcsSubscription',
+                      },
+                      'subscriptionId': <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^rcs-subscription:[a-f0-9]{64}\$',
                       },
                     },
                   },
@@ -1829,11 +1852,18 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                           'additionalProperties': false,
                           'required': <Object?>[
                             'routeId',
+                            'senderId',
                           ],
                           'properties': <String, Object?>{
                             'routeId': <String, Object?>{
                               'type': 'string',
                               'const': 'catchEventRcs',
+                            },
+                            'senderId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
                             },
                           },
                         },

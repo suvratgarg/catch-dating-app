@@ -137,12 +137,19 @@ export const setEventAssistanceRuntimeConfigCallablePayloadSchema: Record<string
                             "type": "object",
                             "additionalProperties": false,
                             "required": [
-                              "routeId"
+                              "routeId",
+                              "senderId"
                             ],
                             "properties": {
                               "routeId": {
                                 "type": "string",
                                 "const": "catchEventRcs"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                               }
                             }
                           }

@@ -100,6 +100,8 @@ export {
   onAssistanceRuntimeConfigChanged,
   onAssistanceMembershipChanged, onAssistanceMessageChanged,
   onAssistanceSmsPermissionChanged, onAssistanceWhatsappPermissionChanged,
+  onAssistanceRcsPermissionChanged, onAssistanceRcsSenderChanged,
+  onAssistanceRcsBudgetChanged, onAssistanceRcsSubscriptionChanged,
   onAssistanceSmsSenderChanged,
   onAssistanceSmsBudgetChanged,
   onAssistanceWhatsappSenderChanged,

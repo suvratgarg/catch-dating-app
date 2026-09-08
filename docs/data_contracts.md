@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.76.0
+version: 1.77.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -109,6 +109,16 @@ the current event window rechecked by the shared transactional permission
 reader. STOP review hashes exclude START and unrelated observation revisions;
 a new STOP requires fresh review. No SMS/WhatsApp permission is reused or
 mutated. Direct client collection access remains denied.
+
+RCS permission records require a derived `subscriptionId` matching the canonical
+agent plus phone hash. The whole record remains covered by its immutable consent
+receipt. A composite index over `subscriptionId`, `expiresAt` and document ID
+supports bounded conversation STOP discovery without storing raw phones in work
+payloads or scanning every recipient of an agent. Do not retrofit an indexed
+field onto a previously receipted grant: changing that record invalidates its
+proof. These pre-activation contracts require state verification and fresh
+review for any older records before live activation; no data backfill or consent
+migration is performed by this source change.
 
 The same canonical contract now owns `WithdrawalGrant`, `WithdrawalView` and a
 closed `messageLink` revoke-only receipt variant with a null actor. Private

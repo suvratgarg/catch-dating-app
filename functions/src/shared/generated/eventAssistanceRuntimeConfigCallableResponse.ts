@@ -44,6 +44,7 @@ export interface EventAssistanceRuntimeConfigCallableResponse {
                       }
                     | {
                         routeId: "catchEventRcs";
+                        senderId: string;
                       }
                   )[];
                   responseDeadline: number | null;
@@ -113,6 +114,7 @@ export interface EventAssistanceRuntimeConfigCallableResponse {
                       }
                     | {
                         routeId: "catchEventRcs";
+                        senderId: string;
                       }
                   )[];
                   responseDeadline: number | null;

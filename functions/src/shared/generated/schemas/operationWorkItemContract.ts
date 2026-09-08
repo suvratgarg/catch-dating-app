@@ -1377,7 +1377,11 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                       "eventAssistanceWhatsappBudgets",
                       "organizerWhatsappEndpointStops",
                       "organizerContactChannelStates",
-                      "eventStaffGrants"
+                      "eventStaffGrants",
+                      "eventAssistanceRcsPermissions",
+                      "eventAssistanceRcsSenders",
+                      "eventAssistanceRcsBudgets",
+                      "eventAssistanceRcsSubscriptions"
                     ]
                   },
                   "documentId": {
@@ -1509,7 +1513,8 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                         "type": "string",
                         "enum": [
                           "catchEventSms",
-                          "organizerEventWhatsapp"
+                          "organizerEventWhatsapp",
+                          "catchEventRcs"
                         ]
                       },
                       "senderId": {
@@ -1542,6 +1547,24 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                       "recipientEndpointId": {
                         "type": "string",
                         "pattern": "^whatsapp:[a-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "subscriptionId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rcsSubscription"
+                      },
+                      "subscriptionId": {
+                        "type": "string",
+                        "pattern": "^rcs-subscription:[a-f0-9]{64}$"
                       }
                     }
                   }
@@ -1826,12 +1849,19 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                           "type": "object",
                           "additionalProperties": false,
                           "required": [
-                            "routeId"
+                            "routeId",
+                            "senderId"
                           ],
                           "properties": {
                             "routeId": {
                               "type": "string",
                               "const": "catchEventRcs"
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                             }
                           }
                         }

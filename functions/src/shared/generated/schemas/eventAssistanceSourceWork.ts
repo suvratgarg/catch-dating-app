@@ -71,7 +71,11 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
             "eventAssistanceWhatsappBudgets",
             "organizerWhatsappEndpointStops",
             "organizerContactChannelStates",
-            "eventStaffGrants"
+            "eventStaffGrants",
+            "eventAssistanceRcsPermissions",
+            "eventAssistanceRcsSenders",
+            "eventAssistanceRcsBudgets",
+            "eventAssistanceRcsSubscriptions"
           ]
         },
         "documentId": {
@@ -203,7 +207,8 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
               "type": "string",
               "enum": [
                 "catchEventSms",
-                "organizerEventWhatsapp"
+                "organizerEventWhatsapp",
+                "catchEventRcs"
               ]
             },
             "senderId": {
@@ -236,6 +241,24 @@ export const eventAssistanceSourceWorkSchema: Record<string, unknown> = {
             "recipientEndpointId": {
               "type": "string",
               "pattern": "^whatsapp:[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "subscriptionId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rcsSubscription"
+            },
+            "subscriptionId": {
+              "type": "string",
+              "pattern": "^rcs-subscription:[a-f0-9]{64}$"
             }
           }
         }

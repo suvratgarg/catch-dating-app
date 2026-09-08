@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.23.0
-updated: 2026-09-07
+version: 1.24.0
+updated: 2026-09-08
 owner: operations_platform
 status: active
 ---
@@ -707,19 +707,31 @@ a later correction retains the effective reporter when reopening work.
 one `liveSourceWake` Operations run/item, enforced by
 `event_assistance_source_work.schema.json`. The source `eventId` is the
 CloudEvent delivery identity. Event scopes carry `scope.context`; readiness
-scopes carry an exact sender selection or organizer/WhatsApp endpoint hash.
+scopes carry an exact sender selection, organizer/WhatsApp endpoint hash, or
+RCS agent/phone conversation subscription ID.
 Repeated delivery reuses the same work. Source payloads only request a fresh
 evaluation and cannot supply authoritative domain facts or sender permission.
 
-The twenty source triggers cover relevant event configuration/lifecycle,
+The twenty-four source triggers cover relevant event configuration/lifecycle,
 roster/check-in, live plan status, participation/replies, late-join settings,
 confirmed group progress, membership, runtime permission, message evidence and
-event-specific SMS/WhatsApp consent, sender configuration, approved templates,
+event-specific SMS/WhatsApp/RCS consent, sender configuration, approved templates,
 spending authority, provider STOP, CRM suppression and scoped staff grants. Owner or scope
 changes wake both previous and current affected scopes. Unrelated event
 counters and rehearsal state create no work. No-target checks avoid creating
 source runs when no guest, delivery or checkpoint work exists; newly created work evaluates
 current facts on its first execution.
+
+RCS sender changes select exact configured RCS routes. Event budget changes
+wake that event; UTC sender-day changes discover the corresponding sender.
+Debit increases and revision counters do not trigger repair, while released
+spending and changes to limits, approval, agent, currency or window do. RCS
+subscription discovery queries unexpired permissions by their receipt-covered
+conversation ID with expiry/document-ID cursors. Target resolution revalidates
+that key and current expiry before creating an attendee wake. START-only
+records and subsequent START observations create no work and grant no consent.
+STOP creation, removal or replacement rechecks only the affected conversation.
+The source dispatcher retains the same bounded retry and review lifecycle.
 
 Fanout scans only work for the exact organizer/event and optional attendee,
 then revalidates each target before waking it. Event-wide scopes merge bounded

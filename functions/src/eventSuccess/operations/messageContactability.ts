@@ -11,6 +11,9 @@ import {WHATSAPP_POLICIES} from "./whatsappTemplate";
 import {MessagePermissionScope, readSmsMessagePermission,
   readWhatsappMessagePermission} from "./messagePermissionReader";
 import type {LateJoinAutomation} from "./messageProtocol";
+import {parseRcsConfig} from "./rcsProtocol";
+import {rcsConsentCollections, rcsStopHash} from "./rcsConsent";
+import {readRcsMessagePermission} from "./rcsPermissionReader";
 
 /** The trusted workflow chooses senders; consent never selects them. */
 export type EventMessageRouteSelection = LateJoinAutomation["routes"][number];
@@ -61,9 +64,40 @@ export async function readEventMessageContactability(db: Firestore,
       results.push(blocked("notAdmitted")); continue;
     }
     switch (route.routeId) {
-    case "catchEventRcs":
-      results.push(blocked("notProvisioned"));
+    case "catchEventRcs": {
+      requireDocumentId(route.senderId);
+      const snap = await tx.get(db.collection(rcsConsentCollections.senders)
+        .doc(route.senderId));
+      if (!snap.exists) {
+        results.push(blocked("notProvisioned")); break;
+      }
+      const sender = parseRcsConfig(snap.data());
+      if (sender.senderId !== route.senderId || sender.status !== "ready" ||
+          sender.activation.approvedAt > now ||
+          now >= Math.min(sender.activation.validUntil,
+            sender.quote.validUntil)) {
+        results.push(blocked("notProvisioned")); break;
+      }
+      if (!sender.allowedPurposes.includes(purpose)) {
+        results.push(blocked("templateUnavailable")); break;
+      }
+      const consent = await readRcsMessagePermission(db, tx,
+        {...scope, senderId: route.senderId}, sender, now);
+      if (consent.kind === "blocked") {
+        results.push(blocked(consent.reason)); break;
+      }
+      if (!sender.recipientPrefixes.some((prefix) =>
+        consent.permission.phoneE164.startsWith(prefix))) {
+        results.push(blocked("notProvisioned")); break;
+      }
+      results.push({route, state: {kind: "canPrepare",
+        validUntil: Math.min(now + 30_000, serviceEnd,
+          consent.permission.expiresAt, sender.activation.validUntil,
+          sender.quote.validUntil), evidenceHash: operationContentHash([
+          scope, purpose, sender, consent.permission,
+          rcsStopHash(consent.subscription)])}});
       break;
+    }
     case "catchEventSms": {
       requireDocumentId(route.senderId);
       const snap = await tx.get(db.collection(smsCollections.senders)

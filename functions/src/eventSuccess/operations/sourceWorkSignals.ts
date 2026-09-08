@@ -99,6 +99,7 @@ function scopeFor(collection: Collection, documentId: string,
   let context: unknown = value.context;
   let attendeeId: unknown = value.attendeeId ?? null;
   switch (collection) {
+  case "eventAssistanceRcsBudgets":
   case "eventAssistanceSmsBudgets":
   case "eventAssistanceWhatsappBudgets": {
     const budgetScope = object(value.scope);
@@ -110,12 +111,14 @@ function scopeFor(collection: Collection, documentId: string,
     attendeeId = null;
     break;
   }
+  case "eventAssistanceRcsSenders":
   case "eventAssistanceSmsSenders":
   case "organizerSenderConnections":
   case "eventAssistanceWhatsappPolicies":
   case "organizerMessageTemplates":
   case "organizerWhatsappEndpointStops":
   case "organizerContactChannelStates":
+  case "eventAssistanceRcsSubscriptions":
     return readinessScope(collection, documentId, value);
   case "events":
     context = {mode: "live", eventId: documentId,
@@ -136,6 +139,7 @@ function scopeFor(collection: Collection, documentId: string,
     break;
   case "eventAssistanceGroupProgress": attendeeId = null; break;
   case "eventAssistanceGuests":
+  case "eventAssistanceRcsPermissions":
   case "eventAssistanceSmsPermissions":
   case "eventAssistanceWhatsappPermissions":
   case "eventAssistanceMemberships": break;
@@ -162,15 +166,21 @@ function scopeFor(collection: Collection, documentId: string,
 function projection(collection: Collection, snapshot: Snapshot) {
   if (!snapshot) return null;
   const value = snapshot.value;
+  if (collection === "eventAssistanceRcsSubscriptions" && !value.lastStop) {
+    return null;
+  }
   let fields: string[];
   switch (collection) {
+  case "eventAssistanceRcsSenders":
   case "eventAssistanceSmsSenders":
   case "organizerSenderConnections":
   case "organizerMessageTemplates":
   case "organizerWhatsappEndpointStops":
   case "eventAssistanceWhatsappPolicies": fields = Object.keys(value); break;
+  case "eventAssistanceRcsBudgets":
   case "eventAssistanceSmsBudgets":
   case "eventAssistanceWhatsappBudgets":
+  case "eventAssistanceRcsSubscriptions":
   case "organizerContactChannelStates": fields = readinessFields(collection)!;
     break;
   case "events": fields = ["organizerId", "clubId", "status", "eventFormat",
@@ -186,6 +196,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventStaffGrants": fields = ["eventId", "organizerId", "uid",
     "status", "expiresAt", "groupDuties"]; break;
   case "eventAssistanceGuests":
+  case "eventAssistanceRcsPermissions":
   case "eventAssistanceSmsPermissions":
   case "eventAssistanceWhatsappPermissions":
   case "eventAssistanceSettings":

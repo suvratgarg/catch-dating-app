@@ -5,6 +5,7 @@ import {parseRuntimeConfig, RUNTIME_CONFIGS} from "./runtimeConfigRecords";
 import {parseWhatsappPermission, WHATSAPP_PERMISSIONS} from
   "./whatsappPermissionRecords";
 import type {EventSourceScope, ReadinessSourceScope} from "./sourceWorkRecords";
+import {parseRcsPermission, rcsConsentCollections} from "./rcsConsent";
 
 /** Stable query tuple, retained even if the discovery document disappears. */
 export function readinessTargetKey(expiresAt: number, documentId: string) {
@@ -18,7 +19,8 @@ export function parseReadinessTargetKey(key: string,
   const stamp = Number(match?.[1]);
   const id = match?.[2] ?? "";
   const pattern = scope.kind === "sender" ?
-    /^runtime:lateJoin:[a-f0-9]{64}$/ : /^wa-permission:[a-f0-9]{64}$/;
+    /^runtime:lateJoin:[a-f0-9]{64}$/ : scope.kind === "rcsSubscription" ?
+      /^rcs-permission:[a-f0-9]{64}$/ : /^wa-permission:[a-f0-9]{64}$/;
   if (!match || !pattern.test(id) || !Number.isSafeInteger(stamp) ||
       readinessTargetKey(stamp, id) !== key) throw invalidWork();
   return [stamp, id];
@@ -40,9 +42,12 @@ export class SourceReadinessTargets {
     let query = scope.kind === "sender" ?
       this.db.collection(RUNTIME_CONFIGS).where("configuration.options.routes",
         "array-contains", {routeId: scope.routeId, senderId: scope.senderId}) :
-      this.db.collection(WHATSAPP_PERMISSIONS)
-        .where("context.organizerId", "==", scope.organizerId)
-        .where("recipientEndpointId", "==", scope.recipientEndpointId);
+      scope.kind === "rcsSubscription" ?
+        this.db.collection(rcsConsentCollections.permissions)
+          .where("subscriptionId", "==", scope.subscriptionId) :
+        this.db.collection(WHATSAPP_PERMISSIONS)
+          .where("context.organizerId", "==", scope.organizerId)
+          .where("recipientEndpointId", "==", scope.recipientEndpointId);
     query = query.where(expiryField, ">", occurredAt).orderBy(expiryField)
       .orderBy(FieldPath.documentId());
     if (cursor !== null) {
@@ -60,7 +65,9 @@ export class SourceReadinessTargets {
     occurredAt: number): Promise<EventSourceScope | null> {
     const [expiry, id] = parseReadinessTargetKey(key, scope);
     const snap = await this.db.collection(scope.kind === "sender" ?
-      RUNTIME_CONFIGS : WHATSAPP_PERMISSIONS).doc(id).get();
+      RUNTIME_CONFIGS : scope.kind === "rcsSubscription" ?
+        rcsConsentCollections.permissions : WHATSAPP_PERMISSIONS)
+      .doc(id).get();
     if (!snap.exists) return null;
     const value = snap.data()!;
     if (scope.kind === "sender") {
@@ -73,6 +80,17 @@ export class SourceReadinessTargets {
             operationContentHash({routeId: scope.routeId,
               senderId: scope.senderId}))) return null;
       return {context: runtime.context, attendeeId: null};
+    }
+    if (scope.kind === "rcsSubscription") {
+      const permission = parseRcsPermission(value);
+      if (permission.permissionId !== id ||
+          permission.updatedAt > this.clock()) {
+        throw invalidWork();
+      }
+      if (permission.expiresAt !== expiry ||
+          permission.expiresAt <= Math.max(occurredAt, this.clock()) ||
+          permission.subscriptionId !== scope.subscriptionId) return null;
+      return {context: permission.context, attendeeId: permission.attendeeId};
     }
     const permission = parseWhatsappPermission(value);
     if (permission.permissionId !== id || permission.updatedAt > this.clock()) {

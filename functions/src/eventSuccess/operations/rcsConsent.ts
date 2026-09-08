@@ -63,7 +63,10 @@ export function parseRcsPermission(value: unknown): Permission {
             value.evidence.phoneVerifiedAt)))) {
     throw new Error("Invalid event-service RCS permission");
   }
-  rcsSubscriptionId(value.sender.agentId, rcsPhoneHash(value.phoneE164)!);
+  if (value.subscriptionId !== rcsSubscriptionId(value.sender.agentId,
+    rcsPhoneHash(value.phoneE164)!)) {
+    throw new Error("Invalid RCS permission conversation");
+  }
   return value;
 }
 

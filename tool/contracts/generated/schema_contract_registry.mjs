@@ -1211,7 +1211,8 @@ export const eventRcsPermissionDocumentSchema = {
         "expiresAt",
         "updatedAt",
         "status",
-        "evidence"
+        "evidence",
+        "subscriptionId"
       ],
       "properties": {
         "schemaVersion": {
@@ -1394,6 +1395,11 @@ export const eventRcsPermissionDocumentSchema = {
               ]
             }
           }
+        },
+        "subscriptionId": {
+          "type": "string",
+          "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+          "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
         }
       }
     },
@@ -1419,7 +1425,8 @@ export const eventRcsPermissionDocumentSchema = {
         "expiresAt",
         "updatedAt",
         "status",
-        "evidence"
+        "evidence",
+        "subscriptionId"
       ],
       "properties": {
         "schemaVersion": {
@@ -1609,6 +1616,11 @@ export const eventRcsPermissionDocumentSchema = {
               }
             }
           ]
+        },
+        "subscriptionId": {
+          "type": "string",
+          "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+          "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
         }
       }
     }
@@ -8245,12 +8257,19 @@ export const eventAssistanceRuntimeConfigDocumentSchema = {
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
-                          "routeId"
+                          "routeId",
+                          "senderId"
                         ],
                         "properties": {
                           "routeId": {
                             "type": "string",
                             "const": "catchEventRcs"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                           }
                         }
                       }
@@ -8580,12 +8599,19 @@ export const eventAssistanceRuntimeConfigDocumentSchema = {
                             "type": "object",
                             "additionalProperties": false,
                             "required": [
-                              "routeId"
+                              "routeId",
+                              "senderId"
                             ],
                             "properties": {
                               "routeId": {
                                 "type": "string",
                                 "const": "catchEventRcs"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                               }
                             }
                           }
@@ -9010,12 +9036,19 @@ export const setEventAssistanceRuntimeConfigCallablePayloadSchema = {
                             "type": "object",
                             "additionalProperties": false,
                             "required": [
-                              "routeId"
+                              "routeId",
+                              "senderId"
                             ],
                             "properties": {
                               "routeId": {
                                 "type": "string",
                                 "const": "catchEventRcs"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                               }
                             }
                           }
@@ -9426,12 +9459,19 @@ export const eventAssistanceRuntimeConfigCallableResponseSchema = {
                                     "type": "object",
                                     "additionalProperties": false,
                                     "required": [
-                                      "routeId"
+                                      "routeId",
+                                      "senderId"
                                     ],
                                     "properties": {
                                       "routeId": {
                                         "type": "string",
                                         "const": "catchEventRcs"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                                       }
                                     }
                                   }
@@ -9761,12 +9801,19 @@ export const eventAssistanceRuntimeConfigCallableResponseSchema = {
                                         "type": "object",
                                         "additionalProperties": false,
                                         "required": [
-                                          "routeId"
+                                          "routeId",
+                                          "senderId"
                                         ],
                                         "properties": {
                                           "routeId": {
                                             "type": "string",
                                             "const": "catchEventRcs"
+                                          },
+                                          "senderId": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 160,
+                                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                                           }
                                         }
                                       }
@@ -43431,12 +43478,19 @@ export const eventAssistanceMessageDocumentSchema = {
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
-                          "routeId"
+                          "routeId",
+                          "senderId"
                         ],
                         "properties": {
                           "routeId": {
                             "type": "string",
                             "const": "catchEventRcs"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                           }
                         }
                       }
@@ -46511,12 +46565,19 @@ export const eventAssistanceMessageIntentSchema = {
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
-                      "routeId"
+                      "routeId",
+                      "senderId"
                     ],
                     "properties": {
                       "routeId": {
                         "type": "string",
                         "const": "catchEventRcs"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                       }
                     }
                   }
@@ -64372,7 +64433,11 @@ export const eventAssistanceSourceWorkSchema = {
             "eventAssistanceWhatsappBudgets",
             "organizerWhatsappEndpointStops",
             "organizerContactChannelStates",
-            "eventStaffGrants"
+            "eventStaffGrants",
+            "eventAssistanceRcsPermissions",
+            "eventAssistanceRcsSenders",
+            "eventAssistanceRcsBudgets",
+            "eventAssistanceRcsSubscriptions"
           ]
         },
         "documentId": {
@@ -64504,7 +64569,8 @@ export const eventAssistanceSourceWorkSchema = {
               "type": "string",
               "enum": [
                 "catchEventSms",
-                "organizerEventWhatsapp"
+                "organizerEventWhatsapp",
+                "catchEventRcs"
               ]
             },
             "senderId": {
@@ -64537,6 +64603,24 @@ export const eventAssistanceSourceWorkSchema = {
             "recipientEndpointId": {
               "type": "string",
               "pattern": "^whatsapp:[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "subscriptionId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rcsSubscription"
+            },
+            "subscriptionId": {
+              "type": "string",
+              "pattern": "^rcs-subscription:[a-f0-9]{64}$"
             }
           }
         }
@@ -66001,12 +66085,19 @@ export const eventAssistanceLiveWorkSchema = {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
-                  "routeId"
+                  "routeId",
+                  "senderId"
                 ],
                 "properties": {
                   "routeId": {
                     "type": "string",
                     "const": "catchEventRcs"
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                   }
                 }
               }
@@ -70090,7 +70181,11 @@ export const operationWorkItemSchema = {
                       "eventAssistanceWhatsappBudgets",
                       "organizerWhatsappEndpointStops",
                       "organizerContactChannelStates",
-                      "eventStaffGrants"
+                      "eventStaffGrants",
+                      "eventAssistanceRcsPermissions",
+                      "eventAssistanceRcsSenders",
+                      "eventAssistanceRcsBudgets",
+                      "eventAssistanceRcsSubscriptions"
                     ]
                   },
                   "documentId": {
@@ -70222,7 +70317,8 @@ export const operationWorkItemSchema = {
                         "type": "string",
                         "enum": [
                           "catchEventSms",
-                          "organizerEventWhatsapp"
+                          "organizerEventWhatsapp",
+                          "catchEventRcs"
                         ]
                       },
                       "senderId": {
@@ -70255,6 +70351,24 @@ export const operationWorkItemSchema = {
                       "recipientEndpointId": {
                         "type": "string",
                         "pattern": "^whatsapp:[a-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "subscriptionId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rcsSubscription"
+                      },
+                      "subscriptionId": {
+                        "type": "string",
+                        "pattern": "^rcs-subscription:[a-f0-9]{64}$"
                       }
                     }
                   }
@@ -70539,12 +70653,19 @@ export const operationWorkItemSchema = {
                           "type": "object",
                           "additionalProperties": false,
                           "required": [
-                            "routeId"
+                            "routeId",
+                            "senderId"
                           ],
                           "properties": {
                             "routeId": {
                               "type": "string",
                               "const": "catchEventRcs"
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                             }
                           }
                         }

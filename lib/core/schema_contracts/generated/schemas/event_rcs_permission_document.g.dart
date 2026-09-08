@@ -29,6 +29,7 @@ const schemaEventRcsPermissionDocumentSchema = <String, Object?>{
         'updatedAt',
         'status',
         'evidence',
+        'subscriptionId',
       ],
       'properties': <String, Object?>{
         'schemaVersion': <String, Object?>{
@@ -212,6 +213,11 @@ const schemaEventRcsPermissionDocumentSchema = <String, Object?>{
             },
           },
         },
+        'subscriptionId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^rcs-subscription:[a-f0-9]{64}\$',
+          'description': 'Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.',
+        },
       },
     },
     <String, Object?>{
@@ -237,6 +243,7 @@ const schemaEventRcsPermissionDocumentSchema = <String, Object?>{
         'updatedAt',
         'status',
         'evidence',
+        'subscriptionId',
       ],
       'properties': <String, Object?>{
         'schemaVersion': <String, Object?>{
@@ -426,6 +433,11 @@ const schemaEventRcsPermissionDocumentSchema = <String, Object?>{
               },
             },
           ],
+        },
+        'subscriptionId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^rcs-subscription:[a-f0-9]{64}\$',
+          'description': 'Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.',
         },
       },
     },

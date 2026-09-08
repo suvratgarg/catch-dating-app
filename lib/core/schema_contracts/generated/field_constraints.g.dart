@@ -22925,7 +22925,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.scope.routeId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['catchEventSms', 'organizerEventWhatsapp'],
+    enumValues: <String>['catchEventSms', 'organizerEventWhatsapp', 'catchEventRcs'],
   );
 
   static const eventAssistanceSourceWorkScopeSenderId = CatchContractFieldConstraints(
@@ -22935,6 +22935,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSourceWorkScopeSubscriptionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSourceWork.scope.subscriptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-subscription:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceSourceWorkSignalId = CatchContractFieldConstraints(
@@ -22950,7 +22957,7 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceSourceWork.source.collection',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions', 'eventAssistanceSmsSenders', 'eventAssistanceSmsBudgets', 'organizerSenderConnections', 'eventAssistanceWhatsappPolicies', 'organizerMessageTemplates', 'eventAssistanceWhatsappBudgets', 'organizerWhatsappEndpointStops', 'organizerContactChannelStates', 'eventStaffGrants'],
+    enumValues: <String>['events', 'eventAttendees', 'eventSuccessPlans', 'eventAssistanceGuests', 'eventAssistanceSettings', 'eventAssistanceGroupProgress', 'eventAssistanceMemberships', 'eventAssistanceMessages', 'eventAssistanceRuntimeConfigs', 'eventAssistanceSmsPermissions', 'eventAssistanceWhatsappPermissions', 'eventAssistanceSmsSenders', 'eventAssistanceSmsBudgets', 'organizerSenderConnections', 'eventAssistanceWhatsappPolicies', 'organizerMessageTemplates', 'eventAssistanceWhatsappBudgets', 'organizerWhatsappEndpointStops', 'organizerContactChannelStates', 'eventStaffGrants', 'eventAssistanceRcsPermissions', 'eventAssistanceRcsSenders', 'eventAssistanceRcsBudgets', 'eventAssistanceRcsSubscriptions'],
   );
 
   static const eventAssistanceSourceWorkSourceDocumentId = CatchContractFieldConstraints(
@@ -27897,6 +27904,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsPermissionDocumentSubscriptionId = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.subscriptionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-subscription:[a-f0-9]{64}\$',
   );
 
   static const eventRcsPermissionDocumentUpdatedAt = CatchContractFieldConstraints(
@@ -83315,6 +83329,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSourceWork.scope.recipientEndpointId': eventAssistanceSourceWorkScopeRecipientEndpointId,
     'eventAssistanceSourceWork.scope.routeId': eventAssistanceSourceWorkScopeRouteId,
     'eventAssistanceSourceWork.scope.senderId': eventAssistanceSourceWorkScopeSenderId,
+    'eventAssistanceSourceWork.scope.subscriptionId': eventAssistanceSourceWorkScopeSubscriptionId,
     'eventAssistanceSourceWork.signalId': eventAssistanceSourceWorkSignalId,
     'eventAssistanceSourceWork.source.collection': eventAssistanceSourceWorkSourceCollection,
     'eventAssistanceSourceWork.source.documentId': eventAssistanceSourceWorkSourceDocumentId,
@@ -83993,6 +84008,7 @@ abstract final class CatchContractConstraints {
     'eventRcsPermissionDocument.sourceGeneration': eventRcsPermissionDocumentSourceGeneration,
     'eventRcsPermissionDocument.status': eventRcsPermissionDocumentStatus,
     'eventRcsPermissionDocument.subjectUid': eventRcsPermissionDocumentSubjectUid,
+    'eventRcsPermissionDocument.subscriptionId': eventRcsPermissionDocumentSubscriptionId,
     'eventRcsPermissionDocument.updatedAt': eventRcsPermissionDocumentUpdatedAt,
     'eventRcsPreferenceCallableResponse.outcome': eventRcsPreferenceCallableResponseOutcome,
     'eventRcsPreferenceCallableResponse.view.attendeeId': eventRcsPreferenceCallableResponseViewAttendeeId,

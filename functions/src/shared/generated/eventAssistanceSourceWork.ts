@@ -31,7 +31,11 @@ export interface EventAssistanceSourceWork {
       | "eventAssistanceWhatsappBudgets"
       | "organizerWhatsappEndpointStops"
       | "organizerContactChannelStates"
-      | "eventStaffGrants";
+      | "eventStaffGrants"
+      | "eventAssistanceRcsPermissions"
+      | "eventAssistanceRcsSenders"
+      | "eventAssistanceRcsBudgets"
+      | "eventAssistanceRcsSubscriptions";
     documentId: string;
     occurredAt: number;
   };
@@ -55,13 +59,17 @@ export interface EventAssistanceSourceWork {
       }
     | {
         kind: "sender";
-        routeId: "catchEventSms" | "organizerEventWhatsapp";
+        routeId: "catchEventSms" | "organizerEventWhatsapp" | "catchEventRcs";
         senderId: string;
       }
     | {
         kind: "whatsappEndpoint";
         organizerId: string;
         recipientEndpointId: string;
+      }
+    | {
+        kind: "rcsSubscription";
+        subscriptionId: string;
       };
   expiresAt: number;
   checkpoint: {

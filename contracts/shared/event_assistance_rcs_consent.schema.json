@@ -125,7 +125,8 @@
             "expiresAt",
             "updatedAt",
             "status",
-            "evidence"
+            "evidence",
+            "subscriptionId"
           ],
           "properties": {
             "schemaVersion": {
@@ -215,6 +216,11 @@
             },
             "evidence": {
               "$ref": "#/definitions/Evidence"
+            },
+            "subscriptionId": {
+              "type": "string",
+              "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+              "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
             }
           }
         },
@@ -240,7 +246,8 @@
             "expiresAt",
             "updatedAt",
             "status",
-            "evidence"
+            "evidence",
+            "subscriptionId"
           ],
           "properties": {
             "schemaVersion": {
@@ -337,6 +344,11 @@
                   "$ref": "#/definitions/Evidence"
                 }
               ]
+            },
+            "subscriptionId": {
+              "type": "string",
+              "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+              "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
             }
           }
         }

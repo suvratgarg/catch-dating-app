@@ -74,6 +74,10 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
             'organizerWhatsappEndpointStops',
             'organizerContactChannelStates',
             'eventStaffGrants',
+            'eventAssistanceRcsPermissions',
+            'eventAssistanceRcsSenders',
+            'eventAssistanceRcsBudgets',
+            'eventAssistanceRcsSubscriptions',
           ],
         },
         'documentId': <String, Object?>{
@@ -206,6 +210,7 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
               'enum': <Object?>[
                 'catchEventSms',
                 'organizerEventWhatsapp',
+                'catchEventRcs',
               ],
             },
             'senderId': <String, Object?>{
@@ -238,6 +243,24 @@ const schemaEventAssistanceSourceWorkSchema = <String, Object?>{
             'recipientEndpointId': <String, Object?>{
               'type': 'string',
               'pattern': '^whatsapp:[a-f0-9]{64}\$',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'subscriptionId',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'const': 'rcsSubscription',
+            },
+            'subscriptionId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^rcs-subscription:[a-f0-9]{64}\$',
             },
           },
         },

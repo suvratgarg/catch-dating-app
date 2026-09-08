@@ -190,6 +190,7 @@ export type EventAssistanceMessageIntent =
             }
           | {
               routeId: "catchEventRcs";
+              senderId: string;
             }
         )[];
         responseDeadline: number | null;

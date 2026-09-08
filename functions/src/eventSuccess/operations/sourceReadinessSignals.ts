@@ -1,4 +1,5 @@
 import type {SourceWork, ReadinessSourceScope} from "./sourceWorkRecords";
+import {rcsSubscriptionId} from "./rcsSubscriptions";
 
 type Collection = SourceWork["source"]["collection"];
 type Value = Record<string, unknown>;
@@ -6,6 +7,18 @@ type Value = Record<string, unknown>;
 export function readinessScope(collection: Collection, documentId: string,
   value: Value): ReadinessSourceScope | null {
   switch (collection) {
+  case "eventAssistanceRcsSenders":
+    return sender("catchEventRcs", documentId);
+  case "eventAssistanceRcsBudgets":
+    return sender("catchEventRcs", value.senderId);
+  case "eventAssistanceRcsSubscriptions": {
+    if (typeof value.agentId !== "string" ||
+        typeof value.endpointHash !== "string") return null;
+    const subscriptionId = rcsSubscriptionId(value.agentId, value.endpointHash);
+    if (value.subscriptionId !== subscriptionId ||
+        documentId !== subscriptionId) return null;
+    return {kind: "rcsSubscription", subscriptionId};
+  }
   case "eventAssistanceSmsSenders":
     return sender("catchEventSms", documentId);
   case "eventAssistanceSmsBudgets":
@@ -32,8 +45,9 @@ export function readinessScope(collection: Collection, documentId: string,
   }
 }
 
-function sender(routeId: "catchEventSms" | "organizerEventWhatsapp",
-  senderId: unknown): ReadinessSourceScope | null {
+function sender(routeId: Extract<ReadinessSourceScope,
+  {kind: "sender"}>["routeId"],
+senderId: unknown): ReadinessSourceScope | null {
   return typeof senderId === "string" ? {kind: "sender", routeId,
     senderId} : null;
 }
@@ -41,6 +55,11 @@ function sender(routeId: "catchEventSms" | "organizerEventWhatsapp",
 /** Dispatch debits and inbox counters are not repair notifications. */
 export function readinessFields(collection: Collection): string[] | null {
   switch (collection) {
+  case "eventAssistanceRcsSubscriptions":
+    return ["subscriptionId", "agentId", "endpointHash", "lastStop"];
+  case "eventAssistanceRcsBudgets":
+    return ["senderId", "agentId", "scope", "status", "approvalId", "currency",
+      "limitMicros", "startsAt", "endsAt"];
   case "eventAssistanceSmsBudgets":
   case "eventAssistanceWhatsappBudgets":
     return ["senderId", "scope", "status", "approvalId", "currency",
@@ -55,7 +74,8 @@ export function readinessFields(collection: Collection): string[] | null {
 export function spendingReleased(collection: Collection,
   before: Value | undefined, after: Value | undefined) {
   return (collection === "eventAssistanceSmsBudgets" ||
-    collection === "eventAssistanceWhatsappBudgets") &&
+    collection === "eventAssistanceWhatsappBudgets" ||
+    collection === "eventAssistanceRcsBudgets") &&
     typeof before?.chargedMicros === "number" &&
     typeof after?.chargedMicros === "number" &&
     after.chargedMicros < before.chargedMicros;

@@ -2855,6 +2855,7 @@ export interface EventAssistanceMessageDocument {
               }
             | {
                 routeId: "catchEventRcs";
+                senderId: string;
               }
           )[];
           responseDeadline: number | null;

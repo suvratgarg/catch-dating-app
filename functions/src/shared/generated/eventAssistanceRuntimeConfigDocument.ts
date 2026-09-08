@@ -31,6 +31,7 @@ export type EventAssistanceRuntimeConfigDocument =
               }
             | {
                 routeId: "catchEventRcs";
+                senderId: string;
               }
           )[];
           responseDeadline: number | null;
@@ -100,6 +101,7 @@ export type EventAssistanceRuntimeConfigDocument =
               }
             | {
                 routeId: "catchEventRcs";
+                senderId: string;
               }
           )[];
           responseDeadline: number | null;

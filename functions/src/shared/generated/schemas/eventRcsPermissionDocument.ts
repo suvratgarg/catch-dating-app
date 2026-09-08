@@ -26,7 +26,8 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
         "expiresAt",
         "updatedAt",
         "status",
-        "evidence"
+        "evidence",
+        "subscriptionId"
       ],
       "properties": {
         "schemaVersion": {
@@ -209,6 +210,11 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
               ]
             }
           }
+        },
+        "subscriptionId": {
+          "type": "string",
+          "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+          "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
         }
       }
     },
@@ -234,7 +240,8 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
         "expiresAt",
         "updatedAt",
         "status",
-        "evidence"
+        "evidence",
+        "subscriptionId"
       ],
       "properties": {
         "schemaVersion": {
@@ -424,6 +431,11 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
               }
             }
           ]
+        },
+        "subscriptionId": {
+          "type": "string",
+          "pattern": "^rcs-subscription:[a-f0-9]{64}$",
+          "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
         }
       }
     }

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.68.0
+version: 1.69.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -408,14 +408,20 @@ inferred consent record. A policy requiring a response deadline stays unresolved
 until that scoped value is available. No source read publishes, schedules, debits,
 loads credentials or submits a provider message.
 
-`readSmsMessagePermission` and `readWhatsappMessagePermission` are shared by
+`readSmsMessagePermission`, `readWhatsappMessagePermission` and
+`readRcsMessagePermission` are shared by
 pre-publication contactability and the final channel dispatch readers. They bind
 current event/attendee source, phone and linked identity to exact immutable consent
 receipts, sender identity and expiry. WhatsApp also checks endpoint STOP and a
 bounded set of CRM/provider/admin suppression records. Regranting event consent
 does not bypass an independent pause. Each selected channel needs its own proof;
 WhatsApp suppression does not revoke a separately granted SMS preference. RCS
-continues to return notProvisioned.
+binds the configured Catch sender and its current agent, recipient prefix,
+allowed purpose, approval and quote window. STOP comes from the shared verified
+conversation reader; START does not change its permission or evidence hash.
+The canonical automatic RCS route now requires `senderId`, just like SMS and
+WhatsApp. Old senderless placeholders cannot authorize preparation or dispatch;
+configuration must be reviewed with an explicit sender before activation.
 
 Contactability permits preparation only. It checks sender activation, quote window,
 purpose mapping and consent without a secret or guest bearer token. Exact message
@@ -1110,7 +1116,7 @@ Recorded delivery evidence remains readable after sender or event authority
 changes. Completed Operations work never reopens; later contradictory or delayed
 receipts remain in the outbox, whose current state must inform the Host read
 model. A delivery review flag is not yet a surfaced Host case or notification.
-Relevant event/guest changes and event-specific SMS/WhatsApp consent now also
+Relevant event/guest changes and event-specific SMS/WhatsApp/RCS consent now also
 wake saved delivery work, including unsent items held for missing permission.
 The bounded source job revalidates each target's scope and forwards only a
 signal identity. Immutable delivery wake receipts prevent a replayed source
@@ -1122,7 +1128,11 @@ affected saved runtime/permission scopes and enqueue the same event/guest wakes.
 These lookups exclude expired records, retain bounded cursors and revalidate
 their targets; they do not enroll guests or grant sender permission. Budget
 debits and inbox counters are filtered to avoid repeated fanout during ordinary
-delivery. See the [source lifecycle](operations_platform.md#source-changes-and-due-work-recovery).
+delivery. RCS STOP discovery uses the permission's receipt-covered
+`subscriptionId` to find only that agent/phone conversation across events. START
+observations and their counters create no repair work; STOP deletion/replacement
+and actual spending releases do. Discovery grants no consent, and final claims
+still recheck current facts. See the [source lifecycle](operations_platform.md#source-changes-and-due-work-recovery).
 Provider lookup/finality, retention and financial reconciliation remain separate
 work.
 

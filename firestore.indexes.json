@@ -1,6 +1,24 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceRcsPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "subscriptionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceCases",
       "queryScope": "COLLECTION",
       "fields": [

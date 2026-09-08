@@ -17,7 +17,8 @@ import {RCS_CONSENT_VERSION, rcsConsentCollections, rcsPermissionId,
   rcsSenderHash} from "./rcsConsent";
 import {rcsTestConfig, rcsTestNow as at, rcsTestGrant, rcsTestIntent,
   rcsTestKeys} from "./rcsTestFixtures";
-import {rcsEndpointId} from "./rcsProtocol";
+import {rcsEndpointId, rcsPhoneHash} from "./rcsProtocol";
+import {rcsSubscriptionId} from "./rcsSubscriptions";
 import {RCS_WITHDRAWAL_GRANTS, newRcsWithdrawalGrant, parseRcsWithdrawalGrant,
   prepareRcsWithdrawal} from "./rcsWithdrawalRecords";
 import {RcsWithdrawalStore} from "./rcsWithdrawalStore";
@@ -209,6 +210,8 @@ test("links cannot revoke replacement subjects, phones, sources or agents",
       if (change === "subject") patch.subjectUid = "replacement";
       if (change === "phone") {
         patch.phoneE164 = "+919888888888";
+        patch.subscriptionId = rcsSubscriptionId(p.sender.agentId,
+          rcsPhoneHash(patch.phoneE164)!);
         patch.recipientEndpointId = rcsEndpointId(p.context, p.attendeeId,
           patch.phoneE164 as string);
       }
@@ -217,6 +220,8 @@ test("links cannot revoke replacement subjects, phones, sources or agents",
       if (change === "agent") {
         const sender = {...p.sender, agentId: "replacement@rbm.goog"};
         patch.sender = sender;
+        patch.subscriptionId = rcsSubscriptionId(sender.agentId,
+          rcsPhoneHash(p.phoneE164)!);
         patch.evidence = {...p.evidence,
           senderHash: rcsSenderHash(p.senderId, sender)};
       }

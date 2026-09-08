@@ -180,7 +180,7 @@ function choices(h: Awaited<ReturnType<typeof harness>>):
   EventMessageRouteSelection[] {
   return [{routeId: "organizerEventWhatsapp", senderId: h.scope.senderId},
     {routeId: "catchEventSms", senderId: "sms-source"},
-    {routeId: "catchEventRcs"}];
+    {routeId: "catchEventRcs", senderId: "rcs-source"}];
 }
 async function contacts(h: Awaited<ReturnType<typeof harness>>,
   selections = choices(h)) {

@@ -134,6 +134,15 @@ export const onAssistanceSmsPermissionChanged = sourceTrigger(
 export const onAssistanceWhatsappPermissionChanged = sourceTrigger(
   "eventAssistanceWhatsappPermissions");
 
+export const onAssistanceRcsPermissionChanged = sourceTrigger(
+  "eventAssistanceRcsPermissions");
+export const onAssistanceRcsSenderChanged = sourceTrigger(
+  "eventAssistanceRcsSenders");
+export const onAssistanceRcsBudgetChanged = sourceTrigger(
+  "eventAssistanceRcsBudgets");
+export const onAssistanceRcsSubscriptionChanged = sourceTrigger(
+  "eventAssistanceRcsSubscriptions");
+
 export const onAssistanceSmsSenderChanged = sourceTrigger(
   "eventAssistanceSmsSenders");
 export const onAssistanceSmsBudgetChanged = sourceTrigger(

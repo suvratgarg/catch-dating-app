@@ -1,3 +1,4 @@
+import {rcsSubscriptionId} from "./rcsSubscriptions";
 import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {AssistanceDeliveryWorkStore} from "./deliveryWorkStore";
 import assert from "node:assert/strict";
@@ -33,7 +34,8 @@ async function harness(count = 1, realDb?: Firestore) {
   const records = Array.from({length: count}, (_, i) => newLiveWorkRecords({
     schemaVersion: 1, kind: "liveLateJoin", scope: {context,
       attendeeId: "attendee-" + i, episodeId: "episode-" + i},
-    options: {routes: [{routeId: "catchEventRcs"}], responseDeadline: null,
+    options: {routes: [{routeId: "catchEventRcs", senderId: "rcs-source"}],
+      responseDeadline: null,
       deliveryPolicy: {maxAttempts: 3, maxAttemptsPerRoute: 1,
         minimumRetrySeconds: 1}},
     expiresAt: now + 3_600_000, maxEvaluations: 100,
@@ -257,7 +259,7 @@ test("all source collections derive their event or guest scope on deletion",
     const h = await harness();
     const cases: Record<SourceWorkInput["source"]["collection"], {
       value: Record<string, unknown>; attendeeId?: string | null;
-      scope?: SourceWorkInput["scope"];
+      scope?: SourceWorkInput["scope"]; documentId?: string;
     }> = {
       events: {value: {clubId: h.context.organizerId}, attendeeId: null},
       eventAttendees: {value: {eventId: h.context.eventId,
@@ -268,6 +270,18 @@ test("all source collections derive their event or guest scope on deletion",
         organizerId: h.context.organizerId}, attendeeId: null},
       eventAssistanceGuests: {value: {context: h.context,
         attendeeId: "guest"}, attendeeId: "guest"},
+      eventAssistanceRcsPermissions: {value: {context: h.context,
+        attendeeId: "guest"}, attendeeId: "guest"},
+      eventAssistanceRcsSenders: {value: {}, scope: {kind: "sender",
+        routeId: "catchEventRcs", senderId: h.context.eventId}},
+      eventAssistanceRcsBudgets: {value: {scope: {kind: "event",
+        context: h.context}}, attendeeId: null},
+      eventAssistanceRcsSubscriptions: {
+        documentId: rcsSubscriptionId("agent", "a".repeat(64)),
+        value: {subscriptionId: rcsSubscriptionId("agent", "a".repeat(64)),
+          agentId: "agent", endpointHash: "a".repeat(64), lastStop: {}},
+        scope: {kind: "rcsSubscription",
+          subscriptionId: rcsSubscriptionId("agent", "a".repeat(64))}},
       eventAssistanceSmsPermissions: {value: {context: h.context,
         attendeeId: "guest"}, attendeeId: "guest"},
       eventAssistanceWhatsappPermissions: {value: {context: h.context,
@@ -310,7 +324,8 @@ test("all source collections derive their event or guest scope on deletion",
     for (const [collection, c] of Object.entries(cases)) {
       const change: AssistanceSourceChange = {
         source: {...h.input.source,
-          collection: collection as SourceWorkInput["source"]["collection"]},
+          collection: collection as SourceWorkInput["source"]["collection"],
+          documentId: c.documentId ?? h.input.source.documentId},
         before: {generation: 1, value: c.value}, after: null};
       assert.deepEqual(sourceWakeScopes(change),
         [c.scope ?? {context: h.context, attendeeId: c.attendeeId},

@@ -12,7 +12,8 @@ import {GuestSourceFacts, guestSourceFactsFromSnapshots,
 import {runAssistanceTransaction} from "./transactionCallback";
 import {parseRcsConfig, RcsConfig, rcsEndpointId, rcsPhoneHash} from
   "./rcsProtocol";
-import {readRcsSubscription, RcsSubscription} from "./rcsSubscriptions";
+import {readRcsSubscription, RcsSubscription, rcsSubscriptionId} from
+  "./rcsSubscriptions";
 import {rcsCallbackClock} from "./rcsCallbackRecords";
 import {Permission, ConsentReceipt, parseRcsPermission,
   parseRcsConsentReceipt, rcsConsentCollections, rcsPermissionId,
@@ -108,6 +109,7 @@ export class RcsPreferenceStore {
           previous?.sourceGeneration ?? facts.source.sourceGeneration,
         subjectUid: actor.uid, senderId: input.senderId, sender,
         routeId: "catchEventRcs", purpose: "eventService", phoneE164: phone,
+        subscriptionId: rcsSubscriptionId(sender.agentId, rcsPhoneHash(phone)!),
         recipientEndpointId: rcsEndpointId(facts.context,
           input.attendeeId, phone), status: granting ? "granted" : "revoked",
         evidence, expiresAt: granting ? expiry(facts.source) :

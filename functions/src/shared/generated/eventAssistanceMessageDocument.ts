@@ -199,6 +199,7 @@ export type EventAssistanceMessageDocument = {
               }
             | {
                 routeId: "catchEventRcs";
+                senderId: string;
               }
           )[];
           responseDeadline: number | null;

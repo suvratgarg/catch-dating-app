@@ -38,6 +38,9 @@ export function sourceWorkIds(input: SourceWorkInput) {
           input.source.documentId !== scope.attendeeId)) throw invalidWork();
   } else if (scope.kind === "sender") {
     requireDocumentId(scope.senderId);
+  } else if (scope.kind === "rcsSubscription") {
+    if (!/^rcs-subscription:[a-f0-9]{64}$/.test(scope.subscriptionId) ||
+        scope.subscriptionId.length !== 81) throw invalidWork();
   } else {
     requireDocumentId(scope.organizerId);
     requireDocumentId(scope.recipientEndpointId);

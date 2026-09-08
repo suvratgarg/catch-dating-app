@@ -31,6 +31,7 @@ export interface SetEventAssistanceRuntimeConfigCallablePayload {
                 }
               | {
                   routeId: "catchEventRcs";
+                  senderId: string;
                 }
             )[];
             responseDeadline: number | null;
