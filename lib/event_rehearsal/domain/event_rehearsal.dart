@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
@@ -332,6 +333,7 @@ class EventRehearsalActor {
     this.assistance,
     this.assistanceMessage,
     this.assistanceDelivery,
+    this.assistanceAutomation,
   });
 
   factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) {
@@ -374,6 +376,9 @@ class EventRehearsalActor {
       assistance: assistance,
       assistanceMessage: message,
       assistanceDelivery: delivery,
+      assistanceAutomation: map['assistanceAutomation'] == null
+          ? null
+          : RehearsalAssistanceAutomation.fromJson(map['assistanceAutomation']),
     );
   }
 
@@ -399,6 +404,7 @@ class EventRehearsalActor {
   final RehearsalAssistanceState? assistance;
   final RehearsalJoiningInstruction? assistanceMessage;
   final RehearsalDeliveryView? assistanceDelivery;
+  final RehearsalAssistanceAutomation? assistanceAutomation;
 }
 
 class EventRehearsalActionRecord {

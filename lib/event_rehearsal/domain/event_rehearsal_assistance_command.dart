@@ -1,51 +1,11 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
-enum RehearsalConfirmedDelivery { accepted, delivered, read, revoked }
-
-enum RehearsalDeliveryFailure {
-  technical,
-  policy,
-  suppressed,
-  invalidRecipient,
-}
-
-enum RehearsalDeliveryUncertainty { timeout, connectionLost, workerInterrupted }
-
-sealed class RehearsalDeliveryOutcome {
-  const RehearsalDeliveryOutcome();
-  Map<String, Object?> toJson();
-}
-
-sealed class RehearsalConfirmedOutcome extends RehearsalDeliveryOutcome {
-  const RehearsalConfirmedOutcome();
-}
-
-final class RehearsalDeliveryConfirmed extends RehearsalConfirmedOutcome {
-  const RehearsalDeliveryConfirmed(this.result);
-  final RehearsalConfirmedDelivery result;
-  @override
-  Map<String, Object?> toJson() => {'kind': result.name};
-}
-
-final class RehearsalDeliveryFailed extends RehearsalConfirmedOutcome {
-  const RehearsalDeliveryFailed(this.classification);
-  final RehearsalDeliveryFailure classification;
-  @override
-  Map<String, Object?> toJson() => {
-    'kind': 'failed',
-    'classification': classification.name,
-  };
-}
-
-final class RehearsalDeliveryUnknown extends RehearsalDeliveryOutcome {
-  const RehearsalDeliveryUnknown(this.reason);
-  final RehearsalDeliveryUncertainty reason;
-  @override
-  Map<String, Object?> toJson() => {'kind': 'unknown', 'reason': reason.name};
-}
+export 'event_rehearsal_delivery_outcome.dart';
 
 sealed class RehearsalAssistanceCommand {
   RehearsalAssistanceCommand(this.actorId) {
@@ -68,6 +28,44 @@ final class RehearsalPublishInstruction extends RehearsalAssistanceCommand {
     'actorId': actorId,
     'plan': plan.toJson(),
   };
+}
+
+final class RehearsalConfigureAutomation extends RehearsalAssistanceCommand {
+  RehearsalConfigureAutomation({
+    required String actorId,
+    required this.plan,
+    required List<RehearsalDeliveryOutcome> outcomes,
+  }) : outcomes = rehearsalDeliveryScript(
+         outcomes.map((o) => o.toJson()).toList(),
+       ),
+       super(actorId);
+  final RehearsalAssistancePlan plan;
+  final List<RehearsalDeliveryOutcome> outcomes;
+  @override
+  String get kind => 'configureAutomation';
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': kind,
+    'actorId': actorId,
+    'plan': plan.toJson(),
+    'outcomes': outcomes.map((o) => o.toJson()).toList(growable: false),
+  };
+}
+
+final class RehearsalPauseAutomation extends RehearsalAssistanceCommand {
+  RehearsalPauseAutomation({required String actorId}) : super(actorId);
+  @override
+  String get kind => 'pauseAutomation';
+  @override
+  Map<String, Object?> toJson() => {'kind': kind, 'actorId': actorId};
+}
+
+final class RehearsalResumeAutomation extends RehearsalAssistanceCommand {
+  RehearsalResumeAutomation({required String actorId}) : super(actorId);
+  @override
+  String get kind => 'resumeAutomation';
+  @override
+  Map<String, Object?> toJson() => {'kind': kind, 'actorId': actorId};
 }
 
 final class RehearsalDispatchMessage extends RehearsalAssistanceCommand {

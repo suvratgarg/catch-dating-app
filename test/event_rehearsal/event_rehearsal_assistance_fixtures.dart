@@ -158,3 +158,19 @@ Map<String, Object?> practiceReceipt(RehearsalAssistanceChange change) => {
   'runtimeRevision': change.session.runtimeRevision + 1,
   'virtualNowMillis': 1000,
 };
+
+Map<String, Object?> practiceAutomation({
+  String status = 'enabled',
+  int consumed = 0,
+  Map<String, Object?>? evaluation,
+}) => {
+  'clockId': 'clock:${'a' * 64}',
+  'status': status,
+  'plan': practicePlan().toJson(),
+  'outcomes': [
+    {'kind': 'unknown', 'reason': 'timeout'},
+    {'kind': 'delivered'},
+  ],
+  'nextOutcomeIndex': consumed,
+  'evaluation': evaluation,
+};

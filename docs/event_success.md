@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.84.0
+version: 1.85.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -185,7 +185,8 @@ bootstrap. Malformed instruction pointers fail closed. A reported intention
 still cannot change attendance. Rehearsal plans reuse the live template's
 `AssistanceLateJoinRules` value, with a concrete joining destination, explicit
 departure confirmation and channel choices that contain no live sender binding.
-Closed command types distinguish publish, dispatch and confirmed receipt; an
+Closed command types distinguish publish, dispatch, confirmed receipt and
+configure/pause/resume automation; an
 unknown dispatch outcome cannot be used as a receipt. The existing rehearsal
 repository and action controller accept a frozen command tied to the reviewed
 session, setup revision, runtime revision and client action id. The assistance
@@ -246,10 +247,22 @@ current organizer authority before they can run assistance. Host bootstrap
 exposes the saved recipe and typed evaluation; guest bootstrap excludes them.
 Reset rebuilds actors without recipes and deletes rehearsal message history.
 
+Native Host bootstrap now retains that saved plan, immutable outcome script,
+cursor and typed evaluation. Policy results reuse the live
+`AssistanceJoinDecision` model; delivery results distinguish paused, stopped,
+delivered, reconciliation, backoff, stale facts, exhausted scripts and Host
+review. Unknown variants and malformed scripts fail closed. A response without
+the optional automation field remains readable. The guarded rehearsal editor
+assembles configuration from the reviewed publication draft and freezes its
+script before submission. Configure, pause and resume use the same account,
+generation and exact-request retry protections as manual commands. Tests cover
+every schema-declared command, policy and delivery variant, including uncertain
+configuration retries and immutable caller inputs.
+
 This integrates backend fact assembly, storage, guest effects, automatic
 reevaluation, the guest web reply flow and the native typed command/data and
-plan assembly boundaries. Native automation commands/views, Host presentation
-and setup/coach wiring remain unfinished. The simulation advances through
+plan assembly boundaries. Host presentation and setup/coach wiring remain
+unfinished. The simulation advances through
 existing rehearsal actions; it does not run a wall-clock scheduler. No real
 sender or delivery is enabled.
 

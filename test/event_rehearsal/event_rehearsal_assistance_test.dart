@@ -113,6 +113,18 @@ void main() {
             messageId: practiceMessageId,
             outcome: outcome,
           ),
+        RehearsalPauseAutomation(actorId: 'actor-01'),
+        RehearsalResumeAutomation(actorId: 'actor-01'),
+        for (final outcome in <RehearsalDeliveryOutcome>[
+          ...confirmed,
+          for (final reason in RehearsalDeliveryUncertainty.values)
+            RehearsalDeliveryUnknown(reason),
+        ])
+          RehearsalConfigureAutomation(
+            actorId: 'actor-01',
+            plan: practicePlan(),
+            outcomes: [outcome],
+          ),
         for (final outcome in confirmed)
           RehearsalRecordReceipt(
             actorId: 'actor-01',

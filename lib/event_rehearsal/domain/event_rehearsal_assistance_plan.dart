@@ -43,6 +43,40 @@ final class RehearsalAssistancePlan {
       );
     }
   }
+  factory RehearsalAssistancePlan.fromJson(Object? value) {
+    final object = assistanceObject(value);
+    final map = assistanceObject(object, {
+      'policy',
+      'guidance',
+      'departureConfirmed',
+      'responseDeadline',
+      'routes',
+      'deliveryPolicy',
+      if (object.containsKey('laterChoices')) 'laterChoices',
+    });
+    final routes = map['routes'];
+    final later = map['laterChoices'];
+    if (routes is! List ||
+        object.containsKey('laterChoices') && later is! List) {
+      throw const FormatException('Invalid practice plan choices.');
+    }
+    return RehearsalAssistancePlan(
+      rules: AssistanceLateJoinRules.fromJson(map['policy']),
+      guidance: AssistanceJoiningGuidance.fromJson(map['guidance']),
+      departureConfirmed: assistanceBoolean(map['departureConfirmed']),
+      responseDeadline: assistanceNullableInteger(map['responseDeadline']),
+      routes: routes
+          .map((route) => assistanceEnum(AssistanceMessageRoute.values, route))
+          .toList(growable: false),
+      deliveryPolicy: AssistanceDeliveryPolicy.fromJson(map['deliveryPolicy']),
+      laterChoices: later == null
+          ? null
+          : (later as List)
+                .map(AssistanceLaterJoiningChoice.fromJson)
+                .toList(growable: false),
+    );
+  }
+
   final AssistanceLateJoinRules rules;
   final AssistanceJoiningGuidance guidance;
   final bool departureConfirmed;

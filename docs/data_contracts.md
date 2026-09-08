@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.85.0
+version: 1.86.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -75,6 +75,16 @@ shares the parent actor transaction; failed or duplicate transitions cannot
 consume another script item or create another attempt. Reset removes recipes
 by rebuilding the synthetic roster. These additions have no live sender or
 provider binding.
+
+Native rehearsal readers preserve this optional automation value with a strict
+plan parser, immutable one-to-six-item outcome script and bounded cursor.
+Policy evaluations reuse the shared late-join decision union; delivery
+evaluations have closed variants and reasons. Missing automation remains null,
+and uncertain or accepted delivery evidence retains its reconciliation state.
+Native configure/pause/resume commands use the existing assistance payload and
+receipt checks. Configuration freezes the reviewed plan and script, including
+through an uncertain exact retry; no schema or live provider change is required
+for these native bindings.
 
 ### Event Assistance Transaction Boundary
 

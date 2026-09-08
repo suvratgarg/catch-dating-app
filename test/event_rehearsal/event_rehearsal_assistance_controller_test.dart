@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart';
@@ -69,13 +70,18 @@ void main() {
       container.read(eventRehearsalAssistanceEditorProvider(review));
   RehearsalAssistanceForm form(RehearsalAssistanceReview review) =>
       state(review) as RehearsalAssistanceForm;
-  void confirm(int index, {int runtimeRevision = 5}) {
+  void confirm(
+    int index, {
+    int runtimeRevision = 5,
+    List<Map<String, Object?>>? actors,
+  }) {
     final write = repository.writes[index];
     write.result.complete(
       EventRehearsalBootstrap.fromCallableData(
         practiceBootstrap(
           runtimeRevision: runtimeRevision,
           actions: [practiceReceipt(write.change)],
+          actors: actors,
         ),
       ),
     );
@@ -120,6 +126,101 @@ void main() {
     await pending;
     expect(form(current).phase, RehearsalAssistancePhase.applied);
   });
+
+  test('automation retries keep the exact reviewed plan and script', () async {
+    final current = await review();
+    final actions = editor(current);
+    final draft = RehearsalPublicationDraft(
+      actorId: 'actor-01',
+      joiningPoint: rehearsalJoiningPoints(current.snapshot.session).single,
+      rules: practiceRules(destination: const LateJoinConfirmedProgress()),
+      guidanceText: 'Meet us at the studio.',
+      departureConfirmed: true,
+      routes: practicePlan().routes,
+      deliveryPolicy: practicePlan().deliveryPolicy,
+    );
+    actions.selectAutomation(draft, []);
+    expect(form(current).error, isA<FormatException>());
+    expect(form(current).canSubmit, isFalse);
+    expect(repository.writes, isEmpty);
+    final script = <RehearsalDeliveryOutcome>[
+      const RehearsalDeliveryUnknown(RehearsalDeliveryUncertainty.timeout),
+      const RehearsalDeliveryConfirmed(RehearsalConfirmedDelivery.delivered),
+    ];
+    actions.selectAutomation(draft, script);
+    script.clear();
+    final change = form(current).change!;
+    final command = change.command as RehearsalConfigureAutomation;
+    expect(command.plan.guidance.validUntil, 3600000);
+    expect(command.outcomes.length, 2);
+    final pending = actions.submit();
+    expect(actions.submit(), same(pending));
+    final failure = expectLater(pending, throwsA(isA<NetworkException>()));
+    repository.writes[0].result.completeError(
+      const NetworkException('unavailable', 'Offline'),
+    );
+    await failure;
+    actions.select(RehearsalPauseAutomation(actorId: 'actor-01'));
+    actions.selectAutomation(draft, []);
+    expect(form(current).change, same(change));
+    final retry = actions.submit();
+    expect(repository.writes[1].change, same(change));
+    expect(repository.writes[1].change.toJson(), change.toJson());
+    final automation = practiceAutomation(
+      consumed: 1,
+      evaluation: {
+        'at': 1000,
+        'policy': null,
+        'delivery': {
+          'kind': 'reconcile',
+          'attemptIds': ['attempt-1'],
+          'notBefore': 121000,
+        },
+      },
+    )..['plan'] = command.plan.toJson();
+    confirm(
+      1,
+      actors: [
+        {
+          ...practiceActor(withAssistance: true),
+          'assistanceAutomation': automation,
+        },
+      ],
+    );
+    final result = await retry;
+    final saved = result.actors.single.assistanceAutomation!;
+    expect(saved.remainingOutcomes, 1);
+    expect(saved.evaluation!.delivery, isA<RehearsalDeliveryReconcile>());
+    expect(form(current).phase, RehearsalAssistancePhase.applied);
+    expect(repository.writes.length, 2);
+  });
+
+  for (final (command, status) in [
+    (RehearsalPauseAutomation(actorId: 'actor-01'), 'paused'),
+    (RehearsalResumeAutomation(actorId: 'actor-01'), 'enabled'),
+  ]) {
+    test('${command.kind} uses its reviewed request receipt', () async {
+      final current = await review();
+      final actions = editor(current)..select(command);
+      expect(form(current).change!.command, same(command));
+      expect(form(current).change!.toJson()['expectedSetupRevision'], 1);
+      final pending = actions.submit();
+      confirm(
+        0,
+        actors: [
+          {
+            ...practiceActor(),
+            'assistanceAutomation': practiceAutomation(status: status),
+          },
+        ],
+      );
+      expect(
+        (await pending).actors.single.assistanceAutomation!.status.name,
+        status,
+      );
+      expect(repository.writes.single.change.command.kind, command.kind);
+    });
+  }
 
   test(
     'loading, signed-out and failed authentication expose no private review',

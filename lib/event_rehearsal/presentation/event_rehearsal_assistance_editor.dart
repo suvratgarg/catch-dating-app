@@ -136,6 +136,18 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
   void selectPublication(RehearsalPublicationDraft draft) =>
       _select(() => draft.prepare(review.snapshot));
 
+  void selectAutomation(
+    RehearsalPublicationDraft draft,
+    List<RehearsalDeliveryOutcome> outcomes,
+  ) => _select(() {
+    final publication = draft.prepare(review.snapshot);
+    return RehearsalConfigureAutomation(
+      actorId: publication.actorId,
+      plan: publication.plan,
+      outcomes: outcomes,
+    );
+  });
+
   void _select(RehearsalAssistanceCommand? Function() resolve) {
     final form = _form;
     if (form == null || !form.canEdit) return;
