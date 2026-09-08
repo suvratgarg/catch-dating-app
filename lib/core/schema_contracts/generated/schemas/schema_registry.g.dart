@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListEventWhatsappPreferencesCallablePayload',
+    source: 'callables/list_event_whatsapp_preferences_payload.schema.json',
+    schema: schemaListEventWhatsappPreferencesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ListEventWhatsappPreferencesCallableResponse',
+    source: 'callable_responses/list_event_whatsapp_preferences_response.schema.json',
+    schema: schemaListEventWhatsappPreferencesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListEventRcsPreferencesCallablePayload',
     source: 'callables/list_event_rcs_preferences_payload.schema.json',
     schema: schemaListEventRcsPreferencesCallablePayloadSchema,
@@ -3244,6 +3254,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListEventWhatsappPreferencesCallablePayload': schemaListEventWhatsappPreferencesCallablePayloadSchema,
+  'ListEventWhatsappPreferencesCallableResponse': schemaListEventWhatsappPreferencesCallableResponseSchema,
   'ListEventRcsPreferencesCallablePayload': schemaListEventRcsPreferencesCallablePayloadSchema,
   'ListEventRcsPreferencesCallableResponse': schemaListEventRcsPreferencesCallableResponseSchema,
   'EventRcsCallbackReceiptDocument': schemaEventRcsCallbackReceiptDocumentSchema,
@@ -3892,6 +3904,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_event_whatsapp_preferences_payload.schema.json': schemaListEventWhatsappPreferencesCallablePayloadSchema,
+  'callable_responses/list_event_whatsapp_preferences_response.schema.json': schemaListEventWhatsappPreferencesCallableResponseSchema,
   'callables/list_event_rcs_preferences_payload.schema.json': schemaListEventRcsPreferencesCallablePayloadSchema,
   'callable_responses/list_event_rcs_preferences_response.schema.json': schemaListEventRcsPreferencesCallableResponseSchema,
   'firestore/event_assistance_rcs_callback_receipts.schema.json': schemaEventRcsCallbackReceiptDocumentSchema,

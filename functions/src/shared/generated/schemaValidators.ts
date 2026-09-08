@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateListEventWhatsappPreferencesCallablePayload} from "./validators/listEventWhatsappPreferencesInput";
+export {validateListEventWhatsappPreferencesCallableResponse} from "./validators/listEventWhatsappPreferencesOutput";
 export {validateListEventRcsPreferencesCallablePayload} from "./validators/listEventRcsPreferencesInput";
 export {validateListEventRcsPreferencesCallableResponse} from "./validators/listEventRcsPreferencesOutput";
 export {validateEventRcsCallbackReceiptDocument} from "./validators/eventRcsCallbackReceiptDocument";

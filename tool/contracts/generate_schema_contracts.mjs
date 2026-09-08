@@ -16,6 +16,22 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "ListEventWhatsappPreferencesCallablePayload",
+  "source": "callables/list_event_whatsapp_preferences_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventWhatsappPreferencesInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventWhatsappPreferencesInput.ts"
+  ]
+},
+{
+  "name": "ListEventWhatsappPreferencesCallableResponse",
+  "source": "callable_responses/list_event_whatsapp_preferences_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventWhatsappPreferencesOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventWhatsappPreferencesOutput.ts"
+  ]
+},
+{
   "name": "ListEventRcsPreferencesCallablePayload",
   "source": "callables/list_event_rcs_preferences_payload.schema.json",
   "typeOutput": "functions/src/shared/generated/listEventRcsPreferencesInput.ts",

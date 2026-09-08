@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.73.0
+version: 1.74.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1389,8 +1389,7 @@ now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The RCS backend now includes consent and withdrawal APIs, capability/readiness
 checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
-delivery/native-reply consumers. Remaining work includes verified guest opt-in
-controls,
+delivery/native-reply consumers. Remaining work includes Consumer app consent controls,
 audited sender/budget onboarding, retention and financial reconciliation,
 provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
@@ -1408,6 +1407,36 @@ mode isolation and live/rehearsal parity. Production sends, provider activation,
 full layout redesign, autonomous emergency judgement, new payment/tournament
 engines and continuous background interception require their own implemented
 adapters and acceptance; they are not conferred by these type definitions.
+
+### Verified WhatsApp sender discovery
+
+`listEventWhatsappPreferences` is an App-Check-protected, authenticated,
+rate-limited read for one participant's event and attendee. It shares canonical
+participant and saved-runtime selection with RCS through
+`readMessagePreferenceDiscovery`, then selects only `organizerEventWhatsapp`.
+It never substitutes a platform RCS sender or enumerates organizer connections.
+A paused runtime keeps its saved sender; a changed source withholds the stale
+default. Sender selection does not assert consent, connection readiness,
+approved templates, budget or dispatch authority.
+
+Previous preferences use indexed 50-row pages plus one lookahead, scoped to
+live organizer/event, attendee and `evidence.subjectUid`. An earlier verified
+grant remains discoverable after withdrawal because its subject evidence is
+retained. An initial withdrawal without a grant has no verified subject evidence
+and is not listed as prior enrollment. Relinking the roster UID cannot expose
+the previous participant's senders. Phone or attendee-generation mismatches are
+filtered; malformed matching records and future timestamps fail the read.
+Cursors advance by scanned records, including filtered ones, and survive a
+deleted cursor document. No contact, provider account/phone ID, credential,
+consent evidence or other attendee data appears in the response.
+
+The guest client must load the existing `getEventWhatsappPreference` for the
+selected sender and review its name, displayed sender number, consent text and
+phone suffix before an explicit grant. `setEventWhatsappPreference` binds both
+the displayed sender hash and current STOP-record hash. Sender discovery makes
+no writes and cannot enroll the guest or supply organizer marketing permission.
+The guest opt-in control is the next client step; provider provisioning and live
+activation remain separate work.
 
 ### RCS authenticated callback boundary
 
@@ -1867,8 +1896,8 @@ phone, token or guest link. The adapter remains injectable; the production
 worker factory supplies its network client and credential loader. Event-scoped
 RCS preference APIs, message-link withdrawal, sender rendering, transactional
 dispatch, signed callback persistence and consumers are implemented in source.
-Verified guest opt-in controls, audited provisioning, deployment and provider
-activation remain required before live use.
+The verified web opt-in flow is implemented above. Consumer app consent,
+audited provisioning, deployment and provider activation remain open.
 
 ## Format Mapping And Wiring
 

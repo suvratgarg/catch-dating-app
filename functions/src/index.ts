@@ -80,6 +80,8 @@ export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,
 } from "./eventSuccess/operations/smsPreferenceHandlers";
+export {listEventWhatsappPreferences} from
+  "./eventSuccess/operations/whatsappPreferenceOptionsHandlers";
 export {listEventRcsPreferences} from
   "./eventSuccess/operations/rcsPreferenceOptionsHandlers";
 export {getEventRcsPreference, setEventRcsPreference} from

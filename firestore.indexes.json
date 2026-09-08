@@ -1,6 +1,36 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceWhatsappPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "attendeeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "evidence.subjectUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceRcsPermissions",
       "queryScope": "COLLECTION",
       "fields": [

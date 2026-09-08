@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.80.0
+version: 1.81.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -108,6 +108,15 @@ paused configurations. Historical discovery uses a composite index over live
 context, attendee, subject UID and document ID; source/phone mismatches are
 filtered after a bounded read. It never supplies consent or sender readiness.
 The existing reviewed preference callables remain the only grant/write path.
+
+The `list_event_whatsapp_preferences` request/response contracts provide the
+corresponding bounded discovery for `organizerEventWhatsapp`. They use a distinct
+`wa-permission` cursor and index prior verified subject evidence via
+`evidence.subjectUid`; an initial revocation without that evidence is excluded.
+The shared source reader checks current participant ownership and the saved
+runtime binding before either channel's private history query. Channel-specific
+permission decoders retain their own consent and identity rules. These read
+contracts add no grant, connection, provider or financial authority.
 
 Private `eventAssistanceRcsPermissions` and `eventAssistanceRcsConsentReceipts`
 commit together. Granted and revoked records are a closed union; a grant

@@ -45470,6 +45470,76 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const listEventWhatsappPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallablePayload.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallablePayload.cursor',
+    valueTypes: <String>['string'],
+    pattern: '^wa-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallablePayload.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponseConfiguredSenderId = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.configuredSenderId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.nextCursor',
+    valueTypes: <String>['string'],
+    pattern: '^wa-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponsePreviousSenderIds = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.previousSenderIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const listEventWhatsappPreferencesCallableResponsePreviousSenderIdsItems = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.previousSenderIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventWhatsappPreferencesCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'listEventWhatsappPreferencesCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const listOrganizerApplicationsCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'listOrganizerApplicationsCallablePayload.contactId',
     maxLength: 180,
@@ -86470,6 +86540,16 @@ abstract final class CatchContractConstraints {
     'listEventRcsPreferencesCallableResponse.previousSenderIds': listEventRcsPreferencesCallableResponsePreviousSenderIds,
     'listEventRcsPreferencesCallableResponse.previousSenderIds.items': listEventRcsPreferencesCallableResponsePreviousSenderIdsItems,
     'listEventRcsPreferencesCallableResponse.serverTime': listEventRcsPreferencesCallableResponseServerTime,
+    'listEventWhatsappPreferencesCallablePayload.attendeeId': listEventWhatsappPreferencesCallablePayloadAttendeeId,
+    'listEventWhatsappPreferencesCallablePayload.cursor': listEventWhatsappPreferencesCallablePayloadCursor,
+    'listEventWhatsappPreferencesCallablePayload.eventId': listEventWhatsappPreferencesCallablePayloadEventId,
+    'listEventWhatsappPreferencesCallableResponse.attendeeId': listEventWhatsappPreferencesCallableResponseAttendeeId,
+    'listEventWhatsappPreferencesCallableResponse.configuredSenderId': listEventWhatsappPreferencesCallableResponseConfiguredSenderId,
+    'listEventWhatsappPreferencesCallableResponse.eventId': listEventWhatsappPreferencesCallableResponseEventId,
+    'listEventWhatsappPreferencesCallableResponse.nextCursor': listEventWhatsappPreferencesCallableResponseNextCursor,
+    'listEventWhatsappPreferencesCallableResponse.previousSenderIds': listEventWhatsappPreferencesCallableResponsePreviousSenderIds,
+    'listEventWhatsappPreferencesCallableResponse.previousSenderIds.items': listEventWhatsappPreferencesCallableResponsePreviousSenderIdsItems,
+    'listEventWhatsappPreferencesCallableResponse.serverTime': listEventWhatsappPreferencesCallableResponseServerTime,
     'listOrganizerApplicationsCallablePayload.contactId': listOrganizerApplicationsCallablePayloadContactId,
     'listOrganizerApplicationsCallablePayload.cursor': listOrganizerApplicationsCallablePayloadCursor,
     'listOrganizerApplicationsCallablePayload.formId': listOrganizerApplicationsCallablePayloadFormId,

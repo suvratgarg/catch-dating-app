@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  listEventWhatsappPreferencesCallablePayloadSchema,
+  listEventWhatsappPreferencesCallableResponseSchema,
   listEventRcsPreferencesCallablePayloadSchema,
   listEventRcsPreferencesCallableResponseSchema,
   eventRcsCallbackReceiptDocumentSchema,
@@ -672,6 +674,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateListEventWhatsappPreferencesCallablePayload = ajv.compile(listEventWhatsappPreferencesCallablePayloadSchema);
+export const validateListEventWhatsappPreferencesCallableResponse = ajv.compile(listEventWhatsappPreferencesCallableResponseSchema);
 export const validateListEventRcsPreferencesCallablePayload = ajv.compile(listEventRcsPreferencesCallablePayloadSchema);
 export const validateListEventRcsPreferencesCallableResponse = ajv.compile(listEventRcsPreferencesCallableResponseSchema);
 export const validateEventRcsCallbackReceiptDocument = ajv.compile(eventRcsCallbackReceiptDocumentSchema);
