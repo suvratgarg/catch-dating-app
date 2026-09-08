@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.14
+version: 1.9.15
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1106,7 +1106,10 @@ semantics, and save orchestration. Rounded, section-clipped and full-bleed
 states share the original border, shadow, outset and animation behavior. Native
 text input now renders once inside its form owner; the duplicate private input
 helper is deleted. Selection updates normalize the live form value so deferred
-cleanup cannot erase a newly supplied selection.
+cleanup cannot erase a newly supplied selection. The field row now renders
+directly in its owning State's build method. Lifecycle, timers, focus and
+expansion behavior move unchanged into a non-rendering part; the private row
+renderer is deleted and both resulting files stay within D6.
 
 ### Phase 4 — One registry, binding grammar
 

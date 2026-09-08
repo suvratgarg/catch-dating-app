@@ -12,6 +12,7 @@ part 'catch_field_configs.dart';
 part 'catch_field_edit.dart';
 part 'catch_field_row_modes.dart';
 part 'catch_field_state.dart';
+part 'catch_field_behavior.dart';
 
 /// Design-system `Field`: the unified field primitive for row, text-entry,
 /// navigation, toggle, disclosure-control, add, validation, and helper states.

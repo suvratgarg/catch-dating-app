@@ -46,645 +46,20 @@ class _CatchFieldState extends State<CatchField>
   @override
   void initState() {
     super.initState();
-    _expandedContentRevealController = AnimationController(vsync: this)
-      ..addListener(_handleExpandedContentRevealTick)
-      ..addStatusListener(_handleExpandedContentRevealStatus);
-    _open = widget.open ?? (widget.initiallyOpen && widget.control != null);
-    _disclosureOffstage = !_isOpen;
-    _attachFocusNode(widget.focusNode);
-    _internalController = TextEditingController(
-      text: widget.controller == null ? widget.initialValue : null,
-    );
-    _inputWasEmpty = _controller.text.isEmpty;
-    _statusLaneActive = _effectiveStatus != CatchFieldStatus.idle;
-    _attachControllerListener(_controller);
-    if (widget._explicitSaveInput && _isOpen) {
-      _pendingExpansionFocus = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _requestPendingExpansionFocus();
-      });
-    }
+    _initializeField();
   }
 
   @override
   void didUpdateWidget(covariant CatchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_effectiveStatus != CatchFieldStatus.idle) {
-      _statusLaneDismissTimer?.cancel();
-      _statusLaneActive = true;
-    } else if (_effectiveStatusFor(oldWidget) != CatchFieldStatus.idle) {
-      _scheduleStatusLaneDismiss();
-    }
-    if (oldWidget.status != widget.status) {
-      _announceStatusTransition(widget.status);
-    }
-    if (oldWidget.focusNode != widget.focusNode) {
-      _detachFocusNode();
-      _attachFocusNode(widget.focusNode);
-    }
-    final wasOpen = oldWidget.open ?? _open;
-    if (oldWidget.control != widget.control &&
-        widget.control == null &&
-        !widget._explicitSaveInput) {
-      _open = false;
-    } else if (widget.open != null) {
-      _open = widget.open!;
-    } else if (oldWidget.open != null) {
-      _open = oldWidget.open!;
-    } else if (oldWidget.initiallyOpen != widget.initiallyOpen) {
-      _open = widget.initiallyOpen && widget.control != null;
-    }
-    final isOpen = _isOpen;
-    if (!wasOpen && isOpen) {
-      _disclosureOffstage = false;
-      _scheduleExpandedContentReveal();
-    } else if (wasOpen && !isOpen) {
-      _cancelExpandedContentReveal();
-    }
-    if (widget._explicitSaveInput && !wasOpen && isOpen) {
-      // Let the drawer finish first. Requesting native focus in the opening
-      // frame makes the keyboard resize the viewport while the same subtree is
-      // still revealing, which reads as a flicker on compact Host screens.
-      _pendingExpansionFocus = true;
-    } else if (wasOpen && !isOpen) {
-      _pendingExpansionFocus = false;
-      _focusNode.unfocus();
-    }
-    final oldController = oldWidget.controller ?? _internalController;
-    if (oldController != _controller) {
-      _attachControllerListener(_controller);
-      _syncFieldValue();
-    }
-    if (widget.controller == null &&
-        oldWidget.controller == null &&
-        widget.initialValue != oldWidget.initialValue &&
-        widget.initialValue != _internalController.text) {
-      _internalController.value = TextEditingValue(
-        text: widget.initialValue ?? '',
-      );
-      _syncFieldValue();
-    }
-  }
-
-  void _announceStatusTransition(CatchFieldStatus status) {
-    final message = switch (status) {
-      CatchFieldStatus.idle => null,
-      CatchFieldStatus.saving => widget.copy.savingSemanticLabel,
-      CatchFieldStatus.saved => widget.copy.savedSemanticLabel,
-    };
-    if (message == null) return;
-    unawaited(
-      SemanticsService.sendAnnouncement(
-        View.of(context),
-        message,
-        Directionality.of(context),
-      ),
-    );
+    _updateFieldConfiguration(oldWidget);
   }
 
   @override
   void dispose() {
-    _activeExpandedContentRevealPosition = null;
-    _expandedContentRevealController.dispose();
-    _singleChoiceCloseTimer?.cancel();
-    _statusLaneDismissTimer?.cancel();
-    _listenedController?.removeListener(_syncFieldValue);
-    _detachFocusNode();
-    _rowFocusNode.dispose();
-    _internalController.dispose();
+    _disposeField();
     super.dispose();
   }
-
-  void _attachFocusNode(FocusNode? supplied) {
-    _focusNode = supplied ?? FocusNode();
-    _ownsFocusNode = supplied == null;
-    _focused = _focusNode.hasFocus;
-    _focusNode.addListener(_handleFocusChanged);
-  }
-
-  void _detachFocusNode() {
-    _focusNode.removeListener(_handleFocusChanged);
-    if (_ownsFocusNode) _focusNode.dispose();
-  }
-
-  void _handleFocusChanged() {
-    final focused = _focusNode.hasFocus;
-    if (_focused == focused) return;
-    _focused = focused;
-    widget.onFocusChanged?.call(_focused);
-    if (!focused) widget.onBlur?.call(_controller.text);
-    setState(() {});
-  }
-
-  void _attachControllerListener(TextEditingController controller) {
-    _listenedController?.removeListener(_syncFieldValue);
-    _listenedController = controller..addListener(_syncFieldValue);
-  }
-
-  void _syncFieldValue() {
-    final text = _controller.text;
-    final field = _fieldKey.currentState;
-    if (field != null && field.value != text) {
-      field.didChange(text);
-    }
-    final isEmpty = text.isEmpty;
-    final needsParentRebuild = isEmpty != _inputWasEmpty;
-    _inputWasEmpty = isEmpty;
-    if (mounted && needsParentRebuild) setState(() {});
-  }
-
-  void _setTextEntryValidationError(bool hasError) {
-    if (_textEntryHasValidationError == hasError) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _textEntryHasValidationError == hasError) return;
-      setState(() => _textEntryHasValidationError = hasError);
-    });
-  }
-
-  void _expandAndFocusTextEntry() {
-    // Let EditableText own subsequent taps so it can position the native
-    // insertion cursor. Re-requesting focus in a post-frame callback would
-    // collapse every tap to the existing selection and make editing feel like
-    // a two-step interaction.
-    if (_focusNode.hasFocus) return;
-    setState(() {
-      if (!_focused) {
-        _focused = true;
-        widget.onFocusChanged?.call(true);
-      }
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _focusNode.requestFocus();
-    });
-  }
-
-  void _requestExpansion(bool expanded) {
-    if (_isOpen == expanded) return;
-    if (!expanded) {
-      _singleChoiceCloseTimer?.cancel();
-      _cancelExpandedContentReveal();
-    }
-    if (widget.open == null) {
-      setState(() {
-        _open = expanded;
-        if (expanded) _disclosureOffstage = false;
-      });
-      if (expanded) _scheduleExpandedContentReveal();
-    }
-    widget.onOpenChanged?.call(expanded);
-  }
-
-  void _cancelExpandedContentReveal() {
-    _expandedContentRevealController.stop();
-    _activeExpandedContentRevealPosition = null;
-  }
-
-  void _startExpandedContentReveal({
-    required ScrollPosition position,
-    required double destination,
-    required Duration duration,
-  }) {
-    _expandedContentRevealController.stop();
-    _activeExpandedContentRevealPosition = position;
-    _expandedContentRevealStart = position.pixels;
-    _expandedContentRevealDestination = destination;
-    _expandedContentRevealController
-      ..duration = duration
-      ..value = 0
-      ..forward();
-  }
-
-  void _handleExpandedContentRevealTick() {
-    final position = _activeExpandedContentRevealPosition;
-    if (!_isOpen || position == null || !position.hasPixels) {
-      _expandedContentRevealController.stop();
-      _activeExpandedContentRevealPosition = null;
-      return;
-    }
-    if (position.isScrollingNotifier.value) {
-      // A direct user drag always wins over the automatic field reveal.
-      _expandedContentRevealController.stop();
-      _activeExpandedContentRevealPosition = null;
-      return;
-    }
-
-    final progress = CatchMotion.standardCurve.transform(
-      _expandedContentRevealController.value,
-    );
-    final requested =
-        _expandedContentRevealStart +
-        (_expandedContentRevealDestination - _expandedContentRevealStart) *
-            progress;
-    final available = requested
-        .clamp(position.minScrollExtent, position.maxScrollExtent)
-        .toDouble();
-    if (available > position.pixels) position.jumpTo(available);
-  }
-
-  void _handleExpandedContentRevealStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      _activeExpandedContentRevealPosition = null;
-    }
-  }
-
-  ScrollableState? _expandedContentRevealScrollable() {
-    BuildContext searchContext = context;
-    ScrollableState? nearestVertical;
-    final visited = <ScrollableState>{};
-    while (true) {
-      final candidate = Scrollable.maybeOf(searchContext);
-      if (candidate == null || !visited.add(candidate)) break;
-      final position = candidate.position;
-      if (position.axis == Axis.vertical) {
-        nearestVertical ??= candidate;
-        if (position.hasContentDimensions &&
-            position.maxScrollExtent > position.minScrollExtent) {
-          return candidate;
-        }
-      }
-      // A Scrollable's own context sits outside its private inherited scope,
-      // so the next lookup walks to the next enclosing scroll owner.
-      searchContext = candidate.context;
-    }
-    return nearestVertical;
-  }
-
-  void _scheduleExpandedContentReveal({Duration? duration}) {
-    if (_expandedContentRevealScheduled) return;
-    _expandedContentRevealScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _expandedContentRevealScheduled = false;
-      if (!mounted || !_isOpen) return;
-
-      final targetContext =
-          _actionBarRevealTargetKey.currentContext ??
-          _disclosureRevealTargetKey.currentContext;
-      final target = targetContext?.findRenderObject();
-      if (target is! RenderBox || !target.attached || !target.hasSize) return;
-
-      final bottomClearance = CatchFieldVisibilityScope.bottomClearanceOf(
-        context,
-      );
-      final prioritizesActionBar =
-          _actionBarRevealTargetKey.currentContext != null;
-      final targetTop = prioritizesActionBar
-          ? 0.0
-          : target.size.height > 1
-          ? target.size.height - 1
-          : 0.0;
-      final targetHeight = prioritizesActionBar ? target.size.height : 1.0;
-      final revealDuration = duration ?? _expansionMotionDuration(context);
-      final scrollable = _expandedContentRevealScrollable();
-      final scrollPosition = scrollable?.position;
-      final scrollViewport = scrollable?.context.findRenderObject();
-      if (scrollPosition != null &&
-          scrollPosition.axis == Axis.vertical &&
-          scrollViewport is RenderBox &&
-          scrollViewport.attached &&
-          scrollViewport.hasSize) {
-        final targetBottom = target
-            .localToGlobal(Offset(0, targetTop + targetHeight))
-            .dy;
-        final viewportBottom = scrollViewport
-            .localToGlobal(Offset(0, scrollViewport.size.height))
-            .dy;
-        final scrollDelta = targetBottom + bottomClearance - viewportBottom;
-        if (scrollDelta > 0) {
-          final destination = scrollPosition.pixels + scrollDelta;
-          if (revealDuration == Duration.zero) {
-            _expandedContentRevealController.stop();
-            _activeExpandedContentRevealPosition = null;
-            final available = destination
-                .clamp(
-                  scrollPosition.minScrollExtent,
-                  scrollPosition.maxScrollExtent,
-                )
-                .toDouble();
-            if (available > scrollPosition.pixels) {
-              scrollPosition.jumpTo(available);
-              return;
-            }
-          } else {
-            // The field and viewport share one motion curve. Driving the
-            // offset frame-by-frame lets the scroll extent grow with the
-            // disclosure instead of clamping an animateTo target to the
-            // collapsed card and snapping at the end.
-            _startExpandedContentReveal(
-              position: scrollPosition,
-              destination: destination,
-              duration: revealDuration,
-            );
-            return;
-          }
-        }
-      }
-
-      target.showOnScreen(
-        rect: Rect.fromLTWH(
-          0,
-          targetTop,
-          target.size.width,
-          targetHeight + bottomClearance,
-        ),
-        duration: revealDuration,
-        curve: CatchMotion.standardCurve,
-      );
-    });
-  }
-
-  void _scheduleStatusLaneDismiss() {
-    _statusLaneDismissTimer?.cancel();
-    final duration = catchFieldMotionDuration(context, CatchMotion.base);
-    if (duration == Duration.zero) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _handleStatusLaneDismissed();
-      });
-      return;
-    }
-    _statusLaneDismissTimer = Timer(duration, _handleStatusLaneDismissed);
-  }
-
-  void _handleStatusLaneDismissed() {
-    if (!mounted || _effectiveStatus != CatchFieldStatus.idle) return;
-    setState(() => _statusLaneActive = false);
-  }
-
-  void _handleExpansionAnimationEnd() {
-    if (!_isOpen && !_disclosureOffstage) {
-      setState(() => _disclosureOffstage = true);
-    } else if (_isOpen) {
-      // The Align height factor reaches its final scroll extent only at the
-      // end of the reveal. Correct any earlier clamp without introducing a
-      // second visible animation.
-      _scheduleExpandedContentReveal(duration: Duration.zero);
-    }
-    _requestPendingExpansionFocus();
-  }
-
-  void _handlePointerDown(PointerDownEvent event) {
-    if (_pressedPointer != null || event.buttons & kPrimaryButton == 0) return;
-    _pressedPointer = event.pointer;
-    _pressedDownPosition = event.position;
-    if (!_pressed) setState(() => _pressed = true);
-  }
-
-  void _handlePointerMove(PointerMoveEvent event) {
-    if (_pressedPointer != event.pointer) return;
-    final origin = _pressedDownPosition;
-    if (origin == null || (event.position - origin).distance <= kTouchSlop) {
-      return;
-    }
-    _clearPressedPointer(event.pointer);
-  }
-
-  void _handlePointerEnd(PointerEvent event) {
-    if (_pressedPointer != event.pointer) return;
-    _pressedPointer = null;
-    _pressedDownPosition = null;
-    // Keep the contact outline alive through GestureDetector's onTap. The tap
-    // may activate focus/disclosure in the same frame, so deferring this reset
-    // prevents a transparent frame between pressed and focused chrome.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _pressedPointer == null && _pressed) {
-        setState(() => _pressed = false);
-      }
-    });
-  }
-
-  void _handlePointerCancel(PointerEvent event) {
-    _clearPressedPointer(event.pointer);
-  }
-
-  void _handlePointerExit(PointerExitEvent event) {
-    _clearPressedPointer(event.pointer);
-  }
-
-  void _clearPressedPointer(int pointer) {
-    if (_pressedPointer != pointer) return;
-    _pressedPointer = null;
-    _pressedDownPosition = null;
-    if (_pressed && mounted) setState(() => _pressed = false);
-  }
-
-  void _handleOutsidePointerDown(PointerDownEvent event) {
-    _outsidePointer = event.pointer;
-    _outsideDownPosition = event.position;
-  }
-
-  void _handleOutsidePointerUp(PointerUpEvent event) {
-    if (_outsidePointer != event.pointer) return;
-    final downPosition = _outsideDownPosition;
-    _outsidePointer = null;
-    _outsideDownPosition = null;
-    if (downPosition != null &&
-        (event.position - downPosition).distance <= kTouchSlop) {
-      _dismiss();
-    }
-  }
-
-  void _clearOutsidePointer(PointerEvent event) {
-    if (_outsidePointer != event.pointer) return;
-    _outsidePointer = null;
-    _outsideDownPosition = null;
-  }
-
-  void _requestPendingExpansionFocus() {
-    if (!_pendingExpansionFocus ||
-        !widget._explicitSaveInput ||
-        !_isOpen ||
-        !widget.enabled) {
-      return;
-    }
-    _pendingExpansionFocus = false;
-    _focusNode.requestFocus();
-  }
-
-  bool _handleChoicePicked(CatchFieldChoicePickedNotification notification) {
-    if (!notification.autoClose || _isSaving) return true;
-    _singleChoiceCloseTimer?.cancel();
-    _singleChoiceCloseTimer = Timer(
-      CatchFieldTokens.singleChoiceCloseDelay,
-      () {
-        if (mounted && !_isSaving) _requestExpansion(false);
-      },
-    );
-    return true;
-  }
-
-  bool get _hasValue => _body != null && _body!.isNotEmpty;
-  bool get _stacksTrailingValueText {
-    final valueText = widget.valueText?.trim();
-    return MediaQuery.textScalerOf(context).scale(1) >= 2 &&
-        (_body?.trim().isNotEmpty != true) &&
-        valueText != null &&
-        valueText.isNotEmpty;
-  }
-
-  bool get _inlineControlAddAtRest => widget.addable && !_hasValue && !_isOpen;
-  bool get _hasControl => widget.control != null || widget._explicitSaveInput;
-  Object get _textFieldTapRegionGroup =>
-      widget._explicitSaveInput ? _tapRegionGroup : EditableText;
-  bool get _hasFieldValidationError => _textEntryHasValidationError;
-  bool get _hasError =>
-      (_displayError != null && _displayError!.isNotEmpty) ||
-      _hasFieldValidationError;
-  bool get _isOpen => widget.open ?? _open;
-  bool get _isSaving =>
-      widget._isLoading || widget.status == CatchFieldStatus.saving;
-  CatchFieldStatus get _effectiveStatus =>
-      _isSaving ? CatchFieldStatus.saving : widget.status;
-  CatchFieldStatus _effectiveStatusFor(CatchField field) =>
-      field._isLoading || field.status == CatchFieldStatus.saving
-      ? CatchFieldStatus.saving
-      : field.status;
-  // Keep progress in the commit bar through its close animation. Once the
-  // drawer is actually offstage, the header becomes the only visible owner.
-  bool get _visibleCommitBarOwnsSavingIndicator =>
-      _isSaving && !_disclosureOffstage && widget._onSubmit != null;
-  bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
-  bool get _isEdit => widget._config is _EditConfig;
-  bool get _isSelect => widget._config is _SelectConfig;
-  bool get _isToggle => widget._config is _ToggleConfig;
-  bool get _isNavigation => switch (widget._config) {
-    _ControlConfig() => true,
-    final _RowConfig config => config.navigation,
-    _ => false,
-  };
-  bool get _hasInputValue => !_inputWasEmpty;
-  bool get _usesUnderlineChrome =>
-      _isEdit && widget.variant == CatchFieldVariant.underline;
-  bool get _usesRowPrefixIcon =>
-      _isEdit &&
-      !_usesUnderlineChrome &&
-      !_compactTextEntry &&
-      widget.showLabel &&
-      widget.prefixIcon != null;
-  bool get _usesRowTextEntryTrailing =>
-      _isEdit &&
-      !_usesUnderlineChrome &&
-      !_compactTextEntry &&
-      (widget.showClearButton ||
-          widget.suffixIcon != null ||
-          widget.action != null);
-  bool get _usesPositionedClearTrailing =>
-      _usesRowTextEntryTrailing &&
-      widget.showClearButton &&
-      widget.showLabel &&
-      (_title?.isNotEmpty ?? false) &&
-      _hasInputValue &&
-      !_isSaving &&
-      widget.status == CatchFieldStatus.idle &&
-      !(widget.valid && !_hasError);
-  bool get _hasLeadingSlot =>
-      widget.leading != null || widget.icon != null || _usesRowPrefixIcon;
-  double get _leadingTextLaneInset => widget.leading != null
-      ? (widget.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
-            CatchFieldTokens.leadingGap
-      : CatchFieldRow.textLaneInset;
-  String? get _title => widget.title;
-  String? get _body => widget.body;
-  String? get _displayError => widget.errorText ?? widget.error;
-  String? get _placeholderText => widget.placeholder;
-  String? get _inputHintText {
-    final hint = (widget.inputHint ?? widget.placeholder)?.trim();
-    if (hint == null || hint.isEmpty) return null;
-
-    final label = _title?.trim();
-    if (widget.showLabel &&
-        label != null &&
-        label.toLowerCase() == hint.toLowerCase()) {
-      return null;
-    }
-    return hint;
-  }
-
-  String? get _emptyEditableValueText {
-    final label = _title?.trim();
-    final isEditableRow =
-        (_isEdit && !widget.readOnly) ||
-        widget._onSubmit != null ||
-        widget.addable;
-    if (!isEditableRow || label == null || label.isEmpty) return null;
-    return CatchField.resolveEmptyValueText(
-      widget.copy,
-      title: label,
-      emptyValueText: widget.emptyValueText,
-    );
-  }
-
-  bool get _shouldShowChevron =>
-      widget.showChevron ??
-      (_isNavigation &&
-          widget.onTap != null &&
-          widget.tone != CatchFieldTone.danger);
-
-  bool get _textEntryCanCollapse =>
-      _isEdit && widget.showLabel && (_title?.isNotEmpty ?? false);
-  bool get _textEntryExpanded =>
-      !_textEntryCanCollapse ||
-      _hasInputValue ||
-      _active ||
-      _hasError ||
-      widget.autofocus;
-  bool _textEntryExpandedWith({required bool hasError}) =>
-      !_textEntryCanCollapse ||
-      _hasInputValue ||
-      _active ||
-      hasError ||
-      widget.autofocus;
-  bool _inlineTextAddAtRestWith({required bool hasError}) =>
-      _isEdit &&
-      !widget.readOnly &&
-      _textEntryCanCollapse &&
-      !_hasInputValue &&
-      !_active &&
-      !hasError &&
-      !widget.autofocus &&
-      _emptyEditableValueText != null;
-  bool get _inlineTextAddAtRest =>
-      _inlineTextAddAtRestWith(hasError: _hasError);
-  bool get _showsInlineAddAtRest =>
-      _inlineControlAddAtRest || _inlineTextAddAtRest;
-  bool get _textEntryCollapsed => _textEntryCanCollapse && !_textEntryExpanded;
-  bool get _compactTextEntry =>
-      _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
-
-  Color _supportColor(CatchTokens t) {
-    return switch (widget.helperTone) {
-      CatchFieldSupportTone.neutral => t.ink2,
-      CatchFieldSupportTone.brand => t.primary,
-      CatchFieldSupportTone.success => t.success,
-    };
-  }
-
-  Color _fieldLabelColor(
-    CatchTokens t, {
-    required bool hasError,
-    Color? inactiveColor,
-  }) {
-    if (hasError) return t.danger;
-    return _active ? t.ink : inactiveColor ?? t.ink2;
-  }
-
-  Color _toneColor(
-    CatchTokens t, {
-    bool muted = false,
-    Color? primaryFallback,
-  }) {
-    return switch (widget.tone) {
-      CatchFieldTone.primary => t.primary,
-      CatchFieldTone.danger => t.danger,
-      _ => primaryFallback ?? (muted ? t.ink2 : t.ink),
-    };
-  }
-
-  double get _contentTrailingReserve => _hasControl
-      ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
-      : _usesPositionedClearTrailing
-      ? CatchFieldTokens.trailingGap +
-            CatchFieldTrailing.clearTargetConstraints.maxWidth
-      : 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -717,28 +92,635 @@ class _CatchFieldState extends State<CatchField>
         field = _buildTextEntryField(context);
       case _EditConfig() || _RowConfig() || _ToggleConfig() || _ControlConfig():
         final t = CatchTokens.of(context);
-        final rowStack = Stack(
-          children: [
-            widget.add
-                ? CatchFieldRow.add(
-                    onTap: widget.onTap,
-                    leading: Icon(
-                      widget.icon ?? CatchIcons.add,
-                      size: CatchIcon.md,
-                      color: t.primary,
+        final Widget configuredRow;
+        if (widget.add) {
+          configuredRow = CatchFieldRow.add(
+            onTap: widget.onTap,
+            leading: Icon(
+              widget.icon ?? CatchIcons.add,
+              size: CatchIcon.md,
+              color: t.primary,
+            ),
+            content: Text(
+              _title ?? '',
+              style: CatchTextStyles.fieldRowValue(
+                context,
+                color: _toneColor(t, primaryFallback: t.primary),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          );
+        } else {
+          final canFocusTextEntry =
+              _isEdit &&
+              !widget._explicitSaveInput &&
+              widget.enabled &&
+              (!widget.readOnly || widget.onTap != null);
+          final canToggleRow =
+              _isToggle && widget.onToggle != null && !_isSaving;
+          final canExpand =
+              _hasControl &&
+              widget.enabled &&
+              !_isSaving &&
+              (widget.open == null || widget.onOpenChanged != null);
+          final VoidCallback? rowAction;
+          if (widget._explicitSaveInput && widget.enabled && !_isSaving) {
+            rowAction = _isOpen
+                ? _focusNode.requestFocus
+                : () {
+                    _requestExpansion(true);
+                    widget.onTap?.call();
+                  };
+          } else if (canFocusTextEntry) {
+            rowAction = () {
+              if (widget.readOnly && widget.onTap != null) {
+                widget.onTap!();
+                return;
+              }
+              _expandAndFocusTextEntry();
+              widget.onTap?.call();
+            };
+          } else if (canExpand) {
+            rowAction = () {
+              _requestExpansion(!_isOpen);
+              widget.onTap?.call();
+            };
+          } else if (canToggleRow) {
+            rowAction = () => widget.onToggle!(!widget.toggled);
+          } else if (widget.onTap != null && !_isEdit) {
+            rowAction = widget.onTap;
+          } else {
+            rowAction = null;
+          }
+          final hasInlineMetadata =
+              widget.inlineMetadata?.trim().isNotEmpty == true;
+          final centerVertically =
+              _showsInlineAddAtRest ||
+              _isToggle ||
+              hasInlineMetadata ||
+              (widget._contentRow &&
+                  widget.emphasis == CatchFieldEmphasis.title);
+          final leadingTopPadding = centerVertically
+              ? 0.0
+              : widget._contentRow
+              ? CatchSpacing.micro2
+              : _rowTrailingTopPadding;
+          final Widget? rawTrailingSlot;
+          if (_isToggle) {
+            rawTrailingSlot = CatchFieldTrailing.toggle(
+              copy: widget.copy,
+              value: widget.toggled,
+              onChanged: _isSaving ? null : widget.onToggle,
+              contract: widget.contract,
+              contractExemption: widget.toggleContractExemption,
+              semanticLabel: _title,
+              status: _effectiveStatus,
+              topPadding: 0,
+            );
+          } else if (_statusLaneActive &&
+              !_visibleCommitBarOwnsSavingIndicator &&
+              !_hasError) {
+            rawTrailingSlot = CatchFieldTrailing.status(
+              copy: widget.copy,
+              status: _effectiveStatus,
+            );
+          } else if (!_isSaving && widget.valid && !_hasError) {
+            rawTrailingSlot = CatchFieldTrailing.valid(topPadding: 0);
+          } else if (_usesRowTextEntryTrailing) {
+            final fallbackContent = widget.action ?? widget.suffixIcon;
+            final fallback = fallbackContent == null
+                ? null
+                : CatchFieldTrailing.custom(
+                    topPadding: 0,
+                    color: t.ink3,
+                    child: fallbackContent,
+                  );
+            if (!widget.showClearButton) {
+              rawTrailingSlot = fallback;
+            } else {
+              rawTrailingSlot = ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _controller,
+                builder: (_, value, _) {
+                  if (value.text.isEmpty)
+                    return fallback ?? const SizedBox.shrink();
+                  return CatchFieldTrailing.clear(
+                    tooltip: widget.copy.clearTooltip(_title),
+                    onPressed: () {
+                      _controller.clear();
+                      widget.onChanged?.call('');
+                    },
+                    topPadding: 0,
+                  );
+                },
+              );
+            }
+          } else if (_hasControl) {
+            rawTrailingSlot = CatchFieldTrailing.rotatingChevron(
+              open: _isOpen,
+              color: _active ? t.ink : t.ink3,
+              topPadding: 0,
+            );
+          } else {
+            final includeChevron = _isNavigation && _shouldShowChevron;
+            final children = <Widget>[];
+            final valueText = widget.valueText?.trim();
+            if (!_stacksTrailingValueText &&
+                valueText != null &&
+                valueText.isNotEmpty) {
+              children.add(
+                CatchFieldTrailing.valueText(
+                  text: valueText,
+                  maxLines: widget.valueMaxLines,
+                  topPadding: 0,
+                ),
+              );
+            }
+
+            final custom = widget.action == null
+                ? null
+                : CatchFieldTrailing.custom(
+                    topPadding: 0,
+                    color: t.ink3,
+                    child: widget.action!,
+                  );
+            if (custom != null) children.add(custom);
+
+            if (children.isEmpty) {
+              rawTrailingSlot = includeChevron
+                  ? CatchFieldTrailing.fixedChevron(
+                      color: t.ink3,
+                      topPadding: 0,
+                    )
+                  : null;
+            } else {
+              // Value and custom metadata share the lane without starving either of width.
+              final group = children.length == 1
+                  ? children.single
+                  : Wrap(
+                      alignment: WrapAlignment.end,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: CatchSpacing.s2,
+                      runSpacing: CatchSpacing.s1,
+                      children: children,
+                    );
+              rawTrailingSlot = !includeChevron
+                  ? group
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(child: group),
+                        const SizedBox(width: CatchSpacing.s2),
+                        CatchFieldTrailing.fixedChevron(
+                          color: t.ink3,
+                          topPadding: 0,
+                        ),
+                      ],
+                    );
+            }
+          }
+          final positionsTrailing = _hasControl || _usesPositionedClearTrailing;
+          final trailingTopPadding = _rowTrailingTopPadding;
+          final trailingSlot = rawTrailingSlot == null
+              ? null
+              : _usesPositionedClearTrailing || centerVertically
+              ? rawTrailingSlot
+              : Padding(
+                  padding: EdgeInsets.only(top: trailingTopPadding),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: CatchFieldTokens.valueLineExtent,
                     ),
-                    content: Text(
-                      _title ?? '',
-                      style: CatchTextStyles.fieldRowValue(
-                        context,
-                        color: _toneColor(t, primaryFallback: t.primary),
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Align(
+                      widthFactor: 1,
+                      heightFactor: 1,
+                      child: rawTrailingSlot,
+                    ),
+                  ),
+                );
+          final Widget? leadingSlot;
+          if (widget.leading != null) {
+            final extent = widget.leadingExtent;
+            leadingSlot = extent == null
+                ? widget.leading
+                : SizedBox(width: extent, child: widget.leading);
+          } else if (widget.icon != null) {
+            leadingSlot = Icon(
+              widget.icon,
+              size: CatchFieldRow.leadingSlotIconSize,
+              color:
+                  widget.iconColor ??
+                  (_active
+                      ? t.ink
+                      : _showsInlineAddAtRest
+                      ? t.primary
+                      : _toneColor(t, muted: true)),
+            );
+          } else if (_usesRowPrefixIcon) {
+            leadingSlot = IconTheme(
+              data: IconThemeData(
+                color: _hasError
+                    ? t.danger
+                    : _active
+                    ? t.ink
+                    : _showsInlineAddAtRest
+                    ? t.primary
+                    : t.ink2,
+                size: CatchFieldRow.leadingSlotIconSize,
+              ),
+              child: widget.prefixIcon!,
+            );
+          } else {
+            leadingSlot = null;
+          }
+          final Widget rowBody;
+          final inlineMetadata = widget.inlineMetadata?.trim();
+          if (_inlineControlAddAtRest) {
+            final addText = _emptyEditableValueText ?? _title ?? '';
+            rowBody = Semantics(
+              label: _inlineAddSemanticLabel(addText),
+              excludeSemantics: true,
+              child: Text.rich(
+                _inlineAddTextSpan(t),
+                style: CatchTextStyles.fieldRowValue(
+                  context,
+                  color: t.ink3,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          } else if (widget._explicitSaveInput) {
+            final error = _displayError?.trim();
+            final inlineAddAtRest =
+                error?.isNotEmpty != true && _inlineTextAddAtRest;
+            final addText = _emptyEditableValueText;
+            final input = IgnorePointer(
+              ignoring: !_isOpen,
+              child: _buildTextEntryField(
+                context,
+                showLabelOverride: false,
+                variantOverride: CatchFieldVariant.bare,
+                valueEmphasis: true,
+                canInteractOverride: _isOpen && widget.enabled,
+                readOnlyOverride: !_isOpen,
+                includeSupport: false,
+                inputHintOverride: inlineAddAtRest
+                    ? null
+                    : _isOpen
+                    ? _inputHintText
+                    : _emptyEditableValueText,
+                inputHintWidgetOverride: inlineAddAtRest
+                    ? Text.rich(
+                        _inlineAddTextSpan(t),
+                        style: CatchTextStyles.fieldRowValue(
+                          context,
+                          color: t.ink3,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : null,
+                semanticLabelOverride: inlineAddAtRest && addText != null
+                    ? _inlineAddSemanticLabel(addText)
+                    : _title,
+              ),
+            );
+            rowBody = CatchFieldValueContent(
+              labelCopy: widget.copy.label,
+              titleMaxLines: widget.titleMaxLines,
+              isOptional: widget.isOptional && widget.showLabel,
+              badgeLabel: widget.badgeLabel,
+              badgeTone: widget.badgeTone,
+              tone: widget.tone,
+              helperTone: widget.helperTone,
+              headerTrailingReserve: _contentTrailingReserve,
+              label: inlineAddAtRest ? null : _title,
+              valueWidget: input,
+              status: error?.isNotEmpty == true
+                  ? CatchFieldValueContentStatus.error
+                  : _active
+                  ? CatchFieldValueContentStatus.active
+                  : CatchFieldValueContentStatus.idle,
+              labelStyle: CatchFieldValueContent.captionStyle(
+                context,
+                color: error?.isNotEmpty == true
+                    ? t.danger
+                    : _active
+                    ? t.ink
+                    : t.ink2,
+              ),
+            );
+          } else if (_isEdit) {
+            rowBody = _buildTextEntryField(
+              context,
+              showLabelOverride: false,
+              variantOverride: CatchFieldVariant.bare,
+              valueEmphasis: true,
+              rowBody: true,
+            );
+          } else if (inlineMetadata?.isNotEmpty == true) {
+            final title = _title?.trim() ?? '';
+            rowBody = Semantics(
+              label: '$title, $inlineMetadata',
+              excludeSemantics: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: CatchTextStyles.recordTitle(
+                      context,
+                      color: _toneColor(t, primaryFallback: t.ink),
+                    ),
+                  ),
+                  const SizedBox(height: CatchRecordTokens.titleGap),
+                  Text(
+                    inlineMetadata!,
+                    style: CatchTextStyles.recordContext(context),
+                  ),
+                ],
+              ),
+            );
+          } else if (widget._contentRow) {
+            final hasError = _displayError?.trim().isNotEmpty == true;
+            rowBody = CatchFieldContentRow(
+              labelCopy: widget.copy.label,
+
+              title: _title?.trim() ?? '',
+              body: _body?.trim() ?? '',
+              titleMaxLines: widget.titleMaxLines,
+              bodyMaxLines: widget.bodyMaxLines,
+              isOptional: widget.isOptional,
+              titleColor: hasError
+                  ? t.danger
+                  : _toneColor(t, primaryFallback: t.ink),
+              bodyColor: t.ink2,
+            );
+          } else {
+            final title = _title?.trim();
+            final value = _stacksTrailingValueText
+                ? widget.valueText!.trim()
+                : _body?.trim().isNotEmpty == true
+                ? _body!.trim()
+                : widget._onSubmit != null
+                ? _emptyEditableValueText
+                : _placeholderText?.trim();
+            final error = _displayError?.trim();
+            final hasValue = value != null && value.isNotEmpty;
+
+            rowBody = CatchFieldValueContent(
+              labelCopy: widget.copy.label,
+              titleMaxLines: widget.titleMaxLines,
+              isOptional: widget.isOptional && widget.showLabel,
+              badgeLabel: widget.badgeLabel,
+              badgeTone: widget.badgeTone,
+              tone: widget.tone,
+              helperTone: widget.helperTone,
+              headerTrailingReserve: _contentTrailingReserve,
+              label: title,
+              value: value,
+              supportText: _hasControl
+                  ? error?.isNotEmpty == true
+                        ? null
+                        : widget.helperText
+                  : error?.isNotEmpty == true
+                  ? error
+                  : widget.helperText,
+              emphasis: widget.emphasis == CatchFieldEmphasis.title || !hasValue
+                  ? CatchFieldEmphasis.title
+                  : CatchFieldEmphasis.body,
+              mode: !_hasValue
+                  ? CatchFieldValueContentMode.placeholder
+                  : CatchFieldValueContentMode.value,
+              valueMaxLines: widget.bodyMaxLines,
+              status: error?.isNotEmpty == true
+                  ? CatchFieldValueContentStatus.error
+                  : _active
+                  ? CatchFieldValueContentStatus.active
+                  : CatchFieldValueContentStatus.idle,
+            );
+          }
+          final rowContent = CatchFieldRow.standard(
+            constraints: _usesPositionedClearTrailing
+                ? _rowConstraints.enforce(
+                    BoxConstraints(
+                      minHeight:
+                          CatchFieldTrailing.clearTargetConstraints.minHeight,
                     ),
                   )
-                : _buildRow(t),
-          ],
-        );
+                : _rowConstraints,
+            padding: _rowHeaderPadding,
+            leading: leadingSlot,
+            trailing: positionsTrailing ? null : trailingSlot,
+            crossAxisAlignment: centerVertically
+                ? CrossAxisAlignment.center
+                : CrossAxisAlignment.start,
+            leadingTopPadding: leadingTopPadding,
+            paddingDuration: _hasControl
+                ? _expansionMotionDuration(context)
+                : Duration.zero,
+            paddingCurve: CatchMotion.standardCurve,
+            content: rowBody,
+          );
+          final row = positionsTrailing && trailingSlot != null
+              ? Stack(
+                  children: [
+                    rowContent,
+                    if (_usesPositionedClearTrailing)
+                      PositionedDirectional(
+                        top: 0,
+                        bottom: 0,
+                        end: _rowHeaderPadding.right,
+                        width:
+                            CatchFieldTrailing.clearTargetConstraints.maxWidth,
+                        child: LayoutBuilder(
+                          builder: (context, available) {
+                            final extent = CatchFieldTrailing
+                                .clearTargetConstraints
+                                .maxHeight;
+                            final scaler = MediaQuery.textScalerOf(context);
+                            final desiredTop =
+                                _rowHeaderPadding.top +
+                                scaler.scale(CatchFieldTokens.captionExtent) +
+                                (scaler.scale(
+                                          CatchFieldTokens.valueLineExtent,
+                                        ) -
+                                        extent) /
+                                    2 +
+                                CatchSpacing.micro3;
+                            // Keep the value-line alignment when it fits, while
+                            // preserving the complete target inside compact rows.
+                            final top = desiredTop.clamp(
+                              0.0,
+                              available.maxHeight - extent,
+                            );
+                            return Align(
+                              alignment: Alignment.topCenter,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: top),
+                                child: trailingSlot,
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      PositionedDirectional(
+                        top: _rowHeaderPadding.top,
+                        end: _rowHeaderPadding.right,
+                        child: trailingSlot,
+                      ),
+                  ],
+                )
+              : rowContent;
+          final action = rowAction;
+          final canInteract = action != null;
+          if (!canInteract && !_active && !_hasControl) {
+            configuredRow = row;
+          } else {
+            final mouseCursor = canInteract
+                ? _isEdit
+                      ? SystemMouseCursors.text
+                      : SystemMouseCursors.click
+                : SystemMouseCursors.basic;
+            final tapRegion = _isEdit
+                ? TextFieldTapRegion(
+                    groupId: _textFieldTapRegionGroup,
+                    child: row,
+                  )
+                : row;
+            final isToggle = _isToggle;
+            final toggleStatusValue = switch (widget.status) {
+              CatchFieldStatus.idle => null,
+              CatchFieldStatus.saving => widget.copy.savingSemanticLabel,
+              CatchFieldStatus.saved => widget.copy.savedSemanticLabel,
+            };
+            final pointerTarget = Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: canInteract ? _handlePointerDown : null,
+              onPointerMove: canInteract ? _handlePointerMove : null,
+              onPointerUp: canInteract ? _handlePointerEnd : null,
+              onPointerCancel: canInteract ? _handlePointerCancel : null,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: action,
+                child: tapRegion,
+              ),
+            );
+            final keyboardTarget = _isEdit || isToggle
+                // Editable rows already own one native focus target through TextField.
+                // Toggle rows likewise delegate keyboard ownership to their nested
+                // switch. A second row Focus node would insert an empty Tab stop.
+                ? pointerTarget
+                : FocusableActionDetector(
+                    enabled: canInteract,
+                    focusNode: _rowFocusNode,
+                    mouseCursor: mouseCursor,
+                    onShowFocusHighlight: (focused) {
+                      if (_rowFocused == focused) return;
+                      _update(() => _rowFocused = focused);
+                    },
+                    actions: <Type, Action<Intent>>{
+                      if (action != null)
+                        ActivateIntent: CallbackAction<ActivateIntent>(
+                          onInvoke: (_) {
+                            if (_rowFocusNode.hasPrimaryFocus) action();
+                            return null;
+                          },
+                        ),
+                    },
+                    child: pointerTarget,
+                  );
+            final rowPadding = _rowPadding;
+            final disclosureStartPadding =
+                rowPadding.left +
+                (_hasLeadingSlot ? _leadingTextLaneInset : 0.0);
+            final disclosureControl = widget._explicitSaveInput
+                ? CatchFieldExplicitSaveControl(
+                    supporting: widget._supporting,
+                    feedback: widget._feedback,
+                    secondaryAction: widget._secondaryAction,
+                  )
+                : widget.control;
+            final actionBar = widget._onSubmit == null
+                ? null
+                : CatchFieldActionBar(
+                    cancelLabel: widget.copy.cancelLabel,
+                    doneLabel: widget.copy.doneLabel,
+                    savingLabel: widget.copy.savingLabel,
+
+                    revealTargetKey: _actionBarRevealTargetKey,
+                    loading: _isSaving,
+                    onCancel: _handleCancel,
+                    onSubmit: _handleSubmit,
+                  );
+            final rootError = _hasControl ? _displayError?.trim() : null;
+            final content = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                keyboardTarget,
+                if (_hasControl)
+                  CatchFieldDisclosureDrawer(
+                    open: _isOpen,
+                    offstage: _disclosureOffstage,
+                    revealTargetKey: _disclosureRevealTargetKey,
+                    control: disclosureControl!,
+                    actionBar: actionBar,
+                    startPadding: disclosureStartPadding,
+                    endPadding: rowPadding.right,
+                    bottomPadding: rowPadding.bottom,
+                    revealDuration: _expansionMotionDuration(context),
+                    opacityDuration: catchFieldMotionDuration(
+                      context,
+                      CatchMotion.base,
+                    ),
+                    onRevealEnd: _handleExpansionAnimationEnd,
+                  ),
+                if (rootError?.isNotEmpty == true)
+                  CatchFieldSupportRow(
+                    key: const ValueKey('catch-field-root-support'),
+                    text: rootError,
+                    color: t.danger,
+                    showErrorIcon: true,
+                    padding: EdgeInsetsDirectional.only(
+                      start: disclosureStartPadding,
+                      end: rowPadding.right,
+                      bottom: rowPadding.bottom,
+                    ),
+                  ),
+              ],
+            );
+            final stack = CatchFieldSurface(
+              pressedOverlayKey: CatchField.pressOverlayKey,
+              states: {
+                if (_active) WidgetState.selected,
+                if (_rowFocused) WidgetState.focused,
+                if (_pressed) WidgetState.pressed,
+              },
+              child: content,
+            );
+            configuredRow = Semantics(
+              container: isToggle,
+              excludeSemantics: isToggle,
+              label: isToggle ? _title : null,
+              button: !isToggle && !_isEdit && canInteract,
+              enabled: canInteract,
+              expanded: _hasControl ? _isOpen : null,
+              toggled: isToggle ? widget.toggled : null,
+              value: isToggle ? toggleStatusValue : null,
+              onTap: isToggle && canInteract ? action : null,
+              child: MouseRegion(
+                cursor: mouseCursor,
+                onExit: canInteract ? _handlePointerExit : null,
+                child: stack,
+              ),
+            );
+          }
+        }
+        final rowStack = Stack(children: [configuredRow]);
         field = !_isEdit && !_hasControl
             ? rowStack
             : Shortcuts(
