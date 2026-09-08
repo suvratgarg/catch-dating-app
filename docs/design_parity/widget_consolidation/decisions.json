@@ -6460,6 +6460,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered family review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toggle-canonical-input",
+      "patternFamilyId": "toggle-canonical-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchToggleInput",
+      "members": [
+        {
+          "name": "CatchToggle",
+          "action": "absorb",
+          "target": "CatchToggleInput"
+        },
+        {
+          "name": "CatchFieldToggle",
+          "action": "absorb",
+          "target": "CatchToggleInput.field"
+        }
+      ],
+      "rationale": "The field wrapper had one production construction site and only forwarded every argument to the existing CatchToggle.field recipe. Remove that extra identity and retain the shared normal/field implementation under the explicit Toggle Input role. The new implementation is byte-identical after symbol renames; both original geometry images, keyboard/save/semantics behavior, platform touch targets and affected Host flows pass. The duplicate field preview is folded into the canonical contract with no lost production state. The lint canonical-control name and existing form-policy path follow the rename; lint-plugin validation remains CI-only.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

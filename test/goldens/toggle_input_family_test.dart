@@ -16,19 +16,19 @@ void main() {
           children: [
             Row(
               children: [
-                CatchToggle(value: false, onChanged: (_) {}),
-                CatchToggle(value: true, onChanged: (_) {}),
-                const CatchToggle(value: false, onChanged: null),
-                const CatchToggle(value: true, onChanged: null),
+                CatchToggleInput(value: false, onChanged: (_) {}),
+                CatchToggleInput(value: true, onChanged: (_) {}),
+                const CatchToggleInput(value: false, onChanged: null),
+                const CatchToggleInput(value: true, onChanged: null),
               ],
             ),
             const SizedBox(height: 24),
             Row(
               children: [
-                CatchFieldToggle(value: false, onChanged: (_) {}),
-                CatchFieldToggle(value: true, onChanged: (_) {}),
-                const CatchFieldToggle(value: false, onChanged: null),
-                const CatchFieldToggle(value: true, onChanged: null),
+                CatchToggleInput.field(value: false, onChanged: (_) {}),
+                CatchToggleInput.field(value: true, onChanged: (_) {}),
+                const CatchToggleInput.field(value: false, onChanged: null),
+                const CatchToggleInput.field(value: true, onChanged: null),
               ],
             ),
           ],

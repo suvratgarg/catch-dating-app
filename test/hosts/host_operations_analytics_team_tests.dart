@@ -598,7 +598,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(topBar.divider, isFalse);
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
-    expect(find.byType(CatchFieldToggle), findsNothing);
+    expect(find.byType(CatchToggleInput), findsNothing);
     expect(find.byType(CatchFieldActionBar), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);
 
@@ -607,7 +607,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       HostClubLiveGuideScreen(clubId: club.id),
       overrides: overrides,
     );
-    expect(find.byType(CatchFieldToggle), findsNothing);
+    expect(find.byType(CatchToggleInput), findsNothing);
     expect(find.byType(CatchFieldActionBar), findsNothing);
 
     await _pumpHostScreen(

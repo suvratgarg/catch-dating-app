@@ -297,7 +297,7 @@ const _roundedAffordanceConstructors = <String>{
   'CatchPersonAvatarStack',
   'CatchSearchField',
   'CatchSkeleton',
-  'CatchToggle',
+  'CatchToggleInput',
 };
 
 const _roundedAffordanceNameFragments = <String>{

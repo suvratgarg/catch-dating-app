@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "4dd88c507a6fbb5ab42ad73818ce1511ca3f9030bbbb4990defee8bc7ddf557e",
+  "sourceDigest": "51d9ff16f6635fb0d51f3058ce0ccb2105352669aade9fa2733dc37b68930da6",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "4dd88c507a6fbb5ab42ad73818ce1511ca3f9030bbbb4990defee8bc7ddf557e",
-    "contractDigest": "4dd88c507a6fbb5ab42ad73818ce1511ca3f9030bbbb4990defee8bc7ddf557e"
+    "digest": "51d9ff16f6635fb0d51f3058ce0ccb2105352669aade9fa2733dc37b68930da6",
+    "contractDigest": "51d9ff16f6635fb0d51f3058ce0ccb2105352669aade9fa2733dc37b68930da6"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1d51262ad5dda75b59c3fbab66b20d8ea6600cb26cc4d2e5799bd1cc72b90504",
+    "handoffRequestDigest": "4f3e68e507d6705b992e936b58dc97be9e75c8c2827cf50077a3d5d3b5b46713",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 307,
+    "publicClassCount": 306,
     "conceptCount": 72,
-    "memberCount": 217,
-    "membersPerConcept": 3.01,
+    "memberCount": 216,
+    "membersPerConcept": 3,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 217,
+      "member": 216,
       "screen": 15
     },
     "collisionCount": 38,
@@ -253,7 +253,6 @@
           "CatchFieldSupportRow",
           "CatchFieldSurface",
           "CatchFieldTextEntry",
-          "CatchFieldToggle",
           "CatchFieldTrailing",
           "CatchFieldValueContent",
           "CatchFieldVisibilityScope",
@@ -975,7 +974,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "e6aad9bc5054be0c78a1e2eefaddaa116575a861d7fe47cd3d6b2a830291ff91"
+      "contractDigest": "d59c89a49e63ab9547ec88953f4a0234e11f275624a0638bb9f1894656ab2591"
     },
     {
       "contractId": "catch.section",
@@ -2005,8 +2004,8 @@
       "contractId": "catch.toggle",
       "conceptRole": "concept",
       "conceptId": "catch.toggle",
-      "dartSymbol": "CatchToggle",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_toggle.dart",
+      "dartSymbol": "CatchToggleInput",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
       "figmaName": "Catch/Toggle",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2023,7 +2022,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "e94c7486831d2848f418c27a609344e89964b1e7da547abc5454b4f86ee311bc",
+      "figmaExpectedPropertyDigest": "a9fa4869593ecb9288f64ad3850934b260629631b0b68a9086680bdefea03d49",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2031,7 +2030,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Toggle",
       "claudeAllowed": true,
-      "contractDigest": "b5d99ffd1b3c815b02d7ca5c400cf1223d0ec47b5870d165ebade2ad53a60cef"
+      "contractDigest": "1cbae0608510c9f7841d61e40db4ec9956a6651bdf61748eafffc8f7a5051040"
     },
     {
       "contractId": "catch.status_bar",

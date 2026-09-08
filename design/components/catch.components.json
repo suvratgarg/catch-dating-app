@@ -3615,26 +3615,6 @@
             }
           },
           {
-            "id": "catch.field.toggle",
-            "symbol": "CatchFieldToggle",
-            "summary": "Field switch with a 44 by 26 visual track inside a platform-sized hit/focus target, animated track/knob/saving opacity, Enter/Space activation, and focus-visible chrome.",
-            "states": [
-              "off",
-              "on",
-              "saving",
-              "disabled",
-              "keyboard-focused"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_toggle.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.repeat_button",
             "symbol": "CatchFieldRepeatButton",
             "summary": "Stepper-owned platform-sized repeat target with a 32 px visual circle. Rendered target and pointer-exit bounds share hitExtent; layoutGap preserves visual spacing. Supports immediate pointer-down step, pointer-up and drag-exit cancellation, 400 ms delay, 110 ms repeats, and 55 ms repeats after tick 10.",
@@ -11142,20 +11122,21 @@
           "SegmentedButton",
           "Switch"
         ],
-        "replacement": "CatchToggle or CatchOptionGroup",
+        "replacement": "CatchToggleInput or CatchOptionGroup",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "Switch(value: false, onChanged: (_) {})"
       },
-      "name": "CatchToggle",
+      "name": "CatchToggleInput",
       "status": "active",
       "kind": "primitive",
       "summary": "Canonical settings toggle control with animated pill track, primary on fill, quiet off track, surface knob, disabled opacity, Enter/Space activation, and a 2 px focus-visible ring.",
       "dart": {
-        "symbol": "CatchToggle",
-        "file": "packages/catch_ui/lib/src/components/catch_toggle.dart",
+        "symbol": "CatchToggleInput",
+        "file": "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
         "constructors": [
-          "CatchToggle"
+          "CatchToggleInput",
+          "CatchToggleInput.field"
         ]
       },
       "design": {
@@ -11200,7 +11181,8 @@
           "on",
           "disabled",
           "semantic-labelled",
-          "keyboard-focused"
+          "keyboard-focused",
+          "field-recipe"
         ],
         "slots": [],
         "tokens": [
@@ -11220,7 +11202,9 @@
           "CatchFieldTokens.focusRingWidth",
           "CatchElevation.toggleKnob"
         ],
-        "goldens": [],
+        "goldens": [
+          "toggle_input_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -11238,7 +11222,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use CatchField toggle mode for settings rows; use CatchToggle for the control itself. The control animates track, knob, and disabled opacity with reduced-motion support, activates from Enter or Space, and exposes a 2 px focus-visible ring without adding a second field-row focus target."
+          "Use CatchField.toggle for labeled settings rows and CatchToggleInput for the boolean control. The field recipe shares the same interaction, semantics, focus and reduced-motion implementation with its existing compact geometry."
         ]
       },
       "governance": {
@@ -11252,10 +11236,21 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.toggle"
+        "conceptId": "catch.toggle",
+        "decisionRef": "pattern-family:toggle-canonical-input"
       },
       "surfaces": {
-        "flutter": "CatchToggle"
+        "flutter": "CatchToggleInput"
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Toggle",
+        "comparedWith": [
+          "catch.field.text_input",
+          "catch.code_input"
+        ],
+        "reason": "Edits a boolean through on/off track activation, including the existing compact field geometry. Text and code inputs own character editing and keyboard/text contracts, so the boolean control remains a distinct Input use case."
       }
     },
     {

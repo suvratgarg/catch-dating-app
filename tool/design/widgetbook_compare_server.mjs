@@ -2050,7 +2050,7 @@ function buildCandidates() {
         "CatchChip",
         "IncludeMeToggle",
         "RecommendationSwitch",
-        "CatchToggle",
+        "CatchToggleInput",
         "ModuleToggleRow",
         "ManualQaToggleRow",
       ],

@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 ///
 /// Matches the handoff `Toggle`: pill track, primary fill when on, quiet
 /// hairline-grey track when off, and a surface knob.
-class CatchToggle extends StatefulWidget {
-  const CatchToggle({
+class CatchToggleInput extends StatefulWidget {
+  const CatchToggleInput({
     super.key,
     required this.value,
     required this.onChanged,
@@ -23,7 +23,7 @@ class CatchToggle extends StatefulWidget {
   ///
   /// Every Catch toggle retains one interaction and semantics implementation;
   /// only the field handoff's geometry and motion tokens differ.
-  const CatchToggle.field({
+  const CatchToggleInput.field({
     super.key,
     required this.value,
     required this.onChanged,
@@ -40,10 +40,10 @@ class CatchToggle extends StatefulWidget {
   final bool _field;
 
   @override
-  State<CatchToggle> createState() => _CatchToggleState();
+  State<CatchToggleInput> createState() => _CatchToggleInputState();
 }
 
-class _CatchToggleState extends State<CatchToggle> {
+class _CatchToggleInputState extends State<CatchToggleInput> {
   bool _showFocusHighlight = false;
 
   void _activate() {
@@ -56,7 +56,7 @@ class _CatchToggleState extends State<CatchToggle> {
     assert(
       widget.contract == null ||
           widget.contract!.valueTypes?.contains('boolean') != false,
-      'CatchToggle requires a boolean contract.',
+      'CatchToggleInput requires a boolean contract.',
     );
     final t = CatchTokens.of(context);
     final enabled = widget.onChanged != null;

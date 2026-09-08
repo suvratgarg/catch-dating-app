@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:71277d734d57462d794d9e1500a0b096260efa3a3920e029a788f5c38634214d",
+  "resolvedDigest": "sha256:83d698421f6474b74db08ca4cb86a4d869d70bb3e67fa59e0c4fd4323672f0df",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2357,10 +2357,11 @@
             "id": "catch.toggle",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchToggle",
-              "file": "packages/catch_ui/lib/src/components/catch_toggle.dart",
+              "symbol": "CatchToggleInput",
+              "file": "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
               "constructors": [
-                "CatchToggle"
+                "CatchToggleInput",
+                "CatchToggleInput.field"
               ]
             }
           },

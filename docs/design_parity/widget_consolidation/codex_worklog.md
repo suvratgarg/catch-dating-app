@@ -70,6 +70,28 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Canonical toggle input
+
+Owner-delegated source and rendered review: `toggle-canonical-input` in
+`pattern_families.json` and `decisions.json`. Both existing geometry recipes
+use `CatchToggleInput`; fields mount its `.field` constructor directly.
+
+- [x] Remove the `CatchFieldToggle` forwarding wrapper and rename the shared
+  implementation, callers, finders, and canonical control references.
+- [x] Verify that the implementation is byte-identical after symbol renames.
+  The two pre-refactor production images remain unchanged across consecutive
+  comparisons. Seventeen field toggle/save tests, ten platform-target tests,
+  two affected Host flow tests, and four form-scanner tests pass.
+- [x] Fold the redundant field preview into the canonical contract; both
+  text-scale gallery comparisons and the enumeration test pass twice.
+- [x] Refresh contracts, generated Widgetbook and design context. Corpus
+  coverage is 319/319 surfaces through 334 IDs. All 1,057 registered cases are
+  classified: 351 component-mount, 338 body-mount, 365 screen-scope, 3 prototype.
+- [ ] Verify the lint rule's canonical-control name change and the full derived
+  Phase 4 gates in CI. No local analyzer/plugin process was run.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Persistent inline feedback
 
 Owner-delegated source and rendered review: `inline-feedback-canonical-banner`

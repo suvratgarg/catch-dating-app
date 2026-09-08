@@ -16,13 +16,13 @@ typedef _ControlBuilder = Widget Function(VoidCallback? activate);
 
 void main() {
   final controls = <String, _ControlBuilder>{
-    'toggle': (activate) => CatchToggle(
+    'toggle': (activate) => CatchToggleInput(
       key: _controlKey,
       value: false,
       semanticLabel: 'Go',
       onChanged: activate == null ? null : (_) => activate(),
     ),
-    'field toggle': (activate) => CatchToggle.field(
+    'field toggle': (activate) => CatchToggleInput.field(
       key: _controlKey,
       value: false,
       semanticLabel: 'Go',

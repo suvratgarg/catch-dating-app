@@ -334,7 +334,7 @@ void main() {
     );
 
     expect(
-      tester.getCenter(find.byType(CatchFieldToggle)).dx,
+      tester.getCenter(find.byType(CatchToggleInput)).dx,
       lessThan(tester.getCenter(find.text('Show pace')).dx),
     );
   });

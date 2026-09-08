@@ -2598,7 +2598,7 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Micro-pod assignment, peer-loading, and table group rotation variants are captured. Live assignment opt-in controls use the handoff CatchToggle primitive.",
+              "notes": "Micro-pod assignment, peer-loading, and table group rotation variants are captured. Live assignment opt-in controls use the handoff CatchToggleInput primitive.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
@@ -2615,7 +2615,7 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Guided rotation schedule and peer-loading variants are captured. Include-me controls use the handoff CatchToggle primitive.",
+              "notes": "Guided rotation schedule and peer-loading variants are captured. Include-me controls use the handoff CatchToggleInput primitive.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
@@ -4403,7 +4403,7 @@
             {
               "id": "DP-PROFILE-SELF-005",
               "status": "closed",
-              "nextAction": "Closed for the implementation-safe primitive tranche. CatchField, CatchSection, and CatchToggle implement and test the handoff footer/header metrics, 16 px caret, exact field typography, spinner/status/error anatomy, directional underline and disclosure motion, animated saving states, repeat boundary, keyboard activation, focus-visible rings, dedicated 2/3-line content clamps, and unchanged legacy 1/2-line value-row defaults. Existing semantic colors already match, so no palette values changed."
+              "nextAction": "Closed for the implementation-safe primitive tranche. CatchField, CatchSection, and CatchToggleInput implement and test the handoff footer/header metrics, 16 px caret, exact field typography, spinner/status/error anatomy, directional underline and disclosure motion, animated saving states, repeat boundary, keyboard activation, focus-visible rings, dedicated 2/3-line content clamps, and unchanged legacy 1/2-line value-row defaults. Existing semantic colors already match, so no palette values changed."
             },
             {
               "id": "DP-PROFILE-SELF-006",
@@ -12087,7 +12087,7 @@
               "tests": [
                 "test/safety/settings_screen_test.dart"
               ],
-              "notes": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; settings_preference_pending captures the disabled pending affordance.",
+              "notes": "Preference toggles optimistically update local CatchToggleInput state and persist through SettingsController.savePreference; settings_preference_pending captures the disabled pending affordance.",
               "previewIds": [
                 "SettingsScreen/Screen states",
                 "SettingsScreen/Mutation states"

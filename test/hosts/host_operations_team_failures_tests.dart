@@ -196,10 +196,10 @@ void _registerHostOperationsTeamFailuresTests() {
       reason: 'The first guide toggle must not synthesize a section divider.',
     );
     tester
-        .widget<CatchFieldToggle>(
+        .widget<CatchToggleInput>(
           find.descendant(
             of: guideField,
-            matching: find.byType(CatchFieldToggle),
+            matching: find.byType(CatchToggleInput),
           ),
         )
         .onChanged!(true);

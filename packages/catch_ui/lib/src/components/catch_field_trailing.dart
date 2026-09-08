@@ -4,7 +4,7 @@ import 'package:catch_ui/src/components/catch_field_copy.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:catch_ui/src/components/catch_field_status.dart';
 import 'package:catch_ui/src/components/catch_field_status_indicator.dart';
-import 'package:catch_ui/src/components/catch_field_toggle.dart';
+import 'package:catch_ui/src/components/catch_toggle_input.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_control_shell.dart';
@@ -177,7 +177,7 @@ class CatchFieldTrailing extends StatelessWidget {
           status: status,
           includeTrailingGap: true,
         ),
-        CatchFieldToggle(
+        CatchToggleInput.field(
           value: value,
           contract: contract,
           contractExemption: contractExemption,

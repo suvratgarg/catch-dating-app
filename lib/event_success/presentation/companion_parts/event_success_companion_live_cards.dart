@@ -556,7 +556,7 @@ class IncludeMeToggle extends StatelessWidget {
             style: CatchTextStyles.labelL(context, color: t.surface),
           ),
         ),
-        CatchToggle(
+        CatchToggleInput(
           contract: CatchContractConstraints
               .mobileFormStateEventSuccessLiveCardIncluded,
           value: included,

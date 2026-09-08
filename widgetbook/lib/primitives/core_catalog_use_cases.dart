@@ -941,10 +941,10 @@ Widget catchChipFieldCatalogStates(BuildContext context) {
   );
 }
 
-Widget catchToggleCatalogStates(BuildContext context) {
+Widget catchToggleInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchToggle',
-    catalogId: 'core.widgets.catch_toggle',
+    title: 'CatchToggleInput',
+    catalogId: 'core.widgets.catch_toggle_input',
     children: const [
       _StateCard(label: 'on / off / disabled', child: _ToggleDemo()),
     ],
@@ -4579,15 +4579,15 @@ class _ToggleDemoState extends State<_ToggleDemo> {
   Widget build(BuildContext context) {
     return _InlineWrap(
       children: [
-        CatchToggle(
+        CatchToggleInput(
           value: _on,
           onChanged: (value) => setState(() => _on = value),
         ),
-        CatchToggle(
+        CatchToggleInput(
           value: _off,
           onChanged: (value) => setState(() => _off = value),
         ),
-        const CatchToggle(value: true, onChanged: null),
+        const CatchToggleInput(value: true, onChanged: null),
       ],
     );
   }

@@ -991,12 +991,12 @@ void _registerCatchPrimitivesControlsTests() {
     }
   });
 
-  testWidgets('CatchToggle emits the next value on tap', (tester) async {
+  testWidgets('CatchToggleInput emits the next value on tap', (tester) async {
     bool? nextValue;
 
     await tester.pumpWidget(
       _wrap(
-        CatchToggle(
+        CatchToggleInput(
           value: false,
           semanticLabel: 'Push notifications',
           onChanged: (value) => nextValue = value,
@@ -1004,7 +1004,7 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    await tester.tap(find.byType(CatchToggle));
+    await tester.tap(find.byType(CatchToggleInput));
     await tester.pump();
 
     expect(nextValue, isTrue);

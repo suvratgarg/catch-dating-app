@@ -593,7 +593,7 @@ class ModuleToggleRow extends StatelessWidget {
                 ],
               ),
             ),
-            CatchToggle(
+            CatchToggleInput(
               contract: CatchContractConstraints
                   .mobileFormStateEventSuccessModuleSelected,
               value: selected,

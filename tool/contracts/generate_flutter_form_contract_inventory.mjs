@@ -117,7 +117,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: () => "selectableChip",
     },
     {
-      expression: /CatchToggle\s*\(/g,
+      expression: /CatchToggleInput\s*\(/g,
       symbol: () => "directToggle",
     },
     {

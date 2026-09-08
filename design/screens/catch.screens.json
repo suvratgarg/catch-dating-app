@@ -4366,7 +4366,7 @@
           "id": "micro_pod_assignment",
           "kind": "populated",
           "status": "captured",
-          "source": "Assigned micro-pod and group-rotation slots render group labels, peer rows, table/round details, and handoff CatchToggle opt-in controls.",
+          "source": "Assigned micro-pod and group-rotation slots render group labels, peer rows, table/round details, and handoff CatchToggleInput opt-in controls.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -4384,7 +4384,7 @@
           "id": "rotation_schedule",
           "kind": "populated",
           "status": "captured",
-          "source": "Guided rotation assignment renders round schedule, partner profile rows, and a handoff CatchToggle Include me control.",
+          "source": "Guided rotation assignment renders round schedule, partner profile rows, and a handoff CatchToggleInput Include me control.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -24314,7 +24314,7 @@
           "id": "notification_preferences",
           "kind": "mutation",
           "status": "captured",
-          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
+          "source": "Preference toggles optimistically update local CatchToggleInput state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
           "captureIds": [
             "settings_preference_pending"
           ],
@@ -24598,7 +24598,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
-            "currentOwner": "_SettingsSection + CatchToggle",
+            "currentOwner": "_SettingsSection + CatchToggleInput",
             "targetOwner": "provider-free settings notification preferences section",
             "dependencies": [
               "catch.surface"

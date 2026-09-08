@@ -176,11 +176,11 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('catch-field-toggle')), findsOneWidget);
-    expect(find.byType(CatchToggle), findsOneWidget);
+    expect(find.byType(CatchToggleInput), findsOneWidget);
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
     final opacity = tester.widget<AnimatedOpacity>(
       find.descendant(
-        of: find.byType(CatchToggle),
+        of: find.byType(CatchToggleInput),
         matching: find.byType(AnimatedOpacity),
       ),
     );

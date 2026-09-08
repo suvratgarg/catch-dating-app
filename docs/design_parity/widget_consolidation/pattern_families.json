@@ -776,6 +776,42 @@
           "rationale": "Keep transient notification delivery distinct: live announcements, dismissal/open callbacks, person payload and delivery-host lifecycle are not persistent page feedback."
         }
       ]
+    },
+    {
+      "id": "toggle-canonical-input",
+      "title": "Canonical boolean input recipes",
+      "intent": "Keep one boolean editing, keyboard, semantics and motion implementation; field geometry is a named recipe, not a forwarding Widget identity.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.toggle",
+      "qualityReference": "CatchToggleInput",
+      "decisionSource": "owner-delegated:2026-09-08 Phase 4 source and rendered review",
+      "acceptedVisualDelta": [
+        "Preserve on/off and enabled/disabled rendering for both existing geometry recipes against the pre-refactor toggle_input_family goldens.",
+        "Widgetbook moves the redundant field-wrapper preview into the canonical toggle contract; production track, knob, focus, saving opacity, keys, semantics and callbacks are unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchToggleInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The existing normal and field constructors already share all interaction and rendering code. Input names the boolean editing responsibility; typed field geometry remains a named recipe."
+        },
+        {
+          "symbol": "CatchToggle",
+          "disposition": "unify",
+          "target": "CatchToggleInput",
+          "preview": "not-applicable",
+          "rationale": "Compiler-verified canonical Input role rename; the implementation body and its two geometry recipes are retained."
+        },
+        {
+          "symbol": "CatchFieldToggle",
+          "disposition": "unify",
+          "target": "CatchToggleInput",
+          "preview": "not-applicable",
+          "rationale": "Remove the pure forwarding wrapper and mount CatchToggleInput.field directly from field trailing anatomy."
+        }
+      ]
     }
   ]
 }

@@ -3267,36 +3267,6 @@ Widget catchFieldCommitButtonContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldToggle,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldToggleContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchFieldToggle',
-    contractId: 'catch.field.toggle',
-    states: const ['off', 'on', 'saving', 'disabled', 'keyboard-focused'],
-    children: [
-      _StateCard(
-        label: 'off / on / saving / disabled',
-        child: _InlineWrap(
-          children: [
-            CatchFieldToggle(value: false, onChanged: (_) {}),
-            CatchFieldToggle(value: true, onChanged: (_) {}),
-            const CatchFieldToggle(value: true, onChanged: null),
-            const CatchFieldToggle(value: false, onChanged: null),
-          ],
-        ),
-      ),
-      _StateCard(
-        label: 'keyboard-focused · use Tab',
-        child: CatchFieldToggle(value: true, onChanged: (_) {}),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchFieldRepeatButton,
   path: '[Core primitives]/Inputs',
 )
@@ -7026,12 +6996,12 @@ Widget catchRangeSliderContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchToggle,
+  type: CatchToggleInput,
   path: '[Core primitives]/Inputs',
 )
-Widget catchToggleContractStates(BuildContext context) {
+Widget catchToggleInputContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchToggle',
+    title: 'CatchToggleInput',
     contractId: 'catch.toggle',
     states: const [
       'off',
@@ -7039,23 +7009,35 @@ Widget catchToggleContractStates(BuildContext context) {
       'disabled',
       'semantic-labelled',
       'keyboard-focused',
+      'field-recipe',
     ],
     children: [
       _StateCard(
+        label: 'field-recipe',
+        child: _InlineWrap(
+          children: [
+            CatchToggleInput.field(value: false, onChanged: (_) {}),
+            CatchToggleInput.field(value: true, onChanged: (_) {}),
+            const CatchToggleInput.field(value: true, onChanged: null),
+            const CatchToggleInput.field(value: false, onChanged: null),
+          ],
+        ),
+      ),
+      _StateCard(
         label: 'off',
-        child: CatchToggle(value: false, onChanged: (_) {}),
+        child: CatchToggleInput(value: false, onChanged: (_) {}),
       ),
       _StateCard(
         label: 'on',
-        child: CatchToggle(value: true, onChanged: (_) {}),
+        child: CatchToggleInput(value: true, onChanged: (_) {}),
       ),
       const _StateCard(
         label: 'disabled',
-        child: CatchToggle(value: true, onChanged: null),
+        child: CatchToggleInput(value: true, onChanged: null),
       ),
       _StateCard(
         label: 'semantic-labelled',
-        child: CatchToggle(
+        child: CatchToggleInput(
           value: true,
           semanticLabel: 'Allow reminders',
           onChanged: (_) {},
@@ -7063,7 +7045,7 @@ Widget catchToggleContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'keyboard-focused · use Tab',
-        child: CatchToggle(value: true, onChanged: (_) {}),
+        child: CatchToggleInput(value: true, onChanged: (_) {}),
       ),
     ],
   );
