@@ -6509,6 +6509,32 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:icon-presentation-canonical-tile",
+      "patternFamilyId": "icon-presentation-canonical-tile",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchIconTile",
+      "members": [
+        {
+          "name": "CatchIconTile",
+          "action": "keep"
+        },
+        {
+          "name": "CatchEmptyStateIcon",
+          "action": "absorb",
+          "target": "CatchIconTile.empty"
+        },
+        {
+          "name": "CatchErrorIcon",
+          "action": "absorb",
+          "target": "CatchIconTile.error"
+        }
+      ],
+      "rationale": "The three source implementations each displayed a glyph in plain or decorated containment without interaction. One CatchIconTile now owns that renderer. Named empty and error recipes preserve palette, border absence, glyph and container defaults, custom sizing and the error recipe centering. CatchIconTileVariant replaces the empty-specific style enum; the two duplicate Widget classes and registry members are deleted. Error/empty compositions retain their own copy, actions and layout. Four pinned production images remain unchanged, eight focused root tests pass, and thirteen gallery/enumeration tests pass twice. All absorbed visual states are present on the canonical gallery page.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

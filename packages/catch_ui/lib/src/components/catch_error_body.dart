@@ -3,7 +3,7 @@ import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_error_state_mode.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_error_icon.dart';
+import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
 
@@ -39,9 +39,9 @@ class CatchErrorBody extends StatelessWidget {
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchErrorIcon(
+        CatchIconTile.error(
           icon: icon,
-          extent: isCompact ? 48 : 64,
+          size: isCompact ? 48 : 64,
           iconSize: isCompact ? 24 : 30,
         ),
         SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),

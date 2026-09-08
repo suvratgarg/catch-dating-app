@@ -70,6 +70,27 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Canonical icon presentation
+
+Owner-delegated source and rendered review: `icon-presentation-canonical-tile`
+in the existing pattern families and decisions. Empty and error icons now use
+`CatchIconTile.empty` and `.error` with one shared decorative renderer.
+
+- [x] Pin the three old icon recipes and their production empty/error layouts
+  in four original images. Both consecutive comparisons preserve those images.
+- [x] Delete the two duplicate Widgets and their registry members; migrate the
+  Host Today caller and empty/error compositions. Preserve glyph/container sizes,
+  quiet/accent/error colors, border absence and error centering.
+- [x] Replace the empty-specific style enum with `CatchIconTileVariant`.
+  The normal tile constructor retains required non-null glyph/color inputs.
+- [x] Eight focused root tests pass. Thirteen affected gallery/enumeration tests
+  pass twice, with every absorbed state on the canonical icon contract page.
+- [x] Register the decorative icon Tile and metric Tile distinction from source;
+  all 19 reviewed naming entries pass the deterministic identity validator.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Typography and reviewed role boundaries
 
 Owner-delegated source review: `typography-role-boundaries` in the existing

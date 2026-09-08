@@ -1146,11 +1146,11 @@
             "dartType": "bool"
           },
           {
-            "name": "iconStyle",
+            "name": "iconVariant",
             "type": "enum",
             "required": false,
             "default": "plain",
-            "dartType": "CatchEmptyStateIconStyle",
+            "dartType": "CatchIconTileVariant",
             "values": [
               "plain",
               "bubble"
@@ -1198,7 +1198,7 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchEmptyStateIconStyle",
+          "CatchIconTileVariant",
           "CatchEmptyStateLayout",
           "CatchSurface",
           "CatchTextStyles.sectionTitle",
@@ -1222,24 +1222,6 @@
               "conceptId": "catch.empty_state",
               "parentConceptId": "catch.empty_state",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.empty_state"
-            }
-          },
-          {
-            "id": "catch.empty_state.icon",
-            "symbol": "CatchEmptyStateIcon",
-            "file": "packages/catch_ui/lib/src/components/catch_empty_state_icon.dart",
-            "summary": "Direct empty-state icon renderer for plain and bubble icon treatments.",
-            "states": [
-              "plain",
-              "bubble",
-              "sized"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.empty_state",
-              "parentConceptId": "catch.empty_state",
-              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.empty_state"
             }
           },
@@ -1562,24 +1544,6 @@
               "conceptId": "catch.error_state",
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_state"
-            }
-          },
-          {
-            "id": "catch.error_state.icon",
-            "symbol": "CatchErrorIcon",
-            "file": "packages/catch_ui/lib/src/primitives/catch_error_icon.dart",
-            "summary": "Shared branded icon medallion composed by app-facing and framework-facing error surfaces.",
-            "states": [
-              "default",
-              "custom-icon",
-              "compact"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.error_state",
-              "parentConceptId": "catch.error_state",
-              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.error_state"
             }
           },
@@ -6743,12 +6707,14 @@
       "name": "CatchIconTile",
       "status": "active",
       "kind": "primitive",
-      "summary": "Decorative square icon tile for quick actions, data cards, and compact labeled rows where the icon is content rather than a tappable command.",
+      "summary": "Non-interactive icon presentation with square-tile, quiet empty-state, circular accent and branded error recipes. Commands belong to CatchIconButton.",
       "dart": {
         "symbol": "CatchIconTile",
         "file": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
         "constructors": [
-          "CatchIconTile"
+          "CatchIconTile",
+          "CatchIconTile.empty",
+          "CatchIconTile.error"
         ]
       },
       "design": {
@@ -6813,12 +6779,31 @@
             "required": false,
             "default": "CatchRadius.md",
             "dartType": "double"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "tile",
+            "dartType": "CatchIconTileVariant",
+            "values": [
+              "tile",
+              "plain",
+              "bubble",
+              "error"
+            ]
           }
         ],
         "states": [
           "default",
           "tinted",
-          "compact"
+          "compact",
+          "plain",
+          "bubble",
+          "sized",
+          "error",
+          "custom-icon",
+          "compact-error"
         ],
         "slots": [],
         "tokens": [
@@ -6832,9 +6817,12 @@
         "dartRoles": [
           "CatchIcon.md",
           "CatchRadius.sm",
-          "CatchRadius.md"
+          "CatchRadius.md",
+          "CatchIconTileVariant"
         ],
-        "goldens": [],
+        "goldens": [
+          "icon_tile_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -6871,6 +6859,15 @@
       },
       "surfaces": {
         "flutter": "CatchIconTile"
+      },
+      "level": "L2",
+      "roleNoun": "Tile",
+      "naming": {
+        "useCase": "Icon",
+        "comparedWith": [
+          "catch.analytics_metric"
+        ],
+        "reason": "A decorative glyph container has no metric payload, title, navigation or tap contract. Empty and error glyph containers now use this canonical renderer through named constructors, rather than separate Widget identities."
       }
     },
     {
@@ -7535,7 +7532,6 @@
           "CatchSurface.tinted"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -11925,7 +11921,6 @@
         ],
         "dartRoles": [],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -13276,7 +13271,6 @@
           "CatchTextStyles.recordBody"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -13393,7 +13387,6 @@
         "tokens": [],
         "dartRoles": [],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -15607,7 +15600,6 @@
           "CatchAvatarColors"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -15746,7 +15738,6 @@
           "LocationCoordinate"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -16953,6 +16944,15 @@
       },
       "surfaces": {
         "flutter": "CatchAnalyticsMetricTile"
+      },
+      "level": "L3",
+      "roleNoun": "Tile",
+      "naming": {
+        "useCase": "AnalyticsMetric",
+        "comparedWith": [
+          "catch.icon_tile"
+        ],
+        "reason": "Renders a caller-formatted metric value, label, optional caption and explicit data-quality status. The decorative icon tile has no metric data or status contract; the metric tile retains the shared CatchSurface containment."
       }
     },
     {
@@ -17022,7 +17022,6 @@
           "CatchTextStyles.supporting"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,

@@ -1,6 +1,6 @@
-import 'package:catch_ui/src/components/catch_empty_state_icon.dart';
 import 'package:catch_ui/src/components/catch_empty_state_types.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:flutter/material.dart';
 
 class CatchEmptyStateContent extends StatelessWidget {
@@ -10,7 +10,7 @@ class CatchEmptyStateContent extends StatelessWidget {
     required this.titleStyle,
     required this.messageStyle,
     this.icon,
-    this.iconStyle = CatchEmptyStateIconStyle.plain,
+    this.iconVariant = CatchIconTileVariant.plain,
     this.iconSize,
     this.iconContainerSize,
     this.title,
@@ -20,7 +20,7 @@ class CatchEmptyStateContent extends StatelessWidget {
 
   final CatchEmptyStateLayout layout;
   final IconData? icon;
-  final CatchEmptyStateIconStyle iconStyle;
+  final CatchIconTileVariant iconVariant;
   final double? iconSize;
   final double? iconContainerSize;
   final String? title;
@@ -41,11 +41,11 @@ class CatchEmptyStateContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (iconData != null)
-            CatchEmptyStateIcon(
+            CatchIconTile.empty(
               icon: iconData,
-              style: iconStyle,
-              size: iconSize,
-              containerSize: iconContainerSize,
+              variant: iconVariant,
+              iconSize: iconSize,
+              size: iconContainerSize,
             ),
           if (_hasText(titleText)) ...[
             if (iconData != null) gapH12,
@@ -65,11 +65,11 @@ class CatchEmptyStateContent extends StatelessWidget {
       CatchEmptyStateLayout.inline => Row(
         children: [
           if (iconData != null) ...[
-            CatchEmptyStateIcon(
+            CatchIconTile.empty(
               icon: iconData,
-              style: iconStyle,
-              size: iconSize,
-              containerSize: iconContainerSize ?? 44,
+              variant: iconVariant,
+              iconSize: iconSize,
+              size: iconContainerSize ?? 44,
             ),
             gapW12,
           ],

@@ -2,6 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_empty_state_content.dart';
 import 'package:catch_ui/src/components/catch_empty_state_types.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class CatchEmptyState extends StatelessWidget {
     this.message,
     this.action,
     this.surface = false,
-    this.iconStyle = CatchEmptyStateIconStyle.plain,
+    this.iconVariant = CatchIconTileVariant.plain,
     this.layout = CatchEmptyStateLayout.stacked,
     this.iconSize,
     this.iconContainerSize,
@@ -27,7 +28,7 @@ class CatchEmptyState extends StatelessWidget {
   final String? message;
   final Widget? action;
   final bool surface;
-  final CatchEmptyStateIconStyle iconStyle;
+  final CatchIconTileVariant iconVariant;
   final CatchEmptyStateLayout layout;
   final double? iconSize;
   final double? iconContainerSize;
@@ -43,7 +44,7 @@ class CatchEmptyState extends StatelessWidget {
         final child = CatchEmptyStateContent(
           layout: layout,
           icon: icon,
-          iconStyle: iconStyle,
+          iconVariant: iconVariant,
           iconSize: iconSize,
           iconContainerSize: iconContainerSize,
           title: title,

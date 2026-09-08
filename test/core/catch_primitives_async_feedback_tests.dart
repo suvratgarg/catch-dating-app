@@ -647,7 +647,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
 
     expect(find.byType(CatchSurface), findsNothing);
     expect(find.byType(CatchEmptyStateContent), findsOneWidget);
-    expect(find.byType(CatchEmptyStateIcon), findsOneWidget);
+    expect(find.byType(CatchIconTile), findsOneWidget);
 
     final icon = tester.widget<Icon>(find.byIcon(CatchIcons.search));
     final title = tester.widget<Text>(find.text('Nothing here yet'));
@@ -875,12 +875,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.textContaining('boom'), findsNothing);
   });
 
-  testWidgets('CatchErrorIcon renders the shared branded medallion', (
+  testWidgets('CatchIconTile.error renders the shared branded medallion', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchErrorIcon()));
+    await tester.pumpWidget(_wrap(const CatchIconTile.error()));
 
-    expect(find.byType(CatchErrorIcon), findsOneWidget);
+    expect(find.byType(CatchIconTile), findsOneWidget);
     expect(find.byIcon(CatchIcons.errorOutlineRounded), findsOneWidget);
   });
 

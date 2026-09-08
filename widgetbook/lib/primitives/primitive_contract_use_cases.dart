@@ -523,7 +523,7 @@ Widget catchErrorStateContractStates(BuildContext context) {
           ),
         ),
       ),
-      const _StateCard(label: 'icon', child: CatchErrorIcon()),
+      const _StateCard(label: 'icon', child: CatchIconTile.error()),
     ],
   );
 }
@@ -583,30 +583,6 @@ Widget catchErrorBodyContractStates(BuildContext context) {
             onPressed: _noop,
           ),
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchErrorIcon,
-  path: '[Core primitives]/Feedback',
-)
-Widget catchErrorIconContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchErrorIcon',
-    contractId: 'catch.error_state.icon',
-    states: const ['default', 'custom-icon', 'compact'],
-    children: [
-      const _StateCard(label: 'default', child: CatchErrorIcon()),
-      _StateCard(
-        label: 'custom-icon',
-        child: CatchErrorIcon(icon: CatchIcons.infoOutlineRounded),
-      ),
-      const _StateCard(
-        label: 'compact',
-        child: CatchErrorIcon(extent: 40, iconSize: 20),
       ),
     ],
   );
@@ -1273,7 +1249,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
         child: CatchEmptyState(
           icon: CatchIcons.group,
           title: 'Private roster',
-          iconStyle: CatchEmptyStateIconStyle.bubble,
+          iconVariant: CatchIconTileVariant.bubble,
         ),
       ),
       _StateCard(
@@ -1339,48 +1315,12 @@ Widget catchEmptyStateContentContractStates(BuildContext context) {
         child: CatchEmptyStateContent(
           layout: CatchEmptyStateLayout.stacked,
           icon: CatchIcons.eventOutlined,
-          iconStyle: CatchEmptyStateIconStyle.bubble,
+          iconVariant: CatchIconTileVariant.bubble,
           title: 'No events yet',
           message: 'Follow a host to see upcoming plans.',
           action: CatchButton(label: 'Explore hosts', onPressed: _noop),
           titleStyle: titleStyle,
           messageStyle: messageStyle,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchEmptyStateIcon,
-  path: '[Core primitives]/Feedback',
-)
-Widget catchEmptyStateIconContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchEmptyStateIcon',
-    contractId: 'catch.empty_state.icon',
-    states: const ['plain', 'bubble', 'sized'],
-    children: [
-      _StateCard(
-        label: 'icon styles',
-        child: _InlineWrap(
-          children: [
-            CatchEmptyStateIcon(
-              icon: CatchIcons.eventOutlined,
-              style: CatchEmptyStateIconStyle.plain,
-            ),
-            CatchEmptyStateIcon(
-              icon: CatchIcons.group,
-              style: CatchEmptyStateIconStyle.bubble,
-            ),
-            CatchEmptyStateIcon(
-              icon: CatchIcons.search,
-              style: CatchEmptyStateIconStyle.bubble,
-              size: 24,
-              containerSize: 56,
-            ),
-          ],
         ),
       ),
     ],
@@ -4194,7 +4134,17 @@ Widget catchIconTileContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchIconTile',
     contractId: 'catch.icon_tile',
-    states: const ['default', 'tinted', 'compact'],
+    states: const [
+      'default',
+      'tinted',
+      'compact',
+      'plain',
+      'bubble',
+      'sized',
+      'error',
+      'custom-icon',
+      'compact-error',
+    ],
     children: [
       _StateCard(
         label: 'default',
@@ -4219,6 +4169,36 @@ Widget catchIconTileContractStates(BuildContext context) {
           size: 32,
           iconSize: 16,
           radius: CatchRadius.sm,
+        ),
+      ),
+      const _StateCard(label: 'error', child: CatchIconTile.error()),
+      _StateCard(
+        label: 'custom-icon',
+        child: CatchIconTile.error(icon: CatchIcons.infoOutlineRounded),
+      ),
+      const _StateCard(
+        label: 'compact-error',
+        child: CatchIconTile.error(size: 40, iconSize: 20),
+      ),
+      _StateCard(
+        label: 'icon styles',
+        child: _InlineWrap(
+          children: [
+            CatchIconTile.empty(
+              icon: CatchIcons.eventOutlined,
+              variant: CatchIconTileVariant.plain,
+            ),
+            CatchIconTile.empty(
+              icon: CatchIcons.group,
+              variant: CatchIconTileVariant.bubble,
+            ),
+            CatchIconTile.empty(
+              icon: CatchIcons.search,
+              variant: CatchIconTileVariant.bubble,
+              iconSize: 24,
+              size: 56,
+            ),
+          ],
         ),
       ),
     ],

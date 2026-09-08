@@ -303,7 +303,7 @@
           "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
           "options": [
             "Enforce 44px outside the documented 40px app-bar navigation exception.",
-            "Allow 36\u201340px wherever the visual circle is compact."
+            "Allow 36–40px wherever the visual circle is compact."
           ]
         },
         {
@@ -866,6 +866,41 @@
           "target": "CatchSectionHeaderTitle",
           "preview": "not-applicable",
           "rationale": "Rename the heading API and remove its duplicate catch.section.label registry identity; preserve the cross-stack catch.ui_label mappings."
+        }
+      ]
+    },
+    {
+      "id": "icon-presentation-canonical-tile",
+      "title": "Canonical icon presentation recipes",
+      "intent": "Use one non-interactive glyph container for tiled content, successful empty-state icons and branded error medallions; preserve caller sizing and centering.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.icon_tile",
+      "qualityReference": "CatchIconTile",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production. Gallery groups all recipes under the canonical icon tile contract."
+      ],
+      "members": [
+        {
+          "symbol": "CatchIconTile",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns one decorative glyph and container renderer, with empty and error named recipes."
+        },
+        {
+          "symbol": "CatchEmptyStateIcon",
+          "disposition": "unify",
+          "target": "CatchIconTile.empty",
+          "preview": "not-applicable",
+          "rationale": "Plain and bubble icon presentation had no independent interaction or data contract."
+        },
+        {
+          "symbol": "CatchErrorIcon",
+          "disposition": "unify",
+          "target": "CatchIconTile.error",
+          "preview": "not-applicable",
+          "rationale": "The branded error medallion shares circular icon paint; its named recipe retains default sizing, palette and centering."
         }
       ]
     }

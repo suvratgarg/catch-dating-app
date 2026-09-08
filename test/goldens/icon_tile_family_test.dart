@@ -28,20 +28,20 @@ void main() {
                     icon: CatchIcons.eventOutlined,
                     iconColor: CatchTokens.of(context).primary,
                   ),
-                  CatchEmptyStateIcon(
+                  CatchIconTile.empty(
                     icon: CatchIcons.search,
-                    style: CatchEmptyStateIconStyle.plain,
+                    variant: CatchIconTileVariant.plain,
                   ),
-                  CatchEmptyStateIcon(
+                  CatchIconTile.empty(
                     icon: CatchIcons.search,
-                    style: CatchEmptyStateIconStyle.bubble,
+                    variant: CatchIconTileVariant.bubble,
                   ),
-                  const CatchErrorIcon(),
+                  const CatchIconTile.error(),
                 ],
               ),
               CatchEmptyState(
                 icon: CatchIcons.search,
-                iconStyle: CatchEmptyStateIconStyle.bubble,
+                iconVariant: CatchIconTileVariant.bubble,
                 title: 'No matches yet',
                 message: 'Try a different filter.',
               ),

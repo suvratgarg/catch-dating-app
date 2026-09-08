@@ -118,11 +118,11 @@ class HostTodayQuietState extends StatelessWidget {
         key: const ValueKey<String>('host-today-quiet-state'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchEmptyStateIcon(
+          CatchIconTile.empty(
             icon: CatchIcons.eventBusy,
-            style: CatchEmptyStateIconStyle.bubble,
-            size: CatchIcon.md,
-            containerSize: CatchSpacing.s12,
+            variant: CatchIconTileVariant.bubble,
+            iconSize: CatchIcon.md,
+            size: CatchSpacing.s12,
           ),
           gapH20,
           Text(

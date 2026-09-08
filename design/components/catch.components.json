@@ -1146,11 +1146,11 @@
             "dartType": "bool"
           },
           {
-            "name": "iconStyle",
+            "name": "iconVariant",
             "type": "enum",
             "required": false,
             "default": "plain",
-            "dartType": "CatchEmptyStateIconStyle",
+            "dartType": "CatchIconTileVariant",
             "values": [
               "plain",
               "bubble"
@@ -1198,7 +1198,7 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchEmptyStateIconStyle",
+          "CatchIconTileVariant",
           "CatchEmptyStateLayout",
           "CatchSurface",
           "CatchTextStyles.sectionTitle",
@@ -1222,24 +1222,6 @@
               "conceptId": "catch.empty_state",
               "parentConceptId": "catch.empty_state",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.empty_state"
-            }
-          },
-          {
-            "id": "catch.empty_state.icon",
-            "symbol": "CatchEmptyStateIcon",
-            "file": "packages/catch_ui/lib/src/components/catch_empty_state_icon.dart",
-            "summary": "Direct empty-state icon renderer for plain and bubble icon treatments.",
-            "states": [
-              "plain",
-              "bubble",
-              "sized"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.empty_state",
-              "parentConceptId": "catch.empty_state",
-              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.empty_state"
             }
           },
@@ -1562,24 +1544,6 @@
               "conceptId": "catch.error_state",
               "parentConceptId": "catch.error_state",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_state"
-            }
-          },
-          {
-            "id": "catch.error_state.icon",
-            "symbol": "CatchErrorIcon",
-            "file": "packages/catch_ui/lib/src/primitives/catch_error_icon.dart",
-            "summary": "Shared branded icon medallion composed by app-facing and framework-facing error surfaces.",
-            "states": [
-              "default",
-              "custom-icon",
-              "compact"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.error_state",
-              "parentConceptId": "catch.error_state",
-              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.error_state"
             }
           },
@@ -2411,7 +2375,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " \u00b7 Optional",
+                "defaultValue": " · Optional",
                 "sourceProps": [
                   "isOptional"
                 ]
@@ -2641,7 +2605,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
-            "notes": "Presentation and accessibility copy only; renders the inline ' \u00b7 Optional' suffix and never controls whether a selection may be cleared."
+            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
           },
           {
             "name": "allowEmptySelection",
@@ -3816,7 +3780,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchOptionCard target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
@@ -6743,12 +6707,14 @@
       "name": "CatchIconTile",
       "status": "active",
       "kind": "primitive",
-      "summary": "Decorative square icon tile for quick actions, data cards, and compact labeled rows where the icon is content rather than a tappable command.",
+      "summary": "Non-interactive icon presentation with square-tile, quiet empty-state, circular accent and branded error recipes. Commands belong to CatchIconButton.",
       "dart": {
         "symbol": "CatchIconTile",
         "file": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
         "constructors": [
-          "CatchIconTile"
+          "CatchIconTile",
+          "CatchIconTile.empty",
+          "CatchIconTile.error"
         ]
       },
       "design": {
@@ -6813,12 +6779,31 @@
             "required": false,
             "default": "CatchRadius.md",
             "dartType": "double"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "tile",
+            "dartType": "CatchIconTileVariant",
+            "values": [
+              "tile",
+              "plain",
+              "bubble",
+              "error"
+            ]
           }
         ],
         "states": [
           "default",
           "tinted",
-          "compact"
+          "compact",
+          "plain",
+          "bubble",
+          "sized",
+          "error",
+          "custom-icon",
+          "compact-error"
         ],
         "slots": [],
         "tokens": [
@@ -6832,9 +6817,12 @@
         "dartRoles": [
           "CatchIcon.md",
           "CatchRadius.sm",
-          "CatchRadius.md"
+          "CatchRadius.md",
+          "CatchIconTileVariant"
         ],
-        "goldens": [],
+        "goldens": [
+          "icon_tile_family"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -6871,6 +6859,15 @@
       },
       "surfaces": {
         "flutter": "CatchIconTile"
+      },
+      "level": "L2",
+      "roleNoun": "Tile",
+      "naming": {
+        "useCase": "Icon",
+        "comparedWith": [
+          "catch.analytics_metric"
+        ],
+        "reason": "A decorative glyph container has no metric payload, title, navigation or tap contract. Empty and error glyph containers now use this canonical renderer through named constructors, rather than separate Widget identities."
       }
     },
     {
@@ -7535,7 +7532,6 @@
           "CatchSurface.tinted"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -11925,7 +11921,6 @@
         ],
         "dartRoles": [],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -13276,7 +13271,6 @@
           "CatchTextStyles.recordBody"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -13393,7 +13387,6 @@
         "tokens": [],
         "dartRoles": [],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -15607,7 +15600,6 @@
           "CatchAvatarColors"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -15746,7 +15738,6 @@
           "LocationCoordinate"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -16953,6 +16944,15 @@
       },
       "surfaces": {
         "flutter": "CatchAnalyticsMetricTile"
+      },
+      "level": "L3",
+      "roleNoun": "Tile",
+      "naming": {
+        "useCase": "AnalyticsMetric",
+        "comparedWith": [
+          "catch.icon_tile"
+        ],
+        "reason": "Renders a caller-formatted metric value, label, optional caption and explicit data-quality status. The decorative icon tile has no metric data or status contract; the metric tile retains the shared CatchSurface containment."
       }
     },
     {
@@ -17022,7 +17022,6 @@
           "CatchTextStyles.supporting"
         ],
         "goldens": [],
-        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,

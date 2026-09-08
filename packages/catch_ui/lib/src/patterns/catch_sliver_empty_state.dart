@@ -2,6 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_empty_state.dart';
 import 'package:catch_ui/src/components/catch_empty_state_types.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_state_viewport.dart';
+import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical sliver placement for a full-region empty success state.
@@ -12,7 +13,7 @@ class CatchSliverEmptyState extends StatelessWidget {
     this.title,
     this.message,
     this.action,
-    this.iconStyle = CatchEmptyStateIconStyle.plain,
+    this.iconVariant = CatchIconTileVariant.plain,
     this.layout = CatchEmptyStateLayout.stacked,
     this.iconSize,
     this.iconContainerSize,
@@ -26,7 +27,7 @@ class CatchSliverEmptyState extends StatelessWidget {
   final String? title;
   final String? message;
   final Widget? action;
-  final CatchEmptyStateIconStyle iconStyle;
+  final CatchIconTileVariant iconVariant;
   final CatchEmptyStateLayout layout;
   final double? iconSize;
   final double? iconContainerSize;
@@ -44,7 +45,7 @@ class CatchSliverEmptyState extends StatelessWidget {
         title: title,
         message: message,
         action: action,
-        iconStyle: iconStyle,
+        iconVariant: iconVariant,
         layout: layout,
         iconSize: iconSize,
         iconContainerSize: iconContainerSize,
