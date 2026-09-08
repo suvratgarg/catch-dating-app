@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.75.0
+version: 1.76.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -365,6 +365,31 @@ Durable worker scheduling, complete runtime readiness checks, Host settings
 controls and the rehearsal adapter remain integration work. Configured preferences
 do not claim that an executor is implemented or activated. Terminal setting/receipt
 retention remains to be defined before activation.
+
+The Host Dart client now implements the late-join settings path with typed
+joining destinations, cutoff, message limits, unanswered policy and template
+authority. Event defaults (`event:whole`), group overrides, explicit disablement
+and reset-to-inherit remain distinct. A disabled configured template retains its
+configuration; stale enabled settings preserve the recorded choice for review
+while withholding an effective policy. The server suggestion remains unselected
+until the Host chooses it. These types describe settings, not provider readiness.
+
+The callable repository validates closed response shapes, event/group/workflow
+scope, own revision, inheritance origin, source freshness and recorded timestamps.
+A save freezes its reviewed source hash, own revision, request ID and typed
+preference. Applied responses must confirm that exact choice; replays preserve
+the original operation revision independently of the latest current setting.
+Account-scoped reads hide stale private state during loading, sign-out and auth
+errors. The settings editor rejects old review periods even after the same UID
+signs in again, deduplicates in-flight submissions, retains uncertain requests
+for exact retry and requires a fresh review after conflict or lost authority.
+Successful saves reload settings without optimistic execution or enrollment.
+
+Host screen composition and the rehearsal adapter remain integration work. This
+client currently edits the late-join workflow; the other catalog entries still
+need their corresponding Host configuration adapters. No live sender is activated
+and no message, attendance, progress or allocation command is issued by a setting
+change.
 
 ### Live late-join source assembly
 
