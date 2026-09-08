@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.81.0
+version: 1.82.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -194,13 +194,26 @@ and inside the mutation transaction. A reset can therefore reuse a runtime
 revision without accepting an old run's pending assistance command. Exact retries
 preserve that request; a result must include its matching action receipt before
 being returned as confirmation. This confirms command handling, not message
-delivery. Native review UI, account-bound review lifecycle and automatic retry
-or in-flight selection management still need wiring before exposing controls.
+delivery.
+
+`EventRehearsalAssistance` now loads a deliberate Host review within the
+shared `AuthenticatedSession` period. Live assistance retains its existing
+account API through that same auth-owned provider. Sign-out, authentication
+failure or a changed account invalidates old reviews even if the same UID
+returns. Rehearsal reviews also retire when explicitly refreshed; slow or
+foreign-session reads cannot replace the current review. The rehearsal editor
+freezes one typed command, shares in-flight submissions, and retains an
+uncertain request across closing and reopening the review within this app
+session. It cannot switch choices after an uncertain result. Conflicts require
+fresh review; confirmed results refresh the runtime. Account or review changes
+during a request cannot restore a stale result. This controller still needs
+Host UI and coach wiring; it does not persist pending requests across app
+restarts or automatically retry them.
 
 This integrates backend fact assembly, storage, guest effects, the guest
 web reply flow and the native typed command/data boundary. Native Host
-presentation, setup/coach plan assembly and automatic evaluation on clock or actor changes remain unfinished. No real
-sender or delivery is enabled.
+presentation, setup/coach plan assembly and automatic evaluation on clock or
+actor changes remain unfinished. No real sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,

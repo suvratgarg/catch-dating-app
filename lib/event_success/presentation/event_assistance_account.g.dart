@@ -57,4 +57,4 @@ final class EventAssistanceAccountProvider
 }
 
 String _$eventAssistanceAccountHash() =>
-    r'855ae2d92dfe80053e0615f86223ed0c45ad825f';
+    r'b3958b15ec0e5e0e2ee2d11ed2afca4a9b76009c';
