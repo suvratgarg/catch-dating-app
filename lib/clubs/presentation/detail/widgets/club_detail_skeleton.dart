@@ -42,7 +42,7 @@ class ClubDetailLoadingSliverBody extends StatelessWidget {
                 ),
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailSkeletonTitleWhatWeDo,
-                  child: const CatchSkeletonChips(height: CatchSpacing.s8),
+                  child: const CatchSkeleton.chips(height: CatchSpacing.s8),
                 ),
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailSkeletonTitleYourHosts,

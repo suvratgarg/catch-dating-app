@@ -157,7 +157,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             onRetry: notifier.reload,
             initialLoadTimeout: null,
             loadingBuilder: (_) =>
-                const CatchPageBody(child: CatchSkeletonRows(count: 8)),
+                const CatchPageBody(child: CatchSkeleton.rows(count: 8)),
             errorBuilder: (_, error, _) => CatchPageBody(
               child: CatchLocalizedErrorState(
                 error,
@@ -714,7 +714,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
               value: ref.watch(hostFormResponsesControllerProvider(request)),
               onRetry: () =>
                   ref.invalidate(hostFormResponsesControllerProvider(request)),
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+              loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
               errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.formResponses,

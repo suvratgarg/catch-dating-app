@@ -58,7 +58,7 @@ class _HostFormAnalyticsScreenState
           value: analytics,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
           errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
@@ -70,7 +70,7 @@ class _HostFormAnalyticsScreenState
               CatchAsyncValueView<HostFormEditorState>(
                 value: ref.watch(editorProvider),
                 onRetry: () => ref.read(editorProvider.notifier).reload(),
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+                loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
                 errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.forms,

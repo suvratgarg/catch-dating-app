@@ -1,10 +1,11 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/patterns/catch_screen_body.dart';
-import 'package:catch_ui/src/patterns/catch_skeleton_list.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton.dart';
 import 'package:flutter/widgets.dart';
 
-class CatchAsyncScreenLoading extends StatelessWidget {
-  const CatchAsyncScreenLoading({
+/// Screen-body loading placement with standard insets and optional scrolling.
+class CatchScreenSkeleton extends StatelessWidget {
+  const CatchScreenSkeleton({
     super.key,
     this.count = 3,
     this.itemHeight,
@@ -19,7 +20,7 @@ class CatchAsyncScreenLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchScreenBody(
       scrollable: scrollable,
-      child: CatchSkeletonList(
+      child: CatchSkeleton.cards(
         count: count,
         height: itemHeight ?? CatchLayout.skeletonCardHeight,
       ),

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:7483a03c3b7c825ec141c27a849c15b754bab8d072a918f5466eaeaa752bd9c9",
+  "resolvedDigest": "sha256:f5aaf3b54daf119c8864d319d4551727373be41feed4ebb09726f5286d95b2aa",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -2009,7 +2009,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },

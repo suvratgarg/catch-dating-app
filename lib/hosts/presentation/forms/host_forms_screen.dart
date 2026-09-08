@@ -527,7 +527,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
               onRetry: () =>
                   ref.invalidate(hostFormsDirectoryControllerProvider(request)),
               initialLoadTimeout: null,
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
+              loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
               errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,

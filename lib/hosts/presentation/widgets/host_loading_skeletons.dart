@@ -25,10 +25,7 @@ class HostRouteLoadingBody extends StatelessWidget {
           children: [
             if (showTabRail) const HostTabRailSkeleton(),
             const HostSummarySkeleton(),
-            const CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              divided: true,
-            ),
+            const CatchSkeleton.mediaRows(divided: true),
           ],
         ),
       ),
@@ -112,18 +109,8 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
           child: HostAnalyticsMetricGridSkeleton(),
         ),
         CatchSection.divided(child: HostChartSkeleton()),
-        CatchSection.divided(
-          child: CatchSkeletonRows(
-            leading: CatchSkeletonRowLeading.mediaTile,
-            divided: true,
-          ),
-        ),
-        CatchSection.divided(
-          child: CatchSkeletonRows(
-            leading: CatchSkeletonRowLeading.icon,
-            divided: true,
-          ),
-        ),
+        CatchSection.divided(child: CatchSkeleton.mediaRows(divided: true)),
+        CatchSection.divided(child: CatchSkeleton.iconRows(divided: true)),
       ],
     );
   }

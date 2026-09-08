@@ -146,7 +146,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
       value: messaging,
       onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       initialLoadTimeout: null,
-      loadingBuilder: (_) => const CatchSkeletonRows(),
+      loadingBuilder: (_) => const CatchSkeleton.rows(),
       errorBuilder: (_, error, _) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
@@ -192,7 +192,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
           );
         }
         if (savedAudiences.status == CatchAsyncStatus.loading) {
-          return const CatchSkeletonRows();
+          return const CatchSkeleton.rows();
         }
         final audiences = savedAudiences.value?.audiences ?? const [];
         if (audiences.isEmpty) {

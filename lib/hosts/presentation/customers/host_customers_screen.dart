@@ -453,7 +453,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                       initialLoadTimeout: null,
-                      loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
+                      loadingBuilder: (_) => const CatchSkeleton.rows(count: 5),
                       errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                         error,
                         context: AppErrorContext.customers,

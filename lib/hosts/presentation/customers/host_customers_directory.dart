@@ -448,7 +448,7 @@ class HostCustomersSummary extends StatelessWidget {
     value: summary,
     onRetry: onRetry,
     initialLoadTimeout: null,
-    loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+    loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
     errorBuilder: (_, error, _) => CatchLocalizedErrorState(
       error,
       context: AppErrorContext.customers,

@@ -21,32 +21,16 @@ void main() {
           children: [
             SizedBox(
               width: 370,
-              child: CatchSkeletonRows(
+              child: CatchSkeleton.rows(
                 count: 2,
                 titleWidth: CatchLayout.skeletonTextSectionWideWidth,
               ),
             ),
+            SizedBox(width: 370, child: CatchSkeleton.mediaRows(count: 2)),
+            SizedBox(width: 370, child: CatchSkeleton.iconRows(count: 2)),
             SizedBox(
               width: 370,
-              child: CatchSkeletonRows(
-                count: 2,
-                leading: CatchSkeletonRowLeading.mediaTile,
-              ),
-            ),
-            SizedBox(
-              width: 370,
-              child: CatchSkeletonRows(
-                count: 2,
-                leading: CatchSkeletonRowLeading.icon,
-              ),
-            ),
-            SizedBox(
-              width: 370,
-              child: CatchSkeletonRows(
-                count: 2,
-                divided: true,
-                leading: CatchSkeletonRowLeading.mediaTile,
-              ),
+              child: CatchSkeleton.mediaRows(count: 2, divided: true),
             ),
           ],
         ),

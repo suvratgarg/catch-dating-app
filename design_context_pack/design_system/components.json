@@ -4630,7 +4630,14 @@
           "CatchSkeleton.text",
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
-          "CatchSkeleton.custom"
+          "CatchSkeleton.custom",
+          "CatchSkeleton.content",
+          "CatchSkeleton.cards",
+          "CatchSkeleton.rows",
+          "CatchSkeleton.boxes",
+          "CatchSkeleton.chips",
+          "CatchSkeleton.mediaRows",
+          "CatchSkeleton.iconRows"
         ]
       },
       "design": {
@@ -4731,113 +4738,25 @@
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
-          "CatchSkeletonized",
-          "CatchSkeletonList",
-          "CatchSkeletonRows",
-          "CatchSkeletonBoxRow",
-          "CatchSkeletonChips",
-          "CatchAsyncScreenLoading",
-          "CatchAsyncSliverLoading",
+          "CatchSkeleton.content",
+          "CatchSkeleton.cards",
+          "CatchSkeleton.rows",
+          "CatchSkeleton.boxes",
+          "CatchSkeleton.chips",
+          "CatchScreenSkeleton",
+          "CatchSliverSkeleton",
           "CatchScreenBody",
-          "CatchSliverPageBody"
+          "CatchSliverPageBody",
+          "CatchSkeleton.mediaRows",
+          "CatchSkeleton.iconRows"
         ],
         "goldens": [],
         "members": [
           {
-            "id": "catch.skeleton.derived_content",
-            "symbol": "CatchSkeletonized",
-            "file": "packages/catch_ui/lib/src/patterns/catch_skeletonized.dart",
-            "summary": "Skeletonizes the real loaded composition so layout edits cannot drift into a parallel placeholder tree.",
-            "states": [
-              "derived-content",
-              "enabled",
-              "disabled",
-              "reduced-motion"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "adapter",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          },
-          {
-            "id": "catch.skeleton.list",
-            "symbol": "CatchSkeletonList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_list.dart",
-            "summary": "Vertical list of content-shaped skeleton cards with standard spacing.",
-            "states": [
-              "list",
-              "custom-count",
-              "custom-height",
-              "custom-spacing"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "layout",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          },
-          {
-            "id": "catch.skeleton.rows",
-            "symbol": "CatchSkeletonRows",
-            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_rows.dart",
-            "summary": "Repeated placeholder rows with an optional title, avatar/media/icon leading shape, and optional dividers.",
-            "states": [
-              "avatar-titled",
-              "media-tile",
-              "icon",
-              "divided-media-tile"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "layout",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          },
-          {
-            "id": "catch.skeleton.box_row",
-            "symbol": "CatchSkeletonBoxRow",
-            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_box_row.dart",
-            "summary": "Equal-width placeholder boxes reserve a compact control or action row with caller-owned count, height, radius, and gap.",
-            "states": [
-              "three-controls"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "layout",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          },
-          {
-            "id": "catch.skeleton.chips",
-            "symbol": "CatchSkeletonChips",
-            "file": "packages/catch_ui/lib/src/patterns/catch_skeleton_chips.dart",
-            "summary": "Wrapping placeholder pills reserve a chip or tag row using token-owned widths and caller-owned height.",
-            "states": [
-              "default",
-              "compact"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "layout",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          },
-          {
             "id": "catch.skeleton.async_screen",
-            "symbol": "CatchAsyncScreenLoading",
-            "file": "packages/catch_ui/lib/src/patterns/catch_async_screen_loading.dart",
-            "summary": "Screen-body placement adapter that composes CatchSkeletonList with CatchScreenBody.",
+            "symbol": "CatchScreenSkeleton",
+            "file": "packages/catch_ui/lib/src/patterns/catch_screen_skeleton.dart",
+            "summary": "Screen-body placement adapter that composes CatchSkeleton.cards with CatchScreenBody.",
             "states": [
               "async-screen",
               "scrollable",
@@ -4851,13 +4770,22 @@
               "parentConceptId": "catch.skeleton",
               "qualifier": "adapter",
               "decisionRef": "pattern-family:loading-concept-decompression"
+            },
+            "level": "L4",
+            "roleNoun": "Skeleton",
+            "naming": {
+              "useCase": "Screen",
+              "comparedWith": [
+                "catch.skeleton"
+              ],
+              "reason": "Owns the screen-body scroll and content inset protocol around card placeholders; the base skeleton supplies no page geometry."
             }
           },
           {
             "id": "catch.skeleton.async_sliver",
-            "symbol": "CatchAsyncSliverLoading",
-            "file": "packages/catch_ui/lib/src/patterns/catch_async_sliver_loading.dart",
-            "summary": "Sliver placement adapter that composes CatchSkeletonList with CatchSliverPageBody.",
+            "symbol": "CatchSliverSkeleton",
+            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_skeleton.dart",
+            "summary": "Sliver placement adapter that composes CatchSkeleton.cards with CatchSliverPageBody.",
             "states": [
               "async-sliver",
               "custom-padding",
@@ -4870,6 +4798,15 @@
               "parentConceptId": "catch.skeleton",
               "qualifier": "adapter",
               "decisionRef": "pattern-family:loading-concept-decompression"
+            },
+            "level": "L4",
+            "roleNoun": "Skeleton",
+            "naming": {
+              "useCase": "Sliver",
+              "comparedWith": [
+                "catch.skeleton"
+              ],
+              "reason": "Supplies a RenderSliver through the page-body sliver protocol with caller padding; the base skeleton produces box content."
             }
           }
         ],
@@ -4895,8 +4832,8 @@
         "notes": [
           "Prefer content-shaped skeletons when the eventual layout is known.",
           "Both explicit shapes and derived layouts use the same Skeletonizer effect, token colors, motion duration, static reduced-motion fallback, and loading semantics.",
-          "Prefer CatchSkeletonized for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
-          "Async screen and sliver loading are placement adapters over CatchSkeletonList, not separate visual concepts."
+          "Prefer CatchSkeleton.content for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
+          "Async screen and sliver loading are placement adapters over CatchSkeleton.cards, not separate visual concepts."
         ]
       },
       "governance": {
@@ -4914,6 +4851,11 @@
       },
       "surfaces": {
         "flutter": "CatchSkeleton"
+      },
+      "level": "L4",
+      "roleNoun": "Skeleton",
+      "naming": {
+        "useCase": ""
       }
     },
     {

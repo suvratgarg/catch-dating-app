@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9a0e99ed190f6382290983c7b4b46215500cf7466dfc645f6222cf2a9ac96957",
+  "sourceDigest": "daefc8c2db2f7ded2ab296d74de46fae91913a285c6a7b4b8a5129542444110b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9a0e99ed190f6382290983c7b4b46215500cf7466dfc645f6222cf2a9ac96957",
-    "contractDigest": "9a0e99ed190f6382290983c7b4b46215500cf7466dfc645f6222cf2a9ac96957"
+    "digest": "daefc8c2db2f7ded2ab296d74de46fae91913a285c6a7b4b8a5129542444110b",
+    "contractDigest": "daefc8c2db2f7ded2ab296d74de46fae91913a285c6a7b4b8a5129542444110b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1f4bac6b85127eaa136b6b8e0cd8ed127ff8fbee2cbdf9d40e961c74f7ebf7b9",
+    "handoffRequestDigest": "1a5fe37ac24fee81260c0f905a322cfbf5692fb96c798a03354ed6c323898e1f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 292,
+    "publicClassCount": 287,
     "conceptCount": 71,
-    "memberCount": 203,
-    "membersPerConcept": 2.86,
+    "memberCount": 198,
+    "membersPerConcept": 2.79,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 71,
-      "member": 203,
+      "member": 198,
       "screen": 15
     },
     "collisionCount": 38,
@@ -453,14 +453,9 @@
       {
         "key": "catch.skeleton",
         "symbols": [
-          "CatchAsyncScreenLoading",
-          "CatchAsyncSliverLoading",
+          "CatchScreenSkeleton",
           "CatchSkeleton",
-          "CatchSkeletonBoxRow",
-          "CatchSkeletonChips",
-          "CatchSkeletonList",
-          "CatchSkeletonRows",
-          "CatchSkeletonized"
+          "CatchSliverSkeleton"
         ]
       },
       {
@@ -1025,7 +1020,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "76034ad4077b292202dd6b13fd3a5ba6fd1365aa9635d72eb9c1d273f1162b2f"
+      "contractDigest": "1d4072e55c966fb139004d8c5c14fc4a38ab6fc280cdadaebb1b4aa6ce6b6219"
     },
     {
       "contractId": "catch.loading_indicator",

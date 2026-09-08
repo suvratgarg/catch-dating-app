@@ -686,10 +686,7 @@ class _RouteLoadingScreen extends StatelessWidget {
           children: [
             CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
             const SizedBox(height: CatchSpacing.s5),
-            const CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              divided: true,
-            ),
+            const CatchSkeleton.mediaRows(divided: true),
           ],
         ),
       ),

@@ -7,12 +7,12 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
   name: 'Derived content',
-  type: CatchSkeletonized,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading compositions',
 )
-Widget catchSkeletonizedCatalogState(BuildContext context) {
+Widget catchSkeletonContentCatalogState(BuildContext context) {
   return Scaffold(
-    body: CatchSkeletonized(
+    body: CatchSkeleton.content(
       child: CatchSectionStack(
         children: [
           CatchSection.containedFieldRows(
@@ -50,40 +50,24 @@ Widget catchSkeletonizedCatalogState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Rows',
-  type: CatchSkeletonRows,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading compositions',
 )
 Widget catchSkeletonRowsCatalogStates(BuildContext context) {
   return const _SkeletonLayoutCatalog(
-    title: 'CatchSkeletonRows',
+    title: 'CatchSkeleton.rows',
     children: [
       _StateCard(
         label: 'avatar titled',
-        child: CatchSkeletonRows(
+        child: CatchSkeleton.rows(
           titleWidth: CatchLayout.skeletonTextSectionWideWidth,
         ),
       ),
-      _StateCard(
-        label: 'media tile',
-        child: CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.mediaTile,
-          count: 2,
-        ),
-      ),
-      _StateCard(
-        label: 'icon',
-        child: CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.icon,
-          count: 2,
-        ),
-      ),
+      _StateCard(label: 'media tile', child: CatchSkeleton.mediaRows(count: 2)),
+      _StateCard(label: 'icon', child: CatchSkeleton.iconRows(count: 2)),
       _StateCard(
         label: 'divided media tile',
-        child: CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.mediaTile,
-          count: 2,
-          divided: true,
-        ),
+        child: CatchSkeleton.mediaRows(count: 2, divided: true),
       ),
     ],
   );
@@ -91,16 +75,16 @@ Widget catchSkeletonRowsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Box row',
-  type: CatchSkeletonBoxRow,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading compositions',
 )
 Widget catchSkeletonBoxRowCatalogStates(BuildContext context) {
   return const _SkeletonLayoutCatalog(
-    title: 'CatchSkeletonBoxRow',
+    title: 'CatchSkeleton.boxes',
     children: [
       _StateCard(
         label: 'three controls',
-        child: CatchSkeletonBoxRow(
+        child: CatchSkeleton.boxes(
           count: 3,
           height: CatchLayout.controlCompactMinHeight,
           radius: CatchRadius.sm,
@@ -113,17 +97,17 @@ Widget catchSkeletonBoxRowCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Chips',
-  type: CatchSkeletonChips,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading compositions',
 )
 Widget catchSkeletonChipsCatalogStates(BuildContext context) {
   return const _SkeletonLayoutCatalog(
-    title: 'CatchSkeletonChips',
+    title: 'CatchSkeleton.chips',
     children: [
-      _StateCard(label: 'default', child: CatchSkeletonChips()),
+      _StateCard(label: 'default', child: CatchSkeleton.chips()),
       _StateCard(
         label: 'compact',
-        child: CatchSkeletonChips(height: CatchSpacing.s8),
+        child: CatchSkeleton.chips(height: CatchSpacing.s8),
       ),
     ],
   );

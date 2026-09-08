@@ -1956,7 +1956,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: CatchSkeletonRows,
+  type: CatchSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
@@ -1990,17 +1990,9 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
         label: 'row and settings groups',
         child: Column(
           children: [
-            CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              count: 2,
-              divided: true,
-            ),
+            CatchSkeleton.mediaRows(count: 2, divided: true),
             gapH12,
-            CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.icon,
-              count: 2,
-              divided: true,
-            ),
+            CatchSkeleton.iconRows(count: 2, divided: true),
           ],
         ),
       ),
@@ -2010,7 +2002,7 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           children: [
             HostAnalyticsReportSkeleton(),
             gapH12,
-            CatchSkeletonRows(
+            CatchSkeleton.rows(
               count: 3,
               titleWidth: CatchLayout.skeletonTextSectionWidth,
             ),

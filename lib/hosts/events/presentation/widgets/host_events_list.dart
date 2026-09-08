@@ -247,7 +247,7 @@ class HostEventsTimelinePage extends StatelessWidget
       slivers: [
         if (state.status == HostEventsWorkspaceStatus.loading ||
             (sections.isEmpty && loadingMore))
-          const SliverToBoxAdapter(child: CatchSkeletonRows(count: 4))
+          const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 4))
         else if (state.status == HostEventsWorkspaceStatus.error)
           CatchLocalizedSliverErrorState(
             state.error!,

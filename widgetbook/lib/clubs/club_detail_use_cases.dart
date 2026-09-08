@@ -506,17 +506,17 @@ Widget clubTextLoadingSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Tag skeleton states',
-  type: CatchSkeletonChips,
+  type: CatchSkeleton,
   path: '[Club Detail]/Loading',
 )
 Widget clubTagLoadingSkeletonStates(BuildContext context) {
   return const _CatalogScreen(
-    title: 'CatchSkeletonChips',
+    title: 'CatchSkeleton',
     catalogId: 'loading.club.detail.tags',
     children: [
       _StateCard(
         label: 'three chips',
-        child: CatchSkeletonChips(height: CatchSpacing.s8),
+        child: CatchSkeleton.chips(height: CatchSpacing.s8),
       ),
     ],
   );

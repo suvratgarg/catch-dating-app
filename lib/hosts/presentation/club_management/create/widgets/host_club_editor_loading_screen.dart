@@ -31,19 +31,17 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchSkeletonBoxRow(
+                  CatchSkeleton.boxes(
                     height: CatchLayout.clubEditorPhotoSkeletonHeight,
                   ),
                   gapH20,
-                  CatchSkeletonRows(
-                    leading: CatchSkeletonRowLeading.icon,
+                  CatchSkeleton.iconRows(
                     count: 4,
                     titleWidth: CatchLayout.skeletonTextCardTitleWidth,
                     divided: true,
                   ),
                   gapH20,
-                  CatchSkeletonRows(
-                    leading: CatchSkeletonRowLeading.icon,
+                  CatchSkeleton.iconRows(
                     titleWidth: CatchLayout.skeletonTextInlineTitleWidth,
                     divided: true,
                   ),
@@ -56,7 +54,7 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchSkeletonBoxRow(
+                CatchSkeleton.boxes(
                   height: CatchLayout.buttonLgHeight,
                   radius: CatchRadius.pill,
                 ),

@@ -126,7 +126,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               value: members,
               initialLoadTimeout: null,
               onRetry: () => ref.invalidate(provider),
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
+              loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
               errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.customers,

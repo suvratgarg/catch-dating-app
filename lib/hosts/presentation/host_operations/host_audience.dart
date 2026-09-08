@@ -35,7 +35,7 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
         onRetry: () =>
             ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
         initialLoadTimeout: null,
-        loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
+        loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
         errorBuilder: (_, error, _) => CatchLocalizedErrorState(
           error,
           context: AppErrorContext.club,

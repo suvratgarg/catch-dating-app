@@ -41,7 +41,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
     return CatchAsyncValueView<HostApplicationsDirectoryState>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
+      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -133,7 +133,7 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
     return CatchAsyncValueView<HostApplicationDetail>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
+      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
       builder: (context, detail) => CatchSection.fieldRows(
         key: const ValueKey('host-customer-submitted-fields'),
         title: context.l10n.hostCustomersLatestSubmittedDetails,

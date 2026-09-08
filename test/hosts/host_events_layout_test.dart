@@ -124,7 +124,18 @@ void main() {
         loadingMorePast: true,
       ),
     );
-    expect(find.byType(CatchSkeletonRows), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            {
+              CatchSkeletonVariant.rows,
+              CatchSkeletonVariant.mediaRows,
+              CatchSkeletonVariant.iconRows,
+            }.contains(widget.variant),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('No past events yet'), findsNothing);
     expect(tester.takeException(), isNull);
   });

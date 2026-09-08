@@ -762,12 +762,12 @@ const _competingPageGeometryOwners = <String>{
   'CatchSliverPageBody',
   'CatchSliverScreenBody',
   'CatchResponsiveSectionPage',
-  'CatchAsyncScreenLoading',
+  'CatchScreenSkeleton',
 };
 
 const _defaultPageGeometryOwnerPadding = <String, String>{
   'CatchSectionStack': 'padding',
-  'CatchAsyncSliverLoading': 'padding',
+  'CatchSliverSkeleton': 'padding',
 };
 
 const _competingPageInsetNames = <String>{

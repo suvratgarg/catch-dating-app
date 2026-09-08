@@ -176,7 +176,7 @@ class _HostApplicationsScreenState
                 initialLoadTimeout: null,
                 loadingBuilder: (_) => ListView(
                   padding: EdgeInsets.zero,
-                  children: const [CatchSkeletonRows(count: 6)],
+                  children: const [CatchSkeleton.rows(count: 6)],
                 ),
                 errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,

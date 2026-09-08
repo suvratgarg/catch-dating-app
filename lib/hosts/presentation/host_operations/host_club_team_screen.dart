@@ -330,7 +330,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeletonRows(
+      HostTeamProfileLoading() => const CatchSkeleton.rows(
         count: 4,
         divided: true,
       ),
@@ -464,10 +464,7 @@ class HostTeamProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeletonRows(
-        leading: CatchSkeletonRowLeading.icon,
-        divided: true,
-      ),
+      HostTeamProfileLoading() => const CatchSkeleton.iconRows(divided: true),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
@@ -755,11 +752,7 @@ class HostTeamHostedClubsSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     final sectionChildren = switch (state) {
       HostTeamHostedClubsLoading() => const <Widget>[
-        CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.icon,
-          count: 2,
-          divided: true,
-        ),
+        CatchSkeleton.iconRows(count: 2, divided: true),
       ],
       HostTeamHostedClubsError(:final error) => <Widget>[
         CatchLocalizedErrorState(

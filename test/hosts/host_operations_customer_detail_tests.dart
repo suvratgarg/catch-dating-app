@@ -533,8 +533,26 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    expect(find.byType(CatchSkeletonized), findsOneWidget);
-    expect(find.byType(CatchSkeletonRows), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            widget.variant == CatchSkeletonVariant.content,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            {
+              CatchSkeletonVariant.rows,
+              CatchSkeletonVariant.mediaRows,
+              CatchSkeletonVariant.iconRows,
+            }.contains(widget.variant),
+      ),
+      findsNothing,
+    );
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerDetailOverview), findsOneWidget);

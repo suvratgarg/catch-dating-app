@@ -277,7 +277,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonChips',
+            name: 'CatchSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Tag skeleton states',
@@ -1297,26 +1297,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAsyncScreenLoading',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchAsyncScreenLoadingCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchAsyncSliverLoading',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchAsyncSliverLoadingCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchAsyncValueSliver',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1347,12 +1327,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonList',
+            name: 'CatchScreenSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchAsyncScreenLoadingCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchSkeletonListCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchAsyncSliverLoadingCatalogStates,
               ),
             ],
           ),
@@ -1372,7 +1372,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading compositions',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonBoxRow',
+            name: 'CatchSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Box row',
@@ -1380,38 +1380,23 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_skeleton_layout_use_cases
                         .catchSkeletonBoxRowCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonChips',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Chips',
                 builder:
                     _widgetbook_workspace_primitives_skeleton_layout_use_cases
                         .catchSkeletonChipsCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonRows',
-            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Derived content',
+                builder:
+                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
+                        .catchSkeletonContentCatalogState,
+              ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Rows',
                 builder:
                     _widgetbook_workspace_primitives_skeleton_layout_use_cases
                         .catchSkeletonRowsCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeletonized',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Derived content',
-                builder:
-                    _widgetbook_workspace_primitives_skeleton_layout_use_cases
-                        .catchSkeletonizedCatalogState,
               ),
             ],
           ),

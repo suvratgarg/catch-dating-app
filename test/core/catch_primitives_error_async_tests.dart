@@ -452,13 +452,20 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchAsyncScreenLoading uses shared screen body and skeletons', (
+  testWidgets('CatchScreenSkeleton uses shared screen body and skeletons', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchAsyncScreenLoading(count: 2)));
+    await tester.pumpWidget(_wrap(const CatchScreenSkeleton(count: 2)));
 
     expect(find.byType(CatchScreenBody), findsOneWidget);
-    expect(find.byType(CatchSkeletonList), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            widget.variant == CatchSkeletonVariant.cards,
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('CatchSkeleton.box renders a fixed-size skeleton piece', (

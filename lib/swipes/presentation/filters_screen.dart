@@ -346,7 +346,7 @@ class FiltersContentSkeleton extends StatelessWidget {
         CatchResponsiveSectionItem(
           child: FiltersSection(
             title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-            child: const CatchSkeletonChips(),
+            child: const CatchSkeleton.chips(),
           ),
         ),
       ],

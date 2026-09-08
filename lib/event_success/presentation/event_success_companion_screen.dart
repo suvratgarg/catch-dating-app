@@ -135,7 +135,7 @@ class EventSuccessCompanionLoadingBody extends StatelessWidget {
               gapH16,
               CompanionPrimaryActionSkeleton(),
               gapH16,
-              CatchSkeletonRows(
+              CatchSkeleton.rows(
                 titleWidth: CatchLayout.skeletonTextSectionWideWidth,
               ),
             ],

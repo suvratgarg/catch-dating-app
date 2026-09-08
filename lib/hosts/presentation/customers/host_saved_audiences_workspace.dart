@@ -101,7 +101,7 @@ class _HostSavedAudiencesDirectoryState
           onRetry: () =>
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
           errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,

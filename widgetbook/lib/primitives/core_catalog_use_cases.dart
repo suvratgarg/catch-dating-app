@@ -1396,17 +1396,17 @@ Widget catchPageDotsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSkeletonList,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchSkeletonListCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSkeletonList',
+    title: 'CatchSkeleton.cards',
     catalogId: 'core.widgets.catch_skeleton_list',
     children: [
       _StateCard(
         label: 'list',
-        child: CatchSkeletonList(
+        child: CatchSkeleton.cards(
           count: 3,
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
         ),
@@ -1564,19 +1564,19 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncScreenLoading,
+  type: CatchScreenSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncScreenLoading',
-    catalogId: 'core.widgets.catch_async_screen_loading',
+    title: 'CatchScreenSkeleton',
+    catalogId: 'core.widgets.catch_screen_skeleton',
     children: const [
       _StateCard(
         label: 'screen skeleton',
         child: _PhoneFrame(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchAsyncScreenLoading(
+          child: CatchScreenSkeleton(
             count: 4,
             itemHeight: CatchLayout.skeletonCardCompactHeight,
           ),
@@ -1588,13 +1588,13 @@ Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncSliverLoading,
+  type: CatchSliverSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncSliverLoading',
-    catalogId: 'core.widgets.catch_async_sliver_loading',
+    title: 'CatchSliverSkeleton',
+    catalogId: 'core.widgets.catch_sliver_skeleton',
     children: const [
       _StateCard(
         label: 'sliver skeleton',
@@ -1602,7 +1602,7 @@ Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
-              CatchAsyncSliverLoading(
+              CatchSliverSkeleton(
                 count: 4,
                 itemHeight: CatchLayout.skeletonCardCompactHeight,
               ),

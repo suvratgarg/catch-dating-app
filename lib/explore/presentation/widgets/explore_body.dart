@@ -109,7 +109,7 @@ List<Widget> buildExploreBodySlivers({
         AsyncLoading() => const SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: CatchSkeletonList(
+            child: CatchSkeleton.cards(
               count: 2,
               height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
             ),

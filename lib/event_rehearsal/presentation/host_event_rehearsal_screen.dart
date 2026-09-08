@@ -152,7 +152,7 @@ class _HostEventRehearsalScreenState
                   ref.invalidate(eventRehearsalProvider(widget.sessionId)),
               initialLoadTimeout: null,
               loadingBuilder: (_) =>
-                  const CatchPageBody(child: CatchSkeletonRows(count: 9)),
+                  const CatchPageBody(child: CatchSkeleton.rows(count: 9)),
               errorBuilder: (_, error, _) => CatchPageBody(
                 child: CatchLocalizedErrorState(
                   error,

@@ -25,7 +25,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
         sections: [
           CatchResponsiveSectionItem(
             child: club.when(
-              loading: () => const CatchSkeletonRows(),
+              loading: () => const CatchSkeleton.rows(),
               error: (error, _) => CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.club,

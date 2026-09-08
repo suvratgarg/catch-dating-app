@@ -1,5 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/patterns/catch_skeleton_effect.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton_variant.dart';
+import 'package:catch_ui/src/primitives/catch_divider.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -17,11 +21,108 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// - [CatchSkeleton.circle] — circular avatar placeholder
 /// - [CatchSkeleton.custom] — freeform child with shimmer overlay
 ///
+/// - [CatchSkeleton.content] — derive the shape from a real composition
+/// - [CatchSkeleton.cards] — repeated cards
+/// - [CatchSkeleton.rows], [CatchSkeleton.mediaRows], [CatchSkeleton.iconRows]
+///   — repeated content rows
+/// - [CatchSkeleton.boxes] — equal-width control placeholders
+/// - [CatchSkeleton.chips] — wrapping chip placeholders
+///
 /// All constructors use the shared Skeletonizer effect and Catch-themed colors.
 /// Reduce Motion keeps the placeholders static; temporary labels and controls
 /// are excluded from accessibility and interaction while loading.
 class CatchSkeleton extends StatelessWidget {
-  const CatchSkeleton._({required this.child});
+  const CatchSkeleton._({required this.child})
+    : variant = CatchSkeletonVariant.shape,
+      enabled = true,
+      _recipe = null;
+
+  /// Derive placeholders from the real composition, restoring it when disabled.
+  const CatchSkeleton.content({
+    super.key,
+    required Widget child,
+    this.enabled = true,
+  }) : child = child,
+       variant = CatchSkeletonVariant.content,
+       _recipe = null;
+
+  /// A vertical list of card placeholders.
+  const CatchSkeleton.cards({
+    super.key,
+    int count = 3,
+    double height = CatchLayout.skeletonCardHeight,
+    double spacing = CatchSpacing.s3,
+  }) : _recipe = (count: count, height: height, spacing: spacing),
+       variant = CatchSkeletonVariant.cards,
+       child = null,
+       enabled = true;
+
+  /// Avatar rows with an optional title and dividers.
+  const CatchSkeleton.rows({
+    super.key,
+    int count = 3,
+    double? titleWidth,
+    bool divided = false,
+  }) : _recipe = (
+         count: count,
+         titleWidth: titleWidth,
+         divided: divided,
+         leading: _RowLeading.avatar,
+       ),
+       variant = CatchSkeletonVariant.rows,
+       child = null,
+       enabled = true;
+
+  /// Media-tile rows with an optional title and dividers.
+  const CatchSkeleton.mediaRows({
+    super.key,
+    int count = 3,
+    double? titleWidth,
+    bool divided = false,
+  }) : _recipe = (
+         count: count,
+         titleWidth: titleWidth,
+         divided: divided,
+         leading: _RowLeading.mediaTile,
+       ),
+       variant = CatchSkeletonVariant.mediaRows,
+       child = null,
+       enabled = true;
+
+  /// Compact icon rows with an optional title and dividers.
+  const CatchSkeleton.iconRows({
+    super.key,
+    int count = 3,
+    double? titleWidth,
+    bool divided = false,
+  }) : _recipe = (
+         count: count,
+         titleWidth: titleWidth,
+         divided: divided,
+         leading: _RowLeading.icon,
+       ),
+       variant = CatchSkeletonVariant.iconRows,
+       child = null,
+       enabled = true;
+
+  /// Equal-width boxes reserve a compact control or action row.
+  const CatchSkeleton.boxes({
+    super.key,
+    int count = 2,
+    required double height,
+    double radius = CatchRadius.md,
+    double gap = CatchSpacing.s3,
+  }) : _recipe = (count: count, height: height, radius: radius, gap: gap),
+       variant = CatchSkeletonVariant.boxes,
+       child = null,
+       enabled = true;
+
+  /// Wrapping placeholder pills with token-owned widths.
+  const CatchSkeleton.chips({super.key, double height = CatchSpacing.s9})
+    : _recipe = (height: height),
+      variant = CatchSkeletonVariant.chips,
+      child = null,
+      enabled = true;
 
   /// Rounded-rectangle card placeholder.
   ///
@@ -142,15 +243,149 @@ class CatchSkeleton extends StatelessWidget {
     return CatchSkeleton._(child: child);
   }
 
-  final Widget child;
+  /// Selected recipe; constructors expose only the arguments that it supports.
+  final CatchSkeletonVariant variant;
+  final Widget? child;
+  final bool enabled;
+  final Object? _recipe;
 
   @override
   Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: Skeletonizer.zone(
-        effect: catchSkeletonEffect(context),
-        child: Skeleton.shade(child: child),
-      ),
-    );
+    switch (_recipe) {
+      case (count: int count, height: double height, spacing: double spacing):
+        return Column(
+          children: [
+            for (var i = 0; i < count; i++) ...[
+              CatchSkeleton.card(height: height),
+              if (i < count - 1) SizedBox(height: spacing),
+            ],
+          ],
+        );
+      case (
+        count: int count,
+        titleWidth: double? titleWidth,
+        divided: bool divided,
+        leading: _RowLeading leading,
+      ):
+        final t = CatchTokens.of(context);
+        return CatchSurface(
+          borderColor: t.line,
+          padding: CatchInsets.content,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (titleWidth case final width?) ...[
+                CatchSkeleton.text(width: width),
+                gapH14,
+              ],
+              for (var i = 0; i < count; i++) ...[
+                Row(
+                  children: [
+                    switch (leading) {
+                      _RowLeading.mediaTile => CatchSkeleton.box(
+                        width: CatchLayout.skeletonMediaTileExtent,
+                        height: CatchLayout.skeletonMediaTileExtent,
+                        radius: CatchRadius.sm,
+                      ),
+                      _RowLeading.avatar => CatchSkeleton.circle(
+                        size: CatchLayout.skeletonAvatarCompactExtent,
+                      ),
+                      _RowLeading.icon => CatchSkeleton.box(
+                        width: CatchIcon.md,
+                        height: CatchIcon.md,
+                        radius: CatchRadius.sm,
+                      ),
+                    },
+                    gapW12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CatchSkeleton.text(
+                            width: i.isEven
+                                ? CatchLayout.skeletonTextBodyLongWidth
+                                : CatchLayout.skeletonTextSecondaryWidth,
+                          ),
+                          gapH6,
+                          CatchSkeleton.text(
+                            width: CatchLayout.skeletonTextDetailWidth,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (i < count - 1)
+                  if (divided) ...[
+                    gapH14,
+                    const SizedBox(
+                      width: double.infinity,
+                      child: CatchDivider(),
+                    ),
+                    gapH14,
+                  ] else
+                    gapH14,
+              ],
+            ],
+          ),
+        );
+      case (
+        count: int count,
+        height: double height,
+        radius: double radius,
+        gap: double gap,
+      ):
+        return Row(
+          children: [
+            for (var i = 0; i < count; i++) ...[
+              Expanded(
+                child: CatchSkeleton.box(height: height, radius: radius),
+              ),
+              if (i < count - 1) SizedBox(width: gap),
+            ],
+          ],
+        );
+      case (height: double height):
+        return Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchSkeleton.box(
+              width: CatchLayout.skeletonChipMediumWidth,
+              height: height,
+              radius: CatchRadius.pill,
+            ),
+            CatchSkeleton.box(
+              width: CatchLayout.skeletonChipWideWidth,
+              height: height,
+              radius: CatchRadius.pill,
+            ),
+            CatchSkeleton.box(
+              width: CatchLayout.skeletonChipNarrowWidth,
+              height: height,
+              radius: CatchRadius.pill,
+            ),
+          ],
+        );
+      case null:
+        return ExcludeSemantics(
+          excluding: enabled,
+          child: variant == CatchSkeletonVariant.content
+              ? Skeletonizer(
+                  enabled: enabled,
+                  effect: catchSkeletonEffect(context),
+                  ignoreContainers: true,
+                  child: child!,
+                )
+              : Skeletonizer.zone(
+                  effect: catchSkeletonEffect(context),
+                  child: Skeleton.shade(child: child!),
+                ),
+        );
+      default:
+        throw StateError('Unknown internal skeleton recipe');
+    }
   }
 }
+
+enum _RowLeading { mediaTile, avatar, icon }

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.35.0
+version: 1.36.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -2298,6 +2298,11 @@ or implementation technique cannot justify a second shared implementation.
   Banner owns persistent inline feedback, with error/retry as named recipes.
   Notice owns transient notification delivery with dismissal/open behavior;
   sharing an icon and message does not make those delivery contracts identical.
+  Skeleton owns content-shaped loading. Explicit shapes, derived content,
+  card lists, row recipes, equal boxes and wrapping chips use named constructors
+  on `CatchSkeleton`; recipe configuration remains private and const-capable.
+  `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
+  render-sliver placement protocols. They do not select asynchronous state.
 - **Files.** Snake case of the primary public class; suffix vocabulary
   `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
   `_service`, `_providers`, or a role-noun widget suffix. One primary public

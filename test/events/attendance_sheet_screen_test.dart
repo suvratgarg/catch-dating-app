@@ -242,7 +242,18 @@ void main() {
       ],
     );
 
-    expect(find.byType(CatchSkeletonRows), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            {
+              CatchSkeletonVariant.rows,
+              CatchSkeletonVariant.mediaRows,
+              CatchSkeletonVariant.iconRows,
+            }.contains(widget.variant),
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 

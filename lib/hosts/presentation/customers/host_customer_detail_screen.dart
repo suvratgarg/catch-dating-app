@@ -157,7 +157,7 @@ class _HostCustomerDetailScreenState
             ),
           ),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => CatchSkeletonized(
+          loadingBuilder: (_) => CatchSkeleton.content(
             child: HostCustomerDetailBody(
               customer: _hostCustomerSkeletonDetail(
                 organizerId: widget.organizerId,

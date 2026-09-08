@@ -661,7 +661,7 @@ Widget catchSkeletonContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'derived-content',
-        child: CatchSkeletonized(
+        child: CatchSkeleton.content(
           child: CatchSection.containedFieldRows(
             title: 'Customer details',
             children: [
@@ -681,27 +681,27 @@ Widget catchSkeletonContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'list',
-        child: CatchSkeletonList(
+        child: CatchSkeleton.cards(
           count: 3,
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
         ),
       ),
-      const _StateCard(label: 'rows', child: CatchSkeletonRows(count: 2)),
+      const _StateCard(label: 'rows', child: CatchSkeleton.rows(count: 2)),
       const _StateCard(
         label: 'box-row',
-        child: CatchSkeletonBoxRow(
+        child: CatchSkeleton.boxes(
           count: 3,
           height: CatchLayout.controlCompactMinHeight,
           radius: CatchRadius.sm,
           gap: CatchSpacing.s2,
         ),
       ),
-      const _StateCard(label: 'chips', child: CatchSkeletonChips()),
+      const _StateCard(label: 'chips', child: CatchSkeleton.chips()),
       const _StateCard(
         label: 'async-screen',
         child: SizedBox(
           height: WidgetbookPreviewLayout.routeViewportHeight,
-          child: CatchAsyncScreenLoading(
+          child: CatchScreenSkeleton(
             count: 2,
             itemHeight: WidgetbookPreviewLayout.skeletonListItemHeight,
           ),
@@ -713,7 +713,7 @@ Widget catchSkeletonContractStates(BuildContext context) {
           height: WidgetbookPreviewLayout.routeViewportHeight,
           child: CustomScrollView(
             slivers: [
-              CatchAsyncSliverLoading(
+              CatchSliverSkeleton(
                 count: 2,
                 itemHeight: WidgetbookPreviewLayout.skeletonListItemHeight,
               ),

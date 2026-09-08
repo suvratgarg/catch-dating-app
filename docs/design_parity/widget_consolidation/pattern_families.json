@@ -303,7 +303,7 @@
           "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
           "options": [
             "Enforce 44px outside the documented 40px app-bar navigation exception.",
-            "Allow 36–40px wherever the visual circle is compact."
+            "Allow 36\u201340px wherever the visual circle is compact."
           ]
         },
         {
@@ -537,9 +537,10 @@
         },
         {
           "symbol": "CatchSkeletonList",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "List-layout member of the skeleton placeholder concept."
+          "disposition": "unify",
+          "preview": "not-applicable",
+          "rationale": "List-layout member of the skeleton placeholder concept. Public API disposition is superseded by skeleton-canonical-recipes; the decompressed concept boundary is unchanged.",
+          "target": "CatchSkeleton.cards"
         },
         {
           "symbol": "CatchLoadingIndicator",
@@ -548,16 +549,16 @@
           "rationale": "Indeterminate inline progress has different semantics and usage from content-shaped placeholders."
         },
         {
-          "symbol": "CatchAsyncScreenLoading",
-          "disposition": "register",
+          "symbol": "CatchScreenSkeleton",
+          "disposition": "canonical",
           "preview": "required",
-          "rationale": "Screen placement adapter that composes the skeleton concept."
+          "rationale": "Screen placement adapter that composes the skeleton concept. Public API disposition is superseded by skeleton-canonical-recipes; the decompressed concept boundary is unchanged."
         },
         {
-          "symbol": "CatchAsyncSliverLoading",
-          "disposition": "register",
+          "symbol": "CatchSliverSkeleton",
+          "disposition": "canonical",
           "preview": "required",
-          "rationale": "Sliver placement adapter that composes the skeleton concept."
+          "rationale": "Sliver placement adapter that composes the skeleton concept. Public API disposition is superseded by skeleton-canonical-recipes; the decompressed concept boundary is unchanged."
         },
         {
           "symbol": "CatchAsyncValueView",
@@ -1179,6 +1180,88 @@
           "target": "CatchLocalizedErrorState",
           "preview": "not-applicable",
           "rationale": "Rendering or parameter-forwarding duplicates an existing state contract; typed modes preserve its presentation."
+        }
+      ]
+    },
+    {
+      "id": "skeleton-canonical-recipes",
+      "title": "Canonical content-shaped loading recipes",
+      "intent": "Expose one skeleton concept with named shape and composition recipes, keeping page-body and sliver placement explicit.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.skeleton",
+      "qualityReference": "CatchSkeleton",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Keep the approved Skeletonizer engine, every placeholder dimension and the existing motion/accessibility policy."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSkeleton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One canonical Widget owns explicit shapes, derived content and const-capable repeated layout recipes. Named constructors expose only supported arguments."
+        },
+        {
+          "symbol": "CatchScreenSkeleton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Page-body inset and optional scroll placement around the card recipe."
+        },
+        {
+          "symbol": "CatchSliverSkeleton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "RenderSliver and page-padding protocol around the card recipe."
+        },
+        {
+          "symbol": "CatchSkeletonized",
+          "disposition": "unify",
+          "target": "CatchSkeleton.content",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchSkeletonList",
+          "disposition": "unify",
+          "target": "CatchSkeleton.cards",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchSkeletonRows",
+          "disposition": "unify",
+          "target": "CatchSkeleton.rows",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchSkeletonBoxRow",
+          "disposition": "unify",
+          "target": "CatchSkeleton.boxes",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchSkeletonChips",
+          "disposition": "unify",
+          "target": "CatchSkeleton.chips",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchAsyncScreenLoading",
+          "disposition": "unify",
+          "target": "CatchScreenSkeleton",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
+        },
+        {
+          "symbol": "CatchAsyncSliverLoading",
+          "disposition": "unify",
+          "target": "CatchSliverSkeleton",
+          "preview": "not-applicable",
+          "rationale": "A named recipe or explicitly named placement adapter preserves the existing loading responsibility."
         }
       ]
     }

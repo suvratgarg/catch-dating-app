@@ -118,7 +118,7 @@ class _HostFormResponsesPanelState
           onRetry: () =>
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
           errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.formResponses,
@@ -270,7 +270,7 @@ class _HostFormResponsesPanelState
                 onRetry: () => ref.invalidate(
                   hostFormsDirectoryControllerProvider(request),
                 ),
-                loadingBuilder: (_) => const CatchSkeletonRows(),
+                loadingBuilder: (_) => const CatchSkeleton.rows(),
                 builder: (context, state) => CatchSection.fieldRows(
                   children: [
                     for (final form in state.forms)

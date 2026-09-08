@@ -1574,12 +1574,11 @@ function buildCandidates() {
       id: "app-skeleton-loading-family",
       title: "Skeleton and loading family",
       reason:
-        "Skeletons currently encode local shapes in many features. Review whether the shapes are variants of CatchSkeleton/List or legitimate feature previews.",
+        "Skeletons currently encode local shapes in many features. Review whether the shapes are variants of CatchSkeleton recipes or legitimate feature previews.",
       recommended: "catch.skeleton",
       tags: ["feedback", "loading"],
       names: [
         "CatchSkeleton",
-        "CatchSkeletonList",
         "ActivitySectionSkeleton",
         "EventAgendaSliverSkeleton",
         "FiltersContentSkeleton",

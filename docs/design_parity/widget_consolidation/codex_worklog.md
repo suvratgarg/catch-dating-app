@@ -70,6 +70,26 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Canonical skeleton recipes
+
+Owner-delegated source and rendered review: `skeleton-canonical-recipes`.
+Five recipe Widgets become named constructors on `CatchSkeleton`. The screen
+and sliver adapters retain their distinct placement protocols with role names.
+
+- [x] Preserve the original row-recipe goldens and canonical loading gallery
+  in consecutive comparisons. Keep every placeholder dimension, the approved
+  Skeletonizer engine, motion timing, reduced-motion and accessibility policy.
+- [x] Keep const-capable recipes and migrate every caller directly; remove the
+  five duplicate Widgets and the row-leading enum without aliases.
+- [x] Pass 15 focused loading/motion/accessibility/geometry tests, ten caller
+  and original-golden tests, and all 18 gallery/enumeration tests twice.
+- [x] Preserve whole-corpus coverage (301/301 surfaces, zero waivers) and
+  classification (1,049 registered cases, zero unclassified). All 53 reviewed
+  naming entries pass; the shared package has 213 public Widgets.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
 ## Phase 4 — Canonical empty and error states
 
 Owner-delegated source and rendered review: `empty-error-canonical-states`.

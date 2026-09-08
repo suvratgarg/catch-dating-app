@@ -6713,6 +6713,53 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:skeleton-canonical-recipes",
+      "patternFamilyId": "skeleton-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSkeleton",
+      "members": [
+        {
+          "name": "CatchSkeletonized",
+          "action": "absorb",
+          "target": "CatchSkeleton.content"
+        },
+        {
+          "name": "CatchSkeletonList",
+          "action": "absorb",
+          "target": "CatchSkeleton.cards"
+        },
+        {
+          "name": "CatchSkeletonRows",
+          "action": "absorb",
+          "target": "CatchSkeleton.rows"
+        },
+        {
+          "name": "CatchSkeletonBoxRow",
+          "action": "absorb",
+          "target": "CatchSkeleton.boxes"
+        },
+        {
+          "name": "CatchSkeletonChips",
+          "action": "absorb",
+          "target": "CatchSkeleton.chips"
+        },
+        {
+          "name": "CatchAsyncScreenLoading",
+          "action": "absorb",
+          "target": "CatchScreenSkeleton"
+        },
+        {
+          "name": "CatchAsyncSliverLoading",
+          "action": "absorb",
+          "target": "CatchSliverSkeleton"
+        }
+      ],
+      "rationale": "All five recipe Widgets belonged to the existing skeleton concept and delegated visual paint to the same engine. CatchSkeleton now exposes content, cards, rows, mediaRows, iconRows, boxes and chips constructors. Preserve const construction using private record configuration; callers cannot combine unrelated recipe arguments. Replace the row-leading enum with named row recipes. Keep screen and sliver adapters because they own page-body and RenderSliver protocols, and name them CatchScreenSkeleton and CatchSliverSkeleton. They do not consume asynchronous state. Original row-recipe images and the canonical multi-recipe gallery remain unchanged; motion, reduced-motion, semantics and pointer-blocking tests pass. Indeterminate progress and asynchronous data/error selection remain separate concepts. This supersedes the old list-member registration disposition without recombining the decompressed loading concepts.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

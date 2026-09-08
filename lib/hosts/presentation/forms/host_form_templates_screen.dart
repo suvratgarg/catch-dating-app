@@ -56,7 +56,7 @@ class _HostFormTemplatesScreenState
                       hostFormTemplatesProvider(widget.organizerId),
                     ),
                     initialLoadTimeout: null,
-                    loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
+                    loadingBuilder: (_) => const CatchSkeleton.rows(count: 7),
                     errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                       error,
                       context: AppErrorContext.forms,

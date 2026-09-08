@@ -38,7 +38,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
               )
               .reload(),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
           errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,

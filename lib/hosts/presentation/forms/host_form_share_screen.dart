@@ -54,7 +54,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           value: ref.watch(provider),
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 5),
           errorBuilder: (_, error, _) => CatchLocalizedErrorState(
             error,
             context: AppErrorContext.forms,
@@ -66,7 +66,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               CatchAsyncValueView<HostFormEditorState>(
                 value: ref.watch(editorProvider),
                 onRetry: () => ref.read(editorProvider.notifier).reload(),
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
+                loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
                 errorBuilder: (_, error, _) => CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.forms,

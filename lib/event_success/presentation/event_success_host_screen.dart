@@ -997,7 +997,7 @@ class EventSuccessHostSectionSkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (showTabs) ...[
-          const CatchSkeletonBoxRow(
+          const CatchSkeleton.boxes(
             count: 3,
             height: CatchLayout.controlCompactMinHeight,
             radius: CatchRadius.sm,
@@ -1054,7 +1054,7 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
           textLines: 2,
           trailingCount: 2,
         ),
-        CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextTitleWidth),
+        CatchSkeleton.rows(titleWidth: CatchLayout.skeletonTextTitleWidth),
         EventSuccessSkeletonSurface(
           titleWidth: CatchLayout.skeletonTextLongWidth,
           textLines: 3,

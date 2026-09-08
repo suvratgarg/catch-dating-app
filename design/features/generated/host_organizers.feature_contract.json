@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:83bcd3c4c0bc484327767c0075b50e616522894c194a4f74fdc52cd76cf7b22e",
-  "resolvedDigest": "sha256:13decd96922ec7edf092a10d4e3435932b07d9fc396828978dd0f6dce4bbb164",
+  "resolvedDigest": "sha256:48c9002d4e49a3bb2d0a0d566d4811d6761379b814b70a3927307ef45e179d15",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5291,7 +5291,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },

@@ -73,7 +73,7 @@ class CatchesHubStateView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (state) {
       CatchesHubAccessLoading() => const SliverToBoxAdapter(
-        child: CatchSkeletonList(),
+        child: CatchSkeleton.cards(),
       ),
       CatchesHubAccessError(:final error) => CatchLocalizedSliverErrorState(
         error,
@@ -84,7 +84,7 @@ class CatchesHubStateView extends ConsumerWidget {
         child: SizedBox.shrink(),
       ),
       CatchesHubEventsLoading() => const SliverToBoxAdapter(
-        child: CatchSkeletonList(),
+        child: CatchSkeleton.cards(),
       ),
       CatchesHubEventsError(:final uid, :final error) =>
         CatchLocalizedSliverErrorState(

@@ -22,7 +22,7 @@ void main() {
               tester,
               child: manual
                   ? CatchSkeleton.box(width: 120, height: 32)
-                  : const CatchSkeletonized(child: Text('Loading details')),
+                  : const CatchSkeleton.content(child: Text('Loading details')),
               brightness: brightness,
               reduceMotion: reduceMotion,
             );
@@ -56,7 +56,7 @@ void main() {
           tester,
           child: manual
               ? CatchSkeleton.custom(child: action)
-              : CatchSkeletonized(child: action),
+              : CatchSkeleton.content(child: action),
         );
         expect(find.bySemanticsLabel('Real action'), findsNothing);
         await tester.tapAt(tester.getCenter(find.byKey(_actionKey)));
@@ -66,7 +66,7 @@ void main() {
 
       await _mount(
         tester,
-        child: CatchSkeletonized(
+        child: CatchSkeleton.content(
           enabled: false,
           child: TextButton(
             key: _actionKey,

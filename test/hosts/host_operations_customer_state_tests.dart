@@ -17,7 +17,18 @@ void _registerHostOperationsCustomerStateTests() {
         ],
       );
 
-      expect(find.byType(CatchSkeletonRows), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchSkeleton &&
+              {
+                CatchSkeletonVariant.rows,
+                CatchSkeletonVariant.mediaRows,
+                CatchSkeletonVariant.iconRows,
+              }.contains(widget.variant),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Customers unavailable'), findsNothing);
       expect(find.text('Customer details unavailable'), findsNothing);
     },

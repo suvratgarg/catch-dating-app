@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:83d698421f6474b74db08ca4cb86a4d869d70bb3e67fa59e0c4fd4323672f0df",
+  "resolvedDigest": "sha256:8883ea8c9dba148ff9c266b84a4018d84155a80c7d888775aa2d45d09d607a01",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2336,7 +2336,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },

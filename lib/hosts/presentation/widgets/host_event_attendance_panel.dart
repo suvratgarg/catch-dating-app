@@ -110,7 +110,7 @@ class _HostEventParticipantsPanelState
         ref.invalidate(watchEventParticipationsForEventProvider(eventId));
         ref.invalidate(attendanceSheetViewModelProvider(eventId));
       },
-      loadingBuilder: (_) => const CatchSkeletonRows(
+      loadingBuilder: (_) => const CatchSkeleton.rows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
       ),
@@ -542,7 +542,7 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
 
     final rows = switch (profileLookupState.status) {
       HostParticipantProfilesLookupStatus.ready => buildBoard(),
-      HostParticipantProfilesLookupStatus.loading => const CatchSkeletonRows(
+      HostParticipantProfilesLookupStatus.loading => const CatchSkeleton.rows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
       ),
