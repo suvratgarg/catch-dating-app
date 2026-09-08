@@ -176,8 +176,10 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
       footer: CatchButton(
         label: state.footerLabel,
         onPressed: state.canSubmit ? callbacks.onContinue : null,
-        isLoading: state.isCompleting,
-        icon: Icon(CatchIcons.checkRounded),
+        status: (state.isCompleting)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
+        leading: Icon(CatchIcons.checkRounded),
         fullWidth: true,
         size: CatchButtonSize.lg,
       ),

@@ -202,7 +202,7 @@ class MembershipTrailing extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchButton(
       label: context.l10n.clubsDirectoryCardLabelJoin,
-      icon: Icon(CatchIcons.groupAddOutlined),
+      leading: Icon(CatchIcons.groupAddOutlined),
       onPressed: isPending ? null : onJoinPressed,
       size: CatchButtonSize.sm,
       backgroundColor: t.ink,

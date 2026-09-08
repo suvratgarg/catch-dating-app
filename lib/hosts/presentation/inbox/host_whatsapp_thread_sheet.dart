@@ -239,7 +239,7 @@ class _HostWhatsappThreadBody extends StatelessWidget {
       gapH8,
       CatchButton(
         label: context.l10n.hostInboxWhatsappReply,
-        isLoading: sending,
+        status: (sending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: !thread.serviceWindowOpen || sending ? null : onSend,
       ),
     ],

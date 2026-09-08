@@ -508,7 +508,9 @@ class _HostAutomationRuleEditorState
                                     CatchButton(
                                       label: l.hostAutomationDraftsMore,
                                       variant: CatchButtonVariant.secondary,
-                                      isLoading: page.loadingMore,
+                                      status: (page.loadingMore)
+                                          ? CatchButtonStatus.loading
+                                          : CatchButtonStatus.idle,
                                       onPressed: page.loadingMore
                                           ? null
                                           : () => ref

@@ -42,17 +42,17 @@ class StepperFooter extends StatelessWidget {
       onPressed: isLoading ? null : onPrevious,
       variant: CatchButtonVariant.ghost,
       size: CatchButtonSize.lg,
-      icon: Icon(CatchIcons.arrowBackRounded),
+      leading: Icon(CatchIcons.arrowBackRounded),
       foregroundColor: t.primary,
       fullWidth: true,
     );
     final primaryButton = CatchButton(
       label: label,
       onPressed: isLoading || !primaryEnabled ? null : onPrimary,
-      isLoading: isLoading,
+      status: (isLoading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       fullWidth: true,
       size: CatchButtonSize.lg,
-      icon:
+      leading:
           primaryIcon ??
           (isLastStep ? null : Icon(CatchIcons.arrowForwardRounded)),
     );

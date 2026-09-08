@@ -241,7 +241,9 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
           CatchButton(
             key: const ValueKey('host-customer-save-note'),
             label: context.l10n.hostCustomersSaveNote,
-            isLoading: _saving,
+            status: (_saving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: _saving ? null : _save,
           ),
         ],
@@ -395,7 +397,9 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
             CatchButton(
               key: const ValueKey('host-customer-save-tags'),
               label: context.l10n.hostCustomersSaveTags,
-              isLoading: _saving,
+              status: (_saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _saving ? null : _save,
             ),
           ],

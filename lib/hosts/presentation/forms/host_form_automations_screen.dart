@@ -168,7 +168,7 @@ class _HostFormAutomationsScreenState
                       children: [
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationNotifyPreset,
-                          icon: Icon(CatchIcons.notificationsNoneRounded),
+                          leading: Icon(CatchIcons.notificationsNoneRounded),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(
@@ -183,7 +183,7 @@ class _HostFormAutomationsScreenState
                         ),
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationCrmPreset,
-                          icon: Icon(CatchIcons.peopleOutlineRounded),
+                          leading: Icon(CatchIcons.peopleOutlineRounded),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(
@@ -238,7 +238,9 @@ class _HostFormAutomationsScreenState
                     label: context.l10n.hostFormAutomationsLoadMore,
                     variant: CatchButtonVariant.secondary,
                     fullWidth: true,
-                    isLoading: state.loadingMore,
+                    status: (state.loadingMore)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: state.loadingMore
                         ? null
                         : () => ref.read(provider.notifier).loadMore(),

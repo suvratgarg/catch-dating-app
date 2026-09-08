@@ -6933,6 +6933,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:labelled-button-canonical-recipes",
+      "patternFamilyId": "labelled-button-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton",
+      "members": [
+        {
+          "name": "CatchCountPill",
+          "action": "absorb",
+          "target": "CatchButton.floating"
+        }
+      ],
+      "rationale": "The labelled floating control is a Button recipe, retaining its raised surface, typed count, optional value, required action, focus border, semantic override and platform target. CatchButton.floating absorbs the former Widget and State; delete the redundant primary contract and route Explore references to catch.button. Icon-only controls remain distinct as the earlier compact-control review required. CatchButtonStatus replaces the loading boolean, CatchButtonMode replaces the nonconforming Shape axis, and leading/trailing replace widget icon plus iconAtEnd. The default constructor now has two booleans. A syntax-selected migration updates only these constructors and their typed footer geometry forwarding. The original normal/scaled light/dark button-family and anatomy images remain unchanged after migration, including the separately fixed badge constraints.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

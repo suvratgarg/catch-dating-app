@@ -44,7 +44,7 @@ class CatchAdaptiveSelectionControl<T> extends StatelessWidget {
         key: buttonKey,
         label: triggerLabel(selectedItem),
         semanticsLabel: tooltip,
-        icon: Icon(icon ?? CatchIcons.sort, size: CatchIcon.sm),
+        leading: Icon(icon ?? CatchIcons.sort, size: CatchIcon.sm),
         variant: CatchButtonVariant.secondary,
         size: CatchButtonSize.sm,
         onPressed: toggle,

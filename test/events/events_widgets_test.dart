@@ -762,12 +762,12 @@ void main() {
                 label: 'Next',
                 onPressed: () => footerTapped = true,
                 fullWidth: true,
-                icon: Icon(CatchIcons.arrowForwardRounded),
+                leading: Icon(CatchIcons.arrowForwardRounded),
               ),
               const CatchButton(
                 label: 'Schedule event',
                 onPressed: _noop,
-                isLoading: true,
+                status: CatchButtonStatus.loading,
                 fullWidth: true,
               ),
               SizedBox(

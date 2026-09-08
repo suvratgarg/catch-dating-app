@@ -527,7 +527,9 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,
-        isLoading: mutation.isPending,
+        status: (mutation.isPending)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         fullWidth: true,
       ),
       child: Column(

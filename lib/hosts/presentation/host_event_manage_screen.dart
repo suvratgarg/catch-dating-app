@@ -1039,10 +1039,12 @@ class HostPrivateAccessBody extends StatelessWidget {
                   ? null
                   : () => onSharePrivateLink(linkAction.inviteLink!),
               variant: CatchButtonVariant.secondary,
-              icon: Icon(
+              leading: Icon(
                 CatchIcons.platformShare(platform: Theme.of(context).platform),
               ),
-              isLoading: shareMutation.isPending,
+              status: (shareMutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
             gapH18,
@@ -1097,8 +1099,10 @@ class HostInviteLinksList extends StatelessWidget {
           ? null
           : () => unawaited(_createNamedLink(context)),
       variant: CatchButtonVariant.secondary,
-      icon: Icon(CatchIcons.addRounded),
-      isLoading: state.createPending,
+      leading: Icon(CatchIcons.addRounded),
+      status: (state.createPending)
+          ? CatchButtonStatus.loading
+          : CatchButtonStatus.idle,
     );
     final heading = Text(
       context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
@@ -1680,7 +1684,9 @@ class HostPublicRegistrationCard extends StatelessWidget {
                           !enabled)
                   ? null
                   : () => onChanged(!enabled),
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: enabled
                   ? CatchButtonVariant.secondary
                   : CatchButtonVariant.primary,

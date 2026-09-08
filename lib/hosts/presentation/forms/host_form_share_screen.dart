@@ -114,7 +114,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                           child: Builder(
                             builder: (originContext) => CatchButton(
                               label: context.l10n.hostFormShareLink,
-                              shape: CatchButtonShape.rounded,
+                              mode: CatchButtonMode.rounded,
                               fullWidth: true,
                               onPressed: () =>
                                   _share(originContext, assets.canonicalUrl),
@@ -125,7 +125,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                         Expanded(
                           child: CatchButton(
                             label: context.l10n.hostFormCopyLink,
-                            shape: CatchButtonShape.rounded,
+                            mode: CatchButtonMode.rounded,
                             fullWidth: true,
                             variant: CatchButtonVariant.secondary,
                             onPressed: () => _copy(

@@ -381,14 +381,14 @@ class _ResponseContactActions extends StatelessWidget {
         CatchButton.command(
           key: const ValueKey('host-form-response-call'),
           label: context.l10n.hostApplicationCall,
-          icon: Icon(CatchIcons.phoneOutlined),
+          leading: Icon(CatchIcons.phoneOutlined),
           onPressed: () => onOpen(Uri(scheme: 'tel', path: phone)),
         ),
       if (identity.email case final email?)
         CatchButton.command(
           key: const ValueKey('host-form-response-email'),
           label: context.l10n.hostApplicationEmail,
-          icon: Icon(CatchIcons.emailOutlined),
+          leading: Icon(CatchIcons.emailOutlined),
           onPressed: () => onOpen(Uri(scheme: 'mailto', path: email)),
         ),
     ],

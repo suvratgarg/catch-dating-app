@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
-  "resolvedDigest": "sha256:8c1c02f963487f420d30c71c0892cb9a72f6ad19b7074162f49bba6c6dc18784",
+  "resolvedDigest": "sha256:1448ea74c0cff94f25d57f9410b59acaf3feb25c44ef5116b8b8e999f2780e08",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1117,7 +1117,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

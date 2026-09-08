@@ -549,7 +549,7 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
           ? context.l10n.hostFormReviewPublishChanges
           : context.l10n.hostFormReviewPublish,
       isLoading: isLoading,
-      buttonShape: CatchButtonShape.rounded,
+      buttonMode: CatchButtonMode.rounded,
       onPressed: isLoading ? null : onReviewAndPublish,
     );
   }
@@ -688,7 +688,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
                 label: form.activeVersionId != null
                     ? context.l10n.hostFormShare
                     : context.l10n.hostAudienceEditQuestions,
-                shape: CatchButtonShape.rounded,
+                mode: CatchButtonMode.rounded,
                 fullWidth: true,
                 onPressed: form.activeVersionId != null ? onShare : onQuestions,
               ),
@@ -698,7 +698,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
               child: CatchButton(
                 label: context.l10n.hostFormPreview,
                 variant: CatchButtonVariant.secondary,
-                shape: CatchButtonShape.rounded,
+                mode: CatchButtonMode.rounded,
                 fullWidth: true,
                 onPressed: onPreview,
               ),
@@ -761,7 +761,7 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
           ),
           CatchButton.command(
             label: context.l10n.hostFormsViewResponsesAction,
-            icon: Icon(CatchIcons.forwardArrow),
+            leading: Icon(CatchIcons.forwardArrow),
             onPressed: onReviewResponses,
           ),
         ],

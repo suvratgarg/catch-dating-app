@@ -216,11 +216,13 @@ class EventActionCardActions extends StatelessWidget {
           CatchButton(
             key: actions[index].key,
             label: actions[index].label,
-            icon: Icon(actions[index].icon, size: CatchIcon.md),
+            leading: Icon(actions[index].icon, size: CatchIcon.md),
             variant: actions[index].variant,
             accentColor: actions[index].accentColor,
             fullWidth: true,
-            isLoading: actions[index].isLoading,
+            status: (actions[index].isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             semanticsLabel: actions[index].semanticsLabel,
             onPressed: actions[index].isLoading
                 ? null

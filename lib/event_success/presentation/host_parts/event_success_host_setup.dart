@@ -278,7 +278,9 @@ class _SetupTabState extends State<SetupTab> {
                 : context
                       .l10n
                       .eventSuccessEventSuccessHostSetupLabelSaveLiveGuide,
-            isLoading: widget.actionState.isSaving,
+            status: (widget.actionState.isSaving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed:
                 widget.actionState.isSaving ||
                     _remotePlanChanged ||

@@ -146,7 +146,9 @@ void _registerExploreMapTests() {
     expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
     expect(find.text('Filters'), findsNothing);
     expect(
-      find.byType(CatchCountPill),
+      find.byWidgetPredicate(
+        (widget) => widget is CatchButton && widget.count != null,
+      ),
       findsNothing,
       reason: 'The map launcher stays hidden without mapped event supply.',
     );
@@ -549,7 +551,7 @@ void _registerExploreMapTests() {
     );
     await _pumpClubUi(tester);
 
-    final mapPill = find.widgetWithText(CatchCountPill, 'Map');
+    final mapPill = find.widgetWithText(CatchButton, 'Map');
     expect(mapPill, findsOneWidget);
     expect(find.byType(ExploreMapScreen), findsNothing);
 
@@ -620,9 +622,7 @@ void _registerExploreMapTests() {
     );
     await _pumpClubUi(tester);
 
-    final mapPillRect = tester.getRect(
-      find.widgetWithText(CatchCountPill, 'Map'),
-    );
+    final mapPillRect = tester.getRect(find.widgetWithText(CatchButton, 'Map'));
     final tabBarTop = tester.view.physicalSize.height - shellBottomOverlayInset;
 
     expect(

@@ -830,7 +830,9 @@ class BlockedAccountTile extends StatelessWidget {
       trailing: CatchButton(
         key: SettingsKeys.unblockButton(row.uid),
         label: context.l10n.safetySettingsScreenLabelUnblock,
-        isLoading: unblocking,
+        status: (unblocking)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         onPressed: !enabled || unblocking ? null : () => onUnblock(row.uid),
         variant: CatchButtonVariant.ghost,
         size: CatchButtonSize.sm,

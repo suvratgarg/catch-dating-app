@@ -34,7 +34,7 @@ class HostRevealActions extends StatelessWidget {
         label: context
             .l10n
             .eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst,
-        icon: Icon(CatchIcons.autoAwesomeOutlined),
+        leading: Icon(CatchIcons.autoAwesomeOutlined),
         onPressed: null,
         fullWidth: true,
       );
@@ -47,8 +47,10 @@ class HostRevealActions extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
-              icon: Icon(CatchIcons.visibilityOutlined),
-              isLoading: isLoading,
+              leading: Icon(CatchIcons.visibilityOutlined),
+              status: (isLoading)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: isLoading || onRevealRound == null
                   ? null
                   : () => unawaited(
@@ -61,9 +63,11 @@ class HostRevealActions extends StatelessWidget {
           Expanded(
             child: CatchButton(
               label: context.l10n.eventSuccessLiveControlCancelCountdownLabel,
-              icon: Icon(CatchIcons.restartAltRounded),
+              leading: Icon(CatchIcons.restartAltRounded),
               variant: CatchButtonVariant.secondary,
-              isLoading: isLoading,
+              status: (isLoading)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: isLoading || onResetReveal == null
                   ? null
                   : () => unawaited(onResetReveal!()),
@@ -93,8 +97,10 @@ class HostRevealActions extends StatelessWidget {
                       .eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown(
                         countdownSeconds: countdownSeconds,
                       ),
-            icon: Icon(CatchIcons.timerOutlined),
-            isLoading: isLoading,
+            leading: Icon(CatchIcons.timerOutlined),
+            status: (isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: isLoading || !canUsePrimary
                 ? null
                 : () {
@@ -122,9 +128,11 @@ class HostRevealActions extends StatelessWidget {
             label: context
                 .l10n
                 .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
-            icon: Icon(CatchIcons.visibilityOutlined),
+            leading: Icon(CatchIcons.visibilityOutlined),
             variant: CatchButtonVariant.secondary,
-            isLoading: isLoading,
+            status: (isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: isLoading || onRevealRound == null
                 ? null
                 : () => unawaited(

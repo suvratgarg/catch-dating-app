@@ -121,7 +121,9 @@ class _HostContactMergeReviewSheetState
                 CatchButton(
                   label: context.l10n.hostCustomersLoadMore,
                   variant: CatchButtonVariant.secondary,
-                  isLoading: _loadingMore,
+                  status: (_loadingMore)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   onPressed: _loadingMore ? null : _loadMore,
                 ),
             ],
@@ -235,7 +237,9 @@ class _HostContactMergeCandidateCardState
           gapH12,
           CatchButton(
             label: context.l10n.hostCustomersMergeAction,
-            isLoading: _saving,
+            status: (_saving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: _saving || _survivorContactId == null ? null : _merge,
           ),
           gapH8,
@@ -352,7 +356,9 @@ class _DismissedMergeCandidateCardState
         CatchButton(
           label: context.l10n.hostCustomersReopenDuplicate,
           variant: CatchButtonVariant.secondary,
-          isLoading: _saving,
+          status: (_saving)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           onPressed: _saving || !widget.candidate.canReopen ? null : _reopen,
         ),
       ],

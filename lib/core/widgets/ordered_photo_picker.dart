@@ -182,7 +182,7 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
             label: context.l10n.coreOrderedPhotoPickerActionManageAll(
               count: photos.length,
             ),
-            icon: Icon(CatchIcons.photoLibraryOutlined),
+            leading: Icon(CatchIcons.photoLibraryOutlined),
             onPressed: () => _openManager(context, photos),
             variant: CatchButtonVariant.secondary,
             fullWidth: true,

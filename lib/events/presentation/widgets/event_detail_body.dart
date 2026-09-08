@@ -258,7 +258,7 @@ class EventDetailCalloutCard extends StatelessWidget {
                   builder: (buttonContext) => CatchButton(
                     label: actionLabel,
                     variant: CatchButtonVariant.secondary,
-                    icon: Icon(actionIcon),
+                    leading: Icon(actionIcon),
                     onPressed: () => onAction(buttonContext),
                     fullWidth: true,
                   ),

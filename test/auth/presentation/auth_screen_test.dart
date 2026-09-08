@@ -67,7 +67,7 @@ void main() {
         find.byKey(AuthFormKeys.sendCode),
       );
       expect(sendButton.onPressed, isNull);
-      expect(sendButton.shape, CatchButtonShape.rounded);
+      expect(sendButton.mode, CatchButtonMode.rounded);
     });
 
     testWidgets('Host reveals OTP inline and keeps the brand anchor fixed', (

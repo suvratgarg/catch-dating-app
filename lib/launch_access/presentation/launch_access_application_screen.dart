@@ -464,7 +464,9 @@ class _LaunchAccessApplicationFormState
                         .l10n
                         .launchAccessLaunchAccessApplicationScreenLabelUpdateApplication,
               onPressed: mutation.isPending ? null : _submit,
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
               size: CatchButtonSize.lg,
             ),

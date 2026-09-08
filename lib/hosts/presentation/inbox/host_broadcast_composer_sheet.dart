@@ -262,7 +262,9 @@ class _HostBroadcastComposerSheetState
                             recipientCount: recipientCount,
                           ),
                 onPressed: enabled ? _send : null,
-                isLoading: mutation.isPending,
+                status: (mutation.isPending)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 fullWidth: true,
               ),
             ],

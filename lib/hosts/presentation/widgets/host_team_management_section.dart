@@ -435,9 +435,9 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
       action: CatchButton(
         label: context.l10n.hostsHostTeamManagementSectionLabelAddHost,
         onPressed: isSaving ? null : () => unawaited(_submit()),
-        isLoading: isSaving,
+        status: (isSaving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         fullWidth: true,
-        icon: Icon(CatchIcons.personAddAlt1Rounded),
+        leading: Icon(CatchIcons.personAddAlt1Rounded),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

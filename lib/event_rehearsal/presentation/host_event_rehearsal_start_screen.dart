@@ -163,8 +163,10 @@ class _HostEventRehearsalStartScreenState
                 child: CatchButton(
                   label: context.l10n.hostEventRehearsalCreate,
                   fullWidth: true,
-                  isLoading: mutation.isPending,
-                  icon: Icon(CatchIcons.playArrowRounded),
+                  status: (mutation.isPending)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  leading: Icon(CatchIcons.playArrowRounded),
                   onPressed: mutation.isPending ? null : _create,
                 ),
               ),

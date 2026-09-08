@@ -163,7 +163,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                 key: ReviewKeys.deleteReviewButton,
                 label: context.l10n.reviewsWriteReviewSheetLabelDeleteReview,
                 onPressed: submitting ? null : _confirmDelete,
-                isLoading: deleteMutation.isPending,
+                status: (deleteMutation.isPending)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
               ),
@@ -175,7 +177,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                   ? context.l10n.reviewsWriteReviewSheetLabelSave
                   : context.l10n.reviewsWriteReviewSheetLabelSubmit,
               onPressed: _rating == 0 || submitting ? null : _submit,
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
           ],

@@ -1164,10 +1164,12 @@ class _HostEventCheckInQrPanelState
             CatchButton(
               label:
                   context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
-              icon: Icon(CatchIcons.share),
+              leading: Icon(CatchIcons.share),
               size: CatchButtonSize.sm,
               variant: CatchButtonVariant.secondary,
-              isLoading: _sharing,
+              status: (_sharing)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
             ),
           ],
@@ -1326,8 +1328,8 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
       ),
       size: CatchButtonSize.sm,
       variant: CatchButtonVariant.secondary,
-      icon: Icon(CatchIcons.sendRounded),
-      isLoading: isPending,
+      leading: Icon(CatchIcons.sendRounded),
+      status: (isPending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: isPending ? null : onOffer,
     );
     return CatchSurface(

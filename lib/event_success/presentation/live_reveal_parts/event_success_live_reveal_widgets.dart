@@ -1038,7 +1038,9 @@ class _EventSuccessOutcomeRecorderState
           gapH12,
           CatchButton(
             label: context.l10n.eventSuccessLiveControlSaveRoundLabel,
-            isLoading: widget.actionState.isLoading,
+            status: (widget.actionState.isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed:
                 widget.actionState.isLoading ||
                     widget.onRecord == null ||

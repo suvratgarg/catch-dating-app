@@ -276,7 +276,7 @@
       "intent": "Review the shared rendering and ergonomics of compact single-action controls across floating overlays and dense rails. Labelled and icon-only commands may share family metrics while feature adapters retain toggle or loading semantics. Picker shells, multi-action inputs, media decision actions, status badges, and Event Detail symbols remain separate.",
       "priority": "P1",
       "status": "implemented",
-      "targetContract": "catch.icon_button + catch.count_pill",
+      "targetContract": "catch.icon_button + catch.button",
       "qualityReference": "CatchIconButton",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
@@ -330,10 +330,16 @@
       "members": [
         {
           "symbol": "CatchCountPill",
-          "disposition": "repair",
-          "target": "CatchCountPill.label",
+          "disposition": "unify",
+          "target": "CatchButton.floating",
+          "preview": "not-applicable",
+          "rationale": "The repaired labelled silhouette and required action now belong to the canonical Button floating recipe; icon-only controls remain separate as approved."
+        },
+        {
+          "symbol": "CatchButton",
+          "disposition": "canonical",
           "preview": "required",
-          "rationale": "Keep its raised translucent labelled silhouette, but remove the overlapping 38px icon-only state, raw string badge drawing, empty-valid construction, and action-looking passive state."
+          "rationale": "Its floating recipe preserves the repaired labelled control while the icon-only role stays distinct."
         },
         {
           "symbol": "CatchIconButton",
@@ -1568,6 +1574,34 @@
           "target": "CatchCountBadge",
           "preview": "required",
           "rationale": "Forward incoming constraints through the overlay Stack; zero and nonzero counts must not change the child constraints."
+        }
+      ]
+    },
+    {
+      "id": "labelled-button-canonical-recipes",
+      "title": "Canonical labelled button recipes",
+      "intent": "Own labelled actions in one Button component with explicit CTA, command, selection and counted-floating recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.button",
+      "qualityReference": "CatchButton",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in this migration. Preserve the established floating surface, count placement after the separately verified constraint fix, focus, semantics, typography and target size. Preserve existing CTA, command and selection visuals."
+      ],
+      "members": [
+        {
+          "symbol": "CatchButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Shared labelled-action owner with explicit named recipes and closed geometry/status axes."
+        },
+        {
+          "symbol": "CatchCountPill",
+          "disposition": "unify",
+          "target": "CatchButton.floating",
+          "preview": "not-applicable",
+          "rationale": "A labelled floating action is a button recipe. The integer badge and optional secondary value remain typed; icon-only controls keep their separate role."
         }
       ]
     }

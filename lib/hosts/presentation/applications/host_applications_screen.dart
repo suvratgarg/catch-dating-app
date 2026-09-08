@@ -163,7 +163,7 @@ class _HostApplicationsScreenState
               label: _status == null
                   ? context.l10n.hostApplicationsReviewStatusFilter
                   : hostApplicationStatusLabel(context, _status!),
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _chooseStatus,
             ),
             gapH16,
@@ -213,7 +213,9 @@ class _HostApplicationsScreenState
                         CatchButton(
                           label: context.l10n.hostApplicationsLoadMore,
                           variant: CatchButtonVariant.secondary,
-                          isLoading: state.loadingMore,
+                          status: (state.loadingMore)
+                              ? CatchButtonStatus.loading
+                              : CatchButtonStatus.idle,
                           fullWidth: true,
                           onPressed: state.loadingMore
                               ? null
@@ -247,7 +249,7 @@ class _HostApplicationsScreenState
             CatchButton.command(
               key: const ValueKey('host-applications-import'),
               label: context.l10n.hostApplicationsImport,
-              icon: Icon(CatchIcons.downloadRounded),
+              leading: Icon(CatchIcons.downloadRounded),
               onPressed: _importing ? null : _pickImport,
             ),
           ],

@@ -666,7 +666,9 @@ class LiveTab extends StatelessWidget {
                 .l10n
                 .eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete,
             variant: CatchButtonVariant.secondary,
-            isLoading: actionState.isCompleting,
+            status: (actionState.isCompleting)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: actionState.isCompleting || onCompleteGuide == null
                 ? null
                 : () => unawaited(completeGuide()),
@@ -1020,7 +1022,9 @@ class _EventSuccessPresenceCard extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveLabelPlaceNextRound,
                       size: CatchButtonSize.sm,
-                      isLoading: resolvingLateArrival,
+                      status: (resolvingLateArrival)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       onPressed:
                           resolvingLateArrival || onResolveLateArrival == null
                           ? null

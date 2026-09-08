@@ -18,7 +18,7 @@ class CatchBottomActionContent extends StatelessWidget {
     this.buttonKey,
     this.isLoading = false,
     this.buttonAccentColor,
-    this.buttonShape = CatchButtonShape.pill,
+    this.buttonMode = CatchButtonMode.pill,
     this.catchLine,
     this.catchLineAccent,
     this.footnote,
@@ -31,7 +31,7 @@ class CatchBottomActionContent extends StatelessWidget {
   final Key? buttonKey;
   final bool isLoading;
   final Color? buttonAccentColor;
-  final CatchButtonShape buttonShape;
+  final CatchButtonMode buttonMode;
   final String? catchLine;
   final Color? catchLineAccent;
   final String? footnote;
@@ -92,9 +92,11 @@ class CatchBottomActionContent extends StatelessWidget {
                       label: label,
                       onPressed: onPressed,
                       size: CatchButtonSize.lg,
-                      isLoading: isLoading,
+                      status: (isLoading)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       fullWidth: true,
-                      shape: buttonShape,
+                      mode: buttonMode,
                       accentColor: buttonAccentColor,
                     ),
                   ),

@@ -62,21 +62,21 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
               children: [
                 CatchButton(
                   label: context.l10n.hostEventRehearsalCopyLink,
-                  icon: Icon(CatchIcons.contentCopyRounded),
+                  leading: Icon(CatchIcons.contentCopyRounded),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onCopy,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalShareLink,
-                  icon: Icon(CatchIcons.share),
+                  leading: Icon(CatchIcons.share),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onShare,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalRotateLink,
-                  icon: Icon(CatchIcons.refresh),
+                  leading: Icon(CatchIcons.refresh),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.ghost,
                   onPressed: isLoading ? null : onRotate,
@@ -235,7 +235,7 @@ class _EventRehearsalControlButton extends StatelessWidget {
     label: label,
     size: CatchButtonSize.sm,
     variant: variant,
-    isLoading: isLoading,
+    status: (isLoading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
     onPressed: isLoading ? null : () => onControl(action, null),
   );
 }

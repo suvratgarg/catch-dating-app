@@ -184,7 +184,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   onPressed: canSubmit ? _submit : null,
                   fullWidth: true,
                   size: CatchButtonSize.lg,
-                  shape: CatchButtonShape.rounded,
+                  mode: CatchButtonMode.rounded,
                 ),
             ],
           ),
@@ -198,9 +198,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
           label: l10n.authSendCodeAction,
-          icon: Icon(CatchIcons.arrowForwardRounded),
+          leading: Icon(CatchIcons.arrowForwardRounded),
           onPressed: _submit,
-          isLoading: viewState.sendButtonLoading,
+          status: (viewState.sendButtonLoading)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),

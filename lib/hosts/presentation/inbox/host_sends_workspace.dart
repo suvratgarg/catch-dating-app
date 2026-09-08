@@ -797,7 +797,9 @@ class _HostSendsHistoryPage extends StatelessWidget {
               child: CatchButton(
                 label: context.l10n.hostSendsLoadMore,
                 variant: CatchButtonVariant.secondary,
-                isLoading: loadingMore,
+                status: (loadingMore)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 onPressed: loadingMore
                     ? null
                     : () => onLoadMore(page, baseKey, nextCursor),

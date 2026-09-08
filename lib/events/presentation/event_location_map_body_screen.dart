@@ -108,12 +108,14 @@ class EventLocationMapScreen extends StatelessWidget {
                     label: context
                         .l10n
                         .eventsEventLocationMapBodyScreenLabelGetDirections,
-                    icon: Icon(
+                    leading: Icon(
                       CatchIcons.directionsOutlined,
                       size: CatchIcon.md,
                     ),
                     fullWidth: true,
-                    isLoading: directionsPending,
+                    status: (directionsPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: directionsPending ? null : onGetDirections,
                   ),
                 ],

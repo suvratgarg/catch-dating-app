@@ -569,11 +569,11 @@ void main() {
     var calls = 0;
     await _pump(
       tester,
-      CatchCountPill.label(
+      CatchButton.floating(
         key: _controlKey,
         label: 'Filters',
         count: 2,
-        semanticLabel: 'Two filters',
+        semanticsLabel: 'Two filters',
         onPressed: () => calls++,
       ),
       scale: 2,

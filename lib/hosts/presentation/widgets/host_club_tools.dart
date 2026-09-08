@@ -148,7 +148,7 @@ class HostClubManagementPanel extends StatelessWidget {
                   key: ClubActionKeys.addEventButton,
                   label: context.l10n.hostsHostClubToolsLabelAddEvent,
                   onPressed: onCreateEvent,
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                  leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   fullWidth: true,
                 ),
                 gapH10,
@@ -184,7 +184,7 @@ class HostClubManagementPanel extends StatelessWidget {
                                         );
                                   },
                             ),
-                      icon: Icon(CatchIcons.megaphone, size: CatchIcon.md),
+                      leading: Icon(CatchIcons.megaphone, size: CatchIcon.md),
                       variant: CatchButtonVariant.secondary,
                       fullWidth: true,
                     );
@@ -195,7 +195,7 @@ class HostClubManagementPanel extends StatelessWidget {
                   key: ClubActionKeys.editButton,
                   label: context.l10n.hostsHostClubToolsLabelEditClub,
                   onPressed: onEditClub,
-                  icon: Icon(CatchIcons.editOutlined, size: CatchIcon.md),
+                  leading: Icon(CatchIcons.editOutlined, size: CatchIcon.md),
                   variant: CatchButtonVariant.secondary,
                   fullWidth: true,
                 ),

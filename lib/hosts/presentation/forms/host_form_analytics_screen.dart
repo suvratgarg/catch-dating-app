@@ -225,7 +225,7 @@ class _HostFormAnalyticsScreenState
               gapH24,
               CatchButton.command(
                 label: context.l10n.hostAudienceViewAllResponses,
-                icon: Icon(CatchIcons.forwardArrow),
+                leading: Icon(CatchIcons.forwardArrow),
                 onPressed: () => context.pushNamed(
                   Routes.hostFormBuilderScreen.name,
                   pathParameters: {'formId': widget.formId},
@@ -278,7 +278,7 @@ class _HostFormAnalyticsScreenState
                           : format == HostFormExportFormat.csv
                           ? context.l10n.hostFormExportCsv
                           : context.l10n.hostFormExportXlsx,
-                      icon: Icon(CatchIcons.downloadRounded),
+                      leading: Icon(CatchIcons.downloadRounded),
                       onPressed: _exporting == null
                           ? () => _export(format, value.versionId)
                           : null,

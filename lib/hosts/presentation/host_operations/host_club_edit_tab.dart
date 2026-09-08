@@ -534,7 +534,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                             publicationState.targetPublicListingEnabled,
                           ),
                         ),
-                  isLoading: publicationMutation.isPending,
+                  status: (publicationMutation.isPending)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant:
                       publicationState.kind ==
                           HostClubPublicationKind.everywhere
@@ -1162,7 +1164,9 @@ class _HostClubMediaManagerActionsState
                       key: const ValueKey('host-media-save'),
                       label: context.l10n.hostsHostClubEditTabActionSaveMedia,
                       onPressed: _saving ? null : () => unawaited(_save()),
-                      isLoading: _saving,
+                      status: (_saving)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       fullWidth: true,
                     ),
                   ),

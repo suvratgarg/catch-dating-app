@@ -168,7 +168,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               actions: [
                 CatchButton(
                   label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                  leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   size: CatchButtonSize.sm,
                   onPressed: () =>
                       context.pushNamed(Routes.hostCreateClubScreen.name),

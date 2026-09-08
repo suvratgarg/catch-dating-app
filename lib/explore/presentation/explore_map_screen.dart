@@ -268,11 +268,11 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   top: CatchSpacing.s5,
                   bottom: CatchSpacing.s5,
                 ),
-                child: CatchCountPill.label(
+                child: CatchButton.floating(
                   icon: CatchIcons.nearMeOutlined,
                   label: distanceControlLabel,
                   value: hasDeviceLocation ? distanceControlValue : null,
-                  semanticLabel: distanceControlSemantics,
+                  semanticsLabel: distanceControlSemantics,
                   onPressed: () {
                     if (!locationLoading) _activateOrCycleDistance();
                   },

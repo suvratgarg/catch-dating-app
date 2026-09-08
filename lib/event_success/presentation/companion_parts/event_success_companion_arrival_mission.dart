@@ -138,8 +138,10 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                     label: context
                         .l10n
                         .eventSuccessEventSuccessCompanionArrivalMissionLabelStartFirstHello,
-                    icon: Icon(CatchIcons.playArrowRounded),
-                    isLoading: starting,
+                    leading: Icon(CatchIcons.playArrowRounded),
+                    status: (starting)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: starting || widget.onStart == null
                         ? null
                         : _start,
@@ -151,8 +153,10 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                         .l10n
                         .eventSuccessEventSuccessCompanionArrivalMissionLabelUseNormalCheckIn,
                     variant: CatchButtonVariant.ghost,
-                    icon: Icon(CatchIcons.qrCode2Rounded),
-                    isLoading: skipping,
+                    leading: Icon(CatchIcons.qrCode2Rounded),
+                    status: (skipping)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: starting || skipping ? null : widget.onSkip,
                     fullWidth: true,
                   ),
@@ -374,8 +378,10 @@ class _FirstHelloMissionEditor extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessCompanionArrivalMissionLabelCompleteCheckIn,
-                icon: Icon(CatchIcons.checkRounded),
-                isLoading: saving,
+                leading: Icon(CatchIcons.checkRounded),
+                status: (saving)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 onPressed:
                     selectedAnswerId == null || saving || onComplete == null
                     ? null
@@ -388,8 +394,10 @@ class _FirstHelloMissionEditor extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessCompanionArrivalMissionLabelCanTFindThem,
                 variant: CatchButtonVariant.ghost,
-                icon: Icon(CatchIcons.swapHorizRounded),
-                isLoading: skipping,
+                leading: Icon(CatchIcons.swapHorizRounded),
+                status: (skipping)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 onPressed: saving || skipping ? null : onSkip,
                 fullWidth: true,
               ),

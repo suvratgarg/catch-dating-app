@@ -98,8 +98,8 @@ void main() {
     expect(
       tester
           .widget<CatchBottomAction>(find.byType(CatchBottomAction))
-          .buttonShape,
-      CatchButtonShape.rounded,
+          .buttonMode,
+      CatchButtonMode.rounded,
     );
   });
 

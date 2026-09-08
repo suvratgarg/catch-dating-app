@@ -49,7 +49,6 @@
         "componentContracts": [
           "catch.button",
           "catch.chip",
-          "catch.count_pill",
           "catch.cover_story",
           "catch.event_card",
           "catch.field",

@@ -287,9 +287,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationMarkInReview,
                                 variant: CatchButtonVariant.secondary,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.inReview,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.inReview)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -301,9 +303,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationWaitlist,
                                 variant: CatchButtonVariant.secondary,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.waitlisted,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.waitlisted)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -315,9 +319,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationDecline,
                                 variant: CatchButtonVariant.danger,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.declined,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.declined)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -407,25 +413,25 @@ class _HostApplicationOutreachSection extends StatelessWidget {
       if (outreach.phoneE164 case final phone?)
         CatchButton.command(
           label: context.l10n.hostApplicationCall,
-          icon: Icon(CatchIcons.phoneOutlined, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.phoneOutlined, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri(scheme: 'tel', path: phone)),
         ),
       if (outreach.email case final email?)
         CatchButton.command(
           label: context.l10n.hostApplicationEmail,
-          icon: Icon(CatchIcons.emailOutlined, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.emailOutlined, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri(scheme: 'mailto', path: email)),
         ),
       if (outreach.instagramUrl case final url?)
         CatchButton.command(
           label: context.l10n.hostApplicationInstagram,
-          icon: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri.parse(url)),
         ),
       if (outreach.linkedinUrl case final url?)
         CatchButton.command(
           label: context.l10n.hostApplicationLinkedin,
-          icon: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri.parse(url)),
         ),
     ];

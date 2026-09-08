@@ -257,7 +257,9 @@ class ExploreFilterSheet extends StatelessWidget {
           Expanded(
             child: CatchButton(
               label: sheetState.actionLabel,
-              isLoading: sheetState.actionLoading,
+              status: (sheetState.actionLoading)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),

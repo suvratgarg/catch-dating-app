@@ -742,8 +742,10 @@ class PaperSelfCheckInBar extends StatelessWidget {
     return CatchButton(
       label:
           context.l10n.eventSuccessEventSuccessCompanionSharedLabelIMHereCheck,
-      icon: Icon(CatchIcons.locationOnOutlined),
-      isLoading: actionState.isCheckingIn,
+      leading: Icon(CatchIcons.locationOnOutlined),
+      status: (actionState.isCheckingIn)
+          ? CatchButtonStatus.loading
+          : CatchButtonStatus.idle,
       onPressed: actionState.isCheckingIn
           ? null
           : () => unawaited(_scanAndCheckIn(context)),

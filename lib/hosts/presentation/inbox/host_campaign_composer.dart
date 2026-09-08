@@ -399,7 +399,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                           template,
                           selectedAudience,
                         ),
-                  isLoading: _busy,
+                  status: (_busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                 )
               else
                 HostCampaignReport(
@@ -684,13 +686,17 @@ class HostCampaignReport extends StatelessWidget {
               CatchButton(
                 label: context.l10n.hostsHostAudienceApprove,
                 onPressed: busy ? null : onApprove,
-                isLoading: busy,
+                status: (busy)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
               ),
             if (onSend != null)
               CatchButton(
                 label: context.l10n.hostsHostAudienceSendNow,
                 onPressed: busy ? null : onSend,
-                isLoading: busy,
+                status: (busy)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
               ),
             CatchButton(
               label: context.l10n.hostsHostAudienceRefresh,

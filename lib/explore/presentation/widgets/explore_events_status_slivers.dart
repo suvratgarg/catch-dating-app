@@ -59,7 +59,7 @@ class ExploreEventsEmptySliver extends StatelessWidget {
           actions: [
             CatchButton(
               label: state.actionLabel,
-              icon: Icon(state.actionIcon),
+              leading: Icon(state.actionIcon),
               variant: CatchButtonVariant.secondary,
               onPressed: _handleAction,
             ),

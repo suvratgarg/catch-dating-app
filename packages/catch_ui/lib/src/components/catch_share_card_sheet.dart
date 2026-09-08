@@ -70,8 +70,10 @@ class CatchShareCardSheet extends StatelessWidget {
                 key: shareButtonKey,
                 label: buttonLabel,
                 fullWidth: true,
-                isLoading: isSharing,
-                icon: Icon(
+                status: (isSharing)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                leading: Icon(
                   CatchIcons.platformShare(
                     platform: Theme.of(context).platform,
                   ),

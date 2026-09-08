@@ -318,7 +318,9 @@ class HostEventsTimelinePage extends StatelessWidget
                           ? context.l10n.hostEventsTimelineLoadMoreSchedule
                           : context.l10n.hostEventsTimelineLoadMoreHistory,
                       variant: CatchButtonVariant.secondary,
-                      isLoading: loadingMore,
+                      status: (loadingMore)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       onPressed: loadingMore ? null : onLoadMore,
                     ),
                   ),

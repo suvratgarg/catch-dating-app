@@ -1859,7 +1859,7 @@ Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
               children: [
                 CatchButton(
                   label: 'Simulate failed save',
-                  icon: Icon(CatchIcons.errorOutlineRounded),
+                  leading: Icon(CatchIcons.errorOutlineRounded),
                   onPressed: () => unawaited(
                     mutation
                         .run(ref, (_) async => throw StateError('Save failed'))
@@ -1925,7 +1925,7 @@ Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
         child: Builder(
           builder: (context) => CatchButton(
             label: 'Show action error',
-            icon: Icon(CatchIcons.errorOutlineRounded),
+            leading: Icon(CatchIcons.errorOutlineRounded),
             onPressed: () => showCatchErrorSnackBar(
               context,
               Exception('Share sheet is unavailable right now.'),

@@ -412,7 +412,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                           .l10n
                           .paymentsPaymentHistoryScreenLabelGetHelpWithThis,
                       onPressed: onHelp,
-                      icon: Icon(CatchIcons.helpOutlineRounded),
+                      leading: Icon(CatchIcons.helpOutlineRounded),
                       variant: CatchButtonVariant.secondary,
                       foregroundColor: t.warning,
                       borderColor: t.warning.withValues(

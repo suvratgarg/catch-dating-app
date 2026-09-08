@@ -118,7 +118,7 @@ class BookingConflictSheet extends StatelessWidget {
                     .l10n
                     .eventsBookingConflictSheetLabelCancelExistingBookThis,
                 fullWidth: true,
-                icon: Icon(CatchIcons.swapHorizRounded),
+                leading: Icon(CatchIcons.swapHorizRounded),
                 onPressed: onReplaceExisting,
               ),
               gapH10,

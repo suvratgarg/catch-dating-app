@@ -146,7 +146,9 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                     onPressed: preferencesState.applyEnabled
                         ? () => _save(preferencesState)
                         : null,
-                    isLoading: saving,
+                    status: (saving)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     fullWidth: true,
                   ),
                 ),
@@ -175,7 +177,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           label: context.l10n.sharedActionTryAgain,
                           onPressed: () =>
                               ref.invalidate(watchUserProfileProvider),
-                          icon: Icon(CatchIcons.refreshRounded),
+                          leading: Icon(CatchIcons.refreshRounded),
                         ),
                       ],
                     ),
@@ -317,7 +319,9 @@ class FiltersContent extends StatelessWidget {
             key: SwipeKeys.applyFiltersButton,
             label: context.l10n.swipesFiltersScreenLabelApplyFilters,
             onPressed: saving ? null : onApply,
-            isLoading: saving,
+            status: (saving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             fullWidth: true,
           ),
         ),

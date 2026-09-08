@@ -160,7 +160,7 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
               onPressed: _onStartFresh,
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
-              icon: Icon(CatchIcons.addRounded),
+              leading: Icon(CatchIcons.addRounded),
             ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

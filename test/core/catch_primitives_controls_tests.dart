@@ -196,7 +196,7 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchButton(
                   label: 'Loading',
                   onPressed: () => taps++,
-                  isLoading: true,
+                  status: CatchButtonStatus.loading,
                 ),
               ],
             ),
@@ -428,12 +428,12 @@ void _registerCatchPrimitivesControlsTests() {
         throwsAssertionError,
       );
       expect(
-        () => CatchCountPill.label(label: '   ', onPressed: () {}),
+        () => CatchButton.floating(label: '   ', onPressed: () {}),
         throwsAssertionError,
       );
       expect(
         () =>
-            CatchCountPill.label(label: 'Filters', count: -1, onPressed: () {}),
+            CatchButton.floating(label: 'Filters', count: -1, onPressed: () {}),
         throwsAssertionError,
       );
     },
@@ -501,19 +501,19 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchCountPill.label stays interactive and at least 44px', (
+  testWidgets('CatchButton.floating stays interactive and at least 44px', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
       _wrap(
-        CatchCountPill.label(
+        CatchButton.floating(
           key: const ValueKey('labelled-count-pill'),
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           count: 3,
-          semanticLabel: 'Filters, 3 active',
+          semanticsLabel: 'Filters, 3 active',
           onPressed: () => taps++,
         ),
         textScale: 2,

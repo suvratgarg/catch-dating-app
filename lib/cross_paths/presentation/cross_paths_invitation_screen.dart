@@ -311,7 +311,9 @@ class _InvitationActions extends StatelessWidget {
           CatchButton(
             label: context.l10n.crossPathsInvitationScreenActionAccept,
             fullWidth: true,
-            isLoading: loading,
+            status: (loading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: () => onRespond(true),
           ),
           gapH10,
@@ -328,7 +330,7 @@ class _InvitationActions extends StatelessWidget {
       return CatchButton(
         label: context.l10n.crossPathsInvitationActionCancel,
         fullWidth: true,
-        isLoading: loading,
+        status: (loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         variant: CatchButtonVariant.secondary,
         onPressed: onCancel,
       );
@@ -352,7 +354,9 @@ class _InvitationActions extends StatelessWidget {
             label: context.l10n.crossPathsInvitationScreenActionCancelPlan,
             fullWidth: true,
             variant: CatchButtonVariant.secondary,
-            isLoading: loading,
+            status: (loading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: onCancel,
           ),
         ],
@@ -443,7 +447,9 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
               key: const ValueKey('cross-paths-pair-complete-booking'),
               label: context.l10n.crossPathsPairInventoryActionCompleteBooking,
               fullWidth: true,
-              isLoading: _booking,
+              status: (_booking)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _booking ? null : _completeBooking,
             ),
           ] else if (active) ...[

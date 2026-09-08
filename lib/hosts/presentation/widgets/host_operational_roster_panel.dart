@@ -116,22 +116,26 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterImport,
                   onPressed: importing ? null : onImport,
-                  isLoading: importing,
+                  status: (importing)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                  leading: Icon(CatchIcons.cloudUploadOutlined),
                 ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterAddGuest,
                   onPressed: importing ? null : onAddGuest,
                   variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: Icon(CatchIcons.personAddAlt1Outlined),
                 ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterForwardCsv,
                   onPressed: importing || creatingHandoff ? null : onForward,
-                  isLoading: creatingHandoff,
+                  status: (creatingHandoff)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.alternateEmailOutlined),
+                  leading: Icon(CatchIcons.alternateEmailOutlined),
                 ),
               ],
             ),
@@ -294,9 +298,11 @@ class _HostOperationalRosterPanelState
                 onPressed: _importing
                     ? null
                     : () => unawaited(_showManualGuest()),
-                isLoading: _importing,
+                status: (_importing)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 variant: CatchButtonVariant.secondary,
-                icon: Icon(CatchIcons.personAddAlt1Outlined),
+                leading: Icon(CatchIcons.personAddAlt1Outlined),
               ),
             ),
             gapH12,
@@ -1272,17 +1278,21 @@ class _HostProviderSetupView extends StatelessWidget {
                   CatchButton(
                     label: context.l10n.hostsOperationalRosterProviderReconnect,
                     onPressed: mutationPending ? null : onConnect,
-                    isLoading: mutationPending,
+                    status: (mutationPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     size: CatchButtonSize.sm,
-                    icon: Icon(CatchIcons.keyOutlined),
+                    leading: Icon(CatchIcons.keyOutlined),
                   )
                 else
                   CatchButton(
                     label: context.l10n.hostsOperationalRosterProviderSyncNow,
                     onPressed: mutationPending ? null : onSync,
-                    isLoading: mutationPending,
+                    status: (mutationPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     size: CatchButtonSize.sm,
-                    icon: Icon(CatchIcons.syncRounded),
+                    leading: Icon(CatchIcons.syncRounded),
                   ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterProviderDisconnect,
@@ -1329,9 +1339,11 @@ class _HostProviderSetupView extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterProviderConnect,
                   onPressed: mutationPending ? null : onConnect,
-                  isLoading: mutationPending,
+                  status: (mutationPending)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   size: CatchButtonSize.sm,
-                  icon: Icon(CatchIcons.keyOutlined),
+                  leading: Icon(CatchIcons.keyOutlined),
                 ),
               if (entry.capabilities.fileImport)
                 CatchButton(
@@ -1339,7 +1351,7 @@ class _HostProviderSetupView extends StatelessWidget {
                   onPressed: mutationPending ? null : onImport,
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                  leading: Icon(CatchIcons.cloudUploadOutlined),
                 ),
             ],
           ),
@@ -1397,7 +1409,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
       action: CatchButton(
         label: context.l10n.hostsOperationalRosterProviderChooseEvent,
         onPressed: _loading ? null : _verifyAndChoose,
-        isLoading: _loading,
+        status: (_loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         fullWidth: true,
       ),
       child: Column(
@@ -1688,7 +1700,9 @@ class _HostRuntimeClaimActions extends StatelessWidget {
         ? CatchButton(
             label: context.l10n.hostsOperationalRosterClaimApprove,
             onPressed: enabled ? () => onApprove(candidateIds.single) : null,
-            isLoading: pending,
+            status: (pending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
           )
@@ -1707,7 +1721,9 @@ class _HostRuntimeClaimActions extends StatelessWidget {
               onPressed: enabled && candidateIds.isNotEmpty
                   ? controller.open
                   : null,
-              isLoading: pending,
+              status: (pending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: CatchButtonVariant.secondary,
               size: CatchButtonSize.sm,
             ),
@@ -1760,7 +1776,9 @@ class _RosterAttendanceAction extends StatelessWidget {
                 ? context.l10n.hostsOperationalRosterUndoCheckIn
                 : context.l10n.hostsOperationalRosterCheckIn,
             onPressed: pending ? null : onPressed,
-            isLoading: pending,
+            status: (pending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.ghost,
             size: CatchButtonSize.sm,
           ),

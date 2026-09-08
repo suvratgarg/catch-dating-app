@@ -97,7 +97,7 @@ class _HostFollowerUpdateComposerSheetState
             ? context.l10n.hostsHostClubToolsLabelPosting
             : context.l10n.hostsHostClubToolsLabelPostUpdate,
         onPressed: canSubmit ? () => _submit(text) : null,
-        isLoading: _pending,
+        status: (_pending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         fullWidth: true,
       ),
       child: Column(

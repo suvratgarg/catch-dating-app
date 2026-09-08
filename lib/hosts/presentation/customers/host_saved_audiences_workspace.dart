@@ -78,7 +78,7 @@ class _HostSavedAudiencesDirectoryState
               label: _byName
                   ? context.l10n.hostCustomersSortName
                   : context.l10n.hostAudienceRecentlyChecked,
-              icon: Icon(CatchIcons.sort),
+              leading: Icon(CatchIcons.sort),
               onPressed: () => setState(() => _byName = !_byName),
             ),
             CatchButton.command(
@@ -90,7 +90,7 @@ class _HostSavedAudiencesDirectoryState
                 _HostSavedAudienceMembership.all =>
                   context.l10n.hostAudienceAllGroups,
               },
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _chooseMembership,
             ),
           ],

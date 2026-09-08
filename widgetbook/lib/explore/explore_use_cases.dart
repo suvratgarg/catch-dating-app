@@ -2140,21 +2140,21 @@ Widget eventTypeBrowseSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Map launcher states',
-  type: CatchCountPill,
+  type: CatchButton,
   path: '[Explore]/Sections',
 )
 Widget exploreMapLauncherStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchCountPill map launcher',
+    title: 'CatchButton map launcher',
     catalogId: 'section.explore.map_launcher',
     children: [
       _StateCard(
         label: 'empty count',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
-            semanticLabel: 'Map',
+            semanticsLabel: 'Map',
             onPressed: _noop,
           ),
         ),
@@ -2162,11 +2162,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'with count',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
             count: 6,
-            semanticLabel: 'Map, 6 events',
+            semanticsLabel: 'Map, 6 events',
             onPressed: _noop,
           ),
         ),
@@ -2174,11 +2174,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'pressed review target',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
             count: 12,
-            semanticLabel: 'Map, 12 events',
+            semanticsLabel: 'Map, 12 events',
             onPressed: _noop,
           ),
         ),
@@ -2188,11 +2188,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _MapPillFrame(
-            child: CatchCountPill.label(
+            child: CatchButton.floating(
               label: 'Map',
               icon: CatchIcons.map,
               count: 12,
-              semanticLabel: 'Map, 12 events',
+              semanticsLabel: 'Map, 12 events',
               onPressed: _noop,
             ),
           ),

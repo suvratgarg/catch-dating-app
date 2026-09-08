@@ -2230,6 +2230,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchButtonContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Floating states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchCountPillContractStates,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -2240,17 +2246,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchButtonLabelContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchCountPill',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCountPillContractStates,
               ),
             ],
           ),
@@ -5305,7 +5300,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchCountPill',
+            name: 'CatchButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map launcher states',

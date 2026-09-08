@@ -353,7 +353,7 @@ class CatchRosterActionCell extends StatelessWidget {
           variant: primary
               ? CatchButtonVariant.primary
               : CatchButtonVariant.secondary,
-          icon: icon == null ? null : Icon(icon),
+          leading: icon == null ? null : Icon(icon),
           onPressed: disabled ? null : onPressed,
         ),
     };

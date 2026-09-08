@@ -633,10 +633,14 @@ Widget buttonGeometryMatrix(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             const CatchButton(label: 'Disabled', onPressed: null),
-            CatchButton(label: 'Loading', isLoading: true, onPressed: _noop),
+            CatchButton(
+              label: 'Loading',
+              status: CatchButtonStatus.loading,
+              onPressed: _noop,
+            ),
             CatchButton(
               label: 'With icon',
-              icon: Icon(CatchIcons.calendarAdd),
+              leading: Icon(CatchIcons.calendarAdd),
               onPressed: _noop,
             ),
           ],

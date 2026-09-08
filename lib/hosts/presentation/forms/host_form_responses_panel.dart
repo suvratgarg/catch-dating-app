@@ -94,7 +94,7 @@ class _HostFormResponsesPanelState
                             responses,
                           ).value?.responses.firstOrNull?.formTitle ??
                           context.l10n.hostAudienceSelectedForm,
-                icon: Icon(CatchIcons.descriptionOutlined),
+                leading: Icon(CatchIcons.descriptionOutlined),
                 onPressed: widget.onFormChanged != null
                     ? _chooseForm
                     : widget.onClearFormFilter,
@@ -107,7 +107,7 @@ class _HostFormResponsesPanelState
                   context.l10n.hostFormResponsesWithdrawn,
                 null => context.l10n.hostAudienceAllStatuses,
               },
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _selectStatus,
             ),
           ],
@@ -184,7 +184,9 @@ class _HostFormResponsesPanelState
                   CatchButton(
                     label: context.l10n.hostFormResponsesLoadMore,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: state.loadingMore,
+                    status: (state.loadingMore)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     fullWidth: true,
                     onPressed: state.loadingMore
                         ? null

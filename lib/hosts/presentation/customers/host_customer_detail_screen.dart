@@ -614,7 +614,7 @@ class _HostWhatsappHandoffSheetState
       action: CatchButton(
         key: const ValueKey('host-customer-confirm-whatsapp'),
         label: context.l10n.hostCustomersOpenWhatsapp,
-        isLoading: _opening,
+        status: (_opening) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: _opening || message.isEmpty ? null : _open,
         fullWidth: true,
       ),

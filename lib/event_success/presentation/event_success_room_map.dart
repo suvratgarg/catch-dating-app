@@ -591,7 +591,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           : context.l10n.eventSuccessRoomMapMoveToUnit(
               unitLabel: destinationUnit!.label,
             ),
-      isLoading: pending,
+      status: (pending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: pending ? null : onMove,
       fullWidth: true,
     );

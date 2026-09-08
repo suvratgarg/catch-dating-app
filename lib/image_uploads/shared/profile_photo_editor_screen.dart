@@ -303,7 +303,9 @@ class _ProfilePhotoEditorScreenState
                         .l10n
                         .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,
               onPressed: canSave ? _save : null,
-              isLoading: _saving,
+              status: (_saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
             gapH12,
@@ -316,7 +318,7 @@ class _ProfilePhotoEditorScreenState
                         .l10n
                         .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
               onPressed: _saving || _deleting ? null : _replaceImage,
-              icon: Icon(CatchIcons.photoLibraryOutlined),
+              leading: Icon(CatchIcons.photoLibraryOutlined),
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
             ),
@@ -331,8 +333,10 @@ class _ProfilePhotoEditorScreenState
                           .l10n
                           .imageUploadsProfilePhotoEditorScreenLabelDeletePhoto,
                 onPressed: canDelete ? _deletePhoto : null,
-                isLoading: _deleting,
-                icon: Icon(CatchIcons.deleteOutlineRounded),
+                status: (_deleting)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                leading: Icon(CatchIcons.deleteOutlineRounded),
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
                 semanticsLabel: canDelete

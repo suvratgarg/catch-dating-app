@@ -196,7 +196,9 @@ class _CompatibilityQuestionnaireSectionState
                   : context
                         .l10n
                         .eventSuccessEventSuccessCompanionQuestionnaireLabelUpdateClues,
-              isLoading: saving,
+              status: (saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: !hasAnswers || !dirty || saving
                   ? null
                   : () async {

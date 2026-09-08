@@ -1107,7 +1107,7 @@
                 "ExploreScreen/Screen states",
                 "ExploreEventsSection/Feed states",
                 "ExploreEventTypeBrowseGrid/Activity states",
-                "CatchCountPill/Map launcher states"
+                "CatchButton/Map launcher states"
               ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
@@ -1281,7 +1281,7 @@
               "status": "captured",
               "previewIds": [
                 "ExploreScreen/Screen states",
-                "CatchCountPill/Map launcher states"
+                "CatchButton/Map launcher states"
               ],
               "captureIds": [
                 "explore_text_scale_2"

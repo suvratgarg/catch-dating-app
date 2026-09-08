@@ -2559,7 +2559,7 @@
             "ExploreScreen/Screen states",
             "ExploreEventsSection/Feed states",
             "ExploreEventTypeBrowseGrid/Activity states",
-            "CatchCountPill/Map launcher states"
+            "CatchButton/Map launcher states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -2817,7 +2817,7 @@
           "source": "Explore has narrow-width widget tests for key cards, but no full-screen text-scale capture.",
           "previewIds": [
             "ExploreScreen/Screen states",
-            "CatchCountPill/Map launcher states"
+            "CatchButton/Map launcher states"
           ],
           "nextAction": "Review text-scale capture against design references for browse header, filter rail, event rows, and map pill.",
           "captureIds": [
@@ -2890,7 +2890,6 @@
             "dependencies": [
               "catch.button",
               "catch.chip",
-              "catch.count_pill",
               "catch.surface"
             ],
             "states": [
@@ -2988,7 +2987,6 @@
             "targetOwner": "registered floating map count pill",
             "dependencies": [
               "catch.button",
-              "catch.count_pill",
               "catch.icon_button"
             ],
             "states": [
@@ -2998,9 +2996,9 @@
               "text_scale"
             ],
             "previewIds": [
-              "CatchCountPill/Map launcher states"
+              "CatchButton/Map launcher states"
             ],
-            "migration": "Map label/count derivation now lives in provider-free ExploreMapLauncherState. CountPill states are registered through catch.count_pill and the Explore map launcher section binds the production map/list affordance states."
+            "migration": "Map label/count derivation now lives in provider-free ExploreMapLauncherState. CountPill states are registered through catch.button and the Explore map launcher section binds the production map/list affordance states."
           },
           {
             "id": "section.explore.map_route",
@@ -3019,7 +3017,7 @@
             "currentOwner": "ExploreMapScreen and EventMapView",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
-              "catch.count_pill",
+              "catch.button",
               "catch.event_card",
               "catch.icon_button"
             ],
@@ -3103,7 +3101,7 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.count_pill, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
         },
         {
           "id": "DS-EXPLORE-002",

@@ -9,7 +9,7 @@ void _registerCatchPrimitivesButtonTests() {
         CatchButton(
           key: const ValueKey('rounded-button'),
           label: 'Review & publish',
-          shape: CatchButtonShape.rounded,
+          mode: CatchButtonMode.rounded,
           onPressed: () {},
         ),
       ),
@@ -142,7 +142,7 @@ void _registerCatchPrimitivesButtonTests() {
             label: 'Join event',
             onPressed: () {},
             buttonAccentColor: accent,
-            buttonShape: CatchButtonShape.rounded,
+            buttonMode: CatchButtonMode.rounded,
           ),
         ),
       );
@@ -152,7 +152,7 @@ void _registerCatchPrimitivesButtonTests() {
         find.widgetWithText(CatchButton, 'Join event'),
       );
       expect(button.accentColor, accent);
-      expect(button.shape, CatchButtonShape.rounded);
+      expect(button.mode, CatchButtonMode.rounded);
     },
   );
 }

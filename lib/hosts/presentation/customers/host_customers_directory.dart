@@ -38,15 +38,14 @@ class HostCustomerDirectoryControls extends StatelessWidget {
           builder: (context, selected, open, toggle) => CatchButton.command(
             key: const ValueKey('host-customers-sort'),
             label: context.l10n.hostCustomersSortControl(label: selected.label),
-            icon: Icon(CatchIcons.expandMoreRounded),
-            iconAtEnd: true,
+            trailing: Icon(CatchIcons.expandMoreRounded),
             onPressed: toggle,
           ),
         ),
         CatchButton.command(
           key: const ValueKey('host-customers-filters'),
           label: context.l10n.hostCustomersFilters,
-          icon: Icon(CatchIcons.tuneRounded),
+          leading: Icon(CatchIcons.tuneRounded),
           onPressed: onOpenFilters,
         ),
       ],
@@ -409,7 +408,9 @@ class HostCustomersDirectory extends StatelessWidget {
             label: context.l10n.hostCustomersLoadMore,
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
-            isLoading: state.loadingMore,
+            status: (state.loadingMore)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: state.loadingMore ? null : onLoadMore,
           ),
         ],

@@ -627,7 +627,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             child: SafeArea(
               top: false,
               child: Center(
-                child: CatchCountPill.label(
+                child: CatchButton.floating(
                   label: screenState.mapLauncherState.actionLabel,
                   count:
                       int.tryParse(
@@ -635,7 +635,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       ) ??
                       0,
                   icon: CatchIcons.map,
-                  semanticLabel: screenState.mapLauncherState.semanticLabel,
+                  semanticsLabel: screenState.mapLauncherState.semanticLabel,
                   onPressed: () {
                     catchTransitionHaptic();
                     context.pushNamed(Routes.exploreMapScreen.name);
@@ -818,7 +818,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
             actions: [
               CatchButton(
                 label: context.l10n.exploreExploreScreenLabelChangeCity,
-                icon: Icon(CatchIcons.locationOnOutlined),
+                leading: Icon(CatchIcons.locationOnOutlined),
                 onPressed: onChangeCity,
               ),
             ],
@@ -902,7 +902,7 @@ class ExploreClearAction extends StatelessWidget {
         }
       },
       variant: CatchButtonVariant.secondary,
-      icon: Icon(icon ?? CatchIcons.clear),
+      leading: Icon(icon ?? CatchIcons.clear),
     );
   }
 }

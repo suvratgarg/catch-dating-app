@@ -56,7 +56,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
               children: [
                 CatchButton(
                   label: context.l10n.hostsEventStaffAdd,
-                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: Icon(CatchIcons.personAddAlt1Outlined),
                   variant: CatchButtonVariant.secondary,
                   onPressed: _mutationPending
                       ? null
@@ -64,7 +64,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                 ),
                 CatchButton(
                   label: context.l10n.hostsEventStaffCopyLink,
-                  icon: Icon(CatchIcons.linkRounded),
+                  leading: Icon(CatchIcons.linkRounded),
                   variant: CatchButtonVariant.ghost,
                   onPressed: () => unawaited(_copyLink()),
                 ),

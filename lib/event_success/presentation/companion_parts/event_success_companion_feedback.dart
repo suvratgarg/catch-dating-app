@@ -140,7 +140,9 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                   : context
                         .l10n
                         .eventSuccessEventSuccessCompanionFeedbackLabelUpdateFeedback,
-              isLoading: saving,
+              status: (saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: saving ? null : _submit,
               fullWidth: true,
             ),

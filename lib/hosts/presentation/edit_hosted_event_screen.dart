@@ -783,9 +783,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             onPressed: screenState.footer.isEnabled
                 ? () => _handleIntent(const HostEventEditSaveIntent())
                 : null,
-            isLoading: screenState.footer.isLoading,
+            status: (screenState.footer.isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             fullWidth: true,
-            icon: Icon(CatchIcons.saveOutlined),
+            leading: Icon(CatchIcons.saveOutlined),
           ),
         ),
       ),

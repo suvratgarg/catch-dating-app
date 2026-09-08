@@ -23,19 +23,19 @@ void main() {
               const CatchButton(label: 'Continue', onPressed: _noop),
               const CatchButton(
                 label: 'Save changes',
-                icon: Icon(Icons.check),
+                leading: Icon(Icons.check),
                 onPressed: _noop,
                 fullWidth: true,
               ),
               const CatchButton(
                 label: 'Saving',
                 onPressed: _noop,
-                isLoading: true,
+                status: CatchButtonStatus.loading,
               ),
               const CatchButton(
                 label: 'Saving',
                 onPressed: _noop,
-                isLoading: true,
+                status: CatchButtonStatus.loading,
                 variant: CatchButtonVariant.secondary,
               ),
               const CatchLoadingIndicator.dots(color: Colors.blue),

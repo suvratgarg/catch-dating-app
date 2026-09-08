@@ -1638,6 +1638,13 @@ Widget catchButtonContractStates(BuildContext context) {
       'reduced-motion',
       'command',
       'selection',
+      'floating-label',
+      'floating-label-with-icon',
+      'floating-label-with-value',
+      'floating-with-count',
+      'floating-focused',
+      'floating-semantic-label',
+      'floating-text-scale-reflow',
     ],
     children: [
       _StateCard(
@@ -1646,7 +1653,7 @@ Widget catchButtonContractStates(BuildContext context) {
           width: 132,
           child: CatchButton.selection(
             label: 'Thiruvananthapuram',
-            icon: Icon(CatchIcons.locationOnOutlined),
+            leading: Icon(CatchIcons.locationOnOutlined),
             onPressed: _noop,
           ),
         ),
@@ -1655,8 +1662,7 @@ Widget catchButtonContractStates(BuildContext context) {
         label: 'command',
         child: CatchButton.command(
           label: 'Sort: Last seen',
-          icon: Icon(CatchIcons.expandMoreRounded),
-          iconAtEnd: true,
+          trailing: Icon(CatchIcons.expandMoreRounded),
           onPressed: () {},
         ),
       ),
@@ -1704,7 +1710,11 @@ Widget catchButtonContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'loading',
-        child: CatchButton(label: 'Joining', isLoading: true, onPressed: _noop),
+        child: CatchButton(
+          label: 'Joining',
+          status: CatchButtonStatus.loading,
+          onPressed: _noop,
+        ),
       ),
       _StateCard(
         label: 'full-width',
@@ -1718,7 +1728,7 @@ Widget catchButtonContractStates(BuildContext context) {
         label: 'with-icon',
         child: CatchButton(
           label: 'Add to calendar',
-          icon: Icon(CatchIcons.calendarAdd),
+          leading: Icon(CatchIcons.calendarAdd),
           onPressed: _noop,
         ),
       ),
@@ -1726,7 +1736,7 @@ Widget catchButtonContractStates(BuildContext context) {
         label: 'rounded editorial bar',
         child: CatchButton(
           label: 'Review & publish',
-          shape: CatchButtonShape.rounded,
+          mode: CatchButtonMode.rounded,
           fullWidth: true,
           onPressed: _noop,
         ),
@@ -1749,6 +1759,67 @@ Widget catchButtonContractStates(BuildContext context) {
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(disableAnimations: true),
           child: CatchButton(label: 'Continue', onPressed: _noop),
+        ),
+      ),
+      _StateCard(
+        label: 'floating-label',
+        child: CatchButton.floating(label: '24 places', onPressed: _noop),
+      ),
+      _StateCard(
+        label: 'floating-label-with-icon',
+        child: CatchButton.floating(
+          icon: CatchIcons.tuneRounded,
+          label: 'Filters',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'floating-label-with-value',
+        child: CatchButton.floating(
+          icon: CatchIcons.map,
+          label: 'Map',
+          value: '12 events',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'floating-with-count',
+        child: CatchButton.floating(
+          icon: CatchIcons.tuneRounded,
+          label: 'Filters',
+          count: 3,
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'floating-focused',
+        description:
+            'Use keyboard traversal to inspect the semantic focus ring.',
+        child: CatchButton.floating(
+          icon: CatchIcons.tuneRounded,
+          label: 'Keyboard focus target',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'floating-semantic-label',
+        child: CatchButton.floating(
+          icon: CatchIcons.listRounded,
+          label: 'List',
+          semanticsLabel: 'Show list view',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'floating-text-scale-reflow',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.compactControlWidth,
+          child: CatchButton.floating(
+            icon: CatchIcons.tuneRounded,
+            label: 'Very specific active filters',
+            count: 12,
+            onPressed: _noop,
+          ),
         ),
       ),
     ],
@@ -7928,31 +7999,22 @@ Widget catchAdaptivePickerBehaviorStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchCountPill,
+  name: 'Floating states',
+  type: CatchButton,
   path: '[Core primitives]/Actions',
 )
 Widget catchCountPillContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCountPill',
-    contractId: 'catch.count_pill',
-    states: const [
-      'label',
-      'label-with-icon',
-      'label-with-value',
-      'with-count',
-      'focused',
-      'semantic-label',
-      'text-scale-reflow',
-    ],
+  return WidgetbookCatalogFrame(
+    title: 'CatchButton.floating',
+    catalogId: 'core.widgets.catch_button',
     children: [
       _StateCard(
         label: 'label',
-        child: CatchCountPill.label(label: '24 places', onPressed: _noop),
+        child: CatchButton.floating(label: '24 places', onPressed: _noop),
       ),
       _StateCard(
         label: 'label-with-icon',
-        child: CatchCountPill.label(
+        child: CatchButton.floating(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           onPressed: _noop,
@@ -7960,7 +8022,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'label-with-value',
-        child: CatchCountPill.label(
+        child: CatchButton.floating(
           icon: CatchIcons.map,
           label: 'Map',
           value: '12 events',
@@ -7969,7 +8031,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'with-count',
-        child: CatchCountPill.label(
+        child: CatchButton.floating(
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           count: 3,
@@ -7980,7 +8042,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         label: 'focused',
         description:
             'Use keyboard traversal to inspect the semantic focus ring.',
-        child: CatchCountPill.label(
+        child: CatchButton.floating(
           icon: CatchIcons.tuneRounded,
           label: 'Keyboard focus target',
           onPressed: _noop,
@@ -7988,10 +8050,10 @@ Widget catchCountPillContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'semantic-label',
-        child: CatchCountPill.label(
+        child: CatchButton.floating(
           icon: CatchIcons.listRounded,
           label: 'List',
-          semanticLabel: 'Show list view',
+          semanticsLabel: 'Show list view',
           onPressed: _noop,
         ),
       ),
@@ -7999,7 +8061,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         label: 'text-scale-reflow',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactControlWidth,
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             icon: CatchIcons.tuneRounded,
             label: 'Very specific active filters',
             count: 12,
@@ -8391,7 +8453,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
         child: _DockFrame(
           child: CatchBottomAction(
             label: 'Review & publish',
-            buttonShape: CatchButtonShape.rounded,
+            buttonMode: CatchButtonMode.rounded,
             onPressed: _noop,
           ),
         ),

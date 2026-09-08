@@ -152,7 +152,9 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
           CatchButton(
             label: context.l10n.onboardingProfilePromptsPageLabelContinue,
             onPressed: state.canSubmit ? callbacks.onContinue : null,
-            isLoading: state.isCompleting,
+            status: (state.isCompleting)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
           ),
         ],
       ),

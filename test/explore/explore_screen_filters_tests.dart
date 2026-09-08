@@ -824,7 +824,9 @@ void _registerExploreScreenFiltersTests() {
     expect(find.text('Map'), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byType(CatchCountPill),
+        of: find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.count != null,
+        ),
         matching: find.text('1'),
       ),
       findsOneWidget,

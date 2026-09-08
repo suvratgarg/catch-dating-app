@@ -98,7 +98,9 @@ List<Widget> buildExploreBodySlivers({
           child: CatchButton(
             label: context.l10n.exploreExploreScreenActionLoadMorePlans,
             onPressed: feedValue!.isLoadingMore ? null : onLoadMore,
-            isLoading: feedValue.isLoadingMore,
+            status: (feedValue.isLoadingMore)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
           ),

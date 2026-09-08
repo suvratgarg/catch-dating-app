@@ -120,7 +120,9 @@ class OnboardingGenderInterestStep extends StatelessWidget {
         footer: CatchButton(
           label: context.l10n.onboardingGenderInterestPageLabelContinue,
           onPressed: state.canSubmit ? callbacks.onContinue : null,
-          isLoading: state.isSaving,
+          status: (state.isSaving)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),

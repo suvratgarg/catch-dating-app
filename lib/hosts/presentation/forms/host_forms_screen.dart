@@ -511,12 +511,12 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   label: purpose == null
                       ? context.l10n.hostAudienceAllPurposes
                       : hostFormPurposeLabel(context, purpose!),
-                  icon: Icon(CatchIcons.descriptionOutlined),
+                  leading: Icon(CatchIcons.descriptionOutlined),
                   onPressed: () => _selectPurpose(context),
                 ),
                 CatchButton.command(
                   label: context.l10n.hostCustomersFilters,
-                  icon: Icon(CatchIcons.tune),
+                  leading: Icon(CatchIcons.tune),
                   onPressed: () => _selectStatus(context),
                 ),
               ],
@@ -603,7 +603,9 @@ class _HostFormsLibraryPage extends ConsumerWidget
                       CatchButton(
                         label: context.l10n.hostFormsLoadMore,
                         variant: CatchButtonVariant.secondary,
-                        isLoading: state.loadingMore,
+                        status: (state.loadingMore)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
                         fullWidth: true,
                         onPressed: state.loadingMore
                             ? null

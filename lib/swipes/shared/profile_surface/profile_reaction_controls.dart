@@ -161,7 +161,7 @@ class _ProfileReactionCommentSheetState
           const Spacer(),
           CatchButton(
             label: context.l10n.swipesProfileReactionControlsLabelSendLike,
-            icon: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
             onPressed: _canSend ? _submit : null,
             size: CatchButtonSize.sm,
           ),

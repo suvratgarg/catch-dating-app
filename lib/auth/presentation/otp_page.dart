@@ -189,7 +189,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             : null,
         variant: CatchButtonVariant.secondary,
         size: CatchButtonSize.sm,
-        shape: CatchButtonShape.rounded,
+        mode: CatchButtonMode.rounded,
         fullWidth: fullWidth,
       );
 
@@ -276,7 +276,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                 onPressed: viewState.canResend ? _resendOtp : null,
                 variant: CatchButtonVariant.secondary,
                 size: CatchButtonSize.lg,
-                shape: CatchButtonShape.rounded,
+                mode: CatchButtonMode.rounded,
                 fullWidth: true,
               ),
           ],
@@ -287,11 +287,13 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     return OnboardingStepLayout(
       footer: CatchButton(
         label: l10n.authVerifyAction,
-        icon: Icon(CatchIcons.checkRounded),
+        leading: Icon(CatchIcons.checkRounded),
         onPressed: viewState.canVerify
             ? () => _submit(_otpController.text)
             : null,
-        isLoading: viewState.verifyButtonLoading,
+        status: (viewState.verifyButtonLoading)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         fullWidth: true,
         size: CatchButtonSize.lg,
       ),

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:a24ae8130fdfb68df8efc919086af134077a235ee2fadd83ae9cb66d604984e8",
-  "resolvedDigest": "sha256:3aa45c20c43b7cb7162562d585e57ae4dbba9c00ddf53f8177fb0c80dd43c208",
+  "resolvedDigest": "sha256:4b67c4d7e7fe7589df67467db586775e07efdb59fb493b98f12b68e36902e69e",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -802,7 +802,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

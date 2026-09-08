@@ -38,7 +38,7 @@ class CatchTopBarPrimaryAction extends StatelessWidget {
 
     return CatchButton(
       label: label,
-      icon: Icon(icon, size: CatchIcon.sm),
+      leading: Icon(icon, size: CatchIcon.sm),
       size: CatchButtonSize.sm,
       onPressed: onPressed,
     );

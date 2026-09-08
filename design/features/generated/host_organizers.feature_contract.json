@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:83bcd3c4c0bc484327767c0075b50e616522894c194a4f74fdc52cd76cf7b22e",
-  "resolvedDigest": "sha256:48c9002d4e49a3bb2d0a0d566d4811d6761379b814b70a3927307ef45e179d15",
+  "resolvedDigest": "sha256:113f1363c0261581f2c59830a0747e676adcfba18e40f6d8a910550a8783c939",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5143,7 +5143,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

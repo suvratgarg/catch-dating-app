@@ -81,7 +81,9 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
           if (state.nextCursor != null)
             CatchButton(
               label: context.l10n.hostCustomersLoadMore,
-              isLoading: state.loadingMore,
+              status: (state.loadingMore)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: CatchButtonVariant.ghost,
               onPressed: state.canLoadMore
                   ? () => ref.read(provider.notifier).loadMore()

@@ -603,14 +603,15 @@
       "name": "CatchButton",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical action button for product CTAs, destructive actions, and secondary commands.",
+      "summary": "Canonical labelled action with CTA, command, current-selection and counted floating recipes.",
       "dart": {
         "symbol": "CatchButton",
         "file": "packages/catch_ui/lib/src/components/catch_button.dart",
         "constructors": [
           "CatchButton",
           "CatchButton.command",
-          "CatchButton.selection"
+          "CatchButton.selection",
+          "CatchButton.floating"
         ]
       },
       "design": {
@@ -671,28 +672,32 @@
             "notes": "Selects visual minimum height and density; interactive targets retain the platform minimum and labels grow naturally without a fixed line cap."
           },
           {
-            "name": "shape",
+            "name": "mode",
             "type": "enum",
             "required": false,
             "default": "pill",
-            "dartType": "CatchButtonShape",
+            "dartType": "CatchButtonMode",
             "values": [
               "pill",
               "rounded"
             ]
           },
           {
-            "name": "icon",
+            "name": "leading",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
           },
           {
-            "name": "isLoading",
-            "type": "bool",
+            "name": "status",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "idle",
+            "dartType": "CatchButtonStatus",
+            "values": [
+              "idle",
+              "loading"
+            ]
           },
           {
             "name": "fullWidth",
@@ -709,19 +714,70 @@
             "dartType": "Color?"
           },
           {
-            "name": "iconAtEnd",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
             "name": "isInteractive",
             "type": "bool",
             "required": false,
             "default": true,
             "dartType": "bool",
             "notes": "False renders a passive button-looking label inside an already tappable parent, without a second action or independent target."
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Optional trailing media for the command recipe."
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "value",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Optional secondary control text. Preserves caller casing and wraps naturally; counts remain separately typed numeric badges."
+          },
+          {
+            "name": "count",
+            "type": "number",
+            "required": false,
+            "default": 0,
+            "dartType": "int"
+          },
+          {
+            "name": "semanticsLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "tooltip",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Optional full-value tooltip for selection."
+          },
+          {
+            "name": "backgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "foregroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "borderColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
           }
         ],
         "states": [
@@ -737,13 +793,25 @@
           "large-text",
           "reduced-motion",
           "command",
-          "selection"
+          "selection",
+          "floating-label",
+          "floating-label-with-icon",
+          "floating-label-with-value",
+          "floating-with-count",
+          "floating-focused",
+          "floating-semantic-label",
+          "floating-text-scale-reflow"
         ],
         "slots": [
           {
-            "name": "icon",
+            "name": "leading",
             "kind": "optional-leading-widget",
             "notes": "Prefer Icon(CatchIcons.*) sized by the primitive."
+          },
+          {
+            "name": "trailing",
+            "kind": "optional-trailing-widget",
+            "notes": "Command recipe only; replaces an icon-position boolean with an explicit slot."
           }
         ],
         "tokens": [
@@ -775,7 +843,12 @@
           "CatchTextButton",
           "CatchTextButtonTone",
           "CatchTextStyles.control",
-          "CatchPlatformTokens.minimumInteractiveExtent"
+          "CatchPlatformTokens.minimumInteractiveExtent",
+          "CatchBorderRole.control",
+          "CatchLayout.countPillIconSize",
+          "CatchCountBadge",
+          "CatchButtonMode",
+          "CatchButtonStatus"
         ],
         "goldens": [],
         "members": [
@@ -840,6 +913,49 @@
             "light",
             "dark"
           ]
+        },
+        "constructorProps": {
+          "CatchButton": [
+            "label",
+            "onPressed",
+            "variant",
+            "size",
+            "mode",
+            "leading",
+            "status",
+            "fullWidth",
+            "isInteractive",
+            "semanticsLabel",
+            "accentColor",
+            "backgroundColor",
+            "foregroundColor",
+            "borderColor"
+          ],
+          "CatchButton.command": [
+            "label",
+            "onPressed",
+            "leading",
+            "trailing",
+            "semanticsLabel"
+          ],
+          "CatchButton.selection": [
+            "label",
+            "onPressed",
+            "leading",
+            "semanticsLabel",
+            "tooltip",
+            "backgroundColor",
+            "foregroundColor",
+            "borderColor"
+          ],
+          "CatchButton.floating": [
+            "icon",
+            "label",
+            "value",
+            "count",
+            "onPressed",
+            "semanticsLabel"
+          ]
         }
       },
       "handoff": {
@@ -848,7 +964,9 @@
           "Every product action still needs action cardinality and controller ownership outside this visual contract.",
           "Use accentColor only for activity-scoped primary actions.",
           "Use CatchTextButton for text-only actions; do not create separate inline-action wrappers.",
-          "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual."
+          "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual.",
+          "Use floating for raised labelled overlay actions with optional value copy and an integer count. Its callback and nonempty label are required. Counts render through CatchCountBadge, including zero hiding, 99+ clamping and preserved child constraints.",
+          "Busy CTA state uses CatchButtonStatus.loading. Leading and trailing are media slots, while the floating recipe accepts an IconData glyph. A geometry mode chooses the standard pill or rounded CTA silhouette."
         ]
       },
       "governance": {
@@ -12311,149 +12429,6 @@
       }
     },
     {
-      "id": "catch.count_pill",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchCountPill",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Labelled floating action with a required callback, optional icon, and typed count overlay.",
-      "dart": {
-        "symbol": "CatchCountPill",
-        "file": "packages/catch_ui/lib/src/components/catch_count_pill.dart",
-        "constructors": [
-          "CatchCountPill.label"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/CountPill",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "CountPill",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "icon",
-            "type": "object",
-            "required": false,
-            "dartType": "IconData?"
-          },
-          {
-            "name": "label",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "value",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "notes": "Optional secondary control text. Preserves caller casing and wraps naturally; counts remain separately typed numeric badges."
-          },
-          {
-            "name": "count",
-            "type": "number",
-            "required": false,
-            "default": 0,
-            "dartType": "int"
-          },
-          {
-            "name": "onPressed",
-            "type": "callback",
-            "required": true,
-            "dartType": "VoidCallback"
-          },
-          {
-            "name": "semanticLabel",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          }
-        ],
-        "states": [
-          "label",
-          "label-with-icon",
-          "label-with-value",
-          "with-count",
-          "focused",
-          "semantic-label",
-          "text-scale-reflow"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "radius.pill",
-          "theme.light.color.primary",
-          "theme.light.color.primaryInk",
-          "theme.light.color.line2",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "CatchBorderRole.control",
-          "CatchBorderRole.focus",
-          "CatchTextStyles.control",
-          "CatchLayout.countPillIconSize",
-          "CatchPlatformTokens.minimumInteractiveExtent",
-          "CatchCountBadge"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use for labelled floating actions only; use CatchIconButton for icon-only commands.",
-          "Counts are integers rendered by CatchCountBadge; raw string badges are not accepted.",
-          "Label and optional value use readable control typography with natural casing and wrapping. Explicit semanticLabel replaces spoken text without removing the action; keyboard focus and platform-sized activation remain on the shared surface."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.count_pill",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.count_pill"
-      },
-      "surfaces": {
-        "flutter": "CatchCountPill"
-      }
-    },
-    {
       "id": "catch.page_dots",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -15388,11 +15363,11 @@
             "dartType": "Color?"
           },
           {
-            "name": "buttonShape",
+            "name": "buttonMode",
             "type": "enum",
             "required": false,
             "default": "pill",
-            "dartType": "CatchButtonShape",
+            "dartType": "CatchButtonMode",
             "values": [
               "pill",
               "rounded"

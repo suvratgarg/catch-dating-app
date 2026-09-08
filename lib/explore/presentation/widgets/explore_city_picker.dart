@@ -121,7 +121,7 @@ class CityTrigger extends StatelessWidget {
             : city.label,
         semanticsLabel: state.semanticLabel,
         tooltip: state.tooltipLabel,
-        icon: Icon(state.icon),
+        leading: Icon(state.icon),
         backgroundColor:
             backgroundColor ??
             (presentation == ExploreCityPickerPresentation.scopeLabel

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:f66daf03972a070add60fa3322c21a0c635abeada92d4783d0d96354448d7dc2",
+  "resolvedDigest": "sha256:ee7baa2dedde37b1cdd7faa7e9b9938e5c1e4eeac026fb31955031ac5a5adb06",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -814,7 +814,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

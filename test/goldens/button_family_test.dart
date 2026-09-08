@@ -23,38 +23,37 @@ void main() {
                   label: 'Continue',
                   variant: variant,
                   onPressed: _noop,
-                  icon: const Icon(Icons.check),
+                  leading: const Icon(Icons.check),
                 ),
               const CatchButton(
                 label: 'Continue',
                 onPressed: _noop,
-                shape: CatchButtonShape.rounded,
+                mode: CatchButtonMode.rounded,
                 fullWidth: true,
               ),
               const CatchButton.selection(
                 label: 'A long current selection',
                 onPressed: _noop,
-                icon: Icon(Icons.place),
+                leading: Icon(Icons.place),
               ),
               const CatchButton.command(
                 label: 'Sort',
                 onPressed: _noop,
-                icon: Icon(Icons.sort),
+                leading: Icon(Icons.sort),
               ),
               const CatchButton.command(
                 label: 'Filter',
                 onPressed: _noop,
-                icon: Icon(Icons.tune),
-                iconAtEnd: true,
+                trailing: Icon(Icons.tune),
               ),
-              CatchCountPill.label(label: 'Map', onPressed: _noop),
-              CatchCountPill.label(
+              CatchButton.floating(label: 'Map', onPressed: _noop),
+              CatchButton.floating(
                 label: 'Map',
                 icon: Icons.map,
                 count: 24,
                 onPressed: _noop,
               ),
-              CatchCountPill.label(
+              CatchButton.floating(
                 label: 'Map',
                 value: 'Nearby places',
                 icon: Icons.map,

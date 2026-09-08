@@ -75,7 +75,7 @@ class CatchErrorState extends StatelessWidget {
                   label: retryLabel!,
                   onPressed: onRetry,
                   size: isCompact ? CatchButtonSize.sm : CatchButtonSize.md,
-                  icon: Icon(CatchIcons.refreshRounded),
+                  leading: Icon(CatchIcons.refreshRounded),
                 ),
               ...actions,
             ],

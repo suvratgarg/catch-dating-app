@@ -96,9 +96,11 @@ class HostPaymentAccountCard extends StatelessWidget {
                       .l10n
                       .hostsHostPaymentAccountCardLabelContinueToRazorpay
                 : context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
-            icon: Icon(CatchIcons.openInNewRounded),
+            leading: Icon(CatchIcons.openInNewRounded),
             fullWidth: true,
-            isLoading: onboardingPending,
+            status: (onboardingPending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: onboardingPending
                 ? null
                 : () {
@@ -548,7 +550,9 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
       action: CatchButton(
         label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
         fullWidth: true,
-        isLoading: widget.pending,
+        status: (widget.pending)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         onPressed: widget.pending || !_termsAccepted ? null : _submit,
       ),
       child: ConstrainedBox(

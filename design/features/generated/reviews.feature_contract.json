@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:0c45561c7100157c87fab1114b10fae9117b4aabe2114e03fb4765e5ce89f811",
+  "resolvedDigest": "sha256:782b8dbce02dbd612591d371f90df71a622590b5f8089186799dc3e058ef0863",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1113,7 +1113,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

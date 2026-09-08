@@ -393,13 +393,13 @@ class _CompactControlFamily extends StatelessWidget {
             runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchCountPill.label(
+              CatchButton.floating(
                 icon: CatchIcons.mapOutlined,
                 label: 'Map',
-                semanticLabel: 'Show map',
+                semanticsLabel: 'Show map',
                 onPressed: _noop,
               ),
-              CatchCountPill.label(
+              CatchButton.floating(
                 icon: CatchIcons.tuneRounded,
                 label: 'Filters',
                 count: 3,
@@ -419,7 +419,7 @@ class _CompactControlFamily extends StatelessWidget {
             children: [
               _MeasuredControl(
                 label: '44 label',
-                child: CatchCountPill.label(
+                child: CatchButton.floating(
                   icon: CatchIcons.mapOutlined,
                   label: 'Map',
                   onPressed: _noop,

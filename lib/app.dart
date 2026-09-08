@@ -274,7 +274,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
                 CatchButton(
                   label: l10n.sharedActionTryAgain,
                   onPressed: onRetry,
-                  icon: Icon(CatchIcons.refresh),
+                  leading: Icon(CatchIcons.refresh),
                   fullWidth: true,
                 ),
               ],

@@ -146,7 +146,7 @@ class HostTodayQuietState extends StatelessWidget {
               CatchButton(
                 key: const ValueKey<String>('host-today-start-dress-rehearsal'),
                 label: context.l10n.hostEventRehearsalEntryTitle,
-                icon: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+                leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 onPressed: onStartRehearsal,

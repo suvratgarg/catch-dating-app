@@ -92,7 +92,7 @@ class UpdateRequiredContent extends StatelessWidget {
               key: UpdateRequiredKeys.updateNowButton,
               label: context.l10n.forceUpdateUpdateRequiredScreenLabelUpdateNow,
               onPressed: onUpdateNow,
-              icon: Icon(CatchIcons.openInNew),
+              leading: Icon(CatchIcons.openInNew),
               fullWidth: true,
             ),
           ],

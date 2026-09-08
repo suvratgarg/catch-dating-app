@@ -114,7 +114,7 @@ def structural_hash(body: str) -> str:
         'CatchTopBar', 'CatchCoverStory', 'CatchSearchField', 'CatchEmptyState',
         'CatchErrorState', 'CatchSliverErrorState',
         'CatchRangeSlider', 'CatchPersonRow', 'CatchPolaroid', 'CatchToggleInput',
-        'CatchBadge', 'CatchCountPill', 'CatchNetworkImage', 'CatchGradedImage',
+        'CatchBadge', 'CatchNetworkImage', 'CatchGradedImage',
         'CatchNotice', 'CatchBottomSheet', 'CatchIconButton', 'CatchTextButton',
         'CatchOptionGroup', 'CatchPageBody', 'CatchScreenBody', 'CatchTabDock',
     } if w in body)

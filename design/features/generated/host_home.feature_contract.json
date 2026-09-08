@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:f5aaf3b54daf119c8864d319d4551727373be41feed4ebb09726f5286d95b2aa",
+  "resolvedDigest": "sha256:92be7a1a976eae783a5a9937899d10b2bfbeda0a4ec5f11c9b12d469c1510aeb",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1898,7 +1898,8 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating"
               ]
             }
           },

@@ -632,8 +632,10 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                   label: context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsLabelScanHostQr,
-                  icon: Icon(CatchIcons.qrCodeScannerRounded),
-                  isLoading: busy,
+                  leading: Icon(CatchIcons.qrCodeScannerRounded),
+                  status: (busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),
@@ -643,7 +645,9 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsLabelCheckIn,
                   variant: CatchButtonVariant.ghost,
-                  isLoading: busy,
+                  status: (busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),

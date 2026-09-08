@@ -21,7 +21,7 @@ class CatchBottomAction extends StatelessWidget {
     this.backgroundColor,
     this.dividerColor,
     this.buttonAccentColor,
-    this.buttonShape = CatchButtonShape.pill,
+    this.buttonMode = CatchButtonMode.pill,
     this.catchLine,
     this.catchLineAccent,
     this.footnote,
@@ -35,7 +35,7 @@ class CatchBottomAction extends StatelessWidget {
   final Color? backgroundColor;
   final Color? dividerColor;
   final Color? buttonAccentColor;
-  final CatchButtonShape buttonShape;
+  final CatchButtonMode buttonMode;
   final String? catchLine;
   final Color? catchLineAccent;
   final String? footnote;
@@ -74,7 +74,7 @@ class CatchBottomAction extends StatelessWidget {
               buttonKey: buttonKey,
               isLoading: isLoading,
               buttonAccentColor: buttonAccentColor,
-              buttonShape: buttonShape,
+              buttonMode: buttonMode,
               catchLine: catchLine,
               catchLineAccent: catchLineAccent,
               footnote: footnote,
@@ -100,7 +100,7 @@ class CatchBottomAction extends StatelessWidget {
             buttonKey: buttonKey,
             isLoading: isLoading,
             buttonAccentColor: buttonAccentColor,
-            buttonShape: buttonShape,
+            buttonMode: buttonMode,
             catchLine: catchLine,
             catchLineAccent: catchLineAccent,
             footnote: footnote,
