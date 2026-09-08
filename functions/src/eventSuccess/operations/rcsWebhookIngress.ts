@@ -15,8 +15,8 @@ interface Dependencies {
 type RawRequest = Request & {rawBody?: Buffer};
 
 /**
- * Dependency-injected HTTP boundary; deliberately no onRequest export or
- * production defaults until the private queue and credential owner are wired.
+ * Authenticated raw-body boundary. The Firebase wrapper resolves a trusted
+ * endpoint binding and acknowledges only after the private inbox commits.
  */
 export function createRcsWebhookIngress(deps: Dependencies) {
   return async (request: RawRequest, response: Response): Promise<void> => {

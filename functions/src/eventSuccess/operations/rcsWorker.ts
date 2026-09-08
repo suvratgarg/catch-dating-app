@@ -44,7 +44,7 @@ export function parseRcsCredentials(value: RcsCredentials,
   return Object.freeze({...value});
 }
 
-/** Shares the SMS/WhatsApp outbox; no public send or activated transport. */
+/** Shares the SMS/WhatsApp outbox; activation and every claim stay explicit. */
 export class EventRcsWorker {
   constructor(private readonly store: RcsDispatchStore,
     private readonly credentials: {

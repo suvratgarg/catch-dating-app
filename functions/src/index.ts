@@ -88,6 +88,8 @@ export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
 export {onEventAssistanceRcsCallbackCreated} from
   "./eventSuccess/operations/rcsWebhookProcessing";
+export {eventAssistanceRcsWebhook} from
+  "./eventSuccess/operations/rcsDeliveryWebhook";
 export {onEventAssistanceWhatsappEventCreated} from
   "./eventSuccess/operations/whatsappWebhookProcessing";
 export {eventAssistanceSmsDeliveryWebhook} from

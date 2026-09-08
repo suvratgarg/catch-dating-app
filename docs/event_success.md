@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.69.0
+version: 1.70.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1387,11 +1387,11 @@ preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgar
 at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`. Its reviewed replacement
 now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
-The remaining RCS backlog includes provider
-send/expiry/revocation integration, delivery and native-reply consumers,
-independent consent and withdrawal, audited sender/budget onboarding,
-capability/readiness checks, shared outbox/worker wiring, and end-to-end
-verification. On 2026-09-08 the user resumed independent RCS work while the
+The RCS backend now includes consent and withdrawal APIs, capability/readiness
+checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
+delivery/native-reply consumers. Remaining work includes guest-page controls,
+audited sender/budget onboarding, retention and financial reconciliation,
+provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
 source establishes live provider selection, provisioning or readiness.
 
@@ -1410,13 +1410,13 @@ adapters and acceptance; they are not conferred by these type definitions.
 
 ### RCS authenticated callback boundary
 
-The current independent slice supplies a bounded Google RBM callback parser,
-an injected HTTP ingress and a durable Firestore evidence inbox. Acceptance is verified signature/agent isolation,
-separate delivery/revocation/reply/subscription observations, retry identity,
-private-data minimization and acknowledgement only after durable acceptance.
-Dispatch wiring, permission updates, delivery and native-reply domain consumers,
-scheduling, retention cleanup, deployment and activation remain subsequent
-integration work.
+The callback boundary supplies a bounded Google RBM parser, a Firebase HTTP
+export and a durable Firestore evidence inbox. Acceptance verifies signature
+and agent isolation, separate delivery/revocation/reply/subscription
+observations, retry identity, private-data minimization and acknowledgement
+only after durable acceptance. Delivery and native-reply consumers are wired
+below. Provider registration, retention cleanup, deployment and activation
+remain open.
 
 `rcsWebhookProtocol.ts` authenticates the base64-decoded `message.data` bytes
 with the configured client token's SHA512 HMAC. It requires the signed agent ID
@@ -1439,7 +1439,7 @@ changed signed content retains a different hash for conflict handling.
 Normalized evidence contains an endpoint hash, no raw phone, free text, file URL,
 location, displayed button label, signature or client token. Location messages
 cannot establish physical attendance. Native choice/page correlations do not
-authenticate a guest; the future consumer must validate the immutable attempt,
+authenticate a guest; the consumer validates the immutable attempt,
 recipient, choice, current episode and expiry before applying a typed command.
 UNSUBSCRIBE and documented country-specific STOP equivalents now preserve a
 conversation restriction during inbox acceptance. SUBSCRIBE/START preserve a
@@ -1447,12 +1447,15 @@ request to re-enable messaging; they never grant event consent or change
 SMS/WhatsApp permission. Inconclusive revocation never becomes proof
 of non-delivery or a fallback permit.
 
-`rcsWebhookIngress.ts` exposes a dependency-injected POST handler with no Firebase
-export, credentials, live queue default or activation. Disabled/malformed requests
-do not open the queue. Verified callbacks are acknowledged after an injected
-queue reports stored, duplicate or durably preserved conflict. Queue/credential
-failure returns an opaque 503; logging receives no private payload or error.
-Only authenticated unsupported traffic may be ignored without persistence.
+`rcsWebhookIngress.ts` owns POST verification and durable acknowledgement.
+`rcsDeliveryWebhook.ts` exports `eventAssistanceRcsWebhook`, whose path suffix
+selects an exact trusted endpoint binding from `RcsWebhookKeyStore`. The default
+queue is `RcsCallbackStore`; disabled or malformed requests cannot enqueue work.
+Verified callbacks receive an acknowledgement only after stored, duplicate or
+durably preserved conflict. Queue/credential failure returns an opaque 503;
+logging receives no private payload or error. Only authenticated unsupported
+traffic may be ignored without persistence. The export is disabled by default;
+its presence does not establish deployment or provider registration.
 
 `rcsCallbackStore.ts` implements the injected queue with canonical records from
 `contracts/shared/event_assistance_rcs_callbacks.schema.json`. It commits each
@@ -1464,7 +1467,7 @@ the shared identity conflicted. Failed commits leave neither a partial callback
 nor an unmarked conflict; the HTTP handler returns 503 so the provider can retry.
 Both collections deny all direct client reads and writes.
 
-Future consumers must call `readForConsumption` in the same transaction as
+Consumers call `readForConsumption` in the same transaction as
 their receipt and domain effect. It revalidates persisted evidence and withholds
 conflicted identities, participating in Firestore contention with concurrent
 conflict writes. A conflict received after an effect committed cannot undo that
@@ -1547,7 +1550,7 @@ sender-readiness, capability or send authority. Renaming the same provider
 agent preserves existing consent; a newly reviewed grant captures the updated
 name. Tests cover stale review hashes, source replacement, rollback, receipt
 tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
-preference UI, deployed worker-factory integration and activation remain open.
+preference UI, audited provisioning, deployment and activation remain open.
 No live sender is activated by these callables.
 
 ### RCS message-link withdrawal
@@ -1617,8 +1620,8 @@ same [Google message contract](https://developers.google.com/business-communicat
 as the injected provider adapter. Rehearsal and stale/mismatched grants cannot
 produce live RCS material. Permission reads, bounded capability observations, transactional budget/dispatch
 claims and the shared composer connection are implemented below. Audited sender
-and budget provisioning, the deployed worker factory and authenticated ingress
-activation remain required before live messaging.
+and budget provisioning, deployment and authenticated ingress activation
+remain required before live messaging.
 
 ### RCS dispatch and shared channel selection
 
@@ -1662,13 +1665,60 @@ Only explicit submission rejection or proven no-I/O failure can become failed
 submission evidence for the shared selector. Concurrent workers contend on the
 same attempt and cannot duplicate a provider submission or debit.
 
-The production `LiveMessageDispatcher` factory still constructs SMS/WhatsApp
-workers only. RCS OAuth loading, factory/configuration wiring, authenticated
-ingress activation, guest-page controls, approved provisioning and
-live activation remain required. Tests use an injected provider transport and
-include direct RCS-to-SMS/WhatsApp fallback, independent consent, STOP between
+The production `LiveMessageDispatcher` factory now constructs `EventRcsWorker`
+for the explicitly saved RCS sender when `EVENT_ASSISTANCE_RCS_ENABLED` is true.
+It supplies `RcsCredentialStore` and the bounded Google RBM provider while
+preserving every shared selection and transactional authority check. Disabled
+RCS cannot load its credential or reserve an attempt. Tests use an injected
+provider transport and include RCS-to-SMS/WhatsApp fallback, independent consent,
+STOP between
 lookup and claim, stale source/credentials/capability, atomic rollback, queued
 expiry, opt-out from an actual claim and real Firestore dispatch contention.
+
+### RCS credentials and endpoint configuration
+
+`RcsCredentialStore` reads the sender configuration's exact numbered Secret
+Manager version before every use, including cached OAuth tokens. Its closed
+`catch.event-rcs-credential/v1` envelope contains only `schema`, `senderId`,
+`agentId`, `region`, `clientEmail` and `privateKey`. Sender, agent and region
+must match the current canonical configuration. The account uses a Google
+service-account email and a PKCS8 RSA private key with a 2048–8192-bit modulus.
+Raw service-account JSON, ambient outbound identity, alternate token URLs,
+delegated subjects and credential file paths are not accepted.
+
+The installed Google authentication library signs and refreshes the token using
+only the [RCS messaging scope](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages/create).
+The token exchange is pinned to Google's HTTPS token endpoint, with bounded
+response size and time, redirects and retries disabled, and no SDK request-data
+logging interceptors. Secret reads have a three-second deadline; OAuth requests
+have an eight-second deadline. Failures expose a fixed error without an SDK
+cause, key, assertion or token. At most 32 OAuth clients remain cached; changing
+the pinned secret or account binding isolates the cache. Missing, disabled or
+malformed secrets cannot use a cached token. Tokens must retain more than 30
+seconds of validity, and the dispatch worker checks its own deadline again.
+
+Inbound configuration has a separate numbered secret reference in
+`EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION`, pointing to
+`projects/<project>/secrets/EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS/versions/<number>`.
+Its closed envelope is `{schema: "catch.event-rcs-webhooks/v1", endpoints: [...]}`.
+Each of 1–20 unique entries contains exactly `endpointId`, `agentId` and
+`clientToken`; tokens are 32–256 printable ASCII characters without whitespace.
+An endpoint ID is 1–80 letters, digits, underscores or hyphens, beginning with a
+letter or digit. Register the native Functions URL ending in
+`eventAssistanceRcsWebhook/<endpointId>` with Google. Request paths select only
+these reviewed bindings; request bodies cannot select credentials or agents.
+Keep prior endpoint bindings through pending callback and reply lifetimes when
+rotating agent credentials or webhook URLs.
+
+`EVENT_ASSISTANCE_RCS_ENABLED` and `EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED` both
+default to false and are independent. Pausing outbound sends must leave inbound
+verification enabled so delivery receipts, STOP and guest replies can still
+arrive. Inbound handling never requires a current outbound token or an active
+sender. An emulator integration test covers automatic publication through the
+production worker factory, budgeted dispatch and a signed receipt after sender
+pause, including duplicate replay. All provider and secret transports in those
+tests are fixtures; no account, credential, approval, budget or flag is
+provisioned or activated by this change.
 
 ### RCS delivery and native reply consumption
 
@@ -1709,9 +1759,9 @@ receipt commit together. Tests cover lost-send-response races, monotonic and
 conflicting receipts, old/foreign buttons, identity changes, failed commits,
 independent fallback consent and real Firestore contention.
 
-The trigger is source-wired; signed HTTP ingress configuration, OAuth/worker
-factory integration, approved senders/budgets and live provider testing are still
-required before RCS is available to users.
+The trigger and signed HTTP wrapper are source-wired. Trusted endpoint
+configuration, approved senders/budgets, deployment and live provider testing
+are still required before RCS is available to users.
 
 ### RCS provider transport boundary
 
@@ -1744,14 +1794,12 @@ Neither it nor a DELETE 404 may authorize fallback; delivery can race with the
 [revocation request](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages/delete).
 The outbox consumer below reconciles authenticated receipts; the shared selector
 revalidates current route authority before deciding on SMS. Errors contain no provider body,
-phone, token or guest link. Tests inject transport; this adds no default network
-client, credential loader, Firebase export or activated sender. Canonical RCS
-sender configuration, rendering, callback persistence and conversation
-subscription observations are now present. Event-scoped RCS preference APIs
-and the shared permission check are implemented, together with message-link
-withdrawal APIs and transactional issuance preparation. Guest-page controls, authenticated ingress activation, deployed worker-factory/OAuth
-integration and provider
-activation remain required before live use.
+phone, token or guest link. The adapter remains injectable; the production
+worker factory supplies its network client and credential loader. Event-scoped
+RCS preference APIs, message-link withdrawal, sender rendering, transactional
+dispatch, signed callback persistence and consumers are implemented in source.
+Guest-page controls, audited provisioning, deployment and provider activation
+remain required before live use.
 
 ## Format Mapping And Wiring
 

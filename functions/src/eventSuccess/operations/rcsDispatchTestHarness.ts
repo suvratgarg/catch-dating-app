@@ -1,3 +1,4 @@
+import type {Response as ExpressResponse} from "express";
 import type {Firestore} from "firebase-admin/firestore";
 import type {MessageRecord} from "./messageOutbox";
 import {harness, worker as whatsappWorker, keys, start} from
@@ -172,4 +173,21 @@ export async function rcsHarness(real?: Firestore, id = "rcs",
     rcsPreferences, rcsBudgetPaths, rcsStore, rcs, credentials, rcsProvider,
     requests, behavior, enable, permission, capability, rcsOutbox: outbox,
     dispatch, record, revoke, sms, smsBudgets, service};
+}
+
+export function rcsHttpResponse() {
+  const replies: Array<{status: number; body: unknown}> = [];
+  const headers: Record<string, string> = {};
+  let code = 200;
+  const response = {set: (value: Record<string, string> | string,
+    second?: string) => {
+    if (typeof value === "string") headers[value] = second!;
+    else Object.assign(headers, value);
+    return response;
+  }, status: (value: number) => {
+    code = value; return response;
+  }, send: (body: unknown) => {
+    replies.push({status: code, body}); return response;
+  }};
+  return {replies, headers, response: response as unknown as ExpressResponse};
 }

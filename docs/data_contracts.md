@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.77.0
+version: 1.78.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -143,9 +143,14 @@ absolute delivery expiry. No phone, bearer secret or message body is persisted
 in that record. Capability is an in-memory, at-most-60-second observation tied
 to the exact sender and consent; its snapshot is retained in dispatch evidence.
 It grants no spending or message permission. The shared channel selector can
-use RCS when explicitly supplied its worker; deployed factory/OAuth wiring,
-authenticated ingress activation and approved provisioning remain required
-for live use.
+use RCS through the production factory for an explicit sender when its default-off
+flag is enabled. The credential loader validates an exact sender/agent/region
+secret envelope and uses the Google OAuth library with the RCS messaging scope.
+The HTTP export resolves independent, pinned webhook endpoint bindings and
+commits verified callbacks to the durable inbox. These secret formats and
+configuration flags are owned in `docs/event_success.md`; they create no new
+client-visible contract or consent. Deployment, authenticated ingress activation
+and approved provisioning remain required for live use.
 
 ### Event Assistance RCS Callback Evidence
 
@@ -625,7 +630,8 @@ No browser or mobile client can read or write this collection directly, even
 with an admin claim. Guest responses use the separate scoped grant and atomic
 mutation boundary described below; this outbox does not grant full runtime
 access or turn self-reported intention into attendance. Scheduling, provider
-activation, RCS permission readers and terminal cleanup remain delivery work.
+activation and terminal cleanup remain delivery work. RCS permission readers
+are implemented in the shared authority boundary.
 The collection currently has no TTL; executable or reconcilable deduplication state
 must not be deleted merely because the message's instruction has expired.
 
@@ -2830,12 +2836,13 @@ hash. Request closeout and wake handling for these facts remain subsequent work.
 ### Event Assistance Channel Selection Contract
 
 `EventMessageWorker` uses one immutable intent and one bounded outbox history
-for all permitted channels. It composes the existing SMS and WhatsApp workers;
+for all permitted channels. It composes the SMS, WhatsApp and RCS workers;
 it is a trusted port, not a callable, scheduler or registered live executor.
 Only explicitly permitted routes can prepare credentials. Each channel loads
 its pinned secret before reservation; a changed sender snapshot makes that
-prepared channel ineligible. RCS currently returns `notProvisioned` and cannot
-load credentials or dispatch. Missing credentials return `channelUnavailable`.
+prepared channel ineligible. The production factory now supplies the RCS worker
+for an explicit sender when its default-off enablement flag is set. Missing
+workers or credentials remain unavailable; enablement grants no send authority.
 A malformed source or inconsistent channel gate fails the whole evaluation.
 
 Every route's event gate, consent, suppression, template, recipient and spending
@@ -2860,8 +2867,8 @@ composition does not imply provider activation or guaranteed delivery.
 An existing unsent reservation keeps its original channel, sender and permission
 snapshot. On authorization expiry the outbox records it as unsent; recovery uses
 a new bounded attempt and fresh authority, never repurposes the old id. Durable
-reconciliation wakeups, RCS implementation and live Operations executor
-integration remain separate work.
+reconciliation and live Operations integration have their own boundaries above;
+their source wiring does not establish deployed scheduling or activation.
 
 ### Event Assistance SMS Delivery Contract
 
