@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.16
+version: 1.9.17
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1118,6 +1118,12 @@ uses the existing `CatchTextInput` primitive, extended with editing and obscurin
 enum axes and platform input options. The text-entry member and its facade
 remain app-side until their constructor/configuration migration is complete;
 no shared package imports the app to reach this intermediate component.
+
+The typed form list and its four editors now have separate owning libraries.
+Each editor retains its State, controllers, validation and save behavior;
+descriptors retain typed construction and patch factories. The former combined
+file no longer declares a Widget or State, and every resulting file is below
+800 lines. These form owners remain app-side until the field facade moves.
 
 ### Phase 4 — One registry, binding grammar
 

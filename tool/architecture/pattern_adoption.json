@@ -1600,6 +1600,11 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-form-descriptor-001-typed-form-row-orchestration",
       "prototypeFiles": [
         "lib/core/forms/catch_form_descriptors.dart",
+        "lib/core/forms/catch_form_row_list.dart",
+        "lib/core/forms/catch_form_text_row_editor.dart",
+        "lib/core/forms/catch_form_single_choice_row_editor.dart",
+        "lib/core/forms/catch_form_multi_choice_row_editor.dart",
+        "lib/core/forms/catch_form_range_row_editor.dart",
         "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "test/core/forms/catch_form_descriptors_test.dart",

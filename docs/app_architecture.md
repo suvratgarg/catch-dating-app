@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.31.0
+version: 1.31.1
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -4153,6 +4153,7 @@ class CalendarEventSummary {
 Reference files:
 
 - `lib/core/forms/catch_form_descriptors.dart`
+- `lib/core/forms/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
