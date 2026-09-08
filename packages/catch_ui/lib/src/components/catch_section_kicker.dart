@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_kicker.dart';
+import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:flutter/material.dart';
 
 /// Section-owned heading with a count and responsive trailing action lane.
@@ -14,14 +14,14 @@ class CatchSectionKicker extends StatelessWidget {
     required this.color,
     this.count,
     this.trailing,
-    this.size = CatchKickerSize.md,
+    this.variant = CatchKickerTextVariant.md,
   });
 
   final String? text;
   final Color color;
   final Object? count;
   final Widget? trailing;
-  final CatchKickerSize size;
+  final CatchKickerTextVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,11 @@ class CatchSectionKicker extends StatelessWidget {
     if (hasText && !hasCount && trailing == null) {
       return Semantics(
         header: true,
-        child: CatchKicker(label: displayText, color: color, size: size),
+        child: CatchKickerText(
+          label: displayText,
+          color: color,
+          variant: variant,
+        ),
       );
     }
     final header = Row(
@@ -43,7 +47,11 @@ class CatchSectionKicker extends StatelessWidget {
       children: [
         if (hasText)
           Expanded(
-            child: CatchKicker(label: displayText, color: color, size: size),
+            child: CatchKickerText(
+              label: displayText,
+              color: color,
+              variant: variant,
+            ),
           )
         else
           const Spacer(),
@@ -78,10 +86,10 @@ class CatchSectionKicker extends StatelessWidget {
                 children: [
                   if (hasText)
                     Expanded(
-                      child: CatchKicker(
+                      child: CatchKickerText(
                         label: displayText,
                         color: color,
-                        size: size,
+                        variant: variant,
                       ),
                     )
                   else

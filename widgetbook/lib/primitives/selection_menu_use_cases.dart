@@ -51,7 +51,7 @@ Widget adaptiveSelectionMenuStates(BuildContext context) {
     catalogId: 'catch.menu.adaptive_trigger',
     children: [
       for (final width in [599.0, 600.0, 840.0]) ...[
-        CatchMonoLabel(
+        CatchMetadataText(
           '${width.toInt()} px window',
           color: CatchTokens.of(context).ink2,
         ),
@@ -85,7 +85,7 @@ Widget adaptiveSelectionControlStates(BuildContext context) {
     catalogId: 'catch.menu.adaptive_selection',
     children: [
       for (final width in [599.0, 600.0, 840.0]) ...[
-        CatchMonoLabel(
+        CatchMetadataText(
           '${width.toInt()} px window',
           color: CatchTokens.of(context).ink2,
         ),

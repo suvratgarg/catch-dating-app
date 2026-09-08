@@ -393,10 +393,10 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchSectionLabel",
+      "name": "CatchSectionHeaderTitle",
       "status": "active",
       "kind": "primitive",
-      "summary": "Structural eyebrow or compact metadata label that introduces a section without communicating status.",
+      "summary": "Structural section heading with optional activity accent and leading glyph; Flutter retains explicit heading semantics and bounded text.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -446,7 +446,8 @@
           "metadata-label",
           "with-icon",
           "accented",
-          "truncated"
+          "truncated",
+          "multi-line"
         ],
         "slots": [],
         "tokens": [
@@ -455,11 +456,13 @@
           "theme.light.color.ink2"
         ],
         "dartRoles": [
-          "CatchSectionLabel",
+          "CatchSectionHeaderTitle",
           "CatchTextStyles.kicker",
           "CatchIcon.md"
         ],
-        "goldens": [],
+        "goldens": [
+          "text_roles"
+        ],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -479,7 +482,8 @@
         "notes": [
           "Use to introduce hierarchy or metadata context; use catch.badge for state, status, counts, or alerts.",
           "Keep copy short and scannable. Long explanatory text belongs in supporting copy.",
-          "Surface adapters own casing, color, spacing, and element choice while preserving non-interactive semantics."
+          "Surface adapters own casing, color, spacing, and element choice while preserving non-interactive semantics.",
+          "This cross-stack contract is the single registered identity for the section-heading anatomy. The former catch.section.label row duplicated the same Flutter declaration and is removed."
         ]
       },
       "governance": {
@@ -492,21 +496,33 @@
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.ui_label"
+        "conceptRole": "member",
+        "conceptId": "catch.section",
+        "parentConceptId": "catch.section",
+        "qualifier": "anatomy",
+        "decisionRef": "pattern-family:typography-role-boundaries"
       },
       "dart": {
-        "symbol": "CatchSectionLabel",
-        "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
+        "symbol": "CatchSectionHeaderTitle",
+        "file": "packages/catch_ui/lib/src/primitives/catch_section_header_title.dart",
         "constructors": [
-          "CatchSectionLabel"
+          "CatchSectionHeaderTitle"
         ]
       },
       "surfaces": {
-        "flutter": "CatchSectionLabel",
+        "flutter": "CatchSectionHeaderTitle",
         "website": "UiLabel",
         "admin": "AdminEyebrow",
         "webui": "UiLabel"
+      },
+      "level": "L2",
+      "roleNoun": "HeaderTitle",
+      "naming": {
+        "useCase": "Section",
+        "comparedWith": [
+          "catch.section"
+        ],
+        "reason": "Owns the section title text, optional leading glyph and heading semantics. The parent Section owns grouping, sibling boundaries and header/action placement; display-only metadata and editorial text do not acquire heading semantics."
       }
     },
     {
@@ -4256,9 +4272,9 @@
           "CatchSectionFieldGroup",
           "CatchDividerRole.fieldSection",
           "CatchDividerRole.fieldRow",
-          "CatchKicker",
+          "CatchKickerText",
           "CatchSectionHeader",
-          "CatchSectionLabel",
+          "CatchSectionHeaderTitle",
           "CatchDaySectionHeader",
           "CatchDaySectionHeaderDelegate",
           "CatchHorizontalRail",
@@ -4331,26 +4347,6 @@
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
               "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.section"
-            }
-          },
-          {
-            "id": "catch.section.label",
-            "symbol": "CatchSectionLabel",
-            "file": "packages/catch_ui/lib/src/primitives/catch_section_label.dart",
-            "summary": "Activity-accent eyebrow label for section introductions with optional leading glyph and bounded text.",
-            "states": [
-              "label",
-              "with-icon",
-              "accented",
-              "truncated",
-              "multi-line"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.section",
-              "parentConceptId": "catch.section",
-              "qualifier": "layout",
               "decisionRef": "contract-family:catch.section"
             }
           },
@@ -5279,15 +5275,15 @@
         "vehicle": "plugin",
         "probeSeed": "Text('unstyled')"
       },
-      "name": "CatchKicker",
+      "name": "CatchKickerText",
       "status": "active",
       "kind": "primitive",
       "summary": "Public text-role atom family for uppercase kicker labels and single-line mono metadata labels.",
       "dart": {
-        "symbol": "CatchKicker",
-        "file": "packages/catch_ui/lib/src/primitives/catch_kicker.dart",
+        "symbol": "CatchKickerText",
+        "file": "packages/catch_ui/lib/src/primitives/catch_kicker_text.dart",
         "constructors": [
-          "CatchKicker"
+          "CatchKickerText"
         ]
       },
       "design": {
@@ -5321,11 +5317,11 @@
             "dartType": "Color?"
           },
           {
-            "name": "size",
+            "name": "variant",
             "type": "enum",
             "required": false,
             "default": "md",
-            "dartType": "CatchKickerSize",
+            "dartType": "CatchKickerTextVariant",
             "values": [
               "md",
               "lg",
@@ -5357,7 +5353,7 @@
           "theme.light.color.ink3"
         ],
         "dartRoles": [
-          "CatchKickerSize",
+          "CatchKickerTextVariant",
           "CatchTextStyles.kicker",
           "CatchTextStyles.kickerLg",
           "CatchTextStyles.fieldSectionKicker",
@@ -5365,14 +5361,16 @@
           "CatchTextStyles.clubDisplay",
           "CatchTextStyles.eventDisplay",
           "CatchDisplayStep",
-          "CatchMonoLabel"
+          "CatchMetadataText"
         ],
-        "goldens": [],
+        "goldens": [
+          "text_roles"
+        ],
         "members": [
           {
             "id": "catch.typography.mono_label",
-            "symbol": "CatchMonoLabel",
-            "file": "packages/catch_ui/lib/src/primitives/catch_mono_label.dart",
+            "symbol": "CatchMetadataText",
+            "file": "packages/catch_ui/lib/src/primitives/catch_metadata_text.dart",
             "summary": "Single-line mono metadata label for cards, rails, distances, and compact facts.",
             "states": [
               "metadata",
@@ -5385,6 +5383,15 @@
               "parentConceptId": "catch.typography",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.typography"
+            },
+            "level": "L2",
+            "roleNoun": "Text",
+            "naming": {
+              "useCase": "Metadata",
+              "comparedWith": [
+                "catch.typography"
+              ],
+              "reason": "Compact factual labels retain sentence casing and lighter metadata weight, with an explicit uppercase option. KickerText is an editorial eyebrow that always forces uppercase; this member shares the same typography contract and style resolver."
             }
           }
         ],
@@ -5420,10 +5427,20 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.typography"
+        "conceptId": "catch.typography",
+        "decisionRef": "pattern-family:typography-role-boundaries"
       },
       "surfaces": {
-        "flutter": "CatchKicker"
+        "flutter": "CatchKickerText"
+      },
+      "level": "L2",
+      "roleNoun": "Text",
+      "naming": {
+        "useCase": "Kicker",
+        "comparedWith": [
+          "catch.typography.mono_label"
+        ],
+        "reason": "Editorial eyebrows force uppercase and use dedicated kicker size/weight/tracking recipes. MetadataText keeps sentence/data casing by default and a lighter metadata weight; both share the existing text-style resolver instead of inventing another type scale."
       }
     },
     {
@@ -6541,6 +6558,15 @@
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.menu"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Menu",
+              "comparedWith": [
+                "catch.menu"
+              ],
+              "reason": "The parent Menu owns the bounded scrolling panel and section separators; this member renders one typed command or choice target, including disabled, destructive and selected state."
             }
           },
           {
@@ -6561,6 +6587,15 @@
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.menu"
+            },
+            "level": "L3",
+            "roleNoun": "Menu",
+            "naming": {
+              "useCase": "Action",
+              "comparedWith": [
+                "catch.menu"
+              ],
+              "reason": "Command dispatch enforces at most five actions and requires a reason for a disabled command; it does not represent a selected value. It delegates positioning and all rows to the shared menu anchor and renderer."
             }
           },
           {
@@ -6580,6 +6615,15 @@
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.menu"
+            },
+            "level": "L3",
+            "roleNoun": "Menu",
+            "naming": {
+              "useCase": "Selection",
+              "comparedWith": [
+                "catch.menu"
+              ],
+              "reason": "Mutually exclusive choice requires the current value to match an item and exposes the selected item through its trigger builder. It shares the menu anchor and renderer with command menus, while retaining selected-value semantics and selection feedback."
             }
           },
           {
@@ -6683,6 +6727,11 @@
       },
       "surfaces": {
         "flutter": "CatchMenu"
+      },
+      "level": "L3",
+      "roleNoun": "Menu",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -7757,7 +7806,7 @@
           "CatchLayout.topBarLargeHeight",
           "CatchIconButton.navSize",
           "CatchSearchField",
-          "CatchKicker",
+          "CatchKickerText",
           "CatchPersonAvatar",
           "CatchTextStyles.headline",
           "CatchTextStyles.monoLabel",
@@ -7988,7 +8037,7 @@
           "Use this primitive for route chrome before creating local AppBar variants.",
           "Use CatchScreenHeaderTitle or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
           "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
-          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKicker. Workspace bars pin large: false so the route-title family cannot drift.",
+          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
           "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
           "Use CatchTopBarPrimaryAction when a root-screen primary action must compact from a labelled button to the canonical icon target; never pass CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
@@ -9961,6 +10010,15 @@
       },
       "surfaces": {
         "flutter": "CatchNetworkImage"
+      },
+      "level": "L2",
+      "roleNoun": "Image",
+      "naming": {
+        "useCase": "Network",
+        "comparedWith": [
+          "catch.graded_image"
+        ],
+        "reason": "Owns remote or bundled source loading, decode sizing, image-cache identity, failure fallback and loading hooks. GradedImage transforms an already supplied child; production composes the two operations, so neither replaces the other."
       }
     },
     {
@@ -14103,6 +14161,15 @@
       },
       "surfaces": {
         "flutter": "CatchGradedImage"
+      },
+      "level": "L2",
+      "roleNoun": "Image",
+      "naming": {
+        "useCase": "Graded",
+        "comparedWith": [
+          "catch.network_image"
+        ],
+        "reason": "Owns reversible display-time color grading of a supplied image child, with a raw-image bypass and deterministic optional grain. NetworkImage owns source loading and decoding; this treatment does not load, decode or cache a source."
       }
     },
     {

@@ -19,7 +19,7 @@ Widget tabBarIndicatorStates(BuildContext context) => WidgetbookCatalogFrame(
       ('Focused', CatchOpacity.tabBarFocusFill, true, false),
       ('Reduced motion focus', CatchOpacity.tabBarFocusFill, true, true),
     ]) ...[
-      CatchMonoLabel(state.$1, color: CatchTokens.of(context).ink2),
+      CatchMetadataText(state.$1, color: CatchTokens.of(context).ink2),
       SizedBox(
         width: CatchLayout.tabBarMinimumTapExtent * 3,
         height: CatchLayout.tabBarIndicatorExtent,

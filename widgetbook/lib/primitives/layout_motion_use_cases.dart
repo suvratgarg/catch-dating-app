@@ -59,7 +59,7 @@ Widget fadeScaleStates(BuildContext context) => WidgetbookCatalogFrame(
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchMonoLabel(
+          CatchMetadataText(
             'Progress $value',
             color: CatchTokens.of(context).ink2,
           ),
@@ -113,7 +113,7 @@ Widget tabViewportContractStates(BuildContext context) =>
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchMonoLabel(
+              CatchMetadataText(
                 placement.name,
                 color: CatchTokens.of(context).ink2,
               ),

@@ -152,15 +152,15 @@ void _registerCatchPrimitivesControlsTests() {
     expect(badgeCaps.letterSpacing, 0.72);
   });
 
-  testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (
+  testWidgets('CatchKickerText renders uppercase mono eyebrow sizes', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchKicker(
+        const CatchKickerText(
           label: 'Was at · Sundowner 5K',
           color: Colors.red,
-          size: CatchKickerSize.lg,
+          variant: CatchKickerTextVariant.lg,
         ),
       ),
     );

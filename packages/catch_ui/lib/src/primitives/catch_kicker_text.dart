@@ -1,35 +1,41 @@
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-enum CatchKickerSize { md, lg, fieldSection }
+enum CatchKickerTextVariant { md, lg, fieldSection }
 
 /// Handoff `Kicker`: uppercase mono eyebrow for section starts and editorial
 /// labels.
-class CatchKicker extends StatelessWidget {
-  const CatchKicker({
+class CatchKickerText extends StatelessWidget {
+  const CatchKickerText({
     super.key,
     required this.label,
     this.color,
-    this.size = CatchKickerSize.md,
+    this.variant = CatchKickerTextVariant.md,
     this.textAlign,
     this.maxLines = 1,
   });
 
   final String label;
   final Color? color;
-  final CatchKickerSize size;
+  final CatchKickerTextVariant variant;
   final TextAlign? textAlign;
   final int maxLines;
 
   static TextStyle styleOf(
     BuildContext context, {
     Color? color,
-    CatchKickerSize size = CatchKickerSize.md,
+    CatchKickerTextVariant variant = CatchKickerTextVariant.md,
   }) {
-    return switch (size) {
-      CatchKickerSize.md => CatchTextStyles.kicker(context, color: color),
-      CatchKickerSize.lg => CatchTextStyles.kickerLg(context, color: color),
-      CatchKickerSize.fieldSection => CatchTextStyles.fieldSectionKicker(
+    return switch (variant) {
+      CatchKickerTextVariant.md => CatchTextStyles.kicker(
+        context,
+        color: color,
+      ),
+      CatchKickerTextVariant.lg => CatchTextStyles.kickerLg(
+        context,
+        color: color,
+      ),
+      CatchKickerTextVariant.fieldSection => CatchTextStyles.fieldSectionKicker(
         context,
         color: color,
       ),
@@ -43,7 +49,7 @@ class CatchKicker extends StatelessWidget {
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
-      style: styleOf(context, color: color, size: size),
+      style: styleOf(context, color: color, variant: variant),
     );
   }
 }

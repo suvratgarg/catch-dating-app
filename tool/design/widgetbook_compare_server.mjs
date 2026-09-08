@@ -1158,7 +1158,7 @@ function buildCandidates() {
     "CatchPersonRow",
     "CatchBottomSheetScaffold",
     "CatchNumberStepper",
-    "CatchKicker",
+    "CatchKickerText",
     "CatchSearchField",
     "CatchSurface",
     "CatchTopBar",
@@ -1390,8 +1390,8 @@ function buildCandidates() {
     reason:
       "Both are small mono section/eyebrow labels. Decide whether SectionLabel is an icon/accent variant of Kicker or a distinct section-label primitive.",
     recommended: "catch.kicker",
-    left: findFirst(byName, "CatchKicker"),
-    right: findFirst(byName, "CatchSectionLabel"),
+    left: findFirst(byName, "CatchKickerText"),
+    right: findFirst(byName, "CatchSectionHeaderTitle"),
     priority: "P1",
     tags: ["typography", "sections"],
   });
@@ -1524,9 +1524,9 @@ function buildCandidates() {
       recommended: "catch.kicker",
       tags: ["typography", "sections"],
       names: [
-        "CatchKicker",
-        "CatchMonoLabel",
-        "CatchSectionLabel",
+        "CatchKickerText",
+        "CatchMetadataText",
+        "CatchSectionHeaderTitle",
         "HostSectionLabel",
         "StageSectionLabel",
         "SetupSectionTitle",

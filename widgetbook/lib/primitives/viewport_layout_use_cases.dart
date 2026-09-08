@@ -14,7 +14,7 @@ Widget fillViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.fill_viewport_scroll_view',
   children: [
     for (final tall in [false, true]) ...[
-      CatchMonoLabel(
+      CatchMetadataText(
         tall ? 'Overflowing content' : 'Short content',
         color: CatchTokens.of(context).ink2,
       ),
@@ -55,7 +55,7 @@ Widget sceneViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.scene_viewport',
   children: [
     for (final maximum in [240.0, 520.0]) ...[
-      CatchMonoLabel(
+      CatchMetadataText(
         'Maximum width ${maximum.toInt()}',
         color: CatchTokens.of(context).ink2,
       ),
@@ -90,7 +90,7 @@ Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.master_detail_layout',
   children: [
     for (final expanded in [false, true]) ...[
-      CatchMonoLabel(
+      CatchMetadataText(
         expanded ? 'Split panes' : 'Compact pane',
         color: CatchTokens.of(context).ink2,
       ),
@@ -117,7 +117,7 @@ Widget adaptiveMasterDetailStates(BuildContext context) =>
       catalogId: 'catch.screen_body.adaptive_master_detail_layout',
       children: [
         for (final width in [719.0, 720.0]) ...[
-          CatchMonoLabel(
+          CatchMetadataText(
             'Route body ${width.toInt()}',
             color: CatchTokens.of(context).ink2,
           ),

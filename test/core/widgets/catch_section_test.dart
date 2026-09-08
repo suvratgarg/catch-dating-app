@@ -359,7 +359,7 @@ void main() {
     expect(find.text('Aanya'), findsOneWidget);
     expect(find.text('+ Add bio'), findsOneWidget);
     expect(find.text('Delete account'), findsOneWidget);
-    expect(find.byType(CatchKicker), findsOneWidget);
+    expect(find.byType(CatchKickerText), findsOneWidget);
     expect(find.bySemanticsLabel('Visible'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('catch-field-toggle')));
@@ -381,7 +381,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchKicker), findsOneWidget);
+      expect(find.byType(CatchKickerText), findsOneWidget);
       expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
       expect(find.text('Body copy'), findsOneWidget);
       expect(

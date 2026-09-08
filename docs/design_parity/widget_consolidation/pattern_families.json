@@ -812,6 +812,62 @@
           "rationale": "Remove the pure forwarding wrapper and mount CatchToggleInput.field directly from field trailing anatomy."
         }
       ]
+    },
+    {
+      "id": "typography-role-boundaries",
+      "title": "Editorial text, metadata and structural headings",
+      "intent": "Keep concrete text responsibilities and heading semantics explicit, with one registry identity per public declaration.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.typography",
+      "qualityReference": "CatchKickerText",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered Phase 4 naming review",
+      "acceptedVisualDelta": [
+        "Preserve editorial, metadata and section-heading text appearance at light/dark and text scales 1.0/2.0 against pre-refactor text_roles goldens.",
+        "Preserve heading semantics only on the section-heading API. Kicker and metadata styles continue to resolve through CatchTextStyles.",
+        "Widgetbook headings use the canonical API names and the canonical section-title preview gains the previously member-declared multi-line example."
+      ],
+      "members": [
+        {
+          "symbol": "CatchKickerText",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Editorial uppercase text keeps its distinct weight, tracking and recipes; Variant describes those combined style differences more accurately than Size."
+        },
+        {
+          "symbol": "CatchKicker",
+          "disposition": "unify",
+          "target": "CatchKickerText",
+          "preview": "not-applicable",
+          "rationale": "Role-based rename with unchanged typography and casing behavior."
+        },
+        {
+          "symbol": "CatchMetadataText",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Name the compact factual-text responsibility rather than its mono font implementation; preserve sentence-case and optional uppercase metadata styles."
+        },
+        {
+          "symbol": "CatchMonoLabel",
+          "disposition": "unify",
+          "target": "CatchMetadataText",
+          "preview": "not-applicable",
+          "rationale": "Rename to the reviewed metadata Text use case without changing its style resolver."
+        },
+        {
+          "symbol": "CatchSectionHeaderTitle",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Its existing Semantics(header: true) makes this structural heading anatomy, not ordinary metadata text. Keep catch.ui_label as the single contract and attach it to the section concept."
+        },
+        {
+          "symbol": "CatchSectionLabel",
+          "disposition": "unify",
+          "target": "CatchSectionHeaderTitle",
+          "preview": "not-applicable",
+          "rationale": "Rename the heading API and remove its duplicate catch.section.label registry identity; preserve the cross-stack catch.ui_label mappings."
+        }
+      ]
     }
   ]
 }

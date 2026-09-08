@@ -15,7 +15,7 @@ Widget bottomActionOverlayStates(BuildContext context) =>
       catalogId: 'catch.bottom_action.overlay',
       children: [
         for (final safeBottom in [0.0, 34.0]) ...[
-          CatchMonoLabel(
+          CatchMetadataText(
             safeBottom == 0 ? 'No bottom inset' : 'Bottom inset and notice',
             color: CatchTokens.of(context).ink2,
           ),

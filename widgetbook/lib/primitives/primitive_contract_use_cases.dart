@@ -38,14 +38,14 @@ import 'code_input_demo.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchSectionLabel,
+  type: CatchSectionHeaderTitle,
   path: '[Core primitives]/Typography',
 )
-Widget catchSectionLabelContractStates(BuildContext context) {
+Widget catchSectionHeaderTitleContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchSectionLabel',
+    title: 'CatchSectionHeaderTitle',
     contractId: 'catch.ui_label',
     states: const [
       'eyebrow',
@@ -53,26 +53,37 @@ Widget catchSectionLabelContractStates(BuildContext context) {
       'with-icon',
       'accented',
       'truncated',
+      'multi-line',
     ],
     children: [
       const _StateCard(
+        label: 'multi-line',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.compactLabelWidth,
+          child: CatchSectionHeaderTitle(
+            label: 'A section title with more context',
+            maxLines: 2,
+          ),
+        ),
+      ),
+      const _StateCard(
         label: 'eyebrow',
-        child: CatchSectionLabel(label: 'How it works'),
+        child: CatchSectionHeaderTitle(label: 'How it works'),
       ),
       const _StateCard(
         label: 'metadata-label',
-        child: CatchSectionLabel(label: 'Source and freshness'),
+        child: CatchSectionHeaderTitle(label: 'Source and freshness'),
       ),
       _StateCard(
         label: 'with-icon',
-        child: CatchSectionLabel(
+        child: CatchSectionHeaderTitle(
           label: 'Social run format',
           icon: CatchIcons.directionsRunRounded,
         ),
       ),
       _StateCard(
         label: 'accented',
-        child: CatchSectionLabel(
+        child: CatchSectionHeaderTitle(
           label: 'Needs review',
           icon: CatchIcons.infoOutlineRounded,
           accentColor: t.warning,
@@ -82,7 +93,7 @@ Widget catchSectionLabelContractStates(BuildContext context) {
         label: 'truncated',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactLabelWidth,
-          child: CatchSectionLabel(
+          child: CatchSectionHeaderTitle(
             label: 'A deliberately long structural context label',
           ),
         ),
@@ -932,7 +943,7 @@ Widget catchStartupLoadingScreenContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchKicker,
+  type: CatchKickerText,
   path: '[Core primitives]/Typography',
 )
 Widget catchTypographyContractStates(BuildContext context) {
@@ -952,39 +963,42 @@ Widget catchTypographyContractStates(BuildContext context) {
     children: [
       const _StateCard(
         label: 'kicker-md',
-        child: CatchKicker(label: 'Today'),
+        child: CatchKickerText(label: 'Today'),
       ),
       _StateCard(
         label: 'kicker-lg',
-        child: CatchKicker(label: 'Featured format', size: CatchKickerSize.lg),
+        child: CatchKickerText(
+          label: 'Featured format',
+          variant: CatchKickerTextVariant.lg,
+        ),
       ),
       const _StateCard(
         label: 'kicker-field-section',
-        child: CatchKicker(
+        child: CatchKickerText(
           label: 'About you',
-          size: CatchKickerSize.fieldSection,
+          variant: CatchKickerTextVariant.fieldSection,
         ),
       ),
       _StateCard(
         label: 'tinted',
-        child: CatchKicker(label: 'Social run format', color: t.primary),
+        child: CatchKickerText(label: 'Social run format', color: t.primary),
       ),
       const _StateCard(
         label: 'truncated',
         child: SizedBox(
           width: WidgetbookPreviewLayout.kickerTruncationWidth,
-          child: CatchKicker(label: 'Very long metadata label'),
+          child: CatchKickerText(label: 'Very long metadata label'),
         ),
       ),
       _StateCard(
         label: 'mono-label',
         child: _InlineWrap(
           children: [
-            CatchMonoLabel('6 going', color: t.ink2),
-            CatchMonoLabel('2.4 km away', color: t.primary),
+            CatchMetadataText('6 going', color: t.ink2),
+            CatchMetadataText('2.4 km away', color: t.primary),
             SizedBox(
               width: WidgetbookPreviewLayout.monoLabelTruncationWidth,
-              child: CatchMonoLabel(
+              child: CatchMetadataText(
                 'A very long metadata label',
                 color: t.ink3,
               ),

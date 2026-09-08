@@ -2,8 +2,8 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Single-line mono label for compact metadata in cards and rails.
-class CatchMonoLabel extends StatelessWidget {
-  const CatchMonoLabel(
+class CatchMetadataText extends StatelessWidget {
+  const CatchMetadataText(
     this.label, {
     super.key,
     required this.color,

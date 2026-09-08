@@ -122,7 +122,7 @@ class EventDateRailCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchMonoLabel(
+                    CatchMetadataText(
                       kicker,
                       color: visual.accent,
                       uppercase: true,

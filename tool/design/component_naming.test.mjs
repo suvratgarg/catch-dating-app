@@ -165,6 +165,24 @@ test("unregistered shared Widgets remain in the source inventory and fail", () =
   assert.match(problems([], declarations([entry])).join("\n"), /expected one registry identity, found 0/u);
 });
 
+test("one physical heading cannot have both a contract and a duplicate member identity", () => {
+  const section = component("CatchSection", "Section");
+  const heading = component("CatchSectionHeaderTitle", "HeaderTitle", {
+    naming: {useCase: "Section", comparedWith: [section.id],
+      reason: "Owns heading semantics; the section owns grouping and placement."},
+    governance: {conceptRole: "member", conceptId: section.id,
+      parentConceptId: section.id, qualifier: "anatomy"},
+  });
+  const source = declarations([section, heading]);
+  assert.deepEqual(problems([section, heading], source), []);
+  section.contract = {members: [{
+    ...heading, id: "catch.section.duplicate_title", symbol: heading.dart.symbol,
+    file: heading.dart.file,
+  }]};
+  assert.match(problems([section, heading], source).join("\n"),
+    /CatchSectionHeaderTitle: expected one registry identity, found 2/u);
+});
+
 test("a source rename or move fails stale registry identity", () => {
   const entry = component("CatchButton", "Button");
   const moved = declarations([entry]);

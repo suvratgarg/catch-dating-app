@@ -91,7 +91,7 @@ class ExploreExternalEventRow extends StatelessWidget {
                 ),
                 gapW8,
                 Expanded(
-                  child: CatchMonoLabel(state.sourceLabel, color: t.ink3),
+                  child: CatchMetadataText(state.sourceLabel, color: t.ink3),
                 ),
                 gapW8,
                 CatchTicketStatusBadge(
@@ -149,7 +149,7 @@ class ExploreExternalEventRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            CatchMonoLabel(state.readOnlySupplyLabel, color: t.ink3),
+            CatchMetadataText(state.readOnlySupplyLabel, color: t.ink3),
           ],
         ),
       ),
@@ -173,7 +173,7 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchMonoLabel(
+        CatchMetadataText(
           context.l10n.exploreExploreEventRowsVisiblecopyComingUpLength(
             length: items.length,
           ),

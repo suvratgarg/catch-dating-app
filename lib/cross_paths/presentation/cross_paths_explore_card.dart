@@ -93,7 +93,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchMonoLabel(
+        CatchMetadataText(
           context.l10n.crossPathsExploreCardLabelPeopleYouCouldMeet,
           color: t.ink3,
           uppercase: true,

@@ -14,7 +14,7 @@ Widget topBarTabLabelStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.top_bar.tab_label',
   children: [
     for (final selected in [true, false]) ...[
-      CatchMonoLabel(
+      CatchMetadataText(
         selected ? 'Selected' : 'Resting',
         color: CatchTokens.of(context).ink2,
       ),

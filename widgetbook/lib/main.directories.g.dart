@@ -1896,22 +1896,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Typography',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMonoLabel',
+            name: 'CatchMetadataText',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMonoLabelCatalogStates,
+                    .catchMetadataTextCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionLabel',
+            name: 'CatchSectionHeaderTitle',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchSectionLabelCatalogStates,
+                    .catchSectionHeaderTitleCatalogStates,
               ),
             ],
           ),
@@ -4326,7 +4326,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Typography',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchKicker',
+            name: 'CatchKickerText',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -4337,13 +4337,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionLabel',
+            name: 'CatchSectionHeaderTitle',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionLabelContractStates,
+                        .catchSectionHeaderTitleContractStates,
               ),
             ],
           ),

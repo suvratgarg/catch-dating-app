@@ -256,7 +256,7 @@ class ExploreFeedContentSliver extends StatelessWidget {
             child: Padding(
               padding: resultCountPadding,
               child: Builder(
-                builder: (context) => CatchMonoLabel(
+                builder: (context) => CatchMetadataText(
                   sectionState.resultCountLabel,
                   color: CatchTokens.of(context).ink3,
                 ),

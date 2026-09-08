@@ -2,10 +2,10 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff `CatchSectionLabel`: an activity-accent eyebrow with an optional leading
+/// Handoff `CatchSectionHeaderTitle`: an activity-accent eyebrow with an optional leading
 /// glyph and mono label.
-class CatchSectionLabel extends StatelessWidget {
-  const CatchSectionLabel({
+class CatchSectionHeaderTitle extends StatelessWidget {
+  const CatchSectionHeaderTitle({
     super.key,
     required this.label,
     this.icon,

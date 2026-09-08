@@ -40,7 +40,7 @@ Widget sectionKickerStates(BuildContext context) {
         text: 'Notification preferences',
         count: 4,
         color: tokens.ink2,
-        size: CatchKickerSize.fieldSection,
+        variant: CatchKickerTextVariant.fieldSection,
       ),
     ],
   );

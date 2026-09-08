@@ -125,7 +125,7 @@ class CatchEventCard extends StatelessWidget {
                             ),
                             gapW10,
                             Expanded(
-                              child: CatchMonoLabel(
+                              child: CatchMetadataText(
                                 context.l10n
                                     .coreCatchEventActivityCardsVisiblecopyTimelabelCountdownlabel(
                                       timeLabel: timeLabel,
@@ -166,7 +166,7 @@ class CatchEventCard extends StatelessWidget {
                           ),
                         ),
                         gapH12,
-                        CatchMonoLabel(capacityLabel, color: t.ink2),
+                        CatchMetadataText(capacityLabel, color: t.ink2),
                       ],
                     ),
                   ),
@@ -197,7 +197,7 @@ Widget _buildOutlineStamp(BuildContext context, String label) {
           horizontal: CatchSpacing.s2,
           vertical: CatchSpacing.s1,
         ),
-        child: CatchMonoLabel(label, color: t.accent, uppercase: true),
+        child: CatchMetadataText(label, color: t.accent, uppercase: true),
       ),
     ),
   );

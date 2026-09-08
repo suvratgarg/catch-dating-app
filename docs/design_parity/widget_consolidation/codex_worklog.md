@@ -70,6 +70,30 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Typography and reviewed role boundaries
+
+Owner-delegated source review: `typography-role-boundaries` in the existing
+pattern families and decisions. `CatchKickerText`, `CatchMetadataText`, and
+`CatchSectionHeaderTitle` preserve distinct typography and heading semantics.
+
+- [x] Pin four production images before edits; both consecutive comparisons
+  pass without changing those images. Twenty-seven heading/layout tests pass.
+- [x] Replace style `size` with `CatchKickerTextVariant` where the choice also
+  owns font weight/tracking; migrate every production and gallery caller.
+- [x] Consolidate the duplicate physical section-heading registry entries into
+  the existing cross-stack `catch.ui_label` contract, governed by `catch.section`.
+  A regression test rejects duplicate source identity; 33 focused Node tests pass.
+- [x] Regenerate the gallery and preserve its multiline heading state. Eleven
+  gallery/enumeration tests pass twice, including unchanged section anatomy.
+- [x] Record source-reviewed Menu and Image distinctions: command vs selected
+  value menus share rendering; network loading and image treatment compose.
+  All 17 reviewed shared declarations pass naming validation. The remaining
+  shared API sweep is still open.
+- [ ] Complete full derived Phase 4 gates in CI; analyzer/plugin execution
+  remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Canonical toggle input
 
 Owner-delegated source and rendered review: `toggle-canonical-input` in

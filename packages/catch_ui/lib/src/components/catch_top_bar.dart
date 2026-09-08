@@ -11,7 +11,7 @@ import 'package:catch_ui/src/components/catch_top_bar_title_role.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_kicker.dart';
+import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
@@ -338,7 +338,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           ),
           gapH2,
         ],
-        if (showKicker) ...[CatchKicker(label: widget.kicker!), gapH6],
+        if (showKicker) ...[CatchKickerText(label: widget.kicker!), gapH6],
         titleWidget,
         if (showSubtitle) ...[
           gapH3,

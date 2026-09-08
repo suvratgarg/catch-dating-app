@@ -12,7 +12,7 @@ import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_kicker.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
-import 'package:catch_ui/src/primitives/catch_kicker.dart';
+import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -381,9 +381,9 @@ class CatchSection extends StatelessWidget {
               count: hasCount ? displayCount : null,
               trailing: sectionTrailing,
               color: effectiveTitleColor,
-              size: fieldRows
-                  ? CatchKickerSize.fieldSection
-                  : CatchKickerSize.md,
+              variant: fieldRows
+                  ? CatchKickerTextVariant.fieldSection
+                  : CatchKickerTextVariant.md,
             ),
             SizedBox(height: bodyGap),
           ],
@@ -458,7 +458,7 @@ class CatchSection extends StatelessWidget {
                       count: hasCount ? displayCount : null,
                       trailing: sectionTrailing,
                       color: titleColor ?? t.ink2,
-                      size: CatchKickerSize.fieldSection,
+                      variant: CatchKickerTextVariant.fieldSection,
                     ),
                     const SizedBox(height: CatchFieldTokens.sectionRuleGap),
                     const CatchDivider.section(),
@@ -486,7 +486,7 @@ class CatchSection extends StatelessWidget {
                             count: group.count?.toString().trim(),
                             trailing: group.trailing,
                             color: t.ink2,
-                            size: CatchKickerSize.fieldSection,
+                            variant: CatchKickerTextVariant.fieldSection,
                           ),
                           const SizedBox(
                             height: CatchFieldTokens.sectionRuleGap,
@@ -630,7 +630,7 @@ class CatchSection extends StatelessWidget {
                       count: hasCount ? displayCount : null,
                       trailing: sectionTrailing,
                       color: titleColor ?? t.ink2,
-                      size: CatchKickerSize.fieldSection,
+                      variant: CatchKickerTextVariant.fieldSection,
                     ),
                   ),
                   SizedBox(height: bodyGap),

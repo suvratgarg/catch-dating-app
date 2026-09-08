@@ -29,7 +29,7 @@ test("structural labels remain distinct from status badges on every stack", () =
   );
   const byId = new Map(registry.components.map((component) => [component.id, component]));
   assert.deepEqual(byId.get("catch.ui_label")?.surfaces, {
-    flutter: "CatchSectionLabel",
+    flutter: "CatchSectionHeaderTitle",
     website: "UiLabel",
     admin: "AdminEyebrow",
     webui: "UiLabel",

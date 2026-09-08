@@ -21,20 +21,26 @@ void main() {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16,
             children: [
-              const CatchKicker(label: 'Host notes'),
-              const CatchKicker(label: 'Featured', size: CatchKickerSize.lg),
-              const CatchKicker(
-                label: 'Your details',
-                size: CatchKickerSize.fieldSection,
+              const CatchKickerText(label: 'Host notes'),
+              const CatchKickerText(
+                label: 'Featured',
+                variant: CatchKickerTextVariant.lg,
               ),
-              CatchMonoLabel('250 views', color: CatchTokens.of(context).ink2),
-              CatchMonoLabel(
+              const CatchKickerText(
+                label: 'Your details',
+                variant: CatchKickerTextVariant.fieldSection,
+              ),
+              CatchMetadataText(
+                '250 views',
+                color: CatchTokens.of(context).ink2,
+              ),
+              CatchMetadataText(
                 'Sold out',
                 color: CatchTokens.of(context).ink2,
                 uppercase: true,
               ),
-              const CatchSectionLabel(label: 'Your guests'),
-              CatchSectionLabel(
+              const CatchSectionHeaderTitle(label: 'Your guests'),
+              CatchSectionHeaderTitle(
                 label: 'Your guests',
                 icon: CatchIcons.groupsOutlined,
               ),

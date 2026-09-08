@@ -884,17 +884,18 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byIcon(CatchIcons.errorOutlineRounded), findsOneWidget);
   });
 
-  testWidgets('CatchMonoLabel renders compact metadata with overflow guard', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(const CatchMonoLabel('TODAY AT 7 PM', color: Colors.black)),
-    );
+  testWidgets(
+    'CatchMetadataText renders compact metadata with overflow guard',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(const CatchMetadataText('TODAY AT 7 PM', color: Colors.black)),
+      );
 
-    final text = tester.widget<Text>(find.text('TODAY AT 7 PM'));
-    expect(text.maxLines, 1);
-    expect(text.overflow, TextOverflow.ellipsis);
-  });
+      final text = tester.widget<Text>(find.text('TODAY AT 7 PM'));
+      expect(text.maxLines, 1);
+      expect(text.overflow, TextOverflow.ellipsis);
+    },
+  );
 
   testWidgets('CatchFrameworkErrorView can expose debug details', (
     tester,

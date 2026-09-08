@@ -17,7 +17,7 @@ const headerTextPattern =
 const sectionHeaderPattern =
   /\bCatchSectionHeader\s*\([\s\S]{0,260}?\btitle\s*:\s*(["'])([^"'\n]{2,96})\1/gu;
 const kickerPattern =
-  /\bCatchKicker\s*\([\s\S]{0,260}?\blabel\s*:\s*(["'])([^"'\n]{2,96})\1/gu;
+  /\bCatchKickerText\s*\([\s\S]{0,260}?\blabel\s*:\s*(["'])([^"'\n]{2,96})\1/gu;
 const classInstantiationPattern = /\b([A-Z][A-Za-z0-9_]*)\s*\(/gu;
 const headerFlagFieldPattern = /\bfinal\s+bool\s+(showHeader|showTitle)\s*;/gu;
 
@@ -170,7 +170,7 @@ export function scanSourceForSectionHeaders({
     const ownsParallelSectionShell =
       /\bfinal\s+String\??\s+(?:label|title)\s*;/u.test(info.source) &&
       /\bfinal\s+Widget\s+child\s*;/u.test(info.source) &&
-      /\bCatchKicker\s*\(/u.test(info.source);
+      /\bCatchKickerText\s*\(/u.test(info.source);
     if (ownsParallelSectionShell) {
       findings.push({
         path: relativePath,
@@ -178,7 +178,7 @@ export function scanSourceForSectionHeaders({
         level: "high",
         rule: "SECTION-HEADER-003",
         reason:
-          "A thin label-plus-child section shell owns CatchKicker chrome outside CatchSection; absorb the shell into the canonical CatchSection contract.",
+          "A thin label-plus-child section shell owns CatchKickerText chrome outside CatchSection; absorb the shell into the canonical CatchSection contract.",
         expression: `${info.className} duplicates CatchSection label and body ownership`,
       });
       continue;
@@ -351,7 +351,7 @@ function collectHeaderLiterals(source) {
         title: match[2],
         kind:
           styleKind ??
-          (pattern === sectionHeaderPattern ? "CatchSectionHeader" : "CatchKicker"),
+          (pattern === sectionHeaderPattern ? "CatchSectionHeader" : "CatchKickerText"),
       });
     }
   }

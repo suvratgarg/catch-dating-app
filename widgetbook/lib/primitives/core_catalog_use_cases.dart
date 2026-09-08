@@ -338,24 +338,24 @@ Widget catchSearchFieldCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMonoLabel,
+  type: CatchMetadataText,
   path: '[Core catalog]/Typography',
 )
-Widget catchMonoLabelCatalogStates(BuildContext context) {
+Widget catchMetadataTextCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchMonoLabel',
-    catalogId: 'core.widgets.catch_mono_label',
+    title: 'CatchMetadataText',
+    catalogId: 'core.widgets.catch_metadata_text',
     children: [
       _StateCard(
         label: 'metadata labels',
         child: _InlineWrap(
           children: [
-            CatchMonoLabel('6 going', color: t.ink2),
-            CatchMonoLabel('2.4 km away', color: t.primary),
+            CatchMetadataText('6 going', color: t.ink2),
+            CatchMetadataText('2.4 km away', color: t.primary),
             SizedBox(
               width: WidgetbookPreviewLayout.monoLabelTruncationWidth,
-              child: CatchMonoLabel(
+              child: CatchMetadataText(
                 'A very long metadata label',
                 color: t.ink3,
               ),
@@ -369,14 +369,14 @@ Widget catchMonoLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSectionLabel,
+  type: CatchSectionHeaderTitle,
   path: '[Core catalog]/Typography',
 )
-Widget catchSectionLabelCatalogStates(BuildContext context) {
+Widget catchSectionHeaderTitleCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchSectionLabel',
-    catalogId: 'core.widgets.catch_section_label',
+    title: 'CatchSectionHeaderTitle',
+    catalogId: 'core.widgets.catch_section_header_title',
     children: [
       _StateCard(
         label: 'plain / icon / truncated',
@@ -385,15 +385,15 @@ Widget catchSectionLabelCatalogStates(BuildContext context) {
           gap: CatchSpacing.s3,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CatchSectionLabel(label: 'How it works'),
-            CatchSectionLabel(
+            const CatchSectionHeaderTitle(label: 'How it works'),
+            CatchSectionHeaderTitle(
               label: 'Social run format',
               icon: CatchIcons.directionsRunRounded,
               accentColor: t.primary,
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.compactControlWidth,
-              child: CatchSectionLabel(
+              child: CatchSectionHeaderTitle(
                 label: 'A very long activity section label',
                 icon: CatchIcons.sparkle,
               ),
@@ -3445,7 +3445,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CatchKicker(label: 'Tonight'),
+                const CatchKickerText(label: 'Tonight'),
                 gapH8,
                 Text('Bandra easy 5K', style: CatchTextStyles.titleL(context)),
                 gapH6,
@@ -4248,7 +4248,7 @@ class _StateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchKicker(label: label, color: t.primary),
+          CatchKickerText(label: label, color: t.primary),
           if (description != null) ...[
             gapH6,
             Text(description!, style: CatchTextStyles.supporting(context)),

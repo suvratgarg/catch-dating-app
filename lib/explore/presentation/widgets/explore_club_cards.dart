@@ -58,10 +58,13 @@ class ExploreOrganizerPosterCard extends StatelessWidget {
               hostAvatarUrl: state.hostAvatarUrl,
               eyebrow: state.hostEyebrow,
               avatarSize: 24,
-              trailing: CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+              trailing: CatchMetadataText(
+                state.ratingReviewLabel,
+                color: t.ink3,
+              ),
             )
           else
-            CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+            CatchMetadataText(state.ratingReviewLabel, color: t.ink3),
           if (state.tags.isNotEmpty) ...[gapH8, ExploreClubTags(state: state)],
         ],
       ),
@@ -123,7 +126,7 @@ class ExploreFeedClubRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                CatchMonoLabel(state.rowKicker, color: palette.accent),
+                CatchMetadataText(state.rowKicker, color: palette.accent),
                 gapH4,
                 Text(
                   state.title,
@@ -146,7 +149,7 @@ class ExploreFeedClubRow extends StatelessWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH4,
-                CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+                CatchMetadataText(state.ratingReviewLabel, color: t.ink3),
               ],
             ),
           ),
@@ -174,7 +177,7 @@ class ExploreClubTags extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     if (state.tags.isEmpty) {
-      return CatchMonoLabel(
+      return CatchMetadataText(
         state.memberCountLabel.toUpperCase(),
         color: t.ink3,
       );

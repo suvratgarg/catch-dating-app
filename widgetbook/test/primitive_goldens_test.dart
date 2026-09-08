@@ -19,8 +19,9 @@ import 'support/triage_inventory.dart';
 // These ids select generated use cases; they do not redeclare component states.
 const _referenceCases = <String, String>{
   'Core catalog/Menus/CatchMenuRow/Catalog states': 'menu_row',
-  'Core catalog/Typography/CatchMonoLabel/Catalog states': 'mono_label',
-  'Core catalog/Typography/CatchSectionLabel/Catalog states': 'section_label',
+  'Core catalog/Typography/CatchMetadataText/Catalog states': 'mono_label',
+  'Core catalog/Typography/CatchSectionHeaderTitle/Catalog states':
+      'section_label',
   'Core catalog/Inputs/CatchControlShell/Catalog states': 'control_shell',
   'Core catalog/Navigation/CatchStepProgress/Catalog states': 'step_progress',
   'Core catalog/Navigation/CatchPageDots/Catalog states': 'page_dots',
