@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.79.0
+version: 1.80.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -179,9 +179,24 @@ Snapshot freshness lasts at most 15 seconds from request start, measured by the
 browser's monotonic clock independently of the paused or advanced virtual time.
 Refresh restores controls only after another successful read.
 
-This integrates backend fact assembly, storage, guest effects and the guest
-web reply flow. Native Host presentation, setup/coach plan assembly and
-automatic evaluation on clock or actor changes remain unfinished. No real
+The native rehearsal domain now retains typed guest intention, joining
+instructions, response choices and simulated delivery evidence from that Host
+bootstrap. Malformed instruction pointers fail closed. A reported intention
+still cannot change attendance. Rehearsal plans reuse the live template's
+`AssistanceLateJoinRules` value, with a concrete joining destination, explicit
+departure confirmation and channel choices that contain no live sender binding.
+Closed command types distinguish publish, dispatch and confirmed receipt; an
+unknown dispatch outcome cannot be used as a receipt. The existing rehearsal
+repository and action controller accept a frozen command tied to the reviewed
+session, setup revision, runtime revision and client action id. Exact retries
+preserve that request; a result must include its matching action receipt before
+being returned as confirmation. This confirms command handling, not message
+delivery. Native review UI, account-bound review lifecycle and automatic retry
+or in-flight selection management still need wiring before exposing controls.
+
+This integrates backend fact assembly, storage, guest effects, the guest
+web reply flow and the native typed command/data boundary. Native Host
+presentation, setup/coach plan assembly and automatic evaluation on clock or actor changes remain unfinished. No real
 sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join

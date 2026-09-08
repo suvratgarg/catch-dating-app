@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -320,31 +321,53 @@ class EventRehearsalActor {
     this.layoutUnitId,
     this.confirmedLayoutUnitId,
     this._connectionState,
+    this.assistance,
+    this.assistanceMessage,
+    this.assistanceDelivery,
   });
 
-  factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) =>
-      EventRehearsalActor(
-        actorId: _requiredString(map, 'actorId'),
-        displayName: _requiredString(map, 'displayName'),
-        persona: _requiredString(map, 'persona'),
-        status: EventRehearsalActorStatus.values.byName(
-          _requiredString(map, 'status'),
-        ),
-        connectionState: map.containsKey('connectionState')
-            ? EventRehearsalConnectionState.values.byName(
-                _requiredString(map, 'connectionState'),
-              )
-            : null,
-        guestMoment: EventRehearsalGuestMoment.values.byName(
-          _requiredString(map, 'guestMoment'),
-        ),
-        optedOut: _requiredBool(map, 'optedOut'),
-        keepApartActorIds: _stringList(map['keepApartActorIds']),
-        helpRequested: _requiredBool(map, 'helpRequested'),
-        promptCompleted: _requiredBool(map, 'promptCompleted'),
-        layoutUnitId: map['layoutUnitId'] as String?,
-        confirmedLayoutUnitId: map['confirmedLayoutUnitId'] as String?,
+  factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) {
+    final assistance = map['assistance'] == null
+        ? null
+        : RehearsalAssistanceState.fromJson(map['assistance']);
+    final message = map['assistanceMessage'] == null
+        ? null
+        : RehearsalJoiningInstruction.fromJson(map['assistanceMessage']);
+    final delivery = map['assistanceDelivery'] == null
+        ? null
+        : RehearsalDeliveryView.fromJson(map['assistanceDelivery']);
+    if (assistance?.latestMessageId != message?.messageId ||
+        (message == null) != (delivery == null)) {
+      throw const FormatException(
+        'Inconsistent rehearsal instruction projection.',
       );
+    }
+    return EventRehearsalActor(
+      actorId: _requiredString(map, 'actorId'),
+      displayName: _requiredString(map, 'displayName'),
+      persona: _requiredString(map, 'persona'),
+      status: EventRehearsalActorStatus.values.byName(
+        _requiredString(map, 'status'),
+      ),
+      connectionState: map.containsKey('connectionState')
+          ? EventRehearsalConnectionState.values.byName(
+              _requiredString(map, 'connectionState'),
+            )
+          : null,
+      guestMoment: EventRehearsalGuestMoment.values.byName(
+        _requiredString(map, 'guestMoment'),
+      ),
+      optedOut: _requiredBool(map, 'optedOut'),
+      keepApartActorIds: _stringList(map['keepApartActorIds']),
+      helpRequested: _requiredBool(map, 'helpRequested'),
+      promptCompleted: _requiredBool(map, 'promptCompleted'),
+      layoutUnitId: map['layoutUnitId'] as String?,
+      confirmedLayoutUnitId: map['confirmedLayoutUnitId'] as String?,
+      assistance: assistance,
+      assistanceMessage: message,
+      assistanceDelivery: delivery,
+    );
+  }
 
   final String actorId;
   final String displayName;
@@ -365,6 +388,9 @@ class EventRehearsalActor {
   final bool promptCompleted;
   final String? layoutUnitId;
   final String? confirmedLayoutUnitId;
+  final RehearsalAssistanceState? assistance;
+  final RehearsalJoiningInstruction? assistanceMessage;
+  final RehearsalDeliveryView? assistanceDelivery;
 }
 
 class EventRehearsalActionRecord {

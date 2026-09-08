@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
+
+export 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 
 enum AssistanceTemplateAuthority { observe, prepare, executeWithinPolicy }
 
 enum AssistanceTemplateDisabledReason { hostChoice, organizerDefault }
-
-enum LateJoinUnansweredRule { keepUnknownUntilCutoff, hostReviewAtDeadline }
 
 sealed class AssistanceTemplateSetting {
   const AssistanceTemplateSetting();
@@ -45,57 +46,36 @@ final class AssistanceTemplateDisabled extends AssistanceTemplateSetting {
   Map<String, Object?> toJson() => {'kind': 'disabled', 'reason': reason.name};
 }
 
-sealed class LateJoinCutoff {
-  const LateJoinCutoff();
-  Map<String, Object?> toJson();
-  factory LateJoinCutoff.fromJson(Object? value) {
-    final map = assistanceObject(value);
-    if (map['kind'] == 'eventEnd') {
-      assistanceObject(map, {'kind'});
-      return const LateJoinEventEnd();
-    }
-    if (map['kind'] == 'time') {
-      assistanceObject(map, {'kind', 'at'});
-      return LateJoinAtTime(assistanceInteger(map['at']));
-    }
-    throw const FormatException('Unknown late joining cutoff.');
-  }
-}
-
-final class LateJoinEventEnd extends LateJoinCutoff {
-  const LateJoinEventEnd();
-  @override
-  Map<String, Object?> toJson() => {'kind': 'eventEnd'};
-}
-
-final class LateJoinAtTime extends LateJoinCutoff {
-  LateJoinAtTime(this.at) {
-    assistanceInteger(at);
-  }
-  final int at;
-  @override
-  Map<String, Object?> toJson() => {'kind': 'time', 'at': at};
-}
-
 /// Reusable configuration, without a runtime subject or provider authority.
 final class AssistanceLateJoinTemplate {
   AssistanceLateJoinTemplate({
+    required AssistanceTemplateSetting setting,
+    required LateJoinDestination destination,
+    required LateJoinCutoff cutoff,
+    required int maxMessagesPerEpisode,
+    required int minimumMinutesBetweenMessages,
+    required LateJoinUnansweredRule unanswered,
+  }) : this.withRules(
+         setting: setting,
+         rules: AssistanceLateJoinRules(
+           destination: destination,
+           cutoff: cutoff,
+           maxMessagesPerEpisode: maxMessagesPerEpisode,
+           minimumMinutesBetweenMessages: minimumMinutesBetweenMessages,
+           unanswered: unanswered,
+         ),
+       );
+  const AssistanceLateJoinTemplate.withRules({
     required this.setting,
-    required this.destination,
-    required this.cutoff,
-    required this.maxMessagesPerEpisode,
-    required this.minimumMinutesBetweenMessages,
-    required this.unanswered,
-  }) {
-    _bounded(maxMessagesPerEpisode, 100);
-    _bounded(minimumMinutesBetweenMessages, 1440);
-  }
+    required this.rules,
+  });
   final AssistanceTemplateSetting setting;
-  final LateJoinDestination destination;
-  final LateJoinCutoff cutoff;
-  final int maxMessagesPerEpisode;
-  final int minimumMinutesBetweenMessages;
-  final LateJoinUnansweredRule unanswered;
+  final AssistanceLateJoinRules rules;
+  LateJoinDestination get destination => rules.destination;
+  LateJoinCutoff get cutoff => rules.cutoff;
+  int get maxMessagesPerEpisode => rules.maxMessagesPerEpisode;
+  int get minimumMinutesBetweenMessages => rules.minimumMinutesBetweenMessages;
+  LateJoinUnansweredRule get unanswered => rules.unanswered;
 
   factory AssistanceLateJoinTemplate.fromJson(Object? value) {
     final map = assistanceObject(value, {
@@ -107,52 +87,15 @@ final class AssistanceLateJoinTemplate {
     if (map['kind'] != 'lateJoin' || map['version'] != 1) {
       throw const FormatException('Unsupported late joining template.');
     }
-    final config = assistanceObject(map['config'], {
-      'destination',
-      'cutoff',
-      'maxMessagesPerEpisode',
-      'minimumMinutesBetweenMessages',
-      'updateOn',
-      'unanswered',
-    });
-    if (config['updateOn'] != 'materialGuidanceChange') {
-      throw const FormatException('Unsupported guidance update rule.');
-    }
-    return AssistanceLateJoinTemplate(
+    return AssistanceLateJoinTemplate.withRules(
       setting: AssistanceTemplateSetting.fromJson(map['setting']),
-      destination: LateJoinDestination.fromJson(config['destination']),
-      cutoff: LateJoinCutoff.fromJson(config['cutoff']),
-      maxMessagesPerEpisode: _bounded(config['maxMessagesPerEpisode'], 100),
-      minimumMinutesBetweenMessages: _bounded(
-        config['minimumMinutesBetweenMessages'],
-        1440,
-      ),
-      unanswered: assistanceEnum(
-        LateJoinUnansweredRule.values,
-        config['unanswered'],
-      ),
+      rules: AssistanceLateJoinRules.fromJson(map['config']),
     );
   }
-
   Map<String, Object?> toJson() => {
     'kind': 'lateJoin',
     'version': 1,
     'setting': setting.toJson(),
-    'config': {
-      'destination': destination.toJson(),
-      'cutoff': cutoff.toJson(),
-      'maxMessagesPerEpisode': maxMessagesPerEpisode,
-      'minimumMinutesBetweenMessages': minimumMinutesBetweenMessages,
-      'updateOn': 'materialGuidanceChange',
-      'unanswered': unanswered.name,
-    },
+    'config': rules.toJson(),
   };
-}
-
-int _bounded(Object? value, int maximum) {
-  final number = assistanceInteger(value);
-  if (number > maximum) {
-    throw const FormatException('Assistance limit exceeded.');
-  }
-  return number;
 }

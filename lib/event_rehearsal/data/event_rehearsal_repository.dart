@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -84,6 +85,20 @@ class EventRehearsalRepository {
     ).toJson(),
     action: 'control an event rehearsal',
     parse: EventRehearsalBootstrap.fromCallableData,
+  );
+
+  /// Reuse the reviewed command unchanged after an uncertain network result.
+  Future<EventRehearsalBootstrap> applyAssistance(
+    RehearsalAssistanceChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'simulate event rehearsal assistance',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
   );
 
   Future<EventRehearsalBootstrap> inject({
